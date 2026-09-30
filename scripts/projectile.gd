@@ -25,6 +25,7 @@ var hit_base=false
 var sniper_visual=false
 var flyer_round=false
 var hit_actors: Array=[]
+var blink_halo:Node3D
 
 func _ready():
 	if is_instance_valid(owner_actor) and owner_actor.has_method("pressure"):pressure=owner_actor.pressure()
@@ -40,11 +41,14 @@ func build_visual():
 	elif sniper_round or sniper_visual:kind="sniper";color=Color("ff263f")
 	elif orb:kind="orb";color=Color("ff8e40")
 	elif piercing or (is_instance_valid(owner_actor) and owner_actor.kind in ["tank","boss","apc","mortar"]):kind="shell"
-	EffectLighting.projectile_visual(self,kind,color)
+	var visual=EffectLighting.projectile_visual(self,kind,color)
+	# Enemy rounds flicker so they read as danger among friendly tracers.
+	if not friendly and visual.get_child_count()>1:blink_halo=visual.get_child(1)
 	if kind in ["sniper","orb","rocket"]:EffectLighting.projectile_light(self,color)
 func _physics_process(delta):
 	if spent or not is_instance_valid(arena) or arena.phase != "combat": return
 	if rocket_radius>0:Game.sound_loop("rocket_flight",self)
+	if is_instance_valid(blink_halo):blink_halo.visible=fposmod(Time.get_ticks_msec()*.011+position.x,1.0)<.6
 	lifetime -= delta
 	if lifetime <= 0: consume(); return
 	# Sweep with short substeps so a fast bullet cannot skip a wall or actor.

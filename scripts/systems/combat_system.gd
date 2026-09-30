@@ -214,7 +214,7 @@ func spawn_free_bullet(actor,travel: Vector3,damage: float,speed: float,orb: boo
 func throw_grenade(actor,target: Vector3):
 	Game.weapon_sound(actor)
 	var grenade=load("res://scenes/grenade.tscn").instantiate()
-	grenade.arena=arena;grenade.friendly=actor.allied or actor.player_owned
+	grenade.arena=arena;grenade.friendly=actor.allied or actor.player_owned;grenade.source=str(actor.kind)
 	grenade.damage=Game.turret_damage() if actor.allied else actor.damage;grenade.target=Vector3(target.x,0,target.z)
 	grenade.position=actor.position+Vector3.UP*(1.4 if actor.allied else .9)
 	grenade.flight_time=1.6 if actor.allied else (3.0 if actor.kind=="mortar" else 2.0)

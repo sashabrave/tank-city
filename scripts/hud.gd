@@ -45,10 +45,13 @@ var biome_label:Label
 var weapon_icon: TextureRect
 var ability_icon: TextureRect
 
+var status_strip:HBoxContainer
 func _ready():
 	add_to_group("battle_message_anchor")
 	root=$Layout
 	top=root.get_node("HealthPanel");health=top.get_node("HeroHealth");base_health=top.get_node("BaseHealth")
+	# Active effects of the soldier: chips with draining bars to the right of the health panel.
+	status_strip=preload("res://scripts/ui/status_strip.gd").new();status_strip.name="StatusStrip";status_strip.arena=arena;root.add_child(status_strip)
 	left_info=root.get_node("WeaponPanel");weapon_icon=left_info.get_node("WeaponIcon");vehicle_label=left_info.get_node("WeaponName");intercept_label=left_info.get_node("WeaponStats");armor_meter=left_info.get_node("VehicleHealth")
 	right_info=root.get_node("RoomPanel");wave_label=right_info.get_node("StageLabel");enemy_label=right_info.get_node("WaveLabel");right_info.get_node("EnemyRoster").arena=arena
 	stage_pips=preload("res://scripts/ui/pip_strip.gd").new();right_info.add_child(stage_pips);wave_pips=preload("res://scripts/ui/pip_strip.gd").new();right_info.add_child(wave_pips)
@@ -109,6 +112,7 @@ func _layout():
 
 var refresh_elapsed=0.0
 func _process(_delta):
+	if is_instance_valid(status_strip) and is_instance_valid(top):status_strip.position=top.position+Vector2(top.size.x+10,top.size.y*.5-17)
 	refresh_elapsed+=_delta
 	if refresh_elapsed<.05:return
 	refresh_elapsed=0.0

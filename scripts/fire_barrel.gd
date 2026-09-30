@@ -7,6 +7,8 @@ var flames:Array=[]
 var clock=0.0
 ## Drum colour; the burning drum takes a dark shade of the map (set before adding to the tree).
 var tint=Color("3a3632")
+## 1 — a burning drum at the field edge; .5 — what is left of an exploded barrel: half the flame, dim light.
+var intensity=1.0
 
 ## One oil-drum model for the whole game: burning drums, explosive barrels and room props differ only in colour.
 static func drum(parent:Node3D,color:Color,pos:=Vector3.ZERO)->Node3D:
@@ -29,14 +31,15 @@ func _ready():
 		flame.position=Vector3(rng.randf_range(-.07,.07),.84+i*.05,rng.randf_range(-.07,.07))
 		var mat=StandardMaterial3D.new();mat.shading_mode=BaseMaterial3D.SHADING_MODE_UNSHADED;mat.albedo_color=[Color("ff7a1f"),Color("ffb13d"),Color("ffe38a")][i]
 		mat.emission_enabled=true;mat.emission=mat.albedo_color;flame.material_override=mat;flame.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		flame.scale=Vector3.ONE*intensity;flame.position.y=.84-(1.0-intensity)*.12+i*.05*intensity
 		add_child(flame);flames.append(flame)
-	light=OmniLight3D.new();light.position.y=1.2;light.light_color=Color("ff9a4a");light.omni_range=4.2;light.omni_attenuation=1.4;light.shadow_enabled=false;add_child(light)
+	light=OmniLight3D.new();light.position.y=1.2;light.light_color=Color("ff9a4a");light.omni_range=4.2*maxf(.5,intensity);light.omni_attenuation=1.4;light.shadow_enabled=false;add_child(light)
 
 func _process(delta):
 	clock+=delta
 	var night=Settings.values.get("world_lighting","day")=="night"
 	var flicker=.75+.25*sin(clock*13.0)+.15*sin(clock*29.0+1.3)+rng.randf_range(-.08,.08)
-	light.light_energy=(2.2 if night else .5)*flicker
+	light.light_energy=(2.2 if night else .5)*flicker*intensity*intensity
 	for i in range(flames.size()):
-		flames[i].scale=Vector3(1,.85+.3*absf(sin(clock*(9.0+i*3.0)+i)),1)
+		flames[i].scale=Vector3(1,.85+.3*absf(sin(clock*(9.0+i*3.0)+i)),1)*intensity
 		flames[i].rotation.y+=delta*(1.5+i)

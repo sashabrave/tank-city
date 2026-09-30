@@ -79,6 +79,6 @@ static func projectile_visual(parent:Node3D,kind:String,color:Color)->Node3D:
 	for node in [trail,halo,core]:node.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF;root.add_child(node)
 	if kind=="rocket":
 		# Light rocket body ahead of the flame core.
-		var body=MeshInstance3D.new();body.mesh=projectile_sphere;body.scale=Vector3(.11,.11,.3);body.position.z=-.17
-		body.material_override=Visuals.material(Color("efe6d2"));body.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF;root.add_child(body)
+		# Finned RPG body ahead of the exhaust flame.
+		preload("res://scripts/ordnance.gd").rocket(root,color.g>.6)
 	return root

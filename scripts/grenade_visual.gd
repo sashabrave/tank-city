@@ -1,11 +1,9 @@
 class_name GrenadeVisual
 extends RefCounted
-static func projectile(parent:Node3D,friendly:bool):
-	# One silhouette and size for every grenade launcher; only team colour changes.
-	var mesh=MeshInstance3D.new();mesh.name="GrenadeModel"
-	var sphere=SphereMesh.new();sphere.radius=.14;sphere.height=.28;mesh.mesh=sphere
-	mesh.material_override=Visuals.material(Color("efb943") if friendly else Color("963d30"))
-	parent.add_child(mesh)
+static func projectile(parent:Node3D,friendly:bool,source:=""):
+	# Mortars and the allied turret lob finned rounds; everyone else throws a hand grenade.
+	if source=="mortar":preload("res://scripts/ordnance.gd").mortar_round(parent,friendly)
+	else:preload("res://scripts/ordnance.gd").grenade(parent,friendly)
 static func marker(parent:Node3D,target:Vector3,radius:float,friendly:bool)->Node3D:
 	var ring=Visuals.ring(parent,Color("e5b455") if friendly else Color("d5573c"),radius,0.0 if friendly else 1.0)
 	ring.name="GrenadeRadius";ring.position=target+Vector3.UP*.06

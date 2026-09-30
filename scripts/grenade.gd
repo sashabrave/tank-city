@@ -1,6 +1,8 @@
 extends Node3D
 var arena
 var friendly=false
+## Kind of the thrower: "mortar" lobs a finned round, others a hand grenade (visual only).
+var source=""
 var damage=1.0
 var blast_radius=0.0
 var target=Vector3.ZERO
@@ -19,7 +21,7 @@ func _ready():
 			var cell=arena.grid_pos(probe)
 			return not arena.inside(cell) or (probe.y < 1.15 and (arena.walls.has(cell) or cell==arena.base_cell)))
 	velocity=(target-position)/flight_time+Vector3.UP*(gravity*flight_time*.5)
-	GrenadeVisual.projectile(self,friendly)
+	GrenadeVisual.projectile(self,friendly,source)
 	marker=GrenadeVisual.marker(arena,target,blast_radius if blast_radius>0 else 1.15,friendly)
 	marker.visible=not friendly
 func _physics_process(delta):

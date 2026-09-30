@@ -360,9 +360,11 @@ func take_damage(amount: float,blast:Vector3=Vector3.ZERO,vehicle_credit:String=
 		arena.burst(position+Vector3.UP*.5,Color("fff2c4"),.7);Game.sound("shield_restore",self)
 		arena.toast("На волоске! Второго шанса в этой вылазке не будет")
 		arena.floating_number(position,-amount);hp=1.0;arena.soldier_hp=hp;invulnerable=1.6;refresh_health()
+		preload("res://scripts/status_fx.gd").of(self).hit()
 		arena.effects.emit("player_damaged",{"actor":self,"amount":amount})
 		return
 	arena.floating_number(position,-minf(hp,amount))
+	if amount>0:preload("res://scripts/status_fx.gd").of(self).hit()
 	hp = maxf(0,hp-amount)
 	if player_owned:
 		invulnerable = .65

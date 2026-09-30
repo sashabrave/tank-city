@@ -38,7 +38,11 @@
 					"Конец боя: боец садится в штаб, и тот уезжает, раскидывая оставшиеся кирпичи защиты. Камера поднимается и провожает его.",
 					"Меньше резких появлений: флаг выхода вырастает из земли, стрелки спавна появляются и гаснут, подобранные бонусы и сундуки схлопываются.",
 					"По краям поля боя медленно проплывают крупные размытые облака.",
-					"Взрывающиеся бочки теперь той же модели, что и горящие: красные с жёлтой табличкой. Горящие — тёмные, в тон карты."
+					"Взрывающиеся бочки теперь той же модели, что и горящие: красные с жёлтой табличкой. Горящие — тёмные, в тон карты.",
+					"Взорванная бочка остаётся на месте обгоревшим корпусом и слабо тлеет.",
+					"Новые модели боеприпасов вместо шариков: ручная граната с чекой, мина миномёта со стабилизаторами, бомба дрона, ракета РПГ с оперением. Свои с жёлтым пояском, вражеские с красным и мигающим огоньком; огонёк на бомбе учащается к взрыву. Вражеские пули мерцают.",
+					"Попадание подсвечивает бойца или врага короткой красной вспышкой. На старте боя боец пару секунд неуязвим и мерцает.",
+					"Статусы видны на моделях: поджог — оранжевое мерцание, заморозка — голубой лёд, оглушение — звёздочки над головой. Эффекты бойца (неуязвимость, звезда, щит, маскировка, заморозка, десант, выдержка, рывок, окоп) показаны значками рядом со здоровьем, с убывающей полоской времени."
 				]
 			},
 			"en": {
@@ -76,7 +80,11 @@
 					"Battle end: the soldier boards the HQ and it drives off, scattering the defence bricks still standing. The camera rises and follows it.",
 					"Fewer pop-ins: the exit flag grows out of the ground, spawn arrows fade in and out, collected bonuses and chests shrink away.",
 					"Large blurry clouds drift slowly along the edges of the battlefield.",
-					"Explosive barrels now share the burning drum model: red with a yellow plate. Burning drums are dark, matching the map."
+					"Explosive barrels now share the burning drum model: red with a yellow plate. Burning drums are dark, matching the map.",
+					"An exploded barrel stays in place as a scorched, smouldering shell.",
+					"New ordnance models instead of balls: a hand grenade with a lever, a finned mortar round, a drone bomb and a finned RPG rocket. Friendly ones have a yellow band; enemy ones a red band and a blinking light that speeds up on the bomb before it goes off. Enemy bullets flicker.",
+					"Hits flash the soldier or enemy briefly red. At the start of a battle the soldier is invulnerable for a couple of seconds and shimmers.",
+					"Statuses show on models: burning flickers orange, frozen turns ice blue, stunned shows stars overhead. The soldier's effects (invulnerability, star, shield, cloak, freeze, landing, opening shot, dash, trench) appear as icons next to health with a draining timer bar."
 				]
 			}
 		},
