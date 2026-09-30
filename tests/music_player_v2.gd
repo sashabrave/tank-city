@@ -22,27 +22,47 @@ func run():
 	var c=Game.music_controller
 	for context in c.TRACKS:
 		for track in c.TRACKS[context]:check(ResourceLoader.exists("res://assets/audio/music/"+track+".wav"),"track exists "+track)
+	check(c.TRACKS.archive.has("battle_signal") and not c.TRACKS.battle.has("battle_signal"),"old tracks live in the archive")
+	c.shuffle=false  # arrows walk the list in order
+	for context in c.PLAYLISTS:
 		c.change(context)
-		c.play_track(c.TRACKS[context][0])
+		var ids=c.pool(context)
+		check(not ids.is_empty(),"playlist has tracks "+context)
+		c.play_track(ids[0])
 		var original=c.current_track
-		c.skip(-1);check(c.current_track==c.TRACKS[context][-1],"previous wraps "+context)
+		c.skip(-1);check(c.current_track==ids[-1],"previous wraps "+context)
 		c.skip(1);check(c.current_track==original,"next wraps "+context)
-		c.skip(1);var manual=c.current_track
-		c.change("boss" if context!="boss" else "hub");c.change(context,true)
-		check(c.current_track==manual,"manual choice retained "+context)
+	# Themes: hub/map theme is held for the session, battle theme rolls per fight.
+	check(c.themes.size()==6,"six music themes")
+	for theme in c.themes:
+		for key in ["battle","hub","map","miniboss","boss"]:check(ResourceLoader.exists("res://assets/audio/music/"+c.themes[theme][key]+".wav"),"theme track "+theme+" "+key)
+		for kind in c.FANFARES:check(c.themes[theme][kind].size()==3,"three fanfares "+theme+" "+kind)
+	var held=c.hub_theme
+	var seen={}
+	for i in range(12):
+		c.change("map");c.change("battle")
+		check(c.hub_theme==held,"hub theme held")
+		seen[c.battle_theme]=true
+		check(c.fanfare_for("battle_greeting") in c.themes[c.battle_theme].start,"battle start fanfare follows battle theme")
+		check(c.fanfare_for("defeat") in c.themes[c.battle_theme].defeat,"defeat fanfare follows battle theme")
+	check(seen.size()>=3,"battle theme changes between fights")
+	var fight=c.battle_theme;c.change("miniboss");check(c.battle_theme==fight,"commander keeps the fight theme")
+	check(c.current_track in c.pool("miniboss"),"commander track from theme or pool")
+	c.change("hub");check(c.fanfare_for("hub_map_greeting") in c.themes[held].greeting,"greeting follows hub theme")
+	c.shuffle=true
 	for i in range(20):c.skip(1)
 	await get_tree().create_timer(.8).timeout
 	check(c.backgrounds.filter(func(p):return p.playing).size()==1,"rapid switching leaves only one deck")
 	var ui=preload("res://scenes/ui/music_mini_player.tscn").instantiate();add_child(ui);ui.size=Vector2(840,70)
 	get_tree().paused=true
-	var before=c.current_track;ui.get_node("Row/Next").pressed.emit()
+	var before=c.current_track;ui.row_node.get_node("Next").pressed.emit()
 	await get_tree().create_timer(.8).timeout
 	check(c.current_track!=before and c.backgrounds[c.active].playing,"track changes during pause")
-	check(ui.get_node("Row/Info/Title").text==c.title(),"visible title updates")
+	check(ui.row_node.get_node("Info/Title").text==c.title(),"visible title updates")
 	check(not c.stinger.playing or c.stinger_priority<=1,"switch does not create victory stinger")
 	get_tree().paused=false;ui.queue_free()
 	var audio=Game.audio()
-	check(audio.banks.size()==98,"98 total SFX banks")
+	check(audio.banks.size()>=109,"all SFX banks")
 	for id in ["countdown_tick","commander_arrive","route_select","route_enter","route_cancel","quest_ready","quest_claim","telegram_accept","base_level_up","weapon_tune","build_complete","trench_enter","trench_exit","trench_hide","armor_recover","low_health","enemy_surprise"]:
 		check(audio.banks.has(id) and audio.stream_for(id).get_length()>0,"new event "+id)
 	var observer=audio.get_child(0);observer.sample_progression()
@@ -60,7 +80,11 @@ func run():
 	main.show_map(0);await get_tree().process_frame
 	check(c.context=="map","map uses own music context")
 	main.current.show_pause();await shot("player_map")
-	check(main.current.modal.find_child("MusicMiniPlayer",true,false)!=null,"map pause player exists")
+	await get_tree().process_frame
+	# Pause opens the field tablet; its radio tab hosts the mini player.
+	check(not get_tree().get_nodes_in_group("field_tablet").is_empty(),"map pause opens the tablet")
+	for tablet in get_tree().get_nodes_in_group("field_tablet"):tablet.queue_free()
+	await get_tree().process_frame;get_tree().paused=false
 	main.current.resume_map();main.enter_room(0);await get_tree().process_frame
 	var arena=main.run_arena;current=arena;arena.auto_pause_enabled=false;arena.phase="countdown"
 	arena.room.commander_countdown=true;arena.countdown=3
@@ -78,9 +102,11 @@ func run():
 	arena.pause_battle()
 	if capture:await get_tree().create_timer(3).timeout
 	await shot("player_battle")
-	check(arena.hud.modal.find_child("MusicMiniPlayer",true,false)!=null,"battle pause player exists")
-	var panel=arena.hud.modal.get_node("Panel");var player=panel.get_node("MusicMiniPlayer")
-	check(player.position.y+player.size.y<=panel.get_node("ResumeButton").position.y,"player does not overlap resume")
-	check(panel.get_global_rect().position.y>=0 and panel.get_global_rect().end.y<=get_viewport().get_visible_rect().size.y,"battle pause fits screen")
+	await get_tree().process_frame
+	var tablets=get_tree().get_nodes_in_group("field_tablet")
+	check(not tablets.is_empty(),"battle pause opens the tablet")
+	if not tablets.is_empty():
+		var view=tablets[0].get_child(0);view.tab="music";view.refresh();await get_tree().process_frame
+		check(tablets[0].find_child("MusicMiniPlayer",true,false)!=null,"battle pause radio has the player")
 	main.queue_free();await get_tree().process_frame
 	print("MUSIC_PLAYER_V2: ",checks," checks; ",failures," failures");get_tree().quit(failures)

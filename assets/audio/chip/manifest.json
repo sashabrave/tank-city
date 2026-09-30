@@ -3,226 +3,82 @@
     "files": [
       "fire_pistol_01.wav",
       "fire_pistol_02.wav",
-      "fire_pistol_03.wav"
+      "fire_pistol_03.wav",
+      "fire_pistol_04.wav"
     ],
-    "loop": false,
-    "stats": [
-      {
-        "seconds": 0.18,
-        "peak": 0.68,
-        "rms": 0.11323936121737259
-      },
-      {
-        "seconds": 0.18,
-        "peak": 0.68,
-        "rms": 0.11125487214778786
-      },
-      {
-        "seconds": 0.18,
-        "peak": 0.68,
-        "rms": 0.09965086451148485
-      }
-    ]
+    "loop": false
   },
   "fire_smg": {
     "files": [
       "fire_smg_01.wav",
       "fire_smg_02.wav",
-      "fire_smg_03.wav"
+      "fire_smg_03.wav",
+      "fire_smg_04.wav"
     ],
-    "loop": false,
-    "stats": [
-      {
-        "seconds": 0.12,
-        "peak": 0.68,
-        "rms": 0.10366029207396403
-      },
-      {
-        "seconds": 0.12,
-        "peak": 0.68,
-        "rms": 0.12674498458103872
-      },
-      {
-        "seconds": 0.12,
-        "peak": 0.6768423321991824,
-        "rms": 0.1275225574288827
-      }
-    ]
+    "loop": false
   },
   "fire_shotgun": {
     "files": [
       "fire_shotgun_01.wav",
       "fire_shotgun_02.wav",
-      "fire_shotgun_03.wav"
+      "fire_shotgun_03.wav",
+      "fire_shotgun_04.wav"
     ],
-    "loop": false,
-    "stats": [
-      {
-        "seconds": 0.34997732426303857,
-        "peak": 0.68,
-        "rms": 0.1037398781124713
-      },
-      {
-        "seconds": 0.34997732426303857,
-        "peak": 0.68,
-        "rms": 0.10109310878862837
-      },
-      {
-        "seconds": 0.34997732426303857,
-        "peak": 0.68,
-        "rms": 0.09655423751412982
-      }
-    ]
+    "loop": false
   },
   "fire_rifle": {
     "files": [
       "fire_rifle_01.wav",
       "fire_rifle_02.wav",
-      "fire_rifle_03.wav"
+      "fire_rifle_03.wav",
+      "fire_rifle_04.wav"
     ],
-    "loop": false,
-    "stats": [
-      {
-        "seconds": 0.22,
-        "peak": 0.68,
-        "rms": 0.10153567878861655
-      },
-      {
-        "seconds": 0.22,
-        "peak": 0.68,
-        "rms": 0.10745904023952421
-      },
-      {
-        "seconds": 0.22,
-        "peak": 0.68,
-        "rms": 0.10321448663843101
-      }
-    ]
+    "loop": false
   },
   "fire_sniper": {
     "files": [
       "fire_sniper_01.wav",
       "fire_sniper_02.wav",
-      "fire_sniper_03.wav"
+      "fire_sniper_03.wav",
+      "fire_sniper_04.wav"
     ],
-    "loop": false,
-    "stats": [
-      {
-        "seconds": 0.44997732426303855,
-        "peak": 0.68,
-        "rms": 0.09012141273397352
-      },
-      {
-        "seconds": 0.44997732426303855,
-        "peak": 0.68,
-        "rms": 0.10299177362797446
-      },
-      {
-        "seconds": 0.44997732426303855,
-        "peak": 0.68,
-        "rms": 0.10045865623424532
-      }
-    ]
+    "loop": false
   },
   "fire_rpg": {
     "files": [
       "fire_rpg_01.wav",
       "fire_rpg_02.wav",
-      "fire_rpg_03.wav"
+      "fire_rpg_03.wav",
+      "fire_rpg_04.wav"
     ],
-    "loop": false,
-    "stats": [
-      {
-        "seconds": 0.6,
-        "peak": 0.68,
-        "rms": 0.10677714523580267
-      },
-      {
-        "seconds": 0.6,
-        "peak": 0.68,
-        "rms": 0.10166049966188732
-      },
-      {
-        "seconds": 0.6,
-        "peak": 0.68,
-        "rms": 0.10077094849679367
-      }
-    ]
+    "loop": false
   },
   "fire_vehicle_mg": {
     "files": [
       "fire_vehicle_mg_01.wav",
       "fire_vehicle_mg_02.wav",
-      "fire_vehicle_mg_03.wav"
+      "fire_vehicle_mg_03.wav",
+      "fire_vehicle_mg_04.wav"
     ],
-    "loop": false,
-    "stats": [
-      {
-        "seconds": 0.18,
-        "peak": 0.68,
-        "rms": 0.08843698700147337
-      },
-      {
-        "seconds": 0.18,
-        "peak": 0.68,
-        "rms": 0.11772163771142738
-      },
-      {
-        "seconds": 0.18,
-        "peak": 0.68,
-        "rms": 0.10007554063281289
-      }
-    ]
+    "loop": false
   },
   "fire_tank": {
     "files": [
       "fire_tank_01.wav",
       "fire_tank_02.wav",
-      "fire_tank_03.wav"
+      "fire_tank_03.wav",
+      "fire_tank_04.wav"
     ],
-    "loop": false,
-    "stats": [
-      {
-        "seconds": 0.72,
-        "peak": 0.68,
-        "rms": 0.0999427688382328
-      },
-      {
-        "seconds": 0.72,
-        "peak": 0.68,
-        "rms": 0.09887279315561043
-      },
-      {
-        "seconds": 0.72,
-        "peak": 0.68,
-        "rms": 0.09564074591763015
-      }
-    ]
+    "loop": false
   },
   "fire_mortar": {
     "files": [
       "fire_mortar_01.wav",
       "fire_mortar_02.wav",
-      "fire_mortar_03.wav"
+      "fire_mortar_03.wav",
+      "fire_mortar_04.wav"
     ],
-    "loop": false,
-    "stats": [
-      {
-        "seconds": 0.5500226757369614,
-        "peak": 0.68,
-        "rms": 0.0943623693562913
-      },
-      {
-        "seconds": 0.5500226757369614,
-        "peak": 0.68,
-        "rms": 0.09377072322868858
-      },
-      {
-        "seconds": 0.5500226757369614,
-        "peak": 0.68,
-        "rms": 0.09512391326304899
-      }
-    ]
+    "loop": false
   },
   "step_hard": {
     "files": [
@@ -259,90 +115,37 @@
     "files": [
       "engine_buggy_01.wav"
     ],
-    "loop": true,
-    "stats": [
-      {
-        "seconds": 4.0,
-        "peak": 0.286757302140998,
-        "rms": 0.10342163235927823
-      }
-    ]
+    "loop": true
   },
   "engine_tank": {
     "files": [
       "engine_tank_01.wav"
     ],
-    "loop": true,
-    "stats": [
-      {
-        "seconds": 4.0,
-        "peak": 0.28405774679473605,
-        "rms": 0.10342733401053014
-      }
-    ]
+    "loop": true
   },
   "rotor_drone": {
     "files": [
       "rotor_drone_01.wav"
     ],
-    "loop": true,
-    "stats": [
-      {
-        "seconds": 4.0,
-        "peak": 0.287077729823948,
-        "rms": 0.10345260972905788
-      }
-    ]
+    "loop": true
   },
   "hit_metal": {
     "files": [
       "hit_metal_01.wav",
       "hit_metal_02.wav",
-      "hit_metal_03.wav"
+      "hit_metal_03.wav",
+      "hit_metal_04.wav"
     ],
-    "loop": false,
-    "stats": [
-      {
-        "seconds": 0.24997732426303854,
-        "peak": 0.6408646952665611,
-        "rms": 0.09234113131653354
-      },
-      {
-        "seconds": 0.24997732426303854,
-        "peak": 0.6354119773825682,
-        "rms": 0.08878139272756388
-      },
-      {
-        "seconds": 0.24997732426303854,
-        "peak": 0.6257653203063445,
-        "rms": 0.09015608578527716
-      }
-    ]
+    "loop": false
   },
   "hit_stone": {
     "files": [
       "hit_stone_01.wav",
       "hit_stone_02.wav",
-      "hit_stone_03.wav"
+      "hit_stone_03.wav",
+      "hit_stone_04.wav"
     ],
-    "loop": false,
-    "stats": [
-      {
-        "seconds": 0.24997732426303854,
-        "peak": 0.6459084891050478,
-        "rms": 0.09226388189650819
-      },
-      {
-        "seconds": 0.24997732426303854,
-        "peak": 0.5760122889954099,
-        "rms": 0.09078512222264119
-      },
-      {
-        "seconds": 0.24997732426303854,
-        "peak": 0.6656705694765823,
-        "rms": 0.09095625324422815
-      }
-    ]
+    "loop": false
   },
   "ricochet": {
     "files": [
@@ -350,43 +153,14 @@
       "ricochet_02.wav",
       "ricochet_03.wav"
     ],
-    "loop": false,
-    "stats": [
-      {
-        "seconds": 0.44997732426303855,
-        "peak": 0.42370162056618943,
-        "rms": 0.0770522238533885
-      },
-      {
-        "seconds": 0.44997732426303855,
-        "peak": 0.43022143393481677,
-        "rms": 0.07677888215572592
-      },
-      {
-        "seconds": 0.44997732426303855,
-        "peak": 0.4034828211890365,
-        "rms": 0.07624516471789738
-      }
-    ]
+    "loop": false
   },
   "player_hurt": {
     "files": [
       "player_hurt_01.wav",
       "player_hurt_02.wav"
     ],
-    "loop": false,
-    "stats": [
-      {
-        "seconds": 0.24997732426303854,
-        "peak": 0.6220864784225406,
-        "rms": 0.09863428778266732
-      },
-      {
-        "seconds": 0.24997732426303854,
-        "peak": 0.6790875545013604,
-        "rms": 0.0936375323052313
-      }
-    ]
+    "loop": false
   },
   "explosion_small": {
     "files": [
@@ -394,24 +168,7 @@
       "explosion_small_02.wav",
       "explosion_small_03.wav"
     ],
-    "loop": false,
-    "stats": [
-      {
-        "seconds": 0.6499773242630386,
-        "peak": 0.68,
-        "rms": 0.10041159422719359
-      },
-      {
-        "seconds": 0.6499773242630386,
-        "peak": 0.68,
-        "rms": 0.09915334168132366
-      },
-      {
-        "seconds": 0.6499773242630386,
-        "peak": 0.68,
-        "rms": 0.1028151190908864
-      }
-    ]
+    "loop": false
   },
   "explosion_heavy": {
     "files": [
@@ -419,24 +176,7 @@
       "explosion_heavy_02.wav",
       "explosion_heavy_03.wav"
     ],
-    "loop": false,
-    "stats": [
-      {
-        "seconds": 1.2,
-        "peak": 0.68,
-        "rms": 0.08217335596453754
-      },
-      {
-        "seconds": 1.2,
-        "peak": 0.68,
-        "rms": 0.0884342316707168
-      },
-      {
-        "seconds": 1.2,
-        "peak": 0.68,
-        "rms": 0.08176542577185669
-      }
-    ]
+    "loop": false
   },
   "shield_hit": {
     "files": [
@@ -530,93 +270,32 @@
       "weapon_mechanism_02.wav",
       "weapon_mechanism_03.wav"
     ],
-    "loop": false,
-    "stats": [
-      {
-        "seconds": 0.24997732426303854,
-        "peak": 0.5887765721447273,
-        "rms": 0.0882698411085926
-      },
-      {
-        "seconds": 0.24997732426303854,
-        "peak": 0.6787207435345632,
-        "rms": 0.08869777254862884
-      },
-      {
-        "seconds": 0.24997732426303854,
-        "peak": 0.6155290409330102,
-        "rms": 0.09436793276360529
-      }
-    ]
+    "loop": false
   },
   "fire_grenade_launcher": {
     "files": [
       "fire_grenade_launcher_01.wav",
       "fire_grenade_launcher_02.wav",
-      "fire_grenade_launcher_03.wav"
+      "fire_grenade_launcher_03.wav",
+      "fire_grenade_launcher_04.wav"
     ],
-    "loop": false,
-    "stats": [
-      {
-        "seconds": 0.32,
-        "peak": 0.68,
-        "rms": 0.0978983595163525
-      },
-      {
-        "seconds": 0.32,
-        "peak": 0.68,
-        "rms": 0.09783724317868399
-      },
-      {
-        "seconds": 0.32,
-        "peak": 0.68,
-        "rms": 0.08849350980195755
-      }
-    ]
+    "loop": false
   },
   "fire_boss": {
     "files": [
       "fire_boss_01.wav",
       "fire_boss_02.wav",
-      "fire_boss_03.wav"
+      "fire_boss_03.wav",
+      "fire_boss_04.wav"
     ],
-    "loop": false,
-    "stats": [
-      {
-        "seconds": 0.8499773242630385,
-        "peak": 0.68,
-        "rms": 0.10477946689239567
-      },
-      {
-        "seconds": 0.8499773242630385,
-        "peak": 0.68,
-        "rms": 0.09273970197932148
-      },
-      {
-        "seconds": 0.8499773242630385,
-        "peak": 0.68,
-        "rms": 0.09457837447832743
-      }
-    ]
+    "loop": false
   },
   "grenade_throw": {
     "files": [
       "grenade_throw_01.wav",
       "grenade_throw_02.wav"
     ],
-    "loop": false,
-    "stats": [
-      {
-        "seconds": 0.44997732426303855,
-        "peak": 0.41914420171419775,
-        "rms": 0.07734731657790943
-      },
-      {
-        "seconds": 0.44997732426303855,
-        "peak": 0.4048357621305695,
-        "rms": 0.0768362262883102
-      }
-    ]
+    "loop": false
   },
   "grenade_land": {
     "files": [
@@ -624,37 +303,13 @@
       "grenade_land_02.wav",
       "grenade_land_03.wav"
     ],
-    "loop": false,
-    "stats": [
-      {
-        "seconds": 0.24997732426303854,
-        "peak": 0.5939300202772575,
-        "rms": 0.08431177961303321
-      },
-      {
-        "seconds": 0.24997732426303854,
-        "peak": 0.68,
-        "rms": 0.0894328112068666
-      },
-      {
-        "seconds": 0.24997732426303854,
-        "peak": 0.68,
-        "rms": 0.09427940134103419
-      }
-    ]
+    "loop": false
   },
   "rocket_flight": {
     "files": [
       "rocket_flight_01.wav"
     ],
-    "loop": true,
-    "stats": [
-      {
-        "seconds": 4.0,
-        "peak": 0.28819420182743066,
-        "rms": 0.10364564592263266
-      }
-    ]
+    "loop": true
   },
   "step_soft": {
     "files": [
@@ -747,116 +402,49 @@
     "files": [
       "engine_apc_01.wav"
     ],
-    "loop": true,
-    "stats": [
-      {
-        "seconds": 4.0,
-        "peak": 0.28812238861827816,
-        "rms": 0.1034889405711695
-      }
-    ]
+    "loop": true
   },
   "tracks": {
     "files": [
       "tracks_01.wav"
     ],
-    "loop": true,
-    "stats": [
-      {
-        "seconds": 4.0,
-        "peak": 0.28794048045556647,
-        "rms": 0.10354505763243711
-      }
-    ]
+    "loop": true
   },
   "turret_servo": {
     "files": [
       "turret_servo_01.wav"
     ],
-    "loop": true,
-    "stats": [
-      {
-        "seconds": 4.0,
-        "peak": 0.28707749206219213,
-        "rms": 0.10348287784147851
-      }
-    ]
+    "loop": true
   },
   "ground_drone_motor": {
     "files": [
       "ground_drone_motor_01.wav"
     ],
-    "loop": true,
-    "stats": [
-      {
-        "seconds": 4.0,
-        "peak": 0.28819420182743066,
-        "rms": 0.10364564592263266
-      }
-    ]
+    "loop": true
   },
   "helicopter_rotor": {
     "files": [
       "helicopter_rotor_01.wav"
     ],
-    "loop": true,
-    "stats": [
-      {
-        "seconds": 4.0,
-        "peak": 0.28830550867242677,
-        "rms": 0.1034095214957885
-      }
-    ]
+    "loop": true
   },
   "hit_body": {
     "files": [
       "hit_body_01.wav",
       "hit_body_02.wav",
-      "hit_body_03.wav"
+      "hit_body_03.wav",
+      "hit_body_04.wav"
     ],
-    "loop": false,
-    "stats": [
-      {
-        "seconds": 0.24997732426303854,
-        "peak": 0.68,
-        "rms": 0.08910464703339907
-      },
-      {
-        "seconds": 0.24997732426303854,
-        "peak": 0.676730329501694,
-        "rms": 0.09048191676438215
-      },
-      {
-        "seconds": 0.24997732426303854,
-        "peak": 0.6306588204628741,
-        "rms": 0.08646020852878084
-      }
-    ]
+    "loop": false
   },
   "hit_wood": {
     "files": [
       "hit_wood_01.wav",
       "hit_wood_02.wav",
-      "hit_wood_03.wav"
+      "hit_wood_03.wav",
+      "hit_wood_04.wav"
     ],
-    "loop": false,
-    "stats": [
-      {
-        "seconds": 0.24997732426303854,
-        "peak": 0.5707108462678555,
-        "rms": 0.09566993190269121
-      },
-      {
-        "seconds": 0.24997732426303854,
-        "peak": 0.6099170803218202,
-        "rms": 0.08495181350245017
-      },
-      {
-        "seconds": 0.24997732426303854,
-        "peak": 0.68,
-        "rms": 0.0942655033034637
-      }
-    ]
+    "loop": false
   },
   "debris": {
     "files": [
@@ -865,29 +453,7 @@
       "debris_03.wav",
       "debris_04.wav"
     ],
-    "loop": false,
-    "stats": [
-      {
-        "seconds": 0.6499773242630386,
-        "peak": 0.68,
-        "rms": 0.10360851607330059
-      },
-      {
-        "seconds": 0.6499773242630386,
-        "peak": 0.68,
-        "rms": 0.09476433347335
-      },
-      {
-        "seconds": 0.6499773242630386,
-        "peak": 0.68,
-        "rms": 0.1035595081125403
-      },
-      {
-        "seconds": 0.6499773242630386,
-        "peak": 0.68,
-        "rms": 0.10340101969889433
-      }
-    ]
+    "loop": false
   },
   "infantry_down": {
     "files": [
@@ -895,24 +461,7 @@
       "infantry_down_02.wav",
       "infantry_down_03.wav"
     ],
-    "loop": false,
-    "stats": [
-      {
-        "seconds": 0.24997732426303854,
-        "peak": 0.68,
-        "rms": 0.08832825114302614
-      },
-      {
-        "seconds": 0.24997732426303854,
-        "peak": 0.68,
-        "rms": 0.08923085337733104
-      },
-      {
-        "seconds": 0.24997732426303854,
-        "peak": 0.5570268968030574,
-        "rms": 0.0871144032988477
-      }
-    ]
+    "loop": false
   },
   "vehicle_destroy": {
     "files": [
@@ -920,43 +469,14 @@
       "vehicle_destroy_02.wav",
       "vehicle_destroy_03.wav"
     ],
-    "loop": false,
-    "stats": [
-      {
-        "seconds": 1.2,
-        "peak": 0.68,
-        "rms": 0.0896359660939147
-      },
-      {
-        "seconds": 1.2,
-        "peak": 0.68,
-        "rms": 0.08652324924084094
-      },
-      {
-        "seconds": 1.2,
-        "peak": 0.68,
-        "rms": 0.08748964270837725
-      }
-    ]
+    "loop": false
   },
   "base_hit": {
     "files": [
       "base_hit_01.wav",
       "base_hit_02.wav"
     ],
-    "loop": false,
-    "stats": [
-      {
-        "seconds": 0.24997732426303854,
-        "peak": 0.5250160160465955,
-        "rms": 0.08395360939374161
-      },
-      {
-        "seconds": 0.24997732426303854,
-        "peak": 0.597619593837872,
-        "rms": 0.08845399008754108
-      }
-    ]
+    "loop": false
   },
   "shield_break": {
     "files": [
@@ -1052,19 +572,7 @@
       "mine_arm_01.wav",
       "mine_arm_02.wav"
     ],
-    "loop": false,
-    "stats": [
-      {
-        "seconds": 0.7,
-        "peak": 0.45529181425665605,
-        "rms": 0.10041241629656049
-      },
-      {
-        "seconds": 0.7,
-        "peak": 0.4717870844852016,
-        "rms": 0.10095377062629271
-      }
-    ]
+    "loop": false
   },
   "cloak": {
     "files": [
@@ -1727,39 +1235,7 @@
       "wall_crumble_05.wav",
       "wall_crumble_06.wav"
     ],
-    "loop": false,
-    "stats": [
-      {
-        "seconds": 0.48,
-        "peak": 0.5444065653459639,
-        "rms": 0.086532000007978
-      },
-      {
-        "seconds": 0.48,
-        "peak": 0.5747619883566759,
-        "rms": 0.07760813498633197
-      },
-      {
-        "seconds": 0.48,
-        "peak": 0.5904097837563078,
-        "rms": 0.08865876904625494
-      },
-      {
-        "seconds": 0.48,
-        "peak": 0.5627885469013671,
-        "rms": 0.08653818047028586
-      },
-      {
-        "seconds": 0.48,
-        "peak": 0.667290698597085,
-        "rms": 0.090999068811523
-      },
-      {
-        "seconds": 0.48,
-        "peak": 0.49867190761492414,
-        "rms": 0.07852181735066051
-      }
-    ]
+    "loop": false
   },
   "reward_reveal_0": {
     "files": [

@@ -85,7 +85,9 @@ func finish_wave():
 func finish_run(won: bool,reason: String):
 	if arena.phase=="result": return
 	if won:arena.reward.collect_resources()
-	Game.sound("rare_reveal" if won else "defeat",arena)
+	# Defeat fanfare comes from the battle theme; the effect stays when music is muted.
+	if won or Settings.values.music<=.01 or not is_instance_valid(Game.music_controller):Game.sound("rare_reveal" if won else "defeat",arena)
+	else:Game.music_stinger("defeat")
 	arena.phase="result"
 	if not won:
 		arena.run.lost_run=true
