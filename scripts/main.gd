@@ -2,11 +2,21 @@ extends Node
 var current
 var run_arena
 var route_choices:Dictionary={}
+var ready_ms=0
 func _ready():
+	ready_ms=Time.get_ticks_msec()
 	Game.profile_changed.connect(reload_profile_hub)
 	if Game.profiles.selected and not Game.save_blocked:show_hub()
 	else:ProfileMenu.call_deferred("open_start")
 	if "--arena" in OS.get_cmdline_user_args():call_deferred("start_run")
+	# Cold-start measurement: `-- --startup-report` prints engine start → first presented frame.
+	if "--startup-report" in OS.get_cmdline_user_args():
+		await RenderingServer.frame_post_draw;await RenderingServer.frame_post_draw
+		var report="STARTUP first frame %d ms (main ready at %d ms)" % [Time.get_ticks_msec(),ready_ms]
+		print(report)
+		var file=FileAccess.open("user://startup_report.txt",FileAccess.WRITE)
+		if file:file.store_line(report);file.close()
+		get_tree().quit()
 func clear_current():
 	Game.reset_input()
 	if is_instance_valid(current):
