@@ -449,6 +449,7 @@ func spawn_actor(kind: String, cell: Vector2i, owned: bool, allied=false,rank: i
 	actor.position = actor_world_pos(actor,cell)
 	add_child(actor)
 	actors.append(actor)
+	if not owned and not allied and phase in ["combat","countdown"]:entry_animation(actor)
 	if not owned and not allied and kind not in ["boss","drone","mortar","sniper","flyer"]:
 		for band in [int(grid_size*.35),int(grid_size*.65)]:
 			var options=[]
@@ -460,6 +461,24 @@ func spawn_actor(kind: String, cell: Vector2i, owned: bool, allied=false,rank: i
 	if kind=="drone":actor.flank=-1 if cell.x<grid_size/2 else 1
 	return actor
 
+## Nothing pops in: infantry drops onto its cell with a small bounce, vehicles roll in from beyond the
+## edge, drones descend. Visual only — the actor's cell and logic are in place at once.
+func entry_animation(actor):
+	if not is_instance_valid(actor.model) or actor.kind=="boss":return
+	var model:Node3D=actor.model;var rest=model.position
+	var tween=actor.create_tween()
+	if actor.kind in Visuals.INFANTRY:
+		model.position=rest+Vector3(0,1.7,0);model.scale=Vector3.ONE*.85
+		tween.tween_property(model,"position",rest,.28).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+		tween.parallel().tween_property(model,"scale",Vector3.ONE,.28)
+		tween.tween_callback(func():if is_instance_valid(actor):burst(actor.position,Color("d8cfb4"),.35))
+	elif actor.kind in ["drone","flyer"]:
+		model.position=rest+Vector3(0,3.0,0)
+		tween.tween_property(model,"position",rest,.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	else:
+		var back=Vector3(-actor.facing.x,0,-actor.facing.y)*1.4
+		model.position=rest+back
+		tween.tween_property(model,"position",rest,.45).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 func start_wave(index: int):
 	return flow.start_wave(index)
 

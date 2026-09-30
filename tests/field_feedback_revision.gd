@@ -73,6 +73,7 @@ func run():
 	var next=arena.pickups.filter(func(item):return item.kind=="heart")[0]
 	next.node.position=arena.world_pos(Vector2i(2,2))
 	p.position=next.node.position+Vector3(.95,0,0);p.hp=1;arena.soldier_hp=1
+	next.land_at=0.0  # landed: bonuses float down on a parachute first
 	arena.reward.collect_nearby_pickups(0)
 	check(next not in arena.pickups,"Collect from adjacent cell edge")
 	var states={}

@@ -22,12 +22,23 @@ func drop_pickup(_cell: Vector2i,kind: String):
 	var node=Node3D.new();arena.add_child(node);node.position=arena.world_pos(cell)
 	var visual=arena.LOOT.visual(node,kind)
 	var info=arena.LOOT.BONUSES[kind]
-	Visuals.ring(node,Color(arena.LOOT.RARITY_COLORS[info.rarity]),.42)
-	var title=Visuals.label3d(node,info.name,Vector3(0,1.25,0),Color(info.color).lightened(.3),48)
-	title.outline_size=3
-	Visuals.label3d(node,arena.LOOT.RARITY_NAMES[info.rarity],Vector3(0,.91,0),Color(arena.LOOT.RARITY_COLORS[info.rarity]),18)
-	arena.room.pickups.append({"node":node,"visual":visual,"kind":kind})
+	# No labels: each bonus reads by its model and colour; the ring takes the bonus colour, rare ones pulse.
+	var ring=Visuals.ring(node,Color(info.color),.42)
+	if int(info.rarity)>=1:
+		var pulse=node.create_tween().set_loops();pulse.tween_property(ring,"scale",Vector3.ONE*1.18,.6);pulse.tween_property(ring,"scale",Vector3.ONE,.6)
+	# Arrival: it floats down under a small parachute, the canopy folds on landing with a puff of dust.
+	var chute=parachute(visual,Color(info.color))
+	arena.room.pickups.append({"node":node,"visual":visual,"kind":kind,"land_at":arena.run.elapsed+1.1,"chute":chute})
 
+## Small canopy with four lines over a falling bonus (visual only).
+func parachute(visual:Node3D,tint:Color)->Node3D:
+	var chute=Node3D.new();chute.name="Chute";visual.add_child(chute)
+	var canopy=MeshInstance3D.new();var dome=SphereMesh.new();dome.radius=.42;dome.height=.84;dome.is_hemisphere=true;canopy.mesh=dome
+	canopy.position.y=.95;canopy.scale.y=.55;canopy.material_override=Visuals.material(Color("e8e2d0").lerp(tint,.35));chute.add_child(canopy)
+	for x in [-.3,.3]:
+		for z in [-.3,.3]:
+			var line=Visuals.box(chute,Vector3(x*.5,.62,z*.5),Vector3(.015,.62,.015),Color("b1b59c"));line.rotation=Vector3(z*.5,0,-x*.5)
+	return chute
 func collect_pickup(pickup: Dictionary):
 	if pickup.kind=="recipe":
 		if arena.run.pending_recipes.size()>=Game.backpack_slots:
@@ -179,9 +190,15 @@ func collect_nearby_pickups(delta):
 	if not is_instance_valid(arena.room.player):return
 	for pickup in arena.room.pickups.duplicate():
 		if arena.flat_distance(arena.room.player.position,pickup.node.position)>1.35:pickup["blocked"]=false
+		if arena.run.elapsed<float(pickup.get("land_at",0.0)):continue
 		if pickup.kind not in ["recipe_draft","cache"] and arena.flat_distance(arena.room.player.position,pickup.node.position)<1.1 and arena.clear_shot(arena.room.player.position,pickup.node.position,.05) and not pickup.get("blocked",false):collect_pickup(pickup)
 	for pickup in arena.room.pickups:
 		if pickup.kind=="recipe_draft":continue  # chests stand still on the ground
+		var falling=float(pickup.get("land_at",0.0))-arena.run.elapsed
+		if falling>0:
+			pickup.visual.position.y=.45+falling/1.1*4.2;pickup.visual.rotation.y+=delta*.6;continue
+		if is_instance_valid(pickup.get("chute")):
+			pickup.chute.queue_free();pickup.erase("chute");arena.burst(pickup.node.position+Vector3.UP*.2,Color("d8cfb4"),.45);Game.sound("delivery_land",arena)
 		pickup.visual.rotation.y+=delta;pickup.visual.position.y=.45+sin(arena.run.elapsed*3)*.07
 func chest_offers(_elite:bool=true)->Array:
 	var difficulty=2 if arena.room.boss_room else arena.room.difficulty
