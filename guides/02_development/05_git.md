@@ -1,6 +1,6 @@
 # Git и версии
 
-Репозиторий: github.com/sashabrave/rubezh-13 (приватный). Вход по SSH-ключу.
+Репозиторий: github.com/sashabrave/tank-city (приватный). Вход по SSH-ключу.
 
 ## Ветки
 
