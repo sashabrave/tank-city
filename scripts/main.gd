@@ -72,6 +72,7 @@ func enter_room(index: int,node_id:String=""):
 	var plan=RoutePlan.build(seed_value)
 	var service_branch=run_arena.visited_services.get(index,"") if is_instance_valid(run_arena) else ""
 	var reachable=RoutePlan.reachable(plan,index,route_choices,service_branch)
+	if reachable.is_empty():return
 	if node_id=="":node_id=reachable[0]
 	if node_id not in reachable:return
 	if is_instance_valid(run_arena) and index in Campaign.SERVICES and not run_arena.visited_services.has(index):return

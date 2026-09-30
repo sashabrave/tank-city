@@ -57,6 +57,7 @@ func build():
 func clear():
 	for batch_node in batches:batch_node.queue_free()
 	batches.clear()
+	if not is_inside_tree() or not is_instance_valid(arena):return
 	for node in get_tree().get_nodes_in_group("weather_drifts"):
 		if arena.is_ancestor_of(node):node.remove_from_group("weather_drifts");node.queue_free()
 

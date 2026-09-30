@@ -94,6 +94,9 @@ func ribbon(points:Array,width:float,height:float,color:Color)->MeshInstance3D:
 	return mesh
 
 func selection_point()->Vector3:
+	# Nothing to select (a stage with no reachable node yet): keep the ring where it is.
+	if (needs_service and service_choices.is_empty()) or (not needs_service and reachable.is_empty()):
+		return selection_ring.position-Vector3.UP*.12 if is_instance_valid(selection_ring) else Vector3.ZERO
 	return fork_positions[service_choices[selection_index%service_choices.size()]] if needs_service else previews[reachable[selection_index%reachable.size()]].position
 func update_selection():
 	if not is_instance_valid(selection_ring):return
