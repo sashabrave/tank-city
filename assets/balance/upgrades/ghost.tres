@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="UpgradeDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrades/upgrade_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "ghost"
+title = "Призрак"
+category = "Тактика"
+family = "recon"
+icon = "legendary"
+tags = PackedStringArray("recon")
+weight = 3
+max_stacks = 1
+min_tier = 3
+modifiers = Array[Dictionary]([{"stat": "dodge", "op": "add", "value": 0.1}, {"stat": "stealth", "op": "add", "value": 0.1}])
+preview = "dodge"
+detail = "И маскировка."

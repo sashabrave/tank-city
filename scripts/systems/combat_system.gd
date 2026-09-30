@@ -20,6 +20,7 @@ func spawn_bullet(owner_actor,pos: Vector3,dir: Vector2i,damage: float,friendly:
 	bullet.damage=damage
 	bullet.friendly=friendly
 	bullet.player_shot=owner_actor.player_owned
+	if friendly and owner_actor.player_owned and arena.run!=null:bullet.pierce_left=int(arena.run.pierce)
 	var muzzle=2.15 if is_instance_valid(owner_actor) and owner_actor.kind=="boss" else .39
 	var muzzle_height=.55
 	if is_instance_valid(owner_actor.model) and owner_actor.model.get("muzzle")!=null:
@@ -38,8 +39,8 @@ func bullet_hit(bullet) -> bool:
 	if bullet.friendly:
 		for flying in arena.room.actors.duplicate():
 			if is_instance_valid(flying) and not flying.dead and not flying.allied and not flying.player_owned and flying.kind=="flyer" and flying not in bullet.hit_actors and arena.flat_distance(pos,flying.position)<.38:
-				bullet.hit_actors.append(flying);flying.take_damage(flying.max_hp if bullet.star_power else bullet.damage,Vector3.ZERO,bullet.vehicle_credit)
-				if not bullet.piercing:return true
+				bullet.hit_actors.append(flying);flying.take_damage(flying.max_hp if bullet.star_power else (CombatMods.outgoing(arena,bullet,flying) if CombatMods.player_bullet(bullet) else bullet.damage),Vector3.ZERO,bullet.vehicle_credit)
+				if not pierce_on(bullet):return true
 	if bullet.piercing and arena.room.nets.has(cell):
 		arena.shred_net(cell)
 	if bullet.sniper_round:
@@ -48,7 +49,7 @@ func bullet_hit(bullet) -> bool:
 			bullet.hit_base=true;damage_base(bullet.damage)
 		var target=arena.room.player
 		if is_instance_valid(target) and not target.dead and target not in bullet.hit_actors and not (arena.abilities.cloak_time>0 and arena.abilities.cloak_ghost) and arena.flat_distance(pos,target.position)<.38:
-			bullet.hit_actors.append(target);target.take_damage(bullet.damage)
+			bullet.hit_actors.append(target);target.take_damage(bullet.damage,Vector3.ZERO,"","bullet")
 		return false
 	if bullet.rocket_radius>0:
 		var impact=not arena.wall_contacts(pos,bullet.travel_direction,bullet.wall_width).is_empty() or (not bullet.friendly and not arena.room.boss_room and cell==arena.room.base_cell)
@@ -63,7 +64,9 @@ func bullet_hit(bullet) -> bool:
 				arena.room.walls[contact].node.queue_free();arena.room.walls.erase(contact);arena.navigation.invalidate(contact)
 			else:
 				Game.sound("ricochet" if arena.room.walls[contact].hp<0 else "hit",arena)
-				arena.board.damage_wall(contact,bullet.damage,pos,bullet.travel_direction,bullet.wall_width)
+				var wall_damage=bullet.damage
+				if arena.room.walls[contact].get("barrel",false) and CombatMods.player_bullet(bullet) and arena.run.burn_chance>0:wall_damage=arena.room.walls[contact].hp
+				arena.board.damage_wall(contact,wall_damage,pos,bullet.travel_direction,bullet.wall_width)
 		arena.burst(pos,Color("dc9870"),.16)
 		return true
 	for other in arena.room.projectiles.duplicate():
@@ -83,8 +86,10 @@ func bullet_hit(bullet) -> bool:
 				arena.burst(pos,Color("9eb6c3"),.3);Game.sound("ricochet",arena);return true
 			bullet.hit_actors.append(actor)
 			actor.resource_blast=Vector3.ZERO
-			actor.take_damage(actor.max_hp if bullet.star_power else bullet.damage,Vector3.ZERO,bullet.vehicle_credit)
-			if not bullet.piercing:return true
+			var amount=actor.max_hp if bullet.star_power else bullet.damage
+			if not bullet.star_power and CombatMods.player_bullet(bullet):amount=CombatMods.outgoing(arena,bullet,actor)
+			actor.take_damage(amount,Vector3.ZERO,bullet.vehicle_credit,CombatMods.bullet_source(bullet) if actor.player_owned else "")
+			if not pierce_on(bullet):return true
 	if not arena.room.boss_room and not bullet.friendly and cell==arena.room.base_cell:
 		damage_base(bullet.damage)
 		return true
@@ -154,7 +159,7 @@ func drone_death_explosion(pos:Vector3):
 	Game.sound("boom",arena)
 	for target in arena.room.actors.duplicate():
 		if is_instance_valid(target) and not target.dead and (target.player_owned or target.allied) and arena.flat_distance(pos,target.position)<=radius:
-			target.take_damage(Balance.CONFIG.combat.drone_death_damage)
+			target.take_damage(Balance.CONFIG.combat.drone_death_damage,Vector3.ZERO,"","blast")
 
 func pressure_flash(pos:Vector3):
 	var icon=Sprite3D.new();icon.name="PressureFlash"
@@ -171,7 +176,7 @@ func explosion(pos: Vector3,amount: float):
 	arena.burst(pos+Vector3.UP*.3,Color("e78331"),1.45)
 	Game.sound("explosion_heavy",arena)
 	for actor in arena.room.actors.duplicate():
-		if is_instance_valid(actor) and not actor.dead and arena.flat_distance(pos,actor.position)<1.45: actor.take_damage(amount,actor.position-pos+Vector3(.01,0,.01))
+		if is_instance_valid(actor) and not actor.dead and arena.flat_distance(pos,actor.position)<1.45: actor.take_damage(amount,actor.position-pos+Vector3(.01,0,.01),"","blast")
 	for cell in arena.room.walls.keys():
 		if arena.flat_distance(pos,arena.world_pos(cell))<1.5: arena.damage_wall(cell,amount)
 	if not arena.room.boss_room and arena.flat_distance(pos,arena.world_pos(arena.room.base_cell))<1.5: damage_base(amount)
@@ -217,13 +222,18 @@ func grenade_explosion(pos: Vector3,amount: float,friendly: bool,blast_radius: f
 	Game.sound("boom",arena)
 	for actor in arena.room.actors.duplicate():
 		if is_instance_valid(actor) and not actor.dead and (actor.player_owned or actor.allied)!=friendly and (arena.flat_distance(pos,actor.position)<=blast_radius if blast_radius>0 else ((absf(pos.x-actor.position.x)<=1.25 and absf(pos.z-actor.position.z)<=1.25) if friendly else arena.flat_distance(pos,actor.position)<1.15)):
-			actor.take_damage(amount,actor.position-pos+Vector3(.01,0,.01))
+			actor.take_damage(amount,actor.position-pos+Vector3(.01,0,.01),"","blast")
 	for cell in arena.room.walls.keys():
 		if arena.flat_distance(pos,arena.world_pos(cell))<1.15:arena.damage_wall(cell,amount)
 	if not friendly and not arena.room.boss_room and arena.flat_distance(pos,arena.world_pos(arena.room.base_cell))<1.15:damage_base(amount)
 	for wreck in arena.room.wrecks.duplicate():
 		if is_instance_valid(wreck) and not wreck.spent and arena.flat_distance(pos,wreck.position)<1.15:wreck.take_damage(amount)
 
+## Bullets keep flying through enemies while they pierce by weapon or have run pierce charges left.
+func pierce_on(bullet)->bool:
+	if bullet.piercing:return true
+	if CombatMods.player_bullet(bullet) and bullet.pierce_left>0:bullet.pierce_left-=1;return true
+	return false
 func current_intercept() -> float:
 	var pressure=player_pressure();return pressure/(pressure+1.0)
 func player_pressure()->float:
@@ -246,7 +256,7 @@ func rocket_impact(bullet):
 	arena.burst(bullet.position,Color("e8b957"),bullet.rocket_radius);Game.sound("boom",arena)
 	for enemy in arena.room.actors.duplicate():
 		if is_instance_valid(enemy) and not enemy.dead and (enemy.player_owned or enemy.allied)!=bullet.friendly and enemy!=bullet.owner_actor and arena.flat_distance(bullet.position,enemy.position)<=bullet.rocket_radius:
-			enemy.take_damage(enemy.max_hp if bullet.star_power else bullet.damage,Vector3.ZERO,bullet.vehicle_credit)
+			enemy.take_damage(enemy.max_hp if bullet.star_power else bullet.damage,Vector3.ZERO,bullet.vehicle_credit,"blast")
 	for cell in arena.room.walls.keys():
 		if arena.flat_distance(bullet.position,arena.world_pos(cell))<=bullet.rocket_radius:
 			if bullet.star_power:arena.room.walls[cell].node.queue_free();arena.room.walls.erase(cell);arena.navigation.invalidate(cell)

@@ -7,6 +7,12 @@ extends Resource
 @export var title:String=""
 @export_enum("Герой","Оружие","Способность","Тактика") var category:String="Герой"
 @export var icon:String=""
+## Card family for build attraction: fire, survival, ammo, recon, logistics (RunUpgrades.FAMILIES).
+@export_enum("fire","survival","ammo","recon","logistics") var family:String="fire"
+## Lowest rarity this card can appear at: 0 common, 1 rare, 2 epic, 3 legendary.
+@export_range(0,3,1) var min_tier:int=0
+## Behaviour switch read by CombatMods (crit_stun, chain_fire…): taking the card adds its id to behavior_cards.
+@export var flag:bool=false
 ## Free tags for pools, families and synergies (weapon, infantry, vehicle, device, behavior…).
 @export var tags:PackedStringArray=PackedStringArray()
 ## Relative chance among eligible cards. 0 keeps the card out of random offers.

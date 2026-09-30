@@ -1,15 +1,24 @@
 class_name RunUpgrades
 extends RefCounted
 ## Applies UpgradeDef cards to a run and derives card text and previews from the same modifiers.
-const PREVIEW_LABELS={"hp":["HP",""],"speed":["Скорость",""],"rate":["Темп"," /с"],"damage":["Урон",""],"intercept":["Перехват","%"],"range":["Дальность","%"],"healing":["Лечение","%"],"device_power":["Мощность","%"],"device_cooldown":["Кулдаун","%"]}
+const PREVIEW_LABELS={"hp":["HP",""],"speed":["Скорость",""],"rate":["Темп"," /с"],"damage":["Урон",""],"intercept":["Перехват","%"],"range":["Дальность","%"],"healing":["Лечение","%"],"device_power":["Мощность","%"],"device_cooldown":["Кулдаун","%"],
+	"crit_chance":["Крит","%"],"crit_damage":["Крит-урон","%"],"dodge":["Уклонение","%"],"guard_bullet":["Защита от пуль","%"],"guard_blast":["Защита от взрывов","%"],"guard_vehicle":["Защита от техники","%"],
+	"pierce":["Пробитие",""],"burn":["Поджог","%"],"shock":["По технике","%"],"stun":["Оглушение","%"],"stealth":["Маскировка","%"],"marauder":["Добыча","%"],"field_repair":["Ремонт за убийство",""],"luck":["Удача",""]}
+const FAMILIES={"fire":"Огневая мощь","survival":"Живучесть","ammo":"Спецпатроны","recon":"Разведка","logistics":"Тыл"}
+## Each shell leans toward one family: its cards show up more often and the first offer of a run holds one.
+const CLASS_FAMILY={"recruit":"fire","heavy":"survival","gunner":"ammo","marksman":"recon","engineer":"logistics","driver":"logistics"}
+const TIER_NAMES=["Обычное","Редкое","Эпическое","Легендарное"]
+## Chance of rare / epic / legendary per stage band (progress index 0-1, 2-3, 4-5, 6+). Rarer cards appear
+## rarely at the start; ★★ rooms and bosses use the next band; luck multiplies all three.
+const TIER_BANDS=[[.07,.012,.001],[.16,.04,.004],[.26,.08,.012],[.32,.12,.025],[.36,.16,.04]]
 
 static func stacks(arena,id:String)->int:
 	return arena.run.upgrade_history.filter(func(entry):return entry.get("id","")==id).size()
 
-static func eligible(arena,def:UpgradeDef)->bool:
-	if def.weight<=0:return false
+static func eligible(arena,def:UpgradeDef,tier:int=3)->bool:
+	if def.weight<=0 or def.min_tier>tier:return false
 	if def.max_stacks>0 and stacks(arena,def.id)>=def.max_stacks:return false
-	if def.effect!=null and def.id in arena.run.behavior_cards:return false
+	if (def.effect!=null or def.flag) and def.id in arena.run.behavior_cards:return false
 	if "abilities" in def.requires and arena.abilities.slots.is_empty():return false
 	# A capped stat that would not move is not offered (speed and interception limits).
 	if def.preview!="" and is_instance_valid(arena.player):
@@ -17,18 +26,52 @@ static func eligible(arena,def:UpgradeDef)->bool:
 		if is_equal_approx(change[0],change[1]):return false
 	return true
 
-## Weighted draw without replacement from the shared combat RNG.
-static func roll(arena,count:int)->Array:
-	var pool=UpgradeRegistry.all().filter(func(def):return eligible(arena,def))
-	var result=[]
-	while result.size()<count and not pool.is_empty():
-		var total=0
-		for def in pool:total+=def.weight
-		var pick=arena.run.combat_rng.randi_range(0,total-1)
-		for i in range(pool.size()):
-			pick-=pool[i].weight
-			if pick<0:result.append(pool[i].id);pool.remove_at(i);break
+## Rarity of one card: stage band, room difficulty and luck. Uses the shared combat RNG.
+static func roll_tier(arena)->int:
+	var stage=Campaign.progress_index(arena.room_index) if arena.room_index>=0 else 0
+	var band=0 if stage<2 else 1 if stage<4 else 2 if stage<6 else 3
+	if Campaign.endless:band=mini(4,3+Campaign.cycle)
+	if arena.room.boss_room or int(arena.room.difficulty)>=1:band=mini(TIER_BANDS.size()-1,band+1)
+	var chances=TIER_BANDS[band];var factor=1.0+CombatMods.luck(arena)*.04
+	var value=arena.run.combat_rng.randf()
+	if value<chances[2]*factor:return 3
+	if value<(chances[2]+chances[1])*factor:return 2
+	if value<(chances[2]+chances[1]+chances[0])*factor:return 1
+	return 0
+static func family_counts(arena)->Dictionary:
+	var counts={}
+	for entry in arena.run.upgrade_history:
+		var def=UpgradeRegistry.get_def(str(entry.get("id","")))
+		if def!=null:counts[def.family]=int(counts.get(def.family,0))+1
+	return counts
+## Weight after build attraction: every taken card of a family makes the family 35% likelier (up to ×3),
+## the shell's favourite family ×1.5.
+static func attracted_weight(arena,def:UpgradeDef,counts:Dictionary)->float:
+	var weight=float(def.weight)*minf(3.0,1.0+.35*int(counts.get(def.family,0)))
+	if CLASS_FAMILY.get(Game.selected_class,"")==def.family:weight*=1.5
+	return weight
+## Offers {id, tier}: each card rolls its own rarity, then a card that exists at that rarity is drawn
+## without replacement. The first offer of a run holds a card of the shell's favourite family.
+static func roll_offers(arena,count:int)->Array:
+	var counts=family_counts(arena);var result=[];var taken=[]
+	var favourite=CLASS_FAMILY.get(Game.selected_class,"")
+	for slot in range(count):
+		var tier=roll_tier(arena)
+		var pool=UpgradeRegistry.all().filter(func(def):return def.id not in taken and eligible(arena,def,tier))
+		if slot==0 and arena.run.upgrade_history.is_empty():
+			var themed=pool.filter(func(def):return def.family==favourite)
+			if not themed.is_empty():pool=themed
+		if pool.is_empty():continue
+		var total=0.0
+		for def in pool:total+=attracted_weight(arena,def,counts)
+		var pick=arena.run.combat_rng.randf()*total
+		var chosen=pool.back()
+		for def in pool:
+			pick-=attracted_weight(arena,def,counts)
+			if pick<0:chosen=def;break
+		taken.append(chosen.id);result.append({"id":chosen.id,"tier":maxi(tier,chosen.min_tier)})
 	return result
+static func roll(arena,count:int)->Array:return roll_offers(arena,count).map(func(offer):return offer.id)
 
 static func apply(arena,id:String,tier:int,record:bool=true)->bool:
 	var def=UpgradeRegistry.get_def(id)
@@ -43,7 +86,7 @@ static func apply(arena,id:String,tier:int,record:bool=true)->bool:
 static func apply_power(arena,def:UpgradeDef,power:float):
 	for modifier in def.modifiers:apply_modifier(arena.run,modifier,power)
 	arena.run.soldier_hp=minf(arena.run.soldier_hp,arena.run.soldier_max_hp)
-	if def.effect!=null and def.id not in arena.run.behavior_cards:arena.run.behavior_cards.append(def.id)
+	if (def.effect!=null or def.flag) and def.id not in arena.run.behavior_cards:arena.run.behavior_cards.append(def.id)
 	refresh_player(arena)
 
 static func apply_modifier(run,modifier:Dictionary,power:float):
@@ -96,6 +139,20 @@ static func measure(arena,kind:String)->float:
 		"healing":return arena.run.healing_multiplier*100
 		"device_power":return arena.run.ability_power_multiplier*100
 		"device_cooldown":return arena.run.ability_cooldown_multiplier*100
+		"crit_chance":return CombatMods.crit_chance(arena)*100
+		"crit_damage":return arena.run.crit_damage*100
+		"dodge":return minf(CombatMods.CAPS.dodge,arena.run.dodge)*100
+		"guard_bullet":return minf(CombatMods.CAPS.guard,arena.run.guard_bullet)*100
+		"guard_blast":return minf(CombatMods.CAPS.guard,arena.run.guard_blast)*100
+		"guard_vehicle":return minf(CombatMods.CAPS.guard,arena.run.guard_vehicle)*100
+		"pierce":return float(arena.run.pierce)
+		"burn":return minf(CombatMods.CAPS.burn_chance,arena.run.burn_chance)*100
+		"shock":return arena.run.shock_bonus*100
+		"stun":return minf(CombatMods.CAPS.stun_chance,arena.run.stun_chance)*100
+		"stealth":return minf(CombatMods.CAPS.stealth,arena.run.stealth)*100
+		"marauder":return arena.run.marauder*100
+		"field_repair":return arena.run.field_repair
+		"luck":return float(CombatMods.luck(arena))
 	return 0.0
 
 ## Before/after of the card's preview value, computed by applying the real modifiers and restoring the run.
@@ -115,10 +172,12 @@ static func preview_text(arena,id:String,tier:int)->String:
 	if def==null or def.preview=="" or not is_instance_valid(arena.room.player):return ""
 	var change=measure_change(arena,def,Balance.tier_power(tier))
 	var label=PREVIEW_LABELS.get(def.preview,[def.title,""])
+	if label[1]=="%":change=[roundf(change[0]),roundf(change[1])]
 	return UiKit.change_text(label[0],change[0],change[1],label[1])
 
 static func card(arena,offer:Dictionary)->Dictionary:
 	var def=UpgradeRegistry.get_def(offer.id);var tier=int(offer.tier)
 	var detail=preview_text(arena,offer.id,tier)
 	if def.detail!="":detail=def.detail if detail=="" else detail+"\n"+def.detail
-	return {"category":def.category,"title":def.title,"detail":detail,"icon":def.icon if def.icon!="" else def.id,"heading":arena.LOOT.RARITY_NAMES[tier],"color":Color(arena.LOOT.RARITY_COLORS[tier]),"disabled":false,"button":"Выбрать"}
+	tier=clampi(tier,0,TIER_NAMES.size()-1)
+	return {"category":FAMILIES.get(def.family,def.category),"title":def.title,"detail":detail,"icon":def.icon if def.icon!="" else def.id,"heading":TIER_NAMES[tier],"color":Color(arena.LOOT.RARITY_COLORS[tier]),"disabled":false,"button":"Выбрать","family":def.family,"tier":tier}

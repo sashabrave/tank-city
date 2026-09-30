@@ -8,6 +8,7 @@ id = "intercept"
 title = "Напор"
 category = "Герой"
 icon = "intercept"
+family = "fire"
 tags = PackedStringArray("infantry", "pressure")
 weight = 10
 modifiers = Array[Dictionary]([{"stat": "intercept_chance", "op": "add", "value": 0.1}])

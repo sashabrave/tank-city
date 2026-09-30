@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="UpgradeDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrades/upgrade_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "burn"
+title = "Зажигательные"
+category = "Оружие"
+family = "ammo"
+icon = "damage"
+tags = PackedStringArray("ammo")
+weight = 9
+modifiers = Array[Dictionary]([{"stat": "burn_chance", "op": "add", "value": 0.15}])
+preview = "burn"
+detail = "Урон 3 с, огонь перекидывается на соседей, бочки взрываются с одного попадания."

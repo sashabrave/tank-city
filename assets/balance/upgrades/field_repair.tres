@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="UpgradeDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrades/upgrade_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "field_repair"
+title = "Полевой ремонт"
+category = "Тактика"
+family = "logistics"
+icon = "repair"
+tags = PackedStringArray("logistics")
+weight = 8
+modifiers = Array[Dictionary]([{"stat": "field_repair", "op": "add", "value": 0.25}])
+preview = "field_repair"
+detail = "Каждое убийство чинит штаб и твою технику."

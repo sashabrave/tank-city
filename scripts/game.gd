@@ -147,11 +147,11 @@ func rarity_roll(value: float,stage:int=-1) -> int:
 	if stage>=0:
 		stage=Campaign.progress_index(stage)
 		if stage<2:return 2 if value<.025 else 1 if value<.16 else 0
-		var epic=.07 if stage<7 else minf(.85,(.35 if stage<12 else .65)+rarity_level*.006)
-		var uncommon=minf(.98,(.35 if stage<7 else .85 if stage<12 else .95)+rarity_level*.006)
+		var epic=.07 if stage<7 else minf(.85,(.35 if stage<12 else .65)+luck_level*.006)
+		var uncommon=minf(.98,(.35 if stage<7 else .85 if stage<12 else .95)+luck_level*.006)
 		return 2 if value<epic else 1 if value<uncommon else 0
-	if value<.08+rarity_level*.006:return 2
-	if value<.35+rarity_level*.012:return 1
+	if value<.08+luck_level*.006:return 2
+	if value<.35+luck_level*.012:return 1
 	return 0
 
 func purchase(branch: String) -> bool:
@@ -263,6 +263,8 @@ func apply_profile(data:Dictionary):
 		luck_level=clampi(int(data.get("luck",0)),0,MAX_LEVEL)
 		turret_level=clampi(int(data.get("turret",0)),0,MAX_LEVEL)
 		rarity_level=clampi(int(data.get("rarity",0)),0,MAX_LEVEL)
+		# One «Удача» since 0.2.1: the former rarity branch folds into luck, no levels are lost.
+		if rarity_level>0:luck_level=mini(MAX_LEVEL,luck_level+rarity_level);rarity_level=0
 		base_level=clampi(int(data.get("base",0)),0,MAX_LEVEL)
 		heal_level=clampi(int(data.get("heal",0)),0,MAX_LEVEL)
 		mobility_level=maxi(0,int(data.get("mobility",0)))
@@ -272,6 +274,9 @@ func apply_profile(data:Dictionary):
 		for branch in UNLOCK_COSTS:
 			if level(branch)>0 or branch in data.get("branch_unlocks",[]):
 				if branch not in branch_unlocks:branch_unlocks.append(branch)
+		if "rarity" in branch_unlocks:
+			branch_unlocks.erase("rarity")
+			if "luck" not in branch_unlocks:branch_unlocks.append("luck")
 		shield_capacity_level=0;recovery_level=0
 		for id in LOOT.WEAPONS:
 			if id!="pistol" and (id in data.get("weapon_unlocks",[]) or (id=="sniper" and "heavy" in data.get("weapon_unlocks",[]))):weapon_unlocks.append(id)

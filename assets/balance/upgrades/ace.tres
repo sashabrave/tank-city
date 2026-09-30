@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="UpgradeDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrades/upgrade_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "ace"
+title = "Кураж снайпера"
+category = "Тактика"
+family = "fire"
+icon = "legendary"
+tags = PackedStringArray("fire")
+weight = 3
+max_stacks = 1
+min_tier = 3
+modifiers = Array[Dictionary]([{"stat": "crit_chance", "op": "add", "value": 0.1}, {"stat": "crit_damage", "op": "add", "value": 0.4}])
+preview = "crit_chance"
+detail = "И заметно выше крит-урон."

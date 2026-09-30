@@ -8,6 +8,7 @@ id = "damage"
 title = "Сила атаки"
 category = "Герой"
 icon = "damage"
+family = "fire"
 tags = PackedStringArray("infantry", "vehicle", "damage")
 weight = 10
 modifiers = Array[Dictionary]([{"stat": "damage_bonus", "op": "add", "value": 0.5}])

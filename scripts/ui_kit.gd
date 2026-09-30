@@ -176,8 +176,9 @@ static func numeric_description(label:Control,text:String):
 	rich.position=label.position;rich.size=label.size;rich.mouse_filter=Control.MOUSE_FILTER_IGNORE;rich.bbcode_enabled=true;rich.scroll_active=false
 	rich.add_theme_color_override("default_color",INK);rich.add_theme_font_size_override("normal_font_size",label.get_theme_font_size("font_size"))
 	var bold=SystemFont.new();bold.font_names=PackedStringArray(["Arial"]);bold.font_weight=700;rich.add_theme_font_override("bold_font",bold)
-	var regex=RegEx.new();regex.compile("[0-9]+(?:[.,][0-9]+)?(?:%| с)?\\s*→\\s*[0-9]+(?:[.,][0-9]+)?(?:%| с)?")
-	Texts.set_text(rich,regex.sub(text,"[b][color=#a3cd85]$0[/color][/b]",true));label.hide()
+	# Design system: the old value is grey, the new one green and bold.
+	var regex=RegEx.new();regex.compile("([0-9]+(?:[.,][0-9]+)?(?:%| с| /с)?)(\\s*→\\s*)([0-9]+(?:[.,][0-9]+)?(?:%| с| /с)?)")
+	Texts.set_text(rich,regex.sub(text,"[color=#8d9589]$1[/color][color=#6f7a6c]$2[/color][b][color=#8fe895]$3[/color][/b]",true));label.hide()
 	return rich
 static func change_text(title:String,before:float,after:float,suffix:String="")->String:
 	return title+": "+number(before)+" → "+number(after)+suffix

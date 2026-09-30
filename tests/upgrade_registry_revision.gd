@@ -11,7 +11,7 @@ func run():
 	var defs=UpgradeRegistry.all()
 	check(defs.size()>=15,"registry loads all card files")
 	for def in defs:
-		check(def.id!="" and def.title!="" and (def.modifiers.size()>0 or def.effect!=null),"card is complete: "+def.id)
+		check(def.id!="" and def.title!="" and (def.modifiers.size()>0 or def.effect!=null or def.flag),"card is complete: "+def.id)
 		for modifier in def.modifiers:check(modifier.has("stat") and str(modifier.get("op","add")) in ["add","add_round","scale","pow"],"modifier readable: "+def.id)
 	var arena=load("res://scenes/arena.tscn").instantiate();arena.run_seed=81;add_child(arena);arena.set_physics_process(false);arena.auto_pause_enabled=false;arena.phase="upgrade"
 	arena.player.set_physics_process(false)

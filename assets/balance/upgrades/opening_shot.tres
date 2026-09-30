@@ -9,6 +9,7 @@ id = "opening_shot"
 title = "Выдержка"
 category = "Тактика"
 icon = "damage"
+family = "fire"
 tags = PackedStringArray("behavior", "infantry", "damage")
 weight = 10
 max_stacks = 1

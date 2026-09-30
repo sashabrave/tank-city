@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="UpgradeDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrades/upgrade_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "crit_stun"
+title = "Звон в ушах"
+category = "Тактика"
+family = "ammo"
+icon = "legendary"
+tags = PackedStringArray("ammo")
+weight = 4
+max_stacks = 1
+min_tier = 2
+detail = "Каждый крит оглушает цель."
+flag = true

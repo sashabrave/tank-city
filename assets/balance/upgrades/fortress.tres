@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="UpgradeDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrades/upgrade_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "fortress"
+title = "Крепость"
+category = "Тактика"
+family = "survival"
+icon = "legendary"
+tags = PackedStringArray("survival")
+weight = 3
+max_stacks = 1
+min_tier = 3
+modifiers = Array[Dictionary]([{"stat": "guard_bullet", "op": "add", "value": 0.12}, {"stat": "guard_blast", "op": "add", "value": 0.12}, {"stat": "guard_vehicle", "op": "add", "value": 0.12}])
+preview = "guard_bullet"
+detail = "Защита от пуль, взрывов и техники."

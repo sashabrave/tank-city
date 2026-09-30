@@ -8,6 +8,7 @@ id = "device_cooldown"
 title = "Перезарядка устройств"
 category = "Способность"
 icon = "device_cooldown"
+family = "logistics"
 tags = PackedStringArray("device")
 weight = 10
 requires = PackedStringArray("abilities")

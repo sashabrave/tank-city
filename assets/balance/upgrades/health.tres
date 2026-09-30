@@ -8,6 +8,7 @@ id = "health"
 title = "Здоровье"
 category = "Герой"
 icon = "health"
+family = "survival"
 tags = PackedStringArray("infantry", "survival")
 weight = 10
 modifiers = Array[Dictionary]([{"stat": "soldier_max_hp", "op": "add_round", "value": 1.0}, {"stat": "soldier_hp", "op": "add_round", "value": 1.0}])

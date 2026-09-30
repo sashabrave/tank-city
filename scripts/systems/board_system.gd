@@ -199,7 +199,7 @@ func explode_barrel(cell):
 	var pos=arena.world_pos(cell);arena.burst(pos,Color("f5a551"),2);Game.sound("boom",arena)
 	for actor in arena.room.actors.duplicate():
 		if is_instance_valid(actor) and not actor.dead and arena.flat_distance(actor.position,pos)<2:
-			actor.take_damage(5)
+			actor.take_damage(5,Vector3.ZERO,"","blast")
 			if actor.dead and not actor.player_owned and not actor.allied:Game.progression.event("barrel_kills")
 	for nearby in arena.room.walls.keys():
 		if arena.flat_distance(arena.world_pos(nearby),pos)<2:damage_wall(nearby,5)

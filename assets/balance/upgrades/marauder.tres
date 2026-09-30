@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="UpgradeDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrades/upgrade_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "marauder"
+title = "Мародёр"
+category = "Тактика"
+family = "logistics"
+icon = "token"
+tags = PackedStringArray("logistics")
+weight = 9
+modifiers = Array[Dictionary]([{"stat": "marauder", "op": "add", "value": 0.2}])
+preview = "marauder"
+detail = "Больше сплава и жетонов с врагов."

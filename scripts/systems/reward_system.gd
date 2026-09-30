@@ -213,12 +213,12 @@ func effective_bonus_level(id:String)->int:return Game.bonus_level(id)+int(arena
 
 func prepare_upgrade_offers():
 	if arena.room.upgrade_offers.is_empty():
-		var ids=RunUpgrades.roll(arena,3)
+		var offers=RunUpgrades.roll_offers(arena,3)
 		# At the flag the first card offers switching to another unlocked weapon.
-		if arena.room.next_is_room and not ids.is_empty():
+		if arena.room.next_is_room and not offers.is_empty():
 			var alternatives=Game.weapon_unlocks.filter(func(id):return id!=arena.run.weapon)
-			if not alternatives.is_empty():ids[0]=alternatives[arena.run.combat_rng.randi_range(0,alternatives.size()-1)]
-		for id in ids:arena.room.upgrade_offers.append({"id":id,"tier":arena.room.difficulty})
+			if not alternatives.is_empty():offers[0]={"id":alternatives[arena.run.combat_rng.randi_range(0,alternatives.size()-1)],"tier":arena.room.difficulty}
+		for offer in offers:arena.room.upgrade_offers.append(offer)
 
 func upgrade_card(offer:Dictionary)->Dictionary:
 	if offer.id.begins_with("hq_"):return arena.headquarters.card(offer)
@@ -246,7 +246,8 @@ func apply_service_reward(branch:String,vehicle:String,index:int,offer:Dictionar
 func award_kill(actor):
 	arena.effects.emit("kill",{"actor":actor})
 	if actor.killed_by_vehicle in GarageCatalog.VEHICLES:Game.progression.event("kills_"+actor.killed_by_vehicle)
-	var amount=EncounterRules.kill_alloy(actor.kind,actor.rank,arena.room.room_index,actor.elite,arena.room.difficulty)
+	var amount=roundi(EncounterRules.kill_alloy(actor.kind,actor.rank,arena.room.room_index,actor.elite,arena.room.difficulty)*CombatMods.loot_multiplier(arena))
+	CombatMods.on_kill(arena,actor)
 	preload("res://scripts/resource_drop.gd").spawn(arena,actor.position,amount,"alloy",actor.resource_blast);arena.run.kills+=1
 	var tokens=token_drop(actor)
 	if tokens>0:preload("res://scripts/resource_drop.gd").spawn(arena,actor.position,tokens,"tokens",actor.resource_blast)
@@ -266,7 +267,7 @@ func token_drop(actor)->int:
 	if actor.elite:return economy.token_commander
 	var chance=economy.token_vehicle_chance if actor.kind in ["buggy","apc","tank","mortar"] else economy.token_chance
 	if actor.rank>=2:chance+=economy.token_rank_bonus
-	return 1 if arena.run.combat_rng.randf()<chance else 0
+	return 1 if arena.run.combat_rng.randf()<chance*CombatMods.loot_multiplier(arena) else 0
 
 func drop_enemy_loot(actor):
 	if not arena.room.boss_room and arena.run.combat_rng.randf()<Game.bonus_chance():

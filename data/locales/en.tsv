@@ -1862,3 +1862,56 @@ FPS в углу экрана во всех режимах, в хабе — ещ�
 Авто — по последнему устройству: касание экрана показывает экранные кнопки, клавиша или геймпад их прячут.	Auto follows the last device: touching the screen shows the on-screen buttons, a key or a gamepad hides them.
 Инструменты	Tools
 +1000 сплава	+1000 alloy
+Меткий глаз	Keen eye
+Разрывные	Expanding rounds
+Бронебойные	Armour-piercing
+Пуля проходит сквозь врагов.	The bullet passes through enemies.
+Перекат	Roll
+Шанс уклониться от пули или снаряда техники.	Chance to dodge a bullet or a vehicle shell.
+Бронежилет	Body armour
+Сапёрный костюм	Bomb suit
+Взрывы: гранаты, ракеты, бочки, дроны.	Blasts: grenades, rockets, barrels, drones.
+Противотанковый экран	Anti-tank screen
+Снаряды танков, БТР, багги и босса.	Shells from tanks, APCs, buggies and the boss.
+Зажигательные	Incendiary rounds
+Поджог: урон 3 с, огонь перекидывается на соседей, бочки взрываются с одного попадания.	Burning: damage for 3 s, fire spreads to neighbours, barrels blow up in one hit.
+ЭМИ-патроны	EMP rounds
+Бонус урона по технике и дронам.	Bonus damage to vehicles and drones.
+Контузия	Concussion
+Оглушение на 0,8 с: враг не двигается и не стреляет. Босс — втрое короче.	Stun for 0.8 s: the enemy can't move or shoot. Bosses: a third as long.
+Звон в ушах	Ringing ears
+Каждый крит оглушает цель.	Every crit stuns the target.
+Цепная реакция	Chain reaction
+Горящий враг при гибели взрывается и поджигает соседей.	A burning enemy explodes on death and sets its neighbours on fire.
+Маскхалат	Ghillie suit
+Враги замечают ближе; первый удар по целому врагу сильнее.	Enemies notice you closer; the first hit on an unhurt enemy is stronger.
+Мародёр	Marauder
+Больше сплава и жетонов с врагов.	More alloy and tokens from enemies.
+Каждое убийство чинит штаб и твою технику.	Every kill repairs the HQ and your vehicle.
+Счастливая гильза	Lucky casing
+Чаще редкие карточки, больше дропа, чуть выше крит.	Rarer cards more often, more drops, slightly higher crit.
+Кураж снайпера	Sniper's nerve
+И крит-урон ×1,4 от базы.	And crit damage ×1.4 of base.
+Призрак	Ghost
+И маскировка.	And stealth.
+Крепость	Fortress
+Защита от пуль, взрывов и техники.	Protection from bullets, blasts and vehicles.
+Огневая мощь	Firepower
+Живучесть	Survival
+Спецпатроны	Special ammo
+Тыл	Logistics
+Крит	Crit
+Крит-урон	Crit damage
+Уклонение	Dodge
+Защита от пуль	Bullet protection
+Защита от взрывов	Blast protection
+Защита от техники	Vehicle protection
+Пробитие	Pierce
+Поджог	Ignite
+По технике	Vs vehicles
+Ремонт за убийство	Repair per kill
+Удача	Luck
+Легендарное	Legendary
+Чаще редкие карточки и награды, больше дропа, чуть выше крит. Сердце %.1f%% · бонус %.1f%% с врага.	Rarer cards and rewards more often, more drops, slightly higher crit. Heart %.1f%% · bonus %.1f%% per enemy.
+Урон 3 с, огонь перекидывается на соседей, бочки взрываются с одного попадания.	Damage for 3 s, fire spreads to neighbours, barrels blow up in one hit.
+И заметно выше крит-урон.	And much higher crit damage.

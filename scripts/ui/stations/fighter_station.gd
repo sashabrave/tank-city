@@ -1,7 +1,7 @@
 extends RefCounted
 ## «Боец» (always available): shells and their abilities, general upgrades, field supply, backpack and rerolls.
 const GENERAL=[["health","Здоровье","+2 HP за уровень"],["damage","Сила","+5% базового урона за уровень"],["mobility","Скорость","Прирост уменьшается с каждым уровнем"],["pressure","Напор","Шанс, что твой снаряд переживёт столкновение"]]
-const SUPPLY=[["heal","Сила лечения","heart"],["supplies","Аптечки в передышках","heart"],["luck","Частота дропа","alloy"],["rarity","Удача улучшений","star"]]
+const SUPPLY=[["heal","Сила лечения","heart"],["supplies","Аптечки в передышках","heart"],["luck","Удача","star"]]
 func title()->String:return "Боец"
 func subtitle()->String:return "Оболочки, способности и общие улучшения — действуют в каждой вылазке."
 func tabs()->Array:return [["shells","Оболочки","fighter"],["general","Общие улучшения","health"],["supply","Снабжение","heart"],["kit","Снаряжение","inventory"]]
@@ -52,8 +52,7 @@ func supply_text(id:String)->String:
 	match id:
 		"heal":return "Сердце %.2f · броня %.2f; +0,15 за уровень." % [Game.heal_amount(),3+Game.heal_level*.15]
 		"supplies":return "%d аптечек у механика и на передышках." % Game.camp_level
-		"luck":return "Сердце %.1f%% · бонус %.1f%% с врага." % [Game.heart_chance()*100,Game.bonus_chance()*100]
-		"rarity":return "Больше редких и эпических наград в сервисах."
+		"luck":return "Чаще редкие карточки и награды, больше дропа, чуть выше крит. Сердце %.1f%% · бонус %.1f%% с врага." % [Game.heart_chance()*100,Game.bonus_chance()*100]
 	return ""
 func act(tab:String,id:String,action:String)->String:
 	match [tab,action]:

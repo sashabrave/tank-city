@@ -4,6 +4,32 @@
 			"date": "2026-09-30",
 			"version": "0.2.1",
 			"ru": {
+				"title": "Новые характеристики и карточки",
+				"items": [
+					"В бою появились крит, уклонение, защита от пуль, взрывов и техники, пробитие, зажигательные, ЭМИ и контузящие патроны, маскировка, мародёр и полевой ремонт.",
+					"Девятнадцать новых карточек, от обычных до легендарных: «Меткий глаз», «Бронебойные», «Перекат», «Сапёрный костюм», «Зажигательные», «Цепная реакция», «Звон в ушах», «Кураж снайпера», «Призрак», «Крепость» и другие.",
+					"Редкость теперь выпадает у каждой карточки отдельно. На старте редкие попадаются изредка, эпические и легендарные — совсем редко, ближе к боссу чаще.",
+					"Карточки разбиты на семьи: огневая мощь, живучесть, спецпатроны, разведка и тыл. Чем больше карточек одной семьи взято, тем чаще она выпадает, так что сборку можно собрать с первых комнат. У каждой оболочки своя любимая семья, и первое предложение забега всегда содержит её карточку.",
+					"Удача теперь одна: она поднимает редкость карточек и наград, частоту дропа и немного крит. Прежняя «Удача улучшений» сложилась с «Удачей», уровни не потерялись.",
+					"На карточках старое значение серое, новое зелёное; эпические и легендарные карточки светятся."
+				]
+			},
+			"en": {
+				"title": "New stats and cards",
+				"items": [
+					"Combat now has crit, dodge, protection from bullets, blasts and vehicles, pierce, incendiary, EMP and concussion rounds, stealth, marauder and field repair.",
+					"Nineteen new cards from common to legendary: Keen eye, Armour-piercing, Roll, Bomb suit, Incendiary rounds, Chain reaction, Ringing ears, Sniper's nerve, Ghost, Fortress and more.",
+					"Each card now rolls its own rarity. At the start rare cards show up now and then, epic and legendary ones very rarely, more often closer to the boss.",
+					"Cards come in families: firepower, survival, special ammo, recon and logistics. The more cards of a family you take, the more often it shows up, so a build can come together from the first rooms. Each shell has a favourite family, and the first offer of a run always has one of its cards.",
+					"There is one luck now: it raises card and reward rarity, drop rate and a bit of crit. The former upgrade luck merged into luck with no levels lost.",
+					"Cards show the old value in grey and the new one in green; epic and legendary cards glow."
+				]
+			}
+		},
+		{
+			"date": "2026-09-30",
+			"version": "0.2.1",
+			"ru": {
 				"title": "Хаб под телефон и геймпад",
 				"items": [
 					"Схема управления выбирается автоматически: коснулся экрана — появились экранные кнопки, нажал клавишу или взял геймпад — они спрятались. Выбрать схему вручную: Настройки → Интерфейс → Схема управления.",

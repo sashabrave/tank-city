@@ -9,6 +9,7 @@ id = "exit_dash"
 title = "Смена позиции"
 category = "Тактика"
 icon = "speed"
+family = "recon"
 tags = PackedStringArray("behavior", "vehicle", "mobility")
 weight = 10
 max_stacks = 1

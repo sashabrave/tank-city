@@ -32,6 +32,24 @@ var range_multiplier=1.0
 var healing_multiplier=1.0
 var ability_power_multiplier=1.0
 var ability_cooldown_multiplier=1.0
+## Combat stats (CombatMods): fractions unless noted.
+var crit_chance=.05
+var crit_damage=1.5
+var dodge=0.0
+var guard_bullet=0.0
+var guard_blast=0.0
+var guard_vehicle=0.0
+## Extra enemies a bullet passes through.
+var pierce=0
+var burn_chance=0.0
+var shock_bonus=0.0
+var stun_chance=0.0
+var stealth=0.0
+var marauder=0.0
+## HQ / vehicle HP restored per kill.
+var field_repair=0.0
+## Luck points from run cards (added to the station level).
+var luck=0
 
 var behavior_cards:Array=[]
 var last_player_shot=-10.0

@@ -84,6 +84,9 @@ var deepest_row=0
 var trench_return_delay=0.0
 var trench_time=0.0
 var hidden_in_trench=false
+var burn_time=0.0
+var burn_dps=0.0
+var burn_tick=0.0
 var occupying_trench=false
 var salvaged=false
 var vehicle_origin="owned"
@@ -185,6 +188,8 @@ func _physics_process(delta):
 	if arena.phase!="combat" and not (player_owned and arena.phase=="countdown"):return
 	if is_instance_valid(force_field):force_field.visible=arena.boss.shield_active()
 	stun_time=maxf(0,stun_time-delta)
+	if not player_owned and not allied:CombatMods.tick_burn(self,delta)
+	if dead:return
 	if not player_owned and not allied and (stun_time>0 or arena.freeze_time>0):return
 	if player_owned:
 		model.visible=arena.abilities.cloak_time<=0 or fmod(arena.abilities.cloak_time,.25)<.15
@@ -335,7 +340,7 @@ func shoot() -> bool:
 
 	return true
 
-func take_damage(amount: float,blast:Vector3=Vector3.ZERO,vehicle_credit:String=""):
+func take_damage(amount: float,blast:Vector3=Vector3.ZERO,vehicle_credit:String="",source:String=""):
 	resource_blast=blast
 	if kind=="boss" and Campaign.is_final(arena.room_index):
 		amount=arena.boss.limit_damage(self,amount)
@@ -344,6 +349,10 @@ func take_damage(amount: float,blast:Vector3=Vector3.ZERO,vehicle_credit:String=
 	if player_owned and arena.abilities.cloak_time>0 and arena.abilities.cloak_ghost:return
 	if player_owned and arena.abilities.block_hit():arena.burst(position,Color("86daec"),.5);Game.sound("shield_hit",self);return
 	if player_owned and occupying_trench:amount*=.5
+	if player_owned and source!="" and arena.run!=null:
+		amount=CombatMods.incoming(arena,amount,source)
+		if amount<0:
+			arena.burst(position+Vector3.UP*.5,Color("d9f2ff"),.3);invulnerable=.25;return
 	arena.floating_number(position,-minf(hp,amount))
 	hp = maxf(0,hp-amount)
 	if player_owned:

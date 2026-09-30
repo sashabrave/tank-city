@@ -8,6 +8,7 @@ id = "weapon_damage"
 title = "Урон оружия"
 category = "Оружие"
 icon = "weapon_damage"
+family = "fire"
 tags = PackedStringArray("weapon", "damage")
 weight = 0
 modifiers = Array[Dictionary]([{"stat": "weapon_mods.@weapon.damage", "op": "add", "value": 0.18}])

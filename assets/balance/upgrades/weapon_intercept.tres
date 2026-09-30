@@ -8,6 +8,7 @@ id = "weapon_intercept"
 title = "Стабилизатор"
 category = "Оружие"
 icon = "weapon_intercept"
+family = "fire"
 tags = PackedStringArray("weapon", "pressure")
 weight = 0
 modifiers = Array[Dictionary]([{"stat": "weapon_mods.@weapon.intercept", "op": "add", "value": 0.05}])

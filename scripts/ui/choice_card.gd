@@ -9,6 +9,7 @@ static func configure(card:Panel,data:Dictionary,choose:Callable):
 	card.set_meta("reward_tier",LootCatalog.RARITY_COLORS.find(data.color.to_html(false)))
 	var style=card.get_theme_stylebox("panel").duplicate()
 	style.bg_color=Color("232c29").lerp(data.color,.10);style.border_color=data.color.darkened(.25);card.add_theme_stylebox_override("panel",style)
+	if int(data.get("tier",0))>=2:style.shadow_color=Color(data.color,.16 if int(data.tier)==2 else .26);style.shadow_size=10 if int(data.tier)==2 else 16
 	card.set_meta("idle_border",style)
 	var active=style.duplicate()
 	active.set_border_width_all(3);active.border_color=data.color
@@ -22,7 +23,7 @@ static func configure(card:Panel,data:Dictionary,choose:Callable):
 	var stripe=ColorRect.new();stripe.name="CategoryStripe";card.add_child(stripe)
 	stripe.mouse_filter=Control.MOUSE_FILTER_IGNORE;stripe.position=Vector2(0,16);stripe.size=Vector2(9,48);stripe.color=data.color
 	var silhouette=TextureRect.new();silhouette.name="CategoryIcon";card.add_child(silhouette)
-	var symbol={"Герой":"hero","Штаб":"hq","Оружие":"weapon","Способность":"ability","Транспорт":"vehicle","Чертёж":"blueprint","Бонус":"bonus","Тактика":"hero"}.get(category,"trophy")
+	var symbol={"Огневая мощь":"weapon","Живучесть":"hero","Спецпатроны":"bonus","Разведка":"ability","Тыл":"hq","Герой":"hero","Штаб":"hq","Оружие":"weapon","Способность":"ability","Транспорт":"vehicle","Чертёж":"blueprint","Бонус":"bonus","Тактика":"hero"}.get(category,"trophy")
 	silhouette.texture=load("res://assets/ui/reward_categories/"+symbol+".svg")
 	silhouette.position=Vector2(20,20);silhouette.size=Vector2(36,36);silhouette.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;silhouette.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	silhouette.modulate=data.color;silhouette.mouse_filter=Control.MOUSE_FILTER_IGNORE

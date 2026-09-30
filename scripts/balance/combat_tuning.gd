@@ -33,7 +33,7 @@ extends Resource
 @export_range(0,1,0.01) var interception_cap:float=0.9
 @export_group("Сила наград")
 ## Множитель силы наград по тиру: обычная, редкая, эпическая.
-@export var reward_tier_power:PackedFloat32Array=PackedFloat32Array([1.0,1.5,2.0])
+@export var reward_tier_power:PackedFloat32Array=PackedFloat32Array([1.0,1.6,2.3,3.2])
 @export_group("Ритм боя")
 @export_range(0.5,15,0.25) var wave_delay:float=3.75
 @export_range(0.1,15,0.1) var spawn_interval:float=2.4

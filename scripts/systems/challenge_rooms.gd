@@ -187,7 +187,7 @@ func explode_shell(shell:Dictionary):
 	var pos=shell.node.position;shell.node.queue_free()
 	arena.burst(pos+Vector3.UP*.3,Color("e78331"),shell.radius);Game.sound("explosion_heavy",arena)
 	var player=arena.room.player
-	if is_instance_valid(player) and not player.dead and arena.flat_distance(pos,player.position)<shell.radius:player.take_damage(1,player.position-pos+Vector3(.01,0,.01))
+	if is_instance_valid(player) and not player.dead and arena.flat_distance(pos,player.position)<shell.radius:player.take_damage(1,player.position-pos+Vector3(.01,0,.01),"","blast")
 	for cell in arena.room.walls.keys():
 		if arena.flat_distance(pos,arena.world_pos(cell))<shell.radius:arena.damage_wall(cell,2)
 

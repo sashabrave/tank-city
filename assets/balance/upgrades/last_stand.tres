@@ -9,6 +9,7 @@ id = "last_stand"
 title = "Последний рубеж"
 category = "Тактика"
 icon = "health"
+family = "survival"
 tags = PackedStringArray("behavior", "infantry", "fire_rate")
 weight = 10
 max_stacks = 1

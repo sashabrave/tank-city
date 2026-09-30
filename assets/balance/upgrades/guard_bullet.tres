@@ -4,12 +4,12 @@
 
 [resource]
 script = ExtResource("1")
-id = "healing"
-title = "Медицина"
+id = "guard_bullet"
+title = "Бронежилет"
 category = "Герой"
-icon = "healing"
 family = "survival"
-tags = PackedStringArray("survival", "supply")
+icon = "health"
+tags = PackedStringArray("survival")
 weight = 10
-modifiers = Array[Dictionary]([{"stat": "healing_multiplier", "op": "add", "value": 0.2}])
-preview = "healing"
+modifiers = Array[Dictionary]([{"stat": "guard_bullet", "op": "add", "value": 0.12}])
+preview = "guard_bullet"

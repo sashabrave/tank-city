@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="UpgradeDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrades/upgrade_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "guard_blast"
+title = "Сапёрный костюм"
+category = "Герой"
+family = "survival"
+icon = "health"
+tags = PackedStringArray("survival")
+weight = 8
+modifiers = Array[Dictionary]([{"stat": "guard_blast", "op": "add", "value": 0.15}])
+preview = "guard_blast"
+detail = "Взрывы: гранаты, ракеты, бочки, дроны."

@@ -8,6 +8,7 @@ id = "fire"
 title = "Темп огня"
 category = "Герой"
 icon = "fire"
+family = "fire"
 tags = PackedStringArray("infantry", "vehicle", "fire_rate")
 weight = 10
 modifiers = Array[Dictionary]([{"stat": "fire_multiplier", "op": "scale", "value": -0.15}])

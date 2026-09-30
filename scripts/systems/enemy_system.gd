@@ -86,7 +86,7 @@ func enemy_aim(actor) -> Vector2i:
 		var width=1.0 if actor.kind in ["buggy","apc","tank","boss"] else .5
 		# Water, vegetation, sand and ice never obstruct a shot; only wall geometry does.
 		var end=actor.position+Vector3(dir.x,0,dir.y)*delta.length()
-		if dir!=Vector2i.ZERO and delta.length()<=weapon_range and arena.clear_shot(actor.position,end,width):return dir
+		if dir!=Vector2i.ZERO and delta.length()<=CombatMods.engage_range(arena,weapon_range) and arena.clear_shot(actor.position,end,width):return dir
 	# Shoot toward the base, including through its destructible cover.
 	if not seek_open_lane and not arena.room.boss_room and actor.cell.x == arena.room.base_cell.x and actor.cell.y >= arena.room.grid_size-4:
 		var p = actor.cell+Vector2i.DOWN

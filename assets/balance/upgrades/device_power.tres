@@ -8,6 +8,7 @@ id = "device_power"
 title = "Мощность устройств"
 category = "Способность"
 icon = "device_power"
+family = "logistics"
 tags = PackedStringArray("device")
 weight = 10
 requires = PackedStringArray("abilities")

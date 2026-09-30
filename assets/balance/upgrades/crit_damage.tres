@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="UpgradeDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrades/upgrade_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "crit_damage"
+title = "Разрывные"
+category = "Оружие"
+family = "fire"
+icon = "damage"
+tags = PackedStringArray("fire")
+weight = 10
+modifiers = Array[Dictionary]([{"stat": "crit_damage", "op": "add", "value": 0.3}])
+preview = "crit_damage"
