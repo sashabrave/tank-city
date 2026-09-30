@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="Texture2D" path="res://assets/ui/branding_v1/tank_city_logo.png" id="99_brand_logo"]
+[ext_resource type="Texture2D" path="res://assets/ui/branding_v1/war_cats_logo.png" id="99_brand_logo"]
 
 [ext_resource type="Texture2D" path="res://assets/icons/v1/alloy.png" id="1_wkqdn"]
 [ext_resource type="Script" path="res://scripts/touch_controls.gd" id="2_hye22"]

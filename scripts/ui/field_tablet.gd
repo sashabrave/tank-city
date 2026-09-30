@@ -286,7 +286,7 @@ func about_page():
 		button.name="AboutTab_"+key
 		if about_tab==key:button.add_theme_stylebox_override("normal",UiKit.style(Color("584a2c"),6))
 	if about_tab=="changelog":changelog_page();return
-	UiKit.label(content,"TANK CITY",Vector2(22,130),Vector2(720,54),36)
+	UiKit.label(content,"War Cats",Vector2(22,130),Vector2(720,54),36)
 	var description=UiKit.label(content,"Тактический экшен с развитием между вылазками. Защищай штаб, захватывай технику и пробивайся к командиру.",Vector2(22,195),Vector2(690,90),20)
 	description.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	UiKit.label(content,"Версия %s · Сборка %s\nВ разработке" % [ProjectSettings.get_setting("application/config/version","0.1"),ProjectSettings.get_setting("application/config/build","1")],Vector2(22,310),Vector2(700,65),18,UiKit.MUTED)

@@ -1,0 +1,263 @@
+<meta charset="utf-8">
+<title>War Cats · вики</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Russo+One&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: field-tablet wiki — fixed left rail of chapters, reading column, asset library with a sticky studio viewer. */
+:root{
+  --bg:#ece8dc; --panel:#f7f4ea; --panel-2:#e2ddcd; --line:#cfc8b4; --fg:#232a25; --muted:#6a6f62;
+  --accent:#c9761e; --accent-soft:#f2d9b5; --olive:#5d6a43; --ok:#3f7d4a; --warn:#b5622a; --legacy:#7c7aa0;
+  --studio-1:#d9dad6; --studio-2:#a9aba6; --code:#e4dfcf;
+  --display:"Russo One","Arial Black",system-ui,sans-serif; --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif; --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#1a201c; --panel:#232b25; --panel-2:#2c352e; --line:#3a453c; --fg:#e8e6dc; --muted:#9aa194;
+  --accent:#f2a33a; --accent-soft:#4a3a22; --olive:#8fa06a; --ok:#7fc08a; --warn:#e08a5a; --legacy:#a9a6d6;
+  --studio-1:#5c5f5b; --studio-2:#2e302d; --code:#1f2621; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1a201c; --panel:#232b25; --panel-2:#2c352e; --line:#3a453c; --fg:#e8e6dc; --muted:#9aa194;
+  --accent:#f2a33a; --accent-soft:#4a3a22; --olive:#8fa06a; --ok:#7fc08a; --warn:#e08a5a; --legacy:#a9a6d6;
+  --studio-1:#5c5f5b; --studio-2:#2e302d; --code:#1f2621; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font:15px/1.6 var(--body);margin:0}
+a{color:var(--accent)}
+.app{display:grid;grid-template-columns:268px minmax(0,1fr);min-height:100%}
+.rail{position:sticky;top:env(safe-area-inset-top,0px);height:100vh;overflow:auto;background:var(--panel);border-right:1px solid var(--line);padding:20px 14px 40px}
+.brand{font:22px/1.1 var(--display);letter-spacing:.01em;margin:0 6px 4px}
+.brand small{display:block;font:500 12px/1.4 var(--body);color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-top:6px}
+.ver{display:inline-block;margin:10px 6px 14px;font:600 12px var(--mono);padding:3px 8px;border-radius:5px;background:var(--accent-soft);color:var(--fg)}
+.search{width:calc(100% - 12px);margin:0 6px 14px;padding:8px 10px;border:1px solid var(--line);border-radius:7px;background:var(--bg);color:var(--fg);font:14px var(--body)}
+.group{margin:14px 0 4px 6px;font:600 11px var(--body);letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.nav a{display:block;padding:5px 10px;border-radius:6px;color:var(--fg);text-decoration:none;font-size:14px;line-height:1.35}
+.nav a:hover{background:var(--panel-2)}
+.nav a[aria-current="page"]{background:var(--accent-soft);box-shadow:inset 3px 0 0 var(--accent)}
+.nav a .n{font:12px var(--mono);color:var(--muted);margin-right:6px}
+.theme{margin:18px 6px 0;display:flex;gap:6px}
+.theme button{flex:1;padding:6px;border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:6px;font:12px var(--body);cursor:pointer}
+.theme button[aria-pressed="true"]{border-color:var(--accent)}
+main{min-width:0;padding-block:28px 64px;padding-inline:clamp(16px,4vw,48px)}
+.crumb{font:12px var(--mono);color:var(--muted);margin-bottom:6px}
+h1,h2,h3{text-wrap:balance}
+h1{font:clamp(26px,3.2vw,36px)/1.15 var(--display);margin:0 0 14px}
+.doc{max-width:74ch}
+.doc h1{font-size:clamp(24px,2.8vw,32px)}
+.doc h2{font:600 21px/1.3 var(--body);margin:34px 0 10px;padding-top:12px;border-top:1px solid var(--line)}
+.doc h3{font:600 17px/1.3 var(--body);margin:22px 0 6px}
+.doc p,.doc li{max-width:72ch}
+.doc code{font:13px var(--mono);background:var(--code);padding:1px 5px;border-radius:4px}
+.doc pre{background:var(--code);padding:12px 14px;border-radius:8px;overflow:auto;font:13px/1.5 var(--mono)}
+.doc pre code{background:none;padding:0}
+.tablewrap{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;font-size:14px;min-width:100%}
+th,td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{font:600 12px var(--body);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--panel);position:sticky;top:0}
+td.num{font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:13px;white-space:nowrap}
+.facts{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 26px}
+.fact{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px;min-width:120px}
+.fact b{display:block;font:22px var(--display);font-variant-numeric:tabular-nums}
+.fact span{font-size:13px;color:var(--muted)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin:10px 0 28px}
+.card{display:block;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;color:var(--fg);text-decoration:none}
+.card:hover{border-color:var(--accent)}
+.card h3{margin:0 0 6px;font:600 16px var(--body)}
+.card p{margin:0;color:var(--muted);font-size:14px}
+.chip{display:inline-block;font:600 11px var(--body);padding:2px 7px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.fam-fire{color:#d0582f}.fam-survival{color:var(--ok)}.fam-ammo{color:#c38a1c}.fam-recon{color:#5b86b8}.fam-logistics{color:#8a6fb0}
+.st-current{color:var(--ok)}.st-legacy{color:var(--legacy)}.st-fallback{color:var(--warn)}
+.swatch{display:inline-block;width:16px;height:16px;border-radius:4px;border:1px solid var(--line);vertical-align:-3px;margin-right:3px}
+/* Asset library */
+.lib{display:grid;grid-template-columns:minmax(0,1fr) minmax(320px,44%);gap:18px;align-items:start}
+.filters{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 12px}
+.filters button{border:1px solid var(--line);background:var(--panel);color:var(--fg);border-radius:999px;padding:4px 11px;font:13px var(--body);cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.asset{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:9px 10px;text-align:left;color:var(--fg);cursor:pointer;font:13px var(--body);display:flex;flex-direction:column;gap:4px;min-width:0}
+.asset:hover{border-color:var(--accent)}
+.asset[aria-selected="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.asset b{font-weight:600;font-size:14px;overflow-wrap:anywhere}
+.asset .meta{font:11px var(--mono);color:var(--muted)}
+.viewer{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.studio{position:relative;aspect-ratio:4/3;max-width:100%;background:radial-gradient(ellipse 70% 60% at 50% 42%,var(--studio-1),var(--studio-2));}
+.studio::after{content:"";position:absolute;inset:auto 0 0 0;height:32%;background:linear-gradient(to bottom,transparent,rgba(0,0,0,.08));pointer-events:none}
+model-viewer{width:100%;height:100%;--poster-color:transparent;background:transparent}
+.vinfo{padding:12px 14px}
+.vinfo h3{margin:0 0 4px;font:600 17px var(--body)}
+.vinfo dl{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;margin:8px 0 0;font-size:13px}
+.vinfo dt{color:var(--muted)}.vinfo dd{margin:0;font-family:var(--mono);font-size:12px;overflow-wrap:anywhere}
+.anims{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.anims button{border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:6px;padding:3px 8px;font:12px var(--mono);cursor:pointer}
+.anims button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.hint{font-size:13px;color:var(--muted)}
+.menu-toggle{display:none}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (max-width:900px){
+  .app{grid-template-columns:1fr}
+  .rail{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}
+  .rail .navwrap{display:none}.rail.open .navwrap{display:block}
+  .menu-toggle{display:inline-block;margin:0 6px 8px;padding:6px 12px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg);font:13px var(--body)}
+  .lib{grid-template-columns:1fr}.viewer{position:static}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="app">
+  <aside class="rail" id="rail">
+    <div class="brand">War Cats<small>вики разработчика</small></div>
+    <span class="ver" id="ver"></span>
+    <button class="menu-toggle" id="menuToggle" aria-expanded="false">Разделы</button>
+    <div class="navwrap">
+      <input class="search" id="search" type="search" placeholder="Поиск по вики" aria-label="Поиск по вики">
+      <nav class="nav" id="nav"></nav>
+      <div class="theme" role="group" aria-label="Тема">
+        <button data-theme-set="light" aria-pressed="false">Светлая</button>
+        <button data-theme-set="system" aria-pressed="true">Как в системе</button>
+        <button data-theme-set="dark" aria-pressed="false">Тёмная</button>
+      </div>
+    </div>
+  </aside>
+  <main id="main" tabindex="-1"></main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script type="module" src="vendor/model-viewer.min.js"></script>
+<script>
+const MANIFEST=/*MANIFEST*/{};
+const FAMILIES={fire:"Огневая мощь",survival:"Живучесть",ammo:"Спецпатроны",recon:"Разведка",logistics:"Тыл"};
+const TIERS=["Обычная","Редкая","Эпическая","Легендарная"];
+const GROUP_TITLES={"04_handbook":"Хендбук","00_start":"Старт","01_design":"Геймдизайн","02_development":"Разработка","03_release":"Релизы"};
+const GROUP_ORDER=["04_handbook","00_start","01_design","02_development","03_release"];
+const DATA_PAGES=[["enemies","Враги"],["weapons","Оружие"],["abilities","Способности"],["cards","Карточки"],["stats","Характеристики"],["classes","Классы"],["bosses","Боссы"],["biomes","Биомы"],["music","Музыка"]];
+let DATA=null,MODELS=null;
+const main=document.getElementById("main"),nav=document.getElementById("nav");
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const slug=p=>p.replace(/^guides\//,"").replace(/\.md$/,"").replace(/[^a-zA-Z0-9_.-]/g,"-");
+function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
+
+function buildNav(filter=""){
+  const f=filter.trim().toLowerCase();let html="";
+  const link=(id,label,n="")=>(!f||label.toLowerCase().includes(f))?`<a href="#${id}" data-id="${id}">${n?`<span class="n">${esc(n)}</span>`:""}${esc(label)}</a>`:"";
+  html+=link("home","Обзор");
+  for(const g of GROUP_ORDER){
+    const docs=MANIFEST.guides.filter(d=>d.group===g);let part="";
+    for(const d of docs)part+=link(slug(d.path),d.title,d.num);
+    if(part)html+=`<div class="group">${esc(GROUP_TITLES[g]||g)}</div>`+part;
+  }
+  let data="";for(const[id,label]of DATA_PAGES)data+=link("data-"+id,label);
+  if(data)html+=`<div class="group">Данные игры</div>`+data;
+  const assets=link("assets","3D-библиотека");
+  if(assets)html+=`<div class="group">Ассеты</div>`+assets;
+  nav.innerHTML=html;markCurrent();
+}
+function markCurrent(){const id=location.hash.slice(1)||"home";nav.querySelectorAll("a").forEach(a=>a.toggleAttribute("aria-current",a.dataset.id===id)||a.setAttribute("aria-current",a.dataset.id===id?"page":"false"));}
+
+async function json(path){const r=await fetch(path);if(!r.ok)throw new Error(path);return r.json();}
+async function loadData(){if(!DATA)DATA=await json("data.json");return DATA;}
+async function loadModels(){if(!MODELS)MODELS=await json("models.json");return MODELS;}
+
+function home(){
+  const m=MANIFEST.stats;
+  main.innerHTML=`<div class="crumb">Альфа ${esc(MANIFEST.version)} · сборка ${esc(MANIFEST.build)} · обновлено ${esc(MANIFEST.generated)}</div>
+  <h1>War Cats: вики разработчика</h1>
+  <div class="doc"><p>Изометрический тактический рогалайт на Godot 4.7: один боец держит мобильный штаб, угоняет вражескую технику и собирает билд из карточек. Здесь все гайды проекта, игровые данные прямо из ресурсов и библиотека 3D-моделей с просмотром. Страница собирается скриптом <code>tools/devdoc/build_wiki.py</code> из тех же файлов, что читает игра.</p></div>
+  <div class="facts">
+    <div class="fact"><b>${m.models}</b><span>3D-моделей</span></div>
+    <div class="fact"><b>${m.animated}</b><span>с анимациями</span></div>
+    <div class="fact"><b>${m.cards}</b><span>карточек вылазки</span></div>
+    <div class="fact"><b>${m.stats}</b><span>характеристик</span></div>
+    <div class="fact"><b>${m.enemies}</b><span>видов врагов</span></div>
+    <div class="fact"><b>${m.biomes}</b><span>биомов</span></div>
+    <div class="fact"><b>${m.guides}</b><span>страниц гайдов</span></div>
+  </div>
+  <h2 style="font:600 19px var(--body)">С чего начать</h2>
+  <div class="cards">${MANIFEST.guides.filter(d=>d.group==="04_handbook").map(d=>`<a class="card" href="#${slug(d.path)}"><h3>${esc(d.title)}</h3><p>${esc(d.lead)}</p></a>`).join("")}</div>
+  <h2 style="font:600 19px var(--body)">Данные и ассеты</h2>
+  <div class="cards">
+    <a class="card" href="#assets"><h3>3D-библиотека</h3><p>Все модели с фильтрами по семейству и статусу, просмотр на студийном фоне, проигрывание анимаций.</p></a>
+    ${DATA_PAGES.slice(0,5).map(([id,l])=>`<a class="card" href="#data-${id}"><h3>${l}</h3><p>Таблица из ресурсов игры.</p></a>`).join("")}
+  </div>`;
+}
+
+async function doc(entry){
+  main.innerHTML=`<div class="crumb">${esc(entry.path)}</div><div class="doc" id="doc">Загружаю…</div>`;
+  try{
+    const text=await (await fetch(entry.path)).text();
+    const box=document.getElementById("doc");box.innerHTML=marked.parse(text);
+    box.querySelectorAll("table").forEach(t=>{const w=document.createElement("div");w.className="tablewrap";t.replaceWith(w);w.appendChild(t);});
+  }catch(e){document.getElementById("doc").textContent="Не удалось загрузить "+entry.path;}
+}
+
+function table(cols,rows){
+  return `<div class="tablewrap"><table><thead><tr>${cols.map(c=>`<th>${esc(c[1])}</th>`).join("")}</tr></thead><tbody>${rows.map(r=>`<tr>${cols.map(c=>{const v=c[2]?c[2](r):r[c[0]];return `<td class="${typeof r[c[0]]==="number"&&!c[2]?"num":""}">${c[2]?v:esc(v)}</td>`}).join("")}</tr>`).join("")}</tbody></table></div>`;
+}
+const fam=f=>`<span class="chip fam-${esc(f)}">${esc(FAMILIES[f]||f)}</span>`;
+const pct=v=>typeof v==="number"?Math.round(v*100)+"%":"";
+async function dataPage(id){
+  const d=await loadData();const label=(DATA_PAGES.find(p=>p[0]===id)||[id,id])[1];let body="";
+  const n=v=>`<span class="num">${esc(v)}</span>`;
+  switch(id){
+    case"enemies":body=table([["id","Тип"],["health","HP"],["move_speed","Скорость"],["enemy_damage","Урон врага"],["enemy_interval","Интервал врага"],["damage","Урон у игрока"],["fire_interval","Интервал у игрока"],["player_speed","Скорость у игрока"],["wave_cost","Цена в волне"]],d.enemies);break;
+    case"weapons":body=table([["name","Оружие"],["damage","Урон"],["interval","Интервал"],["range","Дальность"],["pellets","Дробь"],["intercept","Перехват",r=>n(pct(r.intercept))],["role","Роль"]],d.weapons);break;
+    case"abilities":body=table([["name","Способность"],["price","Цена"],["cooldown","Перезарядка, с"],["power","Сила"],["description","Описание"]],d.abilities);break;
+    case"cards":body=table([["title","Карточка"],["family","Семья",r=>fam(r.family)],["min_tier","Мин. редкость",r=>esc(TIERS[r.min_tier]||r.min_tier)],["flag","Поведение",r=>r.flag?"да":""],["weight","Вес"],["max_stacks","Лимит"],["detail","Описание"]],d.cards.filter(c=>c.weight>0));break;
+    case"stats":body=table([["title","Характеристика"],["family","Семья",r=>fam(r.family)],["cap","Предел в бою",r=>n(r.cap?(r.format==="percent"?pct(r.cap):r.cap):"")],["step","Шаг станции",r=>n(r.format==="percent"?pct(r.step):r.step)],["max_level","Уровней"],["cost_base","Цена от"],["description","Описание"]],d.stats);break;
+    case"classes":body=table([["name","Класс"],["role","Роль"],["family","Любимая семья",r=>fam(r.family)]],d.classes)+`<h2 style="font:600 18px var(--body);margin-top:28px">В разработке</h2>`+table([[0,"Класс"],[1,"Идея"],[2,"Модификаторы"],[3,"Способности"]],d.concepts);break;
+    case"bosses":body=table([["name","Босс"],["id","ID"]],d.bosses);break;
+    case"biomes":body=table([["name","Биом"],["floor","Палитра",r=>["floor","wall","brick","edge"].map(k=>`<span class="swatch" style="background:#${esc(r[k])}" title="${k} #${esc(r[k])}"></span>`).join("")],["kinds","Покрытия",r=>esc((r.kinds||[]).join(", "))],["vegetation","Растительность"],["ambience","Звук"]],d.biomes);break;
+    case"music":body=table([["title","Тема"],["mood","Настроение",r=>r.mood==="night"?"Ночь":"День"],["id","ID"]],d.music);break;
+  }
+  main.innerHTML=`<div class="crumb">данные · assets/balance</div><h1>${esc(label)}</h1>${body}`;
+}
+
+let assetState={family:"all",status:"current",selected:null,query:""};
+async function assets(){
+  const models=await loadModels();
+  const fams=["all",...new Set(models.map(m=>m.folder))];
+  const statuses=[["current","Текущие"],["fallback","Запасные"],["legacy","Наследие"],["all","Все"]];
+  main.innerHTML=`<div class="crumb">assets/models · ${models.length} GLB</div><h1>3D-библиотека</h1>
+  <p class="hint">Выбери модель, чтобы покрутить её на студийном фоне. У пехоты можно включить анимации. Статус показывает, загружает ли игра модель сейчас.</p>
+  <div class="filters" id="fStatus">${statuses.map(([k,l])=>`<button data-k="${k}" aria-pressed="${assetState.status===k}">${l}</button>`).join("")}</div>
+  <div class="filters" id="fFamily">${fams.map(f=>`<button data-k="${esc(f)}" aria-pressed="${assetState.family===f}">${f==="all"?"Все семейства":esc(f==="."?"корень":f)}</button>`).join("")}</div>
+  <input class="search" style="max-width:320px;margin:0 0 12px" id="fQuery" type="search" placeholder="Имя модели" aria-label="Имя модели" value="${esc(assetState.query)}">
+  <div class="lib"><div class="grid" id="agrid"></div><div class="viewer" id="viewer"></div></div>`;
+  const draw=()=>{
+    const list=models.filter(m=>(assetState.family==="all"||m.folder===assetState.family)&&(assetState.status==="all"||m.status===assetState.status)&&(!assetState.query||m.name.includes(assetState.query.toLowerCase())));
+    document.getElementById("agrid").innerHTML=list.map(m=>`<button class="asset" data-p="${esc(m.path)}" aria-selected="${assetState.selected===m.path}"><b>${esc(m.name)}</b><span class="meta">${esc(m.folder==="."?"корень":m.folder)} · ${m.tris.toLocaleString("ru")} тр.</span><span><span class="chip st-${m.status}">${esc(m.status_text)}</span>${m.animations.length?` <span class="chip" style="color:var(--accent)">${m.animations.length} анимаций</span>`:""}</span></button>`).join("")||`<p class="hint">Ничего не найдено.</p>`;
+    if(!assetState.selected&&list[0])assetState.selected=list[0].path;
+    const cur=models.find(m=>m.path===assetState.selected);if(cur)view(cur);
+  };
+  main.querySelector("#fStatus").onclick=e=>{const b=e.target.closest("button");if(!b)return;assetState.status=b.dataset.k;assetState.selected=null;assets();};
+  main.querySelector("#fFamily").onclick=e=>{const b=e.target.closest("button");if(!b)return;assetState.family=b.dataset.k;assetState.selected=null;assets();};
+  main.querySelector("#fQuery").oninput=e=>{assetState.query=e.target.value;draw();};
+  main.querySelector("#agrid").onclick=e=>{const b=e.target.closest(".asset");if(!b)return;assetState.selected=b.dataset.p;main.querySelectorAll(".asset").forEach(x=>x.setAttribute("aria-selected",x.dataset.p===b.dataset.p));view(models.find(m=>m.path===b.dataset.p));};
+  draw();
+}
+function view(m){
+  const box=document.getElementById("viewer");if(!box||!m)return;
+  box.innerHTML=`<div class="studio"><model-viewer id="mv" src="${esc(m.path)}" alt="${esc(m.name)}" camera-controls touch-action="pan-y" auto-rotate rotation-per-second="18deg" shadow-intensity="1.1" shadow-softness=".9" exposure="1.05" environment-image="neutral" camera-orbit="35deg 68deg auto" interaction-prompt="none"></model-viewer></div>
+  <div class="vinfo"><h3>${esc(m.name)}</h3><span class="chip st-${m.status}">${esc(m.status_text)}</span>
+  <dl><dt>Путь</dt><dd>${esc(m.path)}</dd><dt>Треугольники</dt><dd>${m.tris.toLocaleString("ru")}</dd><dt>Мешей / узлов</dt><dd>${m.meshes} / ${m.nodes}</dd><dt>Материалы</dt><dd>${esc(m.materials.join(", ")||"—")}</dd><dt>Размер</dt><dd>${m.kb} КБ</dd><dt>Скелет</dt><dd>${m.skins?"есть":"нет"}</dd></dl>
+  ${m.animations.length?`<div class="anims" id="anims"><button data-a="" aria-pressed="true">Статика</button>${m.animations.map(a=>`<button data-a="${esc(a)}" aria-pressed="false">${esc(a)}</button>`).join("")}</div>`:""}</div>`;
+  const mv=box.querySelector("#mv"),an=box.querySelector("#anims");
+  if(an)an.onclick=e=>{const b=e.target.closest("button");if(!b)return;an.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));if(b.dataset.a){mv.animationName=b.dataset.a;mv.autoRotate=false;mv.play({repetitions:Infinity});}else{mv.pause();mv.autoRotate=true;}};
+}
+
+async function route(){
+  const id=location.hash.slice(1)||"home";markCurrent();window.scrollTo(0,0);
+  if(id==="home")return home();
+  if(id==="assets")return assets();
+  if(id.startsWith("data-"))return dataPage(id.slice(5));
+  const entry=MANIFEST.guides.find(d=>slug(d.path)===id);
+  if(entry)return doc(entry);
+  home();
+}
+function applyTheme(t){const r=document.documentElement;if(t==="system")r.removeAttribute("data-theme");else r.setAttribute("data-theme",t);document.querySelectorAll("[data-theme-set]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.themeSet===t));}
+document.querySelectorAll("[data-theme-set]").forEach(b=>b.onclick=()=>{applyTheme(b.dataset.themeSet);store("wiki-theme",b.dataset.themeSet);});
+applyTheme(store("wiki-theme")||"system");
+document.getElementById("ver").textContent="альфа "+MANIFEST.version;
+document.getElementById("search").oninput=e=>buildNav(e.target.value);
+document.getElementById("menuToggle").onclick=e=>{const r=document.getElementById("rail");r.classList.toggle("open");e.target.setAttribute("aria-expanded",r.classList.contains("open"));};
+window.addEventListener("hashchange",route);
+buildNav();route();
+</script>

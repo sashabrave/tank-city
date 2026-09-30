@@ -1,4 +1,4 @@
-# Работа над «Рубеж — 13»
+# Работа над War Cats
 
 Сначала прочитай guides/00_start/01_project.md и guides/00_start/02_agent_handoff.md, затем нужные разделы guides/01_design и guides/02_development. Актуальная документация находится в guides; старые docs и NEXT_CHAT_CONTEXT содержат исторические решения.
 

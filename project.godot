@@ -14,9 +14,9 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 
 [application]
 
-config/name="Tank City"
-config/description="Защити базу. Захвати технику. Переживи четыре волны."
-config/version="0.3.0"
+config/name="War Cats"
+config/description="War Cats: защити штаб, угони технику, собери билд."
+config/version="0.3.1"
 run/main_scene="res://scenes/main.tscn"
 config/use_custom_user_dir=true
 config/custom_user_dir_name="Godot/app_userdata/Рубеж - 13"
