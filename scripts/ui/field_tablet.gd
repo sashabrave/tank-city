@@ -292,22 +292,39 @@ func about_page():
 	UiKit.label(content,"Версия %s · Сборка %s\nВ разработке" % [ProjectSettings.get_setting("application/config/version","0.1"),ProjectSettings.get_setting("application/config/build","1")],Vector2(22,310),Vector2(700,65),18,UiKit.MUTED)
 	UiKit.label(content,"Автор · Alexander Nikolaev\ntext@test.com",Vector2(22,420),Vector2(700,75),21)
 # Changelog entries carry their own ru/en text, so the box is excluded from automatic translation.
+# Version tabs on top; the selected release shows a summary line and compact sections.
+var changelog_version=""
 func changelog_page():
-	var box=scroller(Vector2(22,124),Vector2(content.size.x-44,440));box.name="ChangelogBox";box.set_meta("text_editor",true)
-	box.add_theme_constant_override("separation",14)
-	var entries=preload("res://scripts/ui/changelog.gd").entries()
-	if entries.is_empty():
-		var empty=Label.new();box.add_child(empty);empty.text="—";return
-	for entry in entries:
+	var notes=preload("res://scripts/ui/changelog.gd")
+	var versions:Array=notes.versions()
+	if versions.is_empty():UiKit.label(content,"—",Vector2(22,124),Vector2(300,30),16);return
+	if changelog_version not in versions:changelog_version=versions[0]
+	var tabs=versions.slice(0,5).map(func(v):return [v,("Альфа "+v) if v!="earlier" else "Ранее"])
+	var width=content.size.x-44
+	UiKit.tab_row(content,Vector2(22,118),width,tabs,changelog_version,func(v):changelog_version=v;refresh(),36)
+	var chosen:Array=notes.for_version(changelog_version)
+	var total=0;var newest=""
+	for entry in chosen:
+		total+=entry.get(Texts.language,entry.get("ru",{})).get("items",[]).size()
+		var day=str(entry.get("date",""))
+		if day>newest:newest=day
+	var summary=UiKit.label(content,"%s · %s · изменений: %d" % [("Альфа "+changelog_version) if changelog_version!="earlier" else "Ранее",notes.date_text(newest),total],Vector2(22,164),Vector2(width,24),14,UiKit.MUTED)
+	summary.set_meta("text_editor",true)
+	var box=scroller(Vector2(22,194),Vector2(width,content.size.y-210));box.name="ChangelogBox";box.set_meta("text_editor",true)
+	box.add_theme_constant_override("separation",10)
+	for entry in chosen:
 		var text:Dictionary=entry.get(Texts.language,entry.get("ru",{}))
+		var items:Array=text.get("items",[])
 		var card=PanelContainer.new();box.add_child(card);card.add_theme_stylebox_override("panel",UiKit.style(Color("2c352e"),7))
 		var margin=MarginContainer.new();card.add_child(margin)
-		for side in ["left","right","top","bottom"]:margin.add_theme_constant_override("margin_"+side,14)
-		var column=VBoxContainer.new();margin.add_child(column);column.add_theme_constant_override("separation",8)
-		var date=Label.new();column.add_child(date);date.text=preload("res://scripts/ui/changelog.gd").date_text(str(entry.get("date","")));date.add_theme_font_size_override("font_size",13);date.add_theme_color_override("font_color",UiKit.MUTED)
-		var heading=Label.new();column.add_child(heading);heading.text=str(text.get("title",""));heading.add_theme_font_size_override("font_size",21);heading.add_theme_color_override("font_color",UiKit.INK);heading.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-		for item in text.get("items",[]):
-			var line=Label.new();column.add_child(line);line.text="•  "+str(item);line.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;line.add_theme_font_size_override("font_size",16);line.add_theme_color_override("font_color",UiKit.INK)
+		for side in ["left","right"]:margin.add_theme_constant_override("margin_"+side,14)
+		for side in ["top","bottom"]:margin.add_theme_constant_override("margin_"+side,10)
+		var column=VBoxContainer.new();margin.add_child(column);column.add_theme_constant_override("separation",6)
+		var head=HBoxContainer.new();column.add_child(head)
+		var heading=Label.new();head.add_child(heading);heading.text=str(text.get("title",""));heading.add_theme_font_size_override("font_size",18);heading.add_theme_color_override("font_color",UiKit.INK);heading.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+		var count=Label.new();head.add_child(count);count.text=str(items.size());count.add_theme_font_size_override("font_size",13);count.add_theme_color_override("font_color",UiKit.ORANGE)
+		for item in items:
+			var line=Label.new();column.add_child(line);line.text="·  "+str(item);line.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;line.add_theme_font_size_override("font_size",14);line.add_theme_color_override("font_color",UiKit.INK)
 	UiKit.reveal_list(box)
 func can_quit()->bool:
 	return not OS.has_feature("mobile") and not OS.has_feature("web")

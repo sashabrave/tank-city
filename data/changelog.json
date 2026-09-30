@@ -134,7 +134,8 @@
 					"Площадку снаружи сначала нужно купить (150 сплава, в «Строительстве» или в «Штабе» → «Постройки»). Пока её нет, ворота закрыты. После покупки на ней можно построить «Стоянку» и «Полигон».",
 					"В хабе появился шкаф с формой: «Лес» есть сразу, «Пустыня», «Зима», «Город» и «Ночь» иногда выпадают у командиров, «Парадная» — за победу над боссом, «Тигровая» — джекпот в автомате торговца. Скины оружия — позже.",
 					"Новая редкая карточка «Сейф»: ячейка рюкзака становится сейфовой, чертёж в ней не пропадает при гибели. Берётся до трёх раз.",
-					"Фильтры задач — горизонтальные табы на всю ширину, «Выполненные» теперь «Готово»."
+					"Фильтры задач — горизонтальные табы на всю ширину, «Выполненные» теперь «Готово».",
+					"Список изменений разбит по версиям: табы сверху, под ними сводка и компактные разделы со счётчиком."
 				]
 			},
 			"en": {
@@ -150,7 +151,8 @@
 					"The outside yard has to be bought first (150 alloy, in Construction or HQ → Buildings). Until then the gate is shut. Once bought, the Parking and the Range can be built on it.",
 					"The hub has a wardrobe with uniforms: Woodland from the start; Desert, Winter, Urban and Night sometimes drop from commanders; Parade for defeating the boss; Tiger is a jackpot at the merchant's slot machine. Weapon skins come later.",
 					"New rare card Safe: a backpack slot becomes safe, its blueprint is not lost on death. Can be taken up to three times.",
-					"Task filters are full-width horizontal tabs; \"Completed\" is now \"Done\"."
+					"Task filters are full-width horizontal tabs; \"Completed\" is now \"Done\".",
+					"The changelog is split by version: tabs on top, a summary line and compact sections with item counts."
 				]
 			}
 		},
