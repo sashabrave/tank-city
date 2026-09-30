@@ -13,7 +13,10 @@ func fit_panel():
 	content.size.y=content.get_combined_minimum_size().y
 	position=hud.right_info.position+Vector2(16,roster.position.y+roster.content_height()+10)
 	size=Vector2(width,content.size.y)
-	hud.right_info.size.y=position.y-hud.right_info.position.y+size.y+16
+	# Hidden (a choice screen is open): autowrapped labels measure at zero width and grow tall,
+	# so the panel keeps only the roster height.
+	var tracked=size.y if visible else -10.0
+	hud.right_info.size.y=position.y-hud.right_info.position.y+tracked+16
 	hud.pause_button.position.y=hud.right_info.position.y+hud.right_info.size.y+16
 func _process(delta):
 	visible=hud.arena.phase in ["combat","countdown"] and not is_instance_valid(hud.modal)
