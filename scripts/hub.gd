@@ -47,8 +47,12 @@ var hub_skills:Control
 var training_barriers:Array=[]
 ## Outdoor yard to the right of the hangar, through the gap between the racks (row y=0): the parking spot
 ## and a fenced range with the dummy. Vehicles can drive out there too; the camera slides to follow.
-const YARD_PARK=Vector3(11,0,1)
-const YARD_DUMMY=Vector3(12,0,-1)
+const YARD_PARK=Vector3(11,0,-2)
+const YARD_DUMMY=Vector3(16,0,-2)
+## Test track oval in the south of the yard (centre, radii) and the guard booth cell.
+const TRACK_CENTER=Vector3(13.8,0,1.8)
+const TRACK_RADII=Vector2(3.0,1.25)
+const BOOTH_CELL=Vector2i(10,3)
 var camera_base:=Vector3.INF
 var parking_sign:Node3D
 var command_meshes:Array=[]
@@ -356,27 +360,54 @@ func _physics_process(delta):
 ## target board behind the dummy, a lamp post, and the parking sign that shows a tank icon while empty.
 func build_yard():
 	var yard=Node3D.new();yard.name="Yard";add_child(yard)
-	# A concrete apron flush with the hangar floor, standing on the outside ground.
-	Visuals.box(yard,Vector3(11.3,-.42,0),Vector3(5.6,.84,5.6),Color("8d9186"))  # top at y=0, flush with the hangar floor
+	# A concrete apron flush with the hangar floor (top at y=0), standing on the outside ground.
+	Visuals.box(yard,Vector3(13.6,-.42,0),Vector3(8.4,.84,7.4),Color("8d9186"))
 	passage(yard)
+	range_pen(yard)
+	test_track(yard)
 	yard_dressing(yard)
-	var post=Color("5b5f57");var rail=Color("9aa093")
-	for x in [10.5,11.5,12.5,13.5]:
-		Visuals.box(yard,Vector3(x,.45,-2.45),Vector3(.1,.9,.1),post)
-	for z in [-2.45,-1.45,-.45]:Visuals.box(yard,Vector3(13.55,.45,z),Vector3(.1,.9,.1),post)
-	for y in [.35,.75]:
-		Visuals.box(yard,Vector3(12,y,-2.45),Vector3(3.1,.05,.05),rail)
-		Visuals.box(yard,Vector3(13.55,y,-1.45),Vector3(.05,.05,2.0),rail)
-	sandbag_row(yard,Vector3(12,0,-1.95),5)
-	var board=Visuals.box(yard,Vector3(13.1,.9,-1.95),Vector3(.7,.7,.06),Color("e8e2d0"))
-	for r in [.26,.16,.07]:
-		var ring=MeshInstance3D.new();var disc=CylinderMesh.new();disc.top_radius=r;disc.bottom_radius=r;disc.height=.02;ring.mesh=disc;ring.rotation.x=PI*.5
-		ring.position=Vector3(13.1,.9,-1.91+(.3-r)*.02);ring.material_override=Visuals.material(Color("cf613f") if r!=.16 else Color("e8e2d0"));yard.add_child(ring)
-	preload("res://scripts/base_surroundings.gd").lamp(yard,Vector3(13.8,0,-.6))
 	parking_sign=Node3D.new();parking_sign.name="ParkingSign";yard.add_child(parking_sign);parking_sign.position=YARD_PARK+Vector3(.75,0,-.7)
+	var post=Color("5b5f57")
 	Visuals.box(parking_sign,Vector3(0,.55,0),Vector3(.07,1.1,.07),post)
 	Visuals.box(parking_sign,Vector3(0,1.15,0),Vector3(.6,.45,.05),Color("2f3b33"))
 	var icon=Sprite3D.new();icon.texture=UiKit.icon_texture("vehicle");icon.pixel_size=.4/maxf(1.0,float(icon.texture.get_width()));icon.position=Vector3(0,1.15,.035);parking_sign.add_child(icon)
+## Fenced range in the north-east corner, open on the west side so vehicles can drive in.
+func range_pen(yard:Node3D):
+	var post=Color("5b5f57");var rail=Color("9aa093")
+	for x in [14.5,15.5,16.5,17.4]:Visuals.box(yard,Vector3(x,.45,-3.35),Vector3(.1,.9,.1),post)
+	for z in [-2.35,-1.2]:Visuals.box(yard,Vector3(17.4,.45,z),Vector3(.1,.9,.1),post)
+	for y in [.35,.75]:
+		Visuals.box(yard,Vector3(15.95,y,-3.35),Vector3(2.95,.05,.05),rail)
+		Visuals.box(yard,Vector3(17.4,y,-2.28),Vector3(.05,.05,2.15),rail)
+	sandbag_row(yard,Vector3(16,0,-2.85),5)
+	var board=Visuals.box(yard,Vector3(17.0,.9,-2.9),Vector3(.7,.7,.06),Color("e8e2d0"))
+	for r in [.26,.16,.07]:
+		var ring=MeshInstance3D.new();var disc=CylinderMesh.new();disc.top_radius=r;disc.bottom_radius=r;disc.height=.02;ring.mesh=disc;ring.rotation.x=PI*.5
+		ring.position=Vector3(17.0,.9,-2.86+(.3-r)*.02);ring.material_override=Visuals.material(Color("cf613f") if r!=.16 else Color("e8e2d0"));yard.add_child(ring)
+	preload("res://scripts/base_surroundings.gd").lamp(yard,Vector3(17.6,0,-.6))
+## Small oval test track: asphalt ring with red-white kerbs, a chequered start line, cones, a ramp and
+## tyre stacks on the infield. Decoration only; soldier and vehicles can drive over it.
+func test_track(yard:Node3D):
+	var segments=28;var asphalt=Color("575a55")
+	for i in range(segments):
+		var a=TAU*i/segments;var b=TAU*(i+1)/segments
+		var pa=TRACK_CENTER+Vector3(cos(a)*TRACK_RADII.x,0,sin(a)*TRACK_RADII.y);var pb=TRACK_CENTER+Vector3(cos(b)*TRACK_RADII.x,0,sin(b)*TRACK_RADII.y)
+		var mid=(pa+pb)*.5;var length=pa.distance_to(pb)+.04
+		var piece=Visuals.box(yard,mid+Vector3(0,.012,0),Vector3(length,.024,.5),asphalt);piece.rotation.y=-atan2(pb.z-pa.z,pb.x-pa.x)
+		for side in [-1,1]:
+			var outward=Vector3(cos((a+b)*.5)*TRACK_RADII.y,0,sin((a+b)*.5)*TRACK_RADII.x).normalized()
+			var kerb=Visuals.box(yard,mid+outward*side*.27+Vector3(0,.03,0),Vector3(length*.9,.03,.06),Color("cf613f") if i%2==0 else Color("e8e2d0"));kerb.rotation.y=piece.rotation.y
+	for k in range(6):
+		var tile=Visuals.box(yard,TRACK_CENTER+Vector3(-TRACK_RADII.x,.03,-.2+k*.08),Vector3(.12,.012,.08),Color("f2f1df") if k%2==0 else Color("222522"))
+	for c in [Vector3(13.0,0,.62),Vector3(14.6,0,.6),Vector3(16.6,0,1.6),Vector3(11.1,0,2.2)]:
+		var cone=MeshInstance3D.new();var shape=CylinderMesh.new();shape.top_radius=.02;shape.bottom_radius=.1;shape.height=.26;cone.mesh=shape
+		cone.position=c+Vector3(0,.14,0);cone.material_override=Visuals.material(Color("ff8a3d"));yard.add_child(cone)
+	var ramp=Visuals.box(yard,TRACK_CENTER+Vector3(.2,.08,TRACK_RADII.y),Vector3(.8,.08,.46),Color("b8a47c"));ramp.rotation.x=.18
+	for p in [TRACK_CENTER+Vector3(-.8,0,0),TRACK_CENTER+Vector3(.9,0,.1)]:
+		for i in range(2):
+			var tyre=MeshInstance3D.new();var torus=TorusMesh.new();torus.inner_radius=.12;torus.outer_radius=.26;tyre.mesh=torus
+			tyre.position=p+Vector3(0,.07+i*.13,0);tyre.material_override=Visuals.material(Color("2a2c2a") if i==0 else Color("cf613f"));yard.add_child(tyre)
+	Visuals.box(yard,TRACK_CENTER+Vector3(0,.014,0),Vector3(3.6,.012,1.2),Color("7d8a6a"))
 ## Covered passage from the hangar to the yard along row 0: grating floor with hazard edges, panel walls,
 ## roof beams with amber lamps and a raised roll-up gate on the hangar side.
 func passage(yard:Node3D):
@@ -396,24 +427,21 @@ func passage(yard:Node3D):
 	var drum=MeshInstance3D.new();var cyl=CylinderMesh.new();cyl.top_radius=.16;cyl.bottom_radius=.16;cyl.height=1.9;drum.mesh=cyl;drum.rotation.x=PI*.5
 	drum.position=Vector3(8.2,2.0,0);drum.material_override=Visuals.material(Color("8a8f86"));yard.add_child(drum)
 	var beacon=Visuals.box(yard,Vector3(8.2,2.4,.75),Vector3(.14,.14,.14),Color("ffb52c"));beacon.material_override=Visuals.material(Color("ffb52c"),true)
-## Outside the apron: concrete barriers along the edges, parking lines, a guard booth, a flag pole, tyres
-## and a container on the ground behind the range.
+## Around the apron: concrete barriers along the south and east edges, parking lines, a guard booth and a
+## flag at the entrance, a container on the ground behind the range.
 func yard_dressing(yard:Node3D):
 	var block=Color("a2a596")
-	for x in [9.4,10.6,11.8,13.0]:Visuals.box(yard,Vector3(x,.25,2.6),Vector3(1.0,.5,.35),block)
-	for z in [.2,1.4]:Visuals.box(yard,Vector3(13.95,.25,z),Vector3(.35,.5,1.0),block)
+	for x in [11.0,12.3,13.6,14.9,16.2]:Visuals.box(yard,Vector3(x,.25,3.55),Vector3(1.1,.5,.35),block)
+	for z in [.2,1.5,2.8]:Visuals.box(yard,Vector3(17.65,.25,z),Vector3(.35,.5,1.1),block)
 	for dx in [-.55,.55]:Visuals.box(yard,YARD_PARK+Vector3(dx,.012,0),Vector3(.06,.012,1.5),Color("e8e2d0"))
 	Visuals.box(yard,YARD_PARK+Vector3(0,.012,.72),Vector3(1.16,.012,.06),Color("e8e2d0"))
-	var booth=Node3D.new();yard.add_child(booth);booth.position=Vector3(13.2,0,1.9)
+	var booth=Node3D.new();yard.add_child(booth);booth.position=Vector3(BOOTH_CELL.x,0,BOOTH_CELL.y)
 	Visuals.box(booth,Vector3(0,.7,0),Vector3(.9,1.4,.8),Color("59603f"))
 	Visuals.box(booth,Vector3(0,1.46,0),Vector3(1.05,.1,.95),Color("454a33"))
-	var window=Visuals.box(booth,Vector3(-.46,.95,0),Vector3(.02,.35,.5),Color("9fd4ff"));window.material_override=Visuals.material(Color("9fd4ff"),true)
-	var flag=Node3D.new();yard.add_child(flag);flag.position=Vector3(10.2,0,2.2);flag.scale=Vector3.ONE*.55;ExitFlag.build(flag)
-	for i in range(3):
-		var tyre=MeshInstance3D.new();var torus=TorusMesh.new();torus.inner_radius=.12;torus.outer_radius=.26;tyre.mesh=torus
-		tyre.position=Vector3(12.6,.07+i*.13,2.1);tyre.material_override=Visuals.material(Color("2a2c2a"));yard.add_child(tyre)
-	var container=Visuals.box(self,Vector3(15.6,-.72+.65,-1.2),Vector3(1.3,1.3,2.8),Color("7a4a33"))
-	for i in range(6):Visuals.box(self,Vector3(14.93,-.72+.65,-2.4+i*.48),Vector3(.02,1.2,.08),Color("5f3a28"))
+	var window=Visuals.box(booth,Vector3(.46,.95,0),Vector3(.02,.35,.5),Color("9fd4ff"));window.material_override=Visuals.material(Color("9fd4ff"),true)
+	var flag=Node3D.new();yard.add_child(flag);flag.position=Vector3(10.2,0,-3.1);flag.scale=Vector3.ONE*.55;ExitFlag.build(flag)
+	var container=Visuals.box(self,Vector3(19.4,-.72+.65,-1.6),Vector3(1.3,1.3,2.8),Color("7a4a33"))
+	for i in range(6):Visuals.box(self,Vector3(18.73,-.72+.65,-2.8+i*.48),Vector3(.02,1.2,.08),Color("5f3a28"))
 func sandbag_row(parent:Node3D,center:Vector3,count:int):
 	for i in range(count):Visuals.box(parent,center+Vector3((i-(count-1)*.5)*.46,.14+(i%2)*.02,0),Vector3(.44,.26,.3),Color("b8a47c"))
 ## The camera slides right while the soldier or the parked vehicle is out in the yard.
@@ -422,16 +450,16 @@ func follow_yard(delta:float):
 	if not is_instance_valid(camera) or not is_instance_valid(avatar):return
 	if camera_base==Vector3.INF:camera_base=camera.position
 	var who=training_tank if mounted else avatar
-	var shift=clampf((who.position.x-6.0)*1.1,0.0,6.0)
+	var shift=clampf((who.position.x-6.0)*1.1,0.0,10.0)
 	camera.position=camera.position.lerp(camera_base+Vector3(shift,0,0),minf(1.0,delta*4.0))
 	if is_instance_valid(parking_sign):parking_sign.visible="garage" in Game.built_workshops and (Game.garage.starting_vehicle()=="" or (not training_tank.visible and not mounted))
 
 func hub_free(p: Vector2i) -> bool:
 	if p in training_barriers or p in [Vector2i(-2,3),Vector2i(3,3),Vector2i(6,3)]:return false
 	if p.x>7:
-		# Yard: the rack gap (x 8-9 only on row 0), then open concrete x 10-13, y -2..2 except the dummy.
+		# Yard: the rack gap (x 8-9 only on row 0), then open concrete x 10-17, y -3..3 except the dummy and booth.
 		if p.x<=9:return p.y==0
-		return p.x<=13 and p.y>=-2 and p.y<=2 and p!=Vector2i(roundi(YARD_DUMMY.x),roundi(YARD_DUMMY.z))
+		return p.x<=17 and p.y>=-3 and p.y<=3 and p!=Vector2i(roundi(YARD_DUMMY.x),roundi(YARD_DUMMY.z)) and p!=BOOTH_CELL
 	if p.x< -4 or p.y< -2 or p.y>4:return false
 	# Command centre (left edge), crates by the back wall, the range pad and the arsenal spot. The retired
 	# workbench cells (character at 0,-1 and bonuses at -3,-1) are walkable floor now.
