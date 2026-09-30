@@ -6,13 +6,15 @@
 			"ru": {
 				"title": "Английский без пропусков",
 				"items": [
-					"Все новые тексты — карточки, характеристики, классы, станции, магазин чертежей — переведены на английский. Появилась автоматическая проверка, которая не даст выпустить непереведённый текст."
+					"Все новые тексты — карточки, характеристики, классы, станции, магазин чертежей — переведены на английский. Появилась автоматическая проверка, которая не даст выпустить непереведённый текст.",
+					"Планшет: единый ритм — одинаковые заголовки страниц, отступ 16 под заголовком, секции мельче заголовка. «Боец» показывает роль класса вместо устаревшего общего уровня."
 				]
 			},
 			"en": {
 				"title": "English without gaps",
 				"items": [
-					"All new texts — cards, stats, classes, stations, the blueprint shop — are translated into English. An automatic check now stops untranslated text from shipping."
+					"All new texts — cards, stats, classes, stations, the blueprint shop — are translated into English. An automatic check now stops untranslated text from shipping.",
+					"Tablet: one rhythm — the same page titles, 16 px below the title, sections smaller than titles. Soldier shows the class role instead of the outdated overall level."
 				]
 			}
 		},

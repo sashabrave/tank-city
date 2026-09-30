@@ -5,8 +5,8 @@ var arena
 var content
 func _init(owner):view=owner;arena=owner.arena;content=owner.content
 func page(title:String,height:float=720)->Control:
-	UiKit.label(content,title,Vector2(22,18),Vector2(730,40),UiKit.PAGE_TITLE_SIZE)
-	var box=view.scroller(Vector2(22,72),Vector2(731,489))
+	UiKit.label(content,title,Vector2(UiKit.PAGE_PADDING,20),Vector2(727,28),UiKit.PAGE_TITLE_SIZE)
+	var box=view.scroller(Vector2(UiKit.PAGE_PADDING,UiKit.PAGE_CONTENT_TOP),Vector2(727,505))
 	var body=Control.new();box.add_child(body);body.custom_minimum_size=Vector2(705,height);return body
 func details(title:String,body:String,action:Callable=Callable()):
 	var overlay=Control.new();view.add_child(overlay);overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -44,7 +44,7 @@ func inventory():
 	UiKit.label(body,"Штаб",Vector2(540,326),Vector2(140,28),17)
 	var hq=Game.hq_loadout();var module=hq[0] if not hq.is_empty() else ""
 	cell(body,Vector2(540,362),module,HQCatalog.DATA.get(module,{}).get("name","Поддержка штаба"),HQCatalog.DATA.get(module,{}).get("description","Выбери модуль в «Штабе» → Технологии."),false,Vector2(76,76))
-	UiKit.label(body,"Трофеи · открыто %d из 6 ячеек" % Game.backpack_slots,Vector2(0,462),Vector2(690,30),20)
+	UiKit.label(body,"Трофеи · открыто %d из 6 ячеек" % Game.backpack_slots,Vector2(0,462),Vector2(690,30),UiKit.SECTION_SIZE)
 	var recipes=arena.pending_recipes if is_instance_valid(arena) else []
 	for i in range(6):
 		var locked=i>=Game.backpack_slots;var recipe=recipes[i] if i<recipes.size() else {}
@@ -61,10 +61,10 @@ func inventory():
 		var take=UiKit.button(body,"Подобрать: "+Game.recipe_name(arena.recipe_offer.recipe),Vector2(0,778),Vector2(680,45),func():arena.take_offered_recipe();view.closed.emit());take.disabled=recipes.size()>=Game.backpack_slots;body.custom_minimum_size.y=835
 	STATS.follow_grid(body,bars)
 func fighter():
-	var body=page("Боец / текущий билд",850)
+	var body=page("Боец",850)
 	var portrait=TextureRect.new();portrait.name="ClassPortrait";body.add_child(portrait);portrait.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;portrait.texture=preload("res://scripts/ui/class_gallery.gd").texture(Game.selected_class);portrait.position=Vector2(0,0);portrait.size=Vector2(110,116);portrait.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;portrait.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	UiKit.label(body,Game.CLASSES[Game.selected_class].name,Vector2(125,0),Vector2(550,35),25)
-	UiKit.label(body,"Общий уровень %d\n%s" % [Game.character_level(),Game.CLASSES[Game.selected_class].desc],Vector2(125,42),Vector2(550,70),17).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	UiKit.label(body,"%s\n%s" % [ClassCatalog.info(Game.selected_class).role,Game.CLASSES[Game.selected_class].desc],Vector2(125,42),Vector2(550,70),17).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	var rows=STATS.fighter(arena if is_instance_valid(arena) else null)
 	UiKit.label(body,"База включает хаб · цветом — изменения вылазки и активные эффекты",Vector2(0,128),Vector2(690,28),13,UiKit.MUTED)
 	var bars=STATS.add_bars(body,Vector2(0,168),680,rows,64,true)
@@ -72,7 +72,7 @@ func fighter():
 	for line in STATS.status(arena if is_instance_valid(arena) else null):
 		UiKit.label(body,line,Vector2(0,upgrades_y),Vector2(690,44),15).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 		upgrades_y+=48
-	UiKit.label(body,"Усиления вылазки",Vector2(0,upgrades_y),Vector2(690,30),20)
+	UiKit.label(body,"Усиления вылазки",Vector2(0,upgrades_y),Vector2(690,30),UiKit.SECTION_SIZE)
 	var entries=[]
 	if is_instance_valid(arena):
 		if arena.run.damage_bonus!=0:entries.append(["Урон +",UiKit.number(arena.run.damage_bonus)])
@@ -189,14 +189,14 @@ func radio():
 			button.pressed.connect(func():c.rate(id,value);view.refresh())
 	if rows.is_empty():UiKit.label(box,"Здесь пока нет композиций",Vector2.ZERO,Vector2(450,40),15,UiKit.MUTED)
 func settings():
-	UiKit.label(content,"Настройки",Vector2(22,18),Vector2(730,40),UiKit.PAGE_TITLE_SIZE)
+	UiKit.label(content,"Настройки",Vector2(UiKit.PAGE_PADDING,20),Vector2(727,28),UiKit.PAGE_TITLE_SIZE)
 	var tabs=["Видео","Звук","Управление","Интерфейс"]
 	for i in range(tabs.size()):
 		var tab=tabs[i]
-		var button=UiKit.button(content,tab,Vector2(22+i*184,68),Vector2(175,40),func():view.settings_tab=tab;view.waiting_key="";view.refresh())
+		var button=UiKit.button(content,tab,Vector2(UiKit.PAGE_PADDING+i*184,UiKit.PAGE_CONTENT_TOP),Vector2(175,40),func():view.settings_tab=tab;view.waiting_key="";view.refresh())
 		button.add_theme_font_size_override("font_size",16)
 		if tab==view.settings_tab:button.add_theme_stylebox_override("normal",UiKit.style(Color("584a2c"),6))
-	var box=view.scroller(Vector2(22,108+UiKit.TAB_CONTENT_GAP),Vector2(731,352))
+	var box=view.scroller(Vector2(UiKit.PAGE_PADDING,UiKit.PAGE_CONTENT_TOP+40+UiKit.TAB_CONTENT_GAP),Vector2(727,366))
 	var body=Control.new();box.add_child(body);body.custom_minimum_size=Vector2(705,350)
 	var y=0
 	if view.settings_tab=="Видео":

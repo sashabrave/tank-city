@@ -168,7 +168,7 @@ func list_button(box:VBoxContainer,text:String,callback:Callable,height=65):
 func quest_page():
 	var p=Game.progression
 	if manage:p.prepare_telegrams()
-	UiKit.label(content,"Задачи",Vector2(20,18),Vector2(700,35),24)
+	UiKit.label(content,"Задачи",Vector2(UiKit.PAGE_PADDING,20),Vector2(700,28),UiKit.PAGE_TITLE_SIZE)
 	var filters=[["all","Все"],["general","Генштаб"],["institute","Институт"],["operations","Оперштаб"],["completed","Выполненные"]]
 	for i in range(filters.size()):
 		var key=filters[i][0]
@@ -259,7 +259,7 @@ func telegram_offer_card(box:VBoxContainer):
 func orders_page():
 	quest_filter="operations";quest_page()
 func messages_page():
-	UiKit.label(content,"Сообщения",Vector2(22,18),Vector2(720,40),UiKit.PAGE_TITLE_SIZE)
+	UiKit.label(content,"Лента",Vector2(UiKit.PAGE_PADDING,20),Vector2(720,28),UiKit.PAGE_TITLE_SIZE)
 	for i in range(2):
 		var key="important" if i==0 else "technical"
 		var button=UiKit.button(content,"Важные" if i==0 else "Технические",Vector2(22+i*190,68),Vector2(180,38),func():message_tab=key;refresh())
@@ -277,7 +277,7 @@ func base_page():preload("res://scripts/ui/base_dashboard.gd").render(self)
 func inventory_page():preload("res://scripts/ui/tablet_pages.gd").new(self).inventory()
 
 func about_page():
-	UiKit.label(content,"Об игре",Vector2(22,20),Vector2(720,40),UiKit.PAGE_TITLE_SIZE)
+	UiKit.label(content,"Об игре",Vector2(UiKit.PAGE_PADDING,20),Vector2(720,28),UiKit.PAGE_TITLE_SIZE)
 	for i in range(2):
 		var key=["info","changelog"][i]
 		var button=UiKit.button(content,["Об игре","Changelog"][i],Vector2(22+i*190,68),Vector2(180,38),func():about_tab=key;refresh())

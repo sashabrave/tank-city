@@ -5,8 +5,13 @@ const MUTED = Color("a6aa9f")
 ## Interface accent; InterfaceTheme keeps it in sync with the ui_accent setting.
 static var ORANGE = Color("ff981f")
 const CREAM = Color("303833")
-const PAGE_TITLE_SIZE=16
-const TAB_CONTENT_GAP=28.0
+## Tablet rhythm (8 px grid): page title 20 at (24,20); 16 below it the content starts; sections 16,
+## body 15, captions 13. Outer padding of the content panel is 24.
+const PAGE_TITLE_SIZE=20
+const SECTION_SIZE=16
+const PAGE_PADDING=24.0
+const PAGE_CONTENT_TOP=64.0
+const TAB_CONTENT_GAP=16.0
 
 static func style(color: Color, radius=16, border=Color.TRANSPARENT) -> StyleBoxFlat:
 	var s=StyleBoxFlat.new()
