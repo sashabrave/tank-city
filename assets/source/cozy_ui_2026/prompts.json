@@ -1,0 +1,81 @@
+{
+  "tool": "built-in image_gen",
+  "date": "2026-09-30",
+  "reference": "Actual project GLB screenshots and user-supplied simple military model board. Earlier detailed furry variants discarded.",
+  "prompts": [
+    {
+      "name": "portraitFinal",
+      "prompt": "Create game portrait atlas based STRICTLY on provided actual game model screenshot (image1) and rendering style board (image2). Same extremely SIMPLE low polygon toy soldier, big cream helmet, amber opaque goggles HIDING EYES, tiny geometric cat muzzle and triangular ears, olive block vest with only FOUR pouches, mitten hands, no fur detail, no visible eyes, NO ANIME, NO illustrated fur, NO texture noise, NO extra tactical detail. Improve only soft studio lighting and clean edges. 3 columns x 2 rows EXACT equal square panels landscape 1536x1024. Waist-up portraits on plain warm gray studio background. Six roles row1: recruit medium build rifle; gunner broad rectangular body machinegun; mechanic slim body wrench short antenna. Row2: heavy extra wide slab armor shield and grenade launcher; sniper narrow triangular hood long rifle; engineer small round body teal small goggles over opaque visor holding box-shaped drone. Keep SAME game-model head and simple orange-white muzzle for all. Gentle restrained palette cream olive charcoal and small orange arm band. All subjects inside cells. No text no borders. These must look like polished screenshots of the supplied model, not redesigned furry characters."
+    },
+    {
+      "name": "miniFinal",
+      "prompt": "Edit reference atlas into full body miniature atlas, keep EXACT same six simple game model CAT soldiers, same simple geometry and matte colors, no added details, no anime no fur. Exact 3 columns x2 rows equal square cells. Each character fully visible head to boots and weapon entirely INSIDE central 76% of its cell with generous transparent margins. Front three-quarter view. Row1 recruit rifle normal proportions; gunner broader and stocky with belt machinegun; mechanic slimmer with wrench antenna. Row2 heavy widest with shield drum launcher; sniper tall narrow triangular hood long rifle; engineer small with box drone. Same cream helmets small triangular ears, dark opaque visor, tiny orange-white geometric cat muzzle as reference. Transparent background absolutely no backdrop no floor no haze no large cast shadow. Keep individual figures separated."
+    },
+    {
+      "name": "weaponsFinal",
+      "prompt": "Production weapon icon atlas, STRICT style of weapons in supplied reference board. Simple low-poly GAME MODEL screenshots, very few large flat faces, matte charcoal metal, muted olive grips, tiny orange marking. No wood, no ivory gun bodies, no wear, no screws, no textures, no fantasy ornament. EXACT 3x3 grid nine isolated items on TRANSPARENT background, each item within central 70% cell, wide EMPTY gaps, no shadow haze, no ground, no labels. Row1 pistol, compact SMG, long assault rifle. Row2 short wide shotgun, bulky belt machinegun, tubular RPG launcher. Row3 simple egg hand grenade with lever, low three-leg gun turret, slim laser rifle with one cyan stripe. Orthographic three-quarter view, softly lit, clean simple toy military aesthetic, identical detail level to reference."
+    },
+    {
+      "name": "weaponCutout",
+      "prompt": "Make a clean PRODUCTION CUTOUT of the nine weapons in reference image. Preserve EXACT simple weapon geometry colors and arrangement. Remove ALL the dark background and ALL smoky gradient halos entirely. Truly transparent empty pixels everywhere outside solid weapons, including between their parts. Brighten weapons modestly for small icon legibility. No ground shadows. Same 3x3 grid but put every isolated weapon inside middle 75% of its own cell. No other changes."
+    },
+    {
+      "name": "supportFinal",
+      "prompt": "Game bonus icon atlas matching supplied minimal military toy 3D reference: simple low-poly primitive shapes with gently bevelled edges, matte flat color, soft clean studio lighting. NO texture noise, NO scratched surfaces, NO fancy tessellation, NO extra details. Transparent background with ZERO haze, ground or shadows outside objects. EXACT 3x3 square grid each object fully inside central 70% cell with wide clear gaps. Row1 folded teal blueprint with simple white tank diagram; THREE plain trapezoid gold ingots; upright olive rectangular deployable shield with narrow amber slot. Row2 simple gold five-point star; plain coral heart with single cream bandage; small squat cream medkit box with teal plus. Row3 wide olive tool box with one large wrench and small wheel; squat olive tank with cream hull band and orange marking like reference; low wall made of three cream beveled blocks. No text, no frames. Match game screenshots not ornate collectible art."
+    },
+    {
+      "name": "abilityFinal",
+      "prompt": "Production game upgrade icon sheet based on provided SIMPLE military low-poly game art. EXACT 3x3 equal cells, transparent background, every item fully within central 70% cell, wide clean transparent gaps. Matte flat-color simple primitive volumes, few broad bevels, soft studio light, NO texture noise, NO ornate edges, NO fantasy medals, no text, no ground or haze. Row1 orange mitten cat paw beside short orange impact wedge (damage); three simple brass bullets and one orange forward arrow (pressure); simple broad teal and olive shield (shield). Row2 small coral heart above two plain cream mitten paws (health); simple olive boot with two orange speed streaks (speed); simple cream plane and one orange bomb (airstrike). Row3 three plain gold metal ingots held by olive strap (alloy); simple olive rectangular two-rotor drone with orange camera (ally drone); triangular olive hood over dark opaque visor with tiny orange cat muzzle (cloak). Restrained olive cream charcoal teal orange palette; no visible animal eyes or fur."
+    },
+    {
+      "name": "utilityFinal",
+      "prompt": "Minimal low-poly military game icons, SAME restrained simple 3D toy primitives as reference. EXACT 3x3 grid nine icons, isolated on completely transparent background, every silhouette confined to central 72% cell, wide empty gaps. Matte flat colors, soft light, few broad polygons, no texture noise, no decorative rims or extra bolts, no text. Row1 two simple soldier helmets with small cat ears side by side (comrade); teal folder containing two cream documents (core); orange simple flame and two brass cartridges (fire rate). Row2 simple pale blue six-armed snowflake (freeze); squat olive gas canister with small mint cloud (gas); flat round olive landmine with orange top button (mine). Row3 orange-white life buoy around simple cream cat helmet (rescue); three olive rectangular equipment pouches side by side (slots); small olive command-bunker building with cream roof orange antenna (HQ health). Cat faces only tiny geometric muzzle under opaque goggles, no eyes no fur no anime. Clean separated solid objects absolutely no hazy backdrop."
+    },
+    {
+      "name": "enemyFinal",
+      "prompt": "Production ENEMY atlas from reference actual DOG game model. Preserve simple helmet, opaque dark goggles, polygon orange dog muzzle with big cream snout and floppy ears. NO visible eyes, NO fur, NO anime, NO detailed armor. Same simple toy model as reference, few low polygons, cream helmet and muted rust olive uniform. Exact 4x4 equal grid square sheet sixteen isolated silhouettes, TRANSPARENT empty background, NO haze or backdrop, no ground, each fully within central 75% cell. Row1 dog pistol soldier, short broad dog shotgun soldier, compact dog SMG soldier, medium dog rifle soldier. Row2 extra wide dog riot shield, dog drum grenade launcher, narrow hood dog long sniper rifle, wide dog RPG launcher. Row3 tiny scout buggy, tall tripod mortar, long six-wheel APC, squat heavy tank. Row4 broad twin cannon boss tank, flat four rotor drone, tiny wheeled bomb robot, dog commander helmet bust with short antenna. Vehicles are simple olive cream toy vehicles with rust-orange marking, broad simple slabs. No labels."
+    },
+    {
+      "name": "workshopFinal",
+      "prompt": "Six workshop illustration atlas, EXACT 3 columns x2 rows equal square cells landscape 1536x1024. Based strictly on supplied simple low-poly military game art. Isometric small toy dioramas, a FEW large matte bevelled cubes, cream olive charcoal small orange accents, soft warm studio light, plain warm gray background for each cell, no text or labels. Row1: character barracks station with one cream cat-eared helmet and vest on squat mannequin beside simple bench; weapons workbench with only three dark simple gun silhouettes on rack; bonus supplies workbench with medkit star shield. Row2: small command bunker with flat cream roof map table and short antenna; wide low vehicle service bay with squat olive tank and one wheel; narrow training lane with simple dog-shaped wooden target and two sandbags. NO tiny clutter, NO fur, no anime, no realistic textures, no scratches. Same simple geometry as reference, each entire station inside its own cell with generous margin."
+    },
+    {
+      "name": "guideFinal",
+      "prompt": "Create four square illustrations as EXACT 2x2 atlas, no borders or labels. Strict visual style of supplied low-poly toy military GAME reference, simple matte flat-color geometry, soft cozy studio-like light, large plain shapes, sparse detail, cream olive charcoal orange. No anime, no visible big eyes, no fur, no realistic texture. Upper left: small same military camp split DIAGONALLY from night on LEFT (blue moon lamp) to day on RIGHT (warm sunlight); upper right: arranged simple bonus objects medkit heart gold star shield and wrench on muted sage floor; lower left: simple game-model cat sniper with cream helmet, dark opaque visor, tiny orange muzzle, olive triangular hood, long dark rifle behind two large cream blocks, wide calm landscape; lower right: isometric winding dirt road with three chunky miniature military outposts, little olive cat-army tank, very simple faceted trees and grassy blocks. Entire panel compositions fit square cells, no cut objects across panel edges. This is lightly polished screenshot-like art, NOT dense concept art."
+    },
+    {
+      "name": "extrasFinal",
+      "prompt": "Nine minimal military game inventory icons, same simple low-poly toy style as supplied reference. Matte charcoal and olive, cream highlights, small orange marking, simple broad primitive shapes no textures. Exact 3x3 grid, truly transparent background no haze, each object central 70% cell well separated. Row1 LONG NARROW sniper rifle with large scope and very long thin barrel; squat olive headquarters bunker with LARGE cream wrench diagonally across it (base repair); dark steel Czech hedgehog tank obstacle THREE crossed I-beams, distinctly open spiky silhouette. Row2 small round brass token with simple embossed paw; angular teal cut gemstone (rare); orange golden angular diamond gemstone (legendary). Row3 rolled teal blueprint showing simple white grid and tank outline; short bulky drum-fed grenade launcher gun; cream first aid case teal plus (medkit). No lettering no numbers, no anime, same restrained plain surfaces as game reference."
+    }
+  ],
+  "revision_2": {
+    "date": "2026-09-30",
+    "provider": "Higgsfield",
+    "requested_model": "nano_banana_pro",
+    "reported_result_model": "nano_banana_2",
+    "project_id": "b6d33678-4471-43a8-bd76-4d910b162d50",
+    "prompt_manifest": "higgsfield-revision.json",
+    "references": [
+      {
+        "path": "reference-soldier-enemy-v2.png",
+        "upload_crop": "dog-game-reference.jpg",
+        "role": "Actual game soldier dog model: brick-red helmet without cat ears, black-tan coat, floppy sideways ears. Captured in isolated windowed Godot scene, enemy paint; infantry palette dark coat and olive armband override only in temporary capture scene. Game code/model not modified."
+      },
+      {
+        "path": "reference-mortar-enemy-v2.png",
+        "upload_crop": "mortar-game-reference.jpg",
+        "role": "Actual new mortar game model: round padded sandbag nest, rotating platform, thick short tube/bipod, red lamp, orange shell noses; enemy paint."
+      },
+      {
+        "path": "cat-atlas-reference.jpg",
+        "role": "Previous cat atlas identity/equipment reference; style revised to smooth painterly forms."
+      },
+      {
+        "path": "workshops-reference.jpg",
+        "role": "Edit target: only star on top-right shield replaced with generated paw."
+      }
+    ],
+    "processing": "White matte removed; sprites trimmed and centered with transparent margins; atlas dimensions/order preserved. Workshop generated paw isolated and composited only on original shield face. First fullbody attempt returned busts and was rejected, successful fullbody sheet index4 installed.",
+    "runtime_status": "Compatible atlases installed.82 new namespaced icons await code-agent hookup; no game code/data edited."
+  }
+}

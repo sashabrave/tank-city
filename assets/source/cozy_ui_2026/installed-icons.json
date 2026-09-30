@@ -1,0 +1,402 @@
+[
+  {
+    "path": "assets/icons/v1/barrier.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "7c7a92b0fe3f753c233870d1dcb2fb371625fac3f30d7531ef97b8aed802c2d9"
+  },
+  {
+    "path": "assets/icons/v1/rifle.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "a7a4e033e36177d4af28952d38e64898b0c5e5266a4bcadd375ff2351f0d78c7"
+  },
+  {
+    "path": "assets/icons/v1/mg.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "1f87d60776b9499e389ed860cd522d7d0e67f03978b48d2fe22109f70664afc2"
+  },
+  {
+    "path": "assets/icons/v1/grenade_launcher.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "6132112eee548004728c93a6e3bde836234ef841339c28878d594c7bcccb23a6"
+  },
+  {
+    "path": "assets/icons/v1/apc.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "50bb3b853f5b1ec0bce52c403ffcd8f36408547e7ffe4933a076719b0b2c835b"
+  },
+  {
+    "path": "assets/icons/v1/token.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "1a9065662c6f2349f122f7fb227d4de28c8f5f394610905fa14ff596f09f3922"
+  },
+  {
+    "path": "assets/icons/v1/blueprint.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "924fc832f8017af440b945e905749950a2169698228b80980c922376da6ee84f"
+  },
+  {
+    "path": "assets/icons/v1/medkit.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "8caa510742ea95a2994dd7635bc920346cc3817a5d3f0d316ade331bfdca3d6a"
+  },
+  {
+    "path": "assets/icons/v1/smg.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "9b6ab72201abc22e56579a556932b7d2327e98b7b84949fba9d65a17c6ab9881"
+  },
+  {
+    "path": "assets/icons/v1/boss.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "6f0e95a838480c00d273919768a3a834ae931c392cd342cc8a032bb690ab8083"
+  },
+  {
+    "path": "assets/icons/v1/grenade.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "f1d122db127c75f48addab1505cfbfd1950e2d108c75a26a0765addd988b9161"
+  },
+  {
+    "path": "assets/icons/v1/flyer.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "811fffdaa95c7632a71d16e843b9f1af103a672868c1954a7f05acfeefb2e8f8"
+  },
+  {
+    "path": "assets/icons/v1/laser.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "cf2e8e737d609e03cb0cdc3f460e1010b6aef4797c09159ec43d4642c97d4b09"
+  },
+  {
+    "path": "assets/icons/v1/buggy.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "e49695150e534848eca31fe57d0d39f38ed3ff5877c0aad97c951df2564c1427"
+  },
+  {
+    "path": "assets/icons/v1/pistol.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "affdcf122d449be1dc21974e5a0dd2a27ddf5611c6dae4155c442cb2ebacda01"
+  },
+  {
+    "path": "assets/icons/v1/heart.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "1f865cf8009332ea16f9ae8b4a8173dedcd1d49232aba4d02935d3433c8948d7"
+  },
+  {
+    "path": "assets/icons/v1/vehicle_repair.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "33d0b8c7124a8f1f9db71e43ccf1f8cf238a64e8f5779315363965c569913dc0"
+  },
+  {
+    "path": "assets/icons/v1/turret.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "4949aeea64246e42fe9bdd9fd0a10f3b984a40bfab527e19fb711ece9684c867"
+  },
+  {
+    "path": "assets/icons/v1/alloy.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "c41da15cb897b57dfe47061a8c7c0e0c5c475bb21bcce1fef8ef6749fabd1d8e"
+  },
+  {
+    "path": "assets/icons/v1/wall.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "e0711cb23a508987018f508f2e28cb266a9fb3c1f8f8e72f1ab91987c5897949"
+  },
+  {
+    "path": "assets/icons/v1/drone.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "e873dd9d428ebbf263c52cdd6c7c8c35c43d3cee85cd8993ff90ec997bf68031"
+  },
+  {
+    "path": "assets/icons/v1/star.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "8a023719243519cdf9d0d6485b4c545b991d90bfd51ffddef2a905ce825a6c1c"
+  },
+  {
+    "path": "assets/icons/v1/sniper.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "549d54d8e2b05b37192186bfaacc5aed4df9bf468960351428429ef97f360f72"
+  },
+  {
+    "path": "assets/icons/v1/mortar.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "00182b2619e1d19439cea945526e3f6a39c8a5ddd66c054ba1a685703aff3cf3"
+  },
+  {
+    "path": "assets/icons/v1/heavy.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "549d54d8e2b05b37192186bfaacc5aed4df9bf468960351428429ef97f360f72"
+  },
+  {
+    "path": "assets/icons/v1/legendary.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "b0d585bad5cb71b3406ef63b3858a605dee280db9ff2b866654b50909240524e"
+  },
+  {
+    "path": "assets/icons/v1/rpg.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "e2c051df93a0140307b110b030020ae7f8276499d6ad41cc2ba9e37cb4db53e0"
+  },
+  {
+    "path": "assets/icons/v1/shotgun.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "57199857b38030f0b98c01fe814d1862dd3886e4f53dff4a578136e420984e44"
+  },
+  {
+    "path": "assets/icons/v1/recipe.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "e489eae9a6b08623cefe7f7ce610a5ee3e25dec0dea9b3b0592a2e4a1d976526"
+  },
+  {
+    "path": "assets/icons/v1/vehicle.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "cb5e24ebdda5dce18435596d7f0e2ce85383f2363652ae610423ad201b035047"
+  },
+  {
+    "path": "assets/icons/v1/rare.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "275816d3692fead378866828c2ea046528253c16324110881c123971a7462f75"
+  },
+  {
+    "path": "assets/icons/v1/repair.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "a27c27698c99af88a33d3c82143f850f81c072bb0bfce905e41844fd604328e6"
+  },
+  {
+    "path": "assets/icons/v1/tank.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "737c20c0ff45182c6b1f709fe9537b46331cbe219eb1dbe52def3882a7abd4de"
+  },
+  {
+    "path": "assets/icons/v09/pressure.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "d7c0aa3e26a96e8a0cb6853c3e759eda9fd196feb2e5812eba58e5b33117b922"
+  },
+  {
+    "path": "assets/icons/v09/shield.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "a82b01c85e0510593fc1ced8da22c4fd756c3778f6c055eeafa2728b5f35c277"
+  },
+  {
+    "path": "assets/icons/v09/health.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "fc45c4fb2ba4cf25ea024fa6f00cf4016544a0edbab907af2782383689563861"
+  },
+  {
+    "path": "assets/icons/v09/fire.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "e1edacea159d7740f019927da81350974e95f2ad9e0169bbae3f3df3a8494b86"
+  },
+  {
+    "path": "assets/icons/v09/comrade.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "17645a3b5cd977dd56d3ac3d6cbcf9bc2af417085eff5463caf67bd07ca98616"
+  },
+  {
+    "path": "assets/icons/v09/freeze.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "fc70cf683cbe8f9820a39523c0929f374b31c7936aeb03e3bb86d07c485d1b6c"
+  },
+  {
+    "path": "assets/icons/v09/mine.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "c7c222778ca9d4fa25664ad42f4ce260a0bcbd3b22714362498d7b1271528aa6"
+  },
+  {
+    "path": "assets/icons/v09/speed.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "a100e7c3e683e565fd33b830cf91f7050a9b30800c2c0e94027456e35cd2b6b2"
+  },
+  {
+    "path": "assets/icons/v09/slots.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "8625e88edc574958aaa122b1a24efe75ab03e875fa2382ddf6bd437a342f9dae"
+  },
+  {
+    "path": "assets/icons/v09/cloak.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "c99fb52f65ca946ef3a46386970a9bbe5da2ab9cc12e0276e451a63904521759"
+  },
+  {
+    "path": "assets/icons/v09/gas.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "aa9fa766d950200b50a8fafeb429da9013e5bcdb2c501345121693db9062da9e"
+  },
+  {
+    "path": "assets/icons/v09/damage.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "b2e2e92e0df3a10d76766a3052d32ebc92a4731fa9f387e979692a39b1a8ed52"
+  },
+  {
+    "path": "assets/icons/v09/alloy.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "e437cd91b1e506800421d4f45eda5fa9da85cce7b64b0790428d7cd00b40a3f3"
+  },
+  {
+    "path": "assets/icons/v09/airstrike.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "116877f5585c18158a1681a4b8587af9ba5bed98f2ee44ac53c020101f9521b1"
+  },
+  {
+    "path": "assets/icons/v09/core.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "28fc87d550e52e1032546ac11c29532d3f2fda4925ee3c30d5fdbd48cd85dc00"
+  },
+  {
+    "path": "assets/icons/v09/rescue.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "87fc32eb8fb230375edc59a00a72c56da7f920bd0069585c551b1d827f1dc252"
+  },
+  {
+    "path": "assets/icons/v09/ally_drone.png",
+    "size": [
+      512,
+      512
+    ],
+    "sha256": "2f4542a8538a0a6836e407c6cafc8f09a490743245db6e681115a3228c55c23e"
+  }
+]

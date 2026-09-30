@@ -1,0 +1,13 @@
+{
+  "tool": "built-in image_gen",
+  "prompts": [
+    {
+      "name": "logoFinal",
+      "prompt": "Edit ONLY the soldier character in this War Cats logo. Keep exact layout, canvas aspect ratio, tank, bricks, colors, typography and the exact words War Cats unchanged. Replace human soldier with the actual simple low-poly orange CAT model from second reference: cream dome helmet, two SMALL triangular pink ears, dark visor with amber lens, tiny geometric cream muzzle with pink nose, no visible eyes, no fur, no anime. Same small raised mitten-paw pose. No added detail. Preserve truly transparent background. Do not move or crop any existing elements."
+    },
+    {
+      "name": "classCorrection",
+      "prompt": "Two separated full-body military CAT game miniatures on transparent background, EXACT two equal square cells side by side, landscape 2:1. Match actual simple low-poly reference characters exactly: large cream helmet, tiny triangular ears, opaque dark goggles, tiny simple geometric orange-white cat muzzle, olive vest with four pouches, mitten paws, no eyes no fur no anime. LEFT: stocky explosives specialist with a SHORT wide DRUM GRENADE LAUNCHER held across chest, THREE large grenade shells attached to vest, compact broad body. RIGHT: much broader tall assault specialist with large RECTANGULAR shield at left side and SHORT DOUBLE BARREL SHOTGUN in right paw, heavy simple slab armor. No machineguns. Both look like simple polished game screenshots, only a few broad bevelled planes, no tiny detail. Full heads boots weapons fully contained central 75% each cell, margins, no background haze, no ground. Same pose direction as reference. Two characters total."
+    }
+  ]
+}
