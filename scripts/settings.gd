@@ -2,7 +2,7 @@ extends Node
 signal changed
 const PATH="user://settings.cfg"
 const DEFAULT_KEYS={"north":KEY_W,"south":KEY_S,"west":KEY_A,"east":KEY_D,"fire":KEY_SPACE,"interact":KEY_E,"hide_trench":KEY_C,"ability":KEY_F,"skill_1":KEY_1,"skill_2":KEY_NONE,"hq_ability":KEY_2,"class_ability":KEY_Q}
-const DEFAULT_VALUES={"fullscreen":false,"vsync":true,"quality":1,"fps":60,"master":1.0,"music":0.8,"effects":0.8,"music_mood":"auto","screen_controls":true,"biome_info":true,"language":"ru","ui_theme":"dark","shaders":true,"world_lighting":"day","light_budget":10,"atmosphere":true,"tilt_shift":true,"shader_style":"pastel","soft_shadows":true,"ambient_occlusion":true,"glow":true,"haze":true,"rim_light":true,"shiny_metal":true,"sun_day":"random","sun_night":"random","weather":"random","ui_motion":true,"show_fps":true,"ui_glass":true,"ui_accent":"apricot","input_scheme":"auto"}
+const DEFAULT_VALUES={"fullscreen":false,"vsync":true,"quality":1,"fps":60,"master":1.0,"music":0.8,"effects":0.8,"music_mood":"auto","screen_controls":true,"biome_info":true,"language":"ru","ui_theme":"dark","shaders":true,"world_lighting":"day","light_budget":10,"atmosphere":true,"tilt_shift":true,"shader_style":"pastel","soft_shadows":true,"ambient_occlusion":true,"glow":true,"haze":true,"rim_light":true,"shiny_metal":true,"sun_day":"random","sun_night":"random","weather":"random","ui_motion":true,"show_fps":true,"ui_glass":true,"ui_accent":"apricot","input_scheme":"auto","render_scale":"auto"}
 const SHADER_STYLES=["pastel","cozy","golden","overcast"]
 const SHADER_OPTIONS=["soft_shadows","ambient_occlusion","glow","haze","rim_light","shiny_metal"]
 var values=DEFAULT_VALUES.duplicate()
@@ -42,12 +42,17 @@ func apply():
 	values.quality=clampi(int(values.quality),0,2)
 	if int(values.fps) not in [0,30,60,120]:values.fps=60
 	if str(values.get("input_scheme","")) not in ["auto","keyboard","gamepad","touch"]:values.input_scheme="auto"
+	if str(values.get("render_scale","")) not in RENDER_SCALES:values.render_scale="auto"
 	if str(values.get("ui_accent","")) not in ["apricot","coral","mint","lemon","sky","lavender"]:values.ui_accent="apricot"
 	if DisplayServer.get_name()!="headless":
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN if values.fullscreen else DisplayServer.WINDOW_MODE_WINDOWED)
 		DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_ENABLED if values.vsync else DisplayServer.VSYNC_DISABLED)
 	Engine.max_fps=int(values.fps)
 	get_viewport().msaa_3d=[Viewport.MSAA_DISABLED,Viewport.MSAA_2X,Viewport.MSAA_4X][values.quality]
+	apply_render_scale()
+	if not get_viewport().size_changed.is_connected(apply_render_scale):get_viewport().size_changed.connect(apply_render_scale)
+	# Ambient occlusion at half resolution: nearly the same soft contact shadows for a third of the cost.
+	RenderingServer.environment_set_ssao_quality(RenderingServer.ENV_SSAO_QUALITY_MEDIUM,true,.5,2,50.0,300.0)
 	for entry in [["Master","master"],["TankCityMusic","music"],["TankCityEffects","effects"]]:
 		var index=AudioServer.get_bus_index(entry[0]);AudioServer.set_bus_volume_db(index,linear_to_db(maxf(.0001,values[entry[1]])));AudioServer.set_bus_mute(index,values[entry[1]]==0)
 	for action in keys:
@@ -66,6 +71,20 @@ func apply():
 	RenderingServer.global_shader_parameter_set("cozy_rim",.45 if cozy and values.rim_light else 0.0)
 	RenderingServer.global_shader_parameter_set("cozy_shiny",cozy and values.shiny_metal)
 	changed.emit()
+## 3D resolution. "auto" keeps about 2.4 megapixels of 3D on big and retina screens (fullscreen 3420×2146
+## would otherwise render 7.3 MP with every post effect); the interface always stays at native sharpness.
+const RENDER_SCALES=["auto","100","75","50"]
+const AUTO_3D_PIXELS=2400000.0
+func render_scale()->float:
+	var mode=str(values.get("render_scale","auto"))
+	if mode!="auto":return float(mode)/100.0
+	var size=Vector2(DisplayServer.window_get_size()) if DisplayServer.get_name()!="headless" else Vector2(1280,720)
+	return clampf(sqrt(AUTO_3D_PIXELS/maxf(1.0,size.x*size.y)),.5,1.0)
+func apply_render_scale():
+	var viewport=get_viewport();var scale=render_scale()
+	viewport.scaling_3d_mode=Viewport.SCALING_3D_MODE_FSR if scale<.99 else Viewport.SCALING_3D_MODE_BILINEAR
+	viewport.scaling_3d_scale=scale if scale<.99 else 1.0
+	viewport.fsr_sharpness=.35
 func save():
 	if not persistence_enabled:return
 	var config=ConfigFile.new()

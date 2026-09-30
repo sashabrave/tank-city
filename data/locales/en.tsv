@@ -2207,3 +2207,5 @@ E — в хаб	E — to the hub
 Понял: сначала вкладываюсь, потом умираю.	Got it: invest first, then die.
 Стоянка готова. Подбитую технику врага тоже можно занять.	The motor pool is ready. You can also take knocked-out enemy vehicles.
 У генерала щит на 60% и 30%. Разбей генератор на фланге.	The general raises a shield at 60% and 30%. Smash the flank generator.
+Разрешение 3D	3D resolution
+Мир рисуется в меньшем разрешении и чётко масштабируется, интерфейс остаётся резким. Авто снижает разрешение на больших и Retina-экранах.	The world renders at a lower resolution and is sharply upscaled; the interface stays crisp. Auto lowers it on large and Retina screens.
