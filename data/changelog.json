@@ -4,6 +4,24 @@
 			"date": "2026-09-30",
 			"version": "0.2.1",
 			"ru": {
+				"title": "Счётчик кадров и номер сборки",
+				"items": [
+					"В углу экрана во всех режимах виден FPS, а в хабе рядом с ним — версия и номер сборки. Так проще понять, какая версия запущена.",
+					"Счётчик можно скрыть: Настройки → Интерфейс → Счётчик кадров."
+				]
+			},
+			"en": {
+				"title": "Frame counter and build number",
+				"items": [
+					"FPS is shown in the screen corner in every mode, and in the hub the version and build number are shown next to it. That makes it easy to tell which version is running.",
+					"The counter can be hidden: Settings → Interface → Frame counter."
+				]
+			}
+		},
+		{
+			"date": "2026-09-30",
+			"version": "0.2.1",
+			"ru": {
 				"title": "Советы бойца",
 				"items": [
 					"При входе в хаб боец больше не просто здоровается, а делится коротким советом о механиках — с иронией и смекалкой. Советов двадцать, подряд один и тот же не повторяется."

@@ -77,6 +77,7 @@ var weapon_bench_pos=Vector3(0,0,3)
 
 func _ready():
 	add_to_group("profile_hub")
+	PerfOverlay.show_build=true;tree_exiting.connect(func():PerfOverlay.show_build=false)
 	add_to_group("notification_context")
 	Visuals.setup_world(self,11.8,Vector3(0,0,0))
 	preload("res://scripts/base_surroundings.gd").hub(self,Color(room_palette().floor).darkened(.12))

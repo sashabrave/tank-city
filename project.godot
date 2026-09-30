@@ -21,7 +21,7 @@ run/main_scene="res://scenes/main.tscn"
 config/use_custom_user_dir=true
 config/custom_user_dir_name="Godot/app_userdata/Рубеж - 13"
 config/features=PackedStringArray("4.7", "Forward Plus")
-config/build="alpha-3"
+config/build="32"
 
 [audio]
 
@@ -37,6 +37,7 @@ CardNavigation="*res://scripts/card_navigation.gd"
 NumberDisplay="*res://scripts/ui/number_display.gd"
 ResourceStrip="*res://scripts/ui/resource_strip.gd"
 ProfileMenu="*res://scripts/ui/profile_menu.gd"
+PerfOverlay="*res://scripts/ui/perf_overlay.gd"
 
 [display]
 

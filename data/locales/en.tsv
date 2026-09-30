@@ -1836,3 +1836,9 @@ F2 — админ	F2 — admin
 Турели в «Штабе» стреляют, пока я думаю. Люблю, когда за меня работают.	The turrets from the HQ station shoot while I think. I like it when others do the work.
 Понял	Got it
 Учту	Noted
+Сборка	Build
+Счётчик кадров	Frame counter
+Скрыт	Hidden
+Показан	Shown
+FPS в углу экрана во всех режимах, в хабе — ещё и номер сборки.	FPS in the screen corner in every mode, plus the build number in the hub.
+Версия %s · Сборка %s\nВ разработке	Version %s · Build %s\nIn development

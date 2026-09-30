@@ -287,7 +287,7 @@ func about_page():
 	UiKit.label(content,"TANK CITY",Vector2(22,130),Vector2(720,54),36)
 	var description=UiKit.label(content,"Тактический экшен с развитием между вылазками. Защищай штаб, захватывай технику и пробивайся к командиру.",Vector2(22,195),Vector2(690,90),20)
 	description.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-	UiKit.label(content,"Версия %s · Билд %s\nВ разработке" % [ProjectSettings.get_setting("application/config/version","0.1"),ProjectSettings.get_setting("application/config/build","1")],Vector2(22,310),Vector2(700,65),18,UiKit.MUTED)
+	UiKit.label(content,"Версия %s · Сборка %s\nВ разработке" % [ProjectSettings.get_setting("application/config/version","0.1"),ProjectSettings.get_setting("application/config/build","1")],Vector2(22,310),Vector2(700,65),18,UiKit.MUTED)
 	UiKit.label(content,"Автор · Alexander Nikolaev\nhello@tankcity.com",Vector2(22,420),Vector2(700,75),21)
 # Changelog entries carry their own ru/en text, so the box is excluded from automatic translation.
 func changelog_page():
