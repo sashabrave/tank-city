@@ -4,6 +4,22 @@
 			"date": "2026-09-30",
 			"version": "0.2.1",
 			"ru": {
+				"title": "Английский без пропусков",
+				"items": [
+					"Все новые тексты — карточки, характеристики, классы, станции, магазин чертежей — переведены на английский. Появилась автоматическая проверка, которая не даст выпустить непереведённый текст."
+				]
+			},
+			"en": {
+				"title": "English without gaps",
+				"items": [
+					"All new texts — cards, stats, classes, stations, the blueprint shop — are translated into English. An automatic check now stops untranslated text from shipping."
+				]
+			}
+		},
+		{
+			"date": "2026-09-30",
+			"version": "0.2.1",
+			"ru": {
 				"title": "Окоп",
 				"items": [
 					"Боец в окопе сидит глубже, а спереди появился бруствер из мешков: видны голова и плечи, в укрытии — только каска.",

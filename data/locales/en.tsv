@@ -2030,3 +2030,69 @@ HP +1 · защита от пуль +10% · дробовик +10% · скоро�
 Уклонение не спасает от взрывов. Проверено лично. Много раз.	Dodge doesn't save you from blasts. Tested personally. Many times.
 В песочнице я бессмертен. Скучаю по ней в каждом бою.	In the sandbox I'm immortal. I miss it in every battle.
 Защита бывает от пуль, взрывов и техники. Мне нужна от всего сразу.	Protection comes against bullets, blasts and vehicles. I need all three at once.
+Q Аптечка-дрон · 1 Реанимация	Q Medkit drone · 1 Revive
+Q Артналёт · 1 Радиоперехват	Q Artillery strike · 1 Radio intercept
+Q Огнемёт · 1 Напалм	Q Flamethrower · 1 Napalm
+Q Сошки · 1 Заградогонь	Q Bipod · 1 Barrage
+Q Пёс-разведчик · 1 Команда «Фас»	Q Scout dog · 1 Attack command
+Q Растяжка · 1 Разминирование	Q Tripwire · 1 Demining
+Q Прыжок через стену · 1 Сигнальный дым	Q Wall jump · 1 Smoke signal
+Q Прицельный выстрел · 1 Ложная позиция	Q Aimed shot · 1 Decoy position
+: отменить	: undo
+Навык 2: выдать	Skill 2: grant
+Навык 2: закрыть	Skill 2: revoke
+Куплено: 	Bought: 
+Сплав и обычные карты	Alloy and common cards
+Редкие карты или чертёж	Rare cards or a blueprint
+Эпические карты, документы или редкий чертёж	Epic cards, documents or a rare blueprint
+Сначала заедь на передышку	Stop at the rest point first
+★ средняя · ★★ сложная · редкие чертежи	★ medium · ★★ hard · rare blueprints
+WASD — ехать · E — войти · колесо, перетаскивание — обзор	WASD to drive · E to enter · wheel, drag to look around
+Ангар · механик	Hangar · mechanic
+Без боя · одно усиление на выбор	No battle · one upgrade of your choice
+Этап %d · %s	Stage %d · %s
+ · засада	 · ambush
+ · смотри	 · watch
+ · следи	 · follow
+ · выбор [E]	 · pick [E]
+ · возрождение	 · respawn
+Оружие, бонусы боя и гаджеты: выбирай ствол в бой и развивай найденное.	Weapons, combat bonuses and gadgets: pick a gun for battle and upgrade what you find.
+Технологии поддержки, оборона базы, страховка добычи и постройки.	Support technologies, base defence, loot insurance and buildings.
+Своя техника у старта вылазки и её оборудование.	Your own vehicle at the start of a run and its equipment.
+Мишень в хабе, чтобы опробовать оружие.	A target in the hub to try weapons.
+Больше не строится: улучшения переехали в «Казарму» и «Штаб».	No longer built: its upgrades moved to the Barracks and the HQ.
+Больше не строится: бонусы переехали в «Арсенал».	No longer built: bonuses moved to the Arsenal.
+Открыта	Unlocked
+ · телеграмма	 · telegram
+В бою · 	In battle · 
+Найди чертёж в вылазке и донеси до хаба.	Find the blueprint in a run and bring it to the hub.
+Найди чертёж бонуса в сундуке.	Find the bonus blueprint in a chest.
+Чертёж гаджета выпадает в вылазках.	Gadget blueprints drop in runs.
+%d / 6 ячеек	%d / 6 slots
+Шанс, что твой снаряд переживёт столкновение	Chance your shot survives a collision
+. Действует во всех классах; бесплатный сброс возвращает всё вложенное.	. Works for every class; a free reset refunds everything.
+Сколько чертежей можно нести из вылазки.	How many blueprints you can carry out of a run.
+Ячейка · %d ◈	Slot · %d ◈
+Дополнительные перебросы карт на каждый забег.	Extra card rerolls for every run.
+Нужен чертёж перебросов.	Needs the reroll blueprint.
+Сердце %.2f · броня %.2f; +0,15 за уровень.	Heart %.2f · armour %.2f; +0.15 per level.
+%d аптечек у механика и на передышках.	%d medkits at the mechanic and rest points.
+Первая способность открыта · Q	First ability unlocked · Q
+Сначала купи: 	Buy first: 
+Машина ждёт у старта каждой вылазки.	The vehicle waits at the start of every run.
+Чертёж машины выпадает в вылазках мира 1.	Vehicle blueprints drop in world 1 runs.
+%s: +%d%% за уровень.	%s: +%d%% per level.
+Чертёж оборудования выпадает в сундуках.	Equipment blueprints drop in chests.
+Сначала купи машину	Buy the vehicle first
+Активная · клавиша 2	Active · key 2
+Автоматическая	Automatic
+Пассивная	Passive
+Чертёж технологии выпадает в сундуках.	Technology blueprints drop in chests.
+%d HP базы · +1 за уровень.	%d base HP · +1 per level.
+%.2f урона турели · +0,05 за уровень.	%.2f turret damage · +0.05 per level.
+Меньше потерь добытого сплава при гибели.	Lose less gathered alloy on death.
+Шанс сохранить чертежи из рюкзака при гибели.	Chance to keep backpack blueprints on death.
+Нужен чертёж страховки.	Needs the insurance blueprint.
+Чертёж постройки выпадает в вылазках.	Building blueprints drop in runs.
+Открывается в «Казарме»: уровень класса 5, затем 2500 сплава.	Unlocks in the Barracks: class level 5, then 2500 alloy.
+Кулдаун	Cooldown

@@ -2,7 +2,7 @@ extends RefCounted
 ## Buildable stations. ATLAS keeps the order of the workshop illustration sheet.
 const IDS=["weapons","headquarters","garage","range"]
 const ATLAS=["character","weapons","bonuses","headquarters","garage","range"]
-const INFO={"weapons":["Арсенал","Оружие, бонусы боя и гаджеты: выбирай ствол в бой и развивай найденное."],"headquarters":["Штаб","Технологии поддержки, оборона базы, страховка добычи и постройки."],"garage":["Стоянка","Своя техника у старта вылазки и её оборудование."],"range":["Полигон","Мишень в хабе, чтобы опробовать оружие."],"character":["Прокачка базы","Больше не строится: улучшения переехали в «Бойца» и «Штаб»."],"bonuses":["Верстак бонусов","Больше не строится: бонусы переехали в «Арсенал»."]}
+const INFO={"weapons":["Арсенал","Оружие, бонусы боя и гаджеты: выбирай ствол в бой и развивай найденное."],"headquarters":["Штаб","Технологии поддержки, оборона базы, страховка добычи и постройки."],"garage":["Стоянка","Своя техника у старта вылазки и её оборудование."],"range":["Полигон","Мишень в хабе, чтобы опробовать оружие."],"character":["Прокачка базы","Больше не строится: улучшения переехали в «Казарму» и «Штаб»."],"bonuses":["Верстак бонусов","Больше не строится: бонусы переехали в «Арсенал»."]}
 static func image(id:String)->Texture2D:
 	if id not in ATLAS or not ResourceLoader.exists("res://assets/ui/workshops/atlas.png"):return UiKit.icon_texture(id)
 	var atlas=AtlasTexture.new();atlas.atlas=load("res://assets/ui/workshops/atlas.png");var size=atlas.atlas.get_size()/Vector2(3,2);var index=ATLAS.find(id);atlas.region=Rect2(Vector2(index%3,index/3)*size,size);return atlas
