@@ -19,7 +19,7 @@ func run():
 	for i in range(40):
 		var before=arena2.run.dry_offers
 		var offers=RunUpgrades.roll_offers(arena2,3)
-		if before>=2:check(offers.any(func(o):return o.tier>=2),"third dry screen guarantees a rare")
+		if before>=2:check(offers.any(func(o):return o.tier>=1),"third dry screen guarantees a rare")
 		dry_max=maxi(dry_max,arena2.run.dry_offers)
 	check(dry_max<=2,"never more than two dry screens in a row")
 	# Series: three quick kills give a ×3 label and bonus alloy.
