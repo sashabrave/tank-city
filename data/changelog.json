@@ -123,9 +123,9 @@
 			}
 		},
 		{
-			"date": "2026-09-29",
+			"date": "2026-09-30",
 			"ru": {
-				"title": "Сохранения и выход из игры",
+				"title": "Альфа 0.2.0: мир 1, испытания, торговец",
 				"items": [
 					"Если выйти из игры во время боя, при возвращении ты окажешься на карте маршрута перед этой комнатой. Сам бой не сохраняется: добыча и события начатой комнаты пропадают, а усиления, полученные до неё, остаются.",
 					"В бесконечном режиме карты нет, поэтому прерванная комната просто начнётся заново.",
@@ -157,7 +157,7 @@
 				]
 			},
 			"en": {
-				"title": "Saving and quitting",
+				"title": "Alpha 0.2.0: world 1, challenges, merchant",
 				"items": [
 					"If you quit during a battle, you will return to the route map in front of that room. The battle itself is not saved: loot and events of the started room are lost, while upgrades earned before it are kept.",
 					"Endless mode has no map, so an interrupted room simply starts over.",
@@ -187,7 +187,8 @@
 					"Performance: removed freezes on the first shots, hits and when new enemies (drones, vehicles) appear — effects and models are prepared while the first room loads.",
 					"Performance: music now loads in the background and no longer stalls the game on track changes; sound effects are preloaded."
 				]
-			}
+			},
+			"version": "0.2.0"
 		}
 	]
 }

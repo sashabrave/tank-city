@@ -145,6 +145,8 @@ func track_finished():
 
 func refresh_library():
 	for filename in DirAccess.get_files_at("res://assets/audio/music"):
+		# Exported packs list imported audio as *.wav.import.
+		filename=filename.trim_suffix(".import")
 		if not filename.ends_with(".wav"):continue
 		var id=filename.trim_suffix(".wav")
 		if "greeting" in id or "victory" in id or "defeat" in id:continue

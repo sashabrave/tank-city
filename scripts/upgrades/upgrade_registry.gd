@@ -8,7 +8,9 @@ static func _load():
 	var files=Array(ResourceLoader.list_directory(DIR))
 	files.sort()
 	for file in files:
-		if not file.ends_with(".tres"):continue
+		# Exported builds list converted resources as *.tres.remap or *.res.
+		file=file.trim_suffix(".remap")
+		if not (file.ends_with(".tres") or file.ends_with(".res")):continue
 		var def=load(DIR.path_join(file))
 		if def is UpgradeDef and def.id!="":_defs[def.id]=def
 		else:push_error("Invalid upgrade definition: "+file)
