@@ -2,6 +2,17 @@ extends Node
 ## UI-only palette. Source colors are retained so repeated switching is reversible.
 const STYLES=["panel","normal","hover","pressed","disabled","focus","read_only","normal_mirrored","hover_mirrored","pressed_mirrored"]
 const COLORS=["font_color","font_hover_color","font_pressed_color","font_focus_color","font_disabled_color","default_color","font_selected_color","font_placeholder_color","icon_normal_color","icon_hover_color","icon_pressed_color","icon_focus_color","icon_hover_pressed_color","clear_button_color","clear_button_color_pressed"]
+## Pastel-juicy accent tones (setting ui_accent). Orange-family colours in any control are remapped to the
+## chosen tone, keeping their relative brightness, so hover/pressed shades follow automatically.
+const SOURCE_ACCENT=Color("ff981f")
+const ACCENTS={"apricot":Color("ff981f"),"coral":Color("ff7b6b"),"mint":Color("5fdca6"),"lemon":Color("f2d44b"),"sky":Color("6cc3ff"),"lavender":Color("b89dff")}
+static func accent()->Color:return ACCENTS.get(str(Settings.values.get("ui_accent","apricot")),SOURCE_ACCENT)
+static func is_accent_family(c:Color)->bool:return c.a>.05 and c.s>.45 and c.v>.55 and c.h>.055 and c.h<.13
+static func accent_map(c:Color)->Color:
+	if not is_accent_family(c):return c
+	var target=accent()
+	if target==SOURCE_ACCENT:return c
+	return Color.from_hsv(target.h,clampf(target.s*c.s/SOURCE_ACCENT.s,0.0,1.0),clampf(target.v*c.v/SOURCE_ACCENT.v,0.0,1.0),c.a)
 func _ready():
 	process_mode=Node.PROCESS_MODE_ALWAYS
 	Settings.changed.connect(refresh)
@@ -9,7 +20,7 @@ func _ready():
 	call_deferred("refresh")
 func on_added(node:Node):
 	if node is Control:apply_node.call_deferred(node)
-func refresh():walk(get_tree().root)
+func refresh():UiKit.ORANGE=accent();walk(get_tree().root)
 func walk(node:Node):
 	if node is Control:apply_node(node)
 	for child in node.get_children():walk(child)
@@ -41,8 +52,9 @@ func apply_node(node):
 			if c.a>.05 and c.v<.55 and c.s<.65:
 				style.bg_color=Color(.93,.93,.87,c.a)
 				if style.border_color.s<.3:style.border_color=Color(.61,.65,.56,style.border_color.a)
+		style.bg_color=accent_map(style.bg_color);style.border_color=accent_map(style.border_color)
 		node.add_theme_stylebox_override(key,style)
 	for key in node.get_meta("theme_source_colors"):
 		var c:Color=node.get_meta("theme_source_colors")[key]
 		if light and c.v>.5 and c.s<.5:c=Color(.20,.25,.20,c.a) if key!="font_disabled_color" else Color(.48,.52,.46,c.a)
-		node.add_theme_color_override(key,c)
+		node.add_theme_color_override(key,accent_map(c))

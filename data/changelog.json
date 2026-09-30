@@ -4,6 +4,22 @@
 			"date": "2026-09-30",
 			"version": "0.2.1",
 			"ru": {
+				"title": "Акцентный цвет",
+				"items": [
+					"Цвет главных кнопок, выделения и цен теперь можно выбрать: Абрикос, Коралл, Мята, Лимон, Небо или Лаванда. Настройки → Интерфейс → Акцентный цвет, меняется сразу."
+				]
+			},
+			"en": {
+				"title": "Accent colour",
+				"items": [
+					"The colour of main buttons, selection and prices can now be chosen: Apricot, Coral, Mint, Lemon, Sky or Lavender. Settings → Interface → Accent colour, applied instantly."
+				]
+			}
+		},
+		{
+			"date": "2026-09-30",
+			"version": "0.2.1",
+			"ru": {
 				"title": "Счётчик кадров и номер сборки",
 				"items": [
 					"В углу экрана во всех режимах виден FPS, а в хабе рядом с ним — версия и номер сборки. Так проще понять, какая версия запущена.",

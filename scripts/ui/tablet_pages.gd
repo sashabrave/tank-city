@@ -235,7 +235,8 @@ func settings():
 		setting_choice(body,["ui_motion","Анимации интерфейса",["Выключены","Включены"],[false,true],"Карточки и сообщения выезжают, кнопки пружинят при нажатии."],288)
 		setting_choice(body,["show_fps","Счётчик кадров",["Скрыт","Показан"],[false,true],"FPS в углу экрана во всех режимах, в хабе — ещё и номер сборки."],384)
 		setting_choice(body,["ui_glass","Стекло интерфейса",["Выключено","Включено"],[false,true],"Размытый полупрозрачный фон у окон. Выключи на слабом устройстве."],480)
-		y=576
+		setting_choice(body,["ui_accent","Акцентный цвет",["Абрикос","Коралл","Мята","Лимон","Небо","Лаванда"],["apricot","coral","mint","lemon","sky","lavender"],"Цвет главных кнопок, выделения и цен."],576)
+		y=672
 	else:
 		UiKit.label(body,"Нажми кнопку и новую клавишу. Esc — отмена. Занятые клавиши меняются местами.",Vector2(0,0),Vector2(700,46),14,UiKit.MUTED).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;y=55
 		for group in [["Движение",["north","south","west","east"]],["Бой и действия",["fire","interact","hide_trench"]],["Способности",["class_ability","skill_1","ability","hq_ability"]]]:
@@ -251,7 +252,7 @@ func settings():
 	UiKit.button(content,"Сбросить вкладку",Vector2(22,535),Vector2(240,36),func():
 		if view.settings_tab=="Управление":Settings.keys=Settings.DEFAULT_KEYS.duplicate()
 		else:
-			var group={"Видео":["atmosphere","tilt_shift","ui_theme","shaders","shader_style","sun_day","sun_night","weather","soft_shadows","ambient_occlusion","glow","haze","rim_light","shiny_metal","world_lighting","light_budget","fullscreen","vsync","quality","fps"],"Звук":["master","music","effects"],"Интерфейс":["screen_controls","biome_info","language","ui_motion","show_fps","ui_glass"]}[view.settings_tab]
+			var group={"Видео":["atmosphere","tilt_shift","ui_theme","shaders","shader_style","sun_day","sun_night","weather","soft_shadows","ambient_occlusion","glow","haze","rim_light","shiny_metal","world_lighting","light_budget","fullscreen","vsync","quality","fps"],"Звук":["master","music","effects"],"Интерфейс":["screen_controls","biome_info","language","ui_motion","show_fps","ui_glass","ui_accent"]}[view.settings_tab]
 			for key in group:Settings.values[key]=Settings.DEFAULT_VALUES[key]
 		Settings.apply();Settings.save();view.waiting_key="";view.refresh()).add_theme_font_size_override("font_size",15)
 func setting_choice(body,entry,y):

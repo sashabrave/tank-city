@@ -2,7 +2,8 @@ class_name UiKit
 extends RefCounted
 const INK = Color("f1eedb")
 const MUTED = Color("a6aa9f")
-const ORANGE = Color("ff981f")
+## Interface accent; InterfaceTheme keeps it in sync with the ui_accent setting.
+static var ORANGE = Color("ff981f")
 const CREAM = Color("303833")
 const PAGE_TITLE_SIZE=16
 const TAB_CONTENT_GAP=28.0
