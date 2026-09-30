@@ -261,7 +261,15 @@ func award_kill(actor):
 		if (Campaign.is_final(arena.room_index) or (Campaign.unified_content() and arena.room_index in Campaign.BOSSES)) and Game.selected_class not in Game.progression.boss_classes:
 			Game.progression.boss_classes.append(Game.selected_class);Game.progression.event("boss_classes",Game.progression.boss_classes.size(),true)
 	Game.save_progress()
-	if actor.elite:drop_recipe(actor.cell,{"elite":actor.commander_elite});Game.music_stinger("boss_victory");Game.music_context("battle")
+	if actor.elite:
+		drop_recipe(actor.cell,{"elite":actor.commander_elite});Game.music_stinger("boss_victory");Game.music_context("battle")
+		# Rare uniform from a commander, visual only; uses a visual RNG so combat rolls stay untouched.
+		if randf()<.12:
+			var skin=Skins.grant("chest",RandomNumberGenerator.new())
+			if skin!="":arena.toast("Новая форма: "+Skins.UNIFORMS[skin].name)
+	if actor.kind=="boss" and not arena.room.actors.any(func(a):return is_instance_valid(a) and not a.dead and a.kind=="boss"):
+		var parade=Skins.grant("boss",RandomNumberGenerator.new())
+		if parade!="":arena.toast("Новая форма: "+Skins.UNIFORMS[parade].name)
 
 ## Merchant tokens: rare from any enemy, more often from vehicles and veterans, guaranteed from commanders.
 func token_drop(actor)->int:

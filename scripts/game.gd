@@ -45,6 +45,9 @@ var damage_level = 0
 var luck_level = 0
 ## Station levels of registry stats (StatRegistry); unknown ids are kept for newer content.
 var stat_levels:Dictionary={}
+## Cosmetics: owned uniform skins (besides the default) and the one worn (Skins).
+var skins_owned:Array=[]
+var skin="woodland"
 var turret_level = 0
 var rarity_level = 0
 var base_level = 0
@@ -198,7 +201,7 @@ func reset_upgrades() -> int:
 	selected_weapon="pistol";backpack_slots=1;reroll_level=0;camp_level=0;research_unlocks.clear();built_workshops.clear()
 	ability_unlocks=["barrier","shield"];selected_ability="barrier";branch_unlocks=["health"];weapon_unlocks=["pistol"];bonus_unlocks=["heart"];bonus_levels.clear()
 	health_level=0;damage_level=0;luck_level=0;turret_level=0;rarity_level=0;base_level=0;heal_level=0;mobility_level=0;recovery_level=0;credits=0
-	stat_levels.clear()
+	stat_levels.clear();skins_owned.clear();skin="woodland"
 	set_all_recipes(false)
 	return 0
 
@@ -207,7 +210,7 @@ func earn(amount: int):
 	save_progress()
 
 func serialize_progress()->Dictionary:
-	return {"stat_levels":stat_levels.duplicate(),"run_checkpoint":run_checkpoint,"duplicate_recipes":duplicate_recipes,"garage":garage.serialize(),"notifications":notification_history,"class_first_slots":class_first_slots,"purchased_gadgets":purchased_gadgets,"purchased_hq":purchased_hq,"class_second_slots":class_second_slots,"gadget":gadget,"pressure_level":pressure_level,"headquarters":{"slots":hq_slots,"unlocks":hq_unlocks,"modules":hq_modules,"active":hq_active,"levels":hq_levels},"progression":progression.serialize(),"version":ProfileSchema.VERSION,"camp_level":camp_level,"selected_weapon":selected_weapon,"backpack_slots":backpack_slots,"reroll_level":reroll_level,"research":research_unlocks,"built":built_workshops,"credits":credits,"health":health_level,"damage":damage_level,"luck":luck_level,"turret":turret_level,"rarity":rarity_level,"base":base_level,"heal":heal_level,"mobility":mobility_level,"recovery":recovery_level,"v09":{"class_levels":class_levels,"specializations":specializations,"cores":cores,"class":selected_class,"classes":class_unlocks,"superboss_defeated":superboss_defeated,"slots":ability_slots,"equipped":equipped_abilities,"rescue":rescue_level,"shield_capacity":shield_capacity_level},"abilities":ability_unlocks,"selected_ability":selected_ability,"branch_unlocks":branch_unlocks,"weapon_unlocks":weapon_unlocks,"bonus_unlocks":bonus_unlocks,"bonus_levels":bonus_levels}
+	return {"skins":skins_owned.duplicate(),"skin":skin,"stat_levels":stat_levels.duplicate(),"run_checkpoint":run_checkpoint,"duplicate_recipes":duplicate_recipes,"garage":garage.serialize(),"notifications":notification_history,"class_first_slots":class_first_slots,"purchased_gadgets":purchased_gadgets,"purchased_hq":purchased_hq,"class_second_slots":class_second_slots,"gadget":gadget,"pressure_level":pressure_level,"headquarters":{"slots":hq_slots,"unlocks":hq_unlocks,"modules":hq_modules,"active":hq_active,"levels":hq_levels},"progression":progression.serialize(),"version":ProfileSchema.VERSION,"camp_level":camp_level,"selected_weapon":selected_weapon,"backpack_slots":backpack_slots,"reroll_level":reroll_level,"research":research_unlocks,"built":built_workshops,"credits":credits,"health":health_level,"damage":damage_level,"luck":luck_level,"turret":turret_level,"rarity":rarity_level,"base":base_level,"heal":heal_level,"mobility":mobility_level,"recovery":recovery_level,"v09":{"class_levels":class_levels,"specializations":specializations,"cores":cores,"class":selected_class,"classes":class_unlocks,"superboss_defeated":superboss_defeated,"slots":ability_slots,"equipped":equipped_abilities,"rescue":rescue_level,"shield_capacity":shield_capacity_level},"abilities":ability_unlocks,"selected_ability":selected_ability,"branch_unlocks":branch_unlocks,"weapon_unlocks":weapon_unlocks,"bonus_unlocks":bonus_unlocks,"bonus_levels":bonus_levels}
 
 func save_progress()->bool:
 	if not save_enabled or not profiles.selected:return true
@@ -283,6 +286,9 @@ func apply_profile(data:Dictionary):
 		rarity_level=clampi(int(data.get("rarity",0)),0,MAX_LEVEL)
 		# One «Удача» since 0.2.1: the former rarity branch folds into luck, no levels are lost.
 		if rarity_level>0:luck_level=mini(MAX_LEVEL,luck_level+rarity_level);rarity_level=0
+		skins_owned=Array(data.get("skins",[])).filter(func(id):return id is String)
+		skin=str(data.get("skin","woodland"))
+		if not Skins.owned(skin):skin="woodland"
 		stat_levels={}
 		var saved_stats=data.get("stat_levels",{})
 		if saved_stats is Dictionary:

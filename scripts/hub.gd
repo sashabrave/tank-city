@@ -56,6 +56,7 @@ const TRACK_RADII=Vector2(3.1,1.35)
 const BOOTH_CELL=Vector2i(10,3)
 var camera_base:=Vector3.INF
 var yard_gate:Node3D
+var uniform_preview:MeshInstance3D
 var parking_sign:Node3D
 var command_meshes:Array=[]
 var command_faded=false
@@ -128,6 +129,7 @@ func _ready():
 	Visuals.model("training_dummy",dummy).scale=Vector3.ONE*1.3  # tools/build_yard_props.py; stands apart in the range pen
 	dummy.visible="range" in Game.built_workshops
 	build_yard()
+	build_wardrobe()
 	dummy_label=Visuals.label3d(dummy,"",Vector3(0,1.7,0),Color("f7d891"),26)
 	Game.progression.prepare_telegrams()
 	command_model=Visuals.model("command_center",self,command_pos)
@@ -360,6 +362,27 @@ func _physics_process(delta):
 
 ## Concrete yard, the range fence (open toward the hangar so vehicles can drive in), a sandbag berm and a
 ## target board behind the dummy, a lamp post, and the parking sign that shows a tank icon while empty.
+## Uniform locker on the old bonus-bench spot by the back wall.
+const WARDROBE_POS=Vector3(-3,0,-1)
+func build_wardrobe():
+	var locker=Node3D.new();locker.name="Wardrobe";add_child(locker);locker.position=WARDROBE_POS
+	var olive=Color("59603f");var dark=Color("3f4430")
+	Visuals.box(locker,Vector3(0,.95,-.1),Vector3(1.1,1.9,.55),olive)
+	for x in [-.27,.27]:
+		Visuals.box(locker,Vector3(x,.95,.19),Vector3(.5,1.78,.03),dark)
+		for i in range(3):Visuals.box(locker,Vector3(x,1.55+i*.07,.21),Vector3(.3,.025,.01),Color("2a2e22"))
+		Visuals.box(locker,Vector3(x+(.18 if x<0 else -.18),.95,.22),Vector3(.04,.16,.03),Color("c9cfbe"))
+	# The right door stands open: a uniform on a hanger inside.
+	var hanger=Node3D.new();locker.add_child(hanger);hanger.position=Vector3(.62,0,.2)
+	Visuals.box(hanger,Vector3(0,1.62,0),Vector3(.3,.03,.03),Color("c9cfbe"))
+	uniform_preview=Visuals.box(hanger,Vector3(0,1.28,0),Vector3(.42,.62,.14),Color("5d6147"))
+	Visuals.box(hanger,Vector3(0,.82,0),Vector3(.34,.32,.13),Color("4a5039"))
+	Visuals.label3d(locker,"Шкаф",Vector3(0,2.15,0),Color("dcf6ec"),22)
+	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Шкаф",WARDROBE_POS,1.3,func():return not mounted)
+func refresh_uniform():
+	if is_instance_valid(uniform_preview):
+		var camo=Skins.camo(Game.skin);uniform_preview.material_override=Visuals.material(camo.get("camo_a",Color("5d6147")))
+	if is_instance_valid(avatar) and avatar.has_method("apply_palette"):avatar.apply_palette()
 func build_yard():
 	var yard=Node3D.new();yard.name="Yard";add_child(yard)
 	# A concrete apron flush with the hangar floor (top at y=0), standing on the outside ground.
@@ -486,7 +509,7 @@ func hub_free(p: Vector2i) -> bool:
 	if p.x< -4 or p.y< -2 or p.y>4:return false
 	# Command centre (left edge), crates by the back wall, the range pad and the arsenal spot. The retired
 	# workbench cells (character at 0,-1 and bonuses at -3,-1) are walkable floor now.
-	if p in [Vector2i(-4,0),Vector2i(-4,1),Vector2i(-4,2),Vector2i(0,3),Vector2i(-2,-2),Vector2i(-1,-2)]:return false
+	if p in [Vector2i(-4,0),Vector2i(-4,1),Vector2i(-4,2),Vector2i(0,3),Vector2i(-2,-2),Vector2i(-1,-2),Vector2i(-3,-1)]:return false
 	if not mounted and training_tank.visible and Vector2i(roundi(training_tank.position.x),roundi(training_tank.position.z))==p:return false
 	return true
 
@@ -498,6 +521,7 @@ func interact():
 	if not mounted and avatar.position.distance_to(hq_bench_pos)<1.2:open_station("hq");return
 	if not mounted and avatar.position.distance_to(command_pos)<1.65:show_command();return
 	if not mounted and avatar.position.distance_to(printer_pos)<1.4:open_station("fighter");return
+	if not mounted and avatar.position.distance_to(WARDROBE_POS)<1.3:open_station("wardrobe");return
 	if not mounted and "garage" in Game.built_workshops and avatar.position.distance_to(YARD_PARK)<1.65:open_station("garage");return
 	var locked=nearest_locked()
 	if locked!="":build_tab=1 if locked in ["garage","range"] else 0;show_build_menu();return
@@ -705,7 +729,7 @@ func update_bench_visuals():
 func show_build_menu():preload("res://scripts/ui/build_menu.gd").show(self)
 
 ## The four stations share one screen (scripts/ui/station_screen.gd); only «Казарма» needs no building.
-const STATIONS={"fighter":["","res://scripts/ui/stations/fighter_station.gd"],"arsenal":["weapons","res://scripts/ui/stations/arsenal_station.gd"],"hq":["headquarters","res://scripts/ui/stations/hq_station.gd"],"garage":["garage","res://scripts/ui/stations/garage_station.gd"]}
+const STATIONS={"wardrobe":["","res://scripts/ui/stations/wardrobe_station.gd"],"fighter":["","res://scripts/ui/stations/fighter_station.gd"],"arsenal":["weapons","res://scripts/ui/stations/arsenal_station.gd"],"hq":["headquarters","res://scripts/ui/stations/hq_station.gd"],"garage":["garage","res://scripts/ui/stations/garage_station.gd"]}
 func open_station(kind:String):
 	var building=STATIONS[kind][0]
 	if building!="" and building not in Game.built_workshops:build_tab=0;show_build_menu();return
@@ -713,6 +737,7 @@ func open_station(kind:String):
 	close_station();phase="workshop";Game.reset_input();dpad.clear();fire_pad.clear();dpad.enabled=false;fire_pad.enabled=false;start_button.disabled=true
 	var screen=preload("res://scripts/ui/station_screen.gd").new();screen.name="Station_"+kind;screen.provider=load(STATIONS[kind][1]).new()
 	build_menu=screen;root.add_child(screen);screen.closed.connect(close_station);screen.changed.connect(refresh)
+	if kind=="wardrobe":screen.changed.connect(refresh_uniform)
 
 func nearest_locked() -> String:
 	if mounted:return ""

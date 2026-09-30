@@ -166,6 +166,9 @@ func play_slot()->String:
 			var ids=RunUpgrades.roll(arena,1)
 			if ids.is_empty():return "Автомат: пусто"
 			var tier=int(result.right(1));RunUpgrades.apply(arena,ids[0],tier)
+			if tier==2:
+				var tiger=Skins.grant("slot",RandomNumberGenerator.new())
+				if tiger!="":return "Джекпот: %s · и форма «%s»" % [UpgradeRegistry.get_def(ids[0]).title,Skins.UNIFORMS[tiger].name]
 			return "Автомат: %s · %s" % [LootCatalog.RARITY_NAMES[tier],UpgradeRegistry.get_def(ids[0]).title]
 	return "Автомат: пусто"
 func close_shop(restore_controls:bool=true):

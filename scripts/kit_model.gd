@@ -204,6 +204,8 @@ func apply_palette():
 	var camo={}
 	if paint_mode=="enemy" and actor is CombatActor and is_instance_valid(actor.arena):camo=InfantryPalette.biome_camo(actor.arena.room_palette())
 	elif paint_mode=="enemy":camo=InfantryPalette.biome_camo(preview_biome)
+	# The player soldier wears the chosen uniform (hub avatar and the player in battle).
+	elif kind=="soldier" and (not actor is CombatActor or actor.player_owned) and not (actor is CombatActor and actor.companion):camo=Skins.camo(Game.skin)
 	var fur=fur_override if fur_override>=0 else 0 if (actor is CombatActor and actor.player_owned) or not actor is CombatActor else 1+posmod(hash(get_instance_id()),InfantryPalette.FURS.size()-1)
 	for mesh in find_children("*","MeshInstance3D",true,false):
 		if weapon_socket and weapon_socket.is_ancestor_of(mesh):continue

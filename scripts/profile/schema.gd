@@ -1,6 +1,6 @@
 extends RefCounted
 const VERSION=12
-const ARRAYS=["duplicate_recipes","notifications","class_first_slots","purchased_gadgets","purchased_hq","class_second_slots","research","built","abilities","branch_unlocks","weapon_unlocks","bonus_unlocks"]
+const ARRAYS=["skins","duplicate_recipes","notifications","class_first_slots","purchased_gadgets","purchased_hq","class_second_slots","research","built","abilities","branch_unlocks","weapon_unlocks","bonus_unlocks"]
 const MAPS=["garage","headquarters","progression","v09","bonus_levels","stat_levels"]
 static func validate(data:Dictionary)->Dictionary:
 	var version=data.get("version",0)
