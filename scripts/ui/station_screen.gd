@@ -16,6 +16,8 @@ var panel:Panel
 var grid:GridContainer
 var detail_box:Control
 var animate_cards=true
+## Hub station id (fighter, arsenal, hq, garage, wardrobe) for seen-aware «Новое» chips; empty elsewhere.
+var station_kind=""
 const STATE_COLORS={"locked":Color("3a3f39"),"ready":Color("584a2c"),"owned":Color("2f3b33"),"active":Color("3f5a3f"),"max":Color("2f3b33")}
 ## One status vocabulary for every station card and detail panel. Derived from the item state and the
 ## detail's purchase action (text with ◈ or док.), so stations only report state + actions.
@@ -30,6 +32,7 @@ const STATUS={
 	"upgrade_short":["Не хватает",Color("d0705c"),Color("2f3b33"),Color("5a4038")],
 	"active":["Выбрано",Color("7fe08a"),Color("34503a"),Color("6fbf78")],
 	"max":["Максимум",Color("e8c96a"),Color("3a3a2c"),Color("8a7a45")],
+	"new":["Новое",Color("ff8a6b"),Color("2f3b33"),Color("47524a")],
 }
 func status(item:Dictionary)->String:
 	if item.has("status"):return str(item.status)
@@ -126,13 +129,19 @@ func card(item:Dictionary):
 	var style=UiKit.style(spec[2],10,UiKit.ORANGE if item.id==selected else spec[3])
 	style.set_border_width_all(3 if item.id==selected else 1)
 	for key in ["normal","hover","pressed","focus"]:b.add_theme_stylebox_override(key,style)
-	b.pressed.connect(func():selected=item.id;notice="";build())
+	b.pressed.connect(func():
+		selected=item.id;notice=""
+		if station_kind!="":preload("res://scripts/ui/station_notices.gd").mark_item_seen(station_kind,tab,str(item.id))
+		build())
 	UiKit.press_bounce(b)
 	var picture=UiKit.icon(b,str(item.get("icon",item.id)),Vector2(58,24),Vector2(50,50))
 	if item.has("texture"):picture.texture=item.texture
 	UiKit.locked_preview(picture,kind in ["locked","soon"])
 	if kind in ["soon","locked"]:picture.modulate.a=.55 if kind=="soon" else .8
 	status_chip(b,kind,Vector2(6,6))
+	if station_kind!="" and kind not in ["locked","soon"] and preload("res://scripts/ui/station_notices.gd").is_new(station_kind,tab,str(item.id)):
+		var fresh=status_chip(b,"new",Vector2(0,6));fresh.name="New"
+		fresh.position.x=b.custom_minimum_size.x-fresh.get_combined_minimum_size().x-6
 	var title=UiKit.label(b,str(item.title),Vector2(8,76),Vector2(150,26),15);title.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;title.clip_text=true
 	var caption=UiKit.label(b,str(item.get("caption","")),Vector2(8,102),Vector2(150,40),13,UiKit.MUTED);caption.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;caption.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	if item.get("dot",false):UiKit.badge(b,str(item.get("dot_kind","news")))

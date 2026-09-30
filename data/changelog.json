@@ -2,6 +2,24 @@
 	"entries": [
 		{
 			"date": "2026-09-30",
+			"version": "0.3.2",
+			"ru": {
+				"title": "Чище интерфейс и уведомления",
+				"items": [
+					"Точки над верстаками больше не горят постоянно: загораются, только когда появилось что-то новое для покупки или улучшения, и гаснут после визита. Новые открытые вещи отмечены бейджем «Новое», пока их не выберешь.",
+					"Стекло окон стало мягче и естественнее: круглое размытие без ступенек, фон чуть сочнее, лёгкое зерно."
+				]
+			},
+			"en": {
+				"title": "Cleaner interface and notices",
+				"items": [
+					"Bench dots no longer stay lit: they appear only when something new becomes affordable or unlocked and clear after a visit. Newly unlocked items carry a \"New\" badge until selected.",
+					"Window glass is softer and more natural: a round blur without steps, a slightly richer backdrop and fine grain."
+				]
+			}
+		},
+		{
+			"date": "2026-09-30",
 			"version": "0.3.1",
 			"ru": {
 				"title": "War Cats: новое имя, стабильность, песочница без поломок",

@@ -567,6 +567,9 @@ func launch():
 	start_requested.emit()
 
 func close_station():
+	# Leaving a station marks what was affordable there as seen: its bench dot waits for something new.
+	if is_instance_valid(build_menu) and str(build_menu.get("station_kind") if "station_kind" in build_menu else "")!="":
+		preload("res://scripts/ui/station_notices.gd").mark_viewed(build_menu.station_kind)
 	if is_instance_valid(build_menu):build_menu.get_parent().remove_child(build_menu);build_menu.queue_free();build_menu=null
 	station.hide();weapon_station.hide();bonus_station.hide();phase="combat";Game.reset_input();dpad.clear();fire_pad.clear();dpad.enabled=true;fire_pad.enabled=true;start_button.disabled=false
 	call_deferred("present_unlock")
@@ -748,7 +751,7 @@ func open_station(kind:String):
 	if building!="" and building not in Game.built_workshops:build_tab=0;show_build_menu();return
 	if building!="":preload("res://scripts/ui/build_catalog.gd").mark(building)
 	close_station();phase="workshop";Game.reset_input();dpad.clear();fire_pad.clear();dpad.enabled=false;fire_pad.enabled=false;start_button.disabled=true
-	var screen=preload("res://scripts/ui/station_screen.gd").new();screen.name="Station_"+kind;screen.provider=load(STATIONS[kind][1]).new()
+	var screen=preload("res://scripts/ui/station_screen.gd").new();screen.name="Station_"+kind;screen.provider=load(STATIONS[kind][1]).new();screen.station_kind=kind
 	build_menu=screen;root.add_child(screen);screen.closed.connect(close_station);screen.changed.connect(refresh)
 	if kind=="wardrobe":screen.changed.connect(refresh_uniform)
 
@@ -759,23 +762,11 @@ func nearest_locked() -> String:
 		if id not in Game.built_workshops and avatar.position.distance_to(pos)<1.25:return id
 	return ""
 
+## A bench dot is seen-aware: it lights up when something new became affordable or unlocked since the
+## station was last opened (scripts/ui/station_notices.gd), not whenever money is enough for anything.
 func bench_available(id:String)->bool:
-	if id=="headquarters":
-		for tech in Game.hq_unlocks:
-			if HQCatalog.available(tech) and int(Game.hq_levels.get(tech,0))<HQCatalog.cap() and Game.credits>=HQCatalog.permanent_cost(tech):return true
-	if id=="weapons":
-		for bonus in Game.bonus_unlocks:
-			if Game.bonus_level(bonus)<Balance.CONFIG.economy.bonus_level_cap and Game.credits>=Game.bonus_cost(bonus):return true
-	if id=="character":
-		for branch in Game.UNLOCK_COSTS:
-			if Game.level(branch)<Game.upgrade_cap(branch) and Game.credits>=(Game.cost(branch) if Game.branch_unlocked(branch) else Game.UNLOCK_COSTS[branch]):return true
-		for key in ["slots","rescue"]:
-			if Game.special_cost(key)>=0 and (Game.cores if key=="slots" else Game.credits)>=Game.special_cost(key):return true
-	if id=="weapons":return Game.weapon_unlocks.size()>1
-	if id=="bonuses":
-		for bonus in Game.bonus_unlocks:
-			if Game.bonus_level(bonus)<Balance.CONFIG.economy.bonus_level_cap and Game.credits>=Game.bonus_cost(bonus):return true
-	return false
+	var notices=preload("res://scripts/ui/station_notices.gd")
+	return id in notices.BENCHES and notices.has_dot(notices.BENCHES[id])
 func show_classes():preload("res://scripts/ui/fighter_station.gd").shell(self)
 
 func show_class_catalog():
