@@ -32,6 +32,8 @@ const SHELL_RADIUS=[1.2,1.4,1.6]
 const SHELL_FUSE=1.5
 var progress=0.0
 var goal=0.0
+## Hold: an enemy stands in the zone and the countdown is paused.
+var contested_now=false
 var zone:Node3D
 var shell_timer=0.0
 var shells:Array=[]
@@ -109,6 +111,10 @@ func tick(delta:float=0.0):
 		"hold":tick_hold(delta)
 		"survive":tick_survive(delta)
 		"switches":tick_switches()
+## Countdown for timed rooms (hold, survive): title, seconds left and done share; empty for other rooms.
+func timer()->Dictionary:
+	if not active() or arena.room.mode not in ["hold","survive"] or goal<=0 or rewarded:return {}
+	return {"title":TITLES[arena.room.mode],"left":maxf(0.0,goal-progress),"ratio":clampf(progress/goal,0.0,1.0),"paused":arena.room.mode=="hold" and contested_now}
 func status()->String:
 	match arena.room.mode:
 		"cache":return TITLES.cache+(" · засада" if opened and not rewarded else "")
@@ -142,6 +148,7 @@ func tick_hold(delta:float):
 	if arena.room.spawn_queue.is_empty() and arena.enemy_count()<=1:refill_enemies()
 	var player=arena.room.player
 	var contested=arena.room.actors.any(func(a):return is_instance_valid(a) and not a.dead and not a.player_owned and not a.allied and in_zone(a.position))
+	contested_now=contested or not (is_instance_valid(player) and in_zone(player.position))
 	if is_instance_valid(player) and in_zone(player.position) and not contested:progress=minf(goal,progress+delta)
 	elif not is_instance_valid(player) or not in_zone(player.position):progress=maxf(0,progress-delta*.25)
 	if progress>=goal:complete(zone.position)

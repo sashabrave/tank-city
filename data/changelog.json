@@ -10,7 +10,8 @@
 					"Новая вкладка «Выучка»: постоянная прокачка новых характеристик по пяти веткам — огневая мощь, живучесть, спецпатроны, разведка и тыл. Следующий узел ветки открывается после двух уровней предыдущего.",
 					"Сундуки, торговец и испытания выдают карточки из общего пула, с редкостью и семьями, поэтому новые карточки встречаются везде. У торговца бывают легендарные.",
 					"В планшете в разделе «Боец» показаны все характеристики: с чем начнёшь забег и сколько сейчас. Устаревшие подсказки в «Снаряжении» ведут на актуальные станции.",
-					"В песочнице появилась вкладка «Статы»: любую характеристику можно поднять или опустить кнопками."
+					"В песочнице появилась вкладка «Статы»: любую характеристику можно поднять или опустить кнопками.",
+					"В «Удержании» и «Выживании» сверху по центру крупный таймер с полосой; когда точку не держишь, он ставится на паузу."
 				]
 			},
 			"en": {
@@ -20,7 +21,8 @@
 					"New Training tab: permanent upgrades for the new stats in five branches — firepower, survival, special ammo, recon and logistics. The next node of a branch opens after two levels of the previous one.",
 					"Chests, the merchant and challenges now offer cards from the shared pool, with rarity and families, so the new cards show up everywhere. The merchant can have legendary ones.",
 					"The Soldier page of the tablet lists every stat: what a run starts with and the current value. Outdated hints in Kit point to the current stations.",
-					"The sandbox has a Stats tab: any stat can be raised or lowered with buttons."
+					"The sandbox has a Stats tab: any stat can be raised or lowered with buttons.",
+					"Hold and Survive show a big countdown with a bar at the top centre; it pauses while you are not holding the point."
 				]
 			}
 		},

@@ -109,6 +109,7 @@ func _process(_delta):
 	refresh_elapsed+=_delta
 	if refresh_elapsed<.05:return
 	refresh_elapsed=0.0
+	update_challenge_timer()
 	var hero_count=arena.abilities.slots.size();var total=hero_count+arena.headquarters.loadout().size()
 	var strip=root.get_node("Skills");strip.set_anchors_preset(Control.PRESET_TOP_LEFT);strip.position=Vector2((get_viewport().get_visible_rect().size.x-(total*88-12))*.5,get_viewport().get_visible_rect().size.y-112);strip.size=Vector2(maxi(0,hero_count*88-12),76)
 	for i in range(skill_buttons.size()):skill_buttons[i].visible=i<hero_count
@@ -153,6 +154,26 @@ func _process(_delta):
 	Texts.set_text(interact_button,data.interact_text);interact_button.disabled=data.interact_disabled
 	dpad.enabled=data.phase in ["combat","countdown"];fire_pad.enabled=dpad.enabled
 
+## Big countdown at the top centre in timed challenges (hold, survive).
+var challenge_timer:Panel
+func update_challenge_timer():
+	var info=arena.challenges.timer() if arena.challenges!=null else {}
+	if info.is_empty():
+		if is_instance_valid(challenge_timer):challenge_timer.hide()
+		return
+	if not is_instance_valid(challenge_timer):
+		challenge_timer=UiKit.glass(root,Vector2.ZERO,Vector2(260,76));challenge_timer.name="ChallengeTimer";challenge_timer.mouse_filter=Control.MOUSE_FILTER_IGNORE
+		var title=UiKit.label(challenge_timer,"",Vector2(16,8),Vector2(228,20),13,UiKit.MUTED);title.name="Title";title.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+		var time=UiKit.label(challenge_timer,"",Vector2(16,26),Vector2(228,32),26);time.name="Time";time.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+		var track=ColorRect.new();track.name="Track";challenge_timer.add_child(track);track.position=Vector2(16,62);track.size=Vector2(228,4);track.color=Color(1,1,1,.14);track.mouse_filter=Control.MOUSE_FILTER_IGNORE
+		var fill=ColorRect.new();fill.name="Fill";track.add_child(fill);fill.size=Vector2(0,4);fill.color=UiKit.ORANGE;fill.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	challenge_timer.show()
+	challenge_timer.position=Vector2((get_viewport().get_visible_rect().size.x-challenge_timer.size.x)*.5,54)
+	var seconds=ceili(info.left)
+	Texts.set_text(challenge_timer.get_node("Title"),info.title+(" · пауза" if info.paused else ""))
+	challenge_timer.get_node("Time").text="%d:%02d" % [seconds/60,seconds%60]
+	challenge_timer.get_node("Time").add_theme_color_override("font_color",UiKit.MUTED if info.paused else UiKit.INK)
+	challenge_timer.get_node("Track/Fill").size.x=228.0*info.ratio
 func close_modal():
 	choice_epoch+=1
 	if choice_tween and choice_tween.is_valid():choice_tween.kill()
