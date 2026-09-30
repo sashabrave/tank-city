@@ -148,9 +148,19 @@ func start_track(track:String,stream:AudioStream):
 	if player.stream is AudioStreamWAV:
 		player.stream.loop_mode=AudioStreamWAV.LOOP_DISABLED;player.stream.loop_begin=0;player.stream.loop_end=roundi(player.stream.get_length()*player.stream.mix_rate)
 	player.volume_db=-60
-	if Game.sound_enabled:player.play();player.stream_paused=paused
-	fade=create_tween().set_parallel(true);fade.tween_property(old,"volume_db",-60,.65);fade.tween_property(player,"volume_db",-6,.65)
-	fade.chain().tween_callback(old.stop)
+	# Fade through silence: the old track eases out, a short breath, then the new one eases in.
+	# Volume moves on linear amplitude so the curve sounds even.
+	fade=create_tween()
+	var level=func(target:AudioStreamPlayer,from:float,to:float,time:float):
+		fade.tween_method(func(v:float):target.volume_db=linear_to_db(maxf(.001,v)),from,to,time).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	if old.playing and old.volume_db>-50:
+		level.call(old,db_to_linear(old.volume_db),0.0,.7)
+		fade.tween_callback(old.stop)
+		fade.tween_interval(.15)
+	else:old.stop()
+	fade.tween_callback(func():
+		if Game.sound_enabled:player.play();player.stream_paused=paused)
+	level.call(player,0.0,db_to_linear(-6.0),.9)
 	track_changed.emit()
 func skip(direction:int):
 	if context not in TRACKS:return
