@@ -13,11 +13,12 @@
 				"items": [
 					"Six new music themes. Day: soft retro disco and synth-pop — Fountain, Ice Cream, Tram. Night: indie rock with orchestral colours — Belfry, Outskirts, Beacons. They join the rotation for their time of day right away."
 				]
-			}
+			},
+			"version": "0.3.0"
 		},
 		{
 			"date": "2026-10-01",
-			"version": "0.2.1",
+			"version": "0.3.0",
 			"ru": {
 				"title": "Бой",
 				"items": [
@@ -59,7 +60,8 @@
 					"Попадание подсвечивает бойца или врага короткой красной вспышкой. На старте боя боец пару секунд неуязвим и мерцает.",
 					"Статусы видны на моделях: поджог — оранжевое мерцание, заморозка — голубой лёд, оглушение — звёздочки над головой. Эффекты бойца (неуязвимость, звезда, щит, маскировка, заморозка, десант, выдержка, рывок, окоп) показаны значками рядом со здоровьем, с убывающей полоской времени.",
 					"В хабе и на экранах между волнами поле слегка наклоняется вслед за курсором или пальцем — на пару градусов, плавно, и само возвращается. В бою камера не двигается.",
-					"Во всех верстаках у каждой карточки есть статус: закрыто, в разработке, можно купить, не хватает, куплено, можно улучшить, выбрано, максимум. Цвет карточки и плашка сразу показывают, что доступно сейчас; нехватка чертежа важнее нехватки денег."
+					"Во всех верстаках у каждой карточки есть статус: закрыто, в разработке, можно купить, не хватает, куплено, можно улучшить, выбрано, максимум. Цвет карточки и плашка сразу показывают, что доступно сейчас; нехватка чертежа важнее нехватки денег.",
+					"Огонь горящих бочек вдвое слабее и меньше отвлекает; тлеющие после взрыва — ещё тише."
 				]
 			},
 			"en": {
@@ -103,13 +105,14 @@
 					"Hits flash the soldier or enemy briefly red. At the start of a battle the soldier is invulnerable for a couple of seconds and shimmers.",
 					"Statuses show on models: burning flickers orange, frozen turns ice blue, stunned shows stars overhead. The soldier's effects (invulnerability, star, shield, cloak, freeze, landing, opening shot, dash, trench) appear as icons next to health with a draining timer bar.",
 					"In the hub and on between-wave screens the field leans a couple of degrees toward the cursor or your finger, smoothly, and settles back. The camera stays still in combat.",
-					"Every workshop card now shows a status: locked, in development, can buy, not enough, owned, can upgrade, selected, maxed. Card colour and tag show at a glance what is available now; a missing blueprint outranks missing money."
+					"Every workshop card now shows a status: locked, in development, can buy, not enough, owned, can upgrade, selected, maxed. Card colour and tag show at a glance what is available now; a missing blueprint outranks missing money.",
+					"Burning drums have half the flame and distract less; smouldering ones after an explosion are even dimmer."
 				]
 			}
 		},
 		{
 			"date": "2026-10-01",
-			"version": "0.2.1",
+			"version": "0.3.0",
 			"ru": {
 				"title": "Хаб",
 				"items": [
@@ -143,7 +146,7 @@
 		},
 		{
 			"date": "2026-09-30",
-			"version": "0.2.1",
+			"version": "0.3.0",
 			"ru": {
 				"title": "Карта маршрута",
 				"items": [
@@ -167,7 +170,7 @@
 		},
 		{
 			"date": "2026-09-30",
-			"version": "0.2.1",
+			"version": "0.3.0",
 			"ru": {
 				"title": "Боец и техника",
 				"items": [
@@ -185,7 +188,7 @@
 		},
 		{
 			"date": "2026-09-30",
-			"version": "0.2.1",
+			"version": "0.3.0",
 			"ru": {
 				"title": "Английский без пропусков",
 				"items": [
@@ -203,7 +206,7 @@
 		},
 		{
 			"date": "2026-09-30",
-			"version": "0.2.1",
+			"version": "0.3.0",
 			"ru": {
 				"title": "Окоп",
 				"items": [
@@ -227,7 +230,7 @@
 		},
 		{
 			"date": "2026-09-30",
-			"version": "0.2.1",
+			"version": "0.3.0",
 			"ru": {
 				"title": "Новые классы",
 				"items": [
@@ -249,7 +252,7 @@
 		},
 		{
 			"date": "2026-09-30",
-			"version": "0.2.1",
+			"version": "0.3.0",
 			"ru": {
 				"title": "Казарма и выучка",
 				"items": [
@@ -275,7 +278,7 @@
 		},
 		{
 			"date": "2026-09-30",
-			"version": "0.2.1",
+			"version": "0.3.0",
 			"ru": {
 				"title": "Новые характеристики и карточки",
 				"items": [
@@ -301,7 +304,7 @@
 		},
 		{
 			"date": "2026-09-30",
-			"version": "0.2.1",
+			"version": "0.3.0",
 			"ru": {
 				"title": "Хаб под телефон и геймпад",
 				"items": [
@@ -352,11 +355,12 @@
 					"The earlier chip tracks moved to the Archive playlist and can still be played from the radio.",
 					"Shots, explosions, hits, ricochets, debris and engines sound more grounded: a crack, a thump, terrain echo and falling debris. Volume is unchanged."
 				]
-			}
+			},
+			"version": "0.3.0"
 		},
 		{
 			"date": "2026-09-30",
-			"version": "0.2.1",
+			"version": "0.3.0",
 			"ru": {
 				"title": "Стеклянные окна",
 				"items": [
@@ -374,7 +378,7 @@
 		},
 		{
 			"date": "2026-09-30",
-			"version": "0.2.1",
+			"version": "0.3.0",
 			"ru": {
 				"title": "Акцентный цвет",
 				"items": [
@@ -390,7 +394,7 @@
 		},
 		{
 			"date": "2026-09-30",
-			"version": "0.2.1",
+			"version": "0.3.0",
 			"ru": {
 				"title": "Счётчик кадров и номер сборки",
 				"items": [
@@ -408,7 +412,7 @@
 		},
 		{
 			"date": "2026-09-30",
-			"version": "0.2.1",
+			"version": "0.3.0",
 			"ru": {
 				"title": "Советы бойца",
 				"items": [
@@ -525,7 +529,8 @@
 					"The fence pattern is redone: a frame, a recessed panel and faceted figures, like real concrete fence panels.",
 					"The Fortification bonus now surrounds the headquarters with reinforced brick at level 2 and with indestructible fence halves at level 3."
 				]
-			}
+			},
+			"version": "0.2.1"
 		},
 		{
 			"date": "2026-09-29",

@@ -202,7 +202,7 @@ func add_rubble(cell):
 func explode_barrel(cell):
 	var pos=arena.world_pos(cell);arena.burst(pos,Color("f5a551"),2);Game.sound("boom",arena)
 	# The drum survives as a scorched, smouldering shell: same model, half the fire. Visual only, walkable.
-	var ember=preload("res://scripts/fire_barrel.gd").new();ember.name="SmoulderingBarrel";ember.intensity=.5
+	var ember=preload("res://scripts/fire_barrel.gd").new();ember.name="SmoulderingBarrel";ember.intensity=.3
 	ember.tint=Color("2a2522");arena.add_child(ember);ember.position=pos+Vector3(.08,0,-.05);ember.rotation.y=float(cell.x*37+cell.y*11)*.1
 	for actor in arena.room.actors.duplicate():
 		if is_instance_valid(actor) and not actor.dead and arena.flat_distance(actor.position,pos)<2:
