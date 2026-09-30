@@ -99,5 +99,9 @@ func run():
 	check(int(Game.stat_levels.get("dodge",0))==2 and int(Game.stat_levels.get("future_stat",0))==4,"station levels persist, unknown ids are kept")
 	var fresh=preload("res://scripts/state/run_state.gd").new();StatRegistry.apply_meta(fresh)
 	check(is_equal_approx(fresh.dodge,StatRegistry.get_def("dodge").step*2),"station levels apply at run start")
+	# Backpack safe: the first slots always survive a death, the rest roll the HQ insurance
+	var carried=[{"id":"a"},{"id":"b"},{"id":"c"}]
+	var kept=preload("res://scripts/recipe_extraction.gd").survivors(carried,false,0,arena.run.combat_rng,2)
+	check(kept.size()==2 and kept[0].id=="a" and kept[1].id=="b","safe slots keep their blueprints")
 	print("COMBAT STATS: %d failures" % failures)
 	get_tree().quit(failures)

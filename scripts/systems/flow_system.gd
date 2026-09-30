@@ -95,7 +95,7 @@ func finish_run(won: bool,reason: String):
 		var loss=mini(Game.credits,roundi(arena.run.earned*Game.death_loss_fraction()))
 		arena.run.lost_alloy=loss;Game.credits-=loss;Game.save_progress()
 		var carried=arena.run.pending_recipes.duplicate(true)
-		arena.run.pending_recipes=preload("res://scripts/recipe_extraction.gd").survivors(arena.run.pending_recipes,false,Game.rescue_level,arena.run.combat_rng)
+		arena.run.pending_recipes=preload("res://scripts/recipe_extraction.gd").survivors(arena.run.pending_recipes,false,Game.rescue_level,arena.run.combat_rng,int(arena.run.safe_slots))
 		arena.set_meta("saved_recipes",arena.run.pending_recipes.duplicate(true));arena.set_meta("lost_recipes",carried.filter(func(r):return r not in arena.run.pending_recipes))
 		if not arena.run.pending_recipes.is_empty():Game.bank_recipes(arena.run.pending_recipes)
 	Game.reset_input()

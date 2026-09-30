@@ -14,7 +14,8 @@
 					"Новая урна-шредер: бронированный корпус, валы с зубьями, экран и лампа. Новый манекен на полигоне: на пружине, в каске и с мишенью.",
 					"Площадка стала вдвое больше: небольшая прямоугольная испытательная трасса с бордюрами, конусами, трамплином и шинами, огороженный полигон и стоянка.",
 					"Площадку снаружи сначала нужно купить (150 сплава, в «Строительстве» или в «Штабе» → «Постройки»). Пока её нет, ворота закрыты. После покупки на ней можно построить «Стоянку» и «Полигон».",
-					"В хабе появился шкаф с формой: «Лес» есть сразу, «Пустыня», «Зима», «Город» и «Ночь» иногда выпадают у командиров, «Парадная» — за победу над боссом, «Тигровая» — джекпот в автомате торговца. Скины оружия — позже."
+					"В хабе появился шкаф с формой: «Лес» есть сразу, «Пустыня», «Зима», «Город» и «Ночь» иногда выпадают у командиров, «Парадная» — за победу над боссом, «Тигровая» — джекпот в автомате торговца. Скины оружия — позже.",
+					"Новая редкая карточка «Сейф»: ячейка рюкзака становится сейфовой, чертёж в ней не пропадает при гибели. Берётся до трёх раз."
 				]
 			},
 			"en": {
@@ -28,7 +29,8 @@
 					"A new shredder bin: armoured body, toothed rollers, a screen and a lamp. A new range dummy: on a spring, with a helmet and a target.",
 					"The yard is twice as big: a small rectangular test track with kerbs, cones, a ramp and tyres, a fenced range and the parking.",
 					"The outside yard has to be bought first (150 alloy, in Construction or HQ → Buildings). Until then the gate is shut. Once bought, the Parking and the Range can be built on it.",
-					"The hub has a wardrobe with uniforms: Woodland from the start; Desert, Winter, Urban and Night sometimes drop from commanders; Parade for defeating the boss; Tiger is a jackpot at the merchant's slot machine. Weapon skins come later."
+					"The hub has a wardrobe with uniforms: Woodland from the start; Desert, Winter, Urban and Night sometimes drop from commanders; Parade for defeating the boss; Tiger is a jackpot at the merchant's slot machine. Weapon skins come later.",
+					"New rare card Safe: a backpack slot becomes safe, its blueprint is not lost on death. Can be taken up to three times."
 				]
 			}
 		},

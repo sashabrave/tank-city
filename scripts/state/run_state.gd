@@ -50,6 +50,8 @@ var marauder=0.0
 var field_repair=0.0
 ## Luck points from run cards (added to the station level).
 var luck=0
+## Backpack slots whose blueprints always survive a death (card «Сейф»).
+var safe_slots=0
 
 var behavior_cards:Array=[]
 var last_player_shot=-10.0

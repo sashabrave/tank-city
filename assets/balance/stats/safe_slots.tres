@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="StatDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/stats/stat_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "safe_slots"
+title = "Сейф рюкзака"
+icon = "blueprint"
+family = "logistics"
+order = 3
+run_field = "safe_slots"
+format = "integer"
+cap = 0.0
+description = "Сколько ячеек рюкзака защищены: их чертежи не пропадают при гибели."
+step = 0.0
+max_level = 0
+cost_base = 0
+cost_step = 0
+requires = ""
+requires_level = 2
+meta_field = ""

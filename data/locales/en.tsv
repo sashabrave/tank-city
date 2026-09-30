@@ -2138,3 +2138,7 @@ E — в хаб	E — to the hub
 Джекпот в автомате торговца	Jackpot at the merchant's slot machine
 Новая форма: 	New uniform: 
 Джекпот: %s · и форма «%s»	Jackpot: %s · and the “%s” uniform
+Сейф	Safe
+Чертежи в сейфовых ячейках рюкзака не пропадают при гибели.	Blueprints in safe backpack slots are not lost on death.
+Сейф рюкзака	Backpack safe
+Сколько ячеек рюкзака защищены: их чертежи не пропадают при гибели.	How many backpack slots are protected: their blueprints are not lost on death.

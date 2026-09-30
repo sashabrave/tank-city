@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="UpgradeDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrades/upgrade_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "safe"
+title = "Сейф"
+category = "Тактика"
+family = "logistics"
+icon = "blueprint"
+tags = PackedStringArray("logistics")
+weight = 6
+max_stacks = 3
+min_tier = 1
+modifiers = Array[Dictionary]([{"stat": "safe_slots", "op": "add_round", "value": 0.7}])
+preview = "safe_slots"
+detail = "Чертежи в сейфовых ячейках рюкзака не пропадают при гибели."
