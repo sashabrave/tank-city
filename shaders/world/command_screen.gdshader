@@ -1,7 +1,7 @@
 shader_type spatial;
 // Hub command screen. Idle: nearly black, abstract maps / dossiers / tables page past at random.
 // Alert (news waiting): the whole screen glows turquoise.
-render_mode unshaded;
+render_mode unshaded, cull_disabled;
 uniform bool alert = false;
 uniform vec3 idle_ink = vec3(0.18, 0.42, 0.36);
 uniform vec3 alert_ink = vec3(0.35, 1.0, 0.92);
@@ -37,8 +37,17 @@ void fragment(){
 		ink = max(ink, box(p, vec2(0.28, 0.0), vec2(0.28 + bar * 0.6, 1.0)) * step(0.3, g.y) * step(g.y, 0.75) * 0.7);
 	}
 	float scan = 0.85 + 0.15 * sin(uv.y * 240.0 + TIME * 3.0);
-	vec3 base = alert ? vec3(0.05, 0.32, 0.3) : vec3(0.015, 0.02, 0.02);
-	vec3 ink_color = alert ? alert_ink : idle_ink;
-	float pulse = alert ? 0.85 + 0.15 * sin(TIME * 4.0) : 1.0;
-	ALBEDO = (base + ink_color * ink * scan) * pulse;
+	if (alert){
+		// News: a big envelope icon on a glowing blue screen, gently pulsing.
+		vec2 q = (uv - 0.5) * vec2(1.0, 1.35);
+		float frame = box(q, vec2(-0.3, -0.2), vec2(0.3, 0.2)) - box(q, vec2(-0.26, -0.16), vec2(0.26, 0.16));
+		float flap = smoothstep(0.03, 0.0, abs(q.y - (-0.2 + (0.3 - abs(q.x)) * 0.8))) * box(q, vec2(-0.3, -0.2), vec2(0.3, 0.1));  // UV y grows downward: flap from the top corners to the centre
+		float icon = clamp(frame + flap, 0.0, 1.0);
+		float pulse = 0.8 + 0.2 * sin(TIME * 3.0);
+		vec3 screen = vec3(0.04, 0.14, 0.3) + vec3(0.1, 0.25, 0.45) * ink * 0.35;
+		ALBEDO = mix(screen, vec3(0.75, 0.9, 1.0), icon) * pulse * scan;
+		EMISSION = ALBEDO * 0.6;
+	} else {
+		ALBEDO = vec3(0.015, 0.02, 0.02) + idle_ink * ink * scan;
+	}
 }

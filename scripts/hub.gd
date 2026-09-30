@@ -124,7 +124,7 @@ func _ready():
 	command_model.rotation.y=.55  # screen turned toward the hub centre and the camera
 	build_command_screen()
 	command_meshes=command_model.find_children("*","MeshInstance3D",true,false).filter(func(m):return not command_beams.is_ancestor_of(m))
-	command_alert=Visuals.label3d(self,"!",command_pos+Vector3(0,3.3,0),Color("ed4f40"),85)
+	command_alert=Visuals.label3d(self,"!",command_pos+Vector3(0,3.1,0),Color("ed4f40"),52)
 	command_alert.no_depth_test=true
 	refresh_command_alert()
 	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Управление",command_pos,1.65)
@@ -266,20 +266,16 @@ func buy(branch: String):
 		Texts.set_text(status,"Улучшено.")
 		refresh()
 
-## Idle: dark screen paging abstract maps and dossiers. News: turquoise glow and rays on the floor.
+## Idle: dark screen paging abstract maps and dossiers. News: the screen glows with a letter icon and a real
+## blue spot light from it softly lights the floor in front. No fake beams.
 func build_command_screen():
 	var screen=command_model.find_child("CommandScreen",true,false)
 	if screen is MeshInstance3D:
 		command_screen=ShaderMaterial.new();command_screen.shader=preload("res://shaders/world/command_screen.gdshader");screen.material_override=command_screen
-	command_beams=Node3D.new();command_beams.name="CommandBeams";command_model.add_child(command_beams)
-	var ray_mat=ShaderMaterial.new();ray_mat.shader=preload("res://shaders/fx/loot_beam.gdshader")
-	ray_mat.set_shader_parameter("tint",Color("5fe6d6"));ray_mat.set_shader_parameter("strength",.5)
-	for x in [-.36,0.0,.36]:
-		var ray=MeshInstance3D.new();var quad=QuadMesh.new();quad.size=Vector2(.3,2.1);ray.mesh=quad;ray.material_override=ray_mat
-		ray.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF;command_beams.add_child(ray)
-		ray.position=Vector3(x*1.3,.62,1.0);ray.rotation=Vector3(deg_to_rad(-58),0,0)
-	var glow=SpotLight3D.new();glow.light_color=Color("5fe6d6");glow.light_energy=2.4;glow.spot_range=4.0;glow.spot_angle=42;glow.shadow_enabled=false
-	command_beams.add_child(glow);glow.position=Vector3(0,1.4,.3);glow.rotation.x=deg_to_rad(-52)
+	command_beams=Node3D.new();command_beams.name="CommandLight";command_model.add_child(command_beams)
+	var glow=SpotLight3D.new();glow.light_color=Color("6fb4ff");glow.light_energy=1.6;glow.spot_range=3.6;glow.spot_angle=38;glow.spot_attenuation=1.4;glow.shadow_enabled=false
+	# The screen plane faces -Z in the model file; the monolith front (and the camera) is +Z, so the light aims +Z.
+	command_beams.add_child(glow);glow.position=Vector3(0,1.5,.55);glow.rotation=Vector3(deg_to_rad(-55),PI,0)
 
 func refresh_command_alert():
 	if not is_instance_valid(command_alert):return
@@ -299,11 +295,6 @@ func _physics_process(delta):
 	if is_instance_valid(dpad):dpad.visible=InputScheme.touch();fire_pad.visible=InputScheme.touch()
 	if phase in ["intro","profiles"]:return
 	training_ability_cooldown=maxf(0,training_ability_cooldown-delta)
-	if is_instance_valid(command_model):
-		var faded=avatar.position.distance_to(command_pos)<1.7
-		if faded!=command_faded:
-			command_faded=faded
-			for mesh in command_meshes:mesh.transparency=0.7 if faded else 0.0
 	hint_clock+=delta;hint_refresh-=delta
 	if hint_refresh<=0:
 		for id in bench_dots:bench_dots[id].visible=bench_available(id)
@@ -316,7 +307,7 @@ func _physics_process(delta):
 		var targets=Game.progression.build_targets()
 		for id in build_arrows:
 			if is_instance_valid(build_arrows[id]):build_arrows[id].visible=id not in Game.built_workshops and (id in Game.research_unlocks or id in targets)
-	if is_instance_valid(command_alert):command_alert.position.y=command_pos.y+3.3+(1-cos(hint_clock*TAU/2.8))*.14
+	if is_instance_valid(command_alert):command_alert.position.y=command_pos.y+3.1+(1-cos(hint_clock*TAU/2.8))*.08
 	for arrow in build_arrows.values():
 		if is_instance_valid(arrow):arrow.position.y=1.9+(1-cos(hint_clock*TAU/4.8))*.18
 	if station.visible or weapon_station.visible or bonus_station.visible or is_instance_valid(build_menu):
@@ -554,7 +545,7 @@ func update_bench_visuals():
 		for id in Game.BUILD_COST:
 			var pos={"headquarters":hq_bench_pos,"character":Vector3(0,0,-1),"weapons":weapon_bench_pos,"bonuses":bonus_bench_pos,"garage":Vector3(6,0,1),"range":Vector3(2,0,-2)}[id]
 			if id not in Game.built_workshops:
-				var arrow=Visuals.label3d(bench_visuals,"▼",pos+Vector3.UP*1.9,UiKit.NOTICE.goal,65)
+				var arrow=Visuals.label3d(bench_visuals,"▼",pos+Vector3.UP*1.5,UiKit.NOTICE.goal,38);arrow.modulate.a=.82;arrow.outline_size=6
 				arrow.no_depth_test=true;arrow.visible=id in Game.research_unlocks or id in Game.progression.build_targets();build_arrows[id]=arrow
 			if id not in ["garage","range"]:
 				preload("res://scripts/interaction_prompt.gd").attach(bench_visuals,self,Game.RESEARCH[id].name if id in Game.built_workshops else "🔒 Построить · "+Game.RESEARCH[id].name,pos,1.25)

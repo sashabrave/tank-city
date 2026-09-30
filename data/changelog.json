@@ -1,6 +1,26 @@
 {
 	"entries": [
 		{
+			"date": "2026-10-01",
+			"version": "0.2.1",
+			"ru": {
+				"title": "Хаб",
+				"items": [
+					"Командный центр при новостях светится сам: на экране иконка письма, синий свет мягко освещает пол перед ним. Он больше не становится прозрачным, когда подходишь.",
+					"Стрелки «построй здесь» и восклицательный знак стали меньше и спокойнее.",
+					"Места снесённых верстаков снова проходимы. На задней стене ангара появились трубы, вентиляторы, щит с инструментами, распредщиток и двигатель на тали."
+				]
+			},
+			"en": {
+				"title": "Hub",
+				"items": [
+					"The command centre glows by itself when there is news: a letter icon on the screen, a soft blue light on the floor in front. It no longer turns see-through when you come close.",
+					"The build-here arrows and the exclamation mark are smaller and calmer.",
+					"The spots of the removed workbenches are walkable again. The back wall of the hangar has pipes, fans, a tool board, a breaker cabinet and an engine on a hoist."
+				]
+			}
+		},
+		{
 			"date": "2026-09-30",
 			"version": "0.2.1",
 			"ru": {
