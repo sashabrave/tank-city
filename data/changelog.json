@@ -24,7 +24,10 @@
 					"Подбитая вражеская техника, которую можно занять, теперь заметна: вокруг корпуса расходятся зелёные волны, над ним светится столб, стрелка мигает. Если машина за краем экрана, на краю появляется указатель.",
 					"У боссов мира появилась маленькая головоломка: на 60% и 30% здоровья босс закрывается щитом, а питает его генератор на фланге под охраной. Разбей генератор, и щит пропадёт.",
 					"Комнаты механика, инструктора и штаба оформлены заново: у механика ангар с подъёмником и шинами, у инструктора тренировочная площадка с мешками и мишенями, у штаба пост связи с антенной и терминалами. Тёплый свет на станции, холодный контровой сзади. Справа ворота выхода: красные до выбора, зелёные после. Через них можно просто выйти на карту.",
-					"За краем поля боя иногда горят бочки: тёплый живой свет, особенно ночью. В хабе бойца подсвечивает холодный контровой свет, он лучше читается на полу."
+					"За краем поля боя иногда горят бочки: тёплый живой свет, особенно ночью. В хабе бойца подсвечивает холодный контровой свет, он лучше читается на полу.",
+					"Один раз за вылазку смертельное попадание оставляет бойцу 1 здоровье и короткую неуязвимость: «На волоске!».",
+					"Если две выдачи подряд прошли без редкой карты, третья точно покажет редкую или лучше.",
+					"Быстрые убийства складываются в серию: над целью золотое «×2», «×3»… С третьего убийства серии выпадает немного сплава сверху."
 				]
 			},
 			"en": {
@@ -48,7 +51,10 @@
 					"Enemy vehicles you can capture now stand out: green waves ripple around the hull, a light column rises above it and the arrow blinks. If the hull is off-screen, a pointer appears at the edge.",
 					"World bosses now have a small puzzle: at 60% and 30% health the boss raises a shield powered by a guarded flank generator. Break the generator to drop the shield.",
 					"Mechanic, instructor and HQ rooms are redesigned: a hangar with a lift and tyres, a training yard with sandbags and targets, a comms post with an antenna and terminals. Warm light on the station, cool rim light behind it. The exit gate on the right is red until you choose and green after; walk through it to return to the map.",
-					"Burning drums sometimes flicker just outside the battlefield, giving warm, living light, especially at night. In the hub a cool rim light makes the soldier stand out against the floor."
+					"Burning drums sometimes flicker just outside the battlefield, giving warm, living light, especially at night. In the hub a cool rim light makes the soldier stand out against the floor.",
+					"Once per run a lethal hit leaves the soldier at 1 HP with brief invulnerability: \"Close call!\".",
+					"If two card screens in a row had no rare card, the third one is guaranteed to show a rare or better.",
+					"Quick kills chain into a series: a gold ×2, ×3… appears over the target, and from the third kill the series drops a little extra alloy."
 				]
 			}
 		},

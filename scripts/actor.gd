@@ -354,6 +354,14 @@ func take_damage(amount: float,blast:Vector3=Vector3.ZERO,vehicle_credit:String=
 		amount=CombatMods.incoming(arena,amount,source)
 		if amount<0:
 			arena.burst(position+Vector3.UP*.5,Color("d9f2ff"),.3);invulnerable=.25;return
+	if player_owned and kind=="soldier" and arena.run!=null and not arena.run.mercy_used and hp>1.0 and hp-amount<=0 and not arena.sandbox:
+		# Once per run a lethal hit leaves 1 HP and a moment to escape.
+		arena.run.mercy_used=true;amount=hp-1.0
+		arena.burst(position+Vector3.UP*.5,Color("fff2c4"),.7);Game.sound("shield_restore",self)
+		arena.toast("На волоске! Второго шанса в этой вылазке не будет")
+		arena.floating_number(position,-amount);hp=1.0;arena.soldier_hp=hp;invulnerable=1.6;refresh_health()
+		arena.effects.emit("player_damaged",{"actor":self,"amount":amount})
+		return
 	arena.floating_number(position,-minf(hp,amount))
 	hp = maxf(0,hp-amount)
 	if player_owned:

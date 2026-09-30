@@ -262,8 +262,10 @@ func apply_service_reward(branch:String,vehicle:String,index:int,offer:Dictionar
 		arena.abilities.upgrade(offer.id,offer.tier)
 		Game.progression.event("upgrade_"+arena.abilities.selected);Game.save_progress()
 
+const KILL_SERIES_WINDOW=1.6
 func award_kill(actor):
 	arena.effects.emit("kill",{"actor":actor})
+	kill_series(actor)
 	if actor.killed_by_vehicle in GarageCatalog.VEHICLES:Game.progression.event("kills_"+actor.killed_by_vehicle)
 	var amount=roundi(EncounterRules.kill_alloy(actor.kind,actor.rank,arena.room.room_index,actor.elite,arena.room.difficulty)*CombatMods.loot_multiplier(arena))
 	CombatMods.on_kill(arena,actor)
@@ -357,3 +359,22 @@ func safe_drop_position(pos:Vector3)->Vector3:
 		var candidate=arena.world_pos(cell);var d=arena.flat_distance(pos,candidate)
 		if d<distance:best=candidate;distance=d
 	return best
+
+## Kills close together build a series: a gold ×N over the target and a small alloy bonus from ×3.
+func kill_series(actor):
+	var run=arena.run
+	run.series=run.series+1 if arena.elapsed-run.series_at<=KILL_SERIES_WINDOW else 1
+	run.series_at=arena.elapsed
+	if run.series<2:return
+	var label=Visuals.label3d(arena,"×%d" % run.series,actor.position+Vector3(0,2.2,0),Color("ffd26b"),44+mini(run.series,6)*4)
+	label.scale=Vector3.ONE*.6
+	var tween=arena.create_tween()
+	tween.tween_property(label,"scale",Vector3.ONE*1.15,.12).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_property(label,"scale",Vector3.ONE,.1)
+	tween.parallel().tween_property(label,"position:y",label.position.y+.6,.8)
+	tween.tween_property(label,"modulate:a",0.0,.35)
+	tween.tween_callback(label.queue_free)
+	if run.series>=3:
+		preload("res://scripts/resource_drop.gd").spawn(arena,actor.position,run.series-1,"alloy",actor.resource_blast)
+		Game.sound("reward_reveal_%d" % clampi(run.series-2,1,3) if run.series<=5 else "rare_reveal",arena)
+

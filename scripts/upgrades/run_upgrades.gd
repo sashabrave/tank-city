@@ -55,6 +55,7 @@ static func roll_offers(arena,count:int)->Array:
 	var favourite=ClassCatalog.info(Game.selected_class).family
 	for slot in range(count):
 		var tier=roll_tier(arena)
+		if slot==0 and arena.run.dry_offers>=2:tier=maxi(tier,2)
 		var pool=UpgradeRegistry.all().filter(func(def):return def.id not in taken and eligible(arena,def,tier))
 		if slot==0 and arena.run.upgrade_history.is_empty():
 			var themed=pool.filter(func(def):return def.family==favourite)
@@ -68,6 +69,7 @@ static func roll_offers(arena,count:int)->Array:
 			pick-=attracted_weight(arena,def,counts)
 			if pick<0:chosen=def;break
 		taken.append(chosen.id);result.append({"id":chosen.id,"tier":maxi(tier,chosen.min_tier)})
+	arena.run.dry_offers=0 if result.any(func(offer):return offer.tier>=2) else arena.run.dry_offers+1
 	return result
 static func roll(arena,count:int)->Array:return roll_offers(arena,count).map(func(offer):return offer.id)
 

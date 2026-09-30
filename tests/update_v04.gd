@@ -49,6 +49,10 @@ func run():
 	var main=load("res://scripts/main.gd").new();add_child(main)
 	main.start_run();main.enter_room(0)
 	main.current.damage_bonus=7.0;main.current.soldier_hp=2
-	main.show_map(1);main.enter_room(1)
+	main.show_map(1)
+	# World 1 may place a service on stage 1: enter a battle lane explicitly.
+	var plan=RoutePlan.build(main.run_arena.run_seed)
+	var lanes=RoutePlan.reachable(plan,1,main.route_choices,"").filter(func(id):return RoutePlan.node_branch(RoutePlan.chosen(plan,1,{1:id}))=="")
+	main.enter_room(1,lanes[0] if not lanes.is_empty() else "")
 	check(main.current.room_index==1 and main.current.damage_bonus==7 and main.current.soldier_hp==2,"map preserves run state")
 	print("V04: %d checks, %d failures" % [checks,failures]);get_tree().quit(1 if failures else 0)

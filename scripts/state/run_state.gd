@@ -61,3 +61,10 @@ var dash_ready_at=0.0
 var landing_until=0.0
 ## Выдержка: shots fired until this time carry the opening bonus (all pellets of one volley).
 var opening_until=-10.0
+## Softening bad moments: one lethal hit per run leaves the soldier at 1 HP.
+var mercy_used=false
+## Card screens in a row without a rare-or-better card; the third one guarantees a rare.
+var dry_offers=0
+## Kill series: kills within KILL_SERIES_WINDOW seconds of each other.
+var series=0
+var series_at=-10.0
