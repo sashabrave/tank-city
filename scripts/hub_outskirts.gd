@@ -110,7 +110,7 @@ func vegetation(biome:Dictionary):
 		tries+=1
 		var p=Vector3(rng.randf_range(-12,14),GROUND_Y+.02,rng.randf_range(-9,10))
 		if not free_cell(p):continue
-		var scene=load("res://assets/models/vegetation/%s_%02d.glb" % [family,rng.randi_range(0,2)])
+		var scene=load("res://assets/models/vegetation/%s_%02d.glb" % [family,rng.randi_range(0,preload("res://scripts/vegetation_visual.gd").VARIANTS-1)])
 		var node=scene.instantiate();add_child(node);node.position=p;node.rotation.y=rng.randi_range(0,3)*PI*.5;node.scale=Vector3.ONE*rng.randf_range(1.0,1.35)
 		for mesh in node.find_children("*","MeshInstance3D",true,false):
 			mesh.set_instance_shader_parameter("wind_offset",rng.randf()*100)

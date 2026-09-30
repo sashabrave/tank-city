@@ -236,7 +236,7 @@ func set_paint(mode:String,rank:int=1):
 				mat.set_meta("barrel",barrel)
 				mat.set_shader_parameter("barrel_end",mesh.get_aabb().position.z+mesh.get_aabb().size.z*(.5 if str(mesh.name)=="buggy_mg" else 1.01))
 				mesh.set_surface_override_material(index,mat);paint_materials.append(mat)
-	var color={"friendly":Color("82956b") if kind in ["tank","boss","apc","buggy","flyer","drone"] else Color("ddd9c5"),"enemy":RANK_COLORS[clampi(rank,1,3)-1],"capture":Color("259642"),"explode":Color("af231b")}.get(mode,Color.WHITE)
+	var color={"friendly":Color("82956b") if kind in ["tank","boss","apc","buggy","flyer","drone","mortar"] else Color("ddd9c5"),"enemy":RANK_COLORS[clampi(rank,1,3)-1],"capture":Color("259642"),"explode":Color("af231b")}.get(mode,Color.WHITE)
 	for mat in paint_materials:
 		mat.set_shader_parameter("paint_color",color)
 		mat.set_shader_parameter("barrel_white",mode=="friendly" and mat.get_meta("barrel",false))

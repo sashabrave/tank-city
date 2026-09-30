@@ -217,6 +217,8 @@ func throw_grenade(actor,target: Vector3):
 	grenade.arena=arena;grenade.friendly=actor.allied or actor.player_owned;grenade.source=str(actor.kind)
 	grenade.damage=Game.turret_damage() if actor.allied else actor.damage;grenade.target=Vector3(target.x,0,target.z)
 	grenade.position=actor.position+Vector3.UP*(1.4 if actor.allied else .9)
+	# The mortar lobs from its muzzle (the model is raised to the shot angle by then).
+	if is_instance_valid(actor.model) and actor.model.has_method("muzzle_point"):grenade.position=actor.model.muzzle_point()
 	grenade.flight_time=1.6 if actor.allied else (3.0 if actor.kind=="mortar" else 2.0)
 	arena.add_child(grenade);arena.room.grenades.append(grenade)
 

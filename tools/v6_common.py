@@ -21,8 +21,8 @@ PALETTE = {
     "hull_light": "b9b39c", "hull_dark": "4f5443", "rubber": "262626", "glass": "9fb6bd",
     "canvas": "7d7a5f", "canvas_dark": "5f5d48", "concrete": "9a9d93", "concrete_dark": "74786f",
     "stone": "a8a79c", "wood": "7a5a3c", "flag": "c8452f", "gold": "c9a24a",
-    "bronze": "7b8a6e", "marble": "cfcabb", "steel": "9aa1a4", "hazard": "e3b23c", "tarp": "6b6e52", "tarp_dark": "55583f",
-    "screen": "6fd8e0", "screen_amber": "f2b74a", "glow_red": "ff4a3a", "desk": "c4bfae",
+    "bronze": "7b8a6e", "marble": "c3bba7", "steel": "9aa1a4", "hazard": "e3b23c", "tarp": "6b6e52", "tarp_dark": "55583f",
+    "screen": "6fd8e0", "screen_amber": "f2b74a", "glow_red": "ff4a3a", "desk": "b8ad94",
 }
 EMISSIVE = {"lamp": "fff1c9", "screen": "5fc8d2", "screen_amber": "e8a53a", "glow_red": "ff3a2a"}
 NAMES = list(PALETTE)
@@ -214,6 +214,35 @@ class Kit:
 
     def tris(self):
         return sum(len(p.vertices) - 2 for ob, _ in self.parts for p in ob.data.polygons)
+
+
+def cozy_soften(ob, width=.022, segments=1, angle=40, smooth=55, min_edge=.08):
+    """Toy-like softening for hard-surface meshes: a small single chamfer on the visible sharp edges (short
+    detail edges are skipped — a chamfer there costs triangles and is invisible from the game camera),
+    keep each face on one palette cell (chamfer faces would otherwise stretch UVs across colours),
+    shade smooth with a sharper cut-off so large panels stay crisp."""
+    if ob.type != 'MESH' or not ob.data.polygons:
+        return
+    me = ob.data
+    scale = max(1e-4, sum(abs(v) for v in ob.matrix_world.to_scale()) / 3)
+    bm = bmesh.new(); bm.from_mesh(me)
+    # Imported flat-shaded meshes have split vertices; weld them so edges are shared and can be rounded.
+    bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=.0005 / scale)
+    sharp = [e for e in bm.edges if e.is_manifold and e.calc_face_angle(0) > D(angle) and e.calc_length() * scale > min_edge]
+    if sharp:
+        bmesh.ops.bevel(bm, geom=sharp, offset=width / scale, segments=segments, affect='EDGES', profile=.5, clamp_overlap=True)
+    print(f"COZY {ob.name}: {len(sharp)} edges rounded")
+    uv = bm.loops.layers.uv.active
+    if uv:
+        n = len(NAMES)
+        for f in bm.faces:
+            u = f.loops[0][uv].uv.x
+            cell = min(n - 1, max(0, int(u * n)))
+            centre = ((cell * CELL + CELL / 2) / (CELL * n), .5)
+            for l in f.loops: l[uv].uv = centre
+    bm.to_mesh(me); bm.free()
+    for p in me.polygons: p.use_smooth = True
+    me.set_sharp_from_angle(angle=D(smooth))
 
 
 def superellipse(a, b, t, n=4.0, notch=0.0):

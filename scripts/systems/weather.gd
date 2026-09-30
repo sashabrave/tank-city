@@ -14,6 +14,19 @@ const LOOK={
 var arena
 var kind="clear"
 var batches:Array[MultiMeshInstance3D]=[]
+var rain_style=""
+## Three rains, chosen per room from the visual seed: count, streak size, fall speed, wind slant,
+## opacity, ripples and glossy puddles. All visual.
+const RAIN={
+	"drizzle":{"count":170,"quad":Vector2(.03,.22),"fall":1.0,"slant":.35,"strength":.75,"ripples":30,"puddles":5},
+	"shower":{"count":260,"quad":Vector2(.034,.34),"fall":1.35,"slant":.9,"strength":1.0,"ripples":48,"puddles":9},
+	"downpour":{"count":420,"quad":Vector2(.038,.5),"fall":1.8,"slant":1.6,"strength":1.2,"ripples":80,"puddles":14},
+}
+static func pick_rain(context:Node)->String:
+	var forced=str(Settings.values.get("rain_style",""))
+	if forced in RAIN:return forced
+	var rng=RandomNumberGenerator.new();rng.seed=hash([Game.visual_run_seed,context.room_index,"rain_style"])
+	return ["drizzle","shower","shower","downpour"][rng.randi_range(0,3)]
 
 static func allowed(entry:Dictionary)->Array:
 	if "ice" in entry.kinds or entry.get("vegetation","")=="frost":return ["clear","snow","fog"]
@@ -45,7 +58,11 @@ func build():
 	var size=float(arena.grid_size)+4.0
 	match kind:
 		"rain":
-			batch(0,260,size,Vector2(.018,.34));batch(4,48,size,Vector2(.3,.3))
+			rain_style=pick_rain(arena);var style=RAIN[rain_style]
+			var streaks=batch(0,style.count,size,style.quad)
+			for key in ["fall","slant","strength"]:streaks.material_override.set_shader_parameter(key,style[key])
+			batch(4,style.ripples,size,Vector2(.3,.3)).material_override.set_shader_parameter("strength",style.strength)
+			puddles(style.puddles)
 		"snow":
 			batch(1,200,size,Vector2(.07,.07))
 		"fog":
@@ -61,7 +78,26 @@ func clear():
 	for node in get_tree().get_nodes_in_group("weather_drifts"):
 		if arena.is_ancestor_of(node):node.remove_from_group("weather_drifts");node.queue_free()
 
-func batch(shader_kind:int,count:int,size:float,quad:Vector2):
+## Glossy rain puddles on open floor: flat blobs that only catch the light. They block nothing.
+func puddles(count:int):
+	var rng=RandomNumberGenerator.new();rng.seed=hash([Game.visual_run_seed,arena.room_index,"puddles"])
+	var multi=MultiMesh.new();multi.transform_format=MultiMesh.TRANSFORM_3D;multi.use_custom_data=true
+	var mesh=QuadMesh.new();mesh.size=Vector2(1,1);mesh.orientation=PlaneMesh.FACE_Y;multi.mesh=mesh
+	var spots=[]
+	for attempt in range(count*12):
+		if spots.size()>=count:break
+		var cell=Vector2i(rng.randi_range(1,arena.grid_size-2),rng.randi_range(1,arena.grid_size-2))
+		if arena.walls.has(cell) or arena.terrain.patches.has(cell*2) or arena.trenches.has(cell) or cell==arena.base_cell:continue
+		var pos=arena.world_pos(cell)+Vector3(rng.randf_range(-.3,.3),.012,rng.randf_range(-.3,.3))
+		var basis=Basis(Vector3.UP,rng.randf()*TAU).scaled(Vector3(rng.randf_range(.65,1.25),1,rng.randf_range(.5,.9)))
+		spots.append([Transform3D(basis,pos),Color(rng.randf(),rng.randf(),rng.randf(),1)])
+	multi.instance_count=spots.size()
+	for i in range(spots.size()):multi.set_instance_transform(i,spots[i][0]);multi.set_instance_custom_data(i,spots[i][1])
+	var instance=MultiMeshInstance3D.new();instance.name="Puddles";instance.multimesh=multi;instance.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var mat=ShaderMaterial.new();mat.shader=preload("res://shaders/world/puddle.gdshader");instance.material_override=mat
+	add_child(instance);batches.append(instance)
+
+func batch(shader_kind:int,count:int,size:float,quad:Vector2)->MultiMeshInstance3D:
 	var rng=RandomNumberGenerator.new();rng.seed=hash([Game.visual_run_seed,arena.room_index,"weather",shader_kind])
 	var multi=MultiMesh.new();multi.transform_format=MultiMesh.TRANSFORM_3D;multi.use_custom_data=true
 	var mesh=QuadMesh.new();mesh.size=quad;multi.mesh=mesh;multi.instance_count=count
@@ -74,9 +110,10 @@ func batch(shader_kind:int,count:int,size:float,quad:Vector2):
 	var mat=ShaderMaterial.new();mat.shader=preload("res://shaders/world/weather.gdshader")
 	mat.set_shader_parameter("kind",shader_kind);mat.set_shader_parameter("area",size)
 	instance.material_override=mat;add_child(instance);batches.append(instance)
+	return instance
 
 func apply():
 	# The settings dropdown can switch weather mid-battle.
 	if pick(arena)!=kind:clear();build()
 	var night=Settings.values.get("world_lighting","day")=="night"
-	for batch_node in batches:batch_node.material_override.set_shader_parameter("night",night)
+	for batch_node in batches:batch_node.material_override.set_shader_parameter("night",night)  # puddles read it too

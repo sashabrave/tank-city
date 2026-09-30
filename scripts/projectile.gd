@@ -26,6 +26,7 @@ var sniper_visual=false
 var flyer_round=false
 var hit_actors: Array=[]
 var blink_halo:Node3D
+var grove_cell:=Vector2i(-99,-99)
 
 func _ready():
 	if is_instance_valid(owner_actor) and owner_actor.has_method("pressure"):pressure=owner_actor.pressure()
@@ -60,6 +61,15 @@ func _physics_process(delta):
 		if arena.bullet_hit(self):
 			consume()
 			return
+	rustle_grove()
+
+## Bullets fly through groves; the tree they cross gives a shiver and a few twigs (visual only).
+func rustle_grove():
+	var cell=arena.grid_pos(position)
+	if cell==grove_cell:return
+	grove_cell=cell
+	var grove=arena.terrain.vegetation.get(cell)
+	if is_instance_valid(grove):preload("res://scripts/vegetation_visual.gd").rustle(grove,travel_direction)
 
 func consume():
 	if spent:return

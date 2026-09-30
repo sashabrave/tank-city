@@ -53,7 +53,7 @@ func run():
 				await get_tree().physics_frame
 			check(soldier.cell==Vector2i(0,arena.grid_size-4),"Distant route reached world %d room %d (%d moves)" % [world,room,moved])
 	check(late>early,"Late rooms contain more difficult terrain")
-	# All biome families provide three importable, rooted, one-cell meshes.
+	# All biome families provide VARIANTS importable, rooted, one-cell meshes.
 	for biome in arena.BIOMES.ENTRIES:family_seen[biome.vegetation]=true
 	check(family_seen.size()==5 and arena.BIOMES.ENTRIES.size()==15,"Five forest families / fifteen biomes")
 	var vegetation=load("res://scripts/vegetation_visual.gd")
@@ -61,9 +61,9 @@ func run():
 	for x in range(30):
 		var a=vegetation.appearance(810,2,Vector2i(x,3));check(a==vegetation.appearance(810,2,Vector2i(x,3)),"Deterministic appearance")
 		appearances[a.tile]=true
-	check(appearances.size()==3,"All three variants appear")
+	check(appearances.size()==vegetation.VARIANTS,"All variants appear")
 	for family in family_seen:
-		for variant in range(3):
+		for variant in range(vegetation.VARIANTS):
 			var scene=load(vegetation.model_path(family,variant)).instantiate()
 			var meshes=scene.find_children("*","MeshInstance3D",true,false);check(meshes.size()==1,"One vegetation mesh per tile")
 			if not meshes.is_empty():

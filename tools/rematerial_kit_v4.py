@@ -10,7 +10,7 @@ Writes assets/models/vehicles_v6/<kind>.glb.
 """
 import bpy, os, sys, math
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from v6_common import Kit
+from v6_common import Kit, cozy_soften
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, "assets/models/kit_v4")
@@ -118,6 +118,9 @@ for kind in ("tank", "apc", "buggy", "drone", "flyer", "boss"):
                 c = Kit.cell_uv(cell)
                 for li in p.loop_indices: uv[li].uv = c
         # (materials.clear() would reset face indices; unused slots are simply not exported)
+    # Cozy pass: the kit_v4 hulls had knife-edge boxes; round them so they sit next to the soft cats.
+    for ob in [o for o in bpy.data.objects if o.type == 'MESH']:
+        cozy_soften(ob, width=.018)
     k.add_special("metal", metal)
     for name, kit in details(kind, k).items():
         join_into(bpy.data.objects[name], kit)

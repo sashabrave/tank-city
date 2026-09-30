@@ -8,7 +8,7 @@ Output: assets/models/environment_v7/<name>.glb (hub props face the camera: flip
 import bpy, math, os, sys
 from mathutils import Vector, Matrix
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from v6_common import Kit, D, preview_scene, still
+from v6_common import Kit, D, cozy_soften, preview_scene, still
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ENV = os.path.join(ROOT, "assets/models/environment_v7")
@@ -33,6 +33,7 @@ def export(scene, kits, name):
     bpy.context.view_layer.objects.active = parts[0]
     bpy.ops.object.join()
     ob = bpy.context.active_object; ob.name = ob.data.name = name
+    cozy_soften(ob, width=.015, angle=50)  # round the raw right angles left by plain boxes
     os.makedirs(ENV, exist_ok=True)
     bpy.ops.export_scene.gltf(filepath=os.path.join(ENV, name + ".glb"), use_selection=True, export_yup=True, export_animations=False)
     print(f"PROP {name}: {tris} tris")

@@ -84,7 +84,7 @@ func apply_render_scale():
 	var viewport=get_viewport();var scale=render_scale()
 	viewport.scaling_3d_mode=Viewport.SCALING_3D_MODE_FSR if scale<.99 else Viewport.SCALING_3D_MODE_BILINEAR
 	viewport.scaling_3d_scale=scale if scale<.99 else 1.0
-	viewport.fsr_sharpness=.35
+	viewport.fsr_sharpness=.6  # 0 is the sharpest; .35 rang around thin rain streaks
 func save():
 	if not persistence_enabled:return
 	var config=ConfigFile.new()

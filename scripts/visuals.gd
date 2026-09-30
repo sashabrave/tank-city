@@ -6,7 +6,7 @@ static var brushed_roughness:ImageTexture
 const INFANTRY=["soldier","grenadier","shield","sniper","rpg_soldier"]
 const VEHICLES=["tank","apc","buggy","drone","flyer","boss"]
 static func model(kind: String, parent: Node3D, pos = Vector3.ZERO) -> Node3D:
-	if kind in ["soldier","grenadier","shield","sniper","rpg_soldier","boss","tank","apc","buggy","drone","flyer"] or kind.begins_with("weapon_"):return kit_model(kind,parent,pos)
+	if kind in ["soldier","grenadier","shield","sniper","rpg_soldier","boss","tank","apc","buggy","drone","flyer","mortar"] or kind.begins_with("weapon_"):return kit_model(kind,parent,pos)
 	var environment_kind="bench_mechanic" if kind=="workbench" else kind
 	var environment_path=("res://assets/models/cover_v1/" if kind in ["net","trench"] else "res://assets/models/concrete_v1/" if kind.begins_with("concrete_") else "res://assets/models/environment_v7/")+environment_kind+".glb"
 	var obj = load(environment_path if ResourceLoader.exists(environment_path) else "res://assets/models/" + kind + ".glb").instantiate()
@@ -19,11 +19,12 @@ static func model(kind: String, parent: Node3D, pos = Vector3.ZERO) -> Node3D:
 	return obj
 
 static func kit_model(kind:String,parent:Node3D,pos:Vector3)->Node3D:
-	var wrapper=load("res://scripts/kit_model.gd").new()
+	# The mortar has its own states (warning, lob, reload) on top of the kit wrapper.
+	var wrapper=load("res://scripts/mortar_model.gd" if kind=="mortar" else "res://scripts/kit_model.gd").new()
 	wrapper.kind=kind
 	# v6: low-poly chibi cat infantry and weapons (tools/build_infantry_v6.py, build_weapons_v6.py).
 	# Vehicles: kit_v4 geometry re-dressed with v6 materials (tools/rematerial_kit_v4.py).
-	var family="infantry_v6" if kind in INFANTRY or kind.begins_with("weapon_") else "vehicles_v6" if kind in VEHICLES else "kit_v4"
+	var family="infantry_v6" if kind in INFANTRY or kind.begins_with("weapon_") else "vehicles_v6" if kind in VEHICLES or kind=="mortar" else "kit_v4"
 	var art=load("res://assets/models/"+family+"/"+kind+".glb").instantiate()
 	wrapper.add_child(art)
 	# One authored cell is .93 units.

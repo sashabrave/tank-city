@@ -2,6 +2,30 @@
 	"entries": [
 		{
 			"date": "2026-09-30",
+			"version": "0.3.3",
+			"ru": {
+				"title": "Уютнее модели, дождь и живой лес",
+				"items": [
+					"Техника и постройки скруглены: мягкие фаски на корпусах, башнях, верстаках и ящиках, теплее кремовые столешницы — всё лучше сочетается с котами.",
+					"Новый миномёт: гнездо из мешков, поворотный стол, пухлый ствол на сошках и лампа. Видно, когда он дремлет, целится, готовится к выстрелу (лампа мигает чаще), стреляет, перезаряжается, получает попадание и опрокидывается.",
+					"Деревья пухлее и разнообразнее: пять вариантов клеток леса вместо трёх, у каждого дерева свой силуэт.",
+					"Лес отзывается на выстрелы: пролетевшая пуля резко встряхивает дерево, вылетают щепки и листья, слышен лёгкий треск.",
+					"Три вида дождя — морось, дождь и ливень — и блестящие лужи на земле. Капли больше не выглядят чёрными чёрточками."
+				]
+			},
+			"en": {
+				"title": "Cozier models, rain and a living forest",
+				"items": [
+					"Vehicles and buildings are rounded: soft chamfers on hulls, turrets, benches and crates, warmer cream desks — everything sits better next to the cats.",
+					"New mortar: sandbag nest, turntable, a chubby tube on a bipod and a lamp. You can see it idle, aim, get ready to fire (the lamp blinks faster), fire, reload, take a hit and topple.",
+					"Trees are puffier and more varied: five forest tile variants instead of three, every tree with its own silhouette.",
+					"The forest reacts to gunfire: a passing bullet gives the tree a sharp shake, twigs and leaves fly out with a light crackle.",
+					"Three kinds of rain — drizzle, rain and downpour — and glossy puddles on the ground. Raindrops no longer show up as black dashes."
+				]
+			}
+		},
+		{
+			"date": "2026-09-30",
 			"version": "0.3.2",
 			"ru": {
 				"title": "Чище интерфейс и уведомления",

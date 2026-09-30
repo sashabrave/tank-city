@@ -1,10 +1,15 @@
 shader_type spatial;
 // Battle weather particles, all motion in the vertex stage.
 // kind 0 rain streak, 1 snowflake, 2 sand streak (gusts), 3 low fog puff, 4 rain ripple (flat).
+// Rain streaks are kept wider than a pixel of the scaled 3D buffer: sub-pixel lines made the FSR
+// sharpening ring and read as black dashes. fall/slant/strength vary per rain style (weather.gd).
 render_mode unshaded,cull_disabled,depth_draw_never,shadows_disabled;
 uniform int kind = 0;
 uniform float area = 16.0;
 uniform bool night = false;
+uniform float fall = 1.35;
+uniform float slant = .9;
+uniform float strength = 1.0;
 varying vec2 corner;
 varying float fade;
 void vertex(){
@@ -13,8 +18,8 @@ void vertex(){
  float phase=INSTANCE_CUSTOM.x;float phase2=INSTANCE_CUSTOM.y;float rate=INSTANCE_CUSTOM.z;
  fade=1.0;
  if(kind==0){
-  float life=fract(TIME*1.35*rate+phase);
-  origin.y=mix(6.5,-.1,life);origin.x+=life*.9;
+  float life=fract(TIME*fall*rate+phase);
+  origin.y=mix(6.5,-.1,life);origin.x+=life*slant;
   fade=smoothstep(0.0,.12,life)*(1.0-smoothstep(.9,1.0,life));
  }else if(kind==1){
   float life=fract(TIME*.085*rate+phase);
@@ -46,10 +51,10 @@ void fragment(){
  vec2 p=UV*2.0-1.0;float r=length(p);
  vec3 color=night ? vec3(.62,.68,.8) : vec3(.93,.95,1.0);
  float alpha=0.0;
- if(kind==0){alpha=(1.0-abs(p.x))*(.35+.65*(1.0-UV.y))*.42;}
+ if(kind==0){alpha=smoothstep(1.0,.1,abs(p.x))*(.35+.65*(1.0-UV.y))*.36*strength;}
  else if(kind==1){alpha=(1.0-smoothstep(.45,1.0,r))*.95;}
  else if(kind==2){color=night ? vec3(.55,.5,.42) : vec3(.93,.82,.6);alpha=(1.0-abs(p.y))*(1.0-smoothstep(.4,1.0,abs(p.x)))*.55;}
  else if(kind==3){color=night ? vec3(.45,.5,.6) : vec3(.95,.96,.97);alpha=(1.0-smoothstep(.2,1.0,r))*.22;}
- else{float ring=1.0-smoothstep(.0,.16,abs(r-.8));alpha=ring*.4*step(r,1.0);}
+ else{float ring=1.0-smoothstep(.0,.16,abs(r-.8));alpha=ring*.4*step(r,1.0)*min(strength,1.3);}
  ALBEDO=color;ALPHA=alpha*fade;
 }

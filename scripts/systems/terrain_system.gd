@@ -2,6 +2,7 @@ extends RefCounted
 ## Half-cell floor ownership. Empty entries are ordinary floor; trenches own full cells.
 var arena
 var patches:Dictionary={}
+var vegetation:Dictionary={}  # cell → grove node, for the bullet rustle (visual only)
 var strips:Array=[]
 var batches:Dictionary={}
 var sand_mesh:ArrayMesh
@@ -137,6 +138,7 @@ func terrain_budget()->int:
 	return maxi(2,roundi(.85*maxi(3,ceili(arena.grid_size*arena.grid_size*(.018+depth*.004+mini(arena.room.difficulty,2)*.003)))))
 func build():
 	generate();batches.clear()
+	vegetation.clear()
 	var tint=Color(arena.room_palette().floor)
 	var positions=[];var foundation=[]
 	for z in range(arena.grid_size):
@@ -144,7 +146,7 @@ func build():
 			var c=Vector2i(x,z)
 			if arena.trenches.has(c):continue
 			foundation.append(arena.world_pos(c))
-			if patches.get(c*2,"")=="vegetation":preload("res://scripts/vegetation_visual.gd").place(arena,c,tint)
+			if patches.get(c*2,"")=="vegetation":vegetation[c]=preload("res://scripts/vegetation_visual.gd").place(arena,c,tint)
 			var special=false
 			for dx in range(2):
 				for dz in range(2):

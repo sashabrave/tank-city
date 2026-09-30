@@ -7,7 +7,7 @@ Run: Blender -b --factory-startup --python tools/build_props_v6.py -- [--render]
 import bpy, bmesh, math, os, sys, random
 from mathutils import Vector, Matrix
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from v6_common import Kit, D, preview_scene, still, rounded_rect
+from v6_common import Kit, D, cozy_soften, preview_scene, still, rounded_rect
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PREVIEW = os.path.join(ROOT, "tmp/props_v6")
@@ -38,6 +38,7 @@ def export(scene, kits, name, folder, flip=None):
     bpy.context.view_layer.objects.active = parts[0]
     bpy.ops.object.join()
     ob = bpy.context.active_object; ob.name = ob.data.name = name
+    cozy_soften(ob, width=.015, angle=50)  # round the raw right angles left by plain boxes
     if folder:
         os.makedirs(folder, exist_ok=True)
         bpy.ops.export_scene.gltf(filepath=os.path.join(folder, name + ".glb"), use_selection=True, export_yup=True, export_animations=False)

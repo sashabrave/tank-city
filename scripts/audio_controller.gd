@@ -1,7 +1,7 @@
 extends Node
 ## Independent audio RNG never changes combat/map seeds. One-shots survive emitter deletion.
 const ROOT="res://assets/audio/chip/"
-const ALIASES={"shot":"fire_pistol","hit":"hit_stone","boom":"explosion_small","upgrade":"ui_confirm"}
+const ALIASES={"shot":"fire_pistol","hit":"hit_stone","boom":"explosion_small","upgrade":"ui_confirm","foliage_crack":"hit_wood"}
 var banks:Dictionary={}
 var cache:Dictionary={}
 var last_variant:Dictionary={}
@@ -75,8 +75,8 @@ func play(event:String,source:Node):
 	voices=voices.filter(is_instance_valid)
 	if voices.size()>=28:
 		voices[0].queue_free();voices.pop_front()
-	var p=make_player();p.stream=stream_for(id);p.volume_db=gain(id)+spatial(p,source)
-	p.set_meta("ui",id.begins_with("ui_") or id.begins_with("reward_reveal_") or id in ["ui_confirm","pickup","heal","repair","chest_open","rare_reveal","weapon_equip","reroll","extraction","defeat","route_select","route_enter","route_cancel","quest_ready","quest_claim","telegram_accept","base_level_up","weapon_tune","build_complete"]);p.pitch_scale=rng.randf_range(.88,1.12) if id=="wall_crumble" else rng.randf_range(.97,1.03);p.finished.connect(p.queue_free);p.play();voices.append(p)
+	var p=make_player();p.stream=stream_for(id);p.volume_db=gain(id)+spatial(p,source)-(6.0 if event=="foliage_crack" else 0.0)
+	p.set_meta("ui",id.begins_with("ui_") or id.begins_with("reward_reveal_") or id in ["ui_confirm","pickup","heal","repair","chest_open","rare_reveal","weapon_equip","reroll","extraction","defeat","route_select","route_enter","route_cancel","quest_ready","quest_claim","telegram_accept","base_level_up","weapon_tune","build_complete"]);p.pitch_scale=rng.randf_range(.88,1.12) if id=="wall_crumble" else rng.randf_range(1.35,1.6) if event=="foliage_crack" else rng.randf_range(.97,1.03);p.finished.connect(p.queue_free);p.play();voices.append(p)
 	stats[id]=int(stats.get(id,0))+1
 func loop_event(id:String,source:Node,enabled:bool=true,pitch:float=1.0):
 	var key=str(source.get_instance_id())+":"+id

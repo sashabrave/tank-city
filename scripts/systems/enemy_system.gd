@@ -296,13 +296,16 @@ func mortar_step(actor):
 			var distance=arena.flat_distance(actor.position,enemy.position)
 			if distance<best:best=distance;target=enemy
 		if target==null:return
-		arena.throw_grenade(actor,target.position)
+		arena.throw_grenade(actor,target.position);lob(actor,target.position)
 	else:
 		if arena.room.boss_room:
 			if not is_instance_valid(arena.room.player):return
-			arena.throw_grenade(actor,arena.room.player.position)
-		else:arena.throw_grenade(actor,arena.world_pos(arena.room.base_cell))
+			arena.throw_grenade(actor,arena.room.player.position);lob(actor,arena.room.player.position)
+		else:arena.throw_grenade(actor,arena.world_pos(arena.room.base_cell));lob(actor,arena.world_pos(arena.room.base_cell))
 	actor.fire_cooldown=actor.fire_interval
+
+func lob(actor,target:Vector3):
+	if is_instance_valid(actor.model) and actor.model.has_method("lob"):actor.model.lob(target)
 
 func sniper_step(actor,delta: float):
 	if not is_instance_valid(arena.room.player) or arena.room.player.dead or arena.abilities.cloak_time>0:return
