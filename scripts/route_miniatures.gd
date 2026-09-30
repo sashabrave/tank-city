@@ -53,6 +53,7 @@ static func battle(parent:Node3D,variant:int,color:Color,cleared:bool=false,diff
 		battle_alt(parent,difficulty,side,y,bag,olive,steel,light,anim)
 	else:
 		battle_main(parent,difficulty,side,y,bag,olive,steel,light,anim)
+	battlefield(parent,variant,side,y,color)
 	preload("res://scripts/base_surroundings.gd").tree(parent,Vector3(-side*2.25,y,-2.1),1.6)
 	preload("res://scripts/base_surroundings.gd").tree(parent,Vector3(side*2.2,y,2.0),1.3)
 	if cleared:
@@ -96,6 +97,22 @@ static func battle_main(parent:Node3D,difficulty:int,side:float,y:float,bag:Colo
 			var bowl=cylinder(dish,Vector3(0,0,.1),.55,.12,light,10,.3);bowl.rotation.x=PI*.5
 			anim.add(dish,"rotation:y",[0.0,1.2,2.4])
 			Visuals.model("crate",parent,Vector3(-side*1.3,y,1.2))
+## Battlefield dressing shared by every battle tile: a ruined building corner with a jagged top and rubble,
+## a hedgehog barricade line and a crater — in the car's scale, so the tile reads as a place of war.
+static func battlefield(parent:Node3D,variant:int,side:float,y:float,color:Color):
+	var wall=color.darkened(.25).lerp(Color("8b8f84"),.5);var rubble=color.darkened(.35)
+	var corner=Node3D.new();parent.add_child(corner);corner.position=Vector3(-side*1.9,y,1.9-(variant%2)*3.6);corner.rotation.y=side*.2
+	var heights=[1.3,1.0,.55]
+	for i in range(3):Visuals.box(corner,Vector3(i*.5,heights[i]*.5,0),Vector3(.5,heights[i],.22),wall)
+	for i in range(2):Visuals.box(corner,Vector3(0,[1.15,.7][i]*.5,.45+i*.45),Vector3(.22,[1.15,.7][i],.45),wall)
+	Visuals.box(corner,Vector3(.35,.62,.02),Vector3(.24,.3,.04),Color("2a2c2a"))
+	for k in range(4):Visuals.box(corner,Vector3(.4+k*.22,.07,.45+(k%2)*.2),Vector3(.2,.14,.18),rubble).rotation.y=k*.7
+	for k in range(3):
+		var hog=Node3D.new();parent.add_child(hog);hog.position=Vector3(-.9+k*.9,y,-2.35);hog.rotation.y=k*.8
+		for axis in [Vector3(1,1,0),Vector3(-1,1,0),Vector3(0,1,1)]:
+			var beam=Visuals.box(hog,Vector3(0,.2,0),Vector3(.06,.48,.06),Color("4f5443"))
+			beam.basis=Basis(Vector3.UP.cross(axis.normalized()).normalized() if Vector3.UP.cross(axis.normalized()).length()>.01 else Vector3.RIGHT,Vector3.UP.angle_to(axis.normalized()))
+	cylinder(parent,Vector3(side*1.7,y-.02,-1.6+(variant%2)*.4),.45,.05,color.darkened(.45),10)
 ## Second set of battle dioramas, picked by the node seed so neighbouring fields differ:
 ## checkpoint (easy), convoy under camo net (medium), bunker with a sweeping searchlight (hard).
 static func battle_alt(parent:Node3D,difficulty:int,side:float,y:float,bag:Color,olive:Color,steel:Color,light:Color,anim):

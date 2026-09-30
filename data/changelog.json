@@ -16,7 +16,8 @@
 					"Поля боя меньше и только нечётного размера, чтобы штаб стоял по центру: 11, 13, 15, 15, 17, 17 и босс на 19. В бесконечном режиме — от 15 до 21.",
 					"Музыка меняется мягко: старый трек затихает до тишины, короткая пауза, новый плавно нарастает.",
 					"Если нажать на точку карты, машина едет к ней по изгибам дороги, а не по прямой. Ручная езда по-прежнему свободна.",
-					"Карта маршрута стала полем войны: вместо серой полосы — земля с воронками, мешками, ежами и остовами техники. Горы ступенчатые, со снежными вершинами, перед ними заброшенная промзона: трубы, руины цехов, градирни."
+					"Карта маршрута стала полем войны: вместо серой полосы — земля с воронками, мешками, ежами и остовами техники. Горы ступенчатые, со снежными вершинами, перед ними заброшенная промзона: трубы, руины цехов, градирни.",
+					"Миниатюры боёв похожи на места сражений: руины угла здания с обломками, ряд противотанковых ежей и воронка на каждой."
 				]
 			},
 			"en": {
@@ -32,7 +33,8 @@
 					"Battle fields are smaller and always odd-sized so the HQ sits in the centre: 11, 13, 15, 15, 17, 17 and the boss at 19. Endless runs from 15 to 21.",
 					"Music changes gently: the old track fades to silence, a short pause, the new one rises smoothly.",
 					"Tapping a map point makes the car drive there along the road's curves instead of a straight line. Manual driving stays free.",
-					"The route map is now a war zone: instead of a grey strip, ground with craters, sandbags, hedgehogs and wrecks. The mountains are stepped with snowy tops, fronted by a derelict industrial belt: chimneys, ruined shops, cooling towers."
+					"The route map is now a war zone: instead of a grey strip, ground with craters, sandbags, hedgehogs and wrecks. The mountains are stepped with snowy tops, fronted by a derelict industrial belt: chimneys, ruined shops, cooling towers.",
+					"Battle miniatures look like battle sites: a ruined building corner with rubble, a row of anti-tank hedgehogs and a crater on each."
 				]
 			}
 		},
