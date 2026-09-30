@@ -118,6 +118,8 @@ func change(next:String,refresh:bool=false):
 ## Tracks are large WAV files: they load on a background thread and start once ready, so a context
 ## change never blocks the frame. The loaded resource is shared; looping is always disabled on it.
 var pending_track=""
+## Set by radio skips: a quick switch (short fade out, no pause) instead of the context fade through silence.
+var quick_switch=false
 static func track_path(track:String)->String:return "res://assets/audio/music/"+track+".wav"
 func play_track(track:String):
 	current_track=track;last_tracks[context]=track
@@ -153,10 +155,11 @@ func start_track(track:String,stream:AudioStream):
 	fade=create_tween()
 	var level=func(target:AudioStreamPlayer,from:float,to:float,time:float):
 		fade.tween_method(func(v:float):target.volume_db=linear_to_db(maxf(.001,v)),from,to,time).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	var quick=quick_switch;quick_switch=false
 	if old.playing and old.volume_db>-50:
-		level.call(old,db_to_linear(old.volume_db),0.0,.7)
+		level.call(old,db_to_linear(old.volume_db),0.0,.25 if quick else .7)
 		fade.tween_callback(old.stop)
-		fade.tween_interval(.15)
+		if not quick:fade.tween_interval(.15)
 	else:old.stop()
 	fade.tween_callback(func():
 		if Game.sound_enabled:player.play();player.stream_paused=paused)
@@ -169,7 +172,7 @@ func skip(direction:int):
 	var index=posmod(ids.find(current_track)+direction,ids.size())
 	if shuffle and direction>0:index=ids.find(choose_variant(context,ids))
 	manual_tracks[context]=ids[index]
-	play_track(ids[index])
+	quick_switch=true;play_track(ids[index])
 func title()->String:return catalog.get(current_track,{}).get("title",NAMES.get(current_track,"Музыка"))
 func subtitle()->String:
 	if context not in TRACKS:return "Нет подборки"
