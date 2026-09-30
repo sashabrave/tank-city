@@ -45,3 +45,32 @@ static func configure(card:Panel,data:Dictionary,choose:Callable):
 	button.mouse_entered.connect(func():
 		if not button.disabled:button.grab_focus())
 	button.add_to_group("reward_choice");button.pressed.connect(choose)
+	if data.has("family"):minimal(card,data)
+## Run upgrade cards, mobile style: the whole card is the button; rarity reads from the border, glow and
+## 1-4 corner pips (no word); the family is a small chip; big icon, title and the old→new line in the middle.
+const FAMILY_COLORS={"fire":Color("e8784a"),"survival":Color("7cc27a"),"ammo":Color("e0b44f"),"recon":Color("5fc7c0"),"logistics":Color("b7a8e6")}
+static func minimal(card:Panel,data:Dictionary):
+	for key in ["Rarity","CategoryStripe","CategoryIcon","IconFrame"]:
+		var node=card.get_node_or_null(key)
+		if node:node.hide()
+	var width=card.size.x if card.size.x>0 else 280.0
+	var icon:TextureRect=card.get_node("Icon");icon.position=Vector2(width*.5-46,44);icon.size=Vector2(92,92)
+	var chip=Panel.new();chip.name="FamilyChip";card.add_child(chip);chip.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	var family_color:Color=FAMILY_COLORS.get(data.family,UiKit.MUTED)
+	chip.add_theme_stylebox_override("panel",UiKit.style(Color(family_color,.16),10,Color(family_color,.5)))
+	var chip_text=UiKit.label(chip,data.category,Vector2(22,2),Vector2(160,20),12,family_color.lightened(.2))
+	var dot=Panel.new();chip.add_child(dot);dot.position=Vector2(9,8);dot.size=Vector2(7,7);dot.add_theme_stylebox_override("panel",UiKit.style(family_color,4,family_color))
+	chip.position=Vector2(14,14);chip.size=Vector2(chip_text.get_theme_font("font").get_string_size(Texts.render(data.category),HORIZONTAL_ALIGNMENT_LEFT,-1,12).x+32,24)
+	var pips=preload("res://scripts/ui/pip_strip.gd").new();card.add_child(pips)
+	var tier=int(data.get("tier",0));pips.set_state(tier+1,tier+1,-1);pips.modulate=data.color.lightened(.35);pips.position=Vector2(width-pips.size.x-16,23)
+	var title:Label=card.get_node("Title");title.position=Vector2(16,146);title.size=Vector2(width-32,34);title.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+	for key in ["Description","NumericDescription"]:
+		var body=card.get_node_or_null(key)
+		if body:body.position=Vector2(18,186);body.size=Vector2(width-36,card.size.y-200)
+		if body is Label:body.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+	var rich=card.get_node_or_null("NumericDescription")
+	if rich is RichTextLabel:rich.text="[center]"+rich.text+"[/center]"
+	var button:Button=card.get_node("ChooseButton");button.position=Vector2.ZERO;button.size=card.size;Texts.set_text(button,"")
+	var clear=StyleBoxEmpty.new()
+	for key in ["normal","hover","pressed","focus","disabled"]:button.add_theme_stylebox_override(key,clear)
+	card.move_child(button,card.get_child_count()-1)

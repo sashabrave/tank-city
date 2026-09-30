@@ -250,7 +250,7 @@ func animate_choices(panel:Panel):
 		CardNavigation.transition_locked=false)
 
 func _show_upgrades_now():
-	var panel=choice_screen("rewards_screen","Усиления отряда","Поле боя зачищено" if arena.next_is_room else "Волна отражена",("Текущий ствол: "+LOOT.WEAPONS[arena.weapon].name) if arena.next_is_room else "Улучшение персонажа до конца вылазки.")
+	var panel=choice_screen("rewards_screen","","Выбери усиление",("Текущий ствол: "+LOOT.WEAPONS[arena.weapon].name) if arena.next_is_room else "Улучшение персонажа до конца вылазки.")
 	arena.reward.prepare_upgrade_offers()
 	panel.get_node("ReturnButton").visible=arena.next_is_room and not Campaign.endless
 	panel.get_node("ReturnButton").pressed.connect(func():arena.return_to_field())
