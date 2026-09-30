@@ -235,14 +235,22 @@ async function assets(){
 }
 function view(m){
   const box=document.getElementById("viewer");if(!box||!m)return;
-  box.innerHTML=`<div class="studio"><model-viewer id="mv" src="${esc(m.path)}" alt="${esc(m.name)}" camera-controls touch-action="pan-y" auto-rotate rotation-per-second="18deg" shadow-intensity="1.1" shadow-softness=".9" exposure="1.05" environment-image="neutral" camera-orbit="35deg 68deg auto" interaction-prompt="none"></model-viewer></div>
+  box.innerHTML=`<div class="studio"><model-viewer id="mv" alt="${esc(m.name)}" camera-controls touch-action="pan-y" auto-rotate rotation-per-second="18deg" shadow-intensity="1.1" shadow-softness=".9" exposure="1.05" environment-image="neutral" camera-orbit="35deg 68deg auto" interaction-prompt="none"></model-viewer></div>
   <div class="vinfo"><h3>${esc(m.name)}</h3><span class="chip st-${m.status}">${esc(m.status_text)}</span>
   <dl><dt>Путь</dt><dd>${esc(m.path)}</dd><dt>Треугольники</dt><dd>${m.tris.toLocaleString("ru")}</dd><dt>Мешей / узлов</dt><dd>${m.meshes} / ${m.nodes}</dd><dt>Материалы</dt><dd>${esc(m.materials.join(", ")||"—")}</dd><dt>Размер</dt><dd>${m.kb} КБ</dd><dt>Скелет</dt><dd>${m.skins?"есть":"нет"}</dd></dl>
   ${m.animations.length?`<div class="anims" id="anims"><button data-a="" aria-pressed="true">Статика</button>${m.animations.map(a=>`<button data-a="${esc(a)}" aria-pressed="false">${esc(a)}</button>`).join("")}</div>`:""}</div>`;
   const mv=box.querySelector("#mv"),an=box.querySelector("#anims");
+  modelUrl(m).then(url=>{if(mv.isConnected)mv.src=url;}).catch(()=>{box.querySelector(".studio").insertAdjacentHTML("beforeend",`<p class="hint" style="position:absolute;inset:auto 12px 12px">Не удалось загрузить модель.</p>`);});
   if(an)an.onclick=e=>{const b=e.target.closest("button");if(!b)return;an.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));if(b.dataset.a){mv.animationName=b.dataset.a;mv.autoRotate=false;mv.play({repetitions:Infinity});}else{mv.pause();mv.autoRotate=true;}};
 }
 
+const blobCache=new Map();
+async function modelUrl(m){
+  if(blobCache.has(m.path))return blobCache.get(m.path);
+  const text=(await (await fetch(m.blob||m.path)).text()).trim();
+  const bin=atob(text);const bytes=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
+  const url=URL.createObjectURL(new Blob([bytes],{type:"model/gltf-binary"}));blobCache.set(m.path,url);return url;
+}
 async function route(){
   const id=location.hash.slice(1)||"home";markCurrent();window.scrollTo(0,0);
   if(id==="home")return home();

@@ -40,10 +40,15 @@ def main(out):
                 shutil.copy(os.path.join(ROOT, rel), os.path.join(out, rel))
     guides.sort()
     models = json.load(open(os.path.join(out, 'models.json'), encoding='utf-8'))
+    # GLB ships base64-encoded as .txt: hosts that refuse binary model types still serve text;
+    # the page decodes it into a Blob for model-viewer.
+    import base64
     for m in models:
-        dest = os.path.join(out, m['path'])
+        m['blob'] = m['path'] + '.b64.txt'
+        dest = os.path.join(out, m['blob'])
         os.makedirs(os.path.dirname(dest), exist_ok=True)
-        shutil.copy(os.path.join(ROOT, m['path']), dest)
+        open(dest, 'w').write(base64.b64encode(open(os.path.join(ROOT, m['path']), 'rb').read()).decode('ascii'))
+    json.dump(models, open(os.path.join(out, 'models.json'), 'w', encoding='utf-8'), ensure_ascii=False)
     os.makedirs(os.path.join(out, 'vendor'), exist_ok=True)
     shutil.copy(os.path.join(ROOT, 'tools/asset_library/vendor/model-viewer.min.js'), os.path.join(out, 'vendor/model-viewer.min.js'))
     data = json.load(open(os.path.join(out, 'data.json'), encoding='utf-8'))
