@@ -1518,3 +1518,15 @@ Changelog	Changelog
 Мимо	Miss
 Штаб был под другим колпаком	The HQ was under another cup
 Мини-штаб прячут под одним из броневых колпаков и перемешивают. Подойди к нужному и нажми E. Попытка одна; звёзды — больше колпаков и быстрее.	A mini HQ is hidden under one of the armoured cups and they get shuffled. Walk up to the right one and press E. One guess; stars mean more cups and faster shuffling.
+Переключатели	Switches
+Переключатели ★	Switches ★
+Переключатели ★★	Switches ★★
+Переключатели · запоминай	Switches · memorize
+Переключатели · шаг %d / %d · попыток %d	Switches · step %d / %d · tries %d
+Переключатели · готово	Switches · done
+Запомни порядок огней	Remember the order of the lights
+Наступай на плиты в том же порядке	Step on the plates in the same order
+Сейф заблокирован	Safe locked
+Попытки кончились	No tries left
+Не тот порядок · попыток: %d	Wrong order · tries left: %d
+Плиты по очереди загораются. Наступай на них в том же порядке, чтобы открыть сейф. Три попытки; звёзды — больше плит и длиннее порядок.	Plates light up one by one. Step on them in the same order to open the safe. Three tries; stars mean more plates and a longer order.

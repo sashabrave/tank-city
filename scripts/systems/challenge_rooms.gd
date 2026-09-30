@@ -6,7 +6,17 @@ extends RefCounted
 ## hold — stand in the zone while enemies keep coming; progress grows only while no enemy is inside.
 ## survive — weapons are out of ammo; dodge artillery markers until the timer ends.
 ## thimbles — a mini HQ hides under one of the armoured cups, the cups shuffle, one guess with E.
-const TITLES={"cache":"Тайник","hold":"Удержание","survive":"Выживание","thimbles":"Напёрстки"}
+## switches — plates light up in order; step on them in the same order (3 tries) to open the safe.
+const TITLES={"cache":"Тайник","hold":"Удержание","survive":"Выживание","thimbles":"Напёрстки","switches":"Переключатели"}
+const PLATES=[4,5,6]
+const SEQUENCE=[3,4,5]
+const PLATE_COLORS=[Color("d8453a"),Color("e5b34f"),Color("5aa469"),Color("4f86c6"),Color("a66cc4"),Color("e8e2cf")]
+var plates:Array=[]
+var sequence:Array=[]
+var step=0
+var tries=3
+var switch_state=""
+var standing=-1
 const CUPS=[3,4,5]
 const SWAPS=[5,8,12]
 const SWAP_TIME=[.55,.4,.28]
@@ -34,7 +44,7 @@ func _init(context):
 	arena=context
 func active()->bool:return arena.room.mode!="battle"
 ## Rooms that finish by their own rule, not by an empty wave queue.
-func blocks_waves()->bool:return arena.room.mode in ["hold","survive","thimbles"] and not rewarded
+func blocks_waves()->bool:return arena.room.mode in ["hold","survive","thimbles","switches"] and not rewarded
 func weapons_locked()->bool:return arena.room.mode=="survive" and not rewarded
 func start():
 	opened=false;rewarded=false;chest={}
@@ -46,11 +56,15 @@ func start():
 	for cup in cups:
 		if is_instance_valid(cup):cup.queue_free()
 	cups.clear();hidden_cup=null;thimble_state=""
+	for plate in plates:
+		if is_instance_valid(plate.node):plate.node.queue_free()
+	plates.clear();sequence.clear();step=0;tries=3;switch_state="";standing=-1
 	match arena.room.mode:
 		"cache":start_cache()
 		"hold":start_hold()
 		"survive":start_survive()
 		"thimbles":start_thimbles()
+		"switches":start_switches()
 func start_cache():
 	# The exit is open from the start: taking the risk is optional.
 	arena.room.room_cleared=true;arena.room.reward_claimed=true;arena.room.next_is_room=true
@@ -91,10 +105,12 @@ func tick(delta:float=0.0):
 				rewarded=true;drop_reward()
 		"hold":tick_hold(delta)
 		"survive":tick_survive(delta)
+		"switches":tick_switches()
 func status()->String:
 	match arena.room.mode:
 		"cache":return TITLES.cache+(" · засада" if opened and not rewarded else "")
 		"thimbles":return TITLES.thimbles+{"show":" · смотри","shuffle":" · следи","pick":" · выбирай [E]"}.get(thimble_state," · готово")
+		"switches":return TITLES.switches+({"show":" · запоминай","input":" · шаг %d / %d · попыток %d" % [step+1,sequence.size(),tries]}.get(switch_state," · готово"))
 		"hold","survive":return TITLES[arena.room.mode]+(" · %d / %d с" % [floori(progress),roundi(goal)] if not rewarded else " · готово")
 	return ""
 
@@ -234,6 +250,72 @@ func pick_cup(cup:Node3D):
 		rewarded=true;arena.room.room_cleared=true;arena.room.reward_claimed=true;arena.room.next_is_room=true
 		arena.flow.place_flag("Выход")
 		if is_instance_valid(arena.presentation):arena.presentation.announce("Мимо","Штаб был под другим колпаком",.8)
+
+func start_switches():
+	var level=clampi(arena.room.difficulty,0,2);var count=PLATES[level];var g=arena.room.grid_size
+	var center=Vector2i(int(g/2),int(g/2)-1)
+	for i in range(count):
+		var angle=TAU*i/count-PI*.5
+		var cell=center+Vector2i(roundi(cos(angle)*3),roundi(sin(angle)*3))
+		if arena.room.walls.has(cell):
+			var wall=arena.room.walls[cell]
+			if is_instance_valid(wall.get("node")):wall.node.queue_free()
+			arena.room.walls.erase(cell);arena.navigation.invalidate(cell)
+		var node=Node3D.new();node.name="Plate%d" % i;arena.add_child(node);node.position=arena.world_pos(cell)
+		var paint=StandardMaterial3D.new();paint.albedo_color=PLATE_COLORS[i].darkened(.35);paint.emission_enabled=true;paint.emission=PLATE_COLORS[i];paint.emission_energy_multiplier=0.0
+		var top=MeshInstance3D.new();var shape=BoxMesh.new();shape.size=Vector3(.8,.06,.8);top.mesh=shape;top.position.y=.04;top.material_override=paint;node.add_child(top)
+		plates.append({"node":node,"paint":paint,"cell":cell})
+	var safe=Node3D.new();safe.name="Safe";arena.add_child(safe);safe.position=arena.world_pos(center)
+	Visuals.box(safe,Vector3(0,.4,0),Vector3(.9,.8,.9),Color("59605a"));Visuals.box(safe,Vector3(0,.45,-.46),Vector3(.3,.3,.03),Color("e5b34f"))
+	zone=safe
+	var order=range(count);var rng=arena.run.combat_rng
+	for i in range(order.size()-1,0,-1):
+		var j=rng.randi_range(0,i);var t=order[i];order[i]=order[j];order[j]=t
+	sequence=order.slice(0,SEQUENCE[level])
+	if is_instance_valid(arena.presentation):arena.presentation.announce("Переключатели","Запомни порядок огней",.8)
+	demonstrate()
+## Plates flash in the target order; input opens afterwards.
+func demonstrate():
+	switch_state="show";step=0
+	var tween=arena.create_tween()
+	tween.tween_interval(.8)
+	for index in sequence:
+		tween.tween_callback(func():flash(index,true));tween.tween_interval(.55)
+		tween.tween_callback(func():flash(index,false));tween.tween_interval(.2)
+	tween.tween_callback(func():
+		if switch_state=="show":switch_state="input";arena.toast("Наступай на плиты в том же порядке"))
+func flash(index:int,on:bool):
+	if index<plates.size():plates[index].paint.emission_energy_multiplier=2.5 if on else 0.0
+func plate_under_player()->int:
+	var player=arena.room.player
+	if not is_instance_valid(player):return -1
+	for i in range(plates.size()):
+		if is_instance_valid(plates[i].node) and arena.flat_distance(plates[i].node.position,player.position)<.55:return i
+	return -1
+func tick_switches():
+	if switch_state!="input":return
+	var plate=plate_under_player()
+	if plate==standing:return
+	standing=plate
+	if plate<0:return
+	press(plate)
+func press(plate:int):
+	if switch_state!="input":return
+	if plate==sequence[step]:
+		flash(plate,true);Game.sound("pickup",arena);step+=1
+		if step>=sequence.size():
+			switch_state="done";Game.sound("rare_reveal",arena);complete(zone.position+Vector3(0,0,1.2))
+		return
+	tries-=1;Game.sound("defeat",arena)
+	for i in range(plates.size()):flash(i,false)
+	if tries<=0:
+		switch_state="done";rewarded=true
+		arena.room.room_cleared=true;arena.room.reward_claimed=true;arena.room.next_is_room=true
+		arena.flow.place_flag("Выход")
+		if is_instance_valid(arena.presentation):arena.presentation.announce("Сейф заблокирован","Попытки кончились",.8)
+		return
+	arena.toast("Не тот порядок · попыток: %d" % tries)
+	demonstrate()
 
 ## Challenge won: remaining enemies withdraw, the exit and the reward chest appear.
 func complete(pos:Vector3):
