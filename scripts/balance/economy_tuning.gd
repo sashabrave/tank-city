@@ -19,5 +19,11 @@ extends Resource
 @export_range(0,10000,5) var chest_alloy:int=60
 @export_range(0,1000,5) var chest_alloy_per_room:int=25
 
+@export_group("Жетоны — валюта забега для торговца")
+@export_range(0,1,0.005) var token_chance:float=0.06
+@export_range(0,1,0.005) var token_vehicle_chance:float=0.15
+@export_range(0,1,0.005) var token_rank_bonus:float=0.10
+@export_range(0,10,1) var token_commander:int=2
+
 @export_group("Поздняя игра — после первой победы над гигабоссом")
 @export_range(1,1000,1) var second_ability_slot_documents:int=15

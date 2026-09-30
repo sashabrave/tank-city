@@ -38,6 +38,12 @@ func _ready():
 			for point in [Vector3.UP*radius*1.4,b,a,Vector3.DOWN*radius*1.4,a,b]:surface.add_vertex(point)
 		surface.generate_normals()
 		var mesh=MeshInstance3D.new();mesh.mesh=surface.commit();mesh.material_override=Visuals.material(Color("debd66"));mesh.material_override.set_meta("cozy_original",Vector2(.95,.2));mesh.material_override.metallic=.95;mesh.material_override.roughness=.2;mesh.material_override.metallic_specular=.75;mesh.material_override.cull_mode=BaseMaterial3D.CULL_DISABLED;visual.add_child(mesh)
+	elif currency=="tokens":
+		# Dog tag with two stamped lines.
+		var tag=Visuals.box(visual,Vector3.ZERO,Vector3(.2,.03,.3),Color("b9c0bd"));tag.material_override.metallic=.8
+		Visuals.box(visual,Vector3(0,.02,-.06),Vector3(.12,.006,.02),Color("5f6b66"))
+		Visuals.box(visual,Vector3(0,.02,.02),Vector3(.12,.006,.02),Color("5f6b66"))
+		floor_height=.05
 	else:
 		Visuals.box(visual,Vector3.ZERO,Vector3(.24,.025,.31),Color("f0ead4"))
 		for z in [-.07,0,.07]:Visuals.box(visual,Vector3(0,.017,z),Vector3(.13,.006,.015),Color("728577"))
@@ -61,8 +67,9 @@ func collect():
 	if collected:return
 	collected=true;arena.room.resource_drops.erase(self)
 	if currency=="alloy":arena.run.earned+=amount;Game.earn(amount)
+	elif currency=="tokens":arena.run.tokens+=amount
 	else:Game.cores+=amount;Game.save_progress()
-	Game.sound("collect_alloy" if currency=="alloy" else "collect_document",Game)
+	Game.sound("collect_alloy" if currency in ["alloy","tokens"] else "collect_document",Game)
 	var camera=get_viewport().get_camera_3d()
 	if camera and not camera.is_position_behind(global_position):ResourceStrip.fly_pickup(currency,camera.unproject_position(global_position))
 	queue_free()

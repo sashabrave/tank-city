@@ -1,6 +1,6 @@
 extends RefCounted
 const VERSION=1
-const RUN_KEYS=["run_seed","upgrade_history","soldier_hp","soldier_max_hp","damage_bonus","fire_multiplier","speed_multiplier","earned","kills","elapsed","weapon","rerolls_left","weapon_mods","recovery_bonus","run_bonus_levels","pending_recipes","vehicle_mods","pending_vehicle","visited_services","intercept_chance","route_choices","range_multiplier","healing_multiplier","ability_power_multiplier","ability_cooldown_multiplier","behavior_cards"]
+const RUN_KEYS=["run_seed","upgrade_history","soldier_hp","soldier_max_hp","damage_bonus","fire_multiplier","speed_multiplier","earned","kills","elapsed","weapon","rerolls_left","weapon_mods","recovery_bonus","run_bonus_levels","pending_recipes","vehicle_mods","pending_vehicle","visited_services","intercept_chance","route_choices","range_multiplier","healing_multiplier","ability_power_multiplier","ability_cooldown_multiplier","behavior_cards","tokens"]
 static func capture(arena,index:int,mode:String,choices:Dictionary)->Dictionary:
 	var data={"version":VERSION,"world":Campaign.world,"endless":Campaign.endless,"cycle":Campaign.cycle,"strength":Campaign.endless_strength,"index":index,"mode":mode,"seed":Game.visual_run_seed,"choices":choices.duplicate(true),"run":{},"abilities":{},"hq":{},"hero":{},"class":Game.selected_class,"start_documents":Game.cores}
 	if not is_instance_valid(arena):return data

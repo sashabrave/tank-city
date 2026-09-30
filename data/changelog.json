@@ -16,7 +16,10 @@
 					"Карты, которые уже упёрлись в предел (скорость, перехват), больше не предлагаются.",
 					"Карта маршрута: у старта появилась площадка с воротами, все точки стоят на одинаковом расстоянии, машина на карте стала меньше.",
 					"Мир 1: сложные точки (★★) больше не встречаются в начале пути — сложность растёт к боссу.",
-					"Мир 1: механик и мастерская штаба стали обычными точками маршрута со своими дорогами. Раньше к ним можно было попасть из любой точки, а дорог на карте не было."
+					"Мир 1: механик и мастерская штаба стали обычными точками маршрута со своими дорогами. Раньше к ним можно было попасть из любой точки, а дорог на карте не было.",
+					"Жетоны: с врагов иногда падают жетоны (с командира — всегда). Они видны вверху рядом со сплавом и сгорают после забега.",
+					"Торговец: новая остановка на карте мира 1 рядом с инструктором. За жетоны — карты улучшений, аптечка, ремонт машины, переброс, иногда чертёж и игровой автомат.",
+					"Сервисные ряды мира 1 теперь соединены дорогами: левая точка ведёт к инструктору, правая — к торговцу, средняя — к обоим."
 				]
 			},
 			"en": {
@@ -33,7 +36,10 @@
 					"Cards whose stat has reached its limit (speed, interception) are no longer offered.",
 					"Route map: the start now has a launch pad with a gate, all points are evenly spaced, and the vehicle on the map is smaller.",
 					"World 1: hard (★★) points no longer appear at the start of the route — difficulty grows towards the boss.",
-					"World 1: the mechanic and the HQ workshop are now ordinary route points with their own roads. Previously they were reachable from any point with no roads drawn."
+					"World 1: the mechanic and the HQ workshop are now ordinary route points with their own roads. Previously they were reachable from any point with no roads drawn.",
+					"Tokens: enemies sometimes drop tokens (commanders always do). They show at the top next to alloy and are lost when the run ends.",
+					"Merchant: a new stop on the world 1 map next to the instructor. Tokens buy upgrade cards, a medkit, vehicle repair, a reroll, sometimes a blueprint, and a slot machine.",
+					"World 1 service rows are now connected by roads: the left point leads to the instructor, the right one to the merchant, the middle one to both."
 				]
 			}
 		}

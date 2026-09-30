@@ -249,6 +249,7 @@ var effects=preload("res://scripts/upgrades/run_effects.gd").new(self)
 var resume_checkpoint:Dictionary={}
 func _ready():
 	set_meta("start_documents",Game.cores)
+	ResourceStrip.track_run(run)
 	weapon=Game.selected_weapon;rerolls_left=3+Game.reroll_level
 	for id in LOOT.WEAPONS:weapon_mods[id]={"damage":0.0,"interval":1.0,"intercept":0.0}
 	abilities=load("res://scripts/run_ability.gd").new();abilities.arena=self;abilities.selected=Game.selected_ability;abilities.setup()

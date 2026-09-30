@@ -47,9 +47,25 @@ static func chosen(plan:Array,stage:int,choices:Dictionary)->Dictionary:
 	for node in plan[stage]:
 		if node.id==id:return node
 	return plan[stage][0]
-static func reachable(plan:Array,stage:int,choices:Dictionary)->Array:
+## service_branch: the service stop visited right before this stage (world 1 rows lead on by their own roads).
+static func reachable(plan:Array,stage:int,choices:Dictionary,service_branch:String="")->Array:
 	if stage==0:return plan[0].map(func(n):return n.id)
+	if service_branch!="" and service_roads():
+		var options=Campaign.service_options(0,stage);var option=options.find(service_branch)
+		if option>=0:return lane_span(option,options.size(),plan[stage].size()).map(func(lane):return plan[stage][lane].id)
 	return chosen(plan,stage-1,choices).next
+## World 1 service rows have real roads: each stop links to the neighbouring lanes on both sides.
+static func service_roads()->bool:return gradual() and not Campaign.endless
+## Lanes of a row with `lanes` points that connect to service stop `option` of `count` stops.
+static func lane_span(option:int,count:int,lanes:int)->Array:
+	if count<=1 or lanes<=1:return range(lanes)
+	var middle=(lanes-1)*.5
+	return range(lanes).filter(func(lane):return (lane<=middle if option==0 else lane>=middle))
+## Service stops at `stage` that the previously chosen node leads to.
+static func service_options_from(plan:Array,stage:int,choices:Dictionary,options:Array)->Array:
+	if not service_roads() or stage==0:return options
+	var lane=chosen(plan,stage-1,choices).lane
+	return options.filter(func(branch):return lane in lane_span(options.find(branch),options.size(),plan[stage-1].size()))
 static func point(node:Dictionary,count:int)->Vector3:
 	return Vector3((node.lane-(count-1)*.5)*6.5,0,-node.stage*STAGE_STEP)
 static func chest_alloy(stage:int,elite:bool)->int:

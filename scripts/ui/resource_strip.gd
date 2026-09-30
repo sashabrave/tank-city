@@ -3,6 +3,10 @@ var label:Label
 var documents:Label
 var panel:Panel
 var document_icon:Control
+## Run-only token counter, shown while a run is alive (weak reference to its RunState).
+var token_icon:TextureRect
+var tokens:Label
+var run_ref:WeakRef
 var pickup_targets:Dictionary={}
 var pickup_flights:Array=[]
 var previous=Vector2i(-1,-1)
@@ -18,6 +22,13 @@ func _ready():
 	document_icon=UiKit.icon(panel,"documents",Vector2(114,4),Vector2(30,30))
 	pickup_targets["documents"]=document_icon
 	documents=UiKit.label(panel,"",Vector2(147,3),Vector2(60,32),17)
+	token_icon=UiKit.icon(panel,"token",Vector2(0,5),Vector2(28,28));token_icon.modulate=UiKit.INK;token_icon.name="TokenIcon"
+	pickup_targets["tokens"]=token_icon
+	tokens=UiKit.label(panel,"",Vector2(0,3),Vector2(40,32),17);tokens.name="Tokens"
+func track_run(run):run_ref=weakref(run) if run!=null else null
+func run_tokens()->int:
+	var run=run_ref.get_ref() if run_ref!=null else null
+	return -1 if run==null else int(run.tokens)
 func _process(_delta):
 	var now=Vector2i(Game.credits,Game.cores)
 	if previous.x>=0 and now!=previous:pending+=now-previous;delay=.12 if delay<=0 else delay
@@ -37,6 +48,13 @@ func _process(_delta):
 	documents.position.x=document_icon.position.x+34
 	documents.size.x=maxf(30,font.get_string_size(documents.text,HORIZONTAL_ALIGNMENT_LEFT,-1,17).x+8)
 	panel.size.x=documents.position.x+documents.size.x+10
+	var run_value=run_tokens()
+	token_icon.visible=run_value>=0;tokens.visible=run_value>=0
+	if run_value>=0:
+		Texts.set_text(tokens,str(run_value));tokens.vertical_alignment=VERTICAL_ALIGNMENT_CENTER
+		token_icon.position.x=panel.size.x+4;tokens.position.x=token_icon.position.x+32
+		tokens.size.x=maxf(24,font.get_string_size(tokens.text,HORIZONTAL_ALIGNMENT_LEFT,-1,17).x+8)
+		panel.size.x=tokens.position.x+tokens.size.x+10
 	panel.position.x=(get_viewport().get_visible_rect().size.x-panel.size.x)*.5
 
 func change(amount:int,documents:bool):

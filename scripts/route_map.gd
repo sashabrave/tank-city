@@ -78,7 +78,8 @@ func _ready():
 	Game.music_context("map")
 	if wave_seed<0:wave_seed=Game.visual_run_seed
 	if hero_weapon=="":hero_weapon=Game.selected_weapon
-	plan=RoutePlan.build(wave_seed);reachable=RoutePlan.reachable(plan,available,route_choices)
+	var visited_branch=run_context.visited_services.get(available,"") if is_instance_valid(run_context) else ""
+	plan=RoutePlan.build(wave_seed);reachable=RoutePlan.reachable(plan,available,route_choices,visited_branch)
 	camera=Visuals.setup_world(self,28,Vector3.ZERO)
 	get_node("WorldAtmosphere").anchor_to_map(-stage_z(plan.size()-1))
 	preload("res://scripts/base_surroundings.gd").route(self,-stage_z(plan.size()-1))
@@ -91,7 +92,8 @@ func _ready():
 			for next_id in info.next:
 				var target=plan[stage+1].filter(func(n):return n.id==next_id)[0]
 				var end=room_point(target,plan[stage+1].size())
-				if stage+1 in Campaign.SERVICES:
+				if stage+1 in Campaign.SERVICES and RoutePlan.service_roads():pass
+				elif stage+1 in Campaign.SERVICES:
 					var side=-1 if (pos.x+end.x)*.5<=0 else 1
 					var camp=Vector3(side*3.25,0,stage_z(stage+1)+RoutePlan.STAGE_STEP)
 					path_line(pos,camp);path_line(camp,end)
@@ -119,9 +121,14 @@ func _ready():
 			var branch=choices[i];var pos=Vector3((i-(choices.size()-1)*.5)*6.5,0,stage_z(service_stage)+RoutePlan.STAGE_STEP)
 			var base=Node3D.new();add_child(base);base.position=pos;base.scale=Vector3.ONE*MINI_SCALE;service_nodes.append(base)
 			if branch=="headquarters":MINI.headquarters(base)
+			elif branch=="merchant":MINI.merchant(base)
 			else:MINI.service(base,branch=="vehicle",Color("839c9f") if branch=="vehicle" else Color("a99b79"))
-			Visuals.label3d(base,{"vehicle":"Техника","ability":"Способность","headquarters":"Штаб"}[branch],Vector3(0,.35,3.65),Color("f3eee0"),30).pixel_size=.025
-			if service_stage==available:fork_positions[branch]=pos;service_choices.append(branch)
+			Visuals.label3d(base,{"vehicle":"Техника","ability":"Способность","headquarters":"Штаб","merchant":"Торговец"}[branch],Vector3(0,.35,3.65),Color("f3eee0"),30).pixel_size=.025
+			if RoutePlan.service_roads() and service_stage<plan.size():
+				# Roads into the stop from neighbouring lanes of the previous stage, and out to the next stage.
+				for lane in RoutePlan.lane_span(i,choices.size(),plan[service_stage-1].size()):path_line(room_point(plan[service_stage-1][lane],plan[service_stage-1].size()),pos)
+				for lane in RoutePlan.lane_span(i,choices.size(),plan[service_stage].size()):path_line(pos,room_point(plan[service_stage][lane],plan[service_stage].size()))
+			if service_stage==available and branch in RoutePlan.service_options_from(plan,available,route_choices,choices):fork_positions[branch]=pos;service_choices.append(branch)
 
 	build_ui()
 	player_marker=Node3D.new();player_marker.scale=Vector3.ONE*MINI_SCALE;player_marker.name="PlayerMarker";add_child(player_marker)
@@ -164,7 +171,7 @@ func build_ui():
 		UiKit.label(root,"Сначала выбери передышку",Vector2(size.x/2-250,size.y-155),Vector2(500,40),25)
 		for i in range(service_choices.size()):
 			var branch=service_choices[i]
-			UiKit.button(root,{"vehicle":"Техника","ability":"Способность","headquarters":"Штаб"}[branch],Vector2(size.x/2-330+i*350,size.y-100),Vector2(310,65),func():choose_service(branch),i==0)
+			UiKit.button(root,{"vehicle":"Техника","ability":"Способность","headquarters":"Штаб","merchant":"Торговец"}[branch],Vector2(size.x/2-330+i*350,size.y-100),Vector2(310,65),func():choose_service(branch),i==0)
 	else:
 		var hint_plate=UiKit.panel(root,Vector2(size.x-535,size.y-93),Vector2(515,58),Color("242d27ed"));hint_plate.mouse_filter=Control.MOUSE_FILTER_IGNORE
 		UiKit.label(root,"WASD — выбор поля боя · E — войти",Vector2(size.x-520,size.y-90),Vector2(500,55),22)

@@ -65,7 +65,8 @@ func enter_room(index: int,node_id:String=""):
 	if is_instance_valid(current) and current.has_method("travel_to_room") and index!=current.available:return
 	var seed_value=run_arena.run_seed if is_instance_valid(run_arena) else Game.visual_run_seed
 	var plan=RoutePlan.build(seed_value)
-	var reachable=RoutePlan.reachable(plan,index,route_choices)
+	var service_branch=run_arena.visited_services.get(index,"") if is_instance_valid(run_arena) else ""
+	var reachable=RoutePlan.reachable(plan,index,route_choices,service_branch)
 	if node_id=="":node_id=reachable[0]
 	if node_id not in reachable:return
 	if is_instance_valid(run_arena) and index in Campaign.SERVICES and not run_arena.visited_services.has(index):return
@@ -86,7 +87,10 @@ func show_service(branch: String,index: int):
 	if not is_instance_valid(run_arena) or run_arena.visited_services.has(index):return
 	if branch=="ability" and run_arena.abilities.slots.is_empty():
 		run_arena.abilities.slots.append("shield");run_arena.abilities.select("shield")
-	clear_current();current=load("res://scripts/service_room.gd").new();current.arena=run_arena;current.index=index;current.branch=branch;add_child(current)
+	clear_current()
+	if branch=="merchant":current=load("res://scripts/merchant_room.gd").new()
+	else:current=load("res://scripts/service_room.gd").new();current.branch=branch
+	current.arena=run_arena;current.index=index;add_child(current)
 	current.hub_requested.connect(show_hub)
 	current.completed.connect(func(completed_index):run_arena.visited_services[completed_index]=branch;show_map(completed_index))
 

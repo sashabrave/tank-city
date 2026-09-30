@@ -230,6 +230,8 @@ func award_kill(actor):
 	if actor.killed_by_vehicle in GarageCatalog.VEHICLES:Game.progression.event("kills_"+actor.killed_by_vehicle)
 	var amount=EncounterRules.kill_alloy(actor.kind,actor.rank,arena.room.room_index,actor.elite,arena.room.difficulty)
 	preload("res://scripts/resource_drop.gd").spawn(arena,actor.position,amount,"alloy",actor.resource_blast);arena.run.kills+=1
+	var tokens=token_drop(actor)
+	if tokens>0:preload("res://scripts/resource_drop.gd").spawn(arena,actor.position,tokens,"tokens",actor.resource_blast)
 	Game.progression.event("drones" if actor.kind in ["drone","flyer"] else "armor" if actor.kind in ["tank","apc","buggy"] else "infantry")
 	if actor.kind=="boss":
 		if not arena.room.actors.any(func(a):return is_instance_valid(a) and not a.dead and a.kind=="boss") and arena.room.spawn_queue.is_empty():
@@ -239,6 +241,14 @@ func award_kill(actor):
 			Game.progression.boss_classes.append(Game.selected_class);Game.progression.event("boss_classes",Game.progression.boss_classes.size(),true)
 	Game.save_progress()
 	if actor.elite:drop_recipe(actor.cell,{"elite":actor.commander_elite});Game.music_stinger("boss_victory");Game.music_context("battle")
+
+## Merchant tokens: rare from any enemy, more often from vehicles and veterans, guaranteed from commanders.
+func token_drop(actor)->int:
+	var economy=Balance.CONFIG.economy
+	if actor.elite:return economy.token_commander
+	var chance=economy.token_vehicle_chance if actor.kind in ["buggy","apc","tank","mortar"] else economy.token_chance
+	if actor.rank>=2:chance+=economy.token_rank_bonus
+	return 1 if arena.run.combat_rng.randf()<chance else 0
 
 func drop_enemy_loot(actor):
 	if not arena.room.boss_room and arena.run.combat_rng.randf()<Game.bonus_chance():

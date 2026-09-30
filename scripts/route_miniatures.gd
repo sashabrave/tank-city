@@ -89,3 +89,13 @@ static func start(parent:Node3D):
 			var chevron=Visuals.box(parent,Vector3(side*.38,.3,1.3-i*.95),Vector3(.9,.03,.18),Color("f0d27a"));chevron.rotation.y=side*.75
 	Visuals.box(parent,Vector3(2.3,.55,1.6),Vector3(.7,.55,.7),concrete.darkened(.2))
 	Visuals.box(parent,Vector3(2.3,.95,1.6),Vector3(.18,.3,.18),Color("cf613f"))
+
+## Merchant stall: striped awning over a counter with crates.
+static func merchant(parent:Node3D):
+	var wood=Color("8a6a48")
+	base(parent,Color("a99b79"),true)
+	Visuals.box(parent,Vector3(0,.6,-.4),Vector3(3,.8,1),wood)
+	for x in [-1.4,1.4]:Visuals.box(parent,Vector3(x,1.3,-.9),Vector3(.18,1.9,.18),wood.darkened(.3))
+	for i in range(5):Visuals.box(parent,Vector3(-1.2+i*.6,2.25,-.6),Vector3(.6,.14,1.4),Color("c9793f") if i%2==0 else Color("e8dcc0"))
+	Visuals.box(parent,Vector3(1.8,.45,1.1),Vector3(.7,.6,.7),Color("9c8156"))
+	Visuals.box(parent,Vector3(-1.8,.45,1),Vector3(.6,.5,.6),Color("9c8156"))
