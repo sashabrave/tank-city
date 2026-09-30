@@ -4,7 +4,12 @@ extends RefCounted
 ## electric, concussion, stealth ambush, marauder, field repair and luck. All rolls use the run's
 ## combat RNG so a seed replays the same fight; visuals never consume it.
 const MACHINES=["buggy","apc","tank","mortar","drone","flyer","boss"]
-const CAPS={"crit_chance":.6,"dodge":.5,"guard":.6,"burn_chance":.8,"stun_chance":.4,"stealth":.5}
+const CAPS={"crit_chance":.6,"dodge":.5,"guard":.6,"burn_chance":.8,"stun_chance":.4,"stealth":.5,"shock_bonus":2.0,"marauder":1.0}
+## Extreme builds stay meaningful: what goes over a cap flows into a neighbouring stat instead of being lost.
+## Every 10% of crit chance over the cap adds 5% crit damage; every 10% of dodge over the cap adds 5% protection.
+const OVERFLOW=.5
+static func crit_overflow(arena)->float:return maxf(0.0,arena.run.crit_chance+luck(arena)*.002-CAPS.crit_chance)*OVERFLOW
+static func dodge_overflow(arena)->float:return maxf(0.0,arena.run.dodge-CAPS.dodge)*OVERFLOW
 const BURN_TIME=3.0
 const STUN_TIME=.8
 static func is_machine(kind:String)->bool:return kind in MACHINES
@@ -26,12 +31,12 @@ static func outgoing(arena,bullet,target)->float:
 	if "last_stand" in run.behavior_cards:
 		var ratio=(shooter.hp/maxf(1.0,shooter.max_hp)) if in_vehicle else (run.soldier_hp/maxf(1.0,float(run.soldier_max_hp)))
 		if ratio<=.25:amount*=1.3
-	if is_machine(target.kind):amount*=1.0+run.shock_bonus
-	if run.stealth>0 and target.hp>=target.max_hp:amount*=1.0+run.stealth*2.0
+	if is_machine(target.kind):amount*=1.0+minf(CAPS.shock_bonus,run.shock_bonus)
+	if run.stealth>0 and target.hp>=target.max_hp:amount*=1.0+minf(CAPS.stealth,run.stealth)*2.0
 	var rng=run.combat_rng
 	var crit=rng.randf()<crit_chance(arena)
 	if crit:
-		amount*=run.crit_damage
+		amount*=run.crit_damage+crit_overflow(arena)
 		arena.burst(target.position+Vector3.UP*.5,Color("ffd166"),.35)
 		if "crit_stun" in run.behavior_cards:stun(target,STUN_TIME)
 	if run.burn_chance>0 and rng.randf()<minf(CAPS.burn_chance,run.burn_chance):ignite(target,bullet.damage)
@@ -49,13 +54,13 @@ static func incoming(arena,amount:float,source:String)->float:
 	if source in ["bullet","vehicle"] and run.elapsed<run.landing_until:return -1.0
 	if source in ["bullet","vehicle"] and run.dodge>0 and run.combat_rng.randf()<minf(CAPS.dodge,run.dodge):return -1.0
 	var guard={"bullet":run.guard_bullet,"vehicle":run.guard_vehicle,"blast":run.guard_blast}.get(source,0.0)
-	return amount*(1.0-minf(CAPS.guard,guard))
+	return amount*(1.0-minf(CAPS.guard,guard+dodge_overflow(arena)))
 ## Source of a bullet that hit the player: shells from machines count as vehicle fire.
 static func bullet_source(bullet)->String:
 	return "vehicle" if is_instance_valid(bullet.owner_actor) and is_machine(bullet.owner_actor.kind) else "bullet"
 ## Enemies engage the player at a shorter range with stealth.
 static func engage_range(arena,distance:float)->float:return distance*(1.0-minf(CAPS.stealth,arena.run.stealth))
-static func loot_multiplier(arena)->float:return 1.0+arena.run.marauder
+static func loot_multiplier(arena)->float:return 1.0+minf(CAPS.marauder,arena.run.marauder)
 ## Kill by the player: field repair, chain fire.
 static func on_kill(arena,actor):
 	var run=arena.run

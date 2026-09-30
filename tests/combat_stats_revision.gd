@@ -19,7 +19,9 @@ func run():
 	run.crit_chance=1.0;run.crit_damage=2.0
 	var hits=[]
 	for i in range(60):hits.append(CombatMods.outgoing(arena,bullet_from(player,1.0),enemy))
-	check(hits.has(2.0) and hits.has(1.0),"crit doubles damage and stays below certainty")
+	# Crit chance over the 60% cap flows into crit damage: (1.0-.6)*.5 = +.2.
+	var crit_hit=2.0+CombatMods.crit_overflow(arena)
+	check(hits.any(func(h):return is_equal_approx(h,crit_hit)) and hits.has(1.0) and is_equal_approx(crit_hit,2.2),"crit doubles damage (+overflow) and stays below certainty")
 	check(CombatMods.crit_chance(arena)<=CombatMods.CAPS.crit_chance,"crit chance is capped")
 	run.crit_chance=0.0;run.crit_damage=1.5;Game.luck_level=0
 	run.shock_bonus=.5

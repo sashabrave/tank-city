@@ -19,6 +19,8 @@ extends Resource
 @export_range(0.1,1,0.01) var ability_cooldown_multiplier:float=0.82
 @export_range(0,2,0.01) var ability_power_step:float=0.35
 @export_range(0.1,30,0.1) var minimum_ability_cooldown:float=5
+## Rate-of-fire ceiling: no card stack can push a shot interval below this (12.5 shots/s at .08).
+@export_range(0.02,1,0.01) var minimum_fire_interval:float=0.08
 @export_range(0.5,10,0.1) var grenade_radius:float=1.5
 @export_range(0.1,5,0.1) var grenade_fuse:float=1
 @export_range(0.01,1,0.01) var interception_base_scale:float=0.5

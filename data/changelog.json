@@ -63,7 +63,9 @@
 					"Во всех верстаках у каждой карточки есть статус: закрыто, в разработке, можно купить, не хватает, куплено, можно улучшить, выбрано, максимум. Цвет карточки и плашка сразу показывают, что доступно сейчас; нехватка чертежа важнее нехватки денег.",
 					"Огонь горящих бочек вдвое слабее и меньше отвлекает; тлеющие после взрыва — ещё тише.",
 					"Бонусы спускаются на парашюте-крыле из пяти секций, ткань матовая, без свечения.",
-					"Исправлен вылет при переходе из песочницы в бой с боссом."
+					"Исправлен вылет при переходе из песочницы в бой с боссом.",
+					"Экстремальная прокачка больше не ломает игру: темп стрельбы ограничен 12,5 выстрела в секунду, у маскировки, электроудара и мародёра появились пределы. Лишний крит сверх предела переходит в крит-урон, лишнее уклонение — в защиту.",
+					"Исправлены редкие ошибки при хаотичных переходах: погода после смены комнаты, выбор точки на пустом этапе карты, вход в комнату без доступных узлов."
 				]
 			},
 			"en": {
@@ -110,7 +112,9 @@
 					"Every workshop card now shows a status: locked, in development, can buy, not enough, owned, can upgrade, selected, maxed. Card colour and tag show at a glance what is available now; a missing blueprint outranks missing money.",
 					"Burning drums have half the flame and distract less; smouldering ones after an explosion are even dimmer.",
 					"Bonuses drop under a five-cell ram-air wing with matte cloth, no glow.",
-					"Fixed a crash when entering a boss fight from the sandbox."
+					"Fixed a crash when entering a boss fight from the sandbox.",
+					"Extreme builds no longer break the game: fire rate is capped at 12.5 shots per second, and stealth, shock and marauder have caps. Crit chance over the cap turns into crit damage, extra dodge into protection.",
+					"Fixed rare errors from chaotic transitions: weather after a room change, map selection on an empty stage, entering a room with no reachable node."
 				]
 			}
 		},

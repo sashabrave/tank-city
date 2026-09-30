@@ -17,7 +17,7 @@ static func weapon(arena=null,id:String="",changes:Dictionary={})->Dictionary:
 	var mods={"damage":0.0,"interval":1.0,"intercept":0.0} if run==null else run.weapon_mods[id]
 	var bonus=(0.0 if run==null else run.damage_bonus)+changes.get("damage_bonus",0.0)
 	var damage=(1+Game.class_level()*.002)*class_weapon_multiplier(id)*data.damage*Game.weapon_factor(id)*(1+Game.damage_level*.05+bonus*.3+mods.damage+changes.get("weapon_damage",0.0))
-	var interval=data.interval*(1.0 if run==null else run.fire_multiplier)*mods.interval*changes.get("fire",1.0)*changes.get("weapon_fire",1.0)
+	var interval=maxf(Balance.CONFIG.combat.minimum_fire_interval,data.interval*(1.0 if run==null else run.fire_multiplier)*mods.interval*changes.get("fire",1.0)*changes.get("weapon_fire",1.0))
 	return {"damage":damage,"interval":interval,"rate":1.0/interval,"range":data.range*(1.0 if run==null else run.range_multiplier),"intercept":probability(arena,"soldier",id)*100}
 static func probability(arena=null,kind:String="soldier",weapon_id:String="",origin:String="owned")->float:
 	if kind in GarageCatalog.VEHICLES and origin=="captured":return .35
