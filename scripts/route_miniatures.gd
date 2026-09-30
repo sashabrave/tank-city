@@ -109,3 +109,11 @@ static func challenge(parent:Node3D,type:String,color:Color):
 			Visuals.box(parent,Vector3(0,1.38,0),Vector3(2.3,.25,1.5),Color("7b7660"))
 			for x in [-.7,.7]:Visuals.box(parent,Vector3(x,.8,-.72),Vector3(.2,1,.06),Color("d4bd73"))
 			Visuals.box(parent,Vector3(0,.95,-.73),Vector3(.35,.35,.05),Color("cf613f"))
+		"hold":
+			Visuals.ring(parent,Color("e5b34f"),2.1)
+			Visuals.box(parent,Vector3(0,1.4,0),Vector3(.18,2.4,.18),Color("eee9d8"))
+			Visuals.box(parent,Vector3(.7,2.2,0),Vector3(1.3,.8,.1),Color("e5b34f"))
+		"survive":
+			for p in [Vector3(-1.2,0,-.8),Vector3(1,0,.6),Vector3(-.2,0,1.3)]:
+				var ring=Visuals.ring(parent,Color("d8453a"),.9);ring.position=p+Vector3(0,.32,0)
+			Visuals.box(parent,Vector3(.9,.7,-1),Vector3(.5,.8,.5),Color("6d6a5c"))

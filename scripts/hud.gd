@@ -122,8 +122,7 @@ func _process(_delta):
 	dpad.visible=Settings.values.screen_controls;fire_pad.visible=Settings.values.screen_controls;biome_panel.visible=Settings.values.biome_info
 	Texts.set_text(biome_label,arena.BIOMES.caption(arena.run_seed,arena.room_index))
 	Texts.set_text(wave_label,"Босс мира" if data.boss_room else "Поле %d / %d" % [data.stage,6])
-	var challenge=ChallengeRooms.TITLES.get(arena.room.mode,"")
-	if challenge!="":Texts.set_text(enemy_label,challenge+(" · засада" if arena.challenges.opened and not arena.challenges.rewarded else ""))
+	if arena.challenges.active():Texts.set_text(enemy_label,arena.challenges.status())
 	else:Texts.set_text(enemy_label,BossCatalog.encounter(arena.run_seed,arena.room_index).name if data.boss_room else "Волна %d / 3 · %s" % [data.wave,WaveDirector.wave_title(data.wave-1)])
 	tip.hide();Texts.set_text(star_label,"★ Звезда · %.1f с" % data.star);star_label.visible=data.star>0
 	ability_button.hide()

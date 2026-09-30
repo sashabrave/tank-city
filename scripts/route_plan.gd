@@ -9,7 +9,7 @@ const WORLD1_LEVELS=[[0,0,1],[0,1,1],[0,1,2],[0,1,2],[1,1,2],[1,2,2]]
 const WORLD1_SPECIALS=[{"type":"mechanic","stages":[1,2]},{"type":"workshop","stages":[3,4]}]
 const SERVICE_BRANCH={"mechanic":"vehicle","workshop":"headquarters"}
 ## Challenge rooms mixed into world 1 stages 2–6: one special point per stage in total. Types join this list as they are built.
-const CHALLENGES=["cache"]
+const CHALLENGES=["cache","hold","survive"]
 static func gradual()->bool:return Campaign.world==1
 static func node_branch(node:Dictionary)->String:return SERVICE_BRANCH.get(node.get("type","battle"),"")
 static func build(seed_value:int)->Array:

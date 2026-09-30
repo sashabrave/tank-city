@@ -482,12 +482,12 @@ func _physics_process(delta):
 			spawn_index+=1;spawn_timer=Balance.CONFIG.combat.spawn_interval
 		else:spawn_index+=1;spawn_timer=.35
 	collect_nearby_pickups(delta)
-	if challenges.active():challenges.tick()
+	if challenges.active():challenges.tick(delta)
 	if room_cleared and is_instance_valid(flag) and is_instance_valid(player):
 		var near=flat_distance(player.position,flag.position)<1.1
 		if not near:flag_armed=true
 		if near and flag_armed:open_flag()
-	if not room_cleared and spawn_queue.is_empty() and enemy_count()==0 and grenades.is_empty():
+	if not room_cleared and spawn_queue.is_empty() and enemy_count()==0 and grenades.is_empty() and not challenges.blocks_waves():
 		finish_wave()
 
 func wave_enemy_count()->int:

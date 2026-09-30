@@ -1487,3 +1487,21 @@ Changelog	Changelog
 Награда: Редкие карты или чертёж	Reward: rare cards or a blueprint
 Награда: Эпические карты, документы или редкий чертёж	Reward: epic cards, documents or a rare blueprint
 Испытание	Challenge
+Удержание	Hold
+Держи точку	Hold the point
+Стой в зоне, пока враги наступают	Stay in the zone while enemies advance
+Патроны кончились	Out of ammo
+Уклоняйся от обстрела	Dodge the barrage
+Выживание: оружие не стреляет — уходи из красных меток	Survival: weapons won't fire — get out of the red markers
+Испытание пройдено	Challenge complete
+Забери награду	Take your reward
+Удержание · %d / %d с	Hold · %d / %d s
+Выживание · %d / %d с	Survival · %d / %d s
+Удержание · готово	Hold · done
+Выживание · готово	Survival · done
+Удержание ★	Hold ★
+Удержание ★★	Hold ★★
+Выживание ★	Survival ★
+Выживание ★★	Survival ★★
+Займи точку и стой в ней, пока враги наступают. Шкала растёт, только если в зоне нет врагов. Штаб тоже нужно беречь.	Take the point and stay in it while enemies advance. Progress grows only while no enemy is inside. Keep the HQ safe too.
+Патроны кончились: оружие не стреляет. Уклоняйся от красных меток артобстрела, пока не выйдет время.	Out of ammo: weapons won't fire. Dodge the red artillery markers until time runs out.

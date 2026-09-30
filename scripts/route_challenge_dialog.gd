@@ -1,6 +1,6 @@
 extends RefCounted
 ## Route dialog for challenge rooms: rules and the reward that the stars promise.
-const RULES={"cache":"Сундук в центре поля. Откроешь — с двух сторон придёт засада ветеранов. Можно уйти через выход, не открывая."}
+const RULES={"cache":"Сундук в центре поля. Откроешь — с двух сторон придёт засада ветеранов. Можно уйти через выход, не открывая.","hold":"Займи точку и стой в ней, пока враги наступают. Шкала растёт, только если в зоне нет врагов. Штаб тоже нужно беречь.","survive":"Патроны кончились: оружие не стреляет. Уклоняйся от красных меток артобстрела, пока не выйдет время."}
 const REWARDS=["Сплав и обычные карты","Редкие карты или чертёж","Эпические карты, документы или редкий чертёж"]
 static func build(route,info:Dictionary,confirm:Callable)->Control:
 	var modal=Control.new();route.root.add_child(modal);modal.add_to_group("selection_scope");modal.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
