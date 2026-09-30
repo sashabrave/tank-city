@@ -2,8 +2,9 @@ extends Node
 ## Gentle diorama tilt: the camera leans a few degrees toward the cursor (keyboard/mouse) or follows a drag
 ## on empty screen space (touch), and eases back when released or disabled. Returns yaw/pitch in degrees.
 ## Used only in calm moments: the hub and between waves. Never during active combat.
-const MAX_YAW=3.0
-const MAX_PITCH=2.0
+## Only a turn around the vertical axis through the field centre (seen from above), no pitch.
+const MAX_YAW=1.5
+const MAX_PITCH=0.0
 const EASE=2.6
 var enabled=false
 var tilt=Vector2.ZERO
@@ -30,4 +31,4 @@ func _process(delta):
 	tilt=tilt.lerp(goal,1.0-exp(-delta*EASE))
 
 func yaw()->float:return tilt.x*MAX_YAW
-func pitch()->float:return -tilt.y*MAX_PITCH
+func pitch()->float:return 0.0
