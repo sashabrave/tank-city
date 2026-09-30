@@ -79,7 +79,7 @@ func _ready():
 	for i in range(3):
 		var button=root.get_node("Skills/Skill"+str(i+1));skill_buttons.append(button);button.pressed.connect(func():arena.abilities.cast_slot(i))
 		button.visible=i<arena.abilities.slots.size()
-		if i<arena.abilities.slots.size():button.get_node("Icon").texture=UiKit.icon_texture(arena.abilities.slots[i])
+		if i<arena.abilities.slots.size():button.get_node("Icon").texture=UiKit.icon_texture("abilities/"+str(arena.abilities.slots[i]))
 	intercept_label.hide();left_info.size.y=168;armor_meter.hide()
 	weapon_bars=UiKit.stat_bars(left_info,Vector2(14,66),205,[],32)
 	transport_panel=UiKit.panel(root,Vector2(-250,135),Vector2(235,194));transport_panel.name="TransportPanel";transport_panel.hide()

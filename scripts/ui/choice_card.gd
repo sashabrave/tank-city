@@ -39,7 +39,7 @@ static func configure(card:Panel,data:Dictionary,choose:Callable):
 		data=data.duplicate();data.detail+="\n{{pressure.description}}"
 	card.get_node("Description").text=data.detail
 	if "→" in data.detail:UiKit.numeric_description(card.get_node("Description"),data.detail)
-	card.get_node("Icon").texture=UiKit.icon_texture(data.icon)
+	card.get_node("Icon").texture=UiKit.icon_texture(data.get("art_key",data.icon))  # art_key: picture only; data.icon stays semantic
 	var button=card.get_node("ChooseButton")
 	Texts.set_text(button,data.get("button","Выбрать"));button.disabled=data.get("disabled",false)
 	button.mouse_entered.connect(func():

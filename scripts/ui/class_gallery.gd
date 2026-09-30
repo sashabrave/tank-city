@@ -115,7 +115,7 @@ func ability_card(pos:Vector2,width:float,slot:int)->float:
 	var level=int(Game.class_levels.get(viewed,0));var height=(174.0 if width>=470 else 210.0)-(44.0 if unlocked else 0.0)
 	var card=UiKit.panel(body,pos,Vector2(width,height),Color("30382f"));card.name="Ability"+str(slot+1)
 	if slot==0 and owned and not unlocked:card.add_theme_stylebox_override("panel",UiKit.style(Color("30382f"),12,UiKit.ORANGE))
-	UiKit.icon(card,skill,Vector2(14,16),Vector2(48,48))
+	UiKit.icon(card,"abilities/"+skill,Vector2(14,16),Vector2(48,48))
 	label(card,info.name,Vector2(76,10),Vector2(width-90,28),18)
 	label(card,"Готова к бою · Q" if slot==0 and unlocked else "Готова к бою · 1" if unlocked else "Первая способность · Q" if slot==0 else "Вторая способность · 1",Vector2(76,40),Vector2(width-90,25),13,true)
 	label(card,info.description,Vector2(14,75),Vector2(width-28,height-(80 if unlocked else 124)),14,true)

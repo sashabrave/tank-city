@@ -19,7 +19,7 @@ func items(tab:String)->Array:
 		"gadgets":
 			for id in GADGETS:
 				var known=id in Game.ability_unlocks;var bought=id in Game.purchased_gadgets
-				result.append({"id":id,"title":AbilityCatalog.DATA[id].name,"icon":id,"caption":"Нужен чертёж" if not known else "Выбран" if Game.gadget==id else "Куплен" if bought else "%d ◈" % Game.gadget_cost(id),"state":"locked" if not known else "active" if Game.gadget==id else "owned" if bought else "ready"})
+				result.append({"id":id,"title":AbilityCatalog.DATA[id].name,"icon":"abilities/"+id,"caption":"Нужен чертёж" if not known else "Выбран" if Game.gadget==id else "Куплен" if bought else "%d ◈" % Game.gadget_cost(id),"state":"locked" if not known else "active" if Game.gadget==id else "owned" if bought else "ready"})
 	return result
 func detail(tab:String,id:String)->Dictionary:
 	match tab:
@@ -36,7 +36,7 @@ func detail(tab:String,id:String)->Dictionary:
 		"gadgets":
 			var info=AbilityCatalog.DATA[id];var known=id in Game.ability_unlocks;var bought=id in Game.purchased_gadgets
 			var text="Выбрать" if bought else "Купить и выбрать · %d ◈" % Game.gadget_cost(id)
-			return {"title":info.name,"icon":id,"text":info.description if known else "Чертёж гаджета выпадает в вылазках.","lines":["Клавиша F в бою"],"actions":[{"id":"equip","text":"Выбран" if Game.gadget==id else text,"enabled":Game.gadget!=id and (bought or Game.credits>=Game.gadget_cost(id)),"primary":true}] if known else []}
+			return {"title":info.name,"icon":"abilities/"+id,"text":info.description if known else "Чертёж гаджета выпадает в вылазках.","lines":["Клавиша F в бою"],"actions":[{"id":"equip","text":"Выбран" if Game.gadget==id else text,"enabled":Game.gadget!=id and (bought or Game.credits>=Game.gadget_cost(id)),"primary":true}] if known else []}
 	return {}
 func act(tab:String,id:String,action:String)->String:
 	match [tab,action]:

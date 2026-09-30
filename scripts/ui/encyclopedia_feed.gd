@@ -33,13 +33,13 @@ static func build()->Array:
 		if def.max_stacks>0:lines.append("Лимит в вылазке: %d" % def.max_stacks)
 		if def.flag:lines.append("Меняет поведение боя: один раз за вылазку.")
 		if def.detail!="":lines.append(def.detail.replace("{{","").replace("}}",""))
-		result.append(article("card_"+def.id,"Карточки",def.title,lines,def.icon))
+		result.append(article("card_"+def.id,"Карточки",def.title,lines,"upgrades/"+def.id))
 	for def in StatRegistry.all():
 		var lines=["Семейство: "+RunUpgrades.FAMILIES.get(def.family,def.family)]
 		if def.description!="":lines.append(def.description)
 		if def.cap>0:lines.append("Предел в бою: "+StatRegistry.text(def,def.cap))
 		if def.step>0 and def.meta_field=="":lines.append("Станция: +%s за уровень, уровней: %d, цена от %d ◈." % [StatRegistry.text(def,def.step),def.max_level,def.cost_base])
-		result.append(article("stat_"+def.id,"Характеристики",def.title,lines,def.icon))
+		result.append(article("stat_"+def.id,"Характеристики",def.title,lines,"stats/"+def.id))
 	for id in ClassCatalog.ROSTER:
 		var data=Game.CLASSES.get(id,{});var info=ClassCatalog.info(id)
 		var lines=["Роль: "+str(info.role),"Семейство карточек: "+RunUpgrades.FAMILIES.get(info.family,info.family)]
@@ -59,5 +59,5 @@ static func build()->Array:
 		var lines=["Цена: %d ◈." % v.price,"Броня: %s · урон: %s · темп: %s /с · скорость: %s" % [UiKit.number(armor),UiKit.number(tuning.damage),UiKit.number(1.0/tuning.fire_interval),UiKit.number(tuning.player_speed)]]
 		if v.previous!="":lines.append("Сначала купи: "+str(GarageCatalog.VEHICLES[v.previous].name))
 		lines.append("Трофейная машина врага даёт 85% этих значений.")
-		result.append(article("vehicle_"+kind,"Техника",str(v.name),lines,"vehicle"))
+		result.append(article("vehicle_"+kind,"Техника",str(v.name),lines,kind))
 	return result

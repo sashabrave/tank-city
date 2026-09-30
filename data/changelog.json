@@ -2,17 +2,27 @@
 	"entries": [
 		{
 			"date": "2026-09-30",
-			"version": "0.3.5",
+			"version": "0.4.0",
 			"ru": {
-				"title": "Мягче форма, свет экрана",
+				"title": "Рисованная графика",
 				"items": [
+					"Новые рисованные портреты котов для всех классов и миниатюры в полный рост.",
+					"Иконки волн показывают врагов-псов: цветные каски по рангу, тёмные окрасы, вражеская техника с эмблемой-костью, новый миномёт.",
+					"82 уникальные иконки: у каждой карточки забега, характеристики, способности, технологии штаба и ветки гаража — своя картинка вместо общих значков.",
+					"Обновлены иконки предметов, оружия, эффектов, сердца здоровья, мастерские и иллюстрации справочника.",
+					"Гараж: оборудование сгруппировано по машинам, названия больше не обрезаются.",
 					"Форма котов и псов спокойнее: крупные мягкие пятна камуфляжа вместо лоскутов — ближе к нарисованному стилю.",
 					"В хабе синий свет больше не ходит за бойцом: он идёт от экрана командного центра — тусклый в покое и яркий, когда есть новости."
 				]
 			},
 			"en": {
-				"title": "Softer uniforms, screen light",
+				"title": "Painted art",
 				"items": [
+					"New painted cat portraits for every class and full-height miniatures.",
+					"Wave icons show the enemy dogs: rank-coloured helmets, dark coats, enemy vehicles with a bone emblem, the new mortar.",
+					"82 unique icons: every run card, stat, ability, HQ technology and garage branch has its own picture instead of shared symbols.",
+					"Refreshed item, weapon and effect icons, health hearts, workshops and handbook illustrations.",
+					"Garage: equipment is grouped by vehicle, names are no longer cut off.",
 					"Cat and dog uniforms are calmer: large soft camo patches instead of a patchwork, closer to the painted style.",
 					"In the hub the blue light no longer follows the soldier: it comes from the command screen — dim at rest, bright when there is news."
 				]

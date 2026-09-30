@@ -11,7 +11,7 @@ func items(tab:String)->Array:
 		"tech":
 			for id in HQCatalog.DATA:
 				var info=HQCatalog.DATA[id];var known=HQCatalog.available(id);var level=int(Game.hq_levels.get(id,0))
-				result.append({"id":id,"title":info.name,"icon":info.icon,"caption":"Нужен чертёж" if not known else ("Выбрана · " if id in Game.hq_loadout() else "")+"ур. %d / %d" % [level,HQCatalog.cap()],"state":"locked" if not known else "active" if id in Game.hq_loadout() else "owned" if id in Game.purchased_hq else "ready"})
+				result.append({"id":id,"title":info.name,"icon":"headquarters/"+id,"caption":"Нужен чертёж" if not known else ("Выбрана · " if id in Game.hq_loadout() else "")+"ур. %d / %d" % [level,HQCatalog.cap()],"state":"locked" if not known else "active" if id in Game.hq_loadout() else "owned" if id in Game.purchased_hq else "ready"})
 		"defence":
 			for row in DEFENCE:
 				var unlocked=Game.branch_unlocked(row[0])
@@ -33,7 +33,7 @@ func detail(tab:String,id:String)->Dictionary:
 			if known and id not in Game.hq_loadout():actions.append({"id":"equip","text":"Выбрать" if bought else "Купить и выбрать · %d ◈" % Game.hq_purchase_cost(id),"enabled":bought or Game.credits>=Game.hq_purchase_cost(id),"primary":true})
 			if known:actions.append({"id":"level","text":"Максимум" if level>=HQCatalog.cap() else "Уровень %d · %d ◈" % [level+1,HQCatalog.permanent_cost(id)],"enabled":level<HQCatalog.cap() and Game.credits>=HQCatalog.permanent_cost(id)})
 			var mode={"active":"Активная · клавиша 2","auto":"Автоматическая","passive":"Пассивная"}.get(info.mode,"")
-			return {"title":info.name,"icon":info.icon,"text":info.description if known else "Чертёж технологии выпадает в сундуках.","rows":[["Уровень",level,mini(level+1,HQCatalog.cap())]],"lines":[mode,HQCatalog.stat(id,level)],"actions":actions}
+			return {"title":info.name,"icon":"headquarters/"+id,"text":info.description if known else "Чертёж технологии выпадает в сундуках.","rows":[["Уровень",level,mini(level+1,HQCatalog.cap())]],"lines":[mode,HQCatalog.stat(id,level)],"actions":actions}
 		"defence":
 			var row=DEFENCE.filter(func(r):return r[0]==id)[0];var unlocked=Game.branch_unlocked(id);var level=Game.level(id);var cap=Game.upgrade_cap(id)
 			var text="%d HP базы · +1 за уровень." % (Balance.CONFIG.combat.base_health+Game.base_level) if id=="base" else "%.2f урона турели · +0,05 за уровень." % Game.turret_damage()

@@ -28,7 +28,7 @@ func items(tab:String)->Array:
 				if def.step<=0 or def.meta_field!="":continue
 				var level=StatRegistry.level(def.id);var open=StatRegistry.unlocked(def.id)
 				var state="max" if level>=def.max_level else "ready" if StatRegistry.can_buy(def.id) else "owned" if open else "locked"
-				result.append({"id":def.id,"title":def.title,"icon":def.icon,"group":RunUpgrades.FAMILIES[def.family],"caption":"ур. %d / %d" % [level,def.max_level] if open else "Нужно: %s %d" % [StatRegistry.get_def(def.requires).title,def.requires_level],"state":state})
+				result.append({"id":def.id,"title":def.title,"icon":"stats/"+def.id,"group":RunUpgrades.FAMILIES[def.family],"caption":"ур. %d / %d" % [level,def.max_level] if open else "Нужно: %s %d" % [StatRegistry.get_def(def.requires).title,def.requires_level],"state":state})
 		"kit":
 			result.append({"id":"backpack","title":"Рюкзак","icon":"inventory","caption":"%d / 6 ячеек" % Game.backpack_slots,"state":"max" if Game.backpack_slots>=6 else "owned"})
 			result.append({"id":"reroll","title":"Перебросы","icon":"reroll","caption":"+%d за забег" % Game.reroll_level if "reroll" in Game.research_unlocks else "Нужен чертёж","state":"locked" if "reroll" not in Game.research_unlocks else "owned"})
@@ -58,7 +58,7 @@ func detail(tab:String,id:String)->Dictionary:
 			var now=StatRegistry.base_value(def);var then=now+(def.step if level<def.max_level else 0.0)
 			var open=StatRegistry.unlocked(id)
 			var action={"id":"buy","text":"Максимум" if level>=def.max_level else ("Улучшить · %d ◈" % StatRegistry.cost(id) if open else "Нужно: %s %d" % [StatRegistry.get_def(def.requires).title,def.requires_level]),"enabled":StatRegistry.can_buy(id),"primary":true}
-			return {"title":def.title,"icon":def.icon,"text":def.description,"rows":[["Уровень",level,mini(level+1,def.max_level)],["В начале забега",StatRegistry.text(def,now),StatRegistry.text(def,then)]],"lines":["Ветка: "+RunUpgrades.FAMILIES[def.family],"Карточки забега прибавляются сверху."],"actions":[action]}
+			return {"title":def.title,"icon":"stats/"+def.id,"text":def.description,"rows":[["Уровень",level,mini(level+1,def.max_level)],["В начале забега",StatRegistry.text(def,now),StatRegistry.text(def,then)]],"lines":["Ветка: "+RunUpgrades.FAMILIES[def.family],"Карточки забега прибавляются сверху."],"actions":[action]}
 		"supply":
 			var row=SUPPLY.filter(func(r):return r[0]==id)[0];var unlocked=Game.branch_unlocked(id);var level=Game.level(id);var cap=Game.upgrade_cap(id)
 			var action={"id":"buy","text":("Максимум" if level>=cap else "Улучшить · %d ◈" % Game.cost(id)) if unlocked else "Открыть · %d ◈" % Game.UNLOCK_COSTS[id],"enabled":(level<cap and Game.credits>=Game.cost(id)) if unlocked else Game.credits>=Game.UNLOCK_COSTS[id],"primary":true}
