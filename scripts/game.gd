@@ -74,6 +74,15 @@ const RETIRED_BUILDINGS={"character":168,"bonuses":144}
 const BRANCH_STATION={"base":"headquarters","turret":"headquarters"}
 func station_ready(id:String)->bool:return id=="" or id in built_workshops
 var BUILD_COST=Balance.CONFIG.economy.building_costs
+## The yard outside the hangar is bought first (alloy, no blueprint); the parking and the range stand on it.
+const YARD_COST=150
+const BUILDING_REQUIRES={"garage":"yard","range":"yard"}
+func building_cost(id:String)->int:return YARD_COST if id=="yard" else int(BUILD_COST.get(id,0))
+func building_known(id:String)->bool:return id=="yard" or id in research_unlocks
+## Missing prerequisite building ("" when none).
+func building_blocker(id:String)->String:
+	var need=str(BUILDING_REQUIRES.get(id,""))
+	return need if need!="" and need not in built_workshops else ""
 var bonus_unlocks: Array=["heart"]
 var bonus_levels: Dictionary={}
 var UNLOCK_COSTS=Balance.CONFIG.economy.branch_unlock_costs
@@ -307,6 +316,8 @@ func apply_profile(data:Dictionary):
 		if "character" not in research_unlocks:research_unlocks.append("character")
 		for id in BUILD_COST:
 			if id in data.get("built",[]):built_workshops.append(id)
+		# The yard came after the parking and the range: profiles that built either keep it open.
+		if "yard" in data.get("built",[]) or "garage" in built_workshops or "range" in built_workshops:built_workshops.append("yard")
 		# Retired buildings: bonuses turn into the Arsenal when it is missing, the rest is refunded once.
 		for id in RETIRED_BUILDINGS:
 			if id not in data.get("built",[]):continue
@@ -395,8 +406,8 @@ func upgrade_rerolls() -> bool:
 	if "reroll" not in research_unlocks or reroll_level>=5 or credits<reroll_cost():return false
 	credits-=reroll_cost();reroll_level+=1;save_progress();return true
 func build_workshop(id: String) -> bool:
-	if id not in BUILD_COST or id not in research_unlocks or id in built_workshops or credits<BUILD_COST[id]:return false
-	credits-=BUILD_COST[id];built_workshops.append(id);save_progress();return true
+	if (id not in BUILD_COST and id!="yard") or not building_known(id) or id in built_workshops or building_blocker(id)!="" or credits<building_cost(id):return false
+	credits-=building_cost(id);built_workshops.append(id);save_progress();return true
 func equip_weapon(id: String) -> bool:
 	if "weapons" not in built_workshops or id not in weapon_unlocks:return false
 	selected_weapon=id;sound("weapon_equip",self);save_progress();return true

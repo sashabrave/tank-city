@@ -1,7 +1,7 @@
 extends RefCounted
 ## «Штаб» (HQ blueprint): support technologies, base defence, insurance and the other buildings.
 const DEFENCE=[["base","Прочность базы","repair"],["turret","Союзные турели","turret"]]
-const BUILDINGS=["weapons","garage","range"]
+const BUILDINGS=["weapons","yard","garage","range"]
 func title()->String:return "Штаб"
 func subtitle()->String:return "Поддержка в бою, оборона базы, страховка добычи и постройки хаба."
 func tabs()->Array:return [["tech","Технологии","base"],["defence","Оборона","repair"],["insurance","Страховка","alloy"],["build","Постройки","settings"]]
@@ -21,10 +21,10 @@ func items(tab:String)->Array:
 			result.append({"id":"rescue","title":"Страховка чертежей","icon":"blueprint","caption":"%d / 10" % Game.rescue_level if "rescue" in Game.research_unlocks else "Нужен чертёж","state":"owned" if "rescue" in Game.research_unlocks else "locked"})
 		"build":
 			for id in BUILDINGS:
-				var built=id in Game.built_workshops;var known=id in Game.research_unlocks
-				result.append({"id":id,"title":building_name(id),"icon":{"weapons":"inventory","garage":"vehicle","range":"sniper"}[id],"caption":"Построено" if built else "%d ◈" % Game.BUILD_COST[id] if known else "Нужен чертёж","state":"active" if built else "ready" if known else "locked"})
+				var built=id in Game.built_workshops;var known=Game.building_known(id);var blocker=Game.building_blocker(id)
+				result.append({"id":id,"group":"Площадка снаружи" if id in ["yard","garage","range"] else "Ангар","title":building_name(id),"icon":{"weapons":"inventory","yard":"base","garage":"vehicle","range":"sniper"}[id],"caption":"Построено" if built else ("Нужна площадка" if blocker!="" else "%d ◈" % Game.building_cost(id)) if known else "Нужен чертёж","state":"active" if built else "ready" if known and blocker=="" else "locked"})
 	return result
-static func building_name(id:String)->String:return {"weapons":"Арсенал","garage":"Стоянка","range":"Полигон","headquarters":"Штаб"}.get(id,id)
+static func building_name(id:String)->String:return {"weapons":"Арсенал","yard":"Площадка","garage":"Стоянка","range":"Полигон","headquarters":"Штаб"}.get(id,id)
 func detail(tab:String,id:String)->Dictionary:
 	match tab:
 		"tech":
@@ -45,9 +45,10 @@ func detail(tab:String,id:String)->Dictionary:
 			var known="rescue" in Game.research_unlocks;var price=Game.special_cost("rescue")
 			return {"title":"Страховка чертежей","icon":"blueprint","text":"Шанс сохранить чертежи из рюкзака при гибели." if known else "Нужен чертёж страховки.","rows":[["Шанс","%d%%" % (Game.rescue_level*6),"%d%%" % (mini(Game.rescue_level+1,10)*6)]],"actions":[{"id":"buy","text":"Максимум" if price<0 and known else "Улучшить · %d ◈" % price,"enabled":known and price>=0 and Game.credits>=price,"primary":true}]}
 		"build":
-			var built=id in Game.built_workshops;var known=id in Game.research_unlocks
+			var built=id in Game.built_workshops;var known=Game.building_known(id);var blocker=Game.building_blocker(id)
 			var text=preload("res://scripts/ui/build_catalog.gd").INFO.get(id,["",""])[1]
-			return {"title":building_name(id),"icon":{"weapons":"inventory","garage":"vehicle","range":"sniper"}[id],"text":text if known else "Чертёж постройки выпадает в вылазках.","actions":[] if built else [{"id":"build","text":"Построить · %d ◈" % Game.BUILD_COST[id],"enabled":known and Game.credits>=Game.BUILD_COST[id],"primary":true}]}
+			if blocker!="":text+=" Сначала купи площадку."
+			return {"title":building_name(id),"icon":{"weapons":"inventory","yard":"base","garage":"vehicle","range":"sniper"}[id],"text":text if known else "Чертёж постройки выпадает в вылазках.","actions":[] if built else [{"id":"build","text":("Купить · %d ◈" if id=="yard" else "Построить · %d ◈") % Game.building_cost(id),"enabled":known and blocker=="" and Game.credits>=Game.building_cost(id),"primary":true}]}
 	return {}
 func act(tab:String,id:String,action:String)->String:
 	match [tab,action]:

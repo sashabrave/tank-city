@@ -55,6 +55,7 @@ const TRACK_CENTER=Vector3(13.9,0,1.9)
 const TRACK_RADII=Vector2(3.1,1.35)
 const BOOTH_CELL=Vector2i(10,3)
 var camera_base:=Vector3.INF
+var yard_gate:Node3D
 var parking_sign:Node3D
 var command_meshes:Array=[]
 var command_faded=false
@@ -441,6 +442,12 @@ func passage(yard:Node3D):
 	var drum=MeshInstance3D.new();var cyl=CylinderMesh.new();cyl.top_radius=.16;cyl.bottom_radius=.16;cyl.height=1.9;drum.mesh=cyl;drum.rotation.x=PI*.5
 	drum.position=Vector3(8.2,2.0,0);drum.material_override=Visuals.material(Color("8a8f86"));yard.add_child(drum)
 	var beacon=Visuals.box(yard,Vector3(8.2,2.4,.75),Vector3(.14,.14,.14),Color("ffb52c"));beacon.material_override=Visuals.material(Color("ffb52c"),true)
+	# Closed gate until the yard is bought: a ribbed shutter with hazard stripes.
+	yard_gate=Node3D.new();yard_gate.name="YardGate";yard.add_child(yard_gate);yard_gate.position=Vector3(8.2,0,0)
+	Visuals.box(yard_gate,Vector3(0,1.0,0),Vector3(.08,2.0,1.8),Color("7d837b"))
+	for i in range(6):Visuals.box(yard_gate,Vector3(-.05,.3+i*.3,0),Vector3(.02,.05,1.8),Color("5d635b"))
+	for i in range(5):Visuals.box(yard_gate,Vector3(-.05,.12,-.72+i*.36),Vector3(.02,.12,.18),Color("e5b34f"))
+	preload("res://scripts/interaction_prompt.gd").attach(self,self,"🔒 Площадка · %d ◈" % Game.YARD_COST,Vector3(7,0,0),1.3,func():return "yard" not in Game.built_workshops and not mounted)
 ## Around the apron: concrete barriers along the south and east edges, parking lines, a guard booth and a
 ## flag at the entrance, a container on the ground behind the range.
 func yard_dressing(yard:Node3D):
@@ -466,11 +473,13 @@ func follow_yard(delta:float):
 	var who=training_tank if mounted else avatar
 	var shift=clampf((who.position.x-6.0)*1.1,0.0,10.0)
 	camera.position=camera.position.lerp(camera_base+Vector3(shift,0,0),minf(1.0,delta*4.0))
+	if is_instance_valid(yard_gate):yard_gate.visible="yard" not in Game.built_workshops
 	if is_instance_valid(parking_sign):parking_sign.visible="garage" in Game.built_workshops and (Game.garage.starting_vehicle()=="" or (not training_tank.visible and not mounted))
 
 func hub_free(p: Vector2i) -> bool:
 	if p in training_barriers or p in [Vector2i(-2,3),Vector2i(3,3),Vector2i(6,3)]:return false
 	if p.x>7:
+		if "yard" not in Game.built_workshops:return false
 		# Yard: the rack gap (x 8-9 only on row 0), then open concrete x 10-17, y -3..3 except the dummy and booth.
 		if p.x<=9:return p.y==0
 		return p.x<=17 and p.y>=-3 and p.y<=3 and p!=Vector2i(roundi(YARD_DUMMY.x),roundi(YARD_DUMMY.z)) and p!=BOOTH_CELL
@@ -492,6 +501,7 @@ func interact():
 	if not mounted and "garage" in Game.built_workshops and avatar.position.distance_to(YARD_PARK)<1.65:open_station("garage");return
 	var locked=nearest_locked()
 	if locked!="":build_tab=1 if locked in ["garage","range"] else 0;show_build_menu();return
+	if not mounted and "yard" not in Game.built_workshops and avatar.position.distance_to(Vector3(7,0,0))<1.3:show_build_menu();return
 	if not mounted and avatar.position.distance_to(weapon_bench_pos)<1.25:open_station("arsenal");return
 	if mounted:
 		var exit_cell=cell

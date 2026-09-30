@@ -52,7 +52,9 @@ func run():
 	check(p.act("tech","hq_medbay","equip")!="" and "hq_medbay" in Game.hq_loadout(),"equip an HQ technology")
 	check(p.act("defence","base","buy")!="" and Game.branch_unlocked("base"),"base defence in the HQ")
 	check(p.act("insurance","alloy","buy")!="" and Game.progression.insurance==1,"insurance in the HQ")
-	Game.research_unlocks.append("garage");check(p.act("build","garage","build")!="" and "garage" in Game.built_workshops,"build the parking lot from the HQ")
+	Game.research_unlocks.append("garage");check(p.act("build","garage","build")=="","the parking needs the yard first")
+	check(p.act("build","yard","build")!="" and "yard" in Game.built_workshops,"buy the yard from the HQ")
+	check(p.act("build","garage","build")!="" and "garage" in Game.built_workshops,"build the parking lot from the HQ")
 	hub.close_station();Game.garage.unlocks.append("vehicle_buggy")
 	hub.open_station("garage");await settle();p=screen(hub).provider
 	check(p.act("vehicles","buggy","buy")!="" and "buggy" in Game.garage.owned,"buy a vehicle")
