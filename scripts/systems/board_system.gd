@@ -113,8 +113,11 @@ func shred_net(cell: Vector2i):
 func add_trench(cell: Vector2i):
 	arena.navigation.invalidate(cell)
 	var node=Node3D.new();arena.add_child(node);node.position=arena.world_pos(cell);arena.room.trenches[cell]=node
-	preload("res://scripts/interaction_prompt.gd").attach(node,arena,"Окоп · C — укрыться",Vector3.ZERO,1.3,func():return is_instance_valid(arena.player) and arena.player.kind=="soldier")
+	var hints=preload("res://scripts/trench_hints.gd").new();hints.arena=arena;hints.cell=cell;node.add_child(hints)
 	Visuals.model("trench",node)
+	# Parapet on the camera side: sandbags that hide the lower body of whoever sits in the trench.
+	for i in range(3):
+		Visuals.box(node,Vector3(-.3+i*.3,.14,.4),Vector3(.3,.2,.16),Color("b8a47c")).rotation.y=(i-1)*.08
 
 func add_barrier(cell: Vector2i,hp: float,hedgehog:bool=true):
 	arena.navigation.invalidate(cell)

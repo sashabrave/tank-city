@@ -4,6 +4,24 @@
 			"date": "2026-09-30",
 			"version": "0.2.1",
 			"ru": {
+				"title": "Окоп",
+				"items": [
+					"Боец в окопе сидит глубже, а спереди появился бруствер из мешков: видны голова и плечи, в укрытии — только каска.",
+					"Подсказки окопа больше не закрывают поле. Рядом с окопом — маленькая клавиша входа на самой клетке окопа. В окопе — клавиша укрытия под клеткой и маленькая клавиша выхода над головой. На телефоне их можно нажимать пальцем."
+				]
+			},
+			"en": {
+				"title": "Trench",
+				"items": [
+					"A soldier sits deeper in the trench, and a sandbag parapet covers the front: head and shoulders show, only the helmet when hiding.",
+					"Trench hints no longer cover the field. Next to a trench a small enter key sits on the trench cell. Inside, the hide key is under the cell and a small leave key above the head. On a phone they can be tapped."
+				]
+			}
+		},
+		{
+			"date": "2026-09-30",
+			"version": "0.2.1",
+			"ru": {
 				"title": "Новые классы",
 				"items": [
 					"Пять классов с разными ролями: Стрелок (крит, граната), Штурмовик (живучесть, щит), Подрывник (поджог, защита от взрывов, газ), Разведчик (маскировка, засада, невидимость) и Инженер (ремонт, мародёр, дрон).",

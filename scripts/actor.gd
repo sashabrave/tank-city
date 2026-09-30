@@ -205,7 +205,7 @@ func _physics_process(delta):
 		if not occupying_trench and not arena.board.occupy_trench(self,cell):return
 		trench_time=fmod(trench_time+delta,5.0)
 		hidden_in_trench=trench_time<1.8
-		model.position.y=-.85 if hidden_in_trench else 0.0
+		model.position.y=-.85 if hidden_in_trench else -.42
 		health_label.visible=not hidden_in_trench
 		if hidden_in_trench:return
 		fire_cooldown=maxf(0,fire_cooldown-delta)
@@ -282,7 +282,7 @@ func _physics_process(delta):
 			var aim=Game.direction()
 			if aim!=Vector2i.ZERO:set_facing(aim)
 			if Input.is_action_just_pressed("hide_trench"):hidden_in_trench=not hidden_in_trench
-			model.position.y=-.65 if hidden_in_trench else -.15
+			model.position.y=-.85 if hidden_in_trench else -.42
 			if Game.wants_fire() and not hidden_in_trench and arena.phase=="combat":shoot()
 			if Game.wants_interact():arena.interact()
 			return
