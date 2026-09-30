@@ -40,7 +40,9 @@ static func build(route,info:Dictionary)->Control:
 	var enter=UiKit.button(panel,"Войти [E]",Vector2(352,325),Vector2(300,48),route.confirm_entry,true)
 	enter.disabled=info.id not in route.reachable or info.stage!=route.available or route.needs_service
 	UiKit.button(panel,"Отказаться",Vector2(28,325),Vector2(308,48),route.cancel_entry)
-	var dev=UiKit.button(panel,"dev run",Vector2(28,398),Vector2(145,34),func():route.dev_entry(false));dev.add_theme_font_size_override("font_size",13)
-	dev=UiKit.button(panel,"dev progress run",Vector2(185,398),Vector2(235,34),func():route.dev_entry(true));dev.add_theme_font_size_override("font_size",13)
-	UiKit.button(panel,"Рюкзак / статы",Vector2(432,398),Vector2(220,34),route.show_pause).add_theme_font_size_override("font_size",14)
+	if Game.dev_map:
+		# Test jump: straight into this room, optionally with every reward of the rooms before it.
+		var jump=UiKit.button(panel,"Перейти",Vector2(28,398),Vector2(308,40),func():route.dev_entry(false));jump.name="DevJump";jump.add_theme_font_size_override("font_size",15)
+		var full=UiKit.button(panel,"Перейти с прокачкой",Vector2(352,398),Vector2(300,40),func():route.dev_entry(true),true);full.name="DevJumpProgress";full.add_theme_font_size_override("font_size",15)
+	else:UiKit.button(panel,"Рюкзак / статы",Vector2(352,398),Vector2(300,40),route.show_pause).add_theme_font_size_override("font_size",15)
 	return modal

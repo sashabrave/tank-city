@@ -167,6 +167,7 @@ func _ready():
 	for info in plan[0]:path_line(START_POINT,previews[info.id].position)
 	start_pad=Node3D.new();start_pad.name="StartPad";add_child(start_pad);start_pad.position=START_POINT;start_pad.scale=Vector3.ONE*MINI_SCALE
 	MINI.start(start_pad);Visuals.label3d(start_pad,"Старт",Vector3(0,.35,3.65),Color("f3eee0"),30).pixel_size=.025
+	Visuals.label3d(start_pad,"E — в хаб",Vector3(0,.35,5.1),Color("c9cfbe"),22).pixel_size=.025
 	selection_ring=Node3D.new();add_child(selection_ring);selection_ring.scale=Vector3.ONE*MINI_SCALE;MINI.border(selection_ring,Color("ffb52c"),needs_service)
 	scroll=maxf(0,-stage_z(available)-7);move_camera();update_selection()
 	setup_driving()
@@ -301,6 +302,12 @@ func tap_at(screen_pos:Vector2):
 	if travelling or is_instance_valid(modal):return
 	var point=Plane(Vector3.UP,.17).intersects_ray(camera.project_ray_origin(screen_pos),camera.project_ray_normal(screen_pos))
 	if point==null:return
+	if Game.dev_map:
+		for id in previews:
+			var delta=point-previews[id].position
+			if previews[id].visible and absf(delta.x)<=3.15*MINI_SCALE and absf(delta.z)<=3.15*MINI_SCALE:
+				pending_info=previews[id].get_meta("info");pending_service="";preview_only=true;selection_ring.hide()
+				modal=preload("res://scripts/route_room_dialog.gd").build(self,pending_info);return
 	if needs_service:
 		for branch in fork_positions:
 			var delta=point-fork_positions[branch]
@@ -309,6 +316,12 @@ func tap_at(screen_pos:Vector2):
 		if not previews[id].visible:continue
 		var delta=point-previews[id].position
 		if absf(delta.x)<=3.15*MINI_SCALE and absf(delta.z)<=3.15*MINI_SCALE:travel_to_room(previews[id].get_meta("info").stage,id);return
+## Mouse wheel zooms the map. Handled in _input: the map UI layer would swallow it otherwise.
+func _input(event):
+	if travelling or is_instance_valid(modal) or not event is InputEventMouseButton or not event.pressed:return
+	if event.button_index in [MOUSE_BUTTON_WHEEL_UP,MOUSE_BUTTON_WHEEL_DOWN]:
+		camera.size=clampf(camera.size+(-2.0 if event.button_index==MOUSE_BUTTON_WHEEL_UP else 2.0),16.0,42.0);move_camera()
+		get_viewport().set_input_as_handled()
 func _unhandled_input(event):
 	if travelling:return
 	if event.is_action_pressed("pause"):
@@ -330,8 +343,6 @@ func _unhandled_input(event):
 			dragging=event.pressed
 			if event.pressed:drag_distance=0
 			elif drag_distance<8:tap_at(event.position)
-		if event.pressed and event.button_index==MOUSE_BUTTON_WHEEL_UP:scroll+=1.6;follow_camera=false;move_camera()
-		if event.pressed and event.button_index==MOUSE_BUTTON_WHEEL_DOWN:scroll-=1.6;follow_camera=false;move_camera()
 	if event is InputEventMouseMotion and dragging:
 		drag_distance+=event.relative.length();scroll+=event.relative.y*.04;follow_camera=false;move_camera()
 	if event is InputEventScreenTouch:
@@ -433,15 +444,19 @@ func nearest_target(radius:float)->Dictionary:
 		for id in reachable:
 			var d=here.distance_to(Vector3(previews[id].position.x,0,previews[id].position.z))
 			if d<best_d:best_d=d;best={"id":id,"pos":previews[id].position}
+	# Back into the garage at the start: E returns to the hub.
+	if best.is_empty() and here.distance_to(START_POINT+Vector3(0,0,4.7))<radius:best={"garage":true,"pos":START_POINT+Vector3(0,0,4.7)}
 	return best
 func enter_target(target:Dictionary):
 	if travelling or is_instance_valid(modal):return
+	if target.has("garage"):hub_requested.emit();return
 	if target.has("branch"):
 		pending_service=target.branch;pending_info={};confirm_service()
 	else:
 		pending_info=previews[target.id].get_meta("info");pending_service="";preview_only=false;confirm_entry()
 func update_card():
 	var target={} if (travelling or is_instance_valid(modal) or showing_pause) else nearest_target(CARD_RADIUS)
+	if target.has("garage"):target={}
 	var key=str(target.get("id",target.get("branch","")))
 	if key==card_key:return
 	card_key=key

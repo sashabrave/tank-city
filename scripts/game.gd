@@ -1,5 +1,7 @@
 extends Node
 var return_through_gate=false
+## Test tool (hub → Инструменты): on the route map any room opens with «Перейти» and «Перейти с прокачкой».
+var dev_map=false
 var garage=preload("res://scripts/garage/state.gd").new()
 var progression=preload("res://scripts/progression/base_progression.gd").new()
 const TIERS=preload("res://scripts/progression/recipe_tiers.gd")

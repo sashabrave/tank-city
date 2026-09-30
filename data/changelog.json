@@ -4,6 +4,26 @@
 			"date": "2026-09-30",
 			"version": "0.2.1",
 			"ru": {
+				"title": "Карта маршрута",
+				"items": [
+					"Колесо мыши приближает и отдаляет карту.",
+					"Чтобы вернуться в хаб, заедь обратно в гараж на старте и нажми E.",
+					"Тест: «Инструменты» → «Дев-режим карты». Клик по любой комнате — «Перейти» или «Перейти с прокачкой» (с наградами всех комнат до неё)."
+				]
+			},
+			"en": {
+				"title": "Route map",
+				"items": [
+					"The mouse wheel zooms the map in and out.",
+					"To return to the hub, drive back into the garage at the start and press E.",
+					"Test: Tools → Map dev mode. Click any room — Jump, or Jump with upgrades (with the rewards of every room before it)."
+				]
+			}
+		},
+		{
+			"date": "2026-09-30",
+			"version": "0.2.1",
+			"ru": {
 				"title": "Боец и техника",
 				"items": [
 					"«Выдержка» и «Последний рубеж» работают и пешком, и в машине.",
