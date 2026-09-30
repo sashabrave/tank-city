@@ -79,6 +79,10 @@ func run():
 	Settings.close()
 	main.show_map(0);await get_tree().process_frame
 	check(c.context=="map","map uses own music context")
+	# The map opens with the car driving off the start pad; pause is ignored until it arrives.
+	for i in range(240):
+		if not main.current.travelling:break
+		await get_tree().process_frame
 	main.current.show_pause();await shot("player_map")
 	await get_tree().process_frame
 	# Pause opens the field tablet; its radio tab hosts the mini player.

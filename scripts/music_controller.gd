@@ -123,6 +123,11 @@ func poll_pending():
 			if track==current_track:start_track(track,ResourceLoader.load_threaded_get(path))
 		ResourceLoader.THREAD_LOAD_FAILED,ResourceLoader.THREAD_LOAD_INVALID_RESOURCE:
 			push_warning("Music track failed to load: "+pending_track);pending_track=""
+## Blocks until the pending track is loaded and starts it; used by tests and tools that need the stream now.
+func finish_loading():
+	if pending_track=="":return
+	var track=pending_track;pending_track=""
+	start_track(track,ResourceLoader.load_threaded_get(track_path(track)))
 func start_track(track:String,stream:AudioStream):
 	if is_instance_valid(fade):fade.kill()
 	var old=backgrounds[active];active=1-active;var player=backgrounds[active]

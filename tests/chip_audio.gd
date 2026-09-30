@@ -56,7 +56,7 @@ func run():
 	check(not audio.voices.back().stream_paused,"UI audible while paused")
 	get_tree().paused=false
 	for context in ["hub","battle","boss","hub","battle","boss","hub","battle","boss"]:
-		Game.music_context(context)
+		Game.music_context(context);Game.music_controller.finish_loading()
 		check(Game.music_controller.backgrounds[Game.music_controller.active].stream!=null,"music context "+context)
 	check(Game.music_controller.selections.hub==3,"music variants rotate")
 	var owner=Node3D.new();add_child(owner);Game.sound_loop("engine_buggy",owner)
