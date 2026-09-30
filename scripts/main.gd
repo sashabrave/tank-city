@@ -40,10 +40,13 @@ func select_world():
 
 func start_run():
 	Game.clear_run_checkpoint()
-	Game.progression.begin_run();Game.progression.event("enter_world_"+str(Campaign.world),1,true);route_choices.clear();Game.visual_run_seed=randi();show_map(0)
+	Game.progression.begin_run();Game.progression.event("enter_world_"+str(Campaign.world),1,true)
+	if Campaign.endless:Game.progression.event("enter_endless",1,true)
+	route_choices.clear();Game.visual_run_seed=randi();show_map(0)
 func show_map(index: int):
 	if Campaign.endless and index>=Campaign.SIZES.size():
 		Campaign.cycle+=1;index=0;route_choices.clear()
+		Game.progression.event("endless_cycle",Campaign.cycle+1,true)
 		if is_instance_valid(run_arena):run_arena.visited_services.clear();run_arena.run.route_choices=route_choices
 	if Campaign.endless:
 		advance_endless(index);return
@@ -97,6 +100,7 @@ func show_service(branch: String,index: int):
 
 ## A service placed on the route as an ordinary node: after it the next stage opens.
 func show_node_service(branch:String,index:int):
+	Game.progression.event("visit_"+branch)
 	clear_current();current=load("res://scripts/service_room.gd").new();current.arena=run_arena;current.index=index;current.branch=branch;add_child(current)
 	current.hub_requested.connect(show_hub)
 	current.completed.connect(func(_completed):run_arena.run.route_choices=route_choices;show_map(index+1))

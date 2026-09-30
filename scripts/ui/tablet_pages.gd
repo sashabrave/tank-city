@@ -182,7 +182,8 @@ func settings():
 		setting_choice(body,["screen_controls","Экранные кнопки",["Скрыты","Показаны"],[false,true],"Кнопки движения и огня в хабе и бою. Клавиатура работает всегда."],0)
 		setting_choice(body,["biome_info","Подпись биома",["Скрыта","Показана"],[false,true],"Номер, название и покрытия карты под характеристиками оружия."],96)
 		setting_choice(body,["language","Язык / Language",["Русский","English"],["ru","en"],"Язык интерфейса. Названия своих статей сохраняются как написаны."],192)
-		y=288
+		setting_choice(body,["ui_motion","Анимации интерфейса",["Выключены","Включены"],[false,true],"Карточки и сообщения выезжают, кнопки пружинят при нажатии."],288)
+		y=384
 	else:
 		UiKit.label(body,"Нажми кнопку и новую клавишу. Esc — отмена. Занятые клавиши меняются местами.",Vector2(0,0),Vector2(700,46),14,UiKit.MUTED).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;y=55
 		for group in [["Движение",["north","south","west","east"]],["Бой и действия",["fire","interact","hide_trench"]],["Способности",["class_ability","skill_1","ability","hq_ability"]]]:

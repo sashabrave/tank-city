@@ -51,6 +51,7 @@ static func button(parent: Node,text: String,pos: Vector2,dimensions: Vector2,ca
 	widget.add_theme_stylebox_override("disabled",style(Color("272e29"),13))
 	widget.focus_mode=Control.FOCUS_NONE
 	widget.pressed.connect(callback)
+	press_bounce(widget)
 	widget.add_child(preload("res://scripts/ui/currency_icons.gd").new())
 	if text=="Выбрать":widget.add_to_group("reward_choice")
 	return widget
@@ -62,6 +63,46 @@ static func icon(parent: Node,id: String,pos: Vector2,dimensions: Vector2) -> Te
 	widget.texture=icon_texture(id)
 	parent.add_child(widget);return widget
 
+## Interface motion (design system). All list and card entrances go through reveal(); buttons get a short press bounce.
+## "Анимации интерфейса" in settings turns motion off; content is always shown in its final state.
+static func motion_enabled()->bool:return Settings.values.get("ui_motion",true) and DisplayServer.get_name()!="headless"
+## Slides a control in from `offset` with a fade. `index` staggers list items (35 ms each, capped).
+## Works for container children too: the move starts after the container placed the node.
+static func reveal(node:Control,index:int=0,offset:=Vector2(0,-22),duration:=.28):
+	if not motion_enabled() or not is_instance_valid(node):return
+	node.modulate.a=0.0
+	await node.get_tree().process_frame
+	if not is_instance_valid(node) or not node.is_inside_tree():return
+	var target=node.position;node.position=target+offset
+	var delay=minf(index,10)*.035
+	var tween=node.create_tween().set_parallel(true)
+	tween.tween_property(node,"modulate:a",1.0,duration*.8).set_delay(delay)
+	tween.tween_property(node,"position",target,duration).set_delay(delay).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+## Reveals every Control child of a list, top to bottom.
+static func reveal_list(list:Node,offset:=Vector2(0,-22)):
+	var i=0
+	for child in list.get_children():
+		if child is Control:reveal(child,i,offset);i+=1
+## Newly arrived item: drops from higher up with a stronger overshoot and a warm flash.
+static func arrive(node:Control,index:int=0):
+	reveal(node,index,Vector2(0,-70),.42)
+	if not motion_enabled():return
+	var flash=node.create_tween();flash.tween_property(node,"self_modulate",Color(1.25,1.15,.9),.18).set_delay(.3+minf(index,10)*.035);flash.tween_property(node,"self_modulate",Color.WHITE,.35)
+## Slides a finished item down and out, then runs `done`.
+static func leave(node:Control,done:Callable):
+	if not motion_enabled() or not is_instance_valid(node):done.call();return
+	var tween=node.create_tween().set_parallel(true)
+	tween.tween_property(node,"position",node.position+Vector2(0,28),.22).set_trans(Tween.TRANS_QUAD)
+	tween.tween_property(node,"modulate:a",0.0,.22)
+	tween.chain().tween_callback(done)
+static func press_bounce(button:Button):
+	button.button_down.connect(func():
+		if not motion_enabled():return
+		button.pivot_offset=button.size*.5
+		button.create_tween().tween_property(button,"scale",Vector2.ONE*.95,.06))
+	button.button_up.connect(func():
+		if not motion_enabled() or not is_instance_valid(button):return
+		button.create_tween().tween_property(button,"scale",Vector2.ONE,.18).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT))
 static func interface_icon(id:String)->Texture2D:
 	return load("res://assets/icons/interface_straight/"+id+".svg")
 static func icon_texture(id:String)->Texture2D:

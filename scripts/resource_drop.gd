@@ -73,7 +73,7 @@ func collect():
 	if collected:return
 	collected=true;arena.room.resource_drops.erase(self)
 	if currency=="alloy":arena.run.earned+=amount;Game.earn(amount)
-	elif currency=="tokens":arena.run.tokens+=amount
+	elif currency=="tokens":arena.run.tokens+=amount;Game.progression.event("tokens",amount)
 	else:Game.cores+=amount;Game.save_progress()
 	Game.sound("collect_alloy" if currency in ["alloy","tokens"] else "collect_document",Game)
 	var camera=get_viewport().get_camera_3d()

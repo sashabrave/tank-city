@@ -1,6 +1,6 @@
 extends RefCounted
-const BASE={"infantry":12,"armor":4,"waves":4,"drones":6,"kills_buggy":8,"kills_apc":11,"kills_tank":14}
-const TITLES={"infantry":"Уничтожь %d пехотинцев","armor":"Уничтожь %d машин","waves":"Зачисти %d волн","drones":"Уничтожь %d дронов","kills_buggy":"Уничтожь %d врагов на багги","kills_apc":"Уничтожь %d врагов на БТР","kills_tank":"Уничтожь %d врагов на танке"}
+const BASE={"infantry":12,"armor":4,"waves":4,"drones":6,"kills_buggy":8,"kills_apc":11,"kills_tank":14,"barrel_kills":3,"tokens":8}
+const TITLES={"infantry":"Уничтожь %d пехотинцев","armor":"Уничтожь %d машин","waves":"Зачисти %d волн","drones":"Уничтожь %d дронов","kills_buggy":"Уничтожь %d врагов на багги","kills_apc":"Уничтожь %d врагов на БТР","kills_tank":"Уничтожь %d врагов на танке","barrel_kills":"Взорви бочками %d врагов","tokens":"Собери %d жетонов"}
 static func create(p,rng:RandomNumberGenerator)->Array:
 	var depth=int(p.counters.get("depth",0))
 	var pool=p.QUESTS.TELEGRAMS.filter(func(q):return (not q.has("vehicle") or q.vehicle in Game.garage.owned) and (q.event!="armor" or depth>=2))

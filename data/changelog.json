@@ -4,6 +4,28 @@
 			"date": "2026-09-30",
 			"version": "0.2.1",
 			"ru": {
+				"title": "Задания и живой интерфейс",
+				"items": [
+					"Задания переписаны под мир 1 и бесконечный режим: больше нет ссылок на закрытые миры. Новые задания — на каждое испытание, торговца и жетоны, бочки, карты «Тактика», механика и мастерскую, секторы бесконечного режима.",
+					"Важные задания дают не только сплав, но и документы.",
+					"Задачи теперь выглядят как лента сообщений: у каждого отправителя (Генштаб, Институт, Оперштаб) свой аватар, новые сообщения прилетают сверху, готовые к сдаче подсвечены, сданные уезжают вниз.",
+					"Интерфейс ожил: карточки и сообщения выезжают лесенкой, уведомления падают сверху, кнопки пружинят. Анимации можно выключить в настройках → Интерфейс."
+				]
+			},
+			"en": {
+				"title": "Quests and a lively interface",
+				"items": [
+					"Quests are rewritten for world 1 and endless mode: no more references to locked worlds. New quests cover every challenge, the merchant and tokens, barrels, Tactics cards, the mechanic and the workshop, endless sectors.",
+					"Important quests now pay documents as well as alloy.",
+					"Quests now look like a message feed: each sender (General Staff, Institute, Operations) has an avatar, new messages drop in from the top, ready ones are highlighted, handed-in ones slide away.",
+					"The interface came alive: cards and messages slide in one by one, notifications drop from the top, buttons bounce. Animations can be turned off in Settings → Interface."
+				]
+			}
+		},
+		{
+			"date": "2026-09-30",
+			"version": "0.2.1",
+			"ru": {
 				"title": "Песочница",
 				"items": [
 					"В хабе появилась кнопка «Песочница»: тестовое поле, где всё открыто и ничего не сохраняется в профиль.",

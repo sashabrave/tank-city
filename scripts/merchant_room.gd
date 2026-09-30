@@ -20,6 +20,7 @@ var modal:Control
 var interact_button:Button
 var stock:Array=[]
 var status_text=""
+var shop_revealed=false
 const COUNTER=Vector3(0,0,-1)
 func _ready():
 	add_to_group("notification_context")
@@ -101,6 +102,7 @@ func open_shop():
 	var scroll=ScrollContainer.new();panel.add_child(scroll);scroll.position=Vector2(25,100);scroll.size=Vector2(width-50,height-125);scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
 	var list=VBoxContainer.new();scroll.add_child(list);list.size_flags_horizontal=Control.SIZE_EXPAND_FILL;list.add_theme_constant_override("separation",10);list.name="Stock"
 	for i in range(stock.size()):row(list,i,width-70)
+	if not shop_revealed:shop_revealed=true;UiKit.reveal_list(list)
 func row(list:VBoxContainer,i:int,width:float):
 	var entry=stock[i];var view=describe(entry)
 	var card=Panel.new();list.add_child(card);card.custom_minimum_size=Vector2(width,86);card.add_theme_stylebox_override("panel",UiKit.style(Color("dce3d5"),9))
@@ -142,6 +144,7 @@ func purchase(i:int)->bool:
 		"blueprint":arena.run.pending_recipes.append(entry.recipe);status_text="Чертёж в рюкзаке"
 		"slot":status_text=play_slot()
 	if entry.kind!="slot":entry.sold=true
+	Game.progression.event("slot_play" if entry.kind=="slot" else "merchant_buy")
 	Game.sound("upgrade" if entry.kind=="card" else "pickup",self)
 	if is_instance_valid(modal):close_shop(false);open_shop()
 	return true
