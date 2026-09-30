@@ -7,13 +7,15 @@ var text_label:Label
 var amount=0.0
 var key_label:Label
 var enabled_check:Callable
+var action="interact"
 static func attach(parent:Node3D,world_context:Node,text:String,at:Vector3=Vector3.ZERO,reach:float=1.65,condition:Callable=Callable()):
 	var prompt=load("res://scripts/interaction_prompt.gd").new();prompt.context=world_context;prompt.caption=text;prompt.position=at;prompt.radius=reach;prompt.enabled_check=condition;parent.add_child(prompt);return prompt
 func _ready():
 	add_to_group("world_interaction_prompts")
 	var canvas=CanvasLayer.new();canvas.layer=4;add_child(canvas)
 	panel=UiKit.panel(canvas,Vector2.ZERO,Vector2(300,44),Color("29372f"))
-	panel.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	# Touch: the prompt itself is the action button — a tap sends the same action as the key.
+	panel.mouse_filter=Control.MOUSE_FILTER_STOP;panel.gui_input.connect(tapped)
 	var key=UiKit.panel(panel,Vector2(7,6),Vector2(32,32),Color("394b40"))
 	key.add_theme_stylebox_override("panel",UiKit.style(Color("394b40"),5,Color("d4ddce")));key.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	var letter=UiKit.label(key,"E",Vector2.ZERO,Vector2(32,32),19,Color("f2f1df"));letter.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;letter.vertical_alignment=VERTICAL_ALIGNMENT_CENTER;key_label=letter
@@ -22,6 +24,13 @@ func _ready():
 	panel.modulate.a=0
 	if "Окоп" in caption:
 		panel.size=Vector2(46,44);text_label.hide()
+func tapped(event:InputEvent):
+	var tap=(event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT and not event.pressed) or (event is InputEventScreenTouch and not event.pressed)
+	if not tap or amount<.5:return
+	panel.accept_event()
+	var press=InputEventAction.new();press.action=action;press.pressed=true;Input.parse_input_event(press)
+	await get_tree().process_frame;await get_tree().process_frame
+	var release=InputEventAction.new();release.action=action;release.pressed=false;Input.parse_input_event(release)
 func _process(delta):
 	if not is_instance_valid(context):return
 	var observer:Node3D
@@ -46,10 +55,13 @@ func _process(delta):
 	if panel.visible:
 		var compact=is_instance_valid(observer) and "hidden_in_trench" in observer and observer.hidden_in_trench and "Окоп" in caption
 		Texts.set_text(text_label,caption)
-		Texts.set_text(key_label,OS.get_keycode_string(Settings.keys.hide_trench if compact else Settings.keys.interact))
-		var width=clampf(text_label.get_theme_font("font").get_string_size(Texts.render(caption),HORIZONTAL_ALIGNMENT_LEFT,-1,17).x+66,90,360)
+		action="hide_trench" if compact else "interact"
+		var glyph=InputScheme.glyph(action);var keyed=glyph!=""
+		Texts.set_text(key_label,glyph);key_label.get_parent().visible=keyed
+		var inset=48.0 if keyed else 16.0
+		var width=clampf(text_label.get_theme_font("font").get_string_size(Texts.render(caption),HORIZONTAL_ALIGNMENT_LEFT,-1,17).x+inset+18,90,360)
 		panel.size=Vector2(46 if "Окоп" in caption else width,44)
-		text_label.size=Vector2(panel.size.x-58,34)
+		text_label.position.x=inset;text_label.size=Vector2(panel.size.x-inset-10,34)
 		panel.scale=Vector2.ONE*(.42 if compact else 1.0)
 		var anchor=global_position+Vector3.UP*(.05 if compact else 2.05+amount*.2)
 		panel.visible=not camera.is_position_behind(anchor)

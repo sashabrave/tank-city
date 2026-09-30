@@ -11,8 +11,7 @@ static func preview(parent:Node,id:String,pos:Vector2,size:Vector2):
 static func fresh(id:String)->bool:return id in Game.research_unlocks and "build:"+id not in Game.progression.seen
 static func mark(id:String):
 	if "build:"+id not in Game.progression.seen:Game.progression.seen.append("build:"+id);Game.save_progress()
-static func dot(parent:Control,pos:Vector2):
-	var label=UiKit.label(parent,"●",pos,Vector2(18,22),17,Color("d9664c"));label.mouse_filter=Control.MOUSE_FILTER_IGNORE;return label
+static func dot(parent:Control,_pos:=Vector2.ZERO):return UiKit.badge(parent,"news")
 static func open_bench(hub,id:String):
 	mark(id)
 	match id:

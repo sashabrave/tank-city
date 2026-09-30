@@ -52,7 +52,7 @@ func _ready():
 	pause_button=root.get_node("PauseButton");pause_button.pressed.connect(func():arena.pause_battle())
 	dpad=root.get_node("MovePad");dpad.apply_movement_layout();fire_pad=root.get_node("FirePad")
 	ability_button=root.get_node("LegacyAbility")
-	star_label=root.get_node("StarLabel");interact_button=root.get_node("InteractButton");interact_button.pressed.connect(func():arena.interact())
+	star_label=root.get_node("StarLabel");interact_button=root.get_node("InteractButton");interact_button.pressed.connect(func():arena.interact());interact_button.hide()
 	tip=root.get_node("TipLabel");countdown=root.get_node("CountdownLabel");footer=root.get_node("FooterLabel")
 	boss_bar=root.get_node("BossHealth");boss_title=root.get_node("BossName");boss_bar2=root.get_node("SecondBossHealth");boss_title2=root.get_node("SecondBossName")
 	for widget in [boss_bar,boss_title,boss_bar2,boss_title2]:widget.position.y+=52
@@ -119,7 +119,7 @@ func _process(_delta):
 		bar.show();label.show();bar.max_value=boss.max_hp;bar.value=boss.hp;Texts.set_text(label,boss.title)
 	if get_viewport().get_visible_rect().size!=last_size:_layout()
 	health.set_health(data.hero_hp,data.hero_max);base_health.visible=not data.boss_room;base_health.set_health(data.base_hp,data.base_max)
-	dpad.visible=Settings.values.screen_controls;fire_pad.visible=Settings.values.screen_controls;biome_panel.visible=Settings.values.biome_info
+	dpad.visible=InputScheme.touch();fire_pad.visible=InputScheme.touch();biome_panel.visible=Settings.values.biome_info
 	Texts.set_text(biome_label,arena.BIOMES.caption(arena.run_seed,arena.room_index))
 	Texts.set_text(wave_label,"Песочница" if arena.sandbox else "Босс мира" if data.boss_room else "Поле %d / %d" % [data.stage,6])
 	if arena.sandbox and not arena.challenges.active():Texts.set_text(enemy_label,"F2 — админ")

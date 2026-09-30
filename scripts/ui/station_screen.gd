@@ -64,7 +64,7 @@ func card(item:Dictionary):
 	UiKit.locked_preview(picture,state=="locked")
 	var title=UiKit.label(b,str(item.title),Vector2(8,76),Vector2(150,26),15);title.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;title.clip_text=true
 	var caption=UiKit.label(b,str(item.get("caption","")),Vector2(8,102),Vector2(150,40),13,UiKit.MUTED);caption.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;caption.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-	if item.get("dot",false):UiKit.label(b,"●",Vector2(146,6),Vector2(16,18),14,Color("cf613f"))
+	if item.get("dot",false):UiKit.badge(b,str(item.get("dot_kind","news")))
 func render_detail():
 	for child in detail_box.get_children():child.queue_free()
 	if selected=="":return

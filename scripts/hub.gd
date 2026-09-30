@@ -145,22 +145,11 @@ func build_ui():
 	for child in root.get_children():
 		if child is TextureRect and child.position==Vector2(48,109):child.hide()
 	credits.size.x=600;credits.add_theme_font_size_override("font_size",23)
-	for i in range(3):
-		var button=root.get_node(["BuildButton","GalleryButton","DebugAlloyButton"][i]);button.position=Vector2(30,205+i*60);button.size=Vector2(300,50)
-	root.get_node("DebugAlloyButton").pressed.connect(func():Game.earn(1000);refresh())
-	var alloy_button=root.get_node("DebugAlloyButton");alloy_button.size.x=146
-	var docs_button=UiKit.button(root,"+10 док.",alloy_button.position+Vector2(154,0),Vector2(146,alloy_button.size.y),func():Game.cores+=10;Game.save_progress();refresh());docs_button.add_theme_font_size_override("font_size",17)
-	alloy_button.add_theme_font_size_override("font_size",17)
-	root.get_node("BuildButton").text="Строительство"
-	root.get_node("BuildButton").pressed.connect(show_build_menu)
-	var recipe_button=UiKit.button(root,"Магазин чертежей · тест",Vector2(30,385),Vector2(300,50),show_recipe_shop)
-	recipe_button.add_theme_font_size_override("font_size",18);root.move_child(recipe_button,0)
-	var sandbox_button=UiKit.button(root,"Песочница",Vector2(30,445),Vector2(300,50),func():sandbox_requested.emit());sandbox_button.name="SandboxButton"
-	sandbox_button.add_theme_font_size_override("font_size",18);root.move_child(sandbox_button,0)
+	build_dev_menu()
 	dpad=root.get_node("MovePad");dpad.apply_movement_layout();fire_pad=root.get_node("FirePad")
 	start_button=root.get_node("StartButton");start_button.pressed.connect(launch)
 	root.get_node("SettingsButton").hide()
-	board_button=root.get_node("InteractButton");board_button.pressed.connect(interact)
+	board_button=root.get_node("InteractButton");board_button.pressed.connect(interact);board_button.hide()
 	station=root.get_node("CharacterWorkshop");weapon_station=root.get_node("WeaponWorkshop");bonus_station=root.get_node("BonusWorkshop")
 	for panel in [station,weapon_station,bonus_station]:
 		panel.z_index=10;panel.add_to_group("selection_scope");panel.get_node("CloseButton").pressed.connect(close_station)
@@ -191,6 +180,40 @@ func build_ui():
 	reset_button.position=Vector2(22,578);reset_button.size.x=210;reset_button.add_theme_font_size_override("font_size",15)
 	status.position=Vector2(260,593)
 	refresh()
+
+## Test tools live in one glass menu under the logo; construction is reached in the world (locked benches)
+## and from HQ → Buildings, so it sits here only as a shortcut.
+func build_dev_menu():
+	var toggle=UiKit.button(root,"Инструменты",Vector2(30,171),Vector2(300,50),func():toggle_dev_menu());toggle.name="ToolsButton"
+	toggle.icon=UiKit.interface_icon("debug");toggle.expand_icon=true;toggle.add_theme_constant_override("icon_max_width",20);toggle.add_theme_font_size_override("font_size",18)
+	var rows=[["DebugAlloyButton","+1000 сплава","DocsButton","+10 док."],["RecipeShopButton","Магазин чертежей"],["SandboxButton","Песочница"]]
+	const PAD=12.0;const ROW=46.0;const GAP=8.0
+	var menu=UiKit.glass(root,Vector2(30,229),Vector2(300,PAD*2+rows.size()*ROW+(rows.size()-1)*GAP));menu.name="DevMenu";menu.hide();menu.z_index=20
+	var y=PAD
+	for row in rows:
+		var half=row.size()>2
+		for i in range(0,row.size(),2):
+			var button:Button=root.get_node_or_null(row[i])
+			if button==null:button=UiKit.button(menu,row[i+1],Vector2.ZERO,Vector2.ZERO,func():pass);button.name=row[i]
+			else:button.get_parent().remove_child(button);menu.add_child(button)
+			button.text=row[i+1];button.add_theme_font_size_override("font_size",16)
+			var width=(276.0-GAP)*.5 if half else 276.0
+			button.position=Vector2(PAD+(i/2)*(width+GAP),y);button.size=Vector2(width,ROW)
+		y+=ROW+GAP
+	root.get_node("GalleryButton").hide()
+	# Construction: square icon button, second in emphasis after «В бой», in the thumb zone.
+	var build:Button=root.get_node("BuildButton");build.text="";build.tooltip_text=Texts.render("Строительство")
+	build.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT);build.offset_left=-392;build.offset_right=-332;build.offset_top=-90;build.offset_bottom=-30
+	build.icon=UiKit.interface_icon("build");build.expand_icon=true;build.add_theme_constant_override("icon_max_width",30);build.icon_alignment=HORIZONTAL_ALIGNMENT_CENTER
+	build.pressed.connect(show_build_menu)
+	menu.get_node("DebugAlloyButton").pressed.connect(func():Game.earn(1000);refresh())
+	menu.get_node("DocsButton").pressed.connect(func():Game.cores+=10;Game.save_progress();refresh())
+	menu.get_node("RecipeShopButton").pressed.connect(func():toggle_dev_menu(false);show_recipe_shop())
+	menu.get_node("SandboxButton").pressed.connect(func():toggle_dev_menu(false);sandbox_requested.emit())
+func toggle_dev_menu(open=null):
+	var menu=root.get_node("DevMenu");menu.visible=not menu.visible if open==null else bool(open)
+	if menu.visible:UiKit.reveal(menu,0,Vector2(0,-10),.2)
+func dev_button(id:String)->Button:return root.get_node("DevMenu/"+id)
 
 func refresh():
 	credits.hide()
@@ -260,7 +283,7 @@ func refresh_command_alert():
 	if command_screen:command_screen.set_shader_parameter("alert",news!="")
 	if is_instance_valid(command_beams):command_beams.visible=news!=""
 	command_alert.visible=news!=""
-	command_alert.modulate=Color("ed4f40") if news=="general" else Color("f1cf55")
+	command_alert.modulate=UiKit.NOTICE.news if news=="general" else UiKit.NOTICE.goal
 
 func sync_model_animation():
 	var active=phase=="combat" and moving and not station.visible and not weapon_station.visible and not bonus_station.visible and not is_instance_valid(build_menu)
@@ -269,7 +292,7 @@ func sync_model_animation():
 
 func _physics_process(delta):
 	sync_model_animation()
-	if is_instance_valid(dpad):dpad.visible=Settings.values.screen_controls;fire_pad.visible=Settings.values.screen_controls
+	if is_instance_valid(dpad):dpad.visible=InputScheme.touch();fire_pad.visible=InputScheme.touch()
 	if phase in ["intro","profiles"]:return
 	training_ability_cooldown=maxf(0,training_ability_cooldown-delta)
 	if is_instance_valid(command_model):
@@ -279,11 +302,11 @@ func _physics_process(delta):
 			for mesh in command_meshes:mesh.transparency=0.7 if faded else 0.0
 	hint_clock+=delta;hint_refresh-=delta
 	if hint_refresh<=0:
-		var build_button=root.get_node("BuildButton")
-		var dot=build_button.get_node_or_null("NewDot")
-		if dot==null:dot=preload("res://scripts/ui/build_catalog.gd").dot(build_button,Vector2(build_button.size.x-26,8));dot.name="NewDot"
-		dot.visible=Game.research_unlocks.any(func(id):return id in Game.BUILD_COST.keys()+["reroll"] and preload("res://scripts/ui/build_catalog.gd").has_news(id))
 		for id in bench_dots:bench_dots[id].visible=bench_available(id)
+		var build:Button=root.get_node("BuildButton")
+		var badge=build.get_node_or_null("Badge")
+		if badge==null:badge=UiKit.badge(build,"news")
+		badge.visible=Game.research_unlocks.any(func(id):return id in Game.BUILD_COST.keys() and preload("res://scripts/ui/build_catalog.gd").has_news(id))
 		hint_refresh=.3
 		refresh_command_alert()
 		var targets=Game.progression.build_targets()
@@ -525,7 +548,7 @@ func update_bench_visuals():
 		for id in Game.BUILD_COST:
 			var pos={"headquarters":hq_bench_pos,"character":Vector3(0,0,-1),"weapons":weapon_bench_pos,"bonuses":bonus_bench_pos,"garage":Vector3(6,0,1),"range":Vector3(2,0,-2)}[id]
 			if id not in Game.built_workshops:
-				var arrow=Visuals.label3d(bench_visuals,"▼",pos+Vector3.UP*1.9,Color("f1cf55"),65)
+				var arrow=Visuals.label3d(bench_visuals,"▼",pos+Vector3.UP*1.9,UiKit.NOTICE.goal,65)
 				arrow.no_depth_test=true;arrow.visible=id in Game.research_unlocks or id in Game.progression.build_targets();build_arrows[id]=arrow
 			if id not in ["garage","range"]:
 				preload("res://scripts/interaction_prompt.gd").attach(bench_visuals,self,Game.RESEARCH[id].name if id in Game.built_workshops else "🔒 Построить · "+Game.RESEARCH[id].name,pos,1.25)
@@ -533,7 +556,7 @@ func update_bench_visuals():
 				Visuals.model("parking",bench_visuals,pos)
 				continue
 			if id in Game.built_workshops:
-				var dot=Visuals.label3d(bench_visuals,"●",pos+Vector3.UP*2.0,Color("b6ff76"),42);dot.outline_size=0
+				var dot=Visuals.label3d(bench_visuals,"●",pos+Vector3.UP*2.0,UiKit.NOTICE.ready,42);dot.outline_size=0
 				bench_dots[id]=dot;dot.visible=bench_available(id)
 				if id in ["garage","range"]:continue
 				Visuals.model("bench_"+id,bench_visuals,pos)

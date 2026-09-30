@@ -41,6 +41,28 @@ static func glass(parent: Node,pos: Vector2,dimensions: Vector2,color=Color("242
 	else:s.bg_color=Color(color,.94)
 	return widget
 
+## Notification markers (design system). One meaning per colour, the same in 2D and in the world:
+## news — something new not yet seen; ready — an action is affordable now; goal — where to go next.
+const NOTICE={"news":Color("ff6b57"),"ready":Color("8fe895"),"goal":Color("f1cf55")}
+## Badge on a control: a dot (or a pill with a count) at the top-right corner, or at the trailing edge of a list row.
+static func badge(parent:Control,kind:="news",count:=0,place:="corner")->Panel:
+	var old=parent.get_node_or_null("Badge")
+	if old:old.get_parent().remove_child(old);old.queue_free()
+	var dot=Panel.new();dot.name="Badge";parent.add_child(dot);dot.mouse_filter=Control.MOUSE_FILTER_IGNORE;dot.z_index=1
+	var s=StyleBoxFlat.new();s.bg_color=NOTICE.get(kind,NOTICE.news);s.set_corner_radius_all(10);s.set_border_width_all(2);s.border_color=Color("1b211d")
+	dot.add_theme_stylebox_override("panel",s)
+	dot.size=Vector2(12,12)
+	if count>0:
+		dot.size=Vector2(maxf(20,12+8*str(count).length()),20)
+		var text=Label.new();dot.add_child(text);text.text=str(count);text.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		text.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;text.vertical_alignment=VERTICAL_ALIGNMENT_CENTER
+		text.add_theme_font_override("font",field_font());text.add_theme_font_size_override("font_size",12);text.add_theme_color_override("font_color",Color("1b211d"))
+	var place_badge=func():
+		if not is_instance_valid(dot):return
+		dot.position=Vector2(parent.size.x-dot.size.x-6,6) if place=="corner" else Vector2(parent.size.x-dot.size.x-14,(parent.size.y-dot.size.y)*.5)
+	place_badge.call();parent.resized.connect(place_badge)
+	return dot
+
 static func label(parent: Node,text: String,pos: Vector2,dimensions: Vector2,font_size=20,color=INK) -> Label:
 	var widget=Label.new()
 	parent.add_child(widget)
@@ -123,7 +145,7 @@ static func press_bounce(button:Button):
 static func interface_icon(id:String)->Texture2D:
 	return load("res://assets/icons/interface_straight/"+id+".svg")
 static func icon_texture(id:String)->Texture2D:
-	if id in ["lock","repeat","inventory","fighter","quests","notifications","music","settings","guide","base","about"]:return interface_icon(id)
+	if id in ["debug","lock","repeat","inventory","fighter","quests","notifications","music","settings","guide","base","about"]:return interface_icon(id)
 	var sections=["inventory","fighter","quests","notifications","music","settings","guide","base","workshop"]
 	if id in sections:
 		var atlas=AtlasTexture.new();atlas.atlas=load("res://assets/icons/field_v1/sections.png")

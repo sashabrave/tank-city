@@ -11,7 +11,7 @@ func run():
 	Game.save_enabled=false;Game.sound_enabled=false;Settings.persistence_enabled=false;Settings.values.fullscreen=false;Settings.apply()
 	Game.profiles.selected=true;Game.credits=77;Game.weapon_unlocks=["pistol"]
 	var main=load("res://scenes/main.tscn").instantiate();add_child(main);await settle()
-	check(main.current.has_node("SandboxButton") or main.current.root.has_node("SandboxButton"),"hub has the sandbox button")
+	check(main.current.root.has_node("DevMenu/SandboxButton"),"hub has the sandbox button")
 	main.current.sandbox_requested.emit();await settle()
 	var arena=main.run_arena
 	check(arena!=null and arena.sandbox and main.current==arena,"sandbox opens a field")

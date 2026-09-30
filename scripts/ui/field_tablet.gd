@@ -80,7 +80,7 @@ func refresh():
 		var key=tabs[i][0]
 		var b=sidebar_button(tabs[i][1],key,80+i*(44 if manage or can_quit() else 48),40,func():tab=key;mark_section(key);refresh())
 		b.add_theme_stylebox_override("normal",UiKit.style(Color("584a2c") if tab==key else Color("3c4435") if section_new(key) else Color("242d27"),6))
-		if section_new(key):UiKit.label(b,"●",Vector2(40,0),Vector2(14,18),12,Color("cf613f"))
+		if section_new(key):UiKit.badge(b,"news",0,"trailing")
 	content=UiKit.panel(panel,Vector2(104 if nav_collapsed else 261,80),Vector2(932 if nav_collapsed else 775,585),Color("242d27"))
 	var inner=UiKit.style(Color("242d27"),0);inner.set_border_width_all(0);inner.border_width_left=1;content.add_theme_stylebox_override("panel",inner)
 	match tab:

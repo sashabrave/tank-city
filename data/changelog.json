@@ -2,6 +2,30 @@
 	"entries": [
 		{
 			"date": "2026-09-30",
+			"version": "0.2.1",
+			"ru": {
+				"title": "Хаб под телефон и геймпад",
+				"items": [
+					"Схема управления выбирается автоматически: коснулся экрана — появились экранные кнопки, нажал клавишу или взял геймпад — они спрятались. Выбрать схему вручную: Настройки → Интерфейс → Схема управления.",
+					"Поддержка геймпада: стик и крестовина — движение, A — взаимодействие, RT или X — огонь, B — окоп, Y — гаджет, LB и RB — навыки класса, LT — поддержка штаба, Start — пауза.",
+					"Подсказку над объектом можно нажать пальцем, поэтому кнопка «Занять [E]» больше не нужна. На геймпаде подсказка показывает кнопку A.",
+					"Строительство — квадратная кнопка рядом с «В бой». Тестовые инструменты собраны в одно меню «Инструменты» под логотипом, Полигон убран.",
+					"Уведомления везде одинаковые: коралловая точка — новое, зелёная — можно улучшить, жёлтая стрелка — куда идти."
+				]
+			},
+			"en": {
+				"title": "Hub for phone and gamepad",
+				"items": [
+					"The control scheme is picked automatically: touch the screen and on-screen buttons appear, press a key or pick up a gamepad and they hide. To choose manually: Settings → Interface → Control scheme.",
+					"Gamepad support: stick and d-pad move, A interacts, RT or X fires, B uses the trench, Y the gadget, LB and RB the class skills, LT the HQ support, Start pauses.",
+					"The hint above an object can be tapped, so the Take [E] button is gone. On a gamepad the hint shows the A button.",
+					"Construction is a square button next to Battle. Test tools are collected in one Tools menu under the logo; the Range is removed.",
+					"Notifications look the same everywhere: a coral dot is new, green means an upgrade is affordable, a yellow arrow shows where to go."
+				]
+			}
+		},
+		{
+			"date": "2026-09-30",
 			"ru": {
 				"title": "Музыкальные темы и живые звуки боя",
 				"items": [
