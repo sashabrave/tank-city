@@ -21,7 +21,7 @@ func _process(delta):
 		var tile=support[i];tile.visible=i<loadout.size()
 		if not tile.visible:continue
 		var id=loadout[i];tile.position=Vector2((hero_count+i)*88,0);tile.get_node("Icon").texture=UiKit.icon_texture(id)
-		var display=tile.get_node("CooldownDisplay");display.key_hint="";display.queue_redraw();tile.tooltip_text=HQCatalog.DATA[id].name+" / в вылазке"
+		var display=tile.get_node("CooldownDisplay");display.key_hint="";display.action="hq_ability" if id==Game.hq_active and HQCatalog.DATA[id].mode=="active" else "";display.queue_redraw();tile.tooltip_text=HQCatalog.DATA[id].name+" / в вылазке"
 	for id in cooldowns:cooldowns[id]=maxf(0,cooldowns[id]-delta)
 	for id in active_times:active_times[id]=maxf(0,active_times[id]-delta)
 	visible=hub.phase=="combat"
@@ -30,7 +30,7 @@ func _process(delta):
 		if not button.visible:continue
 		var id=Game.hero_loadout()[i];var data=AbilityCatalog.DATA[id];var remaining=cooldowns.get(id,0.0)
 		button.get_node("Icon").texture=UiKit.icon_texture(id);button.tooltip_text=data.name+"\n"+data.description
-		var display=button.get_node("CooldownDisplay");display.key_hint=OS.get_keycode_string(Settings.keys[Game.ability_action(i)])
+		var display=button.get_node("CooldownDisplay");display.action=Game.ability_action(i);display.remaining=remaining
 		display.cooling=remaining>0;display.progress=1-remaining/(data.cooldown+(4.0 if id=="shield" else 0));display.active=active_times.get(id,0.0);display.queue_redraw()
 		if i==0:hub.training_ability_cooldown=remaining
 func cast(slot:int):

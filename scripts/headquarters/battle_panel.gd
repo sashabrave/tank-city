@@ -22,7 +22,7 @@ func _process(_delta):
 	var hq=arena.headquarters;var id=hq.active
 	visible=arena.phase in ["combat","countdown"] and (id!="" or not hq.modules.is_empty())
 	button.visible=id!="" and HQCatalog.DATA[id].mode=="active"
-	display.key_hint=OS.get_keycode_string(Settings.keys.hq_ability) if button.visible else ""
+	display.action="hq_ability" if button.visible else "";display.remaining=hq.cooldown
 	if button.visible:
 		icon.texture=UiKit.icon_texture(id)
 		button.tooltip_text=HQCatalog.DATA[id].name+"\n"+HQCatalog.DATA[id].description
@@ -36,8 +36,8 @@ func _process(_delta):
 		slot.icon.texture=UiKit.icon_texture(module);slot.panel.tooltip_text=data.name+"\n"+data.description
 		var exhausted=module=="hq_supply" and int(hq.delivered.get(module,0))>=1+int(hq.level(module)/3)
 		var remaining=float(hq.timers.get(module,0))
-		slot.display.key_hint="";slot.display.active=0
-		slot.display.cooling=data.mode=="auto" and remaining>0 and not exhausted
+		slot.display.key_hint="";slot.display.action="";slot.display.active=0
+		slot.display.cooling=data.mode=="auto" and remaining>0 and not exhausted;slot.display.remaining=remaining
 		slot.display.progress=clampf(1-remaining/HQCatalog.interval(module,hq.level(module)),0,1)
 		slot.display.queue_redraw();slot.icon.modulate.a=.45 if exhausted else 1.0
 		if exhausted:slot.panel.tooltip_text+="\nЛимит поля боя исчерпан"

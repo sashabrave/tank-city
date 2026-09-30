@@ -12,7 +12,7 @@ static func capture(arena)->Dictionary:
 		var remaining=(ability.cooldown if id==ability.selected else ability.states[id].cooldown) if active else 0.0
 		var active_time=ability.active_seconds(id)
 		var total=ability.cooldown_totals.get(id,AbilityCatalog.DATA.get(id,{"cooldown":1}).cooldown)
-		data.skills.append({"disabled":not active or arena.phase not in ["combat","countdown"] or remaining>0,"text":"","hint":AbilityCatalog.DATA[id].name if active else "Открой слот в хабе","cooling":remaining>0,"progress":clampf(1.0-remaining/maxf(.01,total),0,1),"active":active_time})
+		data.skills.append({"remaining":remaining,"disabled":not active or arena.phase not in ["combat","countdown"] or remaining>0,"text":"","hint":AbilityCatalog.DATA[id].name if active else "Открой слот в хабе","cooling":remaining>0,"progress":clampf(1.0-remaining/maxf(.01,total),0,1),"active":active_time})
 
 	if is_instance_valid(room.player):
 		var actor=room.player;var kind=actor.kind;var infantry=kind=="soldier"

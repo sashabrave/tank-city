@@ -85,7 +85,7 @@ func _ready():
 	for i in range(skill_buttons.size()):
 		var button=skill_buttons[i];Texts.set_text(button,"")
 		var display=preload("res://scripts/ui/skill_display.gd").new();display.name="CooldownDisplay";button.add_child(display);button.move_child(display,0)
-		display.key_hint=OS.get_keycode_string(Settings.keys[Game.ability_action(i)])
+		display.action=Game.ability_action(i)
 		button.get_node("Icon").position=Vector2(14,14);button.get_node("Icon").size=Vector2(48,48)
 	var support_ui=preload("res://scripts/headquarters/battle_panel.gd").new();support_ui.arena=arena;root.add_child(support_ui)
 	var tracker=preload("res://scripts/progression/quest_tracker.gd").new();tracker.hud=self;root.add_child(tracker)
@@ -131,7 +131,7 @@ func _process(_delta):
 	for i in range(skill_buttons.size()):
 		var button=skill_buttons[i];var skill=data.skills[i]
 		button.disabled=skill.disabled;Texts.set_text(button,"");button.tooltip_text=skill.hint
-		var display=button.get_node("CooldownDisplay");display.progress=skill.progress;display.cooling=skill.cooling;display.active=skill.active;display.queue_redraw()
+		var display=button.get_node("CooldownDisplay");display.progress=skill.progress;display.cooling=skill.cooling;display.remaining=skill.get("remaining",0.0);display.active=skill.active;display.queue_redraw()
 	countdown.visible=data.phase=="countdown"
 	if countdown.visible:Texts.set_text(countdown,str(data.countdown))
 	if not data.player.is_empty():

@@ -203,8 +203,10 @@ func build_dev_menu():
 	root.get_node("GalleryButton").hide()
 	# Construction: square icon button, second in emphasis after «В бой», in the thumb zone.
 	var build:Button=root.get_node("BuildButton");build.text="";build.tooltip_text=Texts.render("Строительство")
-	build.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT);build.offset_left=-392;build.offset_right=-332;build.offset_top=-90;build.offset_bottom=-30
-	build.icon=UiKit.interface_icon("build");build.expand_icon=true;build.add_theme_constant_override("icon_max_width",30);build.icon_alignment=HORIZONTAL_ALIGNMENT_CENTER
+	build.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT);build.offset_left=-408;build.offset_right=-332;build.offset_top=-112;build.offset_bottom=-36
+	# Thumb-zone actions share the ability tiles' height (76) and top line.
+	root.get_node("StartButton").offset_top=-112;root.get_node("StartButton").offset_bottom=-36
+	build.icon=UiKit.interface_icon("build");build.expand_icon=true;build.add_theme_constant_override("icon_max_width",34);build.icon_alignment=HORIZONTAL_ALIGNMENT_CENTER
 	build.pressed.connect(show_build_menu)
 	menu.get_node("DebugAlloyButton").pressed.connect(func():Game.earn(1000);refresh())
 	menu.get_node("DocsButton").pressed.connect(func():Game.cores+=10;Game.save_progress();refresh())
