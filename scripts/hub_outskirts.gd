@@ -99,7 +99,7 @@ func road():
 	for i in range(18):Visuals.box(self,Vector3(-20+i*2.4,GROUND_Y+.01,ROAD_Z),Vector3(.9,.01,.09),Color("c9b27a"))
 
 func free_cell(p:Vector3)->bool:
-	if p.x>-7.4 and p.x<9.9 and p.z>-7.5 and p.z<5.4:return false  # hangar + parked HQ
+	if p.x>-7.4 and p.x<14.6 and p.z>-7.5 and p.z<5.4:return false  # hangar, yard and parked HQ
 	return absf(p.z-ROAD_Z)>1.5
 
 func vegetation(biome:Dictionary):
@@ -121,7 +121,7 @@ func vegetation(biome:Dictionary):
 		placed+=1
 
 func cargo():
-	for p in [Vector3(-9.5,GROUND_Y,-4.5),Vector3(-10.5,GROUND_Y,1.5),Vector3(12,GROUND_Y,-2.5),Vector3(11.5,GROUND_Y,3.8)]:
+	for p in [Vector3(-9.5,GROUND_Y,-4.5),Vector3(-10.5,GROUND_Y,1.5),Vector3(16,GROUND_Y,-3.5),Vector3(12.5,GROUND_Y,4.4)]:
 		var pile=load("res://assets/models/environment_v7/tarp_%d.glb" % rng.randi_range(0,2)).instantiate()
 		add_child(pile);pile.position=p;pile.rotation.y=rng.randf_range(-.5,.5)+PI*.5;pile.scale=Vector3.ONE*1.3
 	for p in [Vector3(-8.6,GROUND_Y,4.2),Vector3(10.6,GROUND_Y,-5.2)]:
