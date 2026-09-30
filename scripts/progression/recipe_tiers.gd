@@ -4,8 +4,13 @@ const SCORES={"character":100,"weapons":95,"heart":100,"pistol":100,"repair":90,
 static func tier(id:String)->int:
 	if id in GarageCatalog.recipes():return 0 if id=="vehicle_buggy" else 1 if id.begins_with("buggy_") else 2 if id=="vehicle_apc" or id.begins_with("apc_") else 3
 	var score=int(HQCatalog.DATA[id].score if id in HQCatalog.DATA else 90 if id=="headquarters" else SCORES.get(id,60));return 0 if score>=75 else 1 if score>=50 else 2 if score>=25 else 3
+## World 1 route stage (0–6) → highest blueprint tier that can appear: rare items only in the second half and from the boss.
+const WORLD1_TIER_CAP=[1,1,2,2,3,3,3]
+static func unlocked(stage:int)->int:
+	if Campaign.unified_content():return WORLD1_TIER_CAP[clampi(stage,0,WORLD1_TIER_CAP.size()-1)]
+	return 0 if stage<2 else 1 if stage<7 else 2 if stage<12 else 3
 static func weight(id:String,stage:int)->int:
 	if id in ["sniper","rpg"] and Campaign.recipe_world()<Campaign.weapon_world(id):return 0
-	var t=tier(id);var unlocked=0 if stage<2 else 1 if stage<7 else 2 if stage<12 else 3
-	if t>unlocked:return 0
-	return [[100,0,0,0],[35,100,0,0],[6,30,100,0],[1,8,45,100]][unlocked][t]
+	var t=tier(id);var cap=unlocked(stage)
+	if t>cap:return 0
+	return [[100,0,0,0],[35,100,0,0],[6,30,100,0],[1,8,45,100]][cap][t]

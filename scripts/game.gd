@@ -421,7 +421,8 @@ func special_cost(id:String)->int:
 	return -1
 const CLASS_SKILLS={"recruit":"grenade","gunner":"shield","driver":"field_repair","marksman":"cloak","engineer":"ally_drone","heavy":"gas"}
 func class_skill()->String:return CLASS_SKILLS.get(selected_class,"")
-func class_world(id:String)->int:return 1 if id in ["recruit","gunner","driver"] else 2 if id in ["heavy","marksman"] else 3
+## Every shell is available from world 1; the price (alloy or documents) is the only gate.
+func class_world(_id:String)->int:return 1
 func class_price(id:String)->int:return 120 if id=="gunner" else 200 if id=="driver" else CLASSES[id].price
 func can_select_class(id:String)->bool:
 	return id in class_unlocks or (Campaign.unlocked(class_world(id)) and (credits>=class_price(id) if id in ["gunner","driver"] else cores>=class_price(id)))

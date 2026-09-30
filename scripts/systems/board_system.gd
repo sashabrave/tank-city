@@ -128,6 +128,24 @@ func ruin_layout(rows:Array):
 			if rows[y][x]=="B":
 				var roll=rng.randf()
 				BattleMapGenerator.put(rows,cell,"R" if roll<rubble else "A" if roll<rubble+.18 else "X" if roll<rubble+.32 else "B")
+## World 1: part of the destructible walls become explosive barrels, more of them closer to the boss.
+const WORLD1_BARRELS=[1,1,2,2,3,4]
+func scatter_barrels(rows:Array):
+	var count=WORLD1_BARRELS[clampi(arena.room.room_index,0,WORLD1_BARRELS.size()-1)]
+	var rng=RandomNumberGenerator.new();rng.seed=arena.run.run_seed+arena.room.room_index*613+17
+	var cells=[]
+	for y in range(2,arena.room.grid_size-5):
+		for x in range(1,arena.room.grid_size-1):
+			if rows[y][x]=="B":cells.append(Vector2i(x,y))
+	for i in range(mini(count,cells.size())):
+		var pick=rng.randi_range(i,cells.size()-1);var cell=cells[pick];cells[pick]=cells[i];cells[i]=cell
+		BattleMapGenerator.put(rows,cell,"X")
+## World 1 boss: one barrel in each corner, clear of the centre where the boss fights.
+func corner_barrels(rows:Array):
+	var g=arena.room.grid_size
+	for corner in [Vector2i(1,2),Vector2i(g-2,2),Vector2i(1,g-6),Vector2i(g-2,g-6)]:
+		if arena.inside(corner) and rows[corner.y][corner.x]==".":
+			BattleMapGenerator.put(rows,corner,"X");add_barrel(corner)
 func add_armored_wall(cell):
 	arena.navigation.invalidate(cell)
 	add_wall(cell,18+maxi(0,Campaign.progress_index(arena.room.room_index)-7)*2)

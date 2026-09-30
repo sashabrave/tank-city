@@ -355,6 +355,7 @@ func _build_map():
 		for z in range(grid_size):
 			for x in range(grid_size):
 				if current_layout[z][x]=="B":add_wall(Vector2i(x,z),4)
+		if Campaign.unified_content():board.corner_barrels(current_layout)
 		board.shape_map_walls()
 		terrain.build()
 		if Campaign.is_final(room_index):spawn_generators()
@@ -362,6 +363,7 @@ func _build_map():
 		return
 	current_layout=layout.rows
 	if Campaign.zone(room_index)>=2:ruin_layout(current_layout)
+	elif Campaign.unified_content():board.scatter_barrels(current_layout)
 	BattleMapGenerator.thin_obstacles(current_layout,run_seed+room_index*100003)
 	for x in spawn_columns():
 		create_spawn_marker(Vector2i(x,0),Vector2i.DOWN)

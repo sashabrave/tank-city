@@ -20,7 +20,7 @@ var medkits: Array=[]
 var facing=Vector2i.UP
 func _ready():
 	add_to_group("notification_context")
-	vehicle=["buggy","apc","tank"][Campaign.world-1]
+	vehicle=current_vehicle()
 	Visuals.setup_world(self,12,Vector3.ZERO)
 	var positions=[]
 	for x in range(-4,5):
@@ -53,6 +53,12 @@ func _ready():
 	UiKit.button(root,"Вернуться в хаб",Vector2(40,165),Vector2(250,48),func():hub_requested.emit())
 	preload("res://scripts/interaction_prompt.gd").attach(self,self,{"vehicle":"Механик","ability":"Инструктор","headquarters":"Штаб"}[branch],Vector3(0,0,-1),1.8,func():return not claimed)
 	offers=arena.reward.service_offers(branch)
+## The mechanic works on the player's vehicle: the one driven now, the one waiting for the next room, or the starting one.
+func current_vehicle()->String:
+	if is_instance_valid(arena.player) and arena.player.kind in GarageCatalog.VEHICLES:return arena.player.kind
+	if arena.pending_vehicle in GarageCatalog.VEHICLES:return arena.pending_vehicle
+	var start=Game.garage.starting_vehicle()
+	return start if start in GarageCatalog.VEHICLES else "buggy"
 func _physics_process(delta):
 	if not is_instance_valid(modal):collect_medkits()
 	if is_instance_valid(modal):

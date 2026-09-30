@@ -12,6 +12,11 @@ static func recipes()->Dictionary:
 static func weight(id:String,stage:int)->int:
 	for kind in VEHICLES:
 		var v=VEHICLES[kind]
+		# World 1 carries every vehicle; the blueprint tier cap along the route decides when it can drop.
+		if Campaign.unified_content():
+			if id=="vehicle_"+kind:return 90
+			if id.begins_with(kind+"_"):return 45 if kind in Game.garage.owned or "vehicle_"+kind in Game.garage.unlocks else 0
+			continue
 		if id=="vehicle_"+kind:return 90 if Campaign.recipe_world()==v.world and stage>=v.stage else 0
 		if id.begins_with(kind+"_"):return 45 if Campaign.recipe_world()>=v.world and stage>=v.stage and (kind in Game.garage.owned or "vehicle_"+kind in Game.garage.unlocks) else 0
 	return 0

@@ -19,7 +19,11 @@
 					"Мир 1: механик и мастерская штаба стали обычными точками маршрута со своими дорогами. Раньше к ним можно было попасть из любой точки, а дорог на карте не было.",
 					"Жетоны: с врагов иногда падают жетоны (с командира — всегда). Они видны вверху рядом со сплавом и сгорают после забега.",
 					"Торговец: новая остановка на карте мира 1 рядом с инструктором. За жетоны — карты улучшений, аптечка, ремонт машины, переброс, иногда чертёж и игровой автомат.",
-					"Сервисные ряды мира 1 теперь соединены дорогами: левая точка ведёт к инструктору, правая — к торговцу, средняя — к обоим."
+					"Сервисные ряды мира 1 теперь соединены дорогами: левая точка ведёт к инструктору, правая — к торговцу, средняя — к обоим.",
+					"Мир 1 теперь содержит всё: снайперка, РПГ, БТР, танк, лазер и авиаудар падают чертежами. Редкие — только во второй половине пути и с босса.",
+					"Все оболочки бойца (Таран, Сокол, Умелец) можно купить сразу в мире 1 — ограничивает только цена.",
+					"Механик улучшает твою машину, а не случайную технику по номеру мира.",
+					"Взрывающиеся бочки появились в мире 1: ближе к боссу их больше, в бою с боссом — по углам."
 				]
 			},
 			"en": {
@@ -39,7 +43,11 @@
 					"World 1: the mechanic and the HQ workshop are now ordinary route points with their own roads. Previously they were reachable from any point with no roads drawn.",
 					"Tokens: enemies sometimes drop tokens (commanders always do). They show at the top next to alloy and are lost when the run ends.",
 					"Merchant: a new stop on the world 1 map next to the instructor. Tokens buy upgrade cards, a medkit, vehicle repair, a reroll, sometimes a blueprint, and a slot machine.",
-					"World 1 service rows are now connected by roads: the left point leads to the instructor, the right one to the merchant, the middle one to both."
+					"World 1 service rows are now connected by roads: the left point leads to the instructor, the right one to the merchant, the middle one to both.",
+					"World 1 now holds everything: sniper rifle, RPG, APC, tank, laser and airstrike drop as blueprints. Rare ones appear only in the second half of the route and from the boss.",
+					"All soldier shells (Ram, Falcon, Tinker) can be bought right away in world 1 — only the price limits them.",
+					"The mechanic now upgrades your own vehicle instead of one picked by the world number.",
+					"Explosive barrels now appear in world 1: more of them closer to the boss, and in the corners of the boss arena."
 				]
 			}
 		}
