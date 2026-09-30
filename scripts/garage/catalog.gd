@@ -20,12 +20,15 @@ static func weight(id:String,stage:int)->int:
 		if id=="vehicle_"+kind:return 90 if Campaign.recipe_world()==v.world and stage>=v.stage else 0
 		if id.begins_with(kind+"_"):return 45 if Campaign.recipe_world()>=v.world and stage>=v.stage and (kind in Game.garage.owned or "vehicle_"+kind in Game.garage.unlocks) else 0
 	return 0
+## Player vehicles carry more armour than the same enemy hull: each is clearly stronger than the soldier in its
+## role (buggy fast scout, APC middle, tank heavy one-shotting infantry). Enemy health is left untouched.
+const PLAYER_ARMOR={"buggy":1.4,"apc":1.8,"tank":1.6}
 static func stats(kind:String,arena=null,origin:String="owned",zone:int=1,changes:Dictionary={})->Dictionary:
 	var t=Balance.CONFIG.enemy(kind)
 	if origin=="captured":
-		var stock=.75*(1+.04*clampi(zone-1,0,2))
-		return {"hp":t.health*stock,"damage":t.damage*stock,"interval":t.fire_interval,"speed":t.player_speed,"pressure":.35}
-	var hp=t.health;var damage=t.damage+Game.meta_damage()*(.25 if kind=="buggy" else 1.0);var interval=t.fire_interval;var speed=t.player_speed*CombatStats.initial_speed_multiplier()
+		var stock=.85*(1+.04*clampi(zone-1,0,2))
+		return {"hp":t.health*PLAYER_ARMOR.get(kind,1.0)*stock,"damage":t.damage*stock,"interval":t.fire_interval,"speed":t.player_speed,"pressure":.35}
+	var hp=t.health*PLAYER_ARMOR.get(kind,1.0);var damage=t.damage+Game.meta_damage()*(.25 if kind=="buggy" else 1.0);var interval=t.fire_interval;var speed=t.player_speed*CombatStats.initial_speed_multiplier()
 	if arena!=null:
 		var mods=arena.run.vehicle_mods[kind];hp+=mods.hp;damage+=mods.damage+(arena.damage_bonus+changes.get("damage_bonus",0.0))*(.25 if kind=="buggy" else 1.0);interval*=arena.fire_multiplier;speed=t.player_speed*mods.speed*arena.speed_multiplier
 	hp*=1+Game.garage.level(kind,"armor")*.03;damage*=1+Game.garage.level(kind,"gun")*.03;interval/=1+Game.garage.level(kind,"loader")*.02

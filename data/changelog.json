@@ -18,7 +18,8 @@
 					"Если нажать на точку карты, машина едет к ней по изгибам дороги, а не по прямой. Ручная езда по-прежнему свободна.",
 					"Карта маршрута стала полем войны: вместо серой полосы — земля с воронками, мешками, ежами и остовами техники. Горы ступенчатые, со снежными вершинами, перед ними заброшенная промзона: трубы, руины цехов, градирни.",
 					"Миниатюры боёв похожи на места сражений: руины угла здания с обломками, ряд противотанковых ежей и воронка на каждой.",
-					"Депо на карте работает как питстоп: заехал — карточки «Штаба» открываются прямо поверх карты, выбрал и поехал дальше. Если технологий «Штаба» ещё нет, депо даёт ремонт базы, заправку или ящик жетонов."
+					"Депо на карте работает как питстоп: заехал — карточки «Штаба» открываются прямо поверх карты, выбрал и поехал дальше. Если технологий «Штаба» ещё нет, депо даёт ремонт базы, заправку или ящик жетонов.",
+					"Техника стала заметно сильнее бойца: у багги больше брони и скорострельности, БТР быстрее и бьёт сильнее, танк держит почти вдвое больше попаданий и сносит пехоту одним выстрелом. Трофейные машины теряют меньше мощи."
 				]
 			},
 			"en": {
@@ -36,7 +37,8 @@
 					"Tapping a map point makes the car drive there along the road's curves instead of a straight line. Manual driving stays free.",
 					"The route map is now a war zone: instead of a grey strip, ground with craters, sandbags, hedgehogs and wrecks. The mountains are stepped with snowy tops, fronted by a derelict industrial belt: chimneys, ruined shops, cooling towers.",
 					"Battle miniatures look like battle sites: a ruined building corner with rubble, a row of anti-tank hedgehogs and a crater on each.",
-					"The map depot works as a pit stop: drive in, HQ cards open right over the map, pick one and drive on. Without HQ technologies the depot offers a base repair, a refuel or a token box."
+					"The map depot works as a pit stop: drive in, HQ cards open right over the map, pick one and drive on. Without HQ technologies the depot offers a base repair, a refuel or a token box.",
+					"Vehicles now clearly outclass the soldier: the buggy has more armour and fire rate, the APC is faster and hits harder, and the tank takes almost twice the hits and one-shots infantry. Captured vehicles lose less power."
 				]
 			}
 		},
