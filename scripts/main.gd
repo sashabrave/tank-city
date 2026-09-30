@@ -31,6 +31,8 @@ func _return_hub():
 	if is_instance_valid(run_arena):
 		run_arena.resolve_recipes_on_return()
 		if not run_arena.run.lost_run:Game.progression.event("extracted",run_arena.run.earned)
+	if is_instance_valid(run_arena) and Campaign.daily:
+		DailyRun.record(Campaign.daily_key,Campaign.cycle,run_arena.room_index,run_arena.run.kills,run_arena.run.elapsed)
 	if is_instance_valid(run_arena):Game.clear_run_checkpoint()
 	# A kept checkpoint (left from the map before the first room) must not freeze hub purchases.
 	Game.run_save_baseline={}
@@ -47,12 +49,13 @@ func select_world():
 	current.build_menu=picker;current.phase="workshop";current.exit_queued=false
 	picker.cancelled.connect(current.close_station)
 	picker.selected.connect(func(id,infinite):Campaign.configure(id,infinite);picker.queue_free();start_run())
+	picker.daily_selected.connect(func():Campaign.configure(1,true,true);picker.queue_free();start_run())
 
 func start_run():
 	Game.clear_run_checkpoint()
 	Game.progression.begin_run();Game.progression.event("enter_world_"+str(Campaign.world),1,true)
 	if Campaign.endless:Game.progression.event("enter_endless",1,true)
-	route_choices.clear();Game.visual_run_seed=randi();show_map(0)
+	route_choices.clear();Game.visual_run_seed=DailyRun.seed_for(Campaign.daily_key) if Campaign.daily else randi();show_map(0)
 func show_map(index: int):
 	if Campaign.endless and index>=Campaign.SIZES.size():
 		Campaign.cycle+=1;index=0;route_choices.clear()
@@ -161,7 +164,9 @@ func request_run():
 func resume_run(restart:bool=false):
 	var data=Game.run_checkpoint.duplicate(true)
 	if data.is_empty():return
-	Campaign.configure(int(data.world),data.endless);Campaign.cycle=int(data.cycle);Campaign.endless_strength=data.strength
+	Campaign.configure(int(data.world),data.endless,data.get("daily",false));Campaign.cycle=int(data.cycle);Campaign.endless_strength=data.strength
+	# A daily run started yesterday still counts for yesterday.
+	if Campaign.daily:Campaign.daily_key=str(data.get("daily_key",Campaign.daily_key))
 	Game.selected_class=data.class;Game.visual_run_seed=int(data.seed)
 	route_choices=preload("res://scripts/profile/run_checkpoint.gd").integer_keys(data.choices)
 	clear_current()

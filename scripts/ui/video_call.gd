@@ -3,17 +3,17 @@ extends Control
 ## One call per trigger, shown once in the hub (progression.seen keeps "call_<id>"). Info-style, a bit ironic:
 ## what happens and what to do, no lectures. Adding a call is adding an entry to CALLS and a condition in due().
 signal closed
-const MAJOR="Майор Кравец"
+const MAJOR="Майор Мурлыкин"
 const SOLDIER="Боец"
 const CALLS={
 	"intro":[
 		[MAJOR,"Рядовой, Рубеж — 13 держишь ты один. Остальных перевели."],
 		[SOLDIER,"Везёт как обычно."],
-		[MAJOR,"Жми «В бой» и держи штаб. Погибнешь — прокачка останется."],
+		[MAJOR,"Жми «В бой» и держи штаб. Выбьют — прокачка останется."],
 	],
 	"first_death":[
 		[MAJOR,"Страховка в Штабе сохранит часть сплава. Прокачка не сгорает."],
-		[SOLDIER,"Понял: сначала вкладываюсь, потом умираю."],
+		[SOLDIER,"Понял: сначала вкладываюсь, потом шлёпаюсь."],
 	],
 	"garage":[
 		[MAJOR,"Стоянка готова. Подбитую технику врага тоже можно занять."],
@@ -63,7 +63,7 @@ func _ready():
 	for i in range(14):
 		var bar=ColorRect.new();bar.name="Scan";frame.add_child(bar);bar.color=Color(0,0,0,.14);bar.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	rec=ColorRect.new();frame.add_child(rec);rec.color=Color("e2493b");rec.size=Vector2(10,10);rec.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	status=UiKit.label(panel,"Видеосвязь · штаб округа",Vector2.ZERO,Vector2.ZERO,14,UiKit.MUTED)
+	status=UiKit.label(panel,"Видеосвязь · Главная когтебаза",Vector2.ZERO,Vector2.ZERO,14,UiKit.MUTED)
 	caller=UiKit.label(panel,"",Vector2.ZERO,Vector2.ZERO,20)
 	line_label=UiKit.label(panel,"",Vector2.ZERO,Vector2.ZERO,20);line_label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;line_label.vertical_alignment=VERTICAL_ALIGNMENT_TOP
 	skip_button=UiKit.button(panel,"Пропустить",Vector2.ZERO,Vector2.ZERO,finish)

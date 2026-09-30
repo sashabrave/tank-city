@@ -638,7 +638,7 @@ func show_systems():
 		var card=UiKit.panel(workshop_content,Vector2(0,i*226),Vector2(810,212),Color("30382f"))
 		UiKit.locked_preview(UiKit.icon(card,"alloy" if alloy else "documents",Vector2(18,34),Vector2(96,96)),not known)
 		UiKit.label(card,"Страховка сплава" if alloy else "Страховка чертежей",Vector2(136,16),Vector2(650,34),23)
-		var description="При гибели теряется %d%% сплава, добытого за вылазку." % roundi(Game.death_loss_fraction()*100) if alloy else "Шанс сохранить каждый найденный чертёж при гибели."
+		var description="При выбывании теряется %d%% сплава, добытого за вылазку." % roundi(Game.death_loss_fraction()*100) if alloy else "Шанс сохранить каждый найденный чертёж при выбывании."
 		UiKit.label(card,description,Vector2(136,58),Vector2(650,45),16,UiKit.MUTED).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 		var detail="Потеря: %d%% → %d%%" % [roundi(Game.death_loss_fraction()*100),roundi(Game.death_loss_fraction(Game.progression.insurance+1)*100)] if alloy else "Сохранение: %d%% → %d%%" % [Game.rescue_level*6,mini(60,(Game.rescue_level+1)*6)]
 		if capped and known:detail="Достигнут предел" if alloy and Game.progression.insurance<Balance.CONFIG.economy.insurance_cap else "Достигнут максимум"

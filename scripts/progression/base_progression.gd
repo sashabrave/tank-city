@@ -19,13 +19,14 @@ var xp=0
 var insurance=0
 var weapon_levels:Dictionary={}
 var counters:Dictionary={}
+var daily:Dictionary={}  # DailyRun records by UTC date
 var claimed:Array=[]
 var boss_classes:Array=[]
 var telegram:Dictionary={}
 var telegram_options:Array=[]
 var telegram_result="Выбери приказ на следующую вылазку"
 func serialize()->Dictionary:
-	return {"accepted":accepted,"viewed_updates":viewed_updates,"worlds":cleared_worlds,"tracked":tracked,"collapsed":tracker_collapsed,"completed_orders":completed_orders,"order_wait":order_wait,"order_serial":order_serial,"sortie_active":sortie_active,"combat_entered":combat_entered,"sortie_counts":sortie_counts,"recent_sorties":recent_sorties,"seen":seen,"level":level,"xp":xp,"insurance":insurance,"weapons":weapon_levels,"counters":counters,"claimed":claimed,"boss_classes":boss_classes,"telegram":telegram,"telegram_options":telegram_options,"telegram_result":telegram_result}
+	return {"accepted":accepted,"viewed_updates":viewed_updates,"worlds":cleared_worlds,"tracked":tracked,"collapsed":tracker_collapsed,"completed_orders":completed_orders,"order_wait":order_wait,"order_serial":order_serial,"sortie_active":sortie_active,"combat_entered":combat_entered,"sortie_counts":sortie_counts,"recent_sorties":recent_sorties,"seen":seen,"level":level,"xp":xp,"insurance":insurance,"weapons":weapon_levels,"counters":counters,"daily":daily,"claimed":claimed,"boss_classes":boss_classes,"telegram":telegram,"telegram_options":telegram_options,"telegram_result":telegram_result}
 func restore(data:Dictionary):
 	cleared_worlds=data.get("worlds",[]).map(func(value):return int(value));tracked=data.get("tracked",["first_alloy","institute_character"]);tracker_collapsed=data.get("collapsed",false)
 	accepted=data.get("accepted",tracked.duplicate());viewed_updates=data.get("viewed_updates",{})
@@ -33,7 +34,7 @@ func restore(data:Dictionary):
 	sortie_active=data.get("sortie_active",false);combat_entered=data.get("combat_entered",false);sortie_counts=data.get("sortie_counts",{})
 	recent_sorties=data.get("recent_sorties",[]).slice(-3)
 	seen=data.get("seen",[]);level=maxi(1,int(data.get("level",1)));xp=maxi(0,int(data.get("xp",0)));insurance=clampi(int(data.get("insurance",0)),0,10)
-	weapon_levels=data.get("weapons",{});counters=data.get("counters",{});claimed=data.get("claimed",[]);boss_classes=data.get("boss_classes",[]);telegram=data.get("telegram",{});telegram_options=data.get("telegram_options",[]);telegram_result=data.get("telegram_result",telegram_result)
+	weapon_levels=data.get("weapons",{});counters=data.get("counters",{});daily=data.get("daily",{});claimed=data.get("claimed",[]);boss_classes=data.get("boss_classes",[]);telegram=data.get("telegram",{});telegram_options=data.get("telegram_options",[]);telegram_result=data.get("telegram_result",telegram_result)
 	if not data.has("worlds"):
 		for pair in [[1,"boss_6"],[2,"boss_15"],[3,"boss_16"]]:
 			if int(counters.get(pair[1],0))>0:cleared_worlds.append(pair[0])

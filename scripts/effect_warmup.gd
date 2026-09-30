@@ -26,7 +26,7 @@ static func run(arena:Node3D):
 	# Every enemy and vehicle model: loading and first draw happen here instead of mid-fight (drones arrive at 15–30 s).
 	var x=-4.0
 	for kind in ["soldier","grenadier","shield","sniper","rpg_soldier","buggy","apc","tank","drone","flyer","boss"]:
-		var model=Visuals.model(kind,holder,Vector3(x,0,-2));x+=.8
+		var model=Visuals.model(kind,holder,Vector3(x,0,-2),"dog");x+=.8
 		model.set_process(false);model.set_physics_process(false)
 	var tree=arena.get_tree()
 	for i in range(4):await tree.process_frame

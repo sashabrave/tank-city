@@ -39,7 +39,7 @@ func _ready():
 	else:
 		Visuals.box(self,Vector3(0,.35,-1),Vector3(1.4,.7,1.4),Color("717d79"))
 		var statue=Visuals.model("soldier",self,Vector3(0,.7,-1));statue.scale=Vector3.ONE*1.5;Visuals.tint_model(statue,Color("738982"))
-		Visuals.label3d(self,"Отдать честь · E",Vector3(0,3,-1),Color("fff0ce"),28)
+		Visuals.label3d(self,"Погладить статую · E",Vector3(0,3,-1),Color("fff0ce"),28)
 	for i in range(Game.camp_level):
 		var kit=Node3D.new();add_child(kit);kit.position=Vector3([-2.4,-.8,.8,2.4][i],0,2)
 		arena.LOOT.visual(kit,"heart");Visuals.label3d(kit,"Аптечка",Vector3(0,1.1,0),Color("f6c5bc"),25);medkits.append(kit)

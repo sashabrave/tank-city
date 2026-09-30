@@ -123,7 +123,7 @@ func actor_destroyed(actor):
 		arena.burst(actor.position,Color("d69a54"),.7)
 	elif actor.player_owned:
 		if actor.kind=="soldier":
-			arena.finish_run(false,"Солдат погиб")
+			arena.finish_run(false,"Котик выбыл")
 			arena.room.player=null
 		else:
 			var cell=actor.cell
@@ -151,13 +151,28 @@ func actor_destroyed(actor):
 	actor.queue_free()
 
 func leave_body(actor):
-	# Visual only: the model plays its fall, lingers, then sinks away.
+	# Visual only, cartoon: the knocked-out enemy flops, then vanishes in a puff (no lying bodies).
 	var body=actor.model
 	if not is_instance_valid(body) or not body.has_method("has_death") or not body.has_death():return
 	body.reparent(arena);body.play_death()
 	var tween=body.create_tween()
-	tween.tween_interval(2.4);tween.tween_property(body,"position:y",body.position.y-.45,.9).set_trans(Tween.TRANS_SINE)
+	tween.tween_interval(.55)
+	tween.tween_callback(func():poof(body.global_position+Vector3.UP*.3))
+	tween.tween_property(body,"scale",Vector3.ONE*.01,.22).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
 	tween.tween_callback(body.queue_free)
+
+## Soft white puff where a knocked-out enemy disappears.
+func poof(pos:Vector3):
+	for i in range(3):
+		var ball=MeshInstance3D.new();var mesh=SphereMesh.new();mesh.radius=.14;mesh.height=.28;mesh.radial_segments=10;mesh.rings=5;ball.mesh=mesh
+		var mat=StandardMaterial3D.new();mat.transparency=BaseMaterial3D.TRANSPARENCY_ALPHA;mat.shading_mode=BaseMaterial3D.SHADING_MODE_UNSHADED
+		mat.albedo_color=Color(.96,.95,.9,.8);ball.material_override=mat;ball.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		arena.add_child(ball);var offset=Vector3(cos(i*2.1),.1*i,sin(i*2.1))*.14;ball.global_position=pos+offset
+		var tween=ball.create_tween().set_parallel()
+		tween.tween_property(ball,"scale",Vector3.ONE*(1.8+i*.3),.35).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
+		tween.tween_property(ball,"global_position",pos+offset*2.2+Vector3.UP*.25,.35).set_ease(Tween.EASE_OUT)
+		tween.tween_property(mat,"albedo_color:a",0.0,.35)
+		tween.chain().tween_callback(ball.queue_free)
 
 func drone_death_explosion(pos:Vector3):
 	var radius=Balance.CONFIG.combat.drone_death_radius

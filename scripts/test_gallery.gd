@@ -70,7 +70,7 @@ func actor_exhibit(kind:String,title:String,rank_value:int=1,allied_value:bool=f
 
 func build_exhibits():
 	section("Пехота и дроны")
-	var names={"soldier":"Солдат","grenadier":"Гренадёр","shield":"Щитоносец","sniper":"Снайпер","drone":"Дрон-камикадзе","flyer":"Летающий стрелок"}
+	var names={"soldier":"Солдат","grenadier":"Гренадёр","shield":"Щитоносец","sniper":"Снайпер","drone":"Дрон-хлопушка","flyer":"Летающий стрелок"}
 	for kind in names:
 		for rank_value in [1,2]:actor_exhibit(kind,names[kind]+" · ранг "+str(rank_value),rank_value)
 	section("Техника и командиры")

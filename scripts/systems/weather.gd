@@ -3,6 +3,8 @@ extends Node3D
 ## the previous weather unless a chance roll changes it. Precipitation is shader-driven MultiMesh.
 const BIOMES=preload("res://scripts/biome_catalog.gd")
 const CHANGE_CHANCE=.35
+## Clear sky dominates; rain is a rare event (it hurts readability), a downpour rarer still.
+const WEIGHTS={"clear":1.0,"fog":.22,"rain":.1,"snow":.3,"sandstorm":.18}
 const KINDS=["clear","rain","snow","fog","sandstorm"]
 ## Lighting multipliers read by WorldLighting; haze colour/amount by WorldAtmosphere.
 const LOOK={
@@ -18,15 +20,16 @@ var rain_style=""
 ## Three rains, chosen per room from the visual seed: count, streak size, fall speed, wind slant,
 ## opacity, ripples and glossy puddles. All visual.
 const RAIN={
-	"drizzle":{"count":170,"quad":Vector2(.03,.22),"fall":1.0,"slant":.35,"strength":.75,"ripples":30,"puddles":5},
-	"shower":{"count":260,"quad":Vector2(.034,.34),"fall":1.35,"slant":.9,"strength":1.0,"ripples":48,"puddles":9},
-	"downpour":{"count":420,"quad":Vector2(.038,.5),"fall":1.8,"slant":1.6,"strength":1.2,"ripples":80,"puddles":14},
+	"drizzle":{"count":120,"quad":Vector2(.03,.22),"fall":1.0,"slant":.35,"strength":.75,"ripples":30,"puddles":5},
+	"shower":{"count":190,"quad":Vector2(.034,.34),"fall":1.35,"slant":.9,"strength":1.0,"ripples":48,"puddles":9},
+	"downpour":{"count":300,"quad":Vector2(.038,.5),"fall":1.8,"slant":1.6,"strength":1.2,"ripples":80,"puddles":14},
 }
 static func pick_rain(context:Node)->String:
 	var forced=str(Settings.values.get("rain_style",""))
 	if forced in RAIN:return forced
 	var rng=RandomNumberGenerator.new();rng.seed=hash([Game.visual_run_seed,context.room_index,"rain_style"])
-	return ["drizzle","shower","shower","downpour"][rng.randi_range(0,3)]
+	var roll=rng.randf()
+	return "drizzle" if roll<.62 else "shower" if roll<.92 else "downpour"
 
 static func allowed(entry:Dictionary)->Array:
 	if "ice" in entry.kinds or entry.get("vegetation","")=="frost":return ["clear","snow","fog"]
@@ -42,9 +45,18 @@ static func pick(context:Node)->String:
 	var current="clear"
 	for room in range(int(context.room_index)+1):
 		var options=allowed(BIOMES.entry(context.run_seed,room))
-		var roll=rng.randf();var index=rng.randi_range(0,options.size()-1)
-		if roll<CHANGE_CHANCE or current not in options:current=options[index]
+		var roll=rng.randf();var pick_roll=rng.randf()
+		if roll<CHANGE_CHANCE or current not in options:current=weighted(options,pick_roll)
 	return current
+
+static func weighted(options:Array,roll:float)->String:
+	var total=0.0
+	for id in options:total+=float(WEIGHTS.get(id,.2))
+	var at=roll*total
+	for id in options:
+		at-=float(WEIGHTS.get(id,.2))
+		if at<=0:return id
+	return options[0]
 
 static func look(context:Node)->Dictionary:return LOOK.get(pick(context),{})
 

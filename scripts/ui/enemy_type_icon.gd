@@ -1,7 +1,7 @@
 extends Control
 const ATLAS=preload("res://assets/ui/enemies/enemy_atlas_v1.png")
 const IDS=["pistol","shotgun","smg","rifle","shield","grenade_launcher","sniper","rpg","buggy","mortar","apc","tank","boss","flyer","drone","commander"]
-const NAMES=["Стрелок · пистолет","Стрелок · дробовик","Стрелок · ПП","Стрелок · автомат","Щитовик","Гранатомётчик","Снайпер","Рпгшник","Багги","Турель с гранатами","Бтр","Танк","Командир","Летающий дрон","Дрон-камикадзе","Командир"]
+const NAMES=["Стрелок · пистолет","Стрелок · дробовик","Стрелок · ПП","Стрелок · автомат","Щитовик","Гранатомётчик","Снайпер","Рпгшник","Багги","Турель с гранатами","Бтр","Танк","Командир","Летающий дрон","Дрон-хлопушка","Командир"]
 var kind="soldier"
 var weapon=""
 static func index_for(type:String,loadout:String="")->int:

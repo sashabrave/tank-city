@@ -263,8 +263,10 @@ func _ready():
 	weapon=Game.selected_weapon;rerolls_left=3+Game.reroll_level
 	for id in LOOT.WEAPONS:weapon_mods[id]={"damage":0.0,"interval":1.0,"intercept":0.0}
 	abilities=load("res://scripts/run_ability.gd").new();abilities.arena=self;abilities.selected=Game.selected_ability;abilities.setup()
-	combat_rng.randomize()
 	if run_seed==0:run_seed=randi()
+	# Daily runs: fights and offers follow the day's seed; normal runs stay unpredictable.
+	if Campaign.daily:combat_rng.seed=hash([run_seed,"combat"])
+	else:combat_rng.randomize()
 	headquarters=load("res://scripts/headquarters/run_support.gd").new(self)
 	base_max_hp=headquarters.max_hp()
 	soldier_max_hp = CombatStats.initial_health()
@@ -284,6 +286,7 @@ func _ready():
 
 func begin_room(index: int):
 	Game.progression.combat_entered=true
+	if Campaign.daily:combat_rng.seed=DailyRun.room_seed(run_seed,Campaign.cycle,index)
 	effects.emit("room_start",{"index":index})
 	Game.music_context("boss" if index in Campaign.BOSSES else "battle",true)
 	star_time=0.0;recipe_offer={};draft_pickup={};generators.clear()

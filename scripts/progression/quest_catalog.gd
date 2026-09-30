@@ -1,16 +1,16 @@
 extends RefCounted
 ## Quests for world 1 and endless. STORY and INSTITUTE are sequential chains; BRIEFINGS unlock when the
 ## "requires" counter reaches "threshold". Rewards: alloy and documents ("docs"); "xp" is kept for old saves.
-## Senders shown in the tablet feed: Генштаб (story), Институт (hub), Оперштаб (briefings and orders).
+## Senders shown in the tablet feed: Штаб усов (story), Институт (hub), Оперштаб (briefings and orders).
 const STORY=[
 {"id":"first_alloy","text":"Первый трофей","event":"extracted","goal":30,"alloy":30,"docs":0,"xp":25,"hint":"Подбери 30 сплава и вернись в хаб. Добровольный выход сохраняет добычу."},
 {"id":"bench","text":"Плацдарм","event":"world_depth_1","goal":1,"alloy":40,"docs":0,"xp":35,"hint":"Зачисти первое поле Пограничья: три волны и командира."},
 {"id":"health","text":"Подготовка бойца","event":"health_level","goal":1,"alloy":45,"docs":0,"xp":40,"hint":"В принтере открой «Общие улучшения» и купи здоровье."},
-{"id":"rooms3","text":"Разведка границы","event":"world_depth_1","goal":3,"alloy":70,"docs":0,"xp":65,"hint":"Доберись до третьего поля и зачисти его. Сложные точки ★★ дальше по пути."},
+{"id":"rooms3","text":"Разведка двора","event":"world_depth_1","goal":3,"alloy":70,"docs":0,"xp":65,"hint":"Доберись до третьего поля и зачисти его. Сложные точки ★★ дальше по пути."},
 {"id":"first_challenge","text":"Особое задание","event":"challenge_any","goal":1,"alloy":60,"docs":1,"xp":50,"hint":"На карте есть особые точки: тайник, удержание, выживание, напёрстки, переключатели. Пройди любую."},
 {"id":"first_trade","text":"Сделка на марше","event":"merchant_buy","goal":1,"alloy":50,"docs":0,"xp":40,"hint":"Собери жетоны с врагов и купи что-нибудь у торговца в сервисном ряду."},
 {"id":"rooms5","text":"Подступы к генералу","event":"world_depth_1","goal":5,"alloy":100,"docs":0,"xp":85,"hint":"Пройди пять полей первого мира. Подготовь оружие и штаб к генералу."},
-{"id":"general1","text":"Пограничье под контролем","event":"world_clear_1","goal":1,"alloy":160,"docs":2,"xp":130,"hint":"Уничтожь генерала в конце мира 1. Откроется бесконечный режим."},
+{"id":"general1","text":"Двор наш!","event":"world_clear_1","goal":1,"alloy":160,"docs":2,"xp":130,"hint":"Уничтожь генерала в конце мира 1. Откроется бесконечный режим."},
 {"id":"endless_entry","text":"Удержать рубеж","event":"enter_endless","goal":1,"alloy":90,"docs":0,"xp":70,"hint":"В хабе нажми «В бой» и выбери бесконечный режим."},
 {"id":"endless_cycle2","text":"Второй сектор","event":"endless_cycle","goal":2,"alloy":150,"docs":2,"xp":110,"hint":"В бесконечном режиме пройди семь комнат и начни второй сектор."},
 {"id":"another_class","text":"Новая тактика","event":"boss_classes","goal":2,"alloy":300,"docs":2,"xp":250,"hint":"Выбери другой класс в Казарме и снова победи генерала мира 1."},
@@ -43,7 +43,7 @@ const BRIEFINGS=[
 {"id":"challenge_thimbles","text":"Зоркий глаз","event":"challenge_thimbles","goal":1,"alloy":80,"docs":1,"xp":60,"requires":"world_depth_1","threshold":1,"hint":"Угадай колпак со штабом в напёрстках."},
 {"id":"challenge_switches","text":"Код сейфа","event":"challenge_switches","goal":1,"alloy":80,"docs":1,"xp":60,"requires":"world_depth_1","threshold":1,"hint":"Повтори порядок огней на переключателях и открой сейф."},
 {"id":"challenge_hard","text":"Две звезды","event":"challenge_hard","goal":3,"alloy":200,"docs":2,"xp":150,"requires":"challenge_any","threshold":2,"hint":"Пройди три испытания со звёздами ★★."},
-{"id":"barrels","text":"Огненный мешок","event":"barrel_kills","goal":5,"alloy":70,"docs":0,"xp":50,"requires":"world_depth_1","threshold":1,"hint":"Уничтожь пятерых врагов взрывом бочек."},
+{"id":"barrels","text":"Бочковой салют","event":"barrel_kills","goal":5,"alloy":70,"docs":0,"xp":50,"requires":"world_depth_1","threshold":1,"hint":"Уничтожь пятерых врагов взрывом бочек."},
 {"id":"tokens","text":"Коллекционер жетонов","event":"tokens","goal":25,"alloy":80,"docs":0,"xp":60,"requires":"merchant_buy","threshold":1,"hint":"Собери 25 жетонов. Их чаще носят техника и ветераны, командир — всегда."},
 {"id":"slot_machine","text":"Азартный рядовой","event":"slot_play","goal":5,"alloy":60,"docs":0,"xp":40,"requires":"merchant_buy","threshold":1,"hint":"Сыграй пять раз на игровом автомате торговца."},
 {"id":"tactics","text":"Тактик","event":"behavior_cards","goal":3,"alloy":90,"docs":1,"xp":70,"requires":"world_depth_1","threshold":2,"hint":"Возьми три карты «Тактика» за всё время."},
@@ -58,7 +58,7 @@ const TELEGRAMS=[
 {"id":"drones","text":"Дроны","event":"drones","goal":10,"alloy":60,"xp":40},
 {"id":"barrel_order","text":"Бочки","event":"barrel_kills","goal":4,"alloy":70,"xp":45},
 {"id":"token_order","text":"Жетоны","event":"tokens","goal":10,"alloy":60,"xp":40}]
-const SENDERS={"story":{"name":"Генштаб","icon":"quests","color":"c9793f"},"institute":{"name":"Институт","icon":"guide","color":"3f9a8f"},"operations":{"name":"Оперштаб","icon":"notifications","color":"4f86c6"}}
+const SENDERS={"story":{"name":"Штаб усов","icon":"quests","color":"c9793f"},"institute":{"name":"Институт","icon":"guide","color":"3f9a8f"},"operations":{"name":"Оперштаб","icon":"notifications","color":"4f86c6"}}
 static func sender(q:Dictionary)->String:
 	if str(q.get("id","")).begins_with("order_") or q in BRIEFINGS:return "operations"
 	if q in INSTITUTE:return "institute"

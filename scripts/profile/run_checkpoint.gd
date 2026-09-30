@@ -8,7 +8,7 @@ static func keys()->Array:
 		if field not in result:result.append(field)
 	return result
 static func capture(arena,index:int,mode:String,choices:Dictionary)->Dictionary:
-	var data={"version":VERSION,"world":Campaign.world,"endless":Campaign.endless,"cycle":Campaign.cycle,"strength":Campaign.endless_strength,"index":index,"mode":mode,"seed":Game.visual_run_seed,"choices":choices.duplicate(true),"run":{},"abilities":{},"hq":{},"hero":{},"class":Game.selected_class,"start_documents":Game.cores}
+	var data={"version":VERSION,"world":Campaign.world,"endless":Campaign.endless,"cycle":Campaign.cycle,"strength":Campaign.endless_strength,"index":index,"mode":mode,"seed":Game.visual_run_seed,"choices":choices.duplicate(true),"run":{},"abilities":{},"hq":{},"hero":{},"class":Game.selected_class,"start_documents":Game.cores,"daily":Campaign.daily,"daily_key":Campaign.daily_key}
 	if not is_instance_valid(arena):return data
 	for key in keys():data.run[key]=arena.run.get(key)
 	data.run=data.run.duplicate(true)
@@ -61,6 +61,7 @@ static func valid(data:Dictionary)->bool:
 		if not number(data.get(key)):return false
 	if data.version!=VERSION or int(data.world) not in [1,2,3] or int(data.index) not in range(8 if int(data.world)==3 and not data.get("endless",false) else 7) or data.cycle<0:return false
 	if not data.get("endless") is bool or data.get("mode") not in ["map","room"] or not data.get("class") is String:return false
+	if not data.get("daily",false) is bool or not data.get("daily_key","") is String:return false
 	for key in ["choices","run","abilities","hq","hero"]:
 		if not data.get(key) is Dictionary:return false
 	for key in data.choices:

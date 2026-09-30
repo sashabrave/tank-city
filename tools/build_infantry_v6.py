@@ -1,7 +1,9 @@
 """v6 infantry: serious chibi military cats. Model, skinned rig, armed animations, previews.
 
 Run (all kinds):  for k in soldier grenadier shield sniper rpg_soldier; do
-    Blender -b --factory-startup --python tools/build_infantry_v6.py -- --kind $k [--render] [--video]; done
+    Blender -b --factory-startup --python tools/build_infantry_v6.py -- --kind $k [--species dog] [--render] [--video]; done
+--species dog builds the enemy variant (floppy ears, long snout, curled tail) as infantry_v6/dog_<kind>.glb;
+body, rig, clips and materials are the same, so kit_model.gd drives both.
 Build tools/build_weapons_v6.py first: weapons.json gives each rifle's support point.
 Authored facing +Y (becomes Godot -Z), 1 unit = 1 m, height ~1.05.
 Bone names match infantry_v5 plus tail/tail.001, so kit_model.gd keeps working.
@@ -18,10 +20,13 @@ from v6_common import Kit, D, superellipse, camo_cell, aim_camera, preview_scene
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ARGS = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
 KIND = ARGS[ARGS.index("--kind") + 1] if "--kind" in ARGS else "soldier"
+SPECIES = ARGS[ARGS.index("--species") + 1] if "--species" in ARGS else "cat"
+DOG = SPECIES == "dog"
+PREFIX = "dog_" if DOG else ""
 OUT_DIR = os.path.join(ROOT, "assets/models/infantry_v6")
-OUT_GLB = os.path.join(OUT_DIR, f"{KIND}.glb")
-OUT_BLEND = os.path.join(ROOT, f"assets/source/infantry_v6_{KIND}.blend")
-PREVIEW = os.path.join(ROOT, "tmp/infantry_v6", KIND)
+OUT_GLB = os.path.join(OUT_DIR, f"{PREFIX}{KIND}.glb")
+OUT_BLEND = os.path.join(ROOT, f"assets/source/infantry_v6_{PREFIX}{KIND}.blend")
+PREVIEW = os.path.join(ROOT, "tmp/infantry_v6", PREFIX + KIND)
 HOLD = json.load(open(os.path.join(OUT_DIR, "weapons.json")))
 WEAPON = {"soldier": "rifle", "grenadier": "grenade_launcher", "shield": "shotgun", "sniper": "sniper", "rpg_soldier": "rpg"}[KIND]
 
@@ -120,6 +125,15 @@ def ear(side, base_c, radius, sc, cell_out="fur"):
     K.finish(bm, f"v6_ear_{side}", cell_out, "head", smooth=30,
              face_cell=lambda p: "ear_inner" if p.normal.dot(front) > .6 else cell_out)
 
+def dog_ear(side, base_c, radius, sc, cell_out="fur_dark"):
+    """Floppy dog ear: a soft flap tucked under the helmet rim, hanging down and a little outwards."""
+    s = -1 if side == "L" else 1
+    # Flared out past the helmet so the flaps read from the top-down battle camera.
+    top = base_c + Vector((s * radius * sc.x * .92, .02, -.04))
+    ob = K.ellipsoid(f"v6_ear_{side}", (0, 0, -.1), (.04, .088, .125), cell_out, "head", seg=6, rings=4,
+                     face_cell=lambda p: "ear_inner" if p.normal.x * -s > .7 else cell_out)
+    ob.data.transform(Matrix.Translation(top) @ Matrix.Rotation(-D(48) * s, 4, 'Y') @ Matrix.Rotation(D(-10), 4, 'X'))
+
 def goggles():
     N = 16
     c = HELMET_C + Vector((0, 0, -.028))
@@ -157,6 +171,16 @@ def cat_face():
     K.ellipsoid("v6_chin", (0, .19, .622), (.04, .03, .024), "muzzle", "head", seg=6, rings=4)
     K.ellipsoid("v6_nose", (0, .247, .676), (.02, .012, .013), "nose", "head", seg=6, rings=3)
 
+def dog_face():
+    """Dog face under the goggles: a wide, chubby, short snout with puffy jowls and a big black nose (not a fox)."""
+    K.ellipsoid("v6_face", (0, .085, .69), (.17, .16, .13), "fur", "head", seg=10, rings=6)
+    K.ellipsoid("v6_snout", (0, .255, .64), (.115, .105, .078), "muzzle", "head", seg=7, rings=4)
+    for s in (-1, 1):
+        K.ellipsoid("v6_jowl", (s * .072, .26, .608), (.062, .07, .048), "muzzle", "head", seg=5, rings=3)
+    K.ellipsoid("v6_chin", (0, .2, .6), (.04, .035, .022), "fur", "head", seg=5, rings=3)
+    K.ellipsoid("v6_nose", (0, .352, .675), (.05, .03, .032), "nose", "head", seg=6, rings=3)
+    K.ellipsoid("v6_tongue", (0, .32, .575), (.02, .024, .008), "ear_inner", "head", seg=4, rings=2)
+
 def build_head():
     if KIND == "sniper":
         # Ghillie hood over a thin helmet: white brim still shows the team colour.
@@ -164,11 +188,11 @@ def build_head():
         hc = HELMET_C + Vector((0, -.018, .012))
         dome("v6_hood", "camo_a", hc, .292, Vector((1.02, 1.04, .97)), .56, .79, .185, segs=14, rings=9,
              face_cell=lambda p: camo_cell(p, scale=1.4), lip=.02)
-        for s in "LR": ear(s, hc, .292, Vector((1.02, 1.04, .97)), cell_out="camo_b")
+        for s in "LR": (dog_ear if DOG else ear)(s, hc, .292, Vector((1.02, 1.04, .97)), cell_out="camo_b")
     else:
         dome("v6_helmet", "helmet", HELMET_C, HELMET_R, HELMET_SCALE, .64, .755, .155)
-        for s in "LR": ear(s, HELMET_C, HELMET_R, HELMET_SCALE)
-    cat_face()
+        for s in "LR": (dog_ear(s, HELMET_C, HELMET_R, HELMET_SCALE) if DOG else ear(s, HELMET_C, HELMET_R, HELMET_SCALE))
+    dog_face() if DOG else cat_face()
     goggles()
 
 # ---------------------------------------------------------------- torso & gear
@@ -286,6 +310,11 @@ def build_leg(side):
     boot(side, ank)
 
 def build_tail():
+    if DOG:  # short, thick, curled up over the back
+        curl = [TAIL[0], TAIL[1] + Vector((0, .02, .03)), TAIL[2] + Vector((0, .04, .1)), TAIL[3] + Vector((0, .1, .12)), TAIL[4] + Vector((0, .15, .06))]
+        K.tube("v6_tail", curl, [.05, .052, .048, .042, .032], "fur", ["tail", "tail.001"], sides=6,
+               face_cell=lambda p: "muzzle" if p.center.z > .42 else "fur")
+        return
     K.tube("v6_tail", TAIL, [.046, .042, .038, .034, .028], "fur", ["tail", "tail.001"], sides=6,
            face_cell=lambda p: "fur_dark" if p.center.z > .33 else "fur")
 

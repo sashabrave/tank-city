@@ -15,4 +15,4 @@ max_stacks = 3
 min_tier = 1
 modifiers = Array[Dictionary]([{"stat": "safe_slots", "op": "add_round", "value": 0.7}])
 preview = "safe_slots"
-detail = "Чертежи в сейфовых ячейках рюкзака не пропадают при гибели."
+detail = "Чертежи в сейфовых ячейках рюкзака не пропадают при выбывании."

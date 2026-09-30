@@ -13,7 +13,7 @@ static func render(tablet):
 		["inventory","Оружие","%d / %d" % [Game.weapon_unlocks.size(),Game.LOOT.WEAPONS.size()]],
 		["vehicle","Техника","%d / %d" % [Game.garage.owned.size(),GarageCatalog.VEHICLES.size()]],
 		["blueprint","Бонусы и гаджеты","%d бонусов · %d гаджетов" % [Game.bonus_unlocks.size(),Game.ability_unlocks.size()]],
-		["alloy","Сохранение добычи","%d%% сплава при гибели" % roundi((1.0-Game.death_loss_fraction())*100)],
+		["alloy","Сохранение добычи","%d%% сплава при выбывании" % roundi((1.0-Game.death_loss_fraction())*100)],
 		["quests","Задания","%d сдано · %d в работе" % [p.claimed.size(),p.quests("active").size()]],
 	]
 	for row in rows:

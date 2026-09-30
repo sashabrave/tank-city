@@ -13,5 +13,5 @@ tags = PackedStringArray("ammo")
 weight = 4
 max_stacks = 1
 min_tier = 2
-detail = "Горящий враг при гибели взрывается и поджигает соседей."
+detail = "Подпалённый враг, убегая, хлопает и поджигает соседей."
 flag = true

@@ -1,6 +1,7 @@
 extends Node3D
 ## Rigid vehicle articulation; static tracks. Authored +Y becomes Godot -Z.
 var kind=""
+var species="cat"  # "dog": enemy infantry (infantry_v6/dog_<kind>.glb)
 var wheels:Array[Node3D]=[]
 var rotors:Array[Node3D]=[]
 var recoils:Array[Node3D]=[]
@@ -207,12 +208,13 @@ func apply_palette():
 	# The player soldier wears the chosen uniform (hub avatar and the player in battle).
 	elif kind=="soldier" and (not actor is CombatActor or actor.player_owned) and not (actor is CombatActor and actor.companion):camo=Skins.camo(Game.skin)
 	var fur=fur_override if fur_override>=0 else 0 if (actor is CombatActor and actor.player_owned) or not actor is CombatActor else 1+posmod(hash(get_instance_id()),InfantryPalette.FURS.size()-1)
+	if species=="dog":fur=posmod(hash(get_instance_id()),InfantryPalette.DOG_FURS.size())
 	for mesh in find_children("*","MeshInstance3D",true,false):
 		if weapon_socket and weapon_socket.is_ancestor_of(mesh):continue
 		for index in range(mesh.mesh.get_surface_count()):
 			var source=mesh.mesh.surface_get_material(index)
 			if source is StandardMaterial3D and source.resource_name==InfantryPalette.SOURCE_MATERIAL:
-				mesh.set_surface_override_material(index,InfantryPalette.material(source,fur,camo))
+				mesh.set_surface_override_material(index,InfantryPalette.material(source,fur,camo,species))
 func set_paint(mode:String,rank:int=1):
 	paint_mode=mode;paint_rank=rank
 	apply_palette()

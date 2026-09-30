@@ -22,7 +22,7 @@ extends Resource
 ## Награда за зачищенное поле: база + шаг за каждую пройденную точку маршрута.
 @export_range(0,500,1) var clear_reward:int=10
 @export_range(0,200,1) var clear_reward_per_room:int=5
-## Доля добытого за вылазку сплава, которая теряется при гибели без страховки.
+## Доля добытого за вылазку сплава, которая теряется при выбывании без страховки.
 @export_range(0,1,0.01) var death_loss:float=0.4
 @export_range(0,1,0.01) var death_loss_floor:float=0.2
 @export_group("Сундук — награда сплавом")

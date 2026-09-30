@@ -25,7 +25,7 @@ static func build(parent:Node3D,rosters:Array)->Node3D:
 	for start in range(0,entries.size(),5):
 		var row=[];var width=0.0
 		for entry in entries.slice(start,start+5):
-			var model=Visuals.model(entry.get("model",EnemyLoadouts.model_for(entry.kind,entry.get("weapon",""))),display)
+			var model=Visuals.model(entry.get("model",EnemyLoadouts.model_for(entry.kind,entry.get("weapon",""))),display,Vector3.ZERO,"dog")
 			model.set_meta("enemy_type",entry.get("model",EnemyLoadouts.model_for(entry.kind,entry.get("weapon",""))))
 			if entry.kind in WaveDirector.PEOPLE:Visuals.equip_model(model,entry.get("weapon",EnemyLoadouts.default_for(entry.kind)))
 			Visuals.recolor_enemy(model,entry.rank);model.rotation.y=PI

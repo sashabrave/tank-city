@@ -171,13 +171,13 @@ func quest_page():
 	var p=Game.progression
 	if manage:p.prepare_telegrams()
 	UiKit.label(content,"Задачи",Vector2(UiKit.PAGE_PADDING,20),Vector2(700,28),UiKit.PAGE_TITLE_SIZE)
-	var filters=[["all","Все"],["general","Генштаб"],["institute","Институт"],["operations","Оперштаб"],["completed","Готово"]]
+	var filters=[["all","Все"],["general","Штаб усов"],["institute","Институт"],["operations","Оперштаб"],["completed","Готово"]]
 	# Horizontal tabs across the whole block; the feed takes the full width below them.
 	var full=content.size.x-UiKit.PAGE_PADDING*2
 	quest_bubble_width=full-56-14
 	UiKit.tab_row(content,Vector2(UiKit.PAGE_PADDING,UiKit.PAGE_CONTENT_TOP),full,filters,quest_filter,func(key):quest_filter=key;refresh())
 	var quests=p.quests("completed" if quest_filter=="completed" else "available" if manage else "active")
-	# Feed filters follow the sender: story — Генштаб, hub chain — Институт, briefings and orders — Оперштаб.
+	# Feed filters follow the sender: story — Штаб усов, hub chain — Институт, briefings and orders — Оперштаб.
 	var sender_filter={"general":"story","institute":"institute","operations":"operations"}.get(quest_filter,"")
 	if sender_filter!="":quests=quests.filter(func(q):return Q.sender(q)==sender_filter)
 	var feed_top=UiKit.PAGE_CONTENT_TOP+40+UiKit.TAB_CONTENT_GAP

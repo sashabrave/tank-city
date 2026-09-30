@@ -5,7 +5,7 @@
 [resource]
 script = ExtResource("1")
 id = "marauder"
-title = "Мародёр"
+title = "Запасливый"
 category = "Тактика"
 family = "logistics"
 icon = "token"

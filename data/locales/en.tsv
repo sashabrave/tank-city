@@ -101,13 +101,13 @@ Esc — открыть / закрыть планшет (постоянная к�
 Прочитать эту вкладку	Mark this tab as read
 Пока нет сообщений	No messages yet
 Командование	Command
-Генштаб	General staff
+Штаб усов	Whisker HQ
 Институт	Institute
 Оперштаб	Operations
 Выполненные	Completed
 Новое задание	New task
 Задание выполнено	Task completed
-Разведка границы	Border reconnaissance
+Разведка двора	Yard scouting
 Подготовка бойца	Soldier preparation
 Плацдарм	Bridgehead
 Поиск по статьям…	Search articles…
@@ -193,8 +193,8 @@ Esc — открыть / закрыть планшет (постоянная к�
 Аптечки передышки	Rest-stop medkits
 Страховка сплава	Alloy insurance
 Страховка чертежей	Blueprint insurance
-Шанс сохранить каждый найденный чертёж при гибели.	Chance to keep each recovered blueprint on death.
-При гибели теряется %d%% сплава, добытого за вылазку.	On death, you lose %d%% of the alloy earned during the run.
+Шанс сохранить каждый найденный чертёж при выбывании.	Chance to keep each recovered blueprint on a knockout.
+При выбывании теряется %d%% сплава, добытого за вылазку.	When knocked out, you lose %d%% of the alloy earned during the run.
 Потеря: %d%% → %d%%	Loss: %d%% → %d%%
 Сохранение: %d%% → %d%%	Retention: %d%% → %d%%
 Достигнут предел · повысь уровень базы	Limit reached · upgrade the base
@@ -260,7 +260,7 @@ Esc — открыть / закрыть планшет (постоянная к�
 Покинуть	Leave
 Выйти	Exit
 Войти	Enter
-Пограничье	Borderlands
+Тихий двор	Quiet Yard
 Мир	World
 Поле	Field
 Волна	Wave
@@ -334,7 +334,7 @@ Esc — открыть / закрыть планшет (постоянная к�
 Боец / текущий билд	Soldier / current build
 База включает хаб · цветом — изменения вылазки и активные эффекты	Base includes hub upgrades · colors show run bonuses and active effects
 Постоянный бонус урона: %d%% · Ячеек рюкзака: %d	Permanent damage bonus: %d%% · Backpack slots: %d
-Потеря сплава при гибели: %d%%	Alloy lost on death: %d%%
+Потеря сплава при выбывании: %d%%	Alloy lost on a knockout: %d%%
 Телеграмма · оперштаб	Telegram · operations
 Выбери сложность задания или откажись.	Choose task difficulty or decline.
 Лёгкий	Easy
@@ -351,7 +351,7 @@ Esc — открыть / закрыть планшет (постоянная к�
 Не хватает %d	Need %d more
 предел	Limit
 построено	Built
-%d%% сплава при гибели · улучшение в «Прокачке базы»	%d%% alloy retained on death · upgrade at Base upgrades
+%d%% сплава при выбывании · улучшение в «Прокачке базы»	%d%% alloy retained on a knockout · upgrade at Base upgrades
 %d аптечек передышки · лечение %d HP	%d rest-stop medkits · %d HP healing
 Подборка появится в игре	The playlist becomes available in game
 Командный центр	Command center
@@ -620,8 +620,8 @@ HP турели +1/ур.	Turret HP +1 per level
 2: +3 прочности штабу, +1 HP герою рядом. Кулдаун 50 с.	2: +3 HQ health, +1 HP to a nearby hero. Cooldown: 50 s.
 2: 4 урона и 2 с оглушения врагам рядом. Кулдаун 45 с.	2: 4 damage and 2 s stun to nearby enemies. Cooldown: 45 s.
 2: 5 с защиты штаба и героя в радиусе 3 клеток. Кулдаун 55 с.	2: protects HQ and hero within 3 tiles for 5 s. Cooldown: 55 s.
-6 Полей + босс\nГенерал пограничья\nБагги · ПП · дробовик · винтовка	6 battlefields + boss\nBorderlands general\nBuggy · SMG · shotgun · rifle
-6 полей + босс\nГенерал фронта\nБтр · снайперка	6 battlefields + boss\nFrontline general\nAPC · sniper rifle
+6 Полей + босс\nГенерал двора\nБагги · ПП · дробовик · винтовка	6 battlefields + boss\nYard general\nBuggy · SMG · shotgun · rifle
+6 полей + босс\nГенерал гряды\nБтр · снайперка	6 battlefields + boss\nRidge general\nAPC · sniper rifle
 6 полей + босс\nГигабосс цитадели\nТанк · Рпг	6 battlefields + boss\nCitadel gigaboss\nTank · RPG
 : неверный идентификатор	: invalid identifier
 E — выйти.	E — exit.
@@ -778,7 +778,7 @@ WASD — выбор поля боя · E — войти	WASD — select battlefi
 Доставка: %s с · лимит %d	Delivery: %s s · limit %d
 Доступно для постройки в хабе.	Available to build in the hub.
 Дрон	Drone
-Дрон-камикадзе	Kamikaze drone
+Дрон-хлопушка	Popper drone
 Дрон-помощник	Helper drone
 Дронов уничтожено	Drones destroyed
 Дроны	Drones
@@ -844,7 +844,7 @@ WASD — выбор поля боя · E — войти	WASD — select battlefi
 Лимит мин	Mine limit
 Лимит помощников	Helper limit
 Лимит помощников +1 (до 3)	Helper limit +1 (up to 3)
-Линия фронта	Frontline
+Мисочная гряда	Kibble Ridge
 Личный багги	Personal buggy
 Максимум здоровья	Maximum health
 Манекен тира	Target dummy
@@ -944,7 +944,7 @@ WASD — выбор поля боя · E — войти	WASD — select battlefi
 Особенность	Special trait
 Особые противники	Special enemies
 Оставить на поле	Leave on the battlefield
-Отдать честь · E	Salute · E
+Погладить статую · E	Pat the statue · E
 Отказаться	Decline
 Отказаться от приказа	Decline order
 Отказаться от телеграммы	Decline telegram
@@ -1001,7 +1001,7 @@ WASD — выбор поля боя · E — войти	WASD — select battlefi
 Повторять все	Repeat all
 Повторять один	Repeat one
 Повторяющийся или пустой ID.	Duplicate or empty ID.
-Пограничье под контролем	Borderlands secured
+Двор наш!	The yard is ours!
 Подбери 30 сплава и вернись в хаб. Добровольный выход сохраняет добычу.	Collect 30 alloy and return to the hub. Voluntary extraction preserves your loot.
 Подбитая техника · 	Wrecked vehicle · 
 Поддержка авиации	Air support
@@ -1023,7 +1023,7 @@ WASD — выбор поля боя · E — войти	WASD — select battlefi
 Последний бой	Last stand
 Постоянная сила оружия: ×%s\nУрон оружия за вылазку: +%s%%\nИнтервал между выстрелами: ×%s\nДобавка к напору: +%s п.п.	Permanent weapon power: ×%s\nWeapon damage this run: +%s%%\nShot interval: ×%s\nPressure bonus: +%s pp
 Постройка	Building
-Потеря сплава при гибели: %s%%	Alloy lost on death: %s%%
+Потеря сплава при выбывании: %s%%	Alloy lost on a knockout: %s%%
 Потеряно: %d ◈ · чертежей %d	Lost: %d ◈ · blueprints: %d
 Правила боя	Combat rules
 Преграда · состояние 	Barrier · condition 
@@ -1111,7 +1111,7 @@ WASD — выбор поля боя · E — войти	WASD — select battlefi
 Сначала открой и возьми способность в хабе	Unlock and equip an ability in the hub first
 Совместная операция	Joint operation
 Создать	Create
-Солдат погиб	Soldier killed
+Котик выбыл	Kitty knocked out
 Сохранение: data/encyclopedia.json · предыдущая версия остаётся в .bak	Saved to data/encyclopedia.json · previous version kept in .bak
 Сохранено	Saved
 Сохрани при возврате в хаб	Keep it by returning to the hub
@@ -1292,12 +1292,12 @@ WASD — Герой · пробел — огонь · тяни мышью — о
 Название награды	Reward name
 Нужен чертёж из сундука	Requires a chest blueprint
 Описание эффекта улучшения	Upgrade effect description
-Облако оглушает людей на 5 с	Cloud stuns infantry for 5 s
+Облако усыпляет пехоту на 5 с	Cloud makes infantry doze for 5 s
 Побег из боя: для каждого чертежа сработает шанс сохранения.	Escape from combat: each blueprint rolls its survival chance.
 Подсказка игроку	Player hint
 После зачистки — все чертежи. При побеге или смерти шанс сохранить каждый: 0%.	After clearing: all blueprints. On escape or death, each has a 0% chance to survive.
 Предыдущий трек	Previous track
-Паралитический газ	Paralyzing gas
+Облако кошачьей мяты	Catnip cloud
 Парашют · случайный ствол · занимает технику	Parachute · random weapon · boards vehicles
 Персонаж	Character
 Полевая пауза	Field pause
@@ -1586,7 +1586,7 @@ F2 — админ	F2 — admin
 Запустить	Start
 Техника рядом · E, чтобы сесть	Vehicle nearby · E to board
 Летающий	Flyer
-Солдат погиб · возрождение	Soldier down · respawn
+Котик выбыл · возрождение	Kitty knocked out · respawn
 База уничтожена · возрождение	Base destroyed · respawn
 Взорви бочками %d врагов	Blow up %d enemies with barrels
 Собери %d жетонов	Collect %d tokens
@@ -1631,7 +1631,7 @@ F2 — админ	F2 — admin
 Повтори порядок огней на переключателях и открой сейф.	Repeat the order of lights on the switches and open the safe.
 Две звезды	Two stars
 Пройди три испытания со звёздами ★★.	Complete three ★★ challenges.
-Огненный мешок	Fire trap
+Бочковой салют	Barrel fireworks
 Уничтожь пятерых врагов взрывом бочек.	Destroy five enemies with barrel explosions.
 Коллекционер жетонов	Token collector
 Собери 25 жетонов. Их чаще носят техника и ветераны, командир — всегда.	Collect 25 tokens. Vehicles and veterans carry them more often, commanders always.
@@ -1668,7 +1668,7 @@ F2 — админ	F2 — admin
 Классы	Classes
 Бонусы и гаджеты	Bonuses and gadgets
 %d бонусов · %d гаджетов	%d bonuses · %d gadgets
-%d%% сплава при гибели	%d%% of alloy on death
+%d%% сплава при выбывании	%d%% of alloy on a knockout
 Задания	Quests
 %d сдано · %d в работе	%d handed in · %d in progress
 Отслеживаемые задания	Tracked quests
@@ -1695,7 +1695,7 @@ F2 — админ	F2 — admin
 За забег	Per run
 Взять на вылазку	Take on the run
 Идти пешком	Go on foot
-Потеря при гибели	Loss on death
+Потеря при выбывании	Loss on a knockout
 Шанс	Chance
 Выбрана	Selected
 В гараже	In the garage
@@ -1867,10 +1867,10 @@ FPS в углу экрана во всех режимах, в хабе — ещ�
 Звон в ушах	Ringing ears
 Каждый крит оглушает цель.	Every crit stuns the target.
 Цепная реакция	Chain reaction
-Горящий враг при гибели взрывается и поджигает соседей.	A burning enemy explodes on death and sets its neighbours on fire.
+Подпалённый враг, убегая, хлопает и поджигает соседей.	A singed enemy pops as it flees and sets its neighbours on fire.
 Маскхалат	Ghillie suit
 Враги замечают ближе; первый удар по целому врагу сильнее.	Enemies notice you closer; the first hit on an unhurt enemy is stronger.
-Мародёр	Marauder
+Запасливый	Hoarder
 Больше сплава и жетонов с врагов.	More alloy and tokens from enemies.
 Каждое убийство чинит штаб и твою технику.	Every kill repairs the HQ and your vehicle.
 Счастливая гильза	Lucky casing
@@ -1959,10 +1959,10 @@ HP +1 · защита от пуль +10% · дробовик +10% · скоро�
 Связист	Signaller
 Корректировщик огня	Fire spotter
 Огнемётчик	Flamethrower
-Выжженная земля	Scorched earth
+Жаркий денёк	Hot day
 Шквал огня	Hail of fire
-Кинолог	Dog handler
-Верный пёс	Loyal dog
+Мышелов	Mouser
+Верная мышь	Loyal mouse
 Минёр	Sapper
 Тихий сапёр	Quiet sapper
 Десантник	Paratrooper
@@ -1994,7 +1994,7 @@ HP +1 · защита от пуль +10% · дробовик +10% · скоро�
 Оборудование · 	Equipment · 
 Снова собрали в Казарме. Выучка там же — плюсы к каждому забегу.	Reassembled in the Barracks again. Training is there too — a bonus for every run.
 Бочка рядом с врагом — лучший союзник. Рядом со мной она тоже взрывается.	A barrel next to an enemy is my best ally. Next to me it explodes too.
-Жетоны сгорают вместе со мной. Трачу у торговца, пока жив.	Tokens burn with me. I spend them at the merchant while I'm alive.
+Жетоны пропадают, если меня унесут с поля. Трачу у торговца, пока на лапах.	Tokens vanish if I get carried off the field. I spend them at the merchant while I'm still on my paws.
 Падает штаб — вылазка окончена. Падаю я — тоже. Берегу обоих.	The HQ falls — the run is over. I fall — same. I protect both.
 Карточки одной семьи тянут родню. Взял крит — жди ещё крит.	Cards of one family pull their kin. Took crit — expect more crit.
 Не нравятся карточки — переброс. Судьба одна, перебросов три.	Don't like the cards — reroll. One fate, three rerolls.
@@ -2005,18 +2005,18 @@ HP +1 · защита от пуль +10% · дробовик +10% · скоро�
 Легендарные карточки выпадают редко. Как и хорошие дни.	Legendary cards are rare. So are good days.
 Классы открываются в бою. Подорвал бочками десяток — стал Подрывником.	Classes unlock in battle. Blow up ten with barrels — become a Demolisher.
 Инженера дают после босса. Я пока не видел ни того, ни другого.	The Engineer comes after the boss. I've seen neither yet.
-Погиб — прокачка на базе осталась. Единственное, что у меня не взрывается.	Died — base upgrades stay. The only thing of mine that doesn't explode.
+Шлёпнулся — прокачка на базе осталась. Единственное, что у меня не взрывается.	Faceplanted — base upgrades stay. The only thing of mine that doesn't explode.
 Задания выдают в командном центре. Там же платят.	Quests are handed out at the command centre. That's where they pay, too.
-Страховка в Штабе сохраняет часть сплава после гибели. Страхуюсь регулярно.	Insurance at the HQ keeps some alloy after death. I use it a lot.
+Страховка в Штабе сохраняет часть сплава после выбывания. Страхуюсь регулярно.	Insurance at the HQ keeps some alloy after a knockout. I use it a lot.
 Удержание: стой в круге, пока таймер не дойдёт до нуля. Стоять я умею.	Hold: stay in the circle until the timer hits zero. Standing I can do.
 Уклонение не спасает от взрывов. Проверено лично. Много раз.	Dodge doesn't save you from blasts. Tested personally. Many times.
 В песочнице я бессмертен. Скучаю по ней в каждом бою.	In the sandbox I'm immortal. I miss it in every battle.
 Защита бывает от пуль, взрывов и техники. Мне нужна от всего сразу.	Protection comes against bullets, blasts and vehicles. I need all three at once.
 Q Аптечка-дрон · 1 Реанимация	Q Medkit drone · 1 Revive
 Q Артналёт · 1 Радиоперехват	Q Artillery strike · 1 Radio intercept
-Q Огнемёт · 1 Напалм	Q Flamethrower · 1 Napalm
-Q Сошки · 1 Заградогонь	Q Bipod · 1 Barrage
-Q Пёс-разведчик · 1 Команда «Фас»	Q Scout dog · 1 Attack command
+Q Огнемёт · 1 Горячая лужа	Q Flamethrower · 1 Hot puddle
+Q Сошки · 1 Шквал из миски	Q Bipod · 1 Bowl barrage
+Q Мышь-разведчик · 1 Команда «Кусь»	Q Scout mouse · 1 Chomp command
 Q Растяжка · 1 Разминирование	Q Tripwire · 1 Demining
 Q Прыжок через стену · 1 Сигнальный дым	Q Wall jump · 1 Smoke signal
 Q Прицельный выстрел · 1 Ложная позиция	Q Aimed shot · 1 Decoy position
@@ -2072,8 +2072,8 @@ WASD — ехать · E — войти · колесо, перетаскива�
 Чертёж технологии выпадает в сундуках.	Technology blueprints drop in chests.
 %d HP базы · +1 за уровень.	%d base HP · +1 per level.
 %.2f урона турели · +0,05 за уровень.	%.2f turret damage · +0.05 per level.
-Меньше потерь добытого сплава при гибели.	Lose less gathered alloy on death.
-Шанс сохранить чертежи из рюкзака при гибели.	Chance to keep backpack blueprints on death.
+Меньше потерь добытого сплава при выбывании.	Lose less gathered alloy on a knockout.
+Шанс сохранить чертежи из рюкзака при выбывании.	Chance to keep backpack blueprints on a knockout.
 Нужен чертёж страховки.	Needs the insurance blueprint.
 Чертёж постройки выпадает в вылазках.	Building blueprints drop in runs.
 Открывается в «Казарме»: уровень класса 5, затем 2500 сплава.	Unlocks in the Barracks: class level 5, then 2500 alloy.
@@ -2121,9 +2121,9 @@ E — в хаб	E — to the hub
 Новая форма: 	New uniform: 
 Джекпот: %s · и форма «%s»	Jackpot: %s · and the “%s” uniform
 Сейф	Safe
-Чертежи в сейфовых ячейках рюкзака не пропадают при гибели.	Blueprints in safe backpack slots are not lost on death.
+Чертежи в сейфовых ячейках рюкзака не пропадают при выбывании.	Blueprints in safe backpack slots are not lost on a knockout.
 Сейф рюкзака	Backpack safe
-Сколько ячеек рюкзака защищены: их чертежи не пропадают при гибели.	How many backpack slots are protected: their blueprints are not lost on death.
+Сколько ячеек рюкзака защищены: их чертежи не пропадают при выбывании.	How many backpack slots are protected: their blueprints are not lost on a knockout.
 Поле %d	Field %d
 Волна %d	Wave %d
 Бой с генералом	Fight the general
@@ -2183,18 +2183,18 @@ E — в хаб	E — to the hub
 лечение	healing
 сила способности	ability power
 перезарядка способности	ability cooldown
-Майор Кравец	Major Kravets
-Видеосвязь · штаб округа	Video call · district HQ
+Майор Мурлыкин	Major Purrkins
+Видеосвязь · Главная когтебаза	Video call · Claw HQ
 Пропустить	Skip
 Дальше	Next
 Конец связи	End call
-Видеосвязь: Майор Кравец	Video call: Major Kravets
+Видеосвязь: Майор Мурлыкин	Video call: Major Purrkins
 Выбери другой класс в Казарме и снова победи генерала мира 1.	Pick another class in the Barracks and beat the world 1 general again.
 Рядовой, Рубеж — 13 держишь ты один. Остальных перевели.	Private, you're holding Line 13 alone. Everyone else got transferred.
 Везёт как обычно.	Lucky as always.
-Жми «В бой» и держи штаб. Погибнешь — прокачка останется.	Hit Deploy and hold the HQ. If you die, your upgrades stay.
+Жми «В бой» и держи штаб. Выбьют — прокачка останется.	Hit Deploy and hold the HQ. Get knocked out and your upgrades stay.
 Страховка в Штабе сохранит часть сплава. Прокачка не сгорает.	Insurance at HQ keeps part of the alloy. Upgrades never burn.
-Понял: сначала вкладываюсь, потом умираю.	Got it: invest first, then die.
+Понял: сначала вкладываюсь, потом шлёпаюсь.	Got it: invest first, then faceplant.
 Стоянка готова. Подбитую технику врага тоже можно занять.	The motor pool is ready. You can also take knocked-out enemy vehicles.
 У генерала щит на 60% и 30%. Разбей генератор на фланге.	The general raises a shield at 60% and 30%. Smash the flank generator.
 Разрешение 3D	3D resolution
@@ -2238,7 +2238,7 @@ E — в хаб	E — to the hub
 Поддержка, оборона, страховка, постройки.	Support, defence, insurance, buildings.
 Оружие, бонусы, гаджеты. Чертёж открывает, сплав прокачивает.	Weapons, bonuses, gadgets. Blueprints unlock, alloy upgrades.
 Классы, выучка, снабжение — на все вылазки.	Classes, training, supply — for every run.
-Сплав — покупки и прокачка. При гибели теряется часть добытого за вылазку.	Alloy — purchases and upgrades. Dying loses part of what the run earned.
+Сплав — покупки и прокачка. При выбывании теряется часть добытого за вылазку.	Alloy — purchases and upgrades. A knockout loses part of what the run earned.
 Документы — открытия и исследования.	Documents — unlocks and research.
 Жетоны — валюта торговца. Сгорают после вылазки.	Tokens — the merchant's currency. They burn after the run.
 Неуязвимость	Invulnerable
@@ -2260,3 +2260,10 @@ E — в хаб	E — to the hub
 Используется сейчас	In use now
 Прокачано до предела	Fully upgraded
 Открыто недавно	Recently unlocked
+Забег дня	Daily run
+Забег дня · сектор %d · поле %d	Daily run · sector %d · field %d
+Ещё не сыграно	Not played yet
+%d очков · сектор %d · поле %d	%d points · sector %d · field %d
+Одно поле на всех на сегодня: те же враги, генералы и карточки. Сила врагов одинакова для всех.	One battlefield for everyone today: the same enemies, generals and cards. Enemy strength is the same for everyone.
+Счёт дня	Daily score
+Рекорд дня	Daily best

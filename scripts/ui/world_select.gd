@@ -1,5 +1,6 @@
 extends Control
 signal selected(world:int,infinite:bool)
+signal daily_selected
 signal cancelled
 func _ready():
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);add_to_group("selection_scope")
@@ -15,9 +16,17 @@ func _ready():
 		UiKit.label(card,Campaign.WORLDS[i+1].name if i<3 else "Рубеж",Vector2(15,55),Vector2(214,40),22)
 		var badge=UiKit.panel(card,Vector2(16,108),Vector2(212,112),Color("627866") if unlocked else Color("92988e"))
 		UiKit.label(badge,"0%d" % (i+1) if i<3 else "∞",Vector2(15,15),Vector2(180,85),58,Color("ecedda"))
-		var detail=["6 полей + босс\nГенерал пограничья\nБагги · ПП · дробовик · винтовка","6 полей + босс\nГенерал фронта\nБТР · снайперка","6 полей + генерал\nПередышка → гигабосс\nТанк · РПГ","Секторы без конца\nСтарт под подготовку\nКаждый сектор сильнее"][i]
+		var detail=["6 полей + босс\nГенерал двора\nБагги · ПП · дробовик · винтовка","6 полей + босс\nГенерал гряды\nБТР · снайперка","6 полей + генерал\nПередышка → гигабосс\nТанк · РПГ","Секторы без конца\nСтарт под подготовку\nКаждый сектор сильнее"][i]
 		UiKit.label(card,detail,Vector2(15,240),Vector2(214,120),17).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-		UiKit.label(card,"Открыто" if unlocked else "🔒 Пройдите %d-й мир" % (i if i<3 else 1),Vector2(15,374),Vector2(214,45),16,UiKit.MUTED)
+		if i==3:
+			# Endless card carries the daily run: one seed for everyone today, best result under the button.
+			var best=DailyRun.best(DailyRun.today_key())
+			UiKit.label(card,"Забег дня" if unlocked else "🔒 Пройдите 1-й мир",Vector2(15,332),Vector2(214,24),16,UiKit.MUTED if not unlocked else UiKit.INK)
+			var note=UiKit.label(card,DailyRun.describe(best) if unlocked else "",Vector2(15,354),Vector2(214,24),13,UiKit.MUTED)
+			note.tooltip_text="Одно поле на всех на сегодня: те же враги, генералы и карточки. Сила врагов одинакова для всех."
+			var daily=UiKit.button(card,"Забег дня" if unlocked else "🔒 Закрыто",Vector2(15,386),Vector2(214,46),func():daily_selected.emit(),false)
+			daily.disabled=not unlocked;UiKit.muted_locked_button(daily)
+		else:UiKit.label(card,"Открыто" if unlocked else "🔒 Пройдите %d-й мир" % i,Vector2(15,374),Vector2(214,45),16,UiKit.MUTED)
 		var button=UiKit.button(card,"В бой" if unlocked else "🔒 Закрыто",Vector2(15,440),Vector2(214,48),func():selected.emit(i+1 if i<3 else 1,i==3),unlocked and i==0)
 		button.disabled=not unlocked;UiKit.muted_locked_button(button)
 

@@ -30,6 +30,12 @@ func run():
 		assert(cat.skeleton.find_bone("tail.001")>=0 and cat.find_child("Flashlight",true,false)!=null,kind)
 		assert(triangles(cat.get_child(0)).x<=2400,kind)
 		cat.queue_free()
+		# Enemy dogs: same rig, clips and budget, their own GLB and coat list.
+		var dog=Visuals.model(kind,stage,Vector3(0,0,-3),"dog")
+		assert(dog.species=="dog" and dog.get_child(0).scene_file_path.ends_with("infantry_v6/dog_"+kind+".glb"),kind)
+		assert(dog.skeleton.find_bone("tail.001")>=0 and dog.find_child("Flashlight",true,false)!=null and dog.player.has_animation("hero_death"),kind)
+		assert(triangles(dog.get_child(0)).x<=(2100 if kind=="soldier" else 2400),kind)
+		dog.queue_free()
 	for clip in ["hero_idle","hero_walk","hero_fire","hero_hit","hero_death"]:assert(m.player.has_animation(clip),clip)
 	assert(m.player.get_animation("hero_walk").loop_mode==Animation.LOOP_LINEAR)
 	assert(m.player.get_animation("hero_death").loop_mode==Animation.LOOP_NONE)

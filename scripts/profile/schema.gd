@@ -17,7 +17,7 @@ static func validate(data:Dictionary)->Dictionary:
 		if data.has(key) and not numeric(data[key]):return bad("Неверное число: "+key)
 	for key in ["selected_weapon","selected_ability","gadget"]:
 		if data.has(key) and not data[key] is String:return bad("Неверное имя: "+key)
-	var specs={"garage":{"arrays":["unlocks","owned"],"maps":["levels"]},"headquarters":{"arrays":["unlocks","modules"],"maps":["levels"]},"v09":{"arrays":["classes","equipped"],"maps":["class_levels","specializations"]},"progression":{"arrays":["accepted","worlds","tracked","completed_orders","recent_sorties","seen","claimed","boss_classes","telegram_options"],"maps":["viewed_updates","sortie_counts","weapons","counters","telegram"]}}
+	var specs={"garage":{"arrays":["unlocks","owned"],"maps":["levels"]},"headquarters":{"arrays":["unlocks","modules"],"maps":["levels"]},"v09":{"arrays":["classes","equipped"],"maps":["class_levels","specializations"]},"progression":{"arrays":["accepted","worlds","tracked","completed_orders","recent_sorties","seen","claimed","boss_classes","telegram_options"],"maps":["viewed_updates","sortie_counts","weapons","counters","telegram","daily"]}}
 	for section in specs:
 		var value=data.get(section,{})
 		for key in specs[section].arrays:
@@ -39,6 +39,10 @@ static func validate(data:Dictionary)->Dictionary:
 					if not numeric(item):return bad(key)
 				elif not item is String:return bad(key)
 		for key in specs[section].maps:
+			if key=="daily":
+				for n in value.get(key,{}).values():
+					if not n is Dictionary:return bad(key)
+				continue
 			if key in ["telegram","viewed_updates"]:continue
 			for n in value.get(key,{}).values():
 				if not numeric(n):return bad(key)

@@ -259,7 +259,11 @@ func upgrade_card(offer:Dictionary)->Dictionary:
 func service_offers(branch:String)->Array:
 	if branch=="ability" and arena.abilities.slots.is_empty():return []
 	if branch=="headquarters":
-		var pool=arena.headquarters.offers(true);pool.shuffle();return pool.slice(0,3)
+		var pool=arena.headquarters.offers(true)
+		# Seeded shuffle: the same run seed (daily runs) gives the same workshop stops.
+		for i in range(pool.size()-1,0,-1):
+			var j=arena.run.combat_rng.randi_range(0,i);var swap=pool[i];pool[i]=pool[j];pool[j]=swap
+		return pool.slice(0,3)
 	var offers=[]
 	for id in ["damage","hp","speed"] if branch=="vehicle" else ["power","cooldown","utility"]:
 		offers.append({"id":id,"tier":Game.rarity_roll(arena.run.combat_rng.randf(),arena.room_index)})

@@ -108,15 +108,18 @@ def statue():
     hard.rbox("block", (0, 0, .31), (.72, .72, .28), "marble", bevel=.02)
     hard.rbox("cornice", (0, 0, .465), (.8, .8, .04), "stone", bevel=.012)
     hard.rbox("plaque", (0, .362, .31), (.3, .012, .11), "bronze", bevel=.004)
-    hard.rbox("plaque_star", (0, .37, .31), (.05, .006, .05), "gold", bevel=.002, rot=RX(0) @ Matrix.Rotation(D(45), 3, 'Y'))
-    for s in (-1, 1):
-        hard.rbox("wreath", (s * .362, 0, .31), (.012, .16, .1), "bronze", bevel=.004)
+    # Paw print instead of a star, a ball of yarn instead of wreaths: a cartoon monument, no real insignia.
+    soft.ellipsoid("paw_pad", (0, .372, .298), (.03, .006, .024), "gold", seg=8, rings=3)
+    for dx, dz in ((-.032, .03), (-.011, .042), (.011, .042), (.032, .03)):
+        soft.ellipsoid("paw_toe", (dx, .372, .302 + dz * .8), (.011, .005, .012), "gold", seg=6, rings=3)
+    soft.ellipsoid("yarn", (.3, .3, .23), (.07, .07, .07), "band", seg=10, rings=6)
+    soft.band("yarn_line", Vector((.3, .3, .23)), .071, .012, "gold", axis=(1, .4, .3), sides=10)
     cat_general(soft, .6, (-.13, .06, .485), facing=12, pose="point")
     cat_general(soft, .6, (.13, -.02, .485), facing=-10, pose="sword")
     top = Vector((0, 0, .485))
     grow = Matrix.Translation(top) @ Matrix.Scale(1.3, 4) @ Matrix.Translation(-top)
     for ob, _ in soft.parts: ob.data.transform(grow)
-    banner(hard, (-.34, -.3, .485), 1.25, .46, .3, "flag", .0)
+    banner(hard, (-.34, -.3, .485), 1.25, .46, .3, "hazard", .0)
     banner(hard, (.34, -.3, .485), 1.25, .46, .3, "band", 1.3)
     export(scene, [hard, soft], "concrete_statue", os.path.join(ROOT, "assets/models/concrete_v1"))
 
@@ -286,8 +289,8 @@ def bench_character():
         k.cylinder("ear", (-.15 + s * .09, 0, 1.05), (-.15 + s * .12, 0, 1.15), .03, "helmet", radius_b=.004, sides=4, smooth=20)
     monitor(k, (.3, -.05, .62), .24, .2, cell="screen", lines=True)
     k.rbox("console", (.3, .05, .3), (.34, .3, .4), "hull", bevel=.02)
-    k.rbox("cross", (.3, .205, .34), (.08, .006, .025), "glow_red", bevel=.002)
-    k.rbox("cross_v", (.3, .205, .34), (.025, .006, .08), "glow_red", bevel=.002)
+    k.rbox("cross", (.3, .205, .34), (.08, .006, .025), "screen", bevel=.002)
+    k.rbox("cross_v", (.3, .205, .34), (.025, .006, .08), "screen", bevel=.002)
     export(scene, [k, soft], "bench_character", ENV)
 
 
@@ -408,8 +411,8 @@ def hq_supplies():
     scene, k, soft = fresh()
     k.rbox("pallet", (0, 0, .04), (.9, .9, .08), "wood", bevel=.01)
     k.rbox("med_box", (-.12, -.1, .3), (.5, .4, .42), "desk", bevel=.03)
-    k.rbox("cross_h", (-.12, .105, .32), (.16, .006, .05), "glow_red", bevel=.002)
-    k.rbox("cross_v", (-.12, .105, .32), (.05, .006, .16), "glow_red", bevel=.002)
+    k.rbox("cross_h", (-.12, .105, .32), (.16, .006, .05), "screen", bevel=.002)
+    k.rbox("cross_v", (-.12, .105, .32), (.05, .006, .16), "screen", bevel=.002)
     k.rbox("case", (.25, .15, .18), (.3, .3, .2), "hull", bevel=.02)
     k.rbox("case_strap", (.25, .15, .18), (.31, .06, .21), "band", bevel=.004)
     export(scene, [k, soft], "hq_supplies", ENV)

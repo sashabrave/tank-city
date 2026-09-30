@@ -1,11 +1,11 @@
 [gd_resource type="Resource" script_class="AbilityBalance" load_steps=2 format=3]
 [ext_resource type="Script" path="res://scripts/balance/ability_balance.gd" id="1"]
 [resource]
-resource_name="Паралитический газ"
+resource_name="Облако кошачьей мяты"
 script=ExtResource("1")
 id = "gas"
-name = "Паралитический газ"
+name = "Облако кошачьей мяты"
 price = 260
 cooldown = 42.0
 power = 5.0
-description = "Облако оглушает людей на 5 с"
+description = "Облако усыпляет пехоту на 5 с"

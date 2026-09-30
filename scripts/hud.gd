@@ -284,6 +284,10 @@ func show_result(won:bool,reason:String):
 		["Время",int(arena.elapsed),maxi(1,int(arena.elapsed)),"%d:%02d" % [int(arena.elapsed/60.0),int(arena.elapsed)%60]],
 		["Сплав",kept,maxi(1,kept+arena.run.lost_alloy),"+%d ◈" % kept],
 		["Документы",docs,maxi(1,docs),"+%d" % docs]]
+	var daily_best=-1;var daily_score=0
+	if Campaign.daily:
+		daily_best=int(DailyRun.best(Campaign.daily_key).get("score",-1));daily_score=DailyRun.score(Campaign.cycle,arena.room_index,arena.kills)
+		rows.append(["Счёт дня",daily_score,maxi(1,maxi(daily_best,daily_score)),str(daily_score)])
 	var y=150.0
 	for i in range(rows.size()):
 		var row=rows[i]
@@ -294,6 +298,7 @@ func show_result(won:bool,reason:String):
 		var value=UiKit.label(line,"",Vector2(720,0),Vector2(160,32),20);value.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
 		if i==1 and record:UiKit.label(line,"Рекорд",Vector2(600,-14),Vector2(100,18),12,UiKit.ORANGE).horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
 		if i==2:track.hide()
+		if i==5 and daily_score>daily_best:UiKit.label(line,"Рекорд дня",Vector2(560,-14),Vector2(140,18),12,UiKit.ORANGE).horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
 		if i==3 and arena.run.lost_alloy>0:UiKit.label(line,"потеряно %d" % arena.run.lost_alloy,Vector2(560,-14),Vector2(140,18),12,Color("ff6b57")).horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
 		var share=clampf(float(row[1])/float(maxi(1,row[2])),0.0,1.0);var text=str(row[3]);var target=int(row[1])
 		var tween=line.create_tween();tween.tween_interval(.15+i*.22)
