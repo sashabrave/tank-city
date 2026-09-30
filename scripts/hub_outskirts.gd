@@ -83,7 +83,8 @@ func backwall():
 
 func racks():
 	for x in [-6.9,8.9]:
-		for z in [-1.8,1.8]:
+		# Right racks stand clear of the covered passage to the yard (row z=0).
+		for z in ([-1.8,1.8] if x<0 else [-2.2,2.2]):
 			var rack=Node3D.new();rack.name="StorageRack";add_child(rack);rack.position=Vector3(x,0,z)
 			for dx in [-.35,.35]:
 				for dz in [-.9,.9]:Visuals.box(rack,Vector3(dx,1.1,dz),Vector3(.07,2.2,.07),steel())
