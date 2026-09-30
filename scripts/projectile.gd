@@ -15,6 +15,7 @@ var speed = 10.5
 var lifetime = 2.5
 var spent = false
 var pierce_left=0
+var opening=false
 var piercing=false
 var star_power=false
 var rocket_radius=0.0

@@ -4,6 +4,24 @@
 			"date": "2026-09-30",
 			"version": "0.2.1",
 			"ru": {
+				"title": "Боец и техника",
+				"items": [
+					"«Выдержка» и «Последний рубеж» работают и пешком, и в машине.",
+					"Новые карточки-связки: «Экипаж» (в машине урон +20%, пешком темп +10%), «Десант» (3 с после выхода из машины пули не попадают, крит +50%), «Абордаж» (захваченная машина сразу чинится, её выстрелы +30%)."
+				]
+			},
+			"en": {
+				"title": "Soldier and vehicles",
+				"items": [
+					"Steady aim and Last stand work both on foot and in a vehicle.",
+					"New combo cards: Crew (damage +20% in a vehicle, fire rate +10% on foot), Landing (for 3 s after leaving a vehicle bullets miss, crit +50%), Boarding (a captured vehicle is repaired at once, its shots +30%)."
+				]
+			}
+		},
+		{
+			"date": "2026-09-30",
+			"version": "0.2.1",
+			"ru": {
 				"title": "Английский без пропусков",
 				"items": [
 					"Все новые тексты — карточки, характеристики, классы, станции, магазин чертежей — переведены на английский. Появилась автоматическая проверка, которая не даст выпустить непереведённый текст.",

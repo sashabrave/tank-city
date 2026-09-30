@@ -2096,3 +2096,13 @@ WASD — ехать · E — войти · колесо, перетаскива�
 Чертёж постройки выпадает в вылазках.	Building blueprints drop in runs.
 Открывается в «Казарме»: уровень класса 5, затем 2500 сплава.	Unlocks in the Barracks: class level 5, then 2500 alloy.
 Кулдаун	Cooldown
+После 1,5 с без стрельбы следующий выстрел наносит +40% урона. Пешком и в машине.	After 1.5 s without firing the next shot deals +40% damage. On foot and in a vehicle.
+При здоровье 25% и ниже урон +30%. Пешком и в машине.	At 25% health or less damage +30%. On foot and in a vehicle.
+Экипаж	Crew
+В машине урон +20%, пешком темп +10%.	In a vehicle damage +20%, on foot fire rate +10%.
+Десант	Landing
+3 с после выхода из машины пули и снаряды не попадают, крит +50%.	For 3 s after leaving a vehicle bullets and shells miss, crit +50%.
+Абордаж	Boarding
+Захваченная машина сразу чинится полностью, её выстрелы +30%.	A captured vehicle is fully repaired at once, its shots +30%.
+Десант · 3 с	Landing · 3 s
+Абордаж · машина починена	Boarding · vehicle repaired

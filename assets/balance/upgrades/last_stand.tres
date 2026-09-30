@@ -1,7 +1,6 @@
-[gd_resource type="Resource" script_class="UpgradeDef" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="UpgradeDef" load_steps=2 format=3]
 
 [ext_resource type="Script" path="res://scripts/upgrades/upgrade_def.gd" id="1"]
-[ext_resource type="Script" path="res://scripts/upgrades/effects/last_stand.gd" id="2"]
 
 [resource]
 script = ExtResource("1")
@@ -13,5 +12,5 @@ family = "survival"
 tags = PackedStringArray("behavior", "infantry", "fire_rate")
 weight = 10
 max_stacks = 1
-detail = "Пехота: при HP не выше 25% стрельба быстрее на 25%."
-effect = ExtResource("2")
+detail = "При здоровье 25% и ниже урон +30%. Пешком и в машине."
+flag = true

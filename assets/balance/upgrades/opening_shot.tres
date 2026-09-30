@@ -1,7 +1,6 @@
-[gd_resource type="Resource" script_class="UpgradeDef" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="UpgradeDef" load_steps=2 format=3]
 
 [ext_resource type="Script" path="res://scripts/upgrades/upgrade_def.gd" id="1"]
-[ext_resource type="Script" path="res://scripts/upgrades/effects/opening_shot.gd" id="2"]
 
 [resource]
 script = ExtResource("1")
@@ -13,5 +12,5 @@ family = "fire"
 tags = PackedStringArray("behavior", "infantry", "damage")
 weight = 10
 max_stacks = 1
-detail = "Пехота: после 1,5 с без стрельбы следующий выстрел наносит +40% урона."
-effect = ExtResource("2")
+detail = "После 1,5 с без стрельбы следующий выстрел наносит +40% урона. Пешком и в машине."
+flag = true

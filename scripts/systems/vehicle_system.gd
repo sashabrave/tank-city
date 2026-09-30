@@ -129,6 +129,7 @@ func interact_vehicle():
 		previous_actor.dead=true
 		arena.room.player=arena.spawn_actor("soldier",safe,true)
 		arena.effects.emit("vehicle_exit",{"vehicle":previous_actor})
+		if "landing" in arena.run.behavior_cards:arena.run.landing_until=arena.run.elapsed+3.0;arena.toast("Десант · 3 с")
 		arena.room.player.invulnerable=.7
 		previous_actor.queue_free()
 		Game.sound("vehicle_exit",arena);Game.sound("engine_stop",arena)
@@ -150,6 +151,8 @@ func interact_vehicle():
 	arena.room.player.facing=dir
 	arena.room.player.model.rotation.y=arena.room.player.angle_for(dir)
 	arena.room.player.invulnerable=.8
+	if "boarding" in arena.run.behavior_cards and wreck.vehicle_origin=="captured":arena.room.player.hp=arena.room.player.max_hp;arena.toast("Абордаж · машина починена")
+	arena.effects.emit("vehicle_enter",{"vehicle":arena.room.player})
 	arena.room.player.refresh_health()
 	old.queue_free()
 	wreck.queue_free()

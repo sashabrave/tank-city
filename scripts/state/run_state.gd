@@ -55,3 +55,7 @@ var behavior_cards:Array=[]
 var last_player_shot=-10.0
 var dash_until=0.0
 var dash_ready_at=0.0
+## Десант: bullets miss and crit is higher until this time.
+var landing_until=0.0
+## Выдержка: shots fired until this time carry the opening bonus (all pellets of one volley).
+var opening_until=-10.0

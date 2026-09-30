@@ -10,12 +10,22 @@ const STUN_TIME=.8
 static func is_machine(kind:String)->bool:return kind in MACHINES
 ## Meta luck (station) plus luck cards of this run.
 static func luck(arena)->int:return Game.luck_level+(int(arena.run.luck) if arena!=null and arena.run!=null else 0)
-static func crit_chance(arena)->float:return minf(CAPS.crit_chance,arena.run.crit_chance+luck(arena)*.002)
+static func crit_chance(arena)->float:
+	var landing=.5 if arena.run.elapsed<arena.run.landing_until else 0.0
+	return minf(CAPS.crit_chance+landing,arena.run.crit_chance+luck(arena)*.002+landing)
 static func player_bullet(bullet)->bool:
 	return bullet.friendly and is_instance_valid(bullet.owner_actor) and bullet.owner_actor.player_owned
 ## Damage of a player bullet against one target, with its side effects (statuses, crit flash).
 static func outgoing(arena,bullet,target)->float:
 	var run=arena.run;var amount=float(bullet.damage)
+	# Soldier + vehicle synergies and context cards (behavior_cards flags).
+	var shooter=bullet.owner_actor;var in_vehicle=shooter.kind in GarageCatalog.VEHICLES
+	if in_vehicle and "crew" in run.behavior_cards:amount*=1.2
+	if in_vehicle and "boarding" in run.behavior_cards and shooter.vehicle_origin=="captured":amount*=1.3
+	if bullet.opening:amount*=1.4
+	if "last_stand" in run.behavior_cards:
+		var ratio=(shooter.hp/maxf(1.0,shooter.max_hp)) if in_vehicle else (run.soldier_hp/maxf(1.0,float(run.soldier_max_hp)))
+		if ratio<=.25:amount*=1.3
 	if is_machine(target.kind):amount*=1.0+run.shock_bonus
 	if run.stealth>0 and target.hp>=target.max_hp:amount*=1.0+run.stealth*2.0
 	var rng=run.combat_rng
@@ -36,6 +46,7 @@ static func stun(target,seconds:float):
 ## Returns -1 when the hit was dodged.
 static func incoming(arena,amount:float,source:String)->float:
 	var run=arena.run
+	if source in ["bullet","vehicle"] and run.elapsed<run.landing_until:return -1.0
 	if source in ["bullet","vehicle"] and run.dodge>0 and run.combat_rng.randf()<minf(CAPS.dodge,run.dodge):return -1.0
 	var guard={"bullet":run.guard_bullet,"vehicle":run.guard_vehicle,"blast":run.guard_blast}.get(source,0.0)
 	return amount*(1.0-minf(CAPS.guard,guard))

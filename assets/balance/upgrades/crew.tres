@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="UpgradeDef" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrades/upgrade_def.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/upgrades/effects/crew.gd" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = "crew"
+title = "Экипаж"
+category = "Тактика"
+family = "fire"
+icon = "vehicle"
+tags = PackedStringArray("fire", "vehicle")
+weight = 9
+max_stacks = 1
+detail = "В машине урон +20%, пешком темп +10%."
+effect = ExtResource("2")
+flag = true

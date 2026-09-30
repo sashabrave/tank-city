@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="UpgradeDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrades/upgrade_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "landing"
+title = "Десант"
+category = "Тактика"
+family = "recon"
+icon = "exit"
+tags = PackedStringArray("recon", "vehicle")
+weight = 7
+max_stacks = 1
+min_tier = 1
+detail = "3 с после выхода из машины пули и снаряды не попадают, крит +50%."
+flag = true

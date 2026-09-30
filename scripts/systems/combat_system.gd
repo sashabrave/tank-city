@@ -20,7 +20,12 @@ func spawn_bullet(owner_actor,pos: Vector3,dir: Vector2i,damage: float,friendly:
 	bullet.damage=damage
 	bullet.friendly=friendly
 	bullet.player_shot=owner_actor.player_owned
-	if friendly and owner_actor.player_owned and arena.run!=null:bullet.pierce_left=int(arena.run.pierce)
+	if friendly and owner_actor.player_owned and arena.run!=null:
+		bullet.pierce_left=int(arena.run.pierce)
+		# Выдержка: a volley after 1.5 s of silence is marked; every pellet of it keeps the bonus.
+		var run=arena.run
+		if "opening_shot" in run.behavior_cards and run.elapsed-run.last_player_shot>=1.5:run.opening_until=run.elapsed+.05
+		bullet.opening=run.elapsed<=run.opening_until;run.last_player_shot=run.elapsed
 	var muzzle=2.15 if is_instance_valid(owner_actor) and owner_actor.kind=="boss" else .39
 	var muzzle_height=.55
 	if is_instance_valid(owner_actor.model) and owner_actor.model.get("muzzle")!=null:
