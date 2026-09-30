@@ -5,7 +5,7 @@ var arena
 func _init(context):
 	arena=context
 
-func add_wall(cell: Vector2i, hp: int):
+func add_wall(cell: Vector2i, hp: int, style_kind:=""):
 	arena.navigation.invalidate(cell)
 	if arena.room.walls.has(cell):
 		if arena.room.walls[cell].hp>0:
@@ -17,13 +17,14 @@ func add_wall(cell: Vector2i, hp: int):
 	var obj:Node3D
 	if hp>0:
 		obj=Node3D.new();arena.add_child(obj);obj.position=arena.world_pos(cell)
-	else:obj=concrete_visual(cell)
+	else:obj=concrete_visual(cell,style_kind)
 	arena.room.walls[cell]={"node":obj,"hp":hp,"max_hp":hp}
+	if style_kind!="":arena.room.walls[cell]["style_kind"]=style_kind
 	if hp>0:arena.room.walls[cell].merge(preload("res://scripts/section_wall.gd").create(obj,hp))
 
-func concrete_visual(cell:Vector2i)->Node3D:
+func concrete_visual(cell:Vector2i,style_kind:="")->Node3D:
 	var style=preload("res://scripts/concrete_style.gd").pick(arena.run.run_seed+arena.room.room_index*1907,cell)
-	return Visuals.model(style.kind,arena,arena.world_pos(cell))
+	return Visuals.model(style_kind if style_kind!="" else style.kind,arena,arena.world_pos(cell))
 
 func shape_wall(cell:Vector2i,side:int):
 	arena.navigation.invalidate(cell)
@@ -35,7 +36,7 @@ func shape_wall(cell:Vector2i,side:int):
 		for i in range(16):wall.sections.append(1.0)
 		wall.node.queue_free()
 		var style=preload("res://scripts/concrete_style.gd").pick(arena.run.run_seed+arena.room.room_index*1907,cell)
-		style.shape=side
+		style.shape=side;style.kind=wall.get("style_kind",style.kind)
 		wall.node=Visuals.model(preload("res://scripts/concrete_style.gd").asset(style),arena,arena.world_pos(cell))
 	preload("res://scripts/section_wall.gd").set_half(wall,side)
 func shape_base_wall(cell:Vector2i):
@@ -47,32 +48,51 @@ func shape_map_walls():
 	var rng=RandomNumberGenerator.new();rng.seed=arena.run.run_seed+arena.room.room_index*1907+781
 	for cell in arena.room.walls:
 		var wall=arena.room.walls[cell]
-		if wall.get("barrel",false) or wall.get("barrier",false):continue
+		if wall.get("barrel",false) or wall.get("barrier",false) or wall.get("reinforced",false):continue
 		if not arena.boss_room and cell.y>=arena.grid_size-2 and absi(cell.x-arena.base_cell.x)<=1:shape_base_wall(cell)
 		elif wall.hp<0:
 			var style=preload("res://scripts/concrete_style.gd").pick(arena.run.run_seed+arena.room.room_index*1907,cell)
 			if style.shape>=0:shape_wall(cell,style.shape)
 		elif rng.randf()<.28:shape_wall(cell,rng.randi_range(0,3))
+	place_statue()
+## Rare landmark: in 20% of rooms one whole indestructible block becomes the cat generals' statue.
+## Own RNG from the run seed and room: never touches combat randomness.
+func place_statue():
+	var rng=RandomNumberGenerator.new();rng.seed=arena.run.run_seed+arena.room.room_index*1907+52711
+	if rng.randf()>=.2:return
+	var candidates=[]
+	for cell in arena.room.walls:
+		var wall=arena.room.walls[cell]
+		if wall.hp<0 and not wall.has("half_side") and not wall.get("barrel",false) and not wall.get("barrier",false) and not wall.get("reinforced",false) and wall.get("style_kind","")=="":candidates.append(cell)
+	if candidates.is_empty():return
+	candidates.sort()
+	var cell=candidates[rng.randi_range(0,candidates.size()-1)]
+	var wall=arena.room.walls[cell]
+	wall.node.queue_free();wall.node=Visuals.model("concrete_statue",arena,arena.world_pos(cell));wall["style_kind"]="concrete_statue"
 
 func damage_wall(cell: Vector2i, amount: float,impact:Vector3=Vector3.ZERO,direction:Vector3=Vector3.ZERO,width:float=1.0):
 	if not arena.room.walls.has(cell) or arena.room.walls[cell].hp<0: return
 	arena.floating_number(arena.world_pos(cell),-minf(arena.room.walls[cell].hp,amount))
 	var wall=arena.room.walls[cell]
-	if wall.has("sections"):
+	if wall.has("sections") and not wall.get("reinforced",false):
 		var removed=preload("res://scripts/section_wall.gd").hit(wall,arena.world_pos(cell),amount,impact,direction,width)
 		if not removed.is_empty():
 			arena.navigation.invalidate(cell)
 			Game.sound("wall_crumble",wall.node)
-			for i in removed.slice(0,6):
-				var pos=arena.world_pos(cell)+Vector3(-.375+(i%4)*.25,.3,-.375+int(i/4)*.25)
-				var chip=Visuals.box(arena,pos,Vector3(.07,.07,.07),Color("db956c"))
-				var tween=arena.create_tween().set_parallel(true)
-				tween.tween_property(chip,"position",pos-direction*.15+Vector3(((i%3)-1)*.09,-.26,((i%2)*2-1)*.1),.28)
-				tween.tween_property(chip,"scale",Vector3.ZERO,.4)
-				tween.chain().tween_callback(chip.queue_free)
+		# Piece size follows the hit: pistol chips halves, a shell tears out bonded chunks.
+		var debris=preload("res://scripts/brick_debris.gd").shared(arena)
+		var power=amount/maxf(.01,wall.max_hp/4.0)*maxf(1.0,width)
+		if removed.is_empty():debris.chips(impact if impact!=Vector3.ZERO else arena.world_pos(cell),direction,2,"half" if power>.6 else "crumb")
+		else:debris.burst(arena.world_pos(cell),removed,power,direction)
 	else:
 		wall.hp-=amount
 		arena.navigation.invalidate(cell)
+		if wall.get("reinforced",false):
+			# The cage holds: only chips up to one brick fly off until the whole block gives way.
+			var debris=preload("res://scripts/brick_debris.gd").shared(arena)
+			if wall.hp<=0:debris.collapse(arena.world_pos(cell),direction)
+			else:debris.chips(impact if impact!=Vector3.ZERO else arena.world_pos(cell),direction,2 if amount<2 else 3,"brick" if amount>=2.5 else "half",true)
+			wall.bar.visible=true
 	if wall.has("bar"):wall.bar.set_health(maxf(0,wall.hp),wall.max_hp)
 	if arena.room.walls[cell].hp<=0:
 		Game.sound("debris",arena)
@@ -127,11 +147,28 @@ func ruin_layout(rows:Array):
 			var cell=Vector2i(x,y)
 			if rows[y][x]=="B":
 				var roll=rng.randf()
-				BattleMapGenerator.put(rows,cell,"R" if roll<rubble else "A" if roll<rubble+.18 else "X" if roll<rubble+.32 else "B")
-func add_armored_wall(cell):
+				BattleMapGenerator.put(rows,cell,"R" if roll<rubble else "X" if roll<rubble+.14 else "B")
+## Reinforced brick: no sections, breaks only as a whole after the damage of a full brick block.
+func add_reinforced_wall(cell:Vector2i,hp:float):
 	arena.navigation.invalidate(cell)
-	add_wall(cell,18+maxi(0,Campaign.progress_index(arena.room.room_index)-7)*2)
-	arena.room.walls[cell]["armored"]=true
+	if arena.room.walls.has(cell):return
+	var obj=Node3D.new();arena.add_child(obj);obj.position=arena.world_pos(cell)
+	var visual=preload("res://scripts/section_wall.gd").create(obj,4,true)
+	var bar=load("res://scripts/health_bar_3d.gd").new();obj.add_child(bar);bar.position.y=1.15;bar.visible=false
+	# Sections are only the collision mask (kept by base shaping); damage never removes them.
+	arena.room.walls[cell]={"node":obj,"hp":hp,"max_hp":hp,"reinforced":true,"sections":visual.sections,"section_batch":visual.section_batch,"bar":bar}
+
+## Converts part of the brick blocks ("B") into reinforced ones ("K"). Separate seeded RNG.
+func reinforce_layout(rows:Array):
+	var share=Campaign.reinforced_share(arena.room.room_index)
+	if share<=0:return
+	var rng=RandomNumberGenerator.new();rng.seed=arena.run.run_seed+arena.room.room_index*4099+37
+	var width=rows.size();var middle=int(width/2.0)
+	for y in range(width):
+		for x in range(width):
+			if rows[y][x]!="B":continue
+			if not arena.boss_room and y>=width-2 and absi(x-middle)<=1:continue
+			if rng.randf()<share:BattleMapGenerator.put(rows,Vector2i(x,y),"K")
 func add_barrel(cell):
 	arena.navigation.invalidate(cell)
 	var node=Node3D.new();arena.add_child(node);node.position=arena.world_pos(cell)

@@ -2,7 +2,9 @@ extends Node
 signal changed
 const PATH="user://settings.cfg"
 const DEFAULT_KEYS={"north":KEY_W,"south":KEY_S,"west":KEY_A,"east":KEY_D,"fire":KEY_SPACE,"interact":KEY_E,"hide_trench":KEY_C,"ability":KEY_F,"skill_1":KEY_1,"skill_2":KEY_NONE,"hq_ability":KEY_2,"class_ability":KEY_Q}
-const DEFAULT_VALUES={"fullscreen":false,"vsync":true,"quality":1,"fps":60,"master":1.0,"music":0.8,"effects":0.8,"screen_controls":true,"biome_info":true,"language":"ru","ui_theme":"dark","shaders":true,"world_lighting":"day","light_budget":10,"atmosphere":true,"tilt_shift":true}
+const DEFAULT_VALUES={"fullscreen":false,"vsync":true,"quality":1,"fps":60,"master":1.0,"music":0.8,"effects":0.8,"screen_controls":true,"biome_info":true,"language":"ru","ui_theme":"dark","shaders":true,"world_lighting":"day","light_budget":10,"atmosphere":true,"tilt_shift":true,"shader_style":"pastel","soft_shadows":true,"ambient_occlusion":true,"glow":true,"haze":true,"rim_light":true,"shiny_metal":true,"sun_day":"random","sun_night":"random","weather":"random"}
+const SHADER_STYLES=["pastel","cozy","golden","overcast"]
+const SHADER_OPTIONS=["soft_shadows","ambient_occlusion","glow","haze","rim_light","shiny_metal"]
 var values=DEFAULT_VALUES.duplicate()
 var keys=DEFAULT_KEYS.duplicate()
 var menu: CanvasLayer
@@ -31,6 +33,11 @@ func apply():
 	if int(values.light_budget) not in [6,10,14]:values.light_budget=10
 	if values.language not in ["ru","en"]:values.language="ru"
 	if values.world_lighting not in ["day","night"]:values.world_lighting="day"
+	if values.get("shader_style","") not in SHADER_STYLES:values.shader_style="pastel"
+	for key in SHADER_OPTIONS:values[key]=bool(values.get(key,true))
+	if values.get("sun_day","") not in ["random","dawn","morning","noon","golden","sunset"]:values.sun_day="random"
+	if values.get("weather","") not in ["random","clear","rain","snow","fog","sandstorm"]:values.weather="random"
+	if values.get("sun_night","") not in ["random","dusk","moon","predawn"]:values.sun_night="random"
 	for key in ["master","music","effects"]:values[key]=clampf(float(values[key]),0,1)
 	values.quality=clampi(int(values.quality),0,2)
 	if int(values.fps) not in [0,30,60,120]:values.fps=60
@@ -51,7 +58,10 @@ func apply():
 	Game.reset_input()
 	Texts.set_language(values.language)
 	EffectLighting.refresh_projectile_halos()
-	RenderingServer.global_shader_parameter_set("cozy_enabled",bool(values.get("shaders",true)))
+	var cozy=bool(values.get("shaders",true))
+	RenderingServer.global_shader_parameter_set("cozy_enabled",cozy)
+	RenderingServer.global_shader_parameter_set("cozy_rim",.45 if cozy and values.rim_light else 0.0)
+	RenderingServer.global_shader_parameter_set("cozy_shiny",cozy and values.shiny_metal)
 	changed.emit()
 func save():
 	if not persistence_enabled:return

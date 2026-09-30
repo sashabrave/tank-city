@@ -21,6 +21,12 @@ static func configure(id:int,infinite:bool=false):
 	BOSSES=[6,7] if world==3 and not endless else [SIZES.size()-1]
 	SERVICES=[2,4,6,7] if world==3 and not endless else [2,4,6]
 static func progress_index(index:int)->int:return mini(22,int(WORLDS[world].offset)+index) if not endless else mini(22,7+cycle*2+index)
+## Share of brick blocks that become reinforced: none before mid-route, 15% there, 35% at the boss.
+static func reinforced_share(index:int)->float:
+	if endless:return minf(.35,.15+cycle*.05+index*.01)
+	var start=ceili(BOSSES[0]*.5)
+	if index<start:return 0.0
+	return lerpf(.15,.35,clampf(float(index-start)/maxf(1,BOSSES[0]-start),0,1))
 static func zone(_index:int)->int:return world if not endless else mini(3,1+cycle/2)
 static func is_final(index:int)->bool:return not endless and world==3 and index==7
 static func hp_scale(index:int)->float:return endless_strength*(1+cycle*.30+cycle*cycle*.025+index*.065) if endless else WORLDS[world].hp*(1+index*(.13 if world==1 else .08))

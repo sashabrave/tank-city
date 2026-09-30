@@ -1,6 +1,128 @@
 {
 	"entries": [
 		{
+			"date": "2026-09-30",
+			"ru": {
+				"title": "Укрепление базы и советский забор",
+				"items": [
+					"Бронеблоки убраны. Теперь есть только два вида кирпича — обычный и армированный — и два вида неразрушимого бетона: сплошной и с узором советского забора.",
+					"Узор забора перерисован: рамка, утопленная панель и гранёные фигуры, как на настоящих бетонных плитах.",
+					"Бонус «Укрепление» на втором уровне ставит вокруг штаба армированный кирпич, а на третьем — неразрушимые полублоки забора."
+				]
+			},
+			"en": {
+				"title": "Base fortification and the Soviet fence",
+				"items": [
+					"Armoured blocks are gone. There are now only two kinds of brick, regular and reinforced, and two kinds of indestructible concrete: plain and with the Soviet fence pattern.",
+					"The fence pattern is redone: a frame, a recessed panel and faceted figures, like real concrete fence panels.",
+					"The Fortification bonus now surrounds the headquarters with reinforced brick at level 2 and with indestructible fence halves at level 3."
+				]
+			}
+		},
+		{
+			"date": "2026-09-29",
+			"ru": {
+				"title": "Кирпич и армированный кирпич",
+				"items": [
+					"Кирпичные блоки теперь выглядят как настоящая кладка: оранжевые кирпичи с перевязкой и заметными швами.",
+					"Из разбитой кладки летят обломки, и их размер зависит от силы выстрела: от крошки и половинок кирпича до целых кусков стены от снаряда танка.",
+					"Новый армированный кирпич в стальной обвязке. В нём не прострелить узкий проход: блок ломается только целиком, когда получит столько же урона, сколько нужно на обычный кирпичный блок.",
+					"Армированный кирпич появляется со второй половины маршрута, на арене босса и в бесконечном режиме; ближе к боссу его становится больше."
+				]
+			},
+			"en": {
+				"title": "Brick and reinforced brick",
+				"items": [
+					"Brick blocks now look like real masonry: orange bricks laid in a bond with visible mortar joints.",
+					"Broken masonry throws debris sized by the shot: from crumbs and half bricks up to whole chunks of wall from a tank shell.",
+					"New reinforced brick bound with steel bars. You cannot shoot a narrow gap through it: it breaks only as a whole, after taking as much damage as a regular brick block.",
+					"Reinforced brick appears from the second half of the route, in the boss arena and in endless mode, and there is more of it closer to the boss."
+				]
+			}
+		},
+		{
+			"date": "2026-09-29",
+			"ru": {
+				"title": "Погода и мелочи на блоках",
+				"items": [
+					"На новом этапе погода иногда меняется: дождь, снег, туман, а в пустыне — песчаная буря. На бой она не влияет.",
+					"В снег на блоках лежат шапки, у некоторых — сугробы в углу; в пустыне бывают песчаные наносы.",
+					"На блоках появились мелкие обломки, камешки и доски в цвет стен.",
+					"Погоду можно выбрать в настройках видео рядом с солнцем."
+				]
+			},
+			"en": {
+				"title": "Weather and small props on blocks",
+				"items": [
+					"The weather sometimes changes on a new stage: rain, snow, fog, or a sandstorm in the desert. It does not affect combat.",
+					"In snow, blocks get snow caps and some get corner drifts; the desert can leave sand drifts.",
+					"Blocks now carry small chips, pebbles and planks in the wall colour.",
+					"The weather can be chosen in video settings next to the sun."
+				]
+			}
+		},
+		{
+			"date": "2026-09-29",
+			"ru": {
+				"title": "Солнце, взрывы и облака",
+				"items": [
+					"В каждой комнате боя своё солнце: днём от рассвета до заката, чаще золотые часы, ночью — от конца заката через луну до рассвета. Момент можно выбрать в настройках видео.",
+					"Взрывы стали мультяшными: вспышка, огненные клубы, дым, кольцо пыли и копоть на земле.",
+					"Кольца персонажа, зоны гранат и предупреждения мягко дышат, опасные — пульсируют. Лазерный прицел мерцает бегущими импульсами.",
+					"Все снаряды собраны в один стиль со светящимся следом; ракеты получили корпус и пламя.",
+					"На карте мира вместо пятен у камеры — редкие пухлые облака по краям."
+				]
+			},
+			"en": {
+				"title": "Sun, explosions and clouds",
+				"items": [
+					"Each battle room has its own sun: from dawn to sunset by day, mostly golden hours, and from the end of sunset through moonlight to dawn at night. The moment can be chosen in video settings.",
+					"Explosions are now cartoony: a flash, fire puffs, smoke, a dust ring and a scorch mark.",
+					"Character, grenade and warning rings gently breathe, danger rings pulse. The laser sight flickers with travelling pulses.",
+					"All projectiles share one style with a glowing trail; rockets have a body and a flame.",
+					"The world map shows rare puffy clouds at the edges instead of spots near the camera."
+				]
+			}
+		},
+		{
+			"date": "2026-09-29",
+			"ru": {
+				"title": "Стили картинки и блестящий металл",
+				"items": [
+					"В настройках видео появился выбор стиля: пастель, уютный, золотой час и пасмурный фронт.",
+					"Отдельно включаются мягкие тени, затенение углов, блики, дымка вдали, контурный свет и блестящий металл.",
+					"Стволы, гусеницы и рамы техники теперь выглядят металлическими, краска слегка лакированная.",
+					"Сплав блестит как золото, а крупные жетоны подсвечивают пол рядом с собой."
+				]
+			},
+			"en": {
+				"title": "Picture styles and shiny metal",
+				"items": [
+					"Video settings now offer a picture style: pastel, cozy, golden hour and overcast front.",
+					"Soft shadows, ambient occlusion, highlights, distant haze, rim light and shiny metal can be toggled separately.",
+					"Vehicle barrels, tracks and frames now look metallic, and paint has a light lacquer.",
+					"Alloy shines like gold, and large tokens cast a glint on the floor."
+				]
+			}
+		},
+		{
+			"date": "2026-09-29",
+			"ru": {
+				"title": "Штаб на поле боя",
+				"items": [
+					"Штаб теперь всегда стоит боком — влево или вправо, а не носом к тебе или от тебя.",
+					"Сзади у штаба горят красные фары, их свет падает на землю."
+				]
+			},
+			"en": {
+				"title": "Headquarters on the battlefield",
+				"items": [
+					"The headquarters now always stands sideways, facing left or right, never toward or away from you.",
+					"The headquarters has red taillights at the back that light up the ground."
+				]
+			}
+		},
+		{
 			"date": "2026-09-29",
 			"ru": {
 				"title": "Сохранения и выход из игры",

@@ -348,6 +348,7 @@ func take_damage(amount: float,blast:Vector3=Vector3.ZERO,vehicle_credit:String=
 		Game.sound("player_hurt",self)
 	else:Game.sound("hit_body" if kind in ["soldier","grenadier","sniper","shield"] else "hit_metal",self)
 	refresh_health()
+	if hp>0 and is_instance_valid(model) and model.has_method("flinch"):model.flinch()
 	arena.burst(position+Vector3.UP*.4,Color("ffbd61"),.3)
 	if hp <= 0:
 		killed_by_vehicle=vehicle_credit

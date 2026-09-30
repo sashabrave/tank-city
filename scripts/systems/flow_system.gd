@@ -71,9 +71,8 @@ func finish_wave():
 		var reward=4+Campaign.progress_index(arena.room.room_index)*2
 		Game.earn(reward);arena.run.earned+=reward
 		arena.room.flag=Node3D.new();arena.add_child(arena.room.flag);arena.room.flag.position=arena.world_pos(Vector2i(arena.room.base_cell.x,arena.room.grid_size-3))
-		Visuals.box(arena.room.flag,Vector3(0,1,0),Vector3(.06,2,.06),Color("eee9d8"))
-		Visuals.box(arena.room.flag,Vector3(.35,1.7,0),Vector3(.7,.45,.07),Color("7cb56b"))
-		Visuals.label3d(arena.room.flag,"Награда · +%d ◈" % reward,Vector3(0,2.4,0),Color("f5edcc"),25)
+		ExitFlag.build(arena.room.flag)
+		Visuals.label3d(arena.room.flag,"Награда · +%d ◈" % reward,Vector3(0,3.35,0),Color("f5edcc"),25)
 		arena.toast("Маршрут открыт")
 		if Campaign.endless:open_flag()
 		return

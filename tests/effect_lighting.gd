@@ -7,7 +7,14 @@ func run():
 	for i in range(50):
 		var bullet=load("res://scripts/projectile.gd").new();bullet.sniper_visual=i%3==0;bullet.friendly=i%3==1;bullet.orb=i%3==2
 		scene.add_child(bullet);bullet.position=Vector3((i%10)*.6-2.7,.65,floori(i/10.0)*.65-1.4)
-		if i==0:assert(bullet.get_child(0).mesh.size==Vector3(.045,.045,.28));assert(bullet.get_child(0).material_override.shading_mode==BaseMaterial3D.SHADING_MODE_UNSHADED)
+	await get_tree().process_frame
+	# Sniper: thin core and the longest trail of the projectile family.
+	var visual=null
+	for child in scene.get_children():
+		if child.has_node("ProjectileVisual") and child.sniper_visual:visual=child.get_node("ProjectileVisual");break
+	assert(visual!=null)
+	var core=visual.get_child(2);assert(core.scale==EffectLighting.PROJECTILES.sniper.core);assert(core.material_override.shading_mode==BaseMaterial3D.SHADING_MODE_UNSHADED)
+	assert(is_equal_approx(visual.get_child(0).scale.z,EffectLighting.PROJECTILES.sniper.trail))
 	var halo=EffectLighting.glow(Color("ff263f"),true,true)
 	assert(is_equal_approx(halo.albedo_color.a,.12*.7))
 	Settings.change("world_lighting","day");assert(is_equal_approx(halo.albedo_color.a,.12*.2))

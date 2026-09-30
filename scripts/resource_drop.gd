@@ -37,7 +37,13 @@ func _ready():
 			var b=Vector3(cos((side+1)*PI*.5),0,sin((side+1)*PI*.5))*radius
 			for point in [Vector3.UP*radius*1.4,b,a,Vector3.DOWN*radius*1.4,a,b]:surface.add_vertex(point)
 		surface.generate_normals()
-		var mesh=MeshInstance3D.new();mesh.mesh=surface.commit();mesh.material_override=Visuals.material(Color("debd66"));mesh.material_override.set_meta("cozy_original",Vector2(.95,.2));mesh.material_override.metallic=.95;mesh.material_override.roughness=.2;mesh.material_override.metallic_specular=.75;mesh.material_override.cull_mode=BaseMaterial3D.CULL_DISABLED;visual.add_child(mesh)
+		var mesh=MeshInstance3D.new();mesh.mesh=surface.commit();var gold=Visuals.material(Color("ffc948"));gold.set_meta("cozy_original",Vector2(1.0,.16));gold.metallic_specular=.9;gold.cull_mode=BaseMaterial3D.CULL_DISABLED
+		# Faint warm self-light keeps gold bright even when the sky reflection is dim.
+		gold.emission_enabled=true;gold.emission=Color("ffb42e");gold.emission_energy_multiplier=.18
+		Visuals.cozy_material(gold);mesh.material_override=gold;visual.add_child(mesh)
+		if denomination>=20:
+			# Large tokens drop a small glint on the floor; shares the nearest-four pickup light budget.
+			var glint=OmniLight3D.new();glint.light_color=Color("ffcf6a");glint.light_energy=.6;glint.omni_range=1.1;glint.omni_attenuation=1.6;glint.shadow_enabled=false;glint.light_volumetric_fog_energy=0;glint.position.y=-floor_height*.4;glint.add_to_group("pickup_lights");add_child(glint)
 	else:
 		Visuals.box(visual,Vector3.ZERO,Vector3(.24,.025,.31),Color("f0ead4"))
 		for z in [-.07,0,.07]:Visuals.box(visual,Vector3(0,.017,z),Vector3(.13,.006,.015),Color("728577"))

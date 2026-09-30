@@ -136,7 +136,17 @@ func actor_destroyed(actor):
 				arena.drop_recipe(actor.cell,{});Game.music_stinger("boss_victory");arena.toast("Победа! Забери сундук командира")
 		else:
 			arena.reward.drop_enemy_loot(actor)
+	if not actor.player_owned:leave_body(actor)
 	actor.queue_free()
+
+func leave_body(actor):
+	# Visual only: the model plays its fall, lingers, then sinks away.
+	var body=actor.model
+	if not is_instance_valid(body) or not body.has_method("has_death") or not body.has_death():return
+	body.reparent(arena);body.play_death()
+	var tween=body.create_tween()
+	tween.tween_interval(2.4);tween.tween_property(body,"position:y",body.position.y-.45,.9).set_trans(Tween.TRANS_SINE)
+	tween.tween_callback(body.queue_free)
 
 func drone_death_explosion(pos:Vector3):
 	var radius=Balance.CONFIG.combat.drone_death_radius

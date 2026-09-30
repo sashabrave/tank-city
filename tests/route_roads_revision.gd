@@ -37,15 +37,15 @@ func run():
 	var stars=route.find_children("EliteStar*","MeshInstance3D",true,false)
 	check(not stars.is_empty() and stars[0].material_override.emission_energy_multiplier>2,"Emissive stars")
 	var dust=route.get_node("WorldAtmosphere");var origin=dust.global_position
-	check(dust.materials[0].get_shader_parameter("near_bokeh"),"Map white particles use bokeh")
-	var white=dust.batches[0].multimesh
-	check(white.instance_count==ceili(7*maxf(1,(-route.stage_z(route.plan.size()-1)+18)/18)),"Sparse near-field particles")
-	check(white.get_instance_transform(0).basis.get_scale().x>=.55 and white.get_instance_transform(0).origin.y>11,"Large particles close to camera")
-	var particle=dust.batches[0].global_transform*dust.batches[0].multimesh.get_instance_transform(0).origin
+	# Near-camera bokeh was replaced by puffy edge clouds (world_atmosphere.add_map_clouds).
+	check(dust.batches[0].multimesh.instance_count==0,"No near-camera bokeh on the map")
+	var clouds=dust.clouds[0].multimesh
+	check(clouds.instance_count>0,"Puffy map clouds exist")
+	var particle=dust.clouds[0].global_transform*clouds.get_instance_transform(0).origin
 	var screen_before=route.camera.unproject_position(particle)
 	route.scroll+=10;route.move_camera();await get_tree().process_frame
 	check(dust.global_position.is_equal_approx(origin),"Dust anchored to world map")
-	check(route.camera.unproject_position(particle).distance_to(screen_before)>30,"Dust moves across screen while scrolling")
+	check(route.camera.unproject_position(dust.clouds[0].global_transform*clouds.get_instance_transform(0).origin).distance_to(screen_before)>30,"Clouds move across screen while scrolling")
 	if DisplayServer.get_name()!="headless":
 		await RenderingServer.frame_post_draw
 		get_viewport().get_texture().get_image().save_png("/tmp/r13-route-roads-scrolled.png")

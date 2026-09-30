@@ -325,9 +325,9 @@ func sniper_step(actor,delta: float):
 		actor.model.rotation.y=atan2(-(actor.sniper_target-actor.position).x,-(actor.sniper_target-actor.position).z)
 		var diff=actor.sniper_target-actor.position
 		actor.sniper_line=Visuals.box(arena,(actor.position+actor.sniper_target)*.5+Vector3.UP*preload("res://scripts/projectile.gd").SNIPER_HEIGHT,Vector3(.035,.035,diff.length()),Color("f24436"))
-		actor.sniper_line.material_override=EffectLighting.glow(Color("ff263f"))
+		actor.sniper_line.material_override=EffectLighting.laser(Color("ff263f"),false)
 		actor.sniper_line.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		var halo=Visuals.box(actor.sniper_line,Vector3.ZERO,Vector3(.095,.095,diff.length()),Color("ff263f"));halo.material_override=EffectLighting.glow(Color("ff263f"),true);halo.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		var halo=Visuals.box(actor.sniper_line,Vector3.ZERO,Vector3(.095,.095,diff.length()),Color("ff263f"));halo.material_override=EffectLighting.laser(Color("ff263f"),true);halo.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		actor.sniper_line.rotation.y=atan2(diff.x,diff.z)
 
 func flyer_target(actor):

@@ -1438,3 +1438,35 @@ HP и урон +0,2% · скорость +0,1% за уровень	HP and damage
 Changelog	Changelog
 Комната начнётся заново.	The room starts over.
 Продолжение с карты маршрута.	Continue from the route map.
+Стиль картинки	Picture style
+Пастель · мягкий мульт	Pastel · soft cartoon
+Уютный · как раньше	Cozy · classic
+Золотой час	Golden hour
+Пасмурный фронт	Overcast front
+Цвет солнца, заполняющий свет теней, дымка и небо для отражений металла.	Sun colour, shadow fill light, haze and the sky reflected by metal.
+Мягкие тени	Soft shadows
+Затенение углов	Ambient occlusion
+Блики и свечение	Highlights and glow
+Дымка вдали	Distant haze
+Контурный свет	Rim light
+Блестящий металл	Shiny metal
+Затенение углов доступно на компьютере (Forward+). На слабых устройствах сначала выключи затенение и мягкие тени.	Ambient occlusion is available on desktop (Forward+). On weak devices, turn off occlusion and soft shadows first.
+Луна и солнце в бою	Moon and sun in battle
+Солнце в бою	Sun in battle
+Случайно	Random
+Конец заката	End of sunset
+Луна	Moonlight
+Перед рассветом	Before dawn
+Рассвет	Dawn
+Полдень	Noon
+Закат	Sunset
+Ночное поле: от последнего света заката через луну до раннего рассвета.	Night field: from the last light of sunset through moonlight to early dawn.
+Случайно — своё положение солнца в каждой комнате, чаще рассвет и золотые часы.	Random gives each room its own sun position, most often dawn and golden hours.
+Погода в бою	Battle weather
+Ясно	Clear
+Дождь	Rain
+Снег	Snow
+Туман	Fog
+Песчаная буря	Sandstorm
+Случайно — на новом этапе погода иногда меняется. Только оформление, на бой не влияет.	Random: the weather sometimes changes on a new stage. Visual only, no effect on combat.
+HP стен +1/ур. На ур. 2 — армированный кирпич, на ур. 3 — неразрушимый забор.	Wall HP +1 per level. Level 2 builds reinforced brick, level 3 an indestructible fence.

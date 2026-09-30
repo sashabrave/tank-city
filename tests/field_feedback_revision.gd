@@ -77,7 +77,7 @@ func run():
 	check(next not in arena.pickups,"Collect from adjacent cell edge")
 	var states={}
 	for seed_value in range(30):states[preload("res://scripts/mobile_hq.gd").orientation(seed_value)]=true
-	check(states.size()==4,"All four independent HQ orientations")
+	check(states.size()==2 and states.has(PI*.5) and states.has(-PI*.5),"HQ stands only sideways")
 	var audio=Game.audio();check(audio.banks.base_alert.files.size()==3,"Three alarm variants")
 	var rng_state=arena.run.combat_rng.state;var previous=""
 	for i in range(6):

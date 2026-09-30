@@ -118,7 +118,7 @@ func _ready():
 	build_ui()
 	player_marker=Node3D.new();player_marker.scale=Vector3.ONE*MINI_SCALE;player_marker.name="PlayerMarker";add_child(player_marker)
 	var hero=Visuals.model("base",player_marker);hero.name="CurrentHero"
-	hero.rotation.y=PI;hero.scale=Vector3.ONE*2.8
+	hero.rotation.y=PI;hero.scale=Vector3.ONE*2.8*.7
 	Visuals.ring(player_marker,Color("f3b95f"),2.0)
 	player_marker.position=current_point()+Vector3(0,.17,2)*MINI_SCALE
 	foreground_hangar=preload("res://scripts/route_foreground.gd").new();add_child(foreground_hangar)

@@ -23,8 +23,5 @@ static func build(hub)->Control:
 	return root
 static func model(hub,pos:Vector3):
 	var bin=Node3D.new();hub.add_child(bin);bin.name="BlueprintRecycling";bin.position=pos
-	Visuals.box(bin,Vector3(0,.025,0),Vector3(1.15,.05,1.15),Color("d8b368"))
-	Visuals.box(bin,Vector3(0,.35,0),Vector3(.68,.65,.68),Color("5a6b5e"))
-	Visuals.box(bin,Vector3(0,.70,0),Vector3(.8,.1,.8),Color("a7b3a0"))
-	Visuals.box(bin,Vector3(0,.755,0),Vector3(.48,.02,.18),Color("283a30"))
+	Visuals.model("recycler",bin)  # tools/build_props_v6.py
 	preload("res://scripts/interaction_prompt.gd").attach(hub,hub,"Продать повторы",pos,1.3,func():return not hub.mounted)

@@ -3,6 +3,8 @@ extends RefCounted
 static var palette_cache: Dictionary = {}
 static var brushed_roughness:ImageTexture
 
+const INFANTRY=["soldier","grenadier","shield","sniper","rpg_soldier"]
+const VEHICLES=["tank","apc","buggy","drone","flyer","boss"]
 static func model(kind: String, parent: Node3D, pos = Vector3.ZERO) -> Node3D:
 	if kind in ["soldier","grenadier","shield","sniper","rpg_soldier","boss","tank","apc","buggy","drone","flyer"] or kind.begins_with("weapon_"):return kit_model(kind,parent,pos)
 	var environment_kind="bench_mechanic" if kind=="workbench" else kind
@@ -19,7 +21,9 @@ static func model(kind: String, parent: Node3D, pos = Vector3.ZERO) -> Node3D:
 static func kit_model(kind:String,parent:Node3D,pos:Vector3)->Node3D:
 	var wrapper=load("res://scripts/kit_model.gd").new()
 	wrapper.kind=kind
-	var family="infantry_v5" if kind in ["soldier","grenadier","shield","sniper","rpg_soldier"] or kind.begins_with("weapon_") else "kit_v4"
+	# v6: low-poly chibi cat infantry and weapons (tools/build_infantry_v6.py, build_weapons_v6.py).
+	# Vehicles: kit_v4 geometry re-dressed with v6 materials (tools/rematerial_kit_v4.py).
+	var family="infantry_v6" if kind in INFANTRY or kind.begins_with("weapon_") else "vehicles_v6" if kind in VEHICLES else "kit_v4"
 	var art=load("res://assets/models/"+family+"/"+kind+".glb").instantiate()
 	wrapper.add_child(art)
 	# One authored cell is .93 units.
@@ -29,7 +33,8 @@ static func kit_model(kind:String,parent:Node3D,pos:Vector3)->Node3D:
 	return wrapper
 
 static func model_scale(kind:String)->float:
-	if kind in ["soldier","grenadier","shield","sniper","rpg_soldier"] or kind.begins_with("weapon_"):return .52
+	# v6 cats are 1.05 authored: .83 keeps the 0.936-cell infantry height.
+	if kind in INFANTRY or kind.begins_with("weapon_"):return .83
 	return {"apc":1.15,"buggy":1.35,"drone":2.1,"flyer":2.1}.get(kind,1.0)
 
 static func material(color: Color, emission = false) -> StandardMaterial3D:
@@ -117,16 +122,24 @@ static func recolor_enemy(node: Node,rank:int=1):
 				node.set_surface_override_material(index,replacement)
 	for child in node.get_children(): recolor_enemy(child)
 
-static func ring(parent: Node3D, color: Color, radius = .42):
+static var ring_material: ShaderMaterial
+static func ring(parent: Node3D, color: Color, radius = .42, urgency := 0.0):
+	# Flat quad with a shared shader; colour and animation phase are per instance.
+	if ring_material == null:
+		ring_material = ShaderMaterial.new();ring_material.shader = preload("res://shaders/fx/ground_ring.gdshader")
 	var obj = MeshInstance3D.new()
-	var mesh = TorusMesh.new()
-	mesh.inner_radius = radius - .045
-	mesh.outer_radius = radius
-	mesh.rings = 20
-	mesh.ring_segments = 6
+	var mesh = QuadMesh.new()
+	mesh.orientation = PlaneMesh.FACE_Y
+	mesh.size = Vector2.ONE*radius*2.3
 	obj.mesh = mesh
-	obj.material_override = material(color, true)
+	obj.material_override = ring_material
+	obj.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	parent.add_child(obj)
+	obj.set_instance_shader_parameter("tint",color)
+	obj.set_instance_shader_parameter("outer",1.15)
+	obj.set_instance_shader_parameter("thickness",clampf(.05/maxf(radius,.05),.02,.2))
+	obj.set_instance_shader_parameter("urgency",urgency)
+	obj.set_instance_shader_parameter("phase",randf()*TAU)
 	obj.position.y = .035
 	return obj
 
@@ -258,14 +271,25 @@ static func cozy_material(mat:StandardMaterial3D):
 		mat.set_meta("cozy_original",Vector2(mat.metallic,mat.roughness))
 	var original:Vector2=mat.get_meta("cozy_original")
 	mat.metallic=original.x;mat.roughness=original.y;mat.roughness_texture=mat.get_meta("cozy_roughness_texture") if mat.has_meta("cozy_roughness_texture") else null
+	mat.rim_enabled=false;mat.clearcoat_enabled=false
 	if not Settings.values.get("shaders",true):return
 	var title=mat.resource_name.to_lower()
+	var shiny=bool(Settings.values.get("shiny_metal",true))
+	if Settings.values.get("rim_light",true) and mat.shading_mode!=BaseMaterial3D.SHADING_MODE_UNSHADED:
+		mat.rim_enabled=true;mat.rim=.4;mat.rim_tint=.55
 	if "steel" in title or "metal" in title:
-		mat.metallic=.9;mat.roughness=.48;mat.roughness_texture=metal_roughness();mat.roughness_texture_channel=BaseMaterial3D.TEXTURE_CHANNEL_RED
+		mat.metallic=.92 if shiny else .9;mat.roughness=.3 if shiny else .48;mat.roughness_texture=metal_roughness();mat.roughness_texture_channel=BaseMaterial3D.TEXTURE_CHANNEL_RED
+	elif shiny and ("graphite" in title or "frames" in title):
+		# Weapon bodies and frames: blued gunmetal instead of flat plastic.
+		mat.metallic=.7;mat.roughness=.4
 	elif "rubber" in title or "dark" in title or "graphite" in title:
 		mat.roughness=.85
-	elif "armor" in title or "armour" in title or "ivory" in title or "olive" in title:
-		mat.metallic=0;mat.roughness=.52
+	elif title.begins_with("env7_"):pass
+	elif "armor" in title or "armour" in title or "ivory" in title or "olive" in title or "enamel" in title or "sage" in title or "ochre" in title:
+		mat.metallic=.1 if shiny else 0.0;mat.roughness=.46 if shiny else .52
+		if shiny:mat.clearcoat_enabled=true;mat.clearcoat=.5;mat.clearcoat_roughness=.35
+	elif original.x>.8:
+		mat.roughness=minf(original.y,.2) if shiny else .35
 
 static func refresh_cozy_materials(root:Node):
 	if root is GeometryInstance3D and root.material_override is StandardMaterial3D:cozy_material(root.material_override)
