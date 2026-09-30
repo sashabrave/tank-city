@@ -137,6 +137,7 @@ func actor_destroyed(actor):
 		if actor.kind in ["drone","flyer"]:drone_death_explosion(actor.position)
 		elif actor.kind in ["apc","tank","buggy"]:
 			var wreck=arena.make_wreck(actor.kind,actor.cell,actor.facing,false,arena.vehicle.player_armor(actor.kind,"captured",Campaign.zone(arena.room_index))*.5,"captured",Campaign.zone(arena.room_index));wreck.salvaged=true
+			mark_trophy(wreck)
 		else: arena.burst(actor.position,Color("d69a54"),.8 if actor.kind=="boss" else .4)
 		if actor.kind=="boss":
 			if not arena.room.actors.any(func(a):return is_instance_valid(a) and not a.dead and a.kind=="boss") and arena.room.spawn_queue.is_empty():
@@ -266,3 +267,12 @@ func rocket_impact(bullet):
 		if arena.flat_distance(bullet.position,arena.world_pos(cell))<=bullet.rocket_radius:
 			if bullet.star_power:arena.room.walls[cell].node.queue_free();arena.room.walls.erase(cell);arena.navigation.invalidate(cell)
 			else:arena.damage_wall(cell,bullet.damage)
+
+## Captured hull: beacon, pointer and one short hint while the soldier is on foot.
+const TROPHY_HINTS={"buggy":"Трофейный багги: подойди и займи","apc":"Трофейный БТР: подойди и займи","tank":"Трофейный танк: подойди и займи"}
+func mark_trophy(wreck):
+	var beacon=preload("res://scripts/capture_beacon.gd").new();beacon.wreck=wreck;wreck.add_child(beacon)
+	var player=arena.room.player
+	if is_instance_valid(player) and player.kind=="soldier":
+		arena.toast(TROPHY_HINTS.get(wreck.kind,"Трофей: подойди и займи"));Game.sound("quest_ready",wreck)
+
