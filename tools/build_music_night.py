@@ -43,26 +43,24 @@ def hat_roll(tr, at, count, rng, gain=.16):
 
 # ============================================================ Неон: half-time 808 haze
 def neon_groove(tr, b0, bar, e, rng):
+	# Calm half-time: no hat rolls or ghost notes, hats only as a soft pulse.
 	if e == 0:
-		pattern(tr, 'perc', b0, 'x...x...x...x...', lambda v: hat('shaker', v, rng), gain=.1)
+		pattern(tr, 'perc', b0, 'x.......x.......', lambda v: hat('shaker', v, rng), gain=.08)
 		return
-	pattern(tr, 'drums', b0, 'X.........X.....' if bar % 2 == 0 else 'X......x..X.....', lambda v: kick('808', v), gain=.75)
-	pattern(tr, 'drums', b0, '........X.......', lambda v: snare('clap', v, rng), gain=.4)
-	pattern(tr, 'drums', b0, 'x.x.x.x.x.x.x.x.' if e >= 2 else 'x...x...x...x...', lambda v: hat('closed', v, rng), gain=.15)
-	if e >= 2 and bar % 2 == 1:
-		hat_roll(tr, b0 + 3.5, 4, rng)
+	pattern(tr, 'drums', b0, 'X.........x.....', lambda v: kick('808', v), gain=.7)
+	pattern(tr, 'drums', b0, '........X.......', lambda v: snare('clap', v * .8, rng), gain=.34)
+	pattern(tr, 'drums', b0, '..x...x...x...x.' if e >= 2 else 'x.......x.......', lambda v: hat('closed', v * .7, rng), gain=.11)
 	if e >= 3:
-		pattern(tr, 'drums', b0, '.......g......g.', lambda v: snare('rim', v, rng), gain=.25)
+		pattern(tr, 'perc', b0, 'x...x...x...x...', lambda v: hat('shaker', v, rng), gain=.08)
 
 
 def neon_harmony(tr, b0, bar, chord, e):
-	tr.place('keys', b0, pad(chord, tr.secs(4), .9, 1100, .6, .01), .3)
-	if e >= 1 or bar % 2 == 0:
-		for b, i in ([(0, -1), (.75, -2), (1.5, -3), (2.5, -2)] if e >= 1 else [(0, -1), (2, -3)]):
-			tr.place('guitar', b0 + b, bell(chord[i] + 12, tr.secs(.8), .6), .2, .3 if i % 2 else -.3)
-	if e >= 2:
-		for b, i in [(1.75, -1), (3.25, -2)]:
-			tr.place('perc', b0 + b, vocal_chop(chord[i] + 12, .35, .7, 'ah', bar), .25, -.25)
+	tr.place('keys', b0, pad(chord, tr.secs(4), .9, 1000, 1.0, .008), .3)
+	if bar % 2 == 0:
+		for b, i in ([(0, -1), (1.5, -3)] if e >= 1 else [(0, -1)]):
+			tr.place('guitar', b0 + b, felt(chord[i] + 12, tr.secs(1.6), .6), .26, .3 if i % 2 else -.3)
+	if e >= 2 and bar % 4 == 1:
+		tr.place('perc', b0 + 2.75, vocal_chop(chord[-1] + 12, .5, .6, 'ah', bar), .22, -.25)
 
 
 def neon_bass(tr, b0, bar, chord, r, e, nxt):
@@ -70,17 +68,17 @@ def neon_bass(tr, b0, bar, chord, r, e, nxt):
 		tr.place('bass', b0, bass808(r, tr.secs(3.5), .6), .5)
 		return
 	tr.place('bass', b0, bass808(r, tr.secs(2.2), .9), .5)
-	if e >= 2:
-		tr.place('bass', b0 + 2.5, bass808(nxt if bar % 2 else r + 12, tr.secs(1.3), .8, r), .5)
+	if e >= 2 and bar % 2 == 1:
+		tr.place('bass', b0 + 2.5, bass808(nxt, tr.secs(1.3), .7, r), .5)
 
 
-NEON = dict(title='Неон', bpm=140, bpb=4, swing=.08, bars=24,
+NEON = dict(title='Неон', bpm=124, bpb=4, swing=.06, bars=24,
 	chords=[[54, 57, 61, 64, 68], [50, 54, 57, 61], [47, 50, 54, 57, 61], [49, 54, 56, 59]], roots=[30, 26, 35, 37],
 	dark=[[47, 50, 54, 59], [43, 47, 50, 54], [40, 43, 47, 50, 54], [42, 46, 49, 52]], dark_roots=[35, 31, 28, 30],
 	groove=neon_groove, harmony=neon_harmony, bass=neon_bass, lead=glider(), keys=None,
-	motif=[(0, 1, 73), (1, .5, 71), (1.5, 1.5, 69), (3, 1, 68), (4, .5, 69), (4.5, .5, 71), (5, 2.5, 66)],
-	answer=[(0, 1, 73), (1, .5, 76), (1.5, 1.5, 73), (3, 1, 71), (4, .5, 69), (4.5, .5, 68), (5, 2.5, 69)],
-	vowel='ah', pump={'keys': .5, 'choir': .4, 'guitar': .2}, pump_beats=[0, 2.5])
+	motif=[(0, 2, 73), (2, 1, 71), (3, 2.5, 69), (6, 2, 66)],
+	answer=[(0, 2, 73), (2, 1, 76), (3, 2.5, 73), (6, 2, 69)],
+	vowel='ah', pump={'keys': .28, 'choir': .2}, chime=felt)
 
 
 # ============================================================ Спальный район: sad clean guitar
@@ -179,10 +177,11 @@ def fanfare(th, kind, v):
 	r = th['roots'][0]
 	top = max(I) + 12
 	lead = lambda m, d, vv, g=None: glide_lead(m, d, vv, g, 1800)
+	chime = th.get('chime', bell)
 	if kind == 'greeting':
 		tr.place('keys', 0, pad(I, tr.secs(3.2), .9, 1200, .8, .01), .5)
 		for k, iv in enumerate([[-5, -3, 0], [0, -1, -5], [-5, 0, 2]][v]):
-			tr.place('guitar', .5 + k * .5, bell(top + iv, tr.secs(1.5), .8), .35, (k - 1) * .3)
+			tr.place('guitar', .5 + k * .5, chime(top + iv, tr.secs(1.5), .8), .35, (k - 1) * .3)
 		tr.place('bass', .5, bass808(r, tr.secs(2.5), .7), .5)
 	elif kind == 'start':
 		n = round(tr.secs(1.5) * R)
@@ -209,7 +208,7 @@ def fanfare(th, kind, v):
 		for b, d, m in line:
 			tr.place('lead', b, lead(m, tr.secs(d), .85), .35)
 		for k in range(4):
-			tr.place('guitar', 2 + k * .5, bell(top + [0, -5, -3, 0][k] + 12 * (k == 3), tr.secs(1.2), .6), .3, (k - 1.5) * .3)
+			tr.place('guitar', 2 + k * .5, chime(top + [0, -5, -3, 0][k] + 12 * (k == 3), tr.secs(1.2), .6), .3, (k - 1.5) * .3)
 	else:
 		drops = [[0, -2, -4, -7], [0, -1, -3, -5], [0, -3, -5, -12]][v]
 		t0, prev = 0, None
@@ -243,7 +242,7 @@ if __name__ == '__main__':
 	for id, th in THEMES.items():
 		if only and id not in only:
 			continue
-		entry = {'title': th['title']}
+		entry = {'title': th['title'], 'mood': 'night'}
 		reel = []
 		gap = np.zeros((R // 2, 2))
 		for mode in MODES:

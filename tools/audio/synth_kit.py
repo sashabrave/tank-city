@@ -319,6 +319,14 @@ def bell(m, d, vel=1.0):
 	return x * np.exp(-t * 2.5) * adsr(len(t), .002, 9, 1, .3) * vel
 
 
+def felt(m, d, vel=1.0):
+	"""Soft felt keys: mellow electric piano, rounded attack, closed filter."""
+	x = epiano(m, d, vel, .3)
+	n = len(x)
+	x[:round(.012 * R)] *= np.linspace(0, 1, round(.012 * R))
+	return filt(x, 'low', 1600)
+
+
 def bass808(m, d, vel=1.0, glide_from=None):
 	"""Long 808 sub with click and optional slide; soft saturation."""
 	t = _t(d)

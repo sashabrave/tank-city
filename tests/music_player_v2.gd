@@ -45,10 +45,17 @@ func run():
 		seen[c.battle_theme]=true
 		check(c.fanfare_for("battle_greeting") in c.themes[c.battle_theme].start,"battle start fanfare follows battle theme")
 		check(c.fanfare_for("defeat") in c.themes[c.battle_theme].defeat,"defeat fanfare follows battle theme")
-	check(seen.size()>=3,"battle theme changes between fights")
+	check(seen.size()>=2,"battle theme changes between fights")
+	for wanted in ["night","day"]:
+		Settings.values.music_mood=wanted
+		c.change("hub");c.change("map");c.change("battle")
+		check(c.themes[c.battle_theme].mood==wanted and c.themes[c.hub_theme].mood==wanted,"music theme setting "+wanted)
+	Settings.values.music_mood="auto";Settings.values.world_lighting="night"
+	check(c.mood()=="night","auto follows night lighting")
+	Settings.values.world_lighting="day";check(c.mood()=="day","auto follows day lighting")
 	var fight=c.battle_theme;c.change("miniboss");check(c.battle_theme==fight,"commander keeps the fight theme")
 	check(c.current_track in c.pool("miniboss"),"commander track from theme or pool")
-	c.change("hub");check(c.fanfare_for("hub_map_greeting") in c.themes[held].greeting,"greeting follows hub theme")
+	c.change("hub");check(c.fanfare_for("hub_map_greeting") in c.themes[c.hub_theme].greeting,"greeting follows hub theme")
 	c.shuffle=true
 	for i in range(20):c.skip(1)
 	await get_tree().create_timer(.8).timeout

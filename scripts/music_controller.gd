@@ -56,7 +56,7 @@ func _ready():
 	if FileAccess.file_exists("res://assets/audio/music/themes.json"):
 		var parsed=JSON.parse_string(FileAccess.get_file_as_string("res://assets/audio/music/themes.json"))
 		if parsed is Dictionary:themes=parsed
-	if not themes.is_empty():hub_theme=themes.keys()[music_rng.randi_range(0,themes.size()-1)]
+	pick_hub_theme()
 	if AudioServer.get_bus_index("TankCityMusic")<0:AudioServer.add_bus();AudioServer.set_bus_name(AudioServer.bus_count-1,"TankCityMusic")
 	for i in range(2):
 		var player=AudioStreamPlayer.new();add_child(player);backgrounds.append(player);player.volume_db=-60;player.bus="TankCityMusic"
@@ -76,17 +76,30 @@ func pool(group:String)->Array:
 	for id in eligible(group):
 		if id not in result:result.append(id)
 	return result
+## Day themes (folk) or night themes; "auto" follows the world time of day setting.
+func mood()->String:
+	var value=str(Settings.values.get("music_mood","auto"))
+	if value=="auto":return "night" if str(Settings.values.get("world_lighting","day"))=="night" else "day"
+	return value
+func mood_themes()->Array:
+	var wanted=mood()
+	var result=themes.keys().filter(func(id):return str(themes[id].get("mood","day"))==wanted)
+	return result if not result.is_empty() else themes.keys()
+func pick_hub_theme():
+	var options=mood_themes()
+	if not options.is_empty():hub_theme=options[music_rng.randi_range(0,options.size()-1)]
 func pick_battle_theme():
 	if themes.is_empty():return
-	var options=themes.keys().filter(func(id):return id!=battle_theme)
-	battle_theme=options[music_rng.randi_range(0,options.size()-1)] if not options.is_empty() else themes.keys()[0]
+	var options=mood_themes().filter(func(id):return id!=battle_theme)
+	battle_theme=options[music_rng.randi_range(0,options.size()-1)] if not options.is_empty() else mood_themes()[0]
 func change(next:String,refresh:bool=false):
 	if (next==context and not refresh) or next not in PLAYLISTS:return
 	var changed=context!=next
 	var previous=context
 	# A new fight (from hub/map, or the next room) rolls a new theme; the commander keeps it.
 	var new_fight=next in ["battle","boss"] and (refresh or previous in ["","hub","map"])
-	if new_fight or battle_theme=="":pick_battle_theme()
+	if new_fight or battle_theme=="" or battle_theme not in mood_themes():pick_battle_theme()
+	if hub_theme not in mood_themes():pick_hub_theme()
 	context=next
 	Game.sound_loop("ambience_hub",self,next=="hub")
 	manual_tracks.erase(next)
@@ -227,12 +240,14 @@ func rate(id:String,value:int):
 	var file=FileAccess.open(preferences_path,FileAccess.WRITE)
 	if file:file.store_string(JSON.stringify(ratings))
 	track_changed.emit()
+## Durations come from a generated index, so the radio never loads WAVs just to show a length.
 var lengths:Dictionary={}
 func track_length(id:String)->float:
-	if not lengths.has(id):
-		var stream=load("res://assets/audio/music/"+id+".wav")
-		lengths[id]=stream.get_length() if stream is AudioStream else 0.0
-	return lengths[id]
+	if lengths.is_empty() and FileAccess.file_exists("res://assets/audio/music/durations.json"):
+		var parsed=JSON.parse_string(FileAccess.get_file_as_string("res://assets/audio/music/durations.json"))
+		if parsed is Dictionary:lengths=parsed
+	if not lengths.has(id) and ResourceLoader.has_cached(track_path(id)):lengths[id]=load(track_path(id)).get_length()
+	return float(lengths.get(id,0.0))
 func duration()->float:
 	return backgrounds[active].stream.get_length() if backgrounds[active].stream!=null else 0.0
 func position_seconds()->float:return backgrounds[active].get_playback_position()

@@ -19,7 +19,7 @@ func run():
 	music.change("archive");check(music.context!="archive","archive is never an automatic context")
 	for id in music.GREETINGS:
 		var stream=load("res://assets/audio/music/"+id+".wav");check(stream.get_length()>2 and stream.get_length()<5,"short greeting")
-	music.change("battle");var first=music.backgrounds[music.active].stream.resource_path
+	music.change("battle");var first=music.current_track
 	var count=music.selections.battle;music.change("battle");check(music.selections.battle==count,"same context stays playing")
 	music.change("battle",true);check(music.selections.battle==count+1,"next room refreshes track")
 	music.change("miniboss");check(music.context=="miniboss" and music.TRACKS.miniboss.size()>=2,"dedicated miniboss pool")

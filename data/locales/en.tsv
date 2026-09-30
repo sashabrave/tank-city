@@ -1814,3 +1814,6 @@ F2 — админ	F2 — admin
 Помехи · карта	Static · map
 Помехи · командир	Static · commander
 Помехи · босс	Static · boss
+Музыкальная тема	Music theme
+Авто	Auto
+Авто следует времени суток: днём фолк-темы, ночью спокойные ночные. Сменится при следующем переходе.	Auto follows the time of day: folk themes by day, calm night themes at night. Applies on the next transition.

@@ -303,7 +303,7 @@ if __name__ == '__main__':
 	for id, th in THEMES.items():
 		if only and id not in only:
 			continue
-		entry = {'title': th['title']}
+		entry = {'title': th['title'], 'mood': 'day'}
 		reel = []
 		gap = np.zeros((R // 2, 2))
 		for mode in MODES:

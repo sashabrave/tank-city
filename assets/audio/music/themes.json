@@ -25,7 +25,8 @@
       "folk_halt_defeat_1",
       "folk_halt_defeat_2",
       "folk_halt_defeat_3"
-    ]
+    ],
+    "mood": "day"
   },
   "fireflies": {
     "title": "Светлячки",
@@ -53,7 +54,8 @@
       "folk_fireflies_defeat_1",
       "folk_fireflies_defeat_2",
       "folk_fireflies_defeat_3"
-    ]
+    ],
+    "mood": "day"
   },
   "crooked_path": {
     "title": "Кривая тропа",
@@ -81,7 +83,8 @@
       "folk_crooked_path_defeat_1",
       "folk_crooked_path_defeat_2",
       "folk_crooked_path_defeat_3"
-    ]
+    ],
+    "mood": "day"
   },
   "neon": {
     "title": "Неон",
@@ -109,7 +112,8 @@
       "night_neon_defeat_1",
       "night_neon_defeat_2",
       "night_neon_defeat_3"
-    ]
+    ],
+    "mood": "night"
   },
   "district": {
     "title": "Спальный район",
@@ -137,7 +141,8 @@
       "night_district_defeat_1",
       "night_district_defeat_2",
       "night_district_defeat_3"
-    ]
+    ],
+    "mood": "night"
   },
   "static": {
     "title": "Помехи",
@@ -165,6 +170,7 @@
       "night_static_defeat_1",
       "night_static_defeat_2",
       "night_static_defeat_3"
-    ]
+    ],
+    "mood": "night"
   }
 }

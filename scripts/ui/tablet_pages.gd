@@ -228,6 +228,7 @@ func settings():
 			var value_label=UiKit.label(body,str(roundi(slider.value))+"%",Vector2(625,y),Vector2(75,34),17)
 			slider.value_changed.connect(func(value):Settings.change(entry[0],value/100.0);Texts.set_text(value_label,str(roundi(value))+"%"))
 			UiKit.label(body,entry[2],Vector2(0,y+41),Vector2(700,30),14,UiKit.MUTED);y+=96
+		setting_choice(body,["music_mood","Музыкальная тема",["Авто","День","Ночь"],["auto","day","night"],"Авто следует времени суток: днём фолк-темы, ночью спокойные ночные. Сменится при следующем переходе."],y);y+=96
 	elif view.settings_tab=="Интерфейс":
 		setting_choice(body,["screen_controls","Экранные кнопки",["Скрыты","Показаны"],[false,true],"Кнопки движения и огня в хабе и бою. Клавиатура работает всегда."],0)
 		setting_choice(body,["biome_info","Подпись биома",["Скрыта","Показана"],[false,true],"Номер, название и покрытия карты под характеристиками оружия."],96)
