@@ -45,7 +45,7 @@ func run():
 	for id in hub.bench_dots:assert(hub.bench_dots[id].visible==hub.bench_available(id))
 	assert(hub.bench_visuals==models)
 	hub.avatar.position=hub.command_pos;hub._physics_process(0)
-	for mesh in hub.command_meshes:assert(is_equal_approx(mesh.transparency,.7))
+	for mesh in hub.command_meshes:assert(is_zero_approx(mesh.transparency)) # the command centre stays solid (no see-through)
 	hub.avatar.position=Vector3(2,0,2);hub._physics_process(0)
 	for mesh in hub.command_meshes:assert(is_zero_approx(mesh.transparency))
 	await shot("world-cache")

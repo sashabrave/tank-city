@@ -19,6 +19,7 @@ var swoop={}
 var swoop_weight=0.0
 var swoop_tween:Tween
 var follow:Node3D
+var tilt:Node
 func _ready():
 	layer=30
 	heading=Label.new();heading.set_meta("keep_theme_colors",true);add_child(heading);heading.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
@@ -63,6 +64,10 @@ func _process(delta):
 	if phase=="paused":return
 	var overview=phase in ["upgrade","map","result"] or (phase=="countdown" and arena.countdown>.85)
 	var goal:Dictionary=(OVERVIEW if overview else NORMAL).duplicate()
+	# Between waves the field leans a few degrees toward the cursor or a drag; never in combat.
+	if tilt==null:tilt=preload("res://scripts/camera_tilt.gd").new();tilt.name="CameraTilt";add_child(tilt)
+	tilt.enabled=phase in ["upgrade","result"] and swoop_weight<=0.01
+	goal.yaw+=tilt.yaw();goal.elev+=tilt.pitch()
 	if pulse>0:pulse=maxf(0,pulse-delta);goal.zoom=.985
 	if swoop_weight>0:
 		for key in goal:goal[key]=lerpf(goal[key],swoop[key],swoop_weight)

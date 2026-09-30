@@ -56,6 +56,7 @@ const TRACK_CENTER=Vector3(13.9,0,1.9)
 const TRACK_RADII=Vector2(3.1,1.35)
 const BOOTH_CELL=Vector2i(10,3)
 var camera_base:=Vector3.INF
+var camera_tilt:Node
 var yard_gate:Node3D
 var uniform_preview:MeshInstance3D
 var parking_sign:Node3D
@@ -500,7 +501,14 @@ func follow_yard(delta:float):
 	if camera_base==Vector3.INF:camera_base=camera.position
 	var who=training_tank if mounted else avatar
 	var shift=clampf((who.position.x-6.0)*1.1,0.0,10.0)
-	camera.position=camera.position.lerp(camera_base+Vector3(shift,0,0),minf(1.0,delta*4.0))
+	# A few degrees of diorama tilt toward the cursor or a drag; eases back on its own.
+	if camera_tilt==null:camera_tilt=preload("res://scripts/camera_tilt.gd").new();camera_tilt.name="CameraTilt";add_child(camera_tilt)
+	camera_tilt.enabled=phase=="combat" and not is_instance_valid(build_menu)
+	var focus=Vector3(shift,0,0)
+	var arm=(camera_base-Vector3.ZERO).rotated(Vector3.UP,deg_to_rad(camera_tilt.yaw()))
+	arm=arm.rotated(arm.cross(Vector3.UP).normalized(),deg_to_rad(camera_tilt.pitch()))
+	camera.position=camera.position.lerp(focus+arm,minf(1.0,delta*4.0))
+	camera.look_at(camera.position-arm)
 	if is_instance_valid(yard_gate):yard_gate.visible="yard" not in Game.built_workshops
 	if is_instance_valid(parking_sign):parking_sign.visible="garage" in Game.built_workshops and (Game.garage.starting_vehicle()=="" or (not training_tank.visible and not mounted))
 
