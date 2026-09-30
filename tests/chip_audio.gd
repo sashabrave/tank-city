@@ -57,7 +57,7 @@ func run():
 	get_tree().paused=false
 	for context in ["hub","battle","boss","hub","battle","boss","hub","battle","boss"]:
 		Game.music_context(context)
-		check(Game.music_controller.backgrounds[Game.music_controller.active].stream!=null,"music context "+context)
+		var mc=Game.music_controller;check(mc.backgrounds[mc.active].stream!=null or mc.pending_track!="","music context "+context)  # tracks load in the background
 	check(Game.music_controller.selections.hub==3,"music variants rotate")
 	var owner=Node3D.new();add_child(owner);Game.sound_loop("engine_buggy",owner)
 	Game.sound_enabled=false;await get_tree().process_frame;await get_tree().process_frame

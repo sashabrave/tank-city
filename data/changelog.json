@@ -2,6 +2,37 @@
 	"entries": [
 		{
 			"date": "2026-09-30",
+			"ru": {
+				"title": "Музыкальные темы и живые звуки боя",
+				"items": [
+					"Новая музыка: спокойные, но очень ритмичные треки в разных жанрах — лоуфай, 5/4, 2-step, полиритм, даб, джаз-хоп, брейкбит, трип-хоп, фанк, 7/8, афро-брейк, босса, неосоул, драм-н-бейс и другие.",
+					"Три музыкальные темы в духе ритмичного инди-фолк-соула: Полустанок, Светлячки и Кривая тропа. Живые гитары, топот и хлопки, хор, свист, контрабас. У каждой темы свой бой, спокойные версии для хаба и карты, музыка командира и босса, а также фанфары приветствия, начала боя, победы и поражения — по три варианта.",
+					"Ещё три темы, спокойнее и темнее — в духе мелодичного альтернативного хип-хопа: Неон, Спальный район и Помехи. Мягкие 808 со слайдами, чистая гитара, колокольчики, вокальные чопы и размытые пэды.",
+					"Тема «Неон» стала спокойнее: медленнее темп, меньше хэтов, мягкие клавиши вместо звонкого колокольчика.",
+					"В настройках звука появился выбор музыкальной темы: авто (по времени суток), день (фолк-темы) или ночь (ночные темы).",
+					"Тема хаба и карты держится весь запуск игры, а тема боя выбирается заново перед каждым боем.",
+					"Радио стало похоже на классический плеер: папки слева, таблица треков с разделом и длительностью справа, фанфары можно прослушать.",
+					"Прежние чиповые треки перенесены в плейлист «Архив» — их по-прежнему можно включить из радио.",
+					"Выстрелы, взрывы, попадания, рикошеты, обломки и двигатели звучат реалистичнее: щелчок, удар, эхо от местности, осыпание обломков. Громкость осталась прежней."
+				]
+			},
+			"en": {
+				"title": "Music themes and grounded combat sounds",
+				"items": [
+					"New music: chill yet very rhythmic tracks across genres — lo-fi, 5/4, 2-step, polyrhythm, dub, jazz-hop, breakbeat, trip-hop, funk, 7/8, afro-break, bossa, neo-soul, drum and bass and more.",
+					"Three music themes with a rhythmic indie folk-soul feel: Halt, Fireflies and Crooked Path. Strummed guitars, stomps and claps, choir, whistle and upright bass. Each theme has its own battle track, calm hub and map versions, commander and boss music, plus greeting, battle start, victory and defeat fanfares — three variants each.",
+					"Three more themes, calmer and darker, in a melodic alternative hip-hop mood: Neon, Sleeping District and Static. Soft sliding 808s, clean guitar, bells, vocal chops and washed-out pads.",
+					"The Neon theme is calmer now: slower tempo, fewer hi-hats, soft keys instead of a bright bell.",
+					"Sound settings now have a music theme choice: auto (follows the time of day), day (folk themes) or night (night themes).",
+					"The hub and map theme stays for the whole session; the battle theme is picked anew before every battle.",
+					"The radio now works like a classic player: folders on the left, a track table with section and duration on the right, and fanfares can be previewed.",
+					"The earlier chip tracks moved to the Archive playlist and can still be played from the radio.",
+					"Shots, explosions, hits, ricochets, debris and engines sound more grounded: a crack, a thump, terrain echo and falling debris. Volume is unchanged."
+				]
+			}
+		},
+		{
+			"date": "2026-09-30",
 			"version": "0.2.1",
 			"ru": {
 				"title": "Четыре станции хаба",
@@ -81,33 +112,6 @@
 					"The hub now has a Sandbox button: a test field where everything is unlocked and nothing is saved to the profile.",
 					"Admin menu (button or F2): field size, new generation, a regular wave, a boss fight, day and night, any biome; spawn enemies of any rank and a commander; bonuses; any upgrade card of any rarity; a vehicle nearby, weapon and shell switching; start any challenge with stars.",
 					"In the sandbox the soldier and the HQ respawn on the spot. Leave with the Exit button in the admin menu; the profile comes back exactly as it was."
-				]
-			}
-		},
-		{
-			"date": "2026-09-30",
-			"ru": {
-				"title": "Музыкальные темы и живые звуки боя",
-				"items": [
-					"Новая музыка: спокойные, но очень ритмичные треки в разных жанрах — лоуфай, 5/4, 2-step, полиритм, даб, джаз-хоп, брейкбит, трип-хоп, фанк, 7/8, афро-брейк, босса, неосоул, драм-н-бейс и другие.",
-					"Три музыкальные темы в духе ритмичного инди-фолк-соула: Полустанок, Светлячки и Кривая тропа. Живые гитары, топот и хлопки, хор, свист, контрабас. У каждой темы свой бой, спокойные версии для хаба и карты, музыка командира и босса, а также фанфары приветствия, начала боя, победы и поражения — по три варианта.",
-					"Ещё три темы, спокойнее и темнее — в духе мелодичного альтернативного хип-хопа: Неон, Спальный район и Помехи. Мягкие 808 со слайдами, чистая гитара, колокольчики, вокальные чопы и размытые пэды.",
-					"Тема хаба и карты держится весь запуск игры, а тема боя выбирается заново перед каждым боем.",
-					"Радио стало похоже на классический плеер: папки слева, таблица треков с разделом и длительностью справа, фанфары можно прослушать.",
-					"Прежние чиповые треки перенесены в плейлист «Архив» — их по-прежнему можно включить из радио.",
-					"Выстрелы, взрывы, попадания, рикошеты, обломки и двигатели звучат реалистичнее: щелчок, удар, эхо от местности, осыпание обломков. Громкость осталась прежней."
-				]
-			},
-			"en": {
-				"title": "Music themes and grounded combat sounds",
-				"items": [
-					"New music: chill yet very rhythmic tracks across genres — lo-fi, 5/4, 2-step, polyrhythm, dub, jazz-hop, breakbeat, trip-hop, funk, 7/8, afro-break, bossa, neo-soul, drum and bass and more.",
-					"Three music themes with a rhythmic indie folk-soul feel: Halt, Fireflies and Crooked Path. Strummed guitars, stomps and claps, choir, whistle and upright bass. Each theme has its own battle track, calm hub and map versions, commander and boss music, plus greeting, battle start, victory and defeat fanfares — three variants each.",
-					"Three more themes, calmer and darker, in a melodic alternative hip-hop mood: Neon, Sleeping District and Static. Soft sliding 808s, clean guitar, bells, vocal chops and washed-out pads.",
-					"The hub and map theme stays for the whole session; the battle theme is picked anew before every battle.",
-					"The radio now works like a classic player: folders on the left, a track table with section and duration on the right, and fanfares can be previewed.",
-					"The earlier chip tracks moved to the Archive playlist and can still be played from the radio.",
-					"Shots, explosions, hits, ricochets, debris and engines sound more grounded: a crack, a thump, terrain echo and falling debris. Volume is unchanged."
 				]
 			}
 		},
