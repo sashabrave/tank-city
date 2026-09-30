@@ -99,3 +99,13 @@ static func merchant(parent:Node3D):
 	for i in range(5):Visuals.box(parent,Vector3(-1.2+i*.6,2.25,-.6),Vector3(.6,.14,1.4),Color("c9793f") if i%2==0 else Color("e8dcc0"))
 	Visuals.box(parent,Vector3(1.8,.45,1.1),Vector3(.7,.6,.7),Color("9c8156"))
 	Visuals.box(parent,Vector3(-1.8,.45,1),Vector3(.6,.5,.6),Color("9c8156"))
+
+## Challenge tile: battlefield plate with the challenge prop (cache chest…).
+static func challenge(parent:Node3D,type:String,color:Color):
+	base(parent,color)
+	match type:
+		"cache":
+			Visuals.box(parent,Vector3(0,.75,0),Vector3(2.2,1.1,1.4),Color("5d5a4a"))
+			Visuals.box(parent,Vector3(0,1.38,0),Vector3(2.3,.25,1.5),Color("7b7660"))
+			for x in [-.7,.7]:Visuals.box(parent,Vector3(x,.8,-.72),Vector3(.2,1,.06),Color("d4bd73"))
+			Visuals.box(parent,Vector3(0,.95,-.73),Vector3(.35,.35,.05),Color("cf613f"))

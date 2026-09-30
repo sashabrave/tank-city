@@ -8,6 +8,8 @@ const WORLD1_LEVELS=[[0,0,1],[0,1,1],[0,1,2],[0,1,2],[1,1,2],[1,2,2]]
 ## World 1: service points mixed into regular stages as ordinary nodes, one per listed stage range.
 const WORLD1_SPECIALS=[{"type":"mechanic","stages":[1,2]},{"type":"workshop","stages":[3,4]}]
 const SERVICE_BRANCH={"mechanic":"vehicle","workshop":"headquarters"}
+## Challenge rooms mixed into world 1 stages 2–6: one special point per stage in total. Types join this list as they are built.
+const CHALLENGES=["cache"]
 static func gradual()->bool:return Campaign.world==1
 static func node_branch(node:Dictionary)->String:return SERVICE_BRANCH.get(node.get("type","battle"),"")
 static func build(seed_value:int)->Array:
@@ -41,6 +43,10 @@ static func build(seed_value:int)->Array:
 			if stage>=plan.size() or plan[stage].size()<2:continue
 			var node=plan[stage][rng.randi_range(0,plan[stage].size()-1)]
 			node.type=special.type;node.difficulty=0;node.elite=false
+		for stage in range(1,mini(6,plan.size())):
+			if plan[stage].size()<2 or plan[stage].any(func(n):return n.type!="battle"):continue
+			var node=plan[stage][rng.randi_range(0,plan[stage].size()-1)]
+			node.type=CHALLENGES[rng.randi_range(0,CHALLENGES.size()-1)]
 	return plan
 static func chosen(plan:Array,stage:int,choices:Dictionary)->Dictionary:
 	var id=choices.get(stage,choices.get(str(stage),""))

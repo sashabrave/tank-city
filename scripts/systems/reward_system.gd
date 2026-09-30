@@ -135,6 +135,7 @@ func choose_recipe_card(index: int):
 	var offer=arena.room.draft_pickup.offers[index]
 	if offer.category=="alloy":Game.earn(offer.amount);arena.run.earned+=offer.amount
 	elif offer.category=="secret":apply_secret(offer)
+	elif offer.category=="documents":Game.cores+=int(offer.amount);Game.save_progress()
 	elif offer.category=="upgrade":apply_trophy_upgrade(offer.id,offer.tier)
 	elif arena.run.pending_recipes.size()>=Game.backpack_slots:
 		arena.room.recipe_offer=arena.room.draft_pickup;arena.room.recipe_offer.recipe=offer;arena.hud.show_pause();return
@@ -162,7 +163,7 @@ func collect_nearby_pickups(delta):
 	if not is_instance_valid(arena.room.player):return
 	for pickup in arena.room.pickups.duplicate():
 		if arena.flat_distance(arena.room.player.position,pickup.node.position)>1.35:pickup["blocked"]=false
-		if pickup.kind!="recipe_draft" and arena.flat_distance(arena.room.player.position,pickup.node.position)<1.1 and arena.clear_shot(arena.room.player.position,pickup.node.position,.05) and not pickup.get("blocked",false):collect_pickup(pickup)
+		if pickup.kind not in ["recipe_draft","cache"] and arena.flat_distance(arena.room.player.position,pickup.node.position)<1.1 and arena.clear_shot(arena.room.player.position,pickup.node.position,.05) and not pickup.get("blocked",false):collect_pickup(pickup)
 	for pickup in arena.room.pickups:
 		pickup.visual.rotation.y+=delta;pickup.visual.position.y=.45+sin(arena.run.elapsed*3)*.07
 func chest_offers(_elite:bool=true)->Array:

@@ -24,4 +24,6 @@ static func capture(arena)->Dictionary:
 			data.interact_text="Флаг [E]";data.interact_disabled=arena.phase!="combat"
 	if not arena.reward.nearest_recipe().is_empty() and data.interact_text!="Флаг [E]":
 		data.interact_text="Сундук [E]";data.interact_disabled=arena.phase!="combat"
+	elif not arena.challenges.nearest_cache().is_empty():
+		data.interact_text="Тайник [E]";data.interact_disabled=arena.phase!="combat"
 	return data

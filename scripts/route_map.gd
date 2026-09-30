@@ -109,8 +109,9 @@ func _ready():
 			var branch=RoutePlan.node_branch(info)
 			if branch=="headquarters":MINI.headquarters(node)
 			elif branch=="vehicle":MINI.service(node,true,Color("839c9f").darkened(.28 if skipped else 0.0))
+			elif info.type in RoutePlan.CHALLENGES:MINI.challenge(node,info.type,color)
 			else:MINI.battle(node,posmod(wave_seed+stage+info.lane,4),color,visited)
-			var caption={"vehicle":"Техника","headquarters":"Штаб"}.get(branch,"%02d" % (stage+1))
+			var caption={"vehicle":"Техника","headquarters":"Штаб"}.get(branch,ChallengeRooms.TITLES.get(info.type,"%02d" % (stage+1)))
 			Visuals.label3d(node,"✓ "+caption if visited else caption,Vector3(0,.35,3.65),Color("f3eee0"),30).pixel_size=.025
 			if not visited and not skipped and branch=="":
 				for badge in range(info.difficulty):MINI.star(node,info.difficulty,badge)
@@ -230,6 +231,7 @@ func travel_to_room(index:int,node_id:String=""):
 func node_dialog(info:Dictionary,confirm:Callable)->Control:
 	var branch=RoutePlan.node_branch(info)
 	if branch!="":return preload("res://scripts/route_service_dialog.gd").build(self,branch,confirm)
+	if info.type in RoutePlan.CHALLENGES:return preload("res://scripts/route_challenge_dialog.gd").build(self,info,confirm)
 	return preload("res://scripts/route_room_dialog.gd").build(self,info)
 func close_dialog():
 	if is_instance_valid(modal):remove_modal(modal)

@@ -245,6 +245,7 @@ var surprises=preload("res://scripts/systems/surprise_system.gd").new(self)
 var flow=preload("res://scripts/systems/flow_system.gd").new(self)
 ## Run event bus: card effects react to events and adjust live values (see scripts/upgrades/run_effects.gd).
 var effects=preload("res://scripts/upgrades/run_effects.gd").new(self)
+var challenges=preload("res://scripts/systems/challenge_rooms.gd").new(self)
 
 var resume_checkpoint:Dictionary={}
 func _ready():
@@ -294,6 +295,7 @@ func begin_room(index: int):
 	twin_boss=index in Campaign.BOSSES and BossCatalog.encounter(run_seed,index).count==2
 	var route_node=RoutePlan.chosen(RoutePlan.build(run_seed),index,run.route_choices)
 	room.difficulty=route_node.difficulty;room.route_node_id=route_node.id
+	room.mode=route_node.get("type","battle") if route_node.get("type","battle") in RoutePlan.CHALLENGES else "battle"
 	room.commander_elite=room.difficulty>0
 	room.commander=null;room.commander_help_timer=0;room.commander_help_waves=0;room.commander_help_pool.clear()
 	room_index=index;grid_size=ROOM_SIZES[index];boss_room=index in Campaign.BOSSES;boss_defeated=false
@@ -312,7 +314,8 @@ func begin_room(index: int):
 	player.salvaged=carried_salvaged
 	if carried_kind!="soldier" and carried_armor>0:player.hp=minf(carried_armor,player.max_hp);player.refresh_health()
 	toast("Атакуй босса. При включении щита уничтожь светящийся генератор." if Campaign.is_final(room_index) else "Бой с генералом. Уничтожь командирский танк." if boss_room else "")
-	start_wave(0)
+	if challenges.active():challenges.start();phase="combat"
+	else:start_wave(0)
 	if boss_room:drop_pickup(Vector2i(base_cell.x-3,grid_size-2),"vehicle")
 
 func world_pos(cell: Vector2i) -> Vector3:
@@ -479,6 +482,7 @@ func _physics_process(delta):
 			spawn_index+=1;spawn_timer=Balance.CONFIG.combat.spawn_interval
 		else:spawn_index+=1;spawn_timer=.35
 	collect_nearby_pickups(delta)
+	if challenges.active():challenges.tick()
 	if room_cleared and is_instance_valid(flag) and is_instance_valid(player):
 		var near=flat_distance(player.position,flag.position)<1.1
 		if not near:flag_armed=true
@@ -550,6 +554,7 @@ func interact():
 	if phase not in ["combat","countdown"] or not is_instance_valid(player) or player.moving: return
 	var recipe=nearest_recipe()
 	if not recipe.is_empty():open_recipe_draft(recipe);return
+	if not challenges.nearest_cache().is_empty():challenges.open_cache();return
 	if room_cleared and is_instance_valid(flag) and flat_distance(player.position,flag.position)<1.8:
 		open_flag();return
 	if player.kind=="soldier" and board.interact_trench():return

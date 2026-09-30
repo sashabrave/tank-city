@@ -71,10 +71,7 @@ func finish_wave():
 		arena.room.room_cleared=true
 		var reward=4+Campaign.progress_index(arena.room.room_index)*2
 		Game.earn(reward);arena.run.earned+=reward
-		arena.room.flag=Node3D.new();arena.add_child(arena.room.flag);arena.room.flag.position=arena.world_pos(Vector2i(arena.room.base_cell.x,arena.room.grid_size-3))
-		Visuals.box(arena.room.flag,Vector3(0,1,0),Vector3(.06,2,.06),Color("eee9d8"))
-		Visuals.box(arena.room.flag,Vector3(.35,1.7,0),Vector3(.7,.45,.07),Color("7cb56b"))
-		Visuals.label3d(arena.room.flag,"Награда · +%d ◈" % reward,Vector3(0,2.4,0),Color("f5edcc"),25)
+		place_flag("Награда · +%d ◈" % reward)
 		arena.toast("Маршрут открыт")
 		if Campaign.endless:open_flag()
 		return
@@ -112,6 +109,12 @@ func pause_battle():
 	elif arena.phase=="paused":
 		arena.phase=arena.room.previous_phase;arena.hud.close_modal()
 
+## Exit flag in front of the HQ; the room is left through it.
+func place_flag(caption:String):
+	arena.room.flag=Node3D.new();arena.add_child(arena.room.flag);arena.room.flag.position=arena.world_pos(Vector2i(arena.room.base_cell.x,arena.room.grid_size-3))
+	Visuals.box(arena.room.flag,Vector3(0,1,0),Vector3(.06,2,.06),Color("eee9d8"))
+	Visuals.box(arena.room.flag,Vector3(.35,1.7,0),Vector3(.7,.45,.07),Color("7cb56b"))
+	Visuals.label3d(arena.room.flag,caption,Vector3(0,2.4,0),Color("f5edcc"),25)
 func open_flag():
 	arena.room.flag_armed=false;arena.phase="upgrade";Game.reset_input()
 	if arena.room.reward_claimed:arena.hud.show_departure()

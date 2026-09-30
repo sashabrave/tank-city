@@ -1469,3 +1469,21 @@ Changelog	Changelog
 Переброс	Reroll
 Жетоны	Tokens
 %d док.	%d docs
+Тайник	Cache
+Тайник ★	Cache ★
+Тайник ★★	Cache ★★
+Тайник · E	Cache · E
+Тайник [E]	Cache [E]
+Тайник · засада	Cache · ambush
+Выход	Exit
+Тайник. Откроешь — будет засада. Можно уйти через выход	Cache. Opening it calls an ambush. You can leave through the exit
+Засада!	Ambush!
+Продержись	Hold on
+Засада отбита · забери награду	Ambush repelled · take your reward
++%d док.	+%d docs
+Документы для оболочек и открытий	Documents for shells and unlocks
+Сундук в центре поля. Откроешь — с двух сторон придёт засада ветеранов. Можно уйти через выход, не открывая.	A chest in the middle of the field. Opening it brings a veteran ambush from both sides. You can leave through the exit without opening it.
+Награда: Сплав и обычные карты	Reward: alloy and common cards
+Награда: Редкие карты или чертёж	Reward: rare cards or a blueprint
+Награда: Эпические карты, документы или редкий чертёж	Reward: epic cards, documents or a rare blueprint
+Испытание	Challenge

@@ -52,6 +52,8 @@ var surprise_initialized=false
 var surprise_rng=RandomNumberGenerator.new()
 
 var difficulty=0
+## Route node type played in this room: battle or a challenge (cache…).
+var mode="battle"
 var route_node_id=""
 var commander_elite=false
 var commander
