@@ -2,6 +2,90 @@
 	"entries": [
 		{
 			"date": "2026-09-30",
+			"version": "0.2.1",
+			"ru": {
+				"title": "Четыре станции хаба",
+				"items": [
+					"Хаб стал проще: вместо шести верстаков — четыре станции с одинаковым экраном. Слева вкладки, в центре карточки, справа подробности «было → станет», цена и одна понятная кнопка.",
+					"«Боец» есть сразу: оболочки и их способности, общие улучшения, снабжение (лечение, аптечки, дроп, удача), рюкзак и перебросы.",
+					"«Арсенал» строится по чертежу: оружие, бонусы боя и гаджеты. «Штаб» — технологии поддержки, оборона базы, страховка и постройки. «Стоянка» — техника и её оборудование.",
+					"«Прокачка базы» и «Верстак бонусов» больше не строятся: их улучшения переехали на станции. Если они были построены, «Верстак бонусов» стал Арсеналом, а стоимость «Прокачки базы» вернулась сплавом."
+				]
+			},
+			"en": {
+				"title": "Four hub stations",
+				"items": [
+					"The hub is simpler: instead of six workbenches there are four stations with the same screen. Tabs on the left, cards in the middle, before → after details, the price and one clear button on the right.",
+					"Soldier is available from the start: shells and their abilities, general upgrades, supply (healing, medkits, drops, luck), backpack and rerolls.",
+					"Arsenal is built from a blueprint: weapons, combat bonuses and gadgets. HQ has support technologies, base defence, insurance and buildings. Parking has vehicles and their equipment.",
+					"Base upgrades and the bonus workbench are no longer built: their upgrades moved to the stations. If you had built them, the bonus workbench became the Arsenal and the base upgrades cost was refunded in alloy."
+				]
+			}
+		},
+		{
+			"date": "2026-09-30",
+			"version": "0.2.1",
+			"ru": {
+				"title": "Прокачка без уровня базы",
+				"items": [
+					"Уровень базы больше ничего не ограничивает: прокачка упирается только в цену и понятные пределы — оружие до 10, бонусы до 3, технологии штаба и оборудование техники до 5, страховка до 6.",
+					"Гаджеты, технологии штаба и техника доступны сразу после чертежа — без ожидания уровня базы. БТР и танк по-прежнему покупаются по порядку: сначала багги, потом БТР.",
+					"Командный центр открывается на заданиях. Вместо «Развития базы» — короткая «Сводка»: станции, оболочки, оружие, техника и отслеживаемые задания."
+				]
+			},
+			"en": {
+				"title": "Upgrades without a base level",
+				"items": [
+					"The base level no longer limits anything: upgrades are limited only by price and clear caps — weapons up to 10, bonuses up to 3, HQ technologies and vehicle equipment up to 5, insurance up to 6.",
+					"Gadgets, HQ technologies and vehicles are available right after their blueprint, without waiting for a base level. The APC and tank are still bought in order: buggy first, then APC.",
+					"The command centre opens on quests. Base development is replaced by a short Summary: stations, shells, weapons, vehicles and tracked quests."
+				]
+			}
+		},
+		{
+			"date": "2026-09-30",
+			"version": "0.2.1",
+			"ru": {
+				"title": "Задания и живой интерфейс",
+				"items": [
+					"Задания переписаны под мир 1 и бесконечный режим: больше нет ссылок на закрытые миры. Новые задания — на каждое испытание, торговца и жетоны, бочки, карты «Тактика», механика и мастерскую, секторы бесконечного режима.",
+					"Важные задания дают не только сплав, но и документы.",
+					"Задачи теперь выглядят как лента сообщений: у каждого отправителя (Генштаб, Институт, Оперштаб) свой аватар, новые сообщения прилетают сверху, готовые к сдаче подсвечены, сданные уезжают вниз.",
+					"Интерфейс ожил: карточки и сообщения выезжают лесенкой, уведомления падают сверху, кнопки пружинят. Анимации можно выключить в настройках → Интерфейс."
+				]
+			},
+			"en": {
+				"title": "Quests and a lively interface",
+				"items": [
+					"Quests are rewritten for world 1 and endless mode: no more references to locked worlds. New quests cover every challenge, the merchant and tokens, barrels, Tactics cards, the mechanic and the workshop, endless sectors.",
+					"Important quests now pay documents as well as alloy.",
+					"Quests now look like a message feed: each sender (General Staff, Institute, Operations) has an avatar, new messages drop in from the top, ready ones are highlighted, handed-in ones slide away.",
+					"The interface came alive: cards and messages slide in one by one, notifications drop from the top, buttons bounce. Animations can be turned off in Settings → Interface."
+				]
+			}
+		},
+		{
+			"date": "2026-09-30",
+			"version": "0.2.1",
+			"ru": {
+				"title": "Песочница",
+				"items": [
+					"В хабе появилась кнопка «Песочница»: тестовое поле, где всё открыто и ничего не сохраняется в профиль.",
+					"Меню админа (кнопка или F2): размер поля, новая генерация, обычная волна, бой с боссом, день и ночь, любой биом; вызов врагов нужного ранга и командира; бонусы; любые карты улучшений нужной редкости; техника рядом, смена оружия и оболочки; запуск любого испытания со звёздами.",
+					"В песочнице боец и штаб возрождаются на месте. Выход — кнопкой «Выйти» в меню админа, профиль возвращается ровно таким, каким был."
+				]
+			},
+			"en": {
+				"title": "Sandbox",
+				"items": [
+					"The hub now has a Sandbox button: a test field where everything is unlocked and nothing is saved to the profile.",
+					"Admin menu (button or F2): field size, new generation, a regular wave, a boss fight, day and night, any biome; spawn enemies of any rank and a commander; bonuses; any upgrade card of any rarity; a vehicle nearby, weapon and shell switching; start any challenge with stars.",
+					"In the sandbox the soldier and the HQ respawn on the spot. Leave with the Exit button in the admin menu; the profile comes back exactly as it was."
+				]
+			}
+		},
+		{
+			"date": "2026-09-30",
 			"ru": {
 				"title": "Укрепление базы и советский забор",
 				"items": [

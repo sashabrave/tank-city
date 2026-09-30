@@ -2,6 +2,7 @@ extends Node3D
 const LOOT=preload("res://scripts/loot_catalog.gd")
 signal start_requested
 signal gallery_requested
+signal sandbox_requested
 var arrival_reason=""
 var recycling_pos=Vector3(6,0,3)
 var printer_pos=Vector3(3,0,3)
@@ -153,6 +154,8 @@ func build_ui():
 	root.get_node("BuildButton").pressed.connect(show_build_menu)
 	var recipe_button=UiKit.button(root,"Магазин чертежей · тест",Vector2(30,385),Vector2(300,50),show_recipe_shop)
 	recipe_button.add_theme_font_size_override("font_size",18);root.move_child(recipe_button,0)
+	var sandbox_button=UiKit.button(root,"Песочница",Vector2(30,445),Vector2(300,50),func():sandbox_requested.emit());sandbox_button.name="SandboxButton"
+	sandbox_button.add_theme_font_size_override("font_size",18);root.move_child(sandbox_button,0)
 	dpad=root.get_node("MovePad");dpad.apply_movement_layout();fire_pad=root.get_node("FirePad")
 	start_button=root.get_node("StartButton");start_button.pressed.connect(launch)
 	root.get_node("SettingsButton").hide()
@@ -218,7 +221,7 @@ func refresh():
 		UiKit.label(card,names[branch],Vector2(132,14),Vector2(650,32),22)
 		UiKit.label(card,details[branch],Vector2(132,52),Vector2(650,45),16,UiKit.MUTED).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 		UiKit.label(card,"Уровень %d / %d" % [Game.level(branch),Game.upgrade_cap(branch)],Vector2(132,115),Vector2(275,32),17)
-		var title=("Уровень базы" if Game.level(branch)>=Game.upgrade_cap(branch) and Game.upgrade_cap(branch)<(3 if branch=="supplies" else 20) else "Максимум" if Game.level(branch)>=Game.upgrade_cap(branch) else "+1 · %d ◈" % Game.cost(branch)) if unlocked else "Открыть · %d ◈" % Game.UNLOCK_COSTS[branch]
+		var title=("Максимум" if Game.level(branch)>=Game.upgrade_cap(branch) else "+1 · %d ◈" % Game.cost(branch)) if unlocked else "Открыть · %d ◈" % Game.UNLOCK_COSTS[branch]
 		var button=UiKit.button(card,title,Vector2(450,115),Vector2(340,42),func():buy(branch))
 		button.disabled=(Game.level(branch)>=Game.upgrade_cap(branch) or Game.credits<Game.cost(branch)) if unlocked else Game.credits<Game.UNLOCK_COSTS[branch];UiKit.muted_locked_button(button)
 
@@ -337,21 +340,13 @@ func interact():
 	if station.visible or weapon_station.visible or bonus_station.visible or is_instance_valid(build_menu):close_station();return
 	if moving:return
 	if not mounted and avatar.position.distance_to(recycling_pos)<1.3:show_recycling();return
-	if not mounted and avatar.position.distance_to(hq_bench_pos)<1.2:
-		if "headquarters" in Game.built_workshops:show_hq_workshop()
-		else:build_tab=0;show_build_menu()
-		return
+	if not mounted and avatar.position.distance_to(hq_bench_pos)<1.2:open_station("hq");return
 	if not mounted and avatar.position.distance_to(command_pos)<1.65:show_command();return
-	if not mounted and avatar.position.distance_to(printer_pos)<1.4:show_classes();return
-	if not mounted and "garage" in Game.built_workshops and avatar.position.distance_to(Vector3(6,0,1))<1.65:show_garage();return
+	if not mounted and avatar.position.distance_to(printer_pos)<1.4:open_station("fighter");return
+	if not mounted and "garage" in Game.built_workshops and avatar.position.distance_to(Vector3(6,0,1))<1.65:open_station("garage");return
 	var locked=nearest_locked()
 	if locked!="":build_tab=1 if locked in ["garage","range"] else 0;show_build_menu();return
-	if not mounted and avatar.position.distance_to(bonus_bench_pos)<1.2:
-		open_workshop(false,true);return
-	if not mounted and avatar.position.distance_to(weapon_bench_pos)<1.25:
-		open_workshop(true);return
-	if not mounted and avatar.position.distance_to(Vector3(0,0,-1))<1.25:
-		open_workshop(false);return
+	if not mounted and avatar.position.distance_to(weapon_bench_pos)<1.25:open_station("arsenal");return
 	if mounted:
 		var exit_cell=cell
 		for dir in [Vector2i.LEFT,Vector2i.RIGHT,Vector2i.DOWN,Vector2i.UP]:
@@ -442,7 +437,7 @@ func show_systems():
 	for i in range(2):
 		var alloy=i==0
 		var price=Game.insurance_cost() if alloy else Game.special_cost("rescue")
-		var capped=Game.progression.insurance>=mini(6,Game.progression.level*2) if alloy else price<0
+		var capped=Game.progression.insurance>=Balance.CONFIG.economy.insurance_cap if alloy else price<0
 		var known=alloy or "rescue" in Game.research_unlocks
 		var card=UiKit.panel(workshop_content,Vector2(0,i*226),Vector2(810,212),Color("30382f"))
 		UiKit.locked_preview(UiKit.icon(card,"alloy" if alloy else "documents",Vector2(18,34),Vector2(96,96)),not known)
@@ -450,7 +445,7 @@ func show_systems():
 		var description="При гибели теряется %d%% сплава, добытого за вылазку." % roundi(Game.death_loss_fraction()*100) if alloy else "Шанс сохранить каждый найденный чертёж при гибели."
 		UiKit.label(card,description,Vector2(136,58),Vector2(650,45),16,UiKit.MUTED).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 		var detail="Потеря: %d%% → %d%%" % [roundi(Game.death_loss_fraction()*100),roundi(maxf(.2,Game.death_loss_fraction()-.05)*100)] if alloy else "Сохранение: %d%% → %d%%" % [Game.rescue_level*6,mini(60,(Game.rescue_level+1)*6)]
-		if capped and known:detail="Достигнут предел · повысь уровень базы" if alloy and Game.progression.insurance<6 else "Достигнут максимум"
+		if capped and known:detail="Достигнут предел" if alloy and Game.progression.insurance<Balance.CONFIG.economy.insurance_cap else "Достигнут максимум"
 		UiKit.label(card,detail,Vector2(136,108),Vector2(650,30),18)
 		var button=UiKit.button(card,"Нужен чертёж" if not known else "Предел улучшений" if capped else "Улучшить · %d ◈" % price,Vector2(136,156),Vector2(650,40),func():
 			if alloy:Game.buy_insurance()
@@ -489,8 +484,8 @@ func refresh_catalogs():
 					var compact_style=compact.get_theme_stylebox(state).duplicate();compact_style.content_margin_top=3;compact_style.content_margin_bottom=3;compact.add_theme_stylebox_override(state,compact_style)
 				compact.custom_minimum_size=Vector2.ZERO;compact.size=Vector2(244,28)
 			tune.add_theme_font_size_override("font_size",13)
-			if unlocked and Game.weapon_level(id)>=mini(10,Game.progression.level):Texts.set_text(tune,"Ур. %d · %s" % [Game.weapon_level(id),"максимум" if Game.weapon_level(id)>=10 else "🔒 База "+str(Game.progression.level+1)])
-			tune.disabled=not unlocked or Game.weapon_level(id)>=mini(10,Game.progression.level) or Game.credits<Game.weapon_upgrade_cost(id)
+			if unlocked and Game.weapon_level(id)>=Balance.CONFIG.economy.weapon_level_cap:Texts.set_text(tune,"Ур. %d · %s" % [Game.weapon_level(id),"максимум"])
+			tune.disabled=not unlocked or Game.weapon_level(id)>=Balance.CONFIG.economy.weapon_level_cap or Game.credits<Game.weapon_upgrade_cost(id)
 			UiKit.muted_locked_button(tune)
 	if bonus_station.visible:
 		for child in bonus_content.get_children():bonus_content.remove_child(child);child.queue_free()
@@ -514,8 +509,8 @@ func refresh_catalogs():
 			card.get_node("Description").text=info.effect;card.get_node("Description").tooltip_text=detail if owned else ""
 			if owned and level<3:UiKit.numeric_description(card.get_node("Description"),bonus_change(id,level))
 			var price=Game.bonus_cost(id)
-			var button=card.get_node("ChooseButton");Texts.set_text(button,"🔒 Нужен чертёж" if not owned else ("Максимум" if level>=mini(3,Game.progression.level) else "+1 · %d ◈" % price))
-			button.pressed.connect(func():Game.upgrade_bonus(id);refresh());button.disabled=not owned or level>=mini(3,Game.progression.level) or Game.credits<price
+			var button=card.get_node("ChooseButton");Texts.set_text(button,"🔒 Нужен чертёж" if not owned else ("Максимум" if level>=Balance.CONFIG.economy.bonus_level_cap else "+1 · %d ◈" % price))
+			button.pressed.connect(func():Game.upgrade_bonus(id);refresh());button.disabled=not owned or level>=Balance.CONFIG.economy.bonus_level_cap or Game.credits<price
 			UiKit.muted_locked_button(button)
 
 func update_bench_visuals():
@@ -553,6 +548,16 @@ func update_bench_visuals():
 	if is_instance_valid(dummy):dummy.visible="range" in Game.built_workshops
 func show_build_menu():preload("res://scripts/ui/build_menu.gd").show(self)
 
+## The four stations share one screen (scripts/ui/station_screen.gd); only «Боец» needs no building.
+const STATIONS={"fighter":["","res://scripts/ui/stations/fighter_station.gd"],"arsenal":["weapons","res://scripts/ui/stations/arsenal_station.gd"],"hq":["headquarters","res://scripts/ui/stations/hq_station.gd"],"garage":["garage","res://scripts/ui/stations/garage_station.gd"]}
+func open_station(kind:String):
+	var building=STATIONS[kind][0]
+	if building!="" and building not in Game.built_workshops:build_tab=0;show_build_menu();return
+	if building!="":preload("res://scripts/ui/build_catalog.gd").mark(building)
+	close_station();phase="workshop";Game.reset_input();dpad.clear();fire_pad.clear();dpad.enabled=false;fire_pad.enabled=false;start_button.disabled=true
+	var screen=preload("res://scripts/ui/station_screen.gd").new();screen.name="Station_"+kind;screen.provider=load(STATIONS[kind][1]).new()
+	build_menu=screen;root.add_child(screen);screen.closed.connect(close_station);screen.changed.connect(refresh)
+
 func nearest_locked() -> String:
 	if mounted:return ""
 	for id in Game.BUILD_COST:
@@ -561,6 +566,12 @@ func nearest_locked() -> String:
 	return ""
 
 func bench_available(id:String)->bool:
+	if id=="headquarters":
+		for tech in Game.hq_unlocks:
+			if HQCatalog.available(tech) and int(Game.hq_levels.get(tech,0))<HQCatalog.cap() and Game.credits>=HQCatalog.permanent_cost(tech):return true
+	if id=="weapons":
+		for bonus in Game.bonus_unlocks:
+			if Game.bonus_level(bonus)<Balance.CONFIG.economy.bonus_level_cap and Game.credits>=Game.bonus_cost(bonus):return true
 	if id=="character":
 		for branch in Game.UNLOCK_COSTS:
 			if Game.level(branch)<Game.upgrade_cap(branch) and Game.credits>=(Game.cost(branch) if Game.branch_unlocked(branch) else Game.UNLOCK_COSTS[branch]):return true
@@ -569,7 +580,7 @@ func bench_available(id:String)->bool:
 	if id=="weapons":return Game.weapon_unlocks.size()>1
 	if id=="bonuses":
 		for bonus in Game.bonus_unlocks:
-			if Game.bonus_level(bonus)<mini(3,Game.progression.level) and Game.credits>=Game.bonus_cost(bonus):return true
+			if Game.bonus_level(bonus)<Balance.CONFIG.economy.bonus_level_cap and Game.credits>=Game.bonus_cost(bonus):return true
 	return false
 func show_classes():preload("res://scripts/ui/fighter_station.gd").shell(self)
 
@@ -616,11 +627,10 @@ func present_unlock():
 	UiKit.button(panel,"Перейти",Vector2(345,300),Vector2(310,55),func():
 		close_station()
 		if recipe.category=="research":show_build_menu()
-		elif recipe.category=="weapon":open_workshop(true)
-		elif recipe.category=="bonus":open_workshop(false,true)
-		elif recipe.category=="hq":show_hq_workshop()
-		elif recipe.category=="garage":show_garage()
-		else:workshop_tab=3;open_workshop(false)
+		elif recipe.category in ["weapon","bonus","ability"]:open_station("arsenal")
+		elif recipe.category=="hq":open_station("hq")
+		elif recipe.category=="garage":open_station("garage")
+		else:open_station("fighter")
 	,true)
 	Game.music_stinger("wave_victory")
 

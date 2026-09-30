@@ -49,6 +49,7 @@ func _ready():
 	page_scrolls=saved.get("scrolls",{}).duplicate(true)
 	if tab=="":tab=saved.get("manage_tab" if manage else "tab","quests" if manage else "inventory")
 	if tab=="base" and not manage:tab="inventory"
+	if manage and tab not in ["quests","base","notifications","guide","tech"]:tab="quests"
 	memory_ready=true
 	Texts.changed.connect(func():refresh.call_deferred())
 	if is_instance_valid(Game.music_controller):
@@ -73,7 +74,8 @@ func refresh():
 	if tab in ["active","tracked","completed","orders"]:
 		quest_filter={"completed":"completed","orders":"operations"}.get(tab,"all");tab="quests"
 	var tabs=[["inventory","Снаряжение"],["fighter","Боец"],["quests","Задачи · %d" % p.quests("available" if manage else "active").size()],["notifications","Лента · %d" % Game.notifications.unread()],["music","Радио"],["settings","Настройки"],["guide","Энциклопедия"],["about","Об игре"],["tech","Тех. информация"]]
-	if manage:tabs.insert(0,["base","Развитие базы"])
+	# Command centre: quests first, then a compact summary; loadout, radio and settings stay in the field tablet.
+	if manage:tabs=[tabs[2],["base","Сводка"],tabs[3],["guide","Энциклопедия"],["tech","Тех. информация"]]
 	for i in range(tabs.size()):
 		var key=tabs[i][0]
 		var b=sidebar_button(tabs[i][1],key,80+i*(44 if manage or can_quit() else 48),40,func():tab=key;mark_section(key);refresh())
@@ -176,50 +178,84 @@ func quest_page():
 			var filter_style=b.get_theme_stylebox(state).duplicate();filter_style.content_margin_left=8;filter_style.content_margin_right=8;b.add_theme_stylebox_override(state,filter_style)
 		if key==quest_filter:b.add_theme_stylebox_override("normal",UiKit.style(Color("bfcdb5"),7))
 	var quests=p.quests("completed" if quest_filter=="completed" else "available" if manage else "active")
-	if quest_filter=="general":quests=quests.filter(func(q):return q not in Q.INSTITUTE and not str(q.id).begins_with("order_"))
-	if quest_filter=="institute":quests=quests.filter(func(q):return q in Q.INSTITUTE)
-	if quest_filter=="operations":quests=quests.filter(func(q):return str(q.id).begins_with("order_"))
-	var box=scroller(Vector2(180,76),Vector2(573,482))
+	# Feed filters follow the sender: story — Генштаб, hub chain — Институт, briefings and orders — Оперштаб.
+	var sender_filter={"general":"story","institute":"institute","operations":"operations"}.get(quest_filter,"")
+	if sender_filter!="":quests=quests.filter(func(q):return Q.sender(q)==sender_filter)
+	var box=scroller(Vector2(180,76),Vector2(573,482));box.name="QuestFeed";box.add_theme_constant_override("separation",12)
 	var incoming=quest_filter in ["all","operations"] and p.telegram.is_empty() and not p.telegram_options.is_empty() and p.order_wait==0
 	if incoming:telegram_offer_card(box)
 	if quests.is_empty() and not incoming:list_button(box,"Новая телеграмма после следующей вылазки" if quest_filter=="operations" and p.order_wait>0 else "Нет заданий",func():pass,60)
-	for q in quests:
-		var done=quest_filter=="completed";var count=int(q.goal) if done else p.count(q);var taken=q.id in p.accepted or str(q.id).begins_with("order_")
-		var order=str(q.id).begins_with("order_")
+	var done=quest_filter=="completed"
+	# Messenger order: new messages on top, then ready to hand in, then the rest.
+	var ranked=quests.map(func(q):
+		var order=str(q.id).begins_with("order_");var count=int(q.goal) if done else p.count(q)
 		var news=p.operations_news() if order else ("quest:"+q.id not in p.seen or (count>=q.goal and "ready:"+q.id not in p.seen))
-		var card=Panel.new();box.add_child(card);card.custom_minimum_size=Vector2(0,(280 if order else 225) if manage and not done else 166);card.add_theme_stylebox_override("panel",UiKit.style(Color("eee4bf") if order and news else Color("cfddbf") if news else Color("dce3d5"),9))
-		if news:UiKit.label(card,"●",Vector2(466,12),Vector2(20,24),16,Color("d0a532") if order else Color("cf613f"))
-		UiKit.label(card,q.text,Vector2(14,10),Vector2(470,30),19)
-		var hint=UiKit.label(card,q.get("hint",Q.hint(q.id)),Vector2(14,45),Vector2(515,52),15);hint.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-		hint.set_meta("literal_text",true)
-		for child in hint.get_children():hint.remove_child(child);child.queue_free()
-		UiKit.label(card,"%s: %d / %d" % [Q.counter_name(q.event),count,q.goal],Vector2(14,100),Vector2(520,25),16)
-		UiKit.label(card,"%d ◈ · %d XP" % [q.alloy,q.xp]+(" · осталось вылазок: %d" % q.get("runs_left",0) if str(q.id).begins_with("order_") else ""),Vector2(14,131),Vector2(510,24),14,UiKit.MUTED)
-		if not done and taken:
-			var eye=UiKit.button(card,"" if q.id in p.tracked else "+",Vector2(492,9),Vector2(38,32),func():p.toggle_track(q.id);refresh());eye.tooltip_text="Не отслеживать" if q.id in p.tracked else "Отслеживать"
-			if q.id in p.tracked:eye.add_child(preload("res://scripts/ui/tracked_eye.gd").new())
-			if manage:
-				var claim=UiKit.button(card,"Забрать награду",Vector2(14,163),Vector2(515,32),func():
-					if str(q.id).begins_with("order_"):p.claim_telegram()
-					else:p.claim(q)
-					refresh())
-				claim.disabled=count<q.goal;UiKit.muted_locked_button(claim)
-				if str(q.id).begins_with("order_"):UiKit.button(card,"Отказаться от приказа",Vector2(14,220),Vector2(515,42),func():p.abandon_telegram();refresh()).add_theme_font_size_override("font_size",17)
-		if manage and not done and not taken:
-			UiKit.button(card,"Принять задание",Vector2(14,163),Vector2(515,32),func():p.accept_quest(q.id);refresh())
+		return {"q":q,"count":count,"news":news and not done,"ready":count>=q.goal and not done})
+	ranked.sort_custom(func(a,b):return int(a.news)*2+int(a.ready)>int(b.news)*2+int(b.ready))
+	for i in range(ranked.size()):
+		var card=quest_message(ranked[i].q,ranked[i].count,ranked[i].news,ranked[i].ready,done);box.add_child(card)
+		if ranked[i].news:UiKit.arrive(card,i)
+		else:UiKit.reveal(card,i)
 	p.view_quest_updates(quest_filter)
-func telegram_offer_card(box:VBoxContainer):
+## One quest as a message: sender avatar, bubble with title, hint, progress bar, rewards and actions.
+func quest_message(q:Dictionary,count:int,news:bool,ready:bool,done:bool)->Control:
 	var p=Game.progression
-	var card=Panel.new();card.name="TelegramOffer";box.add_child(card);card.custom_minimum_size=Vector2(0,462 if manage else 445);card.add_theme_stylebox_override("panel",UiKit.style(Color("eee4bf"),12))
-	UiKit.label(card,"Телеграмма · оперштаб",Vector2(14,12),Vector2(515,32),21)
-	UiKit.label(card,"Выбери сложность задания или откажись.",Vector2(14,48),Vector2(515,30),16,UiKit.MUTED)
+	var order=str(q.id).begins_with("order_");var taken=q.id in p.accepted or order
+	var sender=Q.SENDERS[Q.sender(q)]
+	var actions=manage and not done
+	var height=(206 if not actions else (296 if order and taken else 250))
+	var row=Control.new();row.name="Quest_"+str(q.id);row.custom_minimum_size=Vector2(0,height)
+	var avatar=Panel.new();row.add_child(avatar);avatar.position=Vector2(0,4);avatar.size=Vector2(46,46);avatar.add_theme_stylebox_override("panel",UiKit.style(Color(sender.color),23))
+	var glyph=UiKit.icon(avatar,sender.icon,Vector2(11,11),Vector2(24,24));glyph.texture=UiKit.interface_icon(sender.icon)
+	var bubble=Panel.new();row.add_child(bubble);bubble.name="Bubble";bubble.position=Vector2(56,0);bubble.size=Vector2(513,height)
+	var tint=Color("eee4bf") if ready else Color("cfddbf") if news else Color("dce3d5")
+	var style=UiKit.style(tint,12);style.corner_radius_top_left=3;bubble.add_theme_stylebox_override("panel",style)
+	var status="готово к сдаче" if ready else "новое" if news else "выполнено" if done else ("в работе" if taken else "предложение")
+	UiKit.label(bubble,sender.name+" · "+status,Vector2(14,8),Vector2(420,20),13,Color(sender.color).darkened(.25))
+	UiKit.label(bubble,q.text,Vector2(14,28),Vector2(440,30),19)
+	var hint=UiKit.label(bubble,q.get("hint",Q.hint(q.id)),Vector2(14,60),Vector2(485,48),15);hint.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	hint.set_meta("literal_text",true)
+	for child in hint.get_children():hint.remove_child(child);child.queue_free()
+	var track=ColorRect.new();bubble.add_child(track);track.position=Vector2(14,118);track.size=Vector2(485,8);track.color=Color(0,0,0,.14)
+	var fill=ColorRect.new();track.add_child(fill);fill.size=Vector2(485*clampf(float(count)/maxf(1,q.goal),0,1),8);fill.color=Color(sender.color);fill.name="Progress"
+	UiKit.label(bubble,"%s: %d / %d" % [Q.counter_name(q.event),count,q.goal],Vector2(14,130),Vector2(485,24),15)
+	var reward="%d ◈" % q.alloy+(" · %d док." % int(q.get("docs",0)) if int(q.get("docs",0))>0 else "")
+	if order:reward+=" · осталось вылазок: %d" % q.get("runs_left",0)
+	UiKit.label(bubble,reward,Vector2(14,158),Vector2(485,24),15,UiKit.MUTED)
+	if not done and taken:
+		var eye=UiKit.button(bubble,"" if q.id in p.tracked else "+",Vector2(462,8),Vector2(38,32),func():p.toggle_track(q.id);refresh());eye.tooltip_text="Не отслеживать" if q.id in p.tracked else "Отслеживать"
+		if q.id in p.tracked:eye.add_child(preload("res://scripts/ui/tracked_eye.gd").new())
+	if actions and taken:
+		var claim=UiKit.button(bubble,"Забрать награду",Vector2(14,196),Vector2(485,40),func():
+			UiKit.leave(row,func():
+				if order:p.claim_telegram()
+				else:p.claim(q)
+				refresh()),ready)
+		claim.name="Claim";claim.disabled=count<q.goal;UiKit.muted_locked_button(claim)
+		if order:UiKit.button(bubble,"Отказаться от приказа",Vector2(14,244),Vector2(485,40),func():p.abandon_telegram();refresh()).add_theme_font_size_override("font_size",17)
+	elif actions:
+		UiKit.button(bubble,"Принять задание",Vector2(14,196),Vector2(485,40),func():p.accept_quest(q.id);refresh(),true).name="Accept"
+	return row
+## Incoming order from Оперштаб as a message with three difficulty options.
+func telegram_offer_card(box:VBoxContainer):
+	var p=Game.progression;var sender=Q.SENDERS.operations
+	var height=120+p.telegram_options.size()*64+(52 if manage else 30)
+	var row=Control.new();row.name="TelegramOffer";box.add_child(row);row.custom_minimum_size=Vector2(0,height)
+	var avatar=Panel.new();row.add_child(avatar);avatar.position=Vector2(0,4);avatar.size=Vector2(46,46);avatar.add_theme_stylebox_override("panel",UiKit.style(Color(sender.color),23))
+	var glyph=UiKit.icon(avatar,sender.icon,Vector2(11,11),Vector2(24,24));glyph.texture=UiKit.interface_icon(sender.icon)
+	var bubble=Panel.new();row.add_child(bubble);bubble.name="Bubble";bubble.position=Vector2(56,0);bubble.size=Vector2(513,height)
+	var style=UiKit.style(Color("eee4bf"),12);style.corner_radius_top_left=3;bubble.add_theme_stylebox_override("panel",style)
+	UiKit.label(bubble,sender.name+" · телеграмма",Vector2(14,8),Vector2(420,20),13,Color(sender.color).darkened(.25))
+	UiKit.label(bubble,"Новый приказ",Vector2(14,28),Vector2(440,30),19)
+	UiKit.label(bubble,"Выбери сложность или откажись.",Vector2(14,60),Vector2(485,26),15,UiKit.MUTED)
 	for i in range(p.telegram_options.size()):
-		var q=p.telegram_options[i];var y=88+i*105
-		var title=UiKit.label(card,q.difficulty+" · "+q.text,Vector2(14,y),Vector2(335 if manage else 515,48),17);title.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-		UiKit.label(card,"%d вылазки · %d ◈ · %d XP" % [q.run_limit,q.alloy,q.xp],Vector2(14,y+52),Vector2(335 if manage else 515,26),15,UiKit.MUTED)
-		if manage:UiKit.button(card,"Принять · "+q.difficulty.to_lower(),Vector2(360,y+16),Vector2(169,48),func():p.choose_telegram(i);refresh()).add_theme_font_size_override("font_size",14)
-	if manage:UiKit.button(card,"Отказаться от телеграммы",Vector2(14,403),Vector2(515,44),func():p.abandon_telegram();refresh()).add_theme_font_size_override("font_size",17)
-	else:UiKit.label(card,"Принять или отказаться можно в хабе.",Vector2(14,409),Vector2(515,28),16,UiKit.MUTED)
+		var q=p.telegram_options[i];var y=96+i*64
+		var title=UiKit.label(bubble,q.difficulty+" · "+q.text,Vector2(14,y),Vector2(310 if manage else 485,28),16);title.clip_text=true
+		UiKit.label(bubble,"%d вылазки · %d ◈" % [q.run_limit,q.alloy],Vector2(14,y+28),Vector2(310,24),14,UiKit.MUTED)
+		if manage:UiKit.button(bubble,"Принять",Vector2(334,y+6),Vector2(165,42),func():p.choose_telegram(i);refresh(),i==1).add_theme_font_size_override("font_size",15)
+	if manage:UiKit.button(bubble,"Отказаться от телеграммы",Vector2(14,height-50),Vector2(485,40),func():p.abandon_telegram();refresh()).add_theme_font_size_override("font_size",16)
+	else:UiKit.label(bubble,"Принять или отказаться можно в хабе.",Vector2(14,height-30),Vector2(485,24),14,UiKit.MUTED)
+	UiKit.arrive(row,0)
 func orders_page():
 	quest_filter="operations";quest_page()
 func messages_page():
@@ -235,6 +271,7 @@ func messages_page():
 		if Game.notifications.category(entry)!=message_tab:continue
 		var card=preload("res://scripts/ui/message_card.gd").new();card.entry=entry;box.add_child(card);card.read_requested.connect(func():entry.read=true;Game.save_progress();refresh())
 	if box.get_child_count()==0:UiKit.label(box,"Пока нет сообщений",Vector2.ZERO,Vector2(500,40),16,UiKit.MUTED)
+	UiKit.reveal_list(box)
 	UiKit.button(content,"Прочитать эту вкладку",Vector2(22,518),Vector2(300,40),func():Game.notifications.mark_all(message_tab);refresh()).add_theme_font_size_override("font_size",16)
 func base_page():preload("res://scripts/ui/base_dashboard.gd").render(self)
 func inventory_page():preload("res://scripts/ui/tablet_pages.gd").new(self).inventory()
@@ -269,6 +306,7 @@ func changelog_page():
 		var heading=Label.new();column.add_child(heading);heading.text=str(text.get("title",""));heading.add_theme_font_size_override("font_size",21);heading.add_theme_color_override("font_color",UiKit.INK);heading.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 		for item in text.get("items",[]):
 			var line=Label.new();column.add_child(line);line.text="•  "+str(item);line.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;line.add_theme_font_size_override("font_size",16);line.add_theme_color_override("font_color",UiKit.INK)
+	UiKit.reveal_list(box)
 func can_quit()->bool:
 	return not OS.has_feature("mobile") and not OS.has_feature("web")
 func confirm_quit():
@@ -327,6 +365,7 @@ func render_guide():
 			var summary=Label.new();body.add_child(summary);Texts.set_text(summary,Texts.description(entry.term));summary.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;summary.add_theme_color_override("font_color",UiKit.ORANGE)
 		if dev_edit:UiKit.button(body,"Редактировать"+(" · общий термин" if entry.term!="" else ""),Vector2.ZERO,Vector2(0,30),func():preload("res://scripts/ui/encyclopedia_editor.gd").open(self,entry.id)).add_theme_font_size_override("font_size",14)
 		var text=Label.new();body.add_child(text);Texts.set_text(text,entry.text);text.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;text.add_theme_font_size_override("font_size",17);text.add_theme_color_override("font_color",UiKit.INK)
+	UiKit.reveal_list(guide_box)
 
 func _input(event):
 	if is_instance_valid(quit_confirm) and event.is_action_pressed("pause") and not event.is_echo():

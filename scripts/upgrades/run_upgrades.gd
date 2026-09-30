@@ -35,6 +35,9 @@ static func apply(arena,id:String,tier:int,record:bool=true)->bool:
 	if def==null:push_error("Unknown upgrade: "+id);return false
 	if record:arena.run.upgrade_history.append({"id":id,"tier":tier})
 	apply_power(arena,def,Balance.tier_power(tier))
+	if record:
+		if def.effect!=null:Game.progression.event("behavior_cards")
+		Game.progression.event("card_stack",stacks(arena,id),true)
 	return true
 
 static func apply_power(arena,def:UpgradeDef,power:float):

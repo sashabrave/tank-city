@@ -105,7 +105,7 @@ func weapon_details(id:String):
 	var text="Постоянная сила оружия: ×%s\nУрон оружия за вылазку: +%s%%\nИнтервал между выстрелами: ×%s\nДобавка к напору: +%s п.п." % [UiKit.number(Game.weapon_factor(id)),UiKit.number(mods.damage*100),UiKit.number(mods.interval),UiKit.number(mods.intercept*100)]
 	if is_instance_valid(arena):text+="\nОбщий бонус урона: +%s%% · интервал: ×%s" % [UiKit.number(arena.run.damage_bonus*30),UiKit.number(arena.run.fire_multiplier)]
 	UiKit.label(card,text,Vector2(24,279),Vector2(602,130),16).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-	UiKit.label(card,"Изменить улучшения можно только на верстаке.",Vector2(24,432),Vector2(602,30),15,UiKit.MUTED)
+	UiKit.label(card,"Изменить улучшения можно на станциях хаба.",Vector2(24,432),Vector2(602,30),15,UiKit.MUTED)
 	UiKit.button(card,"Закрыть",Vector2(24,480),Vector2(602,38),overlay.queue_free)
 func radio():
 	UiKit.label(content,"Радио",Vector2(22,18),Vector2(710,40),24)
@@ -182,7 +182,8 @@ func settings():
 		setting_choice(body,["screen_controls","Экранные кнопки",["Скрыты","Показаны"],[false,true],"Кнопки движения и огня в хабе и бою. Клавиатура работает всегда."],0)
 		setting_choice(body,["biome_info","Подпись биома",["Скрыта","Показана"],[false,true],"Номер, название и покрытия карты под характеристиками оружия."],96)
 		setting_choice(body,["language","Язык / Language",["Русский","English"],["ru","en"],"Язык интерфейса. Названия своих статей сохраняются как написаны."],192)
-		y=288
+		setting_choice(body,["ui_motion","Анимации интерфейса",["Выключены","Включены"],[false,true],"Карточки и сообщения выезжают, кнопки пружинят при нажатии."],288)
+		y=384
 	else:
 		UiKit.label(body,"Нажми кнопку и новую клавишу. Esc — отмена. Занятые клавиши меняются местами.",Vector2(0,0),Vector2(700,46),14,UiKit.MUTED).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;y=55
 		for group in [["Движение",["north","south","west","east"]],["Бой и действия",["fire","interact","hide_trench"]],["Способности",["class_ability","skill_1","ability","hq_ability"]]]:

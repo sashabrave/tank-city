@@ -83,6 +83,8 @@ func finish_wave():
 
 func finish_run(won: bool,reason: String):
 	if arena.phase=="result": return
+	# Sandbox never ends a run: the soldier and the HQ come back on the spot.
+	if arena.sandbox and not won:sandbox_respawn.call_deferred(reason);return
 	if won:arena.reward.collect_resources()
 	Game.sound("rare_reveal" if won else "defeat",arena)
 	arena.phase="result"
@@ -138,3 +140,14 @@ func transition(next:String):
 	var previous=current
 	current=next
 	changed.emit(previous,current)
+
+func sandbox_respawn(reason:String):
+	var cell=Vector2i(arena.room.base_cell.x,arena.room.grid_size-3)
+	if not is_instance_valid(arena.room.player) or arena.room.player.dead:
+		arena.run.soldier_hp=arena.run.soldier_max_hp
+		arena.room.player=arena.spawn_actor("soldier",arena.find_free_near(cell),true)
+		arena.room.player.invulnerable=1.5
+	arena.room.base_hp=arena.room.base_max_hp
+	if is_instance_valid(arena.room.base_bar):arena.room.base_bar.set_health(arena.room.base_hp,arena.room.base_max_hp)
+	arena.phase="combat"
+	arena.toast(reason+" · возрождение")

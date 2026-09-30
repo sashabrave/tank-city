@@ -43,7 +43,7 @@ const ROOM_WAVES = [
 ]
 const BIOMES=preload("res://scripts/biome_catalog.gd")
 var navigation=preload("res://scripts/systems/navigation_cache.gd").new(self)
-func room_palette()->Dictionary:return BIOMES.entry(run_seed,room_index)
+func room_palette()->Dictionary:return BIOMES.ENTRIES[sandbox_biome] if sandbox and sandbox_biome>=0 else BIOMES.entry(run_seed,room_index)
 
 var grid_size:
 	get:return room.grid_size
@@ -248,6 +248,13 @@ var effects=preload("res://scripts/upgrades/run_effects.gd").new(self)
 var challenges=preload("res://scripts/systems/challenge_rooms.gd").new(self)
 
 var resume_checkpoint:Dictionary={}
+## Sandbox (test field from the hub): overrides applied by begin_room; the admin panel sets them.
+var sandbox=false
+var sandbox_size=0
+var sandbox_mode="battle"
+var sandbox_difficulty=0
+var sandbox_biome=-1
+var sandbox_waves=false
 func _ready():
 	set_meta("start_documents",Game.cores)
 	ResourceStrip.track_run(run)
@@ -288,7 +295,7 @@ func begin_room(index: int):
 	resume_checkpoint={}
 	if pending_vehicle!="":carried_kind=pending_vehicle;carried_armor=0;carried_salvaged=false;carried_origin="owned";pending_vehicle=""
 	for child in get_children():
-		if child==presentation or child==hud or child==camera or child is WorldEnvironment or child is DirectionalLight3D or child.name in ["WorldLighting","WorldAtmosphere"]:continue
+		if child==presentation or child==hud or child==camera or child is WorldEnvironment or child is DirectionalLight3D or child.name in ["WorldLighting","WorldAtmosphere","SandboxAdmin"]:continue
 		remove_child(child);child.queue_free()
 	room.commander_countdown=false;room_cleared=false;room_boss_spawned=false;reward_claimed=false;flag=null;flag_armed=true;upgrade_offers.clear();trenches.clear()
 	room.resource_drops.clear();actors.clear();wrecks.clear();walls.clear();pickups.clear();nets.clear();projectiles.clear();bombs.clear();grenades.clear()
@@ -296,10 +303,12 @@ func begin_room(index: int):
 	var route_node=RoutePlan.chosen(RoutePlan.build(run_seed),index,run.route_choices)
 	room.difficulty=route_node.difficulty;room.route_node_id=route_node.id
 	room.mode=route_node.get("type","battle") if route_node.get("type","battle") in RoutePlan.CHALLENGES else "battle"
+	if sandbox:room.mode=sandbox_mode;room.difficulty=sandbox_difficulty;room.commander_elite=sandbox_difficulty>0
 	challenges.reset()
 	room.commander_elite=room.difficulty>0
 	room.commander=null;room.commander_help_timer=0;room.commander_help_waves=0;room.commander_help_pool.clear()
 	room_index=index;grid_size=ROOM_SIZES[index];boss_room=index in Campaign.BOSSES;boss_defeated=false
+	if sandbox and sandbox_size>0 and not boss_room:grid_size=sandbox_size
 	base_cell=Vector2i(int(grid_size/2),grid_size-1)
 	headquarters.room_started()
 	reinforcement_timer=9.2
@@ -320,6 +329,7 @@ func begin_room(index: int):
 	toast("Атакуй босса. При включении щита уничтожь светящийся генератор." if Campaign.is_final(room_index) else "Бой с генералом. Уничтожь командирский танк." if boss_room else "")
 	preload("res://scripts/effect_warmup.gd").run(self)
 	if challenges.active():challenges.start();phase="combat"
+	elif sandbox and not sandbox_waves and not boss_room:room.spawn_queue.clear();room.wave_roster.clear();phase="combat"
 	else:start_wave(0)
 	if boss_room:drop_pickup(Vector2i(base_cell.x-3,grid_size-2),"vehicle")
 
@@ -342,7 +352,7 @@ func _build_map():
 		if child.name=="WorldLighting":
 			child.day_background=Color("bec3b8").lerp(Color(room_palette().floor),.35);child.apply()
 	preload("res://scripts/field_border.gd").build(self)
-	var layout={} if boss_room else BattleMapGenerator.generate(run_seed+room_index*100003,room_index,false)
+	var layout={} if boss_room else BattleMapGenerator.generate(run_seed+room_index*100003,room_index,false,grid_size)
 	terrain.patches.clear()
 	set_meta("environment_floor",Color(room_palette().floor))
 	if boss_room:
@@ -497,7 +507,7 @@ func _physics_process(delta):
 		var near=flat_distance(player.position,flag.position)<1.1
 		if not near:flag_armed=true
 		if near and flag_armed:open_flag()
-	if not room_cleared and spawn_queue.is_empty() and enemy_count()==0 and grenades.is_empty() and not challenges.blocks_waves():
+	if not room_cleared and spawn_queue.is_empty() and enemy_count()==0 and grenades.is_empty() and not challenges.blocks_waves() and not (sandbox and not sandbox_waves and not boss_room):
 		finish_wave()
 
 func wave_enemy_count()->int:

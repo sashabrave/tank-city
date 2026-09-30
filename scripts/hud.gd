@@ -121,8 +121,9 @@ func _process(_delta):
 	health.set_health(data.hero_hp,data.hero_max);base_health.visible=not data.boss_room;base_health.set_health(data.base_hp,data.base_max)
 	dpad.visible=Settings.values.screen_controls;fire_pad.visible=Settings.values.screen_controls;biome_panel.visible=Settings.values.biome_info
 	Texts.set_text(biome_label,arena.BIOMES.caption(arena.run_seed,arena.room_index))
-	Texts.set_text(wave_label,"Босс мира" if data.boss_room else "Поле %d / %d" % [data.stage,6])
-	if arena.challenges.active():Texts.set_text(enemy_label,arena.challenges.status())
+	Texts.set_text(wave_label,"Песочница" if arena.sandbox else "Босс мира" if data.boss_room else "Поле %d / %d" % [data.stage,6])
+	if arena.sandbox and not arena.challenges.active():Texts.set_text(enemy_label,"F2 — админ")
+	elif arena.challenges.active():Texts.set_text(enemy_label,arena.challenges.status())
 	else:Texts.set_text(enemy_label,BossCatalog.encounter(arena.run_seed,arena.room_index).name if data.boss_room else "Волна %d / 3 · %s" % [data.wave,WaveDirector.wave_title(data.wave-1)])
 	tip.hide();Texts.set_text(star_label,"★ Звезда · %.1f с" % data.star);star_label.visible=data.star>0
 	ability_button.hide()

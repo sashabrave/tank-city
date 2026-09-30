@@ -1565,3 +1565,165 @@ Changelog	Changelog
 Песчаная буря	Sandstorm
 Случайно — на новом этапе погода иногда меняется. Только оформление, на бой не влияет.	Random: the weather sometimes changes on a new stage. Visual only, no effect on combat.
 HP стен +1/ур. На ур. 2 — армированный кирпич, на ур. 3 — неразрушимый забор.	Wall HP +1 per level. Level 2 builds reinforced brick, level 3 an indestructible fence.
+Песочница	Sandbox
+F2 — админ	F2 — admin
+Админ [F2]	Admin [F2]
+Песочница · админ	Sandbox · admin
+Карты	Cards
+Испытания	Challenges
+Выйти из песочницы в хаб	Leave the sandbox to the hub
+Размер поля	Field size
+Генерация	Generation
+Новая генерация	New generation
+Обычная волна	Regular wave
+Пустое поле	Empty field
+Бой с боссом	Boss fight
+Время суток	Time of day
+Ранг и количество	Rank and count
+Ранг %d	Rank %d
+Вызвать	Spawn
+Убрать врагов	Clear enemies
++10 жетонов	+10 tokens
+Редкость	Rarity
+Карты улучшений	Upgrade cards
+Техника рядом	Vehicle nearby
+Оболочка (возрождение)	Shell (respawn)
+Звёзды	Stars
+Без звёзд	No stars
+Запустить	Start
+Техника рядом · E, чтобы сесть	Vehicle nearby · E to board
+Летающий	Flyer
+Солдат погиб · возрождение	Soldier down · respawn
+База уничтожена · возрождение	Base destroyed · respawn
+Взорви бочками %d врагов	Blow up %d enemies with barrels
+Собери %d жетонов	Collect %d tokens
+Особое задание	Special task
+На карте есть особые точки: тайник, удержание, выживание, напёрстки, переключатели. Пройди любую.	The map has special points: cache, hold, survival, thimbles, switches. Complete any of them.
+Сделка на марше	Deal on the march
+Собери жетоны с врагов и купи что-нибудь у торговца в сервисном ряду.	Collect tokens from enemies and buy something from the merchant in a service row.
+Зачисти первое поле Пограничья: три волны и командира.	Clear the first Borderland field: three waves and the commander.
+В принтере открой «Общие улучшения» и купи здоровье.	In the printer open General upgrades and buy health.
+Доберись до третьего поля и зачисти его. Сложные точки ★★ дальше по пути.	Reach the third field and clear it. Hard ★★ points come later on the route.
+Уничтожь генерала в конце мира 1. Откроется бесконечный режим.	Destroy the general at the end of world 1. Endless mode unlocks.
+Удержать рубеж	Hold the line
+В хабе нажми «В бой» и выбери бесконечный режим.	In the hub press To battle and choose endless mode.
+Второй сектор	Second sector
+В бесконечном режиме пройди семь комнат и начни второй сектор.	In endless mode clear seven rooms and start the second sector.
+Выбери другую оболочку в принтере и снова победи генерала мира 1.	Pick another shell in the printer and beat the world 1 general again.
+Несокрушимый рубеж	Unbreakable line
+Дойди до пятого сектора бесконечного режима. Нужна сильная сборка карт.	Reach the fifth sector of endless mode. You will need a strong card build.
+Улучши аптечки передышки.	Upgrade the rest stop medkits.
+Донеси чертёж верстака штаба из сундука командира и построй его.	Bring the HQ workbench blueprint from a commander chest and build it.
+Используй активный гаджет штаба три раза.	Use the active HQ gadget three times.
+Вторая оболочка	Second shell
+Купи в принтере вторую оболочку бойца. Все оболочки доступны в мире 1.	Buy a second soldier shell in the printer. All shells are available in world 1.
+Найди чертёж дрона-помощника во второй половине пути и доставь в хаб.	Find the helper drone blueprint in the second half of the route and bring it to the hub.
+Возьми товарища и улучши его у инструктора.	Take the comrade and upgrade him at the instructor.
+Чертёж авиаудара выпадает на сложных точках ближе к генералу и с него самого.	The airstrike blueprint drops on hard points near the general and from the general himself.
+Полный арсенал оболочек	Full set of shells
+Собери все шесть оболочек бойца.	Collect all six soldier shells.
+Добудь чертёж багги и купи машину на стоянке.	Get the buggy blueprint and buy the vehicle at the parking lot.
+Чертёж БТР выпадает во второй половине пути мира 1. Купи машину на стоянке.	The APC blueprint drops in the second half of the world 1 route. Buy it at the parking lot.
+Чертёж танка — самый редкий: сложные точки у генерала и сам генерал.	The tank blueprint is the rarest: hard points near the general and the general himself.
+На карте мира 1 механик стоит обычной точкой второго–третьего этапа. Загляни к нему.	On the world 1 map the mechanic is a regular point of stage two or three. Pay him a visit.
+Мастерская штаба ждёт на четвёртом–пятом этапе маршрута.	The HQ workshop waits on stage four or five of the route.
+Вскрыть тайник	Crack the cache
+Открой тайник и отбейся от засады ветеранов.	Open the cache and fight off the veteran ambush.
+Точка удержана	Point held
+Пройди удержание: стой в зоне, пока шкала не заполнится.	Complete Hold: stay in the zone until the bar fills.
+Под огнём	Under fire
+Пройди выживание без патронов под артобстрелом.	Complete Survival without ammo under the barrage.
+Зоркий глаз	Sharp eye
+Угадай колпак со штабом в напёрстках.	Guess the cup with the HQ in Thimbles.
+Код сейфа	Safe code
+Повтори порядок огней на переключателях и открой сейф.	Repeat the order of lights on the switches and open the safe.
+Две звезды	Two stars
+Пройди три испытания со звёздами ★★.	Complete three ★★ challenges.
+Огненный мешок	Fire trap
+Уничтожь пятерых врагов взрывом бочек.	Destroy five enemies with barrel explosions.
+Коллекционер жетонов	Token collector
+Собери 25 жетонов. Их чаще носят техника и ветераны, командир — всегда.	Collect 25 tokens. Vehicles and veterans carry them more often, commanders always.
+Азартный рядовой	Gambling private
+Сыграй пять раз на игровом автомате торговца.	Play the merchant's slot machine five times.
+Тактик	Tactician
+Возьми три карты «Тактика» за всё время.	Take three Tactics cards in total.
+Специалист	Specialist
+В одном забеге возьми пять одинаковых карт улучшения.	Take five identical upgrade cards in one run.
+Бочки	Barrels
+готово к сдаче	ready to hand in
+новое	new
+выполнено	done
+в работе	in progress
+предложение	offer
+Новый приказ	New order
+Выбери сложность или откажись.	Choose a difficulty or decline.
+Оперштаб · телеграмма	Operations · telegram
+Испытаний пройдено	Challenges completed
+Сектор	Sector
+Покупок	Purchases
+Жетонов собрано	Tokens collected
+Игр на автомате	Slot machine plays
+Врагов взорвано	Enemies blown up
+Карт «Тактика»	Tactics cards
+Одинаковых карт	Identical cards
+Оболочек	Shells
+Визитов	Visits
+Анимации интерфейса	Interface animations
+Карточки и сообщения выезжают, кнопки пружинят при нажатии.	Cards and messages slide in, buttons bounce when pressed.
+%d вылазки · %d ◈	%d runs · %d ◈
+Сводка	Summary
+Станции	Stations
+Оболочки	Shells
+Бонусы и гаджеты	Bonuses and gadgets
+%d бонусов · %d гаджетов	%d bonuses · %d gadgets
+%d%% сплава при гибели	%d%% of alloy on death
+Задания	Quests
+%d сдано · %d в работе	%d handed in · %d in progress
+Отслеживаемые задания	Tracked quests
+К заданиям	To quests
+Арсенал	Arsenal
+Достигнут предел	Limit reached
+%d сплава	%d alloy
+Донеси чертёж Арсенала и построй его через «Строительство» в хабе.	Bring the Arsenal blueprint and build it via Construction in the hub.
+В «Бойце» → Снабжение открой и улучши аптечки передышки.	In Soldier → Supply unlock and upgrade the rest stop medkits.
+Донеси чертёж Штаба из сундука командира и построй его.	Bring the HQ blueprint from a commander chest and build it.
+В Штабе → Технологии выбери модуль или активную технологию.	In HQ → Technologies pick a module or an active technology.
+В Арсенале купи первый уровень открытого оружия.	Buy the first level of an unlocked weapon in the Arsenal.
+Найди чертёж Стоянки и построй её — в «Строительстве» или в Штабе → Постройки.	Find the Parking blueprint and build it via Construction or HQ → Buildings.
+В Штабе купи постоянный уровень технологии.	Buy a permanent technology level in the HQ.
+Изменить улучшения можно на станциях хаба.	Upgrades are changed at the hub stations.
+Оболочки, способности и общие улучшения — действуют в каждой вылазке.	Shells, abilities and general upgrades — active in every run.
+Оружие, бонусы боя и гаджеты. Открываются чертежами, развиваются сплавом.	Weapons, combat bonuses and gadgets. Unlocked by blueprints, upgraded with alloy.
+Поддержка в бою, оборона базы, страховка добычи и постройки хаба.	Combat support, base defence, loot insurance and hub buildings.
+Своя техника ждёт у старта вылазки. Сначала багги, потом БТР и танк.	Your own vehicle waits at the start of a run. Buggy first, then APC and tank.
+Технологии	Technologies
+Оборона	Defence
+Страховка	Insurance
+Надета	Equipped
+Надеть	Equip
+Куплен	Bought
+Выстрелов в с	Shots per s
+Ячейки	Slots
+За забег	Per run
+Взять на вылазку	Take on the run
+Идти пешком	Go on foot
+Потеря при гибели	Loss on death
+Шанс	Chance
+Выбрана	Selected
+В гараже	In the garage
+Клавиша F в бою	F key in battle
+Оружие взято в бой	Weapon taken into battle
+Оружие улучшено	Weapon upgraded
+Бонус улучшен	Bonus upgraded
+Гаджет выбран	Gadget selected
+Оболочка улучшена	Shell upgraded
+Улучшено для всех оболочек	Upgraded for all shells
+Общие улучшения сброшены	General upgrades reset
+Улучшено	Upgraded
+Технология выбрана	Technology selected
+Технология улучшена	Technology upgraded
+Страховка улучшена	Insurance upgraded
+Машина куплена	Vehicle bought
+Машина ждёт у старта	Vehicle waits at the start
+Вылазка пешком	Run on foot
+Оборудование улучшено	Equipment upgraded

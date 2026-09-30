@@ -20,6 +20,7 @@ static func recipe_pool(level:int,pending:Array,stage:int,include_owned:bool=fal
 	for category in ["research","weapon","bonus","ability","hq","garage"]:
 		for id in Game.recipe_catalog(category):
 			if (not include_owned and id in Game.recipe_owned(category)) or pending.any(func(r):return r.id==id and r.category==category):continue
+			if category=="research" and id in Game.RETIRED_BUILDINGS:continue
 			# Class skills are purchases, never a blueprint reward.
 			if category=="ability" and id not in ["barrier","mine","laser","airstrike"]:continue
 			if category=="weapon" and Campaign.recipe_world()<Campaign.weapon_world(id):continue

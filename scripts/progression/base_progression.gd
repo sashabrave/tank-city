@@ -59,6 +59,7 @@ func sync():
 	for value in Game.garage.levels.values():event("vehicle_equipment",int(value),true)
 	for id in Game.built_workshops:event("build_"+id,1,true)
 	event("health_level",Game.health_level,true);event("camp_level",Game.camp_level,true)
+	event("shells",Game.class_unlocks.size(),true)
 	for value in weapon_levels.values():event("weapon_level",int(value),true)
 	for id in Game.ability_unlocks:event("recipe_"+id,1,true)
 func active(chain:Array)->Dictionary:
@@ -74,7 +75,7 @@ func claim(quest:Dictionary)->bool:
 	if quest.is_empty() or quest.id not in accepted or quest.id in claimed or int(counters.get(quest.event,0))<quest.goal:return false
 	var was_tracked=quest.id in tracked;tracked.erase(quest.id)
 	claimed.append(quest.id)
-	xp+=quest.xp;Game.earn(quest.alloy);Game.save_progress();return true
+	xp+=int(quest.get("xp",0));Game.earn(quest.alloy);Game.cores+=int(quest.get("docs",0));Game.save_progress();return true
 func choose_telegram(index:int):
 	if not telegram.is_empty() or order_wait>0 or index<0 or index>=telegram_options.size():return
 	telegram=telegram_options[index].duplicate(true);telegram.progress=0;telegram.active=false

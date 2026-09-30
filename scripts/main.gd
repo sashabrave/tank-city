@@ -31,6 +31,7 @@ func _return_hub():
 	current=load("res://scenes/hub.tscn").instantiate();current.arrival_reason=greeting;add_child(current)
 	current.start_requested.connect(request_run)
 	current.gallery_requested.connect(show_gallery)
+	current.sandbox_requested.connect(show_sandbox)
 func select_world():
 	var picker=load("res://scripts/ui/world_select.gd").new();current.root.add_child(picker)
 	current.build_menu=picker;current.phase="workshop";current.exit_queued=false
@@ -39,10 +40,13 @@ func select_world():
 
 func start_run():
 	Game.clear_run_checkpoint()
-	Game.progression.begin_run();Game.progression.event("enter_world_"+str(Campaign.world),1,true);route_choices.clear();Game.visual_run_seed=randi();show_map(0)
+	Game.progression.begin_run();Game.progression.event("enter_world_"+str(Campaign.world),1,true)
+	if Campaign.endless:Game.progression.event("enter_endless",1,true)
+	route_choices.clear();Game.visual_run_seed=randi();show_map(0)
 func show_map(index: int):
 	if Campaign.endless and index>=Campaign.SIZES.size():
 		Campaign.cycle+=1;index=0;route_choices.clear()
+		Game.progression.event("endless_cycle",Campaign.cycle+1,true)
 		if is_instance_valid(run_arena):run_arena.visited_services.clear();run_arena.run.route_choices=route_choices
 	if Campaign.endless:
 		advance_endless(index);return
@@ -96,6 +100,7 @@ func show_service(branch: String,index: int):
 
 ## A service placed on the route as an ordinary node: after it the next stage opens.
 func show_node_service(branch:String,index:int):
+	Game.progression.event("visit_"+branch)
 	clear_current();current=load("res://scripts/service_room.gd").new();current.arena=run_arena;current.index=index;current.branch=branch;add_child(current)
 	current.hub_requested.connect(show_hub)
 	current.completed.connect(func(_completed):run_arena.run.route_choices=route_choices;show_map(index+1))
@@ -126,7 +131,7 @@ func reload_profile_hub():
 	if not Game.profiles.selected:
 		ProfileMenu.call_deferred("open_start");return
 	current=load("res://scenes/hub.tscn").instantiate();current.arrival_reason="wake";add_child(current)
-	current.start_requested.connect(request_run);current.gallery_requested.connect(show_gallery)
+	current.start_requested.connect(request_run);current.gallery_requested.connect(show_gallery);current.sandbox_requested.connect(show_sandbox)
 
 func request_run():
 	if Game.run_checkpoint.is_empty():select_world();return
@@ -169,3 +174,32 @@ func advance_endless(index:int):
 		current.selected.connect(func(branch):show_service(branch,index));current.hub_requested.connect(show_hub)
 		Game.checkpoint_run(run_arena,index,"map",route_choices)
 	else:enter_room(index)
+
+## Sandbox: an isolated test field. The profile is snapshotted, writing is off, everything is unlocked;
+## leaving restores the profile exactly (including an unfinished real run) and returns to the hub.
+var sandbox_snapshot:Dictionary={}
+var sandbox_restore:Dictionary={}
+func show_sandbox():
+	if is_instance_valid(run_arena):return
+	sandbox_snapshot=Game.serialize_progress().duplicate(true)
+	sandbox_restore={"save":Game.save_enabled,"settings":Settings.persistence_enabled,"lighting":Settings.values.world_lighting,"world":Campaign.world,"endless":Campaign.endless}
+	Game.save_enabled=false;Settings.persistence_enabled=false
+	Game.weapon_unlocks=Game.LOOT.WEAPONS.keys();Game.class_unlocks=Game.CLASSES.keys()
+	Campaign.configure(1)
+	clear_current()
+	run_arena=load("res://scenes/arena.tscn").instantiate();run_arena.sandbox=true;run_arena.run_seed=randi();run_arena.auto_pause_enabled=false
+	current=run_arena;add_child(current)
+	current.exit_requested.connect(exit_sandbox)
+	var admin=load("res://scripts/sandbox/admin_panel.gd").new();admin.name="SandboxAdmin";admin.arena=run_arena;run_arena.add_child(admin)
+	admin.exit_requested.connect(exit_sandbox)
+	Game.music_context("battle")
+func exit_sandbox():
+	if not is_instance_valid(run_arena) or not run_arena.sandbox:return
+	get_tree().paused=false
+	clear_current();run_arena.queue_free();run_arena=null;current=null
+	Settings.values.world_lighting=sandbox_restore.lighting;Settings.apply()
+	Game.apply_profile(sandbox_snapshot)
+	Game.save_enabled=sandbox_restore.save;Settings.persistence_enabled=sandbox_restore.settings
+	Campaign.configure(sandbox_restore.world,sandbox_restore.endless)
+	ResourceStrip.track_run(null)
+	show_hub()

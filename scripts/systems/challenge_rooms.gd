@@ -105,7 +105,7 @@ func tick(delta:float=0.0):
 	match arena.room.mode:
 		"cache":
 			if opened and not rewarded and arena.room.spawn_queue.is_empty() and arena.enemy_count()==0:
-				rewarded=true;drop_reward()
+				rewarded=true;record_success();drop_reward()
 		"hold":tick_hold(delta)
 		"survive":tick_survive(delta)
 		"switches":tick_switches()
@@ -323,7 +323,7 @@ func press(plate:int):
 ## Challenge won: remaining enemies withdraw, the exit and the reward chest appear.
 func complete(pos:Vector3):
 	if rewarded:return
-	rewarded=true
+	rewarded=true;record_success()
 	arena.room.spawn_queue.clear()
 	for actor in arena.room.actors.duplicate():
 		if is_instance_valid(actor) and not actor.dead and not actor.player_owned and not actor.allied:
@@ -333,6 +333,9 @@ func complete(pos:Vector3):
 	arena.reward.drop_recipe(arena.grid_pos(pos),{"elite":true})
 	var pickup=arena.room.pickups.back();pickup["offers"]=reward_offers(arena.room.difficulty)
 	if is_instance_valid(arena.presentation):arena.presentation.announce("Испытание пройдено","Забери награду",.8)
+func record_success():
+	Game.progression.event("challenge_"+arena.room.mode);Game.progression.event("challenge_any")
+	if arena.room.difficulty>=2:Game.progression.event("challenge_hard")
 func drop_reward():
 	var cell=Vector2i(int(arena.room.grid_size/2),int(arena.room.grid_size/2)-1)
 	arena.reward.drop_recipe(cell,{"elite":true})
