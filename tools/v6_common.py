@@ -264,10 +264,11 @@ def rounded_rect(w, h, r, steps=1):
 
 
 def camo_cell(p, cells=("camo_a", "camo_b", "camo_c"), scale=1.0):
-    """Blobby low-frequency camo from the face centre: neighbouring faces share a colour."""
+    """Big soft camo blobs from the face centre (painted-look pass): half the old frequency, one dominant
+    base tone with a few large patches, so the uniform no longer reads as a patchwork of facets."""
     x, y, z = (p.center * scale) if hasattr(p, "center") else p
-    n = math.sin(x * 21 + y * 7) + math.sin(y * 17 - z * 23 + 1.3) + math.sin(z * 19 + x * 11 + 2.1)
-    return cells[0] if n < -.55 else cells[1] if n < .6 else cells[2]
+    n = math.sin(x * 10 + y * 3.5) + math.sin(y * 8.5 - z * 11 + 1.3) + math.sin(z * 9.5 + x * 5.5 + 2.1)
+    return cells[0] if n < .55 else cells[1] if n < 1.55 else cells[2]
 
 
 def empty(scene, name, loc, parent=None, size=.02):

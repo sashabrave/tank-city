@@ -38,7 +38,7 @@ var rescue_level=0
 var shield_capacity_level=0
 ## Class names and short stats; roles, start modifiers and unlock goals live in ClassCatalog. "driver" is the
 ## legacy Механик, merged into Инженер (profiles move over on load).
-const CLASSES={"recruit":{"name":"Стрелок","price":0,"desc":"Крит +5% · граната"},"heavy":{"name":"Штурмовик","price":0,"desc":"HP +1 · защита от пуль +10% · дробовик +10% · скорость −5%"},"gunner":{"name":"Подрывник","price":0,"desc":"Поджог +10% · защита от взрывов +15% · газ"},"marksman":{"name":"Разведчик","price":0,"desc":"Маскировка +12% · крит-урон +25% · снайперка +15%"},"engineer":{"name":"Инженер","price":0,"desc":"Ремонт за убийство +0,3 · мародёр +10% · техника +15% · дрон"},"driver":{"name":"Механик","price":0,"desc":"Объединён с инженером"}}
+const CLASSES={"recruit":{"name":"Стрелок","price":0,"desc":"Крит +5% · граната"},"heavy":{"name":"Штурмовик","price":0,"desc":"HP +1 · защита от пуль +10% · дробовик +10% · скорость −5%"},"gunner":{"name":"Подрывник","price":0,"desc":"Поджог +10% · защита от взрывов +15% · газ"},"marksman":{"name":"Разведчик","price":0,"desc":"Маскировка +12% · крит-урон +25% · снайперка +15%"},"engineer":{"name":"Инженер","price":0,"desc":"Ремонт за побеждённого +0,3 · запасливость +10% · техника +15% · дрон"},"driver":{"name":"Механик","price":0,"desc":"Объединён с инженером"}}
 var credits = 0
 var health_level = 0
 var damage_level = 0

@@ -8,7 +8,6 @@ var recycling_pos=Vector3(6,0,3)
 var printer_pos=Vector3(3,0,3)
 var printer_model:Node3D
 var avatar: Node3D
-var avatar_rim: SpotLight3D
 var root: Control
 var station: Panel
 var credits: Label
@@ -128,8 +127,6 @@ func _ready():
 	avatar.rotation.y=PI
 	Visuals.ring(avatar,Color("fac47a"),.44)
 	# Cool rim light from behind and above keeps the soldier readable against the floor.
-	avatar_rim=SpotLight3D.new();avatar_rim.name="AvatarRim";add_child(avatar_rim);avatar_rim.light_color=Color("8cc4ff");avatar_rim.light_energy=2.4
-	avatar_rim.spot_range=4.0;avatar_rim.spot_angle=22;avatar_rim.shadow_enabled=false
 	dummy=Node3D.new();add_child(dummy);dummy.position=YARD_DUMMY
 	Visuals.model("training_dummy",dummy).scale=Vector3.ONE*1.3  # tools/build_yard_props.py; stands apart in the range pen
 	dummy.visible="range" in Game.built_workshops
@@ -290,7 +287,7 @@ func build_command_screen():
 	if screen is MeshInstance3D:
 		command_screen=ShaderMaterial.new();command_screen.shader=preload("res://shaders/world/command_screen.gdshader");screen.material_override=command_screen
 	command_beams=Node3D.new();command_beams.name="CommandLight";command_model.add_child(command_beams)
-	var glow=SpotLight3D.new();glow.light_color=Color("6fb4ff");glow.light_energy=1.6;glow.spot_range=3.6;glow.spot_angle=38;glow.spot_attenuation=1.4;glow.shadow_enabled=false
+	var glow=SpotLight3D.new();glow.name="ScreenGlow";glow.light_color=Color("6fb4ff");glow.light_energy=1.6;glow.spot_range=3.6;glow.spot_angle=38;glow.spot_attenuation=1.4;glow.shadow_enabled=false
 	# The screen plane faces -Z in the model file; the monolith front (and the camera) is +Z, so the light aims +Z.
 	command_beams.add_child(glow);glow.position=Vector3(0,1.5,.55);glow.rotation=Vector3(deg_to_rad(-55),PI,0)
 
@@ -298,7 +295,9 @@ func refresh_command_alert():
 	if not is_instance_valid(command_alert):return
 	var news=Game.progression.news_kind()
 	if command_screen:command_screen.set_shader_parameter("alert",news!="")
-	if is_instance_valid(command_beams):command_beams.visible=news!=""
+	# The blue light belongs to the screen: a faint glow while idle, bright when there is news.
+	var glow=command_beams.get_node_or_null("ScreenGlow") if is_instance_valid(command_beams) else null
+	if glow:glow.light_energy=1.6 if news!="" else .35
 	command_alert.visible=news!=""
 	command_alert.modulate=UiKit.NOTICE.news if news=="general" else UiKit.NOTICE.goal
 
@@ -309,7 +308,6 @@ func sync_model_animation():
 
 func _physics_process(delta):
 	follow_yard(delta)
-	if is_instance_valid(avatar_rim) and is_instance_valid(avatar):avatar_rim.look_at_from_position(avatar.position+Vector3(-.6,2.6,-1.8),avatar.position+Vector3(0,.6,0))
 	sync_model_animation()
 	if is_instance_valid(dpad):dpad.visible=InputScheme.touch();fire_pad.visible=InputScheme.touch()
 	if phase in ["intro","profiles"]:return

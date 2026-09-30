@@ -1952,7 +1952,7 @@ HP штаба и техники за каждое убийство.	HQ and vehic
 HP +1 · защита от пуль +10% · дробовик +10% · скорость −5%	HP +1 · bullet protection +10% · shotgun +10% · speed −5%
 Поджог +10% · защита от взрывов +15% · газ	Ignite +10% · blast protection +15% · gas
 Маскировка +12% · крит-урон +25% · снайперка +15%	Stealth +12% · crit damage +25% · sniper rifle +15%
-Ремонт за убийство +0,3 · мародёр +10% · техника +15% · дрон	Repair per kill +0.3 · marauder +10% · vehicles +15% · drone
+Ремонт за побеждённого +0,3 · запасливость +10% · техника +15% · дрон	Repair per defeated enemy +0.3 · hoarding +10% · vehicles +15% · drone
 Объединён с инженером	Merged into the engineer
 Медик	Medic
 Полевой хирург	Field surgeon

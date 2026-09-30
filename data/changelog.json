@@ -2,6 +2,24 @@
 	"entries": [
 		{
 			"date": "2026-09-30",
+			"version": "0.3.5",
+			"ru": {
+				"title": "Мягче форма, свет экрана",
+				"items": [
+					"Форма котов и псов спокойнее: крупные мягкие пятна камуфляжа вместо лоскутов — ближе к нарисованному стилю.",
+					"В хабе синий свет больше не ходит за бойцом: он идёт от экрана командного центра — тусклый в покое и яркий, когда есть новости."
+				]
+			},
+			"en": {
+				"title": "Softer uniforms, screen light",
+				"items": [
+					"Cat and dog uniforms are calmer: large soft camo patches instead of a patchwork, closer to the painted style.",
+					"In the hub the blue light no longer follows the soldier: it comes from the command screen — dim at rest, bright when there is news."
+				]
+			}
+		},
+		{
+			"date": "2026-09-30",
 			"version": "0.3.4",
 			"ru": {
 				"title": "Коты против собак и забег дня",
