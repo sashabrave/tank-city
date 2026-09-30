@@ -5,6 +5,9 @@ func run_test():
 	var arena=load("res://scenes/arena.tscn").instantiate();add_child(arena);arena.set_physics_process(false);arena.auto_pause_enabled=false;arena.phase="combat"
 	for wall in arena.walls.values():wall.node.queue_free()
 	arena.walls.clear()
+	# Random room features must not decide the result: clear floor patches, trenches and
+	# generators, then rebuild the shared occupancy cache for the emptied board.
+	arena.terrain.patches.clear();arena.trenches.clear();arena.generators.clear();arena.navigation.reset()
 	for actor in arena.actors:actor.set_physics_process(false)
 	var cell=Vector2i(6,6);var origin=arena.world_pos(cell);arena.add_wall(cell,4)
 	var wall=arena.walls[cell];assert(wall.sections.size()==16)
@@ -29,6 +32,10 @@ func run_test():
 	var shot=arena.spawn_bullet(enemy,enemy.position,Vector2i.DOWN,1,false);shot.position=origin
 	assert(not arena.bullet_hit(shot));shot.consume()
 	# Infantry navigation and locomotion use the same open half-cell passage.
+	# The slit sits in the base column, so seal the base lanes: otherwise the soldier
+	# correctly stops in its firing lane instead of following the route.
+	for blocker in [arena.base_cell+Vector2i.UP,arena.base_cell+Vector2i.LEFT,arena.base_cell+Vector2i.RIGHT]:arena.add_wall(blocker,4)
+	assert(arena.enemy.base_firing_cells(enemy).is_empty())
 	player.position=arena.world_pos(Vector2i(1,1))
 	enemy.position=origin+Vector3(0,0,-1);enemy.cell=arena.grid_pos(enemy.position)
 	enemy.route_points=[cell+Vector2i.DOWN];enemy.movement_pause=0
