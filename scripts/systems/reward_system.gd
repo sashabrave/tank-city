@@ -1,6 +1,5 @@
 extends RefCounted
 ## Reward system. Owns rules; Arena remains the scene coordinator.
-const START_EFFECTS=["health","speed","damage","intercept","fire","range","healing","device_power","device_cooldown"]
 var arena
 
 func _init(context):
@@ -76,41 +75,14 @@ func collect_pickup(pickup: Dictionary):
 	arena.room.pickups.erase(pickup)
 	pickup.node.queue_free()
 
+# Stat and behaviour cards come from UpgradeRegistry; weapons and headquarters offers keep their own catalogs.
 func apply_upgrade(id: String,tier: int=0):
-	var power=[1.0,1.5,2.0][tier]
 	if arena.phase!="upgrade": return
-	if not id.begins_with("hq_"):arena.run.upgrade_history.append({"id":id,"tier":tier})
 	if id.begins_with("hq_"):arena.headquarters.apply(id,tier)
-	if id in BehaviorCards.DATA and id not in arena.run.behavior_cards:arena.run.behavior_cards.append(id)
-	match id:
-		"damage":
-			arena.run.damage_bonus+=.5*power
-			if arena.room.player.kind=="soldier":arena.room.player.apply_weapon()
-			else:arena.room.player.damage+=(.125 if arena.room.player.kind=="buggy" else .5)*power
-		"intercept": arena.run.intercept_chance=minf(.95,arena.run.intercept_chance+.10*power)
-		"speed": apply_speed_upgrade(power)
-		"fire": arena.run.fire_multiplier*=1-.15*power; arena.room.player.fire_interval*=1-.15*power
-		"weapon_damage":
-			arena.run.weapon_mods[arena.run.weapon].damage+=.18*power
-			if arena.room.player.kind=="soldier":arena.room.player.apply_weapon()
-		"weapon_intercept":arena.run.weapon_mods[arena.run.weapon].intercept+=.05*power
-		"weapon_fire":
-			arena.run.weapon_mods[arena.run.weapon].interval*=1-.15*power
-			if arena.room.player.kind=="soldier":arena.room.player.apply_weapon()
-		"range":arena.run.range_multiplier+=.12*power
-		"healing":arena.run.healing_multiplier+=.20*power
-		"device_power":arena.run.ability_power_multiplier+=.15*power
-		"device_cooldown":arena.run.ability_cooldown_multiplier*=pow(.9,power)
-		"recovery":arena.abilities.shield_bonus+=power
-		"pistol", "smg", "shotgun", "rifle", "sniper", "rpg":
-			arena.run.weapon=id
-			if arena.room.player.kind=="soldier":arena.room.player.apply_weapon()
-		"health":
-			arena.run.soldier_max_hp+=roundi(power); arena.run.soldier_hp=minf(arena.run.soldier_max_hp,arena.run.soldier_hp+roundi(power))
-			if arena.room.player.kind=="soldier": arena.room.player.max_hp=arena.run.soldier_max_hp;arena.room.player.hp=arena.run.soldier_hp;arena.room.player.refresh_health()
-	if is_instance_valid(arena.player) and arena.player.kind in GarageCatalog.VEHICLES:
-		var stats=GarageCatalog.stats(arena.player.kind,arena,arena.player.vehicle_origin,arena.player.vehicle_zone)
-		arena.player.damage=stats.damage;arena.player.fire_interval=stats.interval;arena.player.speed=stats.speed
+	elif id in arena.LOOT.WEAPONS:
+		arena.run.upgrade_history.append({"id":id,"tier":tier})
+		arena.run.weapon=id;RunUpgrades.refresh_player(arena)
+	else:RunUpgrades.apply(arena,id,tier)
 	Game.sound("upgrade",arena)
 	if is_instance_valid(arena.replay):arena.replay.call_deferred("next");return
 	if arena.room.next_is_room:
@@ -171,21 +143,7 @@ func choose_recipe_card(index: int):
 	if is_instance_valid(arena.replay):arena.replay.call_deferred("next")
 	else:arena.pause_battle()
 func apply_trophy_upgrade(id: String,tier: int):
-	var n=[1.0,1.5,2.0][tier]
-	match id:
-		"health":
-			arena.run.soldier_max_hp+=roundi(n);arena.run.soldier_hp=minf(arena.run.soldier_max_hp,arena.run.soldier_hp+roundi(n))
-			if arena.room.player.kind=="soldier":arena.room.player.max_hp=arena.run.soldier_max_hp;arena.room.player.hp=arena.run.soldier_hp;arena.room.player.refresh_health()
-		"damage":
-			arena.run.damage_bonus+=.5*n
-			if arena.room.player.kind=="soldier":arena.room.player.apply_weapon()
-			else:arena.room.player.damage+=(.125 if arena.room.player.kind=="buggy" else .5)*n
-		"speed":apply_speed_upgrade(n)
-		"fire":arena.run.fire_multiplier*=1-.15*n;arena.room.player.fire_interval*=1-.15*n
-		"intercept":arena.run.intercept_chance=minf(.95,arena.run.intercept_chance+.1*n)
-	if arena.player.kind in GarageCatalog.VEHICLES:
-		var stats=GarageCatalog.stats(arena.player.kind,arena,arena.player.vehicle_origin,arena.player.vehicle_zone)
-		arena.player.damage=stats.damage;arena.player.fire_interval=stats.interval;arena.player.speed=stats.speed
+	RunUpgrades.apply(arena,id,tier)
 	Game.sound("upgrade",arena)
 
 func discard_recipe(index: int):
@@ -237,35 +195,19 @@ func effective_bonus_level(id:String)->int:return Game.bonus_level(id)+int(arena
 
 func prepare_upgrade_offers():
 	if arena.room.upgrade_offers.is_empty():
-		var ids=START_EFFECTS.duplicate()
-		for id in BehaviorCards.DATA:
-			if id not in arena.run.behavior_cards:ids.append(id)
-		if arena.abilities.slots.is_empty():ids.erase("device_power");ids.erase("device_cooldown")
-		if arena.speed_multiplier>=1.449 or arena.player.speed>=5.199:ids.erase("speed")
-		if arena.run.intercept_chance>=.949:ids.erase("intercept")
-		for i in range(ids.size()-1,0,-1):
-			var j=arena.run.combat_rng.randi_range(0,i);var swap=ids[i];ids[i]=ids[j];ids[j]=swap
-		ids=ids.slice(0,3)
-		if arena.room.next_is_room:
+		var ids=RunUpgrades.roll(arena,3)
+		# At the flag the first card offers switching to another unlocked weapon.
+		if arena.room.next_is_room and not ids.is_empty():
 			var alternatives=Game.weapon_unlocks.filter(func(id):return id!=arena.run.weapon)
 			if not alternatives.is_empty():ids[0]=alternatives[arena.run.combat_rng.randi_range(0,alternatives.size()-1)]
 		for id in ids:arena.room.upgrade_offers.append({"id":id,"tier":arena.room.difficulty})
 
 func upgrade_card(offer:Dictionary)->Dictionary:
 	if offer.id.begins_with("hq_"):return arena.headquarters.card(offer)
-	var id=offer.id;var tier=offer.tier;var power=[1.0,1.5,2.0][tier]
-	if id in BehaviorCards.DATA:
-		return {"category":"Тактика","title":BehaviorCards.DATA[id].name,"detail":BehaviorCards.DATA[id].text,"icon":"damage" if id=="opening_shot" else "health" if id=="last_stand" else "speed","heading":arena.LOOT.RARITY_NAMES[tier],"color":Color(arena.LOOT.RARITY_COLORS[tier]),"disabled":false,"button":"Выбрать"}
-	var names={"weapon_damage":"Урон оружия","weapon_fire":"Скорострельность","weapon_locked":"Нужен чертёж","health":"Здоровье","speed":"Передвижение","recovery":"Защитный щит","damage":"Сила атаки","intercept":"Напор"}
-	var desc={"weapon_damage":"+%.0f%% базового урона ствола" % (18*power),"weapon_locked":"Найди и донеси чертёж оружия","weapon_fire":"+%.0f%% выстрелов в секунду" % (100/(1-.15*power)-100),"health":"+%d к максимуму HP и лечение" % roundi(power),"speed":"+%d%% к передвижению" % (4*power),"recovery":"Кулдаун щита −%.0f%%" % (100*(1-pow(.85,power))),"damage":"+%.0f%% базового урона стволов" % (15*power),"intercept":"+%d %% перехвата" % (10*power)}
-	names.merge({"fire":"Темп огня","weapon_intercept":"Стабилизатор","range":"Дальность","healing":"Медицина","device_power":"Мощность устройств","device_cooldown":"Перезарядка устройств"})
-	desc.merge({"fire":"Темп: +%s%%" % UiKit.number(100/(1-.15*power)-100),"weapon_intercept":"Напор оружия: +%s%%" % UiKit.number(5*power),"range":"Дальность: %s → %s%%" % [UiKit.number(arena.run.range_multiplier*100),UiKit.number((arena.run.range_multiplier+.12*power)*100)],"healing":"Лечение: %s → %s%%" % [UiKit.number(arena.run.healing_multiplier*100),UiKit.number((arena.run.healing_multiplier+.2*power)*100)],"device_power":"Мощность: %s → %s%%" % [UiKit.number(arena.run.ability_power_multiplier*100),UiKit.number((arena.run.ability_power_multiplier+.15*power)*100)],"device_cooldown":"Кулдаун: %s → %s%%" % [UiKit.number(arena.run.ability_cooldown_multiplier*100),UiKit.number(arena.run.ability_cooldown_multiplier*pow(.9,power)*100)]})
-	var preview=upgrade_preview(id,power)
-	if preview!="":desc[id]=preview
-	if id in ["intercept","weapon_intercept"]:desc[id]+="\n{{pressure.description}}"
-	if id in arena.LOOT.WEAPONS:
-		var data=arena.LOOT.WEAPONS[id];tier=data.rarity;names[id]=data.name;desc[id]=data.role
-	return {"category":"Способность" if id.begins_with("device_") else "Оружие" if id.begins_with("weapon_") or id in arena.LOOT.WEAPONS else "Герой","title":names[id],"detail":desc[id],"icon":id,"heading":arena.LOOT.RARITY_NAMES[tier],"color":Color(arena.LOOT.RARITY_COLORS[tier]),"disabled":id=="weapon_locked","button":"Нужен чертёж" if id=="weapon_locked" else "Выбрать"}
+	if offer.id in arena.LOOT.WEAPONS:
+		var data=arena.LOOT.WEAPONS[offer.id];var tier=data.rarity
+		return {"category":"Оружие","title":data.name,"detail":data.role,"icon":offer.id,"heading":arena.LOOT.RARITY_NAMES[tier],"color":Color(arena.LOOT.RARITY_COLORS[tier]),"disabled":false,"button":"Выбрать"}
+	return RunUpgrades.card(arena,offer)
 
 func service_offers(branch:String)->Array:
 	if branch=="ability" and arena.abilities.slots.is_empty():return []
@@ -284,6 +226,7 @@ func apply_service_reward(branch:String,vehicle:String,index:int,offer:Dictionar
 		Game.progression.event("upgrade_"+arena.abilities.selected);Game.save_progress()
 
 func award_kill(actor):
+	arena.effects.emit("kill",{"actor":actor})
 	if actor.killed_by_vehicle in GarageCatalog.VEHICLES:Game.progression.event("kills_"+actor.killed_by_vehicle)
 	var amount=EncounterRules.kill_alloy(actor.kind,actor.rank,arena.room.room_index,actor.elite,arena.room.difficulty)
 	preload("res://scripts/resource_drop.gd").spawn(arena,actor.position,amount,"alloy",actor.resource_blast);arena.run.kills+=1
@@ -321,32 +264,10 @@ func skip_chest():
 	else:arena.pause_battle()
 
 func apply_speed_upgrade(power:float):
-	var previous=arena.run.speed_multiplier
-	arena.run.speed_multiplier=minf(1.45,previous+.04*power)
-	arena.room.player.speed=minf(5.2,arena.room.player.speed*arena.run.speed_multiplier/previous)
+	RunUpgrades.apply_power(arena,UpgradeRegistry.get_def("speed"),power)
 
-func upgrade_preview(id:String,power:float)->String:
-	var player=arena.room.player
-	match id:
-		"health":return UiKit.change_text("HP",arena.soldier_max_hp,arena.soldier_max_hp+roundi(power))
-		"speed":
-			var next=minf(5.2,player.speed*minf(1.45,arena.speed_multiplier+.04*power)/arena.speed_multiplier)
-			if player.kind in GarageCatalog.VEHICLES and player.vehicle_origin=="captured":next=player.speed
-			return UiKit.change_text("Скорость",player.speed,next)
-		"fire","weapon_fire":
-			var rate=preload("res://scripts/ui/weapon_benchmarks.gd").current_weapon(arena).rate if id=="weapon_fire" else 1/player.fire_interval
-			var next=rate if id=="fire" and player.kind in GarageCatalog.VEHICLES and player.vehicle_origin=="captured" else rate/(1-.15*power)
-			return UiKit.change_text("Темп",rate,next," /с")
-		"damage","weapon_damage":
-			var changes={"damage_bonus":.5*power} if id=="damage" else {"weapon_damage":.18*power}
-			var current=CombatStats.weapon(arena).damage
-			var next=CombatStats.weapon(arena,"",changes).damage
-			if id=="damage" and player.kind in GarageCatalog.VEHICLES:
-				current=GarageCatalog.stats(player.kind,arena,player.vehicle_origin,player.vehicle_zone).damage
-				next=GarageCatalog.stats(player.kind,arena,player.vehicle_origin,player.vehicle_zone,changes).damage
-			return UiKit.change_text("Урон",current,next)
-		"intercept":return UiKit.change_text("Перехват",arena.run.intercept_chance*100,minf(.95,arena.run.intercept_chance+.1*power)*100,"%")
-	return ""
+func upgrade_preview(id:String,tier:int)->String:
+	return RunUpgrades.preview_text(arena,id,tier)
 
 func collect_resources():
 	for token in arena.room.resource_drops.duplicate():

@@ -132,7 +132,7 @@ func _ready():
 	if player_owned and kind in GarageCatalog.VEHICLES:
 		var vehicle_stats=GarageCatalog.stats(kind,arena,vehicle_origin,vehicle_zone)
 		max_hp=vehicle_stats.hp;hp=max_hp;damage=vehicle_stats.damage;fire_interval=vehicle_stats.interval;speed=vehicle_stats.speed
-	if player_owned:speed=minf(speed,5.2)
+	if player_owned:speed=minf(speed,Balance.speed_cap())
 	model = Visuals.model(BossCatalog.encounter(arena.run_seed,arena.room_index).model if kind=="boss" else EnemyLoadouts.model_for(kind,enemy_weapon),self)
 	if player_owned or kind in ["tank","apc","buggy"]:preload("res://scripts/world_lighting.gd").headlights(model,kind!="soldier")
 	if kind=="shield":
@@ -212,7 +212,7 @@ func _physics_process(delta):
 		arena.sniper_step(self,delta);return
 	if elite:arena.elite_step(self,delta)
 	if kind=="shield":update_shield(delta)
-	if player_owned and kind=="soldier":speed=minf(5.2,CombatStats.soldier_speed(arena.run)*BehaviorCards.speed_multiplier(arena))
+	if player_owned and kind=="soldier":speed=minf(Balance.speed_cap(),CombatStats.soldier_speed(arena.run)*arena.effects.modify("move_speed",1.0))
 	fire_cooldown = maxf(0,fire_cooldown-delta)
 	if enemy_weapon=="rpg" and not player_owned and arena.enemy.rpg_step(self,delta):return
 	movement_pause=maxf(0,movement_pause-delta)
@@ -227,7 +227,7 @@ func _physics_process(delta):
 	if not moving:arena.terrain.begin_slide(self)
 	if moving:
 		var target=quarter_destination if uses_quarter_steps() or terrain_sliding else arena.actor_world_pos(self,destination)
-		var next_position=position.move_toward(target,(minf(speed,5.2) if player_owned else speed)*arena.terrain.speed_factor(self)*delta)
+		var next_position=position.move_toward(target,(minf(speed,Balance.speed_cap()) if player_owned else speed)*arena.terrain.speed_factor(self)*delta)
 		if arena.can_stand(next_position,self):position=next_position
 		else:moving=false
 		if position.distance_to(quarter_destination if uses_quarter_steps() or terrain_sliding else arena.actor_world_pos(self,destination)) < .005:
@@ -320,7 +320,7 @@ func try_move(dir: Vector2i):
 
 func shoot() -> bool:
 	if (kind=="shield" and shield_phase in ["raising","active"]) or kind in ["grenadier","mortar"] or turn_left > 0 or fire_cooldown > 0 or dead: return false
-	fire_cooldown = fire_interval/(BehaviorCards.rate_multiplier(arena) if player_owned and kind=="soldier" else 1.0)
+	fire_cooldown = fire_interval/(arena.effects.modify("fire_rate",1.0) if player_owned and kind=="soldier" else 1.0)
 	if not player_owned and not allied and kind in ["soldier","shield"]:EnemyLoadouts.begin(self)
 	elif player_owned and kind=="soldier":arena.fire_weapon(self)
 	elif kind=="boss":
@@ -346,6 +346,7 @@ func take_damage(amount: float,blast:Vector3=Vector3.ZERO,vehicle_credit:String=
 		invulnerable = .65
 		if kind == "soldier": arena.soldier_hp = maxf(0,hp)
 		Game.sound("player_hurt",self)
+		arena.effects.emit("player_damaged",{"actor":self,"amount":amount})
 	else:Game.sound("hit_body" if kind in ["soldier","grenadier","sniper","shield"] else "hit_metal",self)
 	refresh_health()
 	arena.burst(position+Vector3.UP*.4,Color("ffbd61"),.3)

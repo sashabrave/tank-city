@@ -32,6 +32,22 @@ static func restore(arena,data:Dictionary):
 		arena.abilities.selected="";arena.abilities.select(data.abilities.selected)
 	if not data.hq.is_empty():
 		for key in ["modules","active","levels","basic_hp"]:arena.headquarters.set(key,data.hq[key])
+## Completes a snapshot written by an older build: new RunState fields, weapons and vehicles get
+## their defaults, removed weapons fall back to the first one. Structural damage is still rejected by valid().
+static func upgrade(data:Dictionary)->Dictionary:
+	if data.is_empty() or not data.get("run") is Dictionary or data.run.is_empty():return data
+	var run=data.run;var defaults=preload("res://scripts/state/run_state.gd").new()
+	for key in RUN_KEYS:
+		if not run.has(key):run[key]=defaults.get(key) if not defaults.get(key) is Dictionary and not defaults.get(key) is Array else defaults.get(key).duplicate(true)
+	if run.get("weapon_mods") is Dictionary:
+		for id in Game.LOOT.WEAPONS:
+			if not run.weapon_mods.get(id) is Dictionary:run.weapon_mods[id]={"damage":0.0,"interval":1.0,"intercept":0.0}
+	if run.get("weapon") not in Game.LOOT.WEAPONS:run.weapon=Game.LOOT.WEAPONS.keys()[0]
+	if run.get("vehicle_mods") is Dictionary:
+		for id in ["buggy","apc","tank"]:
+			if not run.vehicle_mods.get(id) is Dictionary:run.vehicle_mods[id]=defaults.vehicle_mods[id].duplicate()
+	if run.get("behavior_cards") is Array:run.behavior_cards=run.behavior_cards.filter(func(id):return UpgradeRegistry.has(str(id)))
+	return data
 static func valid(data:Dictionary)->bool:
 	if data.is_empty():return true
 	for key in ["version","world","cycle","strength","index","seed","start_documents"]:

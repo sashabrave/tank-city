@@ -128,7 +128,7 @@ func interact_vehicle():
 		arena.room.actors.erase(previous_actor)
 		previous_actor.dead=true
 		arena.room.player=arena.spawn_actor("soldier",safe,true)
-		BehaviorCards.exited_vehicle(arena)
+		arena.effects.emit("vehicle_exit",{"vehicle":previous_actor})
 		arena.room.player.invulnerable=.7
 		previous_actor.queue_free()
 		Game.sound("vehicle_exit",arena);Game.sound("engine_stop",arena)
@@ -158,7 +158,7 @@ func interact_vehicle():
 
 
 func upgrade_at_service(kind:String,index:int,offer:Dictionary):
-	var n=[1.0,1.5,2.0][offer.tier]
+	var n=Balance.tier_power(offer.tier)
 	var mods=arena.run.vehicle_mods[kind];mods.hp+=mini(index,6)
 	match offer.id:
 		"damage":mods.damage+=(.15 if kind=="buggy" else 1.0)*n

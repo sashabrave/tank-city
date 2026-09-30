@@ -75,7 +75,8 @@ static func validate(data:Dictionary)->Dictionary:
 		if not numeric(number):return bad("bonus_levels")
 	for value in progress.get("viewed_updates",{}).values():
 		if not value is String:return bad("viewed_updates")
-	# An outdated run snapshot (new weapon, removed field) only drops the unfinished run, never the whole profile.
+	# An outdated run snapshot is completed first; if still broken, only the unfinished run is dropped.
+	if data.get("run_checkpoint") is Dictionary:preload("res://scripts/profile/run_checkpoint.gd").upgrade(data.run_checkpoint)
 	if data.has("run_checkpoint") and (not data.run_checkpoint is Dictionary or not preload("res://scripts/profile/run_checkpoint.gd").valid(data.run_checkpoint)):
 		push_warning("Run checkpoint is incompatible and was discarded")
 		data.run_checkpoint={}

@@ -25,4 +25,4 @@ static func stats(kind:String,arena=null,origin:String="owned",zone:int=1,change
 		var mods=arena.run.vehicle_mods[kind];hp+=mods.hp;damage+=mods.damage+(arena.damage_bonus+changes.get("damage_bonus",0.0))*(.25 if kind=="buggy" else 1.0);interval*=arena.fire_multiplier;speed=t.player_speed*mods.speed*arena.speed_multiplier
 	hp*=1+Game.garage.level(kind,"armor")*.03;damage*=1+Game.garage.level(kind,"gun")*.03;interval/=1+Game.garage.level(kind,"loader")*.02
 	if Game.selected_class=="driver":hp*=1.15+Game.class_specialization()*.01;damage*=1.1+Game.class_specialization()*.01
-	return {"hp":hp,"damage":damage,"interval":interval,"speed":minf(speed,5.2),"pressure":.35}
+	return {"hp":hp,"damage":damage,"interval":interval,"speed":minf(speed,Balance.speed_cap()),"pressure":.35}

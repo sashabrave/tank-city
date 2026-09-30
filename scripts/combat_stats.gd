@@ -9,7 +9,7 @@ static func initial_health()->float:return (Balance.CONFIG.combat.hero_health+Ga
 static func initial_speed_multiplier()->float:return Game.mobility_multiplier()*(.95 if Game.selected_class=="heavy" else 1.0)*(1+Game.class_level()*.001)
 static func soldier_speed(run=null,extra:float=0.0)->float:
 	var multiplier=initial_speed_multiplier() if run==null else run.speed_multiplier
-	return minf(5.2,Balance.CONFIG.combat.hero_speed*(minf(1.45,multiplier+extra) if extra>0 else multiplier))
+	return minf(Balance.speed_cap(),Balance.CONFIG.combat.hero_speed*(minf(Balance.speed_multiplier_cap(),multiplier+extra) if extra>0 else multiplier))
 static func weapon(arena=null,id:String="",changes:Dictionary={})->Dictionary:
 	if id=="":id=Game.selected_weapon if arena==null else arena.run.weapon
 	var data=Game.LOOT.WEAPONS[id]
@@ -24,7 +24,7 @@ static func probability(arena=null,kind:String="soldier",weapon_id:String="",ori
 	if weapon_id=="":weapon_id=Game.selected_weapon if arena==null else arena.run.weapon
 	var run=arena.run if arena!=null else null
 	var bonus=0.0 if run==null else run.intercept_chance-.70+run.weapon_mods[weapon_id].intercept
-	var chance=clampf((Game.LOOT.WEAPONS[weapon_id].intercept*Balance.CONFIG.combat.interception_base_scale if kind=="soldier" else .35)+bonus+Game.class_pressure_bonus()+Game.shell_pressure_bonus(),.05,.9)
+	var chance=clampf((Game.LOOT.WEAPONS[weapon_id].intercept*Balance.CONFIG.combat.interception_base_scale if kind=="soldier" else .35)+bonus+Game.class_pressure_bonus()+Game.shell_pressure_bonus(),Balance.CONFIG.combat.interception_floor,Balance.CONFIG.combat.interception_cap)
 	if arena!=null and arena.room.pressure_time>0:
 		var odds=chance/(1-chance)*(2.0+arena.effective_bonus_level("pressure")*.3)
 		return odds/(1+odds)
@@ -37,7 +37,7 @@ static func shell_preview(id:String)->Dictionary:
 	var factor=1.1+spec*.01 if id in ["heavy","gunner"] and weapon_id=="shotgun" else 1.15+spec*.01 if id=="marksman" and weapon_id=="sniper" else 1.0
 	return {
 		"health":(Balance.CONFIG.combat.hero_health+Game.health_upgrade_bonus())*(1+health_factor)*(1+level*.002),
-		"speed":minf(5.2,Balance.CONFIG.combat.hero_speed*Game.mobility_multiplier()*(.95 if id=="heavy" else 1.0)*(1+level*.001)),
+		"speed":minf(Balance.speed_cap(),Balance.CONFIG.combat.hero_speed*Game.mobility_multiplier()*(.95 if id=="heavy" else 1.0)*(1+level*.001)),
 		"damage":weapon().damage/((1+Game.class_level()*.002)*class_weapon_multiplier(weapon_id))*(1+level*.002)*factor,
-		"pressure":clampf(Game.LOOT.WEAPONS[weapon_id].intercept*Balance.CONFIG.combat.interception_base_scale+Game.shell_pressure_bonus()+(.04+spec*.005 if id=="gunner" else 0.0),.05,.9)*100
+		"pressure":clampf(Game.LOOT.WEAPONS[weapon_id].intercept*Balance.CONFIG.combat.interception_base_scale+Game.shell_pressure_bonus()+(.04+spec*.005 if id=="gunner" else 0.0),Balance.CONFIG.combat.interception_floor,Balance.CONFIG.combat.interception_cap)*100
 	}

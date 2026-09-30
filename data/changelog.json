@@ -11,7 +11,9 @@
 					"Исправлено: покупки в хабе могли не сохраниться, если перед этим открыть карту маршрута и вернуться в хаб, не заходя в бой.",
 					"Исправлено: сохранённая вылазка от старой версии игры больше не блокирует весь профиль. Сбрасывается только незаконченная вылазка.",
 					"Исправлены ошибки при быстром переключении страниц планшета.",
-					"В разделе «Об игре» появилась вкладка Changelog со списком изменений."
+					"В разделе «Об игре» появилась вкладка Changelog со списком изменений.",
+					"Число на карточке улучшения теперь всегда совпадает с результатом выбора. Раньше карта «Напор» обещала больше перехвата, чем давала на самом деле.",
+					"Карты, которые уже упёрлись в предел (скорость, перехват), больше не предлагаются."
 				]
 			},
 			"en": {
@@ -23,7 +25,9 @@
 					"Fixed: hub purchases could be lost after opening the route map and returning to the hub without entering a battle.",
 					"Fixed: a saved run from an older game version no longer blocks the whole profile. Only the unfinished run is discarded.",
 					"Fixed errors when switching tablet pages quickly.",
-					"The About section now has a Changelog tab listing changes."
+					"The About section now has a Changelog tab listing changes.",
+					"The number on an upgrade card now always matches the result. Previously the Pressure card promised more interception than it actually gave.",
+					"Cards whose stat has reached its limit (speed, interception) are no longer offered."
 				]
 			}
 		}

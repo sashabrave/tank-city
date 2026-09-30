@@ -223,7 +223,8 @@ func player_pressure()->float:
 
 func fire_weapon(actor):
 	var data=arena.LOOT.WEAPONS[arena.run.weapon]
-	var multiplier=BehaviorCards.shot_multiplier(arena)
+	var multiplier=arena.effects.modify("shot_damage",1.0,{"actor":actor})
+	arena.effects.emit("shot",{"actor":actor})
 	for i in range(data.pellets):
 		var bullet=spawn_bullet(actor,actor.position,actor.facing,actor.damage*multiplier,true)
 		var spread=(i-(data.pellets-1)*.5)*.10

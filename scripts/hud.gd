@@ -263,7 +263,7 @@ func show_recipe_draft():
 		if offer.category=="alloy":detail="Сохрани при возврате в хаб"
 		elif offer.category=="secret":
 			detail={"weapon":"+75% базового урона: "+LOOT.WEAPONS.get(offer.id,{"name":""}).name,"ability":"+3 уровня силы: "+AbilityCatalog.DATA.get(offer.id,{"name":""}).name,"bonus":"+3 уровня: "+LOOT.BONUSES.get(offer.id,{"name":""}).name,"stat":"+5 HP" if offer.id=="health" else "Напор: +20 % против равных"}[offer.type]
-		elif offer.category=="upgrade":detail=arena.reward.upgrade_preview(offer.id,[1.0,1.5,2.0][offer.get("tier",0)])
+		elif offer.category=="upgrade":detail=arena.reward.upgrade_preview(offer.id,offer.get("tier",0))
 		if offer.get("duplicate",false):detail="Уже открыт. Донеси в хаб и продай в урне за %d сплава." % Game.duplicate_price(offer)
 		var view={"category":"Транспорт" if offer.category=="garage" else "Штаб" if offer.category=="hq" or offer.id=="headquarters" else "Чертёж" if not special else "Трофей","title":card_name,"detail":detail,"icon":offer.id if special else "recipe","heading":LOOT.RARITY_NAMES[tier],"color":Color(LOOT.RARITY_COLORS[tier])}
 		preload("res://scripts/ui/choice_card.gd").configure(panel.get_node("Card"+str(i+1)),view,func():arena.choose_recipe_card(i))

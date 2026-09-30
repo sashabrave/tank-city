@@ -30,6 +30,10 @@ func run():
 	var arena=main.run_arena;arena.auto_pause_enabled=false;arena.set_physics_process(false)
 	check(main.current==arena and Game.run_checkpoint.mode=="room","room checkpoint on entry")
 	var checkpoint=Game.run_checkpoint.duplicate(true)
+	var older=checkpoint.duplicate(true);older.run.weapon_mods.erase(Game.LOOT.WEAPONS.keys().back());older.run.erase("range_multiplier")
+	var older_profile=Game.serialize_progress();older_profile.run_checkpoint=older
+	var upgraded=preload("res://scripts/profile/schema.gd").validate(older_profile)
+	check(upgraded.ok and not upgraded.data.run_checkpoint.is_empty() and upgraded.data.run_checkpoint.run.has("range_multiplier"),"older checkpoint is completed, not dropped")
 	main.clear_current();arena.queue_free();main.run_arena=null;main.current=null;await settle()
 	Game.run_checkpoint=checkpoint.duplicate(true)
 	main.resume_run();await settle()

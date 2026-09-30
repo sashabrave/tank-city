@@ -243,6 +243,8 @@ var board=preload("res://scripts/systems/board_system.gd").new(self)
 var terrain=preload("res://scripts/systems/terrain_system.gd").new(self)
 var surprises=preload("res://scripts/systems/surprise_system.gd").new(self)
 var flow=preload("res://scripts/systems/flow_system.gd").new(self)
+## Run event bus: card effects react to events and adjust live values (see scripts/upgrades/run_effects.gd).
+var effects=preload("res://scripts/upgrades/run_effects.gd").new(self)
 
 var resume_checkpoint:Dictionary={}
 func _ready():
@@ -268,6 +270,7 @@ func _ready():
 
 func begin_room(index: int):
 	Game.progression.combat_entered=true
+	effects.emit("room_start",{"index":index})
 	Game.music_context("boss" if index in Campaign.BOSSES else "battle",true)
 	star_time=0.0;recipe_offer={};draft_pickup={};generators.clear()
 	var carried_kind="soldier"

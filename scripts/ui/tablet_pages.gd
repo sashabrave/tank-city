@@ -87,7 +87,7 @@ func fighter():
 		for id in arena.headquarters.loadout():entries.append([HQCatalog.DATA[id].name,HQCatalog.stat(id,arena.headquarters.level(id))])
 		for i in range(arena.run.upgrade_history.size()):
 			var choice=arena.run.upgrade_history[i];var id=choice.id
-			var title=BehaviorCards.DATA[id].name if id in BehaviorCards.DATA else AbilityCatalog.DATA.get(id,HQCatalog.DATA.get(id,Game.LOOT.WEAPONS.get(id,{}))).get("name",{"damage":"Урон","intercept":"Напор","speed":"Скорость","fire":"Темп","health":"Здоровье","recovery":"Защита","weapon_damage":"Урон оружия","weapon_fire":"Темп оружия","weapon_intercept":"Напор оружия"}.get(id,id))
+			var title=UpgradeRegistry.get_def(id).title if UpgradeRegistry.has(id) else AbilityCatalog.DATA.get(id,HQCatalog.DATA.get(id,Game.LOOT.WEAPONS.get(id,{}))).get("name",{"damage":"Урон","intercept":"Напор","speed":"Скорость","fire":"Темп","health":"Здоровье","recovery":"Защита","weapon_damage":"Урон оружия","weapon_fire":"Темп оружия","weapon_intercept":"Напор оружия"}.get(id,id))
 			entries.append(["%d. %s" % [i+1,title],choice.get("detail",Game.LOOT.RARITY_NAMES[clampi(choice.tier,0,2)])])
 	for i in range(entries.size()):
 		var b=cell(body,Vector2((i%4)*174,upgrades_y+45+floori(i/4.0)*100),"",str(entries[i][0]),"Текущее усиление: "+str(entries[i][1]),false,Vector2(162,90))

@@ -50,9 +50,9 @@ func radius() -> float:return Balance.CONFIG.combat.grenade_radius+minf(1.0,leve
 func upgrade(id: String,tier: int):
 	if id not in level:return
 	arena.run.upgrade_history.append({"id":selected,"detail":{"cooldown":"Перезарядка","power":"Мощность","utility":"Эффективность"}.get(id,id),"tier":tier})
-	level[id]+=[1.0,1.5,2.0][mini(tier,2)]
+	level[id]+=Balance.tier_power(tier)
 func description(id: String,tier: int) -> String:
-	var n=[1.0,1.5,2.0][mini(tier,2)]
+	var n=Balance.tier_power(tier)
 	if id=="cooldown":return "Кулдаун %.1f → %.1f с" % [interval(),maxf(5,interval()*pow(Balance.CONFIG.combat.ability_cooldown_multiplier,n))]
 	if id=="power":return "Сила / HP / длительность %.1f → %.1f" % [power(),power()+AbilityCatalog.DATA[selected].power*Balance.CONFIG.combat.ability_power_step*n]
 	return {"barrier":"Лимит блоков %d → %d" % [barrier_count(),mini(4,barrier_count()+int(n))],"grenade":"Радиус +0,25 клетки; запал короче","laser":"Пробивает ещё один бетон (до 4)","gas":"Больше площадь облака","ally_drone":"Лимит помощников +1 (до 3)","mine":"Дальность креста и лимит мин +1","airstrike":"Больше залпов; уровень 3 — ракеты","cloak":"Дольше невидимость; уровень 3 — пули насквозь","comrade":"Быстрее высадка и движение товарища","shield":"Неуязвимость +0,5 с (до 8 с)"}.get(selected,"")

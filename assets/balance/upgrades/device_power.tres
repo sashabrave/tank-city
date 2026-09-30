@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="UpgradeDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrades/upgrade_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "device_power"
+title = "Мощность устройств"
+category = "Способность"
+icon = "device_power"
+tags = PackedStringArray("device")
+weight = 10
+requires = PackedStringArray("abilities")
+modifiers = Array[Dictionary]([{"stat": "ability_power_multiplier", "op": "add", "value": 0.15}])
+preview = "device_power"

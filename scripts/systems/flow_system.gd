@@ -22,6 +22,7 @@ func start_wave(index: int):
 		arena.drop_pickup(Vector2i(arena.room.base_cell.x,arena.room.grid_size-3),"vehicle")
 	if not arena.room.boss_room and "turret" in Game.bonus_unlocks and arena.room.room_index>=2 and index==0:arena.drop_pickup(arena.room.base_cell,"turret")
 	arena.surprises.start_wave()
+	arena.effects.emit("wave_start",{"wave":index})
 	for marker in arena.room.spawn_markers:
 		if is_instance_valid(marker):marker.queue_free()
 	arena.room.spawn_markers.clear()
