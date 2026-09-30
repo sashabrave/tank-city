@@ -318,6 +318,7 @@ func begin_room(index: int):
 	player.salvaged=carried_salvaged
 	if carried_kind!="soldier" and carried_armor>0:player.hp=minf(carried_armor,player.max_hp);player.refresh_health()
 	toast("Атакуй босса. При включении щита уничтожь светящийся генератор." if Campaign.is_final(room_index) else "Бой с генералом. Уничтожь командирский танк." if boss_room else "")
+	preload("res://scripts/effect_warmup.gd").run(self)
 	if challenges.active():challenges.start();phase="combat"
 	else:start_wave(0)
 	if boss_room:drop_pickup(Vector2i(base_cell.x-3,grid_size-2),"vehicle")

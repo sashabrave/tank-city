@@ -95,6 +95,7 @@ func _ready():
 	profiles.initialize()
 	load_progress()
 	notifications=load("res://scripts/notifications/channel.gd").new();add_child(notifications)
+	if sound_enabled:audio().warm()
 	add_child(load("res://scripts/progression/quest_notifications.gd").new())
 
 func direction() -> Vector2i:return input_router.direction()

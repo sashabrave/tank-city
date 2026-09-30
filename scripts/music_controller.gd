@@ -65,11 +65,31 @@ func change(next:String,refresh:bool=false):
 	if changed:
 		if next=="hub":celebrate("hub_map_greeting",1)
 		elif next=="battle":celebrate("battle_greeting",1)
+## Tracks are large WAV files: they load on a background thread and start once ready, so a context
+## change never blocks the frame. The loaded resource is shared; looping is always disabled on it.
+var pending_track=""
+static func track_path(track:String)->String:return "res://assets/audio/music/"+track+".wav"
 func play_track(track:String):
 	current_track=track;last_tracks[context]=track
+	var path=track_path(track)
+	if ResourceLoader.has_cached(path):
+		pending_track="";start_track(track,load(path));return
+	pending_track=track
+	if ResourceLoader.load_threaded_get_status(path)==ResourceLoader.THREAD_LOAD_INVALID_RESOURCE:ResourceLoader.load_threaded_request(path)
+	track_changed.emit()
+func poll_pending():
+	if pending_track=="":return
+	var path=track_path(pending_track)
+	match ResourceLoader.load_threaded_get_status(path):
+		ResourceLoader.THREAD_LOAD_LOADED:
+			var track=pending_track;pending_track=""
+			if track==current_track:start_track(track,ResourceLoader.load_threaded_get(path))
+		ResourceLoader.THREAD_LOAD_FAILED,ResourceLoader.THREAD_LOAD_INVALID_RESOURCE:
+			push_warning("Music track failed to load: "+pending_track);pending_track=""
+func start_track(track:String,stream:AudioStream):
 	if is_instance_valid(fade):fade.kill()
 	var old=backgrounds[active];active=1-active;var player=backgrounds[active]
-	player.stop();player.stream=load("res://assets/audio/music/"+track+".wav").duplicate()
+	player.stop();player.stream=stream
 	if player.stream is AudioStreamWAV:
 		player.stream.loop_mode=AudioStreamWAV.LOOP_DISABLED;player.stream.loop_begin=0;player.stream.loop_end=roundi(player.stream.get_length()*player.stream.mix_rate)
 	player.volume_db=-60
@@ -99,6 +119,7 @@ func celebrate(id:String,priority:int):
 	if id in ["hub_map_greeting","battle_greeting"]:id=choose_variant("greeting",GREETINGS)
 	stinger.stop();stinger_priority=priority;stinger.stream=load("res://assets/audio/music/"+id+".wav");stinger.play()
 func _process(delta):
+	poll_pending()
 	if not Game.sound_enabled:
 		for player in backgrounds:player.stop()
 		stinger.stop();enabled_before=false;return
