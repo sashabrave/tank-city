@@ -49,9 +49,10 @@ var training_barriers:Array=[]
 ## and a fenced range with the dummy. Vehicles can drive out there too; the camera slides to follow.
 const YARD_PARK=Vector3(11,0,-2)
 const YARD_DUMMY=Vector3(16,0,-2)
-## Test track oval in the south of the yard (centre, radii) and the guard booth cell.
-const TRACK_CENTER=Vector3(13.8,0,1.8)
-const TRACK_RADII=Vector2(3.0,1.25)
+## Rectangular test track in the south of the yard (centre, half extents) and the guard booth cell.
+const TRACK_CENTER=Vector3(13.9,0,1.9)
+## Half extents of the rectangular track.
+const TRACK_RADII=Vector2(3.1,1.35)
 const BOOTH_CELL=Vector2i(10,3)
 var camera_base:=Vector3.INF
 var parking_sign:Node3D
@@ -123,7 +124,7 @@ func _ready():
 	avatar.rotation.y=PI
 	Visuals.ring(avatar,Color("fac47a"),.44)
 	dummy=Node3D.new();add_child(dummy);dummy.position=YARD_DUMMY
-	Visuals.model("training_dummy",dummy)  # tools/build_yard_props.py
+	Visuals.model("training_dummy",dummy).scale=Vector3.ONE*1.3  # tools/build_yard_props.py; stands apart in the range pen
 	dummy.visible="range" in Game.built_workshops
 	build_yard()
 	dummy_label=Visuals.label3d(dummy,"",Vector3(0,1.7,0),Color("f7d891"),26)
@@ -385,29 +386,42 @@ func range_pen(yard:Node3D):
 		var ring=MeshInstance3D.new();var disc=CylinderMesh.new();disc.top_radius=r;disc.bottom_radius=r;disc.height=.02;ring.mesh=disc;ring.rotation.x=PI*.5
 		ring.position=Vector3(17.0,.9,-2.86+(.3-r)*.02);ring.material_override=Visuals.material(Color("cf613f") if r!=.16 else Color("e8e2d0"));yard.add_child(ring)
 	preload("res://scripts/base_surroundings.gd").lamp(yard,Vector3(17.6,0,-.6))
-## Small oval test track: asphalt ring with red-white kerbs, a chequered start line, cones, a ramp and
-## tyre stacks on the infield. Decoration only; soldier and vehicles can drive over it.
+## Rectangular test track with rounded corners: asphalt, red-white kerbs, a chequered start line, cones,
+## a ramp and tyre stacks on the infield. Decoration only; soldier and vehicles drive over it.
+func track_point(t:float)->Vector3:
+	# Rounded rectangle, perimeter parameter t in [0,1).
+	var half=TRACK_RADII;var r=.55
+	var sx=(half.x-r)*2.0;var sz=(half.y-r)*2.0;var arc=PI*.5*r
+	var total=2.0*(sx+sz)+4.0*arc;var d=fposmod(t,1.0)*total
+	var corners=[Vector2(half.x-r,-(half.y-r)),Vector2(half.x-r,half.y-r),Vector2(-(half.x-r),half.y-r),Vector2(-(half.x-r),-(half.y-r))]
+	var starts=[Vector2(-(half.x-r),-half.y),Vector2(half.x,-(half.y-r)),Vector2(half.x-r,half.y),Vector2(-half.x,half.y-r)]
+	var dirs=[Vector2(1,0),Vector2(0,1),Vector2(-1,0),Vector2(0,-1)];var lengths=[sx,sz,sx,sz]
+	for k in range(4):
+		if d<=lengths[k]:var q=starts[k]+dirs[k]*d;return TRACK_CENTER+Vector3(q.x,0,q.y)
+		d-=lengths[k]
+		if d<=arc:
+			var a=-PI*.5+k*PI*.5+d/r;var c=corners[k];return TRACK_CENTER+Vector3(c.x+cos(a)*r,0,c.y+sin(a)*r)
+		d-=arc
+	return TRACK_CENTER+Vector3(-(half.x-r),0,-half.y)
 func test_track(yard:Node3D):
-	var segments=28;var asphalt=Color("575a55")
+	var segments=40;var asphalt=Color("575a55")
+	Visuals.box(yard,TRACK_CENTER+Vector3(0,.012,0),Vector3(TRACK_RADII.x*2.0-.9,.012,TRACK_RADII.y*2.0-.9),Color("7d8a6a"))
 	for i in range(segments):
-		var a=TAU*i/segments;var b=TAU*(i+1)/segments
-		var pa=TRACK_CENTER+Vector3(cos(a)*TRACK_RADII.x,0,sin(a)*TRACK_RADII.y);var pb=TRACK_CENTER+Vector3(cos(b)*TRACK_RADII.x,0,sin(b)*TRACK_RADII.y)
-		var mid=(pa+pb)*.5;var length=pa.distance_to(pb)+.04
-		var piece=Visuals.box(yard,mid+Vector3(0,.012,0),Vector3(length,.024,.5),asphalt);piece.rotation.y=-atan2(pb.z-pa.z,pb.x-pa.x)
+		var pa=track_point(float(i)/segments);var pb=track_point(float(i+1)/segments)
+		var mid=(pa+pb)*.5;var length=pa.distance_to(pb)+.05;var yaw=-atan2(pb.z-pa.z,pb.x-pa.x)
+		var piece=Visuals.box(yard,mid+Vector3(0,.022,0),Vector3(length,.02,.5),asphalt);piece.rotation.y=yaw
+		var normal=Vector3(-(pb.z-pa.z),0,pb.x-pa.x).normalized()
 		for side in [-1,1]:
-			var outward=Vector3(cos((a+b)*.5)*TRACK_RADII.y,0,sin((a+b)*.5)*TRACK_RADII.x).normalized()
-			var kerb=Visuals.box(yard,mid+outward*side*.27+Vector3(0,.03,0),Vector3(length*.9,.03,.06),Color("cf613f") if i%2==0 else Color("e8e2d0"));kerb.rotation.y=piece.rotation.y
-	for k in range(6):
-		var tile=Visuals.box(yard,TRACK_CENTER+Vector3(-TRACK_RADII.x,.03,-.2+k*.08),Vector3(.12,.012,.08),Color("f2f1df") if k%2==0 else Color("222522"))
-	for c in [Vector3(13.0,0,.62),Vector3(14.6,0,.6),Vector3(16.6,0,1.6),Vector3(11.1,0,2.2)]:
+			var kerb=Visuals.box(yard,mid+normal*side*.27+Vector3(0,.035,0),Vector3(length*.9,.03,.06),Color("cf613f") if i%2==0 else Color("e8e2d0"));kerb.rotation.y=yaw
+	for k in range(6):Visuals.box(yard,track_point(0.02)+Vector3(0,.036,-.2+k*.08),Vector3(.12,.012,.08),Color("f2f1df") if k%2==0 else Color("222522"))
+	for t in [.14,.3,.62,.78]:
 		var cone=MeshInstance3D.new();var shape=CylinderMesh.new();shape.top_radius=.02;shape.bottom_radius=.1;shape.height=.26;cone.mesh=shape
-		cone.position=c+Vector3(0,.14,0);cone.material_override=Visuals.material(Color("ff8a3d"));yard.add_child(cone)
-	var ramp=Visuals.box(yard,TRACK_CENTER+Vector3(.2,.08,TRACK_RADII.y),Vector3(.8,.08,.46),Color("b8a47c"));ramp.rotation.x=.18
-	for p in [TRACK_CENTER+Vector3(-.8,0,0),TRACK_CENTER+Vector3(.9,0,.1)]:
+		cone.position=track_point(t)+Vector3(0,.16,0);cone.material_override=Visuals.material(Color("ff8a3d"));yard.add_child(cone)
+	var ramp=Visuals.box(yard,track_point(.45)+Vector3(0,.09,0),Vector3(.8,.08,.46),Color("b8a47c"));ramp.rotation.z=.16
+	for p in [TRACK_CENTER+Vector3(-.9,0,0),TRACK_CENTER+Vector3(1.0,0,0)]:
 		for i in range(2):
 			var tyre=MeshInstance3D.new();var torus=TorusMesh.new();torus.inner_radius=.12;torus.outer_radius=.26;tyre.mesh=torus
 			tyre.position=p+Vector3(0,.07+i*.13,0);tyre.material_override=Visuals.material(Color("2a2c2a") if i==0 else Color("cf613f"));yard.add_child(tyre)
-	Visuals.box(yard,TRACK_CENTER+Vector3(0,.014,0),Vector3(3.6,.012,1.2),Color("7d8a6a"))
 ## Covered passage from the hangar to the yard along row 0: grating floor with hazard edges, panel walls,
 ## roof beams with amber lamps and a raised roll-up gate on the hangar side.
 func passage(yard:Node3D):
