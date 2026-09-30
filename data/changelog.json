@@ -7,14 +7,16 @@
 				"title": "Бой",
 				"items": [
 					"Бонусы прилетают на маленьких парашютах и приземляются с облачком пыли. Надписей над ними больше нет: бонус узнаётся по модели и цвету кольца, редкие мягко пульсируют.",
-					"Враги больше не возникают из воздуха: пехота спрыгивает на клетку, техника въезжает из-за края, дроны снижаются."
+					"Враги больше не возникают из воздуха: пехота спрыгивает на клетку, техника въезжает из-за края, дроны снижаются.",
+					"Вода в клетках-препятствиях нарисована новым шейдером: рябь, блики и лёгкие волны, соседние клетки сливаются в одну поверхность."
 				]
 			},
 			"en": {
 				"title": "Battle",
 				"items": [
 					"Bonuses float down on small parachutes and land with a puff of dust. No more labels above them: a bonus reads by its model and ring colour, rare ones softly pulse.",
-					"Enemies no longer pop in: infantry jumps onto its cell, vehicles roll in from beyond the edge, drones descend."
+					"Enemies no longer pop in: infantry jumps onto its cell, vehicles roll in from beyond the edge, drones descend.",
+					"Water in obstacle cells uses a new shader: ripples, sparkles and gentle waves; neighbouring cells merge into one surface."
 				]
 			}
 		},

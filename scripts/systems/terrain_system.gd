@@ -163,7 +163,12 @@ func draw_patch(p:Vector2i,tint:Color):
 	elif kind=="water":color=tint.lerp(Color("416d80"),.65).darkened(.12);height=-.035
 	elif kind=="sand":color=tint.lerp(Color("c4ac77"),.58)
 	elif kind=="vegetation":color=tint.darkened(.10)
-	batch_box(pos+Vector3(0,height-.04,0),Vector3(.5,.08,.5),color,.62 if kind=="ice" else .45 if kind=="water" else .9)
+	if kind=="water":
+		# Water cells share one shader batch (shaders/world/water.gdshader), tinted by the biome.
+		var mesh=BoxMesh.new();mesh.size=Vector3.ONE;mesh.subdivide_width=2;mesh.subdivide_depth=2
+		batch("water",mesh,Transform3D(Basis.IDENTITY.scaled(Vector3(.5,.08,.5)),pos+Vector3(0,height-.04,0)),color,.2)
+		batches.water["shader_tint"]=color
+	else:batch_box(pos+Vector3(0,height-.04,0),Vector3(.5,.08,.5),color,.62 if kind=="ice" else .9)
 	if kind=="ice":
 		for i in range(2):batch_box(pos+Vector3(-.07+i*.13,height+.003,-.12+i*.21),Vector3(.19,.004,.009),(color.darkened(.16) if kind=="ice" else color.lightened(.2)),.9,.25 if kind=="water" else -.45+i*.7)
 	elif kind=="sand":
@@ -186,5 +191,10 @@ func flush_batches():
 	for data in batches.values():
 		var multi=MultiMesh.new();multi.transform_format=MultiMesh.TRANSFORM_3D;multi.mesh=data.mesh;multi.instance_count=data.transforms.size()
 		for i in range(data.transforms.size()):multi.set_instance_transform(i,data.transforms[i])
-		var node=MultiMeshInstance3D.new();node.name="TerrainBatch";node.multimesh=multi;node.material_override=Visuals.material(data.color);node.material_override.roughness=data.rough;arena.add_child(node)
+		var node=MultiMeshInstance3D.new();node.name="TerrainBatch";node.multimesh=multi
+		if data.has("shader_tint"):
+			var water=ShaderMaterial.new();water.shader=preload("res://shaders/world/water.gdshader");var tint:Color=data.shader_tint
+			water.set_shader_parameter("deep",tint.darkened(.38));water.set_shader_parameter("shallow",tint.lightened(.18));node.material_override=water
+		else:node.material_override=Visuals.material(data.color);node.material_override.roughness=data.rough
+		arena.add_child(node)
 	batches.clear()
