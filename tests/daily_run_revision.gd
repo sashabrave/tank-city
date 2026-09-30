@@ -26,7 +26,7 @@ func run():
 	check(not DailyRun.record(key,0,2,40,300.0),"shallower attempt is not")
 	var best=DailyRun.best(key)
 	check(int(best.attempts)==2 and int(best.field)==3 and int(best.kills)==12,"best kept, attempts counted")
-	check(DailyRun.describe(best)=="%d очков · сектор 1 · поле 4" % DailyRun.score(0,3,12),"record text")
+	check(DailyRun.describe(best)=="сектор 1 · поле 4 · врагов 12","record text")
 	for i in range(40):Game.progression.daily["2020-01-%02d" % (i%28+1)+("x" if i>=28 else "")]={"score":i}
 	DailyRun.record(key,0,1,1,1.0)
 	check(Game.progression.daily.size()<=DailyRun.KEEP_DAYS and Game.progression.daily.has(key),"history trimmed, today kept")

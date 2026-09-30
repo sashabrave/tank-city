@@ -55,26 +55,26 @@ func collect_pickup(pickup: Dictionary):
 			arena.room.recipe_offer=pickup;pickup["blocked"]=true;arena.pause_battle();return
 		arena.run.pending_recipes.append(pickup.recipe);arena.toast("В рюкзаке: "+Game.recipe_name(pickup.recipe))
 		arena.room.pickups.erase(pickup);preload("res://scripts/battle_stage.gd").vanish(pickup.node);Game.sound("pickup",arena);return
+	var detail=""
 	match pickup.kind:
 		"star":
-			arena.room.star_time=6+effective_bonus_level("star")*1.5;arena.toast("Звезда · неуязвимость и сокрушительный огонь!")
+			arena.room.star_time=6+effective_bonus_level("star")*1.5;detail="Неуязвимость и мощный огонь · %d с" % int(arena.room.star_time)
 		"heart":
 			var healed=minf(float(pickup.get("hq_heal",Game.heal_amount()*bonus_strength("heart")))*arena.run.healing_multiplier,arena.run.soldier_max_hp-arena.run.soldier_hp)
-			arena.run.soldier_hp+=healed;arena.floating_number(arena.room.player.position,healed)
+			arena.run.soldier_hp+=healed;detail="+%s здоровья" % str(snappedf(healed,.1))
 			if is_instance_valid(arena.room.player) and arena.room.player.kind=="soldier":arena.room.player.hp=arena.run.soldier_hp;arena.room.player.refresh_health()
-		"pressure":arena.room.pressure_time=8+effective_bonus_level("pressure")*2
-		"freeze":arena.room.freeze_time=3+effective_bonus_level("freeze")
+		"pressure":arena.room.pressure_time=8+effective_bonus_level("pressure")*2;detail="Напор ×2 · %d с" % int(arena.room.pressure_time)
+		"freeze":arena.room.freeze_time=3+effective_bonus_level("freeze");detail="Враги заморожены · %d с" % int(arena.room.freeze_time)
 		"turret":
-			arena.install_turret()
+			arena.install_turret();detail="Турель у базы"
 		"vehicle_repair":
 			if arena.room.player.kind=="soldier":arena.toast("Для ремонта займи технику");return
 			var healed=minf((3+Game.heal_level*.15)*bonus_strength("vehicle_repair"),arena.room.player.max_hp-arena.room.player.hp)
-			arena.room.player.hp+=healed;arena.room.player.refresh_health();arena.floating_number(arena.room.player.position,healed)
+			arena.room.player.hp+=healed;arena.room.player.refresh_health();detail="+%s брони" % str(snappedf(healed,.1))
 		"repair":
 			var healed=minf((2+Game.heal_level*.15)*bonus_strength("repair"),arena.room.base_max_hp-arena.room.base_hp)
-			arena.room.base_hp+=healed;arena.floating_number(arena.world_pos(arena.room.base_cell),healed)
+			arena.room.base_hp+=healed;detail="База +%s" % str(snappedf(healed,.1))
 			if is_instance_valid(arena.room.base_bar):arena.room.base_bar.set_health(arena.room.base_hp,arena.room.base_max_hp)
-			arena.toast("База отремонтирована: +%.1f HP" % healed)
 		"wall":
 			# Level 0-1: brick; 2: reinforced brick; 3+: indestructible PO-2 fence halves.
 			var level=effective_bonus_level("wall")
@@ -95,17 +95,34 @@ func collect_pickup(pickup: Dictionary):
 						for i in range(16):arena.room.walls[cell].sections[i]*=1.5
 				elif arena.room.walls.has(cell) or arena.can_enter(cell):
 					arena.add_wall(cell,4+effective_bonus_level("wall"));arena.board.shape_base_wall(cell)
-			arena.toast("Защитные стены укреплены")
+			detail="Стены у базы укреплены"
 		"vehicle":
 			var kind=arena.unlocked_vehicle()
 			if kind!="":
 				var cell=arena.find_free_near(Vector2i(arena.room.base_cell.x-2,arena.room.grid_size-3))
 				var delivery=arena.make_wreck(kind,cell,Vector2i.UP,false,arena.vehicle.player_armor(kind))
 				delivery.start_delivery((arena.room.grid_size-1)/3.8*.85*pow(.92,effective_bonus_level("vehicle")))
-				arena.toast({"buggy":"Багги","apc":"БТР","tank":"Танк"}[kind]+" доставлен к базе. Садись в любое время.")
+				arena.toast({"buggy":"Багги","apc":"БТР","tank":"Танк"}[kind]+" доставлен к базе. Садись в любое время.");detail="Техника едет к базе"
+	if is_instance_valid(pickup.get("node")):bonus_popup(pickup.node.global_position,pickup.kind,detail)
 	Game.sound({"heart":"heal","repair":"repair","vehicle_repair":"armor_recover","star":"rare_reveal","wall":"barrier_deploy","freeze":"shield_restore","pressure":"pressure"}.get(pickup.kind,"pickup"),arena)
 	arena.room.pickups.erase(pickup)
 	preload("res://scripts/battle_stage.gd").vanish(pickup.node)
+
+## Pickup popup: bonus name in its colour, the effect in plain words under it; rises and fades.
+func bonus_popup(pos:Vector3,kind:String,detail:String):
+	var info=arena.LOOT.BONUSES.get(kind,{})
+	if info.is_empty():return
+	var holder=Node3D.new();arena.add_child(holder);holder.global_position=pos+Vector3.UP*.9
+	var title=Visuals.label3d(holder,str(info.name),Vector3(0,.2,0),Color(info.color).lightened(.2),36);title.no_depth_test=true;title.render_priority=10
+	if detail!="":
+		var line=Visuals.label3d(holder,detail,Vector3(0,-.05,0),Color("f4f0e2"),26);line.no_depth_test=true;line.render_priority=10
+	holder.scale=Vector3.ONE*.6
+	var tween=holder.create_tween()
+	tween.tween_property(holder,"scale",Vector3.ONE,.16).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.parallel().tween_property(holder,"position:y",holder.position.y+.75,1.5).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
+	tween.parallel().tween_method(func(a:float):
+		for label in holder.get_children():label.modulate.a=a;label.outline_modulate.a=a,1.0,0.0,.45).set_delay(1.05)
+	tween.tween_callback(holder.queue_free)
 
 # Stat and behaviour cards come from UpgradeRegistry; weapons and headquarters offers keep their own catalogs.
 func apply_upgrade(id: String,tier: int=0):

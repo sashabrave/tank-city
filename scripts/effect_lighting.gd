@@ -27,12 +27,16 @@ static func pickup(parent:Node3D,color:Color):
 	pool.add_to_group("pickup_lights")
 
 	var ring=Visuals.ring(parent,color.lightened(.15),.30);ring.position.y=-.4
+	# Soft dark contact disc: the bonus reads against any floor without glowing harder.
+	var disc=MeshInstance3D.new();var mesh=CylinderMesh.new();mesh.top_radius=.3;mesh.bottom_radius=.3;mesh.height=.004;mesh.radial_segments=20;disc.mesh=mesh
+	var shade=StandardMaterial3D.new();shade.shading_mode=BaseMaterial3D.SHADING_MODE_UNSHADED;shade.transparency=BaseMaterial3D.TRANSPARENCY_ALPHA;shade.albedo_color=Color(0,0,0,.28)
+	disc.material_override=shade;disc.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF;parent.add_child(disc);disc.position.y=-.52
 	for node in parent.find_children("*","MeshInstance3D",true,false):
-		if node==ring:continue
+		if node==ring or node==disc:continue
 		for i in range(node.mesh.get_surface_count()):
 			var source=node.get_active_material(i)
 			if source is StandardMaterial3D:
-				var mat=source.duplicate();mat.emission_enabled=true;mat.emission=mat.albedo_color;mat.emission_texture=mat.albedo_texture;mat.emission_energy_multiplier=1.35;node.set_surface_override_material(i,mat)
+				var mat=source.duplicate();mat.emission_enabled=true;mat.emission=mat.albedo_color;mat.emission_texture=mat.albedo_texture;mat.emission_energy_multiplier=.4;node.set_surface_override_material(i,mat)
 
 static func refresh_projectile_halos():
 	var factor=.7 if Settings.values.world_lighting=="night" else .2

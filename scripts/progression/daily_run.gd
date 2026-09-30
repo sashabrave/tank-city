@@ -45,4 +45,4 @@ static func history()->Array:
 ## Source (Russian) text; UI labels localize it through Texts.set_text and the en.tsv template.
 static func describe(entry:Dictionary)->String:
 	if entry.is_empty() or not entry.has("score"):return "Ещё не сыграно"
-	return "%d очков · сектор %d · поле %d" % [int(entry.score),int(entry.cycle)+1,int(entry.field)+1]
+	return "сектор %d · поле %d · врагов %d" % [int(entry.cycle)+1,int(entry.field)+1,int(entry.get("kills",0))]

@@ -2,6 +2,32 @@
 	"entries": [
 		{
 			"date": "2026-09-30",
+			"version": "0.3.4",
+			"ru": {
+				"title": "Коты против собак и забег дня",
+				"items": [
+					"Враги теперь собаки: висячие уши, пухлые морды, загнутые хвосты и шесть окрасов. Свои по-прежнему коты.",
+					"Никакой реальной войны: вымышленные имена и места, облако кошачьей мяты, класс «Мышелов», поверженные враги исчезают в облачке. Мир 1 — «Тихий двор», мир 2 — «Мисочная гряда».",
+					"Забег дня: одно поле на всех на сегодня — те же враги, генералы и карточки, одинаковая сила врагов. Лучший счёт дня виден на карточке и в итогах.",
+					"Поле читается лучше: бетон темнее, дымка слабее, короткие тени без полос, декор по краям больше не закрывает клетки, по бортику — камни, кусты, кактусы и другие лёгкие объекты под биом.",
+					"Дождь стал редким, ливень — совсем редким.",
+					"Бонусы светятся мягче, а при подборе всплывает название и эффект."
+				]
+			},
+			"en": {
+				"title": "Cats vs dogs and the daily run",
+				"items": [
+					"Enemies are dogs now: floppy ears, chubby snouts, curled tails and six coats. Our side is still cats.",
+					"No real-world war: fictional names and places, a catnip cloud, the Mouser class, knocked-out enemies vanish in a puff. World 1 is Quiet Yard, world 2 is Kibble Ridge.",
+					"Daily run: one battlefield for everyone today — the same enemies, generals and cards, the same enemy strength. Your best score of the day shows on the card and in the summary.",
+					"The field reads better: darker concrete, lighter haze, short shadows without stripes, rim decor no longer covers cells, and light biome props — rocks, bushes, cacti and more — along the edge.",
+					"Rain is rare now, a downpour rarer still.",
+					"Bonuses glow softer, and picking one up shows its name and effect."
+				]
+			}
+		},
+		{
+			"date": "2026-09-30",
 			"version": "0.3.3",
 			"ru": {
 				"title": "Уютнее модели, дождь и живой лес",

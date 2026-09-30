@@ -25,6 +25,7 @@ const MOMENTS={
 }
 const DAY_MOMENTS=["dawn","morning","noon","golden","sunset"]
 const NIGHT_MOMENTS=["dusk","moon","predawn"]
+const MIN_DAY_ELEVATION=34.0
 ## Battle-only moment; hub and route map keep the style sun. Deterministic per run and room,
 ## seeded from the visual seed so gameplay RNG is never touched.
 static func moment(context:Node,night:bool)->Dictionary:
@@ -42,6 +43,9 @@ static func moment(context:Node,night:bool)->Dictionary:
 	var entry:Dictionary=MOMENTS[choice].duplicate()
 	var span:Vector2=entry.elevation
 	var elevation=rng.randf_range(span.x,span.y)
+	# Readability: a low sun stretched blurred shadows 3–4 cells across the field and read as stripes.
+	# The colour keeps the dawn/sunset mood; the shadow length stays about one cell or less.
+	if not night:elevation=maxf(elevation,MIN_DAY_ELEVATION+(elevation-span.x)*.4)
 	# Avoid the sun straight behind the camera (yaw ~10°): it flattens every shadow.
 	var yaw=wrapf(10.0+rng.randf_range(35,325),-180,180)
 	entry.id=choice;entry.angle=Vector3(-elevation,yaw,0)
@@ -172,7 +176,7 @@ func update_lamps():
 	if camera:pickups.sort_custom(func(a,b):return a.global_position.distance_squared_to(camera.global_position)<b.global_position.distance_squared_to(camera.global_position))
 	for i in range(pickups.size()):
 		pickups[i].visible=cozy and i<4
-		pickups[i].light_energy=.85 if night else .4
+		pickups[i].light_energy=.6 if night else .22
 static func lamp(parent:Node3D,position:Vector3):
 	var light=OmniLight3D.new();light.name="NightLamp";parent.add_child(light);light.position=position
 	light.light_color=Color("ffcc83");light.light_energy=1.6;light.omni_range=7;light.omni_attenuation=1.3;light.shadow_enabled=false

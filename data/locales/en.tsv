@@ -495,7 +495,7 @@ HP стен +1/ур.	Wall HP +1 per level
 Восстановление брони +10%/ур.	Armor repair +10% per level
 HP турели +1/ур.	Turret HP +1 per level
 Доставка быстрее на 8%/ур.	Delivery 8% faster per level
-Неуязвимость, смертельный выстрел, разрушение бетона	Invulnerability, lethal shots and concrete destruction
+Неуязвимость, сокрушительный выстрел, разрушение бетона	Invulnerability, crushing shots and concrete destruction
 Рельефные песчаные клетки снижают скорость наземной пехоты, техники и союзников до 55% обычной.	Sand reduces ground infantry, vehicle and ally speed to 55% of normal.
 Непроходима для наземных юнитов и техники, но пропускает пули.	Blocks ground units and vehicles, but lets bullets through.
 Наземные юниты и техника скользят в направлении движения.	Ground units and vehicles slide in their movement direction.
@@ -2263,7 +2263,17 @@ E — в хаб	E — to the hub
 Забег дня	Daily run
 Забег дня · сектор %d · поле %d	Daily run · sector %d · field %d
 Ещё не сыграно	Not played yet
-%d очков · сектор %d · поле %d	%d points · sector %d · field %d
+сектор %d · поле %d · врагов %d	sector %d · field %d · %d enemies
+Лучший сегодня	Today's best
 Одно поле на всех на сегодня: те же враги, генералы и карточки. Сила врагов одинакова для всех.	One battlefield for everyone today: the same enemies, generals and cards. Enemy strength is the same for everyone.
 Счёт дня	Daily score
 Рекорд дня	Daily best
+Неуязвимость и мощный огонь · %d с	Invulnerable, heavy fire · %d s
++%s здоровья	+%s health
+Напор ×2 · %d с	Pressure ×2 · %d s
+Враги заморожены · %d с	Enemies frozen · %d s
+Турель у базы	Turret at the base
++%s брони	+%s armour
+База +%s	Base +%s
+Стены у базы укреплены	Base walls reinforced
+Техника едет к базе	Vehicle on its way to the base

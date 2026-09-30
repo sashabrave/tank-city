@@ -21,7 +21,7 @@ func _ready():
 		if i==3:
 			# Endless card carries the daily run: one seed for everyone today, best result under the button.
 			var best=DailyRun.best(DailyRun.today_key())
-			UiKit.label(card,"Забег дня" if unlocked else "🔒 Пройдите 1-й мир",Vector2(15,332),Vector2(214,24),16,UiKit.MUTED if not unlocked else UiKit.INK)
+			UiKit.label(card,"Лучший сегодня" if unlocked else "🔒 Пройдите 1-й мир",Vector2(15,332),Vector2(214,24),16,UiKit.MUTED if not unlocked else UiKit.INK)
 			var note=UiKit.label(card,DailyRun.describe(best) if unlocked else "",Vector2(15,354),Vector2(214,24),13,UiKit.MUTED)
 			note.tooltip_text="Одно поле на всех на сегодня: те же враги, генералы и карточки. Сила врагов одинакова для всех."
 			var daily=UiKit.button(card,"Забег дня" if unlocked else "🔒 Закрыто",Vector2(15,386),Vector2(214,46),func():daily_selected.emit(),false)

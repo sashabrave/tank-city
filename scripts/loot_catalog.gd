@@ -9,7 +9,7 @@ const BONUSES={
  "vehicle_repair":{"name":"Броня","color":"71c7a2","shape":"hex","rarity":1,"effect":"Восстановление брони +10%/ур."},
  "turret":{"name":"Турель","color":"b894d9","shape":"pyramid","rarity":1,"effect":"HP турели +1/ур."},
  "vehicle":{"name":"Десант техники","color":"e8b957","shape":"diamond","rarity":2,"effect":"Доставка быстрее на 8%/ур."},
- "star":{"name":"Звезда","color":"f2cb64","shape":"star","rarity":2,"effect":"Неуязвимость, смертельный выстрел, разрушение бетона"}}
+ "star":{"name":"Звезда","color":"f2cb64","shape":"star","rarity":2,"effect":"Неуязвимость, сокрушительный выстрел, разрушение бетона"}}
 static var WEAPONS=preload("res://scripts/weapon_catalog.gd").DATA
 const RARITY_NAMES=["Обычное","Редкое","Эпическое","Секретное"]
 const RARITY_COLORS=["cbd5df","55baff","bc82ff","ffd166"]
