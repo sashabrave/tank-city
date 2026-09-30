@@ -27,7 +27,7 @@ func run():
 	Campaign.configure(1)
 	var route=load("res://scripts/route_map.gd").new();route.wave_seed=42;route.available=1;add_child(route)
 	await get_tree().create_timer(1.0).timeout
-	check(is_equal_approx(route.stage_z(1),-10.4),"Stage separation +30%")
+	check(is_equal_approx(route.stage_z(1),-RoutePlan.STAGE_STEP) and is_equal_approx(route.START_POINT.z,RoutePlan.STAGE_STEP),"Equal spacing for stages and start pad")
 	var hero=route.player_marker.get_node("CurrentHero")
 	check(is_equal_approx(hero.rotation.y,PI),"World map orientation is fixed")
 	check(route.find_children("RouteRoad*","Node3D",false,false).size()>0,"Road surfaces exist")

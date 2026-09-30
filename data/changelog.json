@@ -13,7 +13,10 @@
 					"Исправлены ошибки при быстром переключении страниц планшета.",
 					"В разделе «Об игре» появилась вкладка Changelog со списком изменений.",
 					"Число на карточке улучшения теперь всегда совпадает с результатом выбора. Раньше карта «Напор» обещала больше перехвата, чем давала на самом деле.",
-					"Карты, которые уже упёрлись в предел (скорость, перехват), больше не предлагаются."
+					"Карты, которые уже упёрлись в предел (скорость, перехват), больше не предлагаются.",
+					"Карта маршрута: у старта появилась площадка с воротами, все точки стоят на одинаковом расстоянии, машина на карте стала меньше.",
+					"Мир 1: сложные точки (★★) больше не встречаются в начале пути — сложность растёт к боссу.",
+					"Мир 1: механик и мастерская штаба стали обычными точками маршрута со своими дорогами. Раньше к ним можно было попасть из любой точки, а дорог на карте не было."
 				]
 			},
 			"en": {
@@ -27,7 +30,10 @@
 					"Fixed errors when switching tablet pages quickly.",
 					"The About section now has a Changelog tab listing changes.",
 					"The number on an upgrade card now always matches the result. Previously the Pressure card promised more interception than it actually gave.",
-					"Cards whose stat has reached its limit (speed, interception) are no longer offered."
+					"Cards whose stat has reached its limit (speed, interception) are no longer offered.",
+					"Route map: the start now has a launch pad with a gate, all points are evenly spaced, and the vehicle on the map is smaller.",
+					"World 1: hard (★★) points no longer appear at the start of the route — difficulty grows towards the boss.",
+					"World 1: the mechanic and the HQ workshop are now ordinary route points with their own roads. Previously they were reachable from any point with no roads drawn."
 				]
 			}
 		}

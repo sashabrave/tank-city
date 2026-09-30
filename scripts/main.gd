@@ -70,6 +70,9 @@ func enter_room(index: int,node_id:String=""):
 	if node_id not in reachable:return
 	if is_instance_valid(run_arena) and index in Campaign.SERVICES and not run_arena.visited_services.has(index):return
 	route_choices[index]=node_id
+	var branch=RoutePlan.node_branch(RoutePlan.chosen(plan,index,route_choices))
+	if branch!="" and is_instance_valid(run_arena):
+		show_node_service(branch,index);return
 	clear_current()
 	if not is_instance_valid(run_arena):
 		run_arena=load("res://scenes/arena.tscn").instantiate();run_arena.run_seed=Game.visual_run_seed;run_arena.run.route_choices=route_choices;current=run_arena;add_child(current)
@@ -86,6 +89,12 @@ func show_service(branch: String,index: int):
 	clear_current();current=load("res://scripts/service_room.gd").new();current.arena=run_arena;current.index=index;current.branch=branch;add_child(current)
 	current.hub_requested.connect(show_hub)
 	current.completed.connect(func(completed_index):run_arena.visited_services[completed_index]=branch;show_map(completed_index))
+
+## A service placed on the route as an ordinary node: after it the next stage opens.
+func show_node_service(branch:String,index:int):
+	clear_current();current=load("res://scripts/service_room.gd").new();current.arena=run_arena;current.index=index;current.branch=branch;add_child(current)
+	current.hub_requested.connect(show_hub)
+	current.completed.connect(func(_completed):run_arena.run.route_choices=route_choices;show_map(index+1))
 
 func test_jump(target:int,replay_rewards:bool,node_id:String=""):
 	var plan=RoutePlan.build(Game.visual_run_seed)

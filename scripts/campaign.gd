@@ -33,6 +33,8 @@ static func title(index:int)->String:
 static func unlocked(id:int)->bool:return id==1 or id-1 in Game.progression.cleared_worlds
 static func infinite_unlocked()->bool:return 1 in Game.progression.cleared_worlds
 static func service_options(seed_value:int,index:int)->Array:
+	# World 1 keeps only the instructor in separate service rows; mechanic and workshop are route nodes.
+	if world==1 and not endless:return ["ability"]
 	var options=["vehicle","ability","headquarters"];var rng=RandomNumberGenerator.new();rng.seed=seed_value+index*977+world*181+cycle*371
 	if not endless:
 		var removed=rng.randi_range(0,2);options.remove_at(removed)

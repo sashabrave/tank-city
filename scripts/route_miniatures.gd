@@ -76,3 +76,16 @@ static func headquarters(parent:Node3D):
 	var rover=Visuals.model("base",parent);rover.scale=Vector3.ONE*1.8;rover.position=Vector3(0,.28,0);rover.rotation.y=PI*.5
 	Visuals.box(parent,Vector3(2,1.4,1.1),Vector3(.08,2.4,.08),Color("d8d9ca"))
 	Visuals.box(parent,Vector3(2.4,2.4,1.1),Vector3(.85,.5,.07),Color("79bd9b"))
+
+## Start pad: round concrete platform with a launch gate and chevrons the vehicle leaves from.
+static func start(parent:Node3D):
+	var concrete=Color("8d9186")
+	base(parent,concrete,true)
+	for x in [-2.1,2.1]:Visuals.box(parent,Vector3(x,1.05,-1.6),Vector3(.32,1.55,.32),concrete.darkened(.35))
+	Visuals.box(parent,Vector3(0,1.9,-1.6),Vector3(4.6,.26,.4),Color("e5b34f"))
+	for i in range(5):Visuals.box(parent,Vector3(-1.9+i*.95,1.9,-1.38),Vector3(.45,.2,.03),Color("2f332d"))
+	for i in range(3):
+		for side in [-1,1]:
+			var chevron=Visuals.box(parent,Vector3(side*.38,.3,1.3-i*.95),Vector3(.9,.03,.18),Color("f0d27a"));chevron.rotation.y=side*.75
+	Visuals.box(parent,Vector3(2.3,.55,1.6),Vector3(.7,.55,.7),concrete.darkened(.2))
+	Visuals.box(parent,Vector3(2.3,.95,1.6),Vector3(.18,.3,.18),Color("cf613f"))
