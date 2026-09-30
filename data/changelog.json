@@ -58,7 +58,8 @@
 					"Новые модели боеприпасов вместо шариков: ручная граната с чекой, мина миномёта со стабилизаторами, бомба дрона, ракета РПГ с оперением. Свои с жёлтым пояском, вражеские с красным и мигающим огоньком; огонёк на бомбе учащается к взрыву. Вражеские пули мерцают.",
 					"Попадание подсвечивает бойца или врага короткой красной вспышкой. На старте боя боец пару секунд неуязвим и мерцает.",
 					"Статусы видны на моделях: поджог — оранжевое мерцание, заморозка — голубой лёд, оглушение — звёздочки над головой. Эффекты бойца (неуязвимость, звезда, щит, маскировка, заморозка, десант, выдержка, рывок, окоп) показаны значками рядом со здоровьем, с убывающей полоской времени.",
-					"В хабе и на экранах между волнами поле слегка наклоняется вслед за курсором или пальцем — на пару градусов, плавно, и само возвращается. В бою камера не двигается."
+					"В хабе и на экранах между волнами поле слегка наклоняется вслед за курсором или пальцем — на пару градусов, плавно, и само возвращается. В бою камера не двигается.",
+					"Во всех верстаках у каждой карточки есть статус: закрыто, в разработке, можно купить, не хватает, куплено, можно улучшить, выбрано, максимум. Цвет карточки и плашка сразу показывают, что доступно сейчас; нехватка чертежа важнее нехватки денег."
 				]
 			},
 			"en": {
@@ -101,7 +102,8 @@
 					"New ordnance models instead of balls: a hand grenade with a lever, a finned mortar round, a drone bomb and a finned RPG rocket. Friendly ones have a yellow band; enemy ones a red band and a blinking light that speeds up on the bomb before it goes off. Enemy bullets flicker.",
 					"Hits flash the soldier or enemy briefly red. At the start of a battle the soldier is invulnerable for a couple of seconds and shimmers.",
 					"Statuses show on models: burning flickers orange, frozen turns ice blue, stunned shows stars overhead. The soldier's effects (invulnerability, star, shield, cloak, freeze, landing, opening shot, dash, trench) appear as icons next to health with a draining timer bar.",
-					"In the hub and on between-wave screens the field leans a couple of degrees toward the cursor or your finger, smoothly, and settles back. The camera stays still in combat."
+					"In the hub and on between-wave screens the field leans a couple of degrees toward the cursor or your finger, smoothly, and settles back. The camera stays still in combat.",
+					"Every workshop card now shows a status: locked, in development, can buy, not enough, owned, can upgrade, selected, maxed. Card colour and tag show at a glance what is available now; a missing blueprint outranks missing money."
 				]
 			}
 		},

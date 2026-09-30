@@ -17,6 +17,61 @@ var grid:GridContainer
 var detail_box:Control
 var animate_cards=true
 const STATE_COLORS={"locked":Color("3a3f39"),"ready":Color("584a2c"),"owned":Color("2f3b33"),"active":Color("3f5a3f"),"max":Color("2f3b33")}
+## One status vocabulary for every station card and detail panel. Derived from the item state and the
+## detail's purchase action (text with ◈ or док.), so stations only report state + actions.
+##   status: [label, chip colour, card colour, border colour]
+const STATUS={
+	"locked":["Закрыто",Color("6c736b"),Color("30352f"),Color("3f463f")],
+	"soon":["В разработке",Color("9d8fc4"),Color("2f2d38"),Color("4a4560")],
+	"buy":["Можно купить",Color("f2a33a"),Color("4a3f28"),Color("c98a33")],
+	"short":["Не хватает",Color("d0705c"),Color("36302c"),Color("5a4038")],
+	"owned":["Куплено",Color("8fb59a"),Color("2f3b33"),Color("47524a")],
+	"upgrade":["Можно улучшить",Color("f2a33a"),Color("33402f"),Color("c98a33")],
+	"upgrade_short":["Не хватает",Color("d0705c"),Color("2f3b33"),Color("5a4038")],
+	"active":["Выбрано",Color("7fe08a"),Color("34503a"),Color("6fbf78")],
+	"max":["Максимум",Color("e8c96a"),Color("3a3a2c"),Color("8a7a45")],
+}
+func status(item:Dictionary)->String:
+	if item.has("status"):return str(item.status)
+	var state=str(item.get("state","owned"))
+	var id=str(item.id)
+	if item.get("soon",false) or str(item.get("group",""))=="В разработке" or id=="soon" or id.begins_with("concept") or str(item.get("caption",""))=="Скоро":return "soon"
+	if state=="max":return "max"
+	if state=="active":return "active"
+	var purchase=purchase_action(id)
+	# A disabled purchase is "not enough" only when the price really exceeds the wallet;
+	# otherwise something else blocks it (a blueprint, a previous step) and the item is locked.
+	var blocked=not purchase.is_empty() and not purchase.get("enabled",true)
+	var poor=blocked and lacks_funds(str(purchase.get("text","")))
+	# A missing blueprint or step outranks money: saving up for something you cannot buy is misleading.
+	var caption=str(item.get("caption","")).to_lower()
+	if state=="locked" and (caption.begins_with("нужен") or caption.begins_with("нужна") or caption.begins_with("открой") or caption.begins_with("после") or "чертёж" in caption):return "locked"
+	if state=="locked":
+		if purchase.is_empty() or (blocked and not poor):return "locked"
+		return "short" if poor else "buy"
+	if state=="ready":return "short" if poor else "buy"
+	if not purchase.is_empty() and not (blocked and not poor):return "upgrade_short" if poor else "upgrade"
+	return "owned"
+func lacks_funds(text:String)->bool:
+	var number=RegEx.new();number.compile("(\\d[\\d ]*)\\s*(◈|док\\.)")
+	var found=number.search(text)
+	if found==null:return false
+	var price=int(found.get_string(1).replace(" ",""))
+	return price>(Game.credits if found.get_string(2)=="◈" else Game.cores)
+func purchase_action(id:String)->Dictionary:
+	var info:Dictionary=provider.detail(tab,id)
+	for action in info.get("actions",[]):
+		var text=str(action.get("text",""))
+		if "◈" in text or "док." in text:return action
+	return {}
+func status_chip(parent:Control,kind:String,pos:Vector2)->Control:
+	var spec:Array=STATUS.get(kind,STATUS.owned)
+	var chip=PanelContainer.new();chip.name="Status";parent.add_child(chip);chip.position=pos;chip.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	var box=UiKit.style(Color(spec[1],.16),5,Color(spec[1],.5));box.content_margin_left=6;box.content_margin_right=6;box.content_margin_top=1;box.content_margin_bottom=1
+	chip.add_theme_stylebox_override("panel",box)
+	var label=Label.new();chip.add_child(label);Texts.set_text(label,spec[0]);label.add_theme_font_size_override("font_size",11);label.add_theme_color_override("font_color",spec[1].lightened(.15))
+	label.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	return chip
 func _ready():
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);add_to_group("selection_scope")
 	var tabs=provider.tabs()
@@ -67,14 +122,17 @@ func build():
 func card(item:Dictionary):
 	var b=Button.new();grid.add_child(b);b.name="Item_"+str(item.id);b.custom_minimum_size=Vector2(166,150);b.focus_mode=Control.FOCUS_NONE
 	var state=str(item.get("state","owned"))
-	var style=UiKit.style(STATE_COLORS.get(state,Color("2f3b33")),10,UiKit.ORANGE if item.id==selected else Color("47524a"))
+	var kind=status(item);var spec:Array=STATUS[kind]
+	var style=UiKit.style(spec[2],10,UiKit.ORANGE if item.id==selected else spec[3])
 	style.set_border_width_all(3 if item.id==selected else 1)
 	for key in ["normal","hover","pressed","focus"]:b.add_theme_stylebox_override(key,style)
 	b.pressed.connect(func():selected=item.id;notice="";build())
 	UiKit.press_bounce(b)
-	var picture=UiKit.icon(b,str(item.get("icon",item.id)),Vector2(55,14),Vector2(56,56))
+	var picture=UiKit.icon(b,str(item.get("icon",item.id)),Vector2(58,24),Vector2(50,50))
 	if item.has("texture"):picture.texture=item.texture
-	UiKit.locked_preview(picture,state=="locked")
+	UiKit.locked_preview(picture,kind in ["locked","soon"])
+	if kind in ["soon","locked"]:picture.modulate.a=.55 if kind=="soon" else .8
+	status_chip(b,kind,Vector2(6,6))
 	var title=UiKit.label(b,str(item.title),Vector2(8,76),Vector2(150,26),15);title.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;title.clip_text=true
 	var caption=UiKit.label(b,str(item.get("caption","")),Vector2(8,102),Vector2(150,40),13,UiKit.MUTED);caption.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;caption.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	if item.get("dot",false):UiKit.badge(b,str(item.get("dot_kind","news")))
@@ -86,7 +144,9 @@ func render_detail():
 	var picture=UiKit.icon(content,str(info.get("icon",selected)),Vector2(16,16),Vector2(72,72))
 	if info.has("texture"):picture.texture=info.texture
 	var heading=UiKit.label(content,str(info.get("title","")),Vector2(100,18),Vector2(206,64),21);heading.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-	var y=100.0
+	var current=provider.items(tab).filter(func(i):return str(i.id)==selected)
+	if not current.is_empty():status_chip(content,status(current[0]),Vector2(16,96))
+	var y=126.0
 	if str(info.get("text",""))!="":
 		var text=UiKit.label(content,str(info.text),Vector2(16,y),Vector2(288,96),15,UiKit.MUTED);text.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;y+=104
 	for row in info.get("rows",[]):
