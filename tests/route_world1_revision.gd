@@ -29,7 +29,7 @@ func run():
 	check(levels_ok,"battle difficulty follows the world 1 table")
 	check(specials_ok,"mechanic on stage 2–3 and workshop on stage 4–5 in every plan")
 	check(edges_ok,"every node keeps a road forward")
-	check(Campaign.service_options(1,2)==["ability"],"world 1 service row keeps the instructor")
+	check(Campaign.service_options(1,2)==["ability","merchant"],"world 1 service row: instructor and merchant")
 	Campaign.configure(1,true)
 	var endless_plan=RoutePlan.build(5)
 	check(endless_plan.all(func(stage):return stage.all(func(n):return n.type=="battle")),"endless rooms stay battles")
