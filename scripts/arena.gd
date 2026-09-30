@@ -299,6 +299,10 @@ func begin_room(index: int):
 		carried_kind=hero.kind;carried_armor=hero.hp;carried_salvaged=hero.salvaged;carried_origin=hero.origin;carried_zone=int(hero.zone)
 	resume_checkpoint={}
 	if pending_vehicle!="":carried_kind=pending_vehicle;carried_armor=0;carried_salvaged=false;carried_origin="owned";pending_vehicle=""
+	# Drop references to the previous room's HQ before freeing it: a boss room builds no label or bar,
+	# and a stale typed reference to a freed node crashes the exported build.
+	room.base_model=null;room.base_label=null;room.base_bar=null
+	preload("res://scripts/battle_stage.gd").stop(self)
 	for child in get_children():
 		if child==presentation or child==hud or child==camera or child is WorldEnvironment or child is DirectionalLight3D or child.name in ["WorldLighting","WorldAtmosphere","SandboxAdmin"]:continue
 		remove_child(child);child.queue_free()

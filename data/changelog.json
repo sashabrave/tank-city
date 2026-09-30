@@ -61,7 +61,9 @@
 					"Статусы видны на моделях: поджог — оранжевое мерцание, заморозка — голубой лёд, оглушение — звёздочки над головой. Эффекты бойца (неуязвимость, звезда, щит, маскировка, заморозка, десант, выдержка, рывок, окоп) показаны значками рядом со здоровьем, с убывающей полоской времени.",
 					"В хабе и на экранах между волнами поле чуть поворачивается вокруг центра вслед за курсором или пальцем — на полтора градуса, плавно, и само возвращается. В бою камера не двигается.",
 					"Во всех верстаках у каждой карточки есть статус: закрыто, в разработке, можно купить, не хватает, куплено, можно улучшить, выбрано, максимум. Цвет карточки и плашка сразу показывают, что доступно сейчас; нехватка чертежа важнее нехватки денег.",
-					"Огонь горящих бочек вдвое слабее и меньше отвлекает; тлеющие после взрыва — ещё тише."
+					"Огонь горящих бочек вдвое слабее и меньше отвлекает; тлеющие после взрыва — ещё тише.",
+					"Бонусы спускаются на парашюте-крыле из пяти секций, ткань матовая, без свечения.",
+					"Исправлен вылет при переходе из песочницы в бой с боссом."
 				]
 			},
 			"en": {
@@ -106,7 +108,9 @@
 					"Statuses show on models: burning flickers orange, frozen turns ice blue, stunned shows stars overhead. The soldier's effects (invulnerability, star, shield, cloak, freeze, landing, opening shot, dash, trench) appear as icons next to health with a draining timer bar.",
 					"In the hub and on between-wave screens the field turns about its centre by a degree and a half toward the cursor or your finger, smoothly, and settles back. The camera stays still in combat.",
 					"Every workshop card now shows a status: locked, in development, can buy, not enough, owned, can upgrade, selected, maxed. Card colour and tag show at a glance what is available now; a missing blueprint outranks missing money.",
-					"Burning drums have half the flame and distract less; smouldering ones after an explosion are even dimmer."
+					"Burning drums have half the flame and distract less; smouldering ones after an explosion are even dimmer.",
+					"Bonuses drop under a five-cell ram-air wing with matte cloth, no glow.",
+					"Fixed a crash when entering a boss fight from the sandbox."
 				]
 			}
 		},
@@ -125,7 +129,8 @@
 					"Площадка стала вдвое больше: небольшая прямоугольная испытательная трасса с бордюрами, конусами, трамплином и шинами, огороженный полигон и стоянка.",
 					"Площадку снаружи сначала нужно купить (150 сплава, в «Строительстве» или в «Штабе» → «Постройки»). Пока её нет, ворота закрыты. После покупки на ней можно построить «Стоянку» и «Полигон».",
 					"В хабе появился шкаф с формой: «Лес» есть сразу, «Пустыня», «Зима», «Город» и «Ночь» иногда выпадают у командиров, «Парадная» — за победу над боссом, «Тигровая» — джекпот в автомате торговца. Скины оружия — позже.",
-					"Новая редкая карточка «Сейф»: ячейка рюкзака становится сейфовой, чертёж в ней не пропадает при гибели. Берётся до трёх раз."
+					"Новая редкая карточка «Сейф»: ячейка рюкзака становится сейфовой, чертёж в ней не пропадает при гибели. Берётся до трёх раз.",
+					"Фильтры задач — горизонтальные табы на всю ширину, «Выполненные» теперь «Готово»."
 				]
 			},
 			"en": {
@@ -140,7 +145,8 @@
 					"The yard is twice as big: a small rectangular test track with kerbs, cones, a ramp and tyres, a fenced range and the parking.",
 					"The outside yard has to be bought first (150 alloy, in Construction or HQ → Buildings). Until then the gate is shut. Once bought, the Parking and the Range can be built on it.",
 					"The hub has a wardrobe with uniforms: Woodland from the start; Desert, Winter, Urban and Night sometimes drop from commanders; Parade for defeating the boss; Tiger is a jackpot at the merchant's slot machine. Weapon skins come later.",
-					"New rare card Safe: a backpack slot becomes safe, its blueprint is not lost on death. Can be taken up to three times."
+					"New rare card Safe: a backpack slot becomes safe, its blueprint is not lost on death. Can be taken up to three times.",
+					"Task filters are full-width horizontal tabs; \"Completed\" is now \"Done\"."
 				]
 			}
 		},

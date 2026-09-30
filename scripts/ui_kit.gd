@@ -149,6 +149,22 @@ static func press_bounce(button:Button):
 		button.create_tween().tween_property(button,"scale",Vector2.ONE,.18).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT))
 static func interface_icon(id:String)->Texture2D:
 	return load("res://assets/icons/interface_straight/"+id+".svg")
+## Horizontal tabs filling a block: equal widths, 8 px gaps, the active one filled like settings tabs.
+## tabs: [[key,title], …]; select(key) is called on press.
+static func tab_row(parent:Control,pos:Vector2,width:float,tabs:Array,active:String,select:Callable,height:=40.0)->Array:
+	var gap=8.0;var each=(width-gap*(tabs.size()-1))/maxf(1,tabs.size());var result=[]
+	for i in range(tabs.size()):
+		var key=str(tabs[i][0])
+		var b=button(parent,str(tabs[i][1]),pos+Vector2(i*(each+gap),0),Vector2(each,height),func():select.call(key))
+		b.name="Tab_"+key;b.add_theme_font_size_override("font_size",14);b.clip_text=true;b.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS
+		for state in ["normal","hover","pressed","disabled","focus"]:
+			var tight=b.get_theme_stylebox(state).duplicate();tight.content_margin_left=6;tight.content_margin_right=6;b.add_theme_stylebox_override(state,tight)
+		b.custom_minimum_size=Vector2(0,height);b.size=Vector2(each,height)
+		if key==active:
+			for state in ["normal","hover","focus"]:b.add_theme_stylebox_override(state,style(Color("584a2c"),6,ORANGE))
+		result.append(b)
+	return result
+
 static func icon_texture(id:String)->Texture2D:
 	if id in ["debug","lock","repeat","inventory","fighter","quests","notifications","music","settings","guide","base","about"]:return interface_icon(id)
 	var sections=["inventory","fighter","quests","notifications","music","settings","guide","base","workshop"]
