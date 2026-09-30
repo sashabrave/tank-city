@@ -12,8 +12,9 @@ func run():
 		var model=Visuals.model(kind,self);model.set_process(false)
 		var bounds=Visuals.mesh_bounds(model,Transform3D.IDENTITY)
 		print("MODEL ",kind," bounds=",bounds.size," clips=",model.player.get_animation_list())
-		check(absf(bounds.size.y-.936)<.03,"0.936-cell height "+kind)
-		check(model.skeleton.get_bone_count()==17,"shared 17 bone rig "+kind)
+		# v6 cats: 0.936-cell body; ears (and the sniper hood) add up to ~0.08 on top.
+		check(bounds.size.y>.906 and bounds.size.y<1.02,"0.936-cell height "+kind)
+		check(model.skeleton.get_bone_count()==19,"shared 19 bone rig (v6 cats: 17 + tail) "+kind)
 		for clip in ["hero_idle","hero_walk","hero_fire"]:check(model.player.has_animation(clip),"clip "+kind+" "+clip)
 		for weapon in (["pistol","smg","rifle","shotgun","sniper","rpg","mg","grenade_launcher"] if kind=="soldier" else [EnemyLoadouts.default_for("grenadier" if kind=="rpg_soldier" else kind)]):
 			model.equip_weapon(weapon);model.preview_moving=true
@@ -21,7 +22,8 @@ func run():
 			model._process(.1)
 			check(model.weapon_id==weapon and model.muzzle!=null,"equipped "+kind+" "+weapon)
 			var hand=model.skeleton.find_bone("hand.R");var grip=model.skeleton.find_bone("weapon")
-			check(model.skeleton.get_bone_global_pose(hand).origin.distance_to(model.skeleton.get_bone_global_pose(grip).origin)<.001,"trigger grip at right hand")
+			# v6 cats carry the weapon on the chest (weapon bone under spine); the wrist is solved just behind the grip.
+			check(model.skeleton.get_bone_global_pose(hand).origin.distance_to(model.skeleton.get_bone_global_pose(grip).origin)<.05,"trigger grip at right hand %s %.3f" % [kind,model.skeleton.get_bone_global_pose(hand).origin.distance_to(model.skeleton.get_bone_global_pose(grip).origin)])
 			if kind!="shield":
 				var left=model.skeleton.get_bone_global_pose(model.skeleton.find_bone("hand.L")).origin
 				var target=model.skeleton.to_local(model.support_grip.global_position)

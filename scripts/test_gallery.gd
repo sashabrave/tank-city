@@ -95,7 +95,7 @@ func build_exhibits():
 		var c=stand("Преграда · состояние "+str(stage+1));add_barrier(c,12)
 		if stage>0:damage_wall(c,stage*4)
 	room_index=7;add_wall(stand("Мешки цемента · зона 2"),6);room_index=0
-	var armored=stand("Сверхпрочный бронеблок");room_index=7;add_armored_wall(armored);room_index=0
+	var armored=stand("Армированный кирпич");room_index=7;board.add_reinforced_wall(armored,12);room_index=0
 	var reinforced=stand("Укреплённая ограда базы");add_wall(reinforced,9);Visuals.box(walls[reinforced].node,Vector3(0,1.07,0),Vector3(.98,.08,.98),Color("668794"))
 	add_barrel(stand("Взрывоопасная бочка"));add_rubble(stand("Обломки · проходимые"))
 	section("Бонусы и трофеи")

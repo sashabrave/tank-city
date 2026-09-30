@@ -46,6 +46,9 @@ func active()->bool:return arena.room.mode!="battle"
 ## Rooms that finish by their own rule, not by an empty wave queue.
 func blocks_waves()->bool:return arena.room.mode in ["hold","survive","thimbles","switches"] and not rewarded
 func weapons_locked()->bool:return arena.room.mode=="survive" and not rewarded
+## Room change: forget props of the previous challenge (their nodes are freed with the room).
+func reset():
+	opened=false;rewarded=false;chest={};zone=null;shells.clear();cups.clear();hidden_cup=null;thimble_state="";plates.clear();sequence.clear();switch_state=""
 func start():
 	opened=false;rewarded=false;chest={}
 	arena.room.spawn_queue.clear();arena.room.wave_roster.clear();arena.room.wave_spawned=0;arena.room.upgrade_offers.clear()
@@ -84,7 +87,7 @@ func start_cache():
 	arena.room.pickups.append(chest)
 	arena.toast("Тайник. Откроешь — будет засада. Можно уйти через выход")
 func nearest_cache()->Dictionary:
-	if chest.is_empty() or opened or not is_instance_valid(arena.room.player):return {}
+	if arena.room.mode!="cache" or chest.is_empty() or opened or not is_instance_valid(chest.get("node")) or not is_instance_valid(arena.room.player):return {}
 	return chest if arena.flat_distance(arena.room.player.position,chest.node.position)<1.6 else {}
 ## Veterans come from both sides; the room stays open to leave.
 func open_cache():
@@ -235,7 +238,7 @@ func swap(a:int,b:int,time:float):
 	tween.tween_property(second,"position",from,time).set_trans(Tween.TRANS_SINE)
 	cups[a]=second;cups[b]=first
 func nearest_cup()->Node3D:
-	if thimble_state!="pick" or not is_instance_valid(arena.room.player):return null
+	if arena.room.mode!="thimbles" or thimble_state!="pick" or not is_instance_valid(arena.room.player):return null
 	for cup in cups:
 		if is_instance_valid(cup) and arena.flat_distance(cup.position,arena.room.player.position)<1.3:return cup
 	return null

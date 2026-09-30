@@ -55,8 +55,19 @@ func collect_pickup(pickup: Dictionary):
 			if is_instance_valid(arena.room.base_bar):arena.room.base_bar.set_health(arena.room.base_hp,arena.room.base_max_hp)
 			arena.toast("База отремонтирована: +%.1f HP" % healed)
 		"wall":
+			# Level 0-1: brick; 2: reinforced brick; 3+: indestructible PO-2 fence halves.
+			var level=effective_bonus_level("wall")
 			for cell in [Vector2i(arena.room.base_cell.x-1,arena.room.grid_size-2),Vector2i(arena.room.base_cell.x,arena.room.grid_size-2),Vector2i(arena.room.base_cell.x+1,arena.room.grid_size-2),Vector2i(arena.room.base_cell.x-1,arena.room.grid_size-1),Vector2i(arena.room.base_cell.x+1,arena.room.grid_size-1)]:
-				if arena.room.walls.has(cell) and arena.room.walls[cell].hp>0 and arena.room.base_hp>=arena.room.base_max_hp:
+				var existing=arena.room.walls.get(cell)
+				if existing!=null and existing.hp<0:continue
+				var upgrade=level>=3 or (level==2 and existing!=null and not existing.get("reinforced",false))
+				if upgrade or (existing==null and level>=2):
+					if existing==null and not arena.can_enter(cell):continue
+					if existing!=null:existing.node.queue_free();arena.room.walls.erase(cell)
+					if level>=3:arena.board.add_wall(cell,-1,"concrete_0")
+					else:arena.board.add_reinforced_wall(cell,(4+level)*4.0)
+					arena.board.shape_base_wall(cell)
+				elif arena.room.walls.has(cell) and arena.room.walls[cell].hp>0 and arena.room.base_hp>=arena.room.base_max_hp:
 					arena.room.walls[cell].hp*=1.5;arena.room.walls[cell].max_hp*=1.5
 					arena.room.walls[cell]["armor_level"]=arena.room.walls[cell].get("armor_level",0)+1
 					if arena.room.walls[cell].has("sections"):
@@ -108,12 +119,17 @@ func drop_recipe(cell: Vector2i,_recipe: Dictionary):
 	cell=arena.grid_pos(safe_drop_position(arena.world_pos(cell)))
 	var elite=_recipe.get("elite",true)
 	var node=Node3D.new();arena.add_child(node);node.position=arena.world_pos(cell)
-	var visual=Node3D.new();node.add_child(visual)
-	Visuals.box(visual,Vector3(0,.25,0),Vector3(.85,.5,.55),Color("637965"))
-	Visuals.box(visual,Vector3(0,.52,0),Vector3(.9,.12,.6),Color("839579"))
-	for x in [-.28,.28]:Visuals.box(visual,Vector3(x,.3,-.29),Vector3(.09,.5,.03),Color("d4bd73") if elite else Color("879486"))
-	Visuals.ring(node,Color("ffd56a") if elite else Color("b7c3ae"),.55)
-	var glow=OmniLight3D.new();node.add_child(glow);glow.position.y=.7;glow.light_color=Color("ffd56a");glow.light_energy=1.5 if elite else .3;glow.omni_range=2;glow.shadow_enabled=false;glow.light_volumetric_fog_energy=0;glow.add_to_group("pickup_lights")
+	# Chest by rank (tools/build_props_v6.py): still, unlit; a soft light pillar marks it instead.
+	var tier=3 if arena.room.boss_room else EncounterRules.difficulty(arena.room.difficulty)
+	var visual=load("res://assets/models/chests_v6/chest_%d.glb" % tier).instantiate();node.add_child(visual)
+	visual.rotation.y=PI;visual.scale=Vector3.ONE*.95
+	var tint=[Color("c9d3bd"),Color("9fd4ff"),Color("ffd56a"),Color("ffb347")][tier]
+	Visuals.ring(node,tint,.55)
+	var beam=MeshInstance3D.new();beam.name="LootBeam";var column=CylinderMesh.new()
+	column.top_radius=.26;column.bottom_radius=.3;column.height=2.6;column.radial_segments=12;column.rings=1;column.cap_top=false;column.cap_bottom=false
+	beam.mesh=column;beam.position.y=1.3;beam.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF;node.add_child(beam)
+	var beam_mat=ShaderMaterial.new();beam_mat.shader=preload("res://shaders/fx/loot_beam.gdshader");beam_mat.set_shader_parameter("tint",tint)
+	beam_mat.set_shader_parameter("strength",[.35,.45,.55,.65][tier]);beam.material_override=beam_mat
 	Visuals.label3d(node,"Сундук "+EncounterRules.STARS[2 if arena.room.boss_room else arena.room.difficulty]+" · E",Vector3(0,1.4,0),Color("fff0ac"),40)
 	preload("res://scripts/interaction_prompt.gd").attach(node,arena,"Сундук",Vector3.ZERO,1.65)
 	arena.room.pickups.append({"kind":"recipe_draft","elite":elite,"final":arena.room.boss_room,"offers":[],"node":node,"visual":visual})
@@ -165,6 +181,7 @@ func collect_nearby_pickups(delta):
 		if arena.flat_distance(arena.room.player.position,pickup.node.position)>1.35:pickup["blocked"]=false
 		if pickup.kind not in ["recipe_draft","cache"] and arena.flat_distance(arena.room.player.position,pickup.node.position)<1.1 and arena.clear_shot(arena.room.player.position,pickup.node.position,.05) and not pickup.get("blocked",false):collect_pickup(pickup)
 	for pickup in arena.room.pickups:
+		if pickup.kind=="recipe_draft":continue  # chests stand still on the ground
 		pickup.visual.rotation.y+=delta;pickup.visual.position.y=.45+sin(arena.run.elapsed*3)*.07
 func chest_offers(_elite:bool=true)->Array:
 	var difficulty=2 if arena.room.boss_room else arena.room.difficulty

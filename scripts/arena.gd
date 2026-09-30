@@ -296,6 +296,7 @@ func begin_room(index: int):
 	var route_node=RoutePlan.chosen(RoutePlan.build(run_seed),index,run.route_choices)
 	room.difficulty=route_node.difficulty;room.route_node_id=route_node.id
 	room.mode=route_node.get("type","battle") if route_node.get("type","battle") in RoutePlan.CHALLENGES else "battle"
+	challenges.reset()
 	room.commander_elite=room.difficulty>0
 	room.commander=null;room.commander_help_timer=0;room.commander_help_waves=0;room.commander_help_pool.clear()
 	room_index=index;grid_size=ROOM_SIZES[index];boss_room=index in Campaign.BOSSES;boss_defeated=false
@@ -307,6 +308,9 @@ func begin_room(index: int):
 	camera.size=grid_size+5.0
 	_build_map()
 	preload("res://scripts/world_lighting.gd").field(self)
+	preload("res://scripts/systems/block_decor.gd").decorate(self)
+	var weather=preload("res://scripts/systems/weather.gd").new();add_child(weather);weather.setup(self)
+	get_node("WorldLighting").apply()
 	get_node("WorldAtmosphere").apply()
 	var ambience=load("res://scripts/location_ambience.gd").new()
 	ambience.seed_value=Game.visual_run_seed;ambience.room_index=index;ambience.biome=room_palette().ambience;ambience.radius=grid_size*.5;add_child(ambience)
@@ -355,9 +359,11 @@ func _build_map():
 				for cell in cluster:
 					BattleMapGenerator.put(current_layout,cell,"B")
 		BattleMapGenerator.thin_obstacles(current_layout,run_seed+room_index*991,false)
+		board.reinforce_layout(current_layout)
 		for z in range(grid_size):
 			for x in range(grid_size):
 				if current_layout[z][x]=="B":add_wall(Vector2i(x,z),4)
+				elif current_layout[z][x]=="K":board.add_reinforced_wall(Vector2i(x,z),16)
 		if Campaign.unified_content():board.corner_barrels(current_layout)
 		board.shape_map_walls()
 		terrain.build()
@@ -368,17 +374,19 @@ func _build_map():
 	if room.mode!="battle":ChallengeLayouts.apply(current_layout,grid_size,room.mode,run_seed+room_index*977)
 	elif Campaign.zone(room_index)>=2:ruin_layout(current_layout)
 	elif Campaign.unified_content():board.scatter_barrels(current_layout)
-	if room.mode=="battle":BattleMapGenerator.thin_obstacles(current_layout,run_seed+room_index*100003)
+	if room.mode=="battle":
+		BattleMapGenerator.thin_obstacles(current_layout,run_seed+room_index*100003)
+		board.reinforce_layout(current_layout)
 	for x in spawn_columns():
 		create_spawn_marker(Vector2i(x,0),Vector2i.DOWN)
 	for z in range(grid_size):
 		for x in range(grid_size):
 			var cell=Vector2i(x,z)
 			match layout.rows[z][x]:
-				"A":add_armored_wall(cell)
 				"X":add_barrel(cell)
 				"R":add_rubble(cell)
 				"B":add_wall(cell,3)
+				"K":board.add_reinforced_wall(cell,12)
 				"C":add_wall(cell,-1)
 				"T":add_trench(cell)
 				"N":nets[cell]=Visuals.model("net",self,world_pos(cell))
@@ -744,9 +752,6 @@ func spawn_columns()->Array:
 	return [1,int(grid_size/3.0),int(grid_size*2/3.0),grid_size-2] if Campaign.zone(room_index)>=2 else [1,base_cell.x,grid_size-2]
 func ruin_layout(rows:Array):
 	return board.ruin_layout(rows)
-
-func add_armored_wall(cell):
-	return board.add_armored_wall(cell)
 
 func add_barrel(cell):
 	return board.add_barrel(cell)

@@ -3,7 +3,7 @@ extends RefCounted
 ## Hand-shaped fields for special rooms: a symmetric military frame of blocks along the edges,
 ## a free plaza in the middle and a mode-specific motif. The HQ area at the bottom and all enemy
 ## entrances (top columns, side rows 2 and 4) stay as the regular generator made them.
-## Cell kinds: C concrete, B brick, A armoured, T trench, R rubble (walkable), N camouflage net, X barrel.
+## Cell kinds: C concrete, B brick, K reinforced brick, T trench, R rubble (walkable), N camouflage net, X barrel.
 static func center(size:int,mode:String)->Vector2i:
 	return Vector2i(int(size/2),int(size/3)) if mode=="hold" else Vector2i(int(size/2),int(size/2)-1)
 static func plaza_radius(mode:String)->float:
@@ -41,7 +41,7 @@ static func frame(rows:Array,size:int):
 	var middle=int(size/2)
 	for offset in [-3,3]:
 		var tip=Vector2i(middle+offset,3)
-		for cell in [tip,tip+Vector2i(-1,1),tip+Vector2i(1,1)]:put(rows,cell,"A",size)
+		for cell in [tip,tip+Vector2i(-1,1),tip+Vector2i(1,1)]:put(rows,cell,"K",size)
 
 static func puzzle_plaza(rows:Array,size:int,mode:String):
 	var c=center(size,mode);var r=plaza_radius(mode)

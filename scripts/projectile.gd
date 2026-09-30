@@ -26,16 +26,20 @@ var hit_actors: Array=[]
 
 func _ready():
 	if is_instance_valid(owner_actor) and owner_actor.has_method("pressure"):pressure=owner_actor.pressure()
-	var color=Color("ffcf79") if friendly else Color("ff5c40")
-	if sniper_round or sniper_visual:
-		color=Color("ff263f");EffectLighting.tracer(self,color,Vector3(.045,.045,.28))
-	elif orb:
-		var visual=MeshInstance3D.new();var sphere=SphereMesh.new();sphere.radius=.16;sphere.height=.32;visual.mesh=sphere
-		color=Color("ff8e40");visual.material_override=EffectLighting.glow(color);add_child(visual)
-	else:EffectLighting.tracer(self,color,Vector3(.09,.09,.28))
-	if sniper_round or sniper_visual or orb:EffectLighting.projectile_light(self,color)
 	rotation.y = atan2(-travel_direction.x,-travel_direction.z)
-
+	# Callers set rocket/orb/sniper fields right after add_child; build once they are known.
+	build_visual.call_deferred()
+func build_visual():
+	if not is_inside_tree():return
+	var color=Color("ffcf79") if friendly else Color("ff5c40")
+	if star_power:color=Color("fff0a0")
+	var kind="bullet"
+	if rocket_radius>0:kind="rocket";color=Color("ffb45a") if friendly else Color("ff7440")
+	elif sniper_round or sniper_visual:kind="sniper";color=Color("ff263f")
+	elif orb:kind="orb";color=Color("ff8e40")
+	elif piercing or (is_instance_valid(owner_actor) and owner_actor.kind in ["tank","boss","apc","mortar"]):kind="shell"
+	EffectLighting.projectile_visual(self,kind,color)
+	if kind in ["sniper","orb","rocket"]:EffectLighting.projectile_light(self,color)
 func _physics_process(delta):
 	if spent or not is_instance_valid(arena) or arena.phase != "combat": return
 	if rocket_radius>0:Game.sound_loop("rocket_flight",self)

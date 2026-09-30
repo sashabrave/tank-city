@@ -4,7 +4,7 @@ func run():
 	Game.save_enabled=false;Game.sound_enabled=false;Settings.persistence_enabled=false
 	var rows=[]
 	for y in range(31):rows.append(".".repeat(31))
-	var kinds=["B","C","A","X","R","T","N"]
+	var kinds=["B","C","X","R","T","N"]
 	for i in range(kinds.size()):
 		for x in range(1,21):BattleMapGenerator.put(rows,Vector2i(x,2+i*3),kinds[i])
 	var copy=rows.duplicate();BattleMapGenerator.thin_obstacles(rows,917,false);BattleMapGenerator.thin_obstacles(copy,917,false)
@@ -19,5 +19,5 @@ func run():
 			for seed_value in range(20):
 				var map=BattleMapGenerator.generate(seed_value*1117,room)
 				assert(BattleMapGenerator.validate(map.rows),"Thinning preserves connected paths and base cover")
-	print("OBSTACLE DENSITY PASS: all seven layout types -15%, deterministic, 180 connected layouts")
+	print("OBSTACLE DENSITY PASS: all six layout types -15%, deterministic, 180 connected layouts")
 	get_tree().quit()

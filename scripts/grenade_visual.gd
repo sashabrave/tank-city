@@ -7,7 +7,7 @@ static func projectile(parent:Node3D,friendly:bool):
 	mesh.material_override=Visuals.material(Color("efb943") if friendly else Color("963d30"))
 	parent.add_child(mesh)
 static func marker(parent:Node3D,target:Vector3,radius:float,friendly:bool)->Node3D:
-	var ring=Visuals.ring(parent,Color("e5b455") if friendly else Color("d5573c"),radius)
+	var ring=Visuals.ring(parent,Color("e5b455") if friendly else Color("d5573c"),radius,0.0 if friendly else 1.0)
 	ring.name="GrenadeRadius";ring.position=target+Vector3.UP*.06
 	ring.set_meta("blast_radius",radius)
 	return ring

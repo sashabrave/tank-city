@@ -26,7 +26,7 @@ static func pickup(parent:Node3D,color:Color):
 	var pool=OmniLight3D.new();pool.name="PickupGlow";parent.add_child(pool);pool.position.y=.15;pool.omni_range=1.5;pool.light_color=color;pool.shadow_enabled=false;pool.light_volumetric_fog_energy=0.0
 	pool.add_to_group("pickup_lights")
 
-	var ring=Visuals.ring(parent,color,.30);ring.position.y=-.4;ring.material_override=glow(color)
+	var ring=Visuals.ring(parent,color.lightened(.15),.30);ring.position.y=-.4
 	for node in parent.find_children("*","MeshInstance3D",true,false):
 		if node==ring:continue
 		for i in range(node.mesh.get_surface_count()):
@@ -36,6 +36,49 @@ static func pickup(parent:Node3D,color:Color):
 
 static func refresh_projectile_halos():
 	var factor=.7 if Settings.values.world_lighting=="night" else .2
+	for mat in trail_materials.values():mat.set_shader_parameter("energy",trail_energy())
 	for mat in materials.values():
 		if mat.get_meta("projectile_halo",false):mat.albedo_color.a=.12*factor
 		if mat.get_meta("projectile_core",false):mat.emission_energy_multiplier=1.8*factor
+
+static var laser_materials:={}
+## Animated sight/telegraph line: pulses travel along the box's local Z.
+static func laser(color:Color,halo:bool)->ShaderMaterial:
+	var key=[color.to_html(),halo]
+	if not laser_materials.has(key):
+		var mat=ShaderMaterial.new();mat.shader=preload("res://shaders/fx/laser.gdshader")
+		mat.set_shader_parameter("color",color);mat.set_shader_parameter("halo",1.0 if halo else 0.0)
+		laser_materials[key]=mat
+	return laser_materials[key]
+
+## One projectile family: round glowing core, soft halo, fading trail.
+## Size and trail length follow the weapon class; colour follows the side.
+const PROJECTILES={
+	"bullet":{"core":Vector3(.08,.08,.2),"trail":.55,"width":.06},
+	"shell":{"core":Vector3(.13,.13,.26),"trail":1.0,"width":.1},
+	"sniper":{"core":Vector3(.05,.05,.3),"trail":1.8,"width":.04},
+	"rocket":{"core":Vector3(.1,.1,.14),"trail":.85,"width":.1},
+	"orb":{"core":Vector3(.3,.3,.3),"trail":.45,"width":.2},
+}
+static var trail_materials:={}
+static var projectile_sphere:SphereMesh
+static func trail_energy()->float:return 1.0 if Settings.values.world_lighting=="night" else .75
+static func projectile_visual(parent:Node3D,kind:String,color:Color)->Node3D:
+	var spec:Dictionary=PROJECTILES.get(kind,PROJECTILES.bullet)
+	if projectile_sphere==null:projectile_sphere=SphereMesh.new();projectile_sphere.radius=.5;projectile_sphere.height=1.0;projectile_sphere.radial_segments=10;projectile_sphere.rings=5
+	var root=Node3D.new();root.name="ProjectileVisual";parent.add_child(root)
+	var core=MeshInstance3D.new();core.mesh=projectile_sphere;core.scale=spec.core;core.material_override=glow(color.lightened(.25),false,true)
+	var halo=MeshInstance3D.new();halo.mesh=projectile_sphere;halo.scale=spec.core*Vector3(2.4,2.4,1.6);halo.material_override=glow(color,true,true)
+	var key=[color.to_html(),kind=="rocket"]
+	if not trail_materials.has(key):
+		var mat=ShaderMaterial.new();mat.shader=preload("res://shaders/fx/tracer.gdshader")
+		mat.set_shader_parameter("color",color);mat.set_shader_parameter("flicker",1.0 if kind=="rocket" else 0.0);mat.set_shader_parameter("energy",trail_energy())
+		trail_materials[key]=mat
+	var trail=MeshInstance3D.new();var box=BoxMesh.new();box.size=Vector3.ONE;trail.mesh=box
+	trail.scale=Vector3(spec.width,spec.width*.6,spec.trail);trail.position.z=spec.trail*.5;trail.material_override=trail_materials[key]
+	for node in [trail,halo,core]:node.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF;root.add_child(node)
+	if kind=="rocket":
+		# Light rocket body ahead of the flame core.
+		var body=MeshInstance3D.new();body.mesh=projectile_sphere;body.scale=Vector3(.11,.11,.3);body.position.z=-.17
+		body.material_override=Visuals.material(Color("efe6d2"));body.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF;root.add_child(body)
+	return root

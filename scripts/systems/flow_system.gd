@@ -112,9 +112,8 @@ func pause_battle():
 ## Exit flag in front of the HQ; the room is left through it.
 func place_flag(caption:String):
 	arena.room.flag=Node3D.new();arena.add_child(arena.room.flag);arena.room.flag.position=arena.world_pos(Vector2i(arena.room.base_cell.x,arena.room.grid_size-3))
-	Visuals.box(arena.room.flag,Vector3(0,1,0),Vector3(.06,2,.06),Color("eee9d8"))
-	Visuals.box(arena.room.flag,Vector3(.35,1.7,0),Vector3(.7,.45,.07),Color("7cb56b"))
-	Visuals.label3d(arena.room.flag,caption,Vector3(0,2.4,0),Color("f5edcc"),25)
+	ExitFlag.build(arena.room.flag)
+	Visuals.label3d(arena.room.flag,caption,Vector3(0,3.35,0),Color("f5edcc"),25)
 func open_flag():
 	arena.room.flag_armed=false;arena.phase="upgrade";Game.reset_input()
 	if arena.room.reward_claimed:arena.hud.show_departure()
