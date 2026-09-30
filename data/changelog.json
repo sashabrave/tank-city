@@ -8,7 +8,8 @@
 				"items": [
 					"Бонусы прилетают на маленьких парашютах и приземляются с облачком пыли. Надписей над ними больше нет: бонус узнаётся по модели и цвету кольца, редкие мягко пульсируют.",
 					"Враги больше не возникают из воздуха: пехота спрыгивает на клетку, техника въезжает из-за края, дроны снижаются.",
-					"Вода в клетках-препятствиях нарисована новым шейдером: рябь, блики и лёгкие волны, соседние клетки сливаются в одну поверхность."
+					"Вода в клетках-препятствиях нарисована новым шейдером: рябь, блики и лёгкие волны, соседние клетки сливаются в одну поверхность.",
+					"Прогресс поля и волн показан точками вместо «Поле 1 / 6» и «Волна 1 / 3 · Контакт». У волн больше нет названий. Крупные надписи остались только для новой волны, генерала и последнего боя, стали меньше; наезды камеры мягче."
 				]
 			},
 			"en": {
@@ -16,7 +17,8 @@
 				"items": [
 					"Bonuses float down on small parachutes and land with a puff of dust. No more labels above them: a bonus reads by its model and ring colour, rare ones softly pulse.",
 					"Enemies no longer pop in: infantry jumps onto its cell, vehicles roll in from beyond the edge, drones descend.",
-					"Water in obstacle cells uses a new shader: ripples, sparkles and gentle waves; neighbouring cells merge into one surface."
+					"Water in obstacle cells uses a new shader: ripples, sparkles and gentle waves; neighbouring cells merge into one surface.",
+					"Field and wave progress shows as pips instead of Field 1 / 6 and Wave 1 / 3 · Contact. Waves have no names any more. Big captions are left only for a new wave, the general and the final fight, and are smaller; camera zooms are softer."
 				]
 			}
 		},

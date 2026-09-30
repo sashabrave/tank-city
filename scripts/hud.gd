@@ -8,6 +8,8 @@ var base_health: Control
 var armor_meter: Control
 var wave_label: Label
 var enemy_label: Label
+var stage_pips:Control
+var wave_pips:Control
 var credits: Label
 var tip: Label
 var countdown: Label
@@ -49,6 +51,7 @@ func _ready():
 	top=root.get_node("HealthPanel");health=top.get_node("HeroHealth");base_health=top.get_node("BaseHealth")
 	left_info=root.get_node("WeaponPanel");weapon_icon=left_info.get_node("WeaponIcon");vehicle_label=left_info.get_node("WeaponName");intercept_label=left_info.get_node("WeaponStats");armor_meter=left_info.get_node("VehicleHealth")
 	right_info=root.get_node("RoomPanel");wave_label=right_info.get_node("StageLabel");enemy_label=right_info.get_node("WaveLabel");right_info.get_node("EnemyRoster").arena=arena
+	stage_pips=preload("res://scripts/ui/pip_strip.gd").new();right_info.add_child(stage_pips);wave_pips=preload("res://scripts/ui/pip_strip.gd").new();right_info.add_child(wave_pips)
 	pause_button=root.get_node("PauseButton");pause_button.pressed.connect(func():arena.pause_battle())
 	dpad=root.get_node("MovePad");dpad.apply_movement_layout();fire_pad=root.get_node("FirePad")
 	ability_button=root.get_node("LegacyAbility")
@@ -122,10 +125,18 @@ func _process(_delta):
 	health.set_health(data.hero_hp,data.hero_max);base_health.visible=not data.boss_room;base_health.set_health(data.base_hp,data.base_max)
 	dpad.visible=InputScheme.touch();fire_pad.visible=InputScheme.touch();biome_panel.visible=Settings.values.biome_info
 	Texts.set_text(biome_label,arena.BIOMES.caption(arena.run_seed,arena.room_index))
-	Texts.set_text(wave_label,"Песочница" if arena.sandbox else "Босс мира" if data.boss_room else "Поле %d / %d" % [data.stage,6])
+	# Progress reads as pips: fields of the route and waves of the room; words only where they add meaning.
+	var plain=not arena.sandbox and not data.boss_room and not Campaign.endless
+	Texts.set_text(wave_label,"Песочница" if arena.sandbox else "Босс мира" if data.boss_room else "Поле" if plain else "Поле %d" % data.stage)
+	stage_pips.visible=plain;stage_pips.set_state(6,data.stage-1,data.stage-1);stage_pips.position=Vector2(wave_label.position.x+text_width(wave_label)+12,wave_label.position.y+wave_label.size.y*.5-3)
+	var waves=not arena.sandbox and not arena.challenges.active() and not data.boss_room
+	wave_pips.visible=waves
 	if arena.sandbox and not arena.challenges.active():Texts.set_text(enemy_label,"F2 — админ")
 	elif arena.challenges.active():Texts.set_text(enemy_label,arena.challenges.status())
-	else:Texts.set_text(enemy_label,BossCatalog.encounter(arena.run_seed,arena.room_index).name if data.boss_room else "Волна %d / 3 · %s" % [data.wave,WaveDirector.wave_title(data.wave-1)])
+	elif data.boss_room:Texts.set_text(enemy_label,BossCatalog.encounter(arena.run_seed,arena.room_index).name)
+	else:
+		Texts.set_text(enemy_label,"Волна");wave_pips.set_state(3,data.wave-1,data.wave-1)
+		wave_pips.position=Vector2(enemy_label.position.x+text_width(enemy_label)+12,enemy_label.position.y+enemy_label.size.y*.5-3)
 	tip.hide();Texts.set_text(star_label,"★ Звезда · %.1f с" % data.star);star_label.visible=data.star>0
 	ability_button.hide()
 	for i in range(skill_buttons.size()):
@@ -154,6 +165,8 @@ func _process(_delta):
 	Texts.set_text(interact_button,data.interact_text);interact_button.disabled=data.interact_disabled
 	dpad.enabled=data.phase in ["combat","countdown"];fire_pad.enabled=dpad.enabled
 
+func text_width(label:Label)->float:
+	return label.get_theme_font("font").get_string_size(label.text,HORIZONTAL_ALIGNMENT_LEFT,-1,label.get_theme_font_size("font_size")).x
 ## Big countdown at the top centre in timed challenges (hold, survive).
 var challenge_timer:Panel
 func update_challenge_timer():

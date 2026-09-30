@@ -20,7 +20,7 @@ func layout():
 	var size=get_viewport().get_visible_rect().size
 	heading.size=Vector2(size.x*.88,140);heading.pivot_offset=heading.size*.5
 	heading.position=Vector2(size.x*.06,size.y*.25);heading.scale=Vector2(.72,1.18)
-	heading.add_theme_font_size_override("font_size",clampi(roundi(size.x*.049),40,130))
+	heading.add_theme_font_size_override("font_size",clampi(roundi(size.x*.036),34,84))
 	caption.size=Vector2(size.x*.9,50);caption.position=Vector2(size.x*.05,size.y*.25+115)
 	caption.add_theme_font_size_override("font_size",clampi(roundi(size.x*.014),18,38))
 func announce(title:String,subtitle:String="",hold:float=.7):
@@ -37,8 +37,11 @@ func fade_in():
 func prepare_wave(index:int):
 	departing=false;pulse=0;last_phase="countdown"
 	if index==0:fade_in()
-	arena.camera.size=(arena.grid_size+5.0)*(1.25 if index==0 else 1.14)
-	announce("Последний бой" if Campaign.is_final(arena.room_index) else "Бой С генералом" if arena.boss_room else "Старт боя" if index==0 else "Волна %d / 3" % (index+1),WaveDirector.wave_title(index)+" · "+WaveDirector.wave_hint(index) if not arena.boss_room else "Приготовься",1.0)
+	arena.camera.size=(arena.grid_size+5.0)*(1.16 if index==0 else 1.08)
+	# Big letters only when they tell something new: the next wave, the boss, the last fight. The first wave just fades in.
+	if Campaign.is_final(arena.room_index):announce("Последний бой","Приготовься",.9)
+	elif arena.boss_room:announce("Бой с генералом","Приготовься",.9)
+	elif index>0:announce("Волна %d" % (index+1),WaveDirector.wave_hint(index),.7)
 func miniboss(difficulty:int):
 	last_phase="combat";pulse=.75;announce("Командир "+EncounterRules.STARS[difficulty], EncounterRules.reward_text(difficulty),.9)
 func _process(delta):
@@ -47,10 +50,10 @@ func _process(delta):
 	heading.visible=phase!="paused";caption.visible=phase!="paused"
 	if phase=="paused":return
 	var overview=phase in ["upgrade","map","result"] or (phase=="countdown" and arena.countdown>.85)
-	var target=base*(1.14 if overview else 1.0)
-	if pulse>0:pulse=maxf(0,pulse-delta);target=base*.97
+	var target=base*(1.08 if overview else 1.0)
+	if pulse>0:pulse=maxf(0,pulse-delta);target=base*.985
 	arena.camera.size=lerpf(arena.camera.size,target,minf(1,delta*4.5))
 	var offset=Vector3(0,24,11) if overview else Vector3(0,19,14)
 	arena.camera.position=arena.camera.position.lerp(offset.rotated(Vector3.UP,deg_to_rad(10)),minf(1,delta*3.5));arena.camera.look_at(Vector3.ZERO)
-	if phase=="combat" and last_phase=="countdown" and not arena.challenges.active():announce("Контакт", "Волна %d / 3" % (arena.wave+1) if not arena.boss_room else "Уничтожь командира",.4)
+	if phase=="combat" and last_phase=="countdown" and arena.boss_room and not arena.challenges.active():announce("","Уничтожь командира",.4)
 	last_phase=phase
