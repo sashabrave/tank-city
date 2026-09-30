@@ -133,11 +133,13 @@ func _ready():
 			var color=LocationStyle.COLORS[biome]
 			if skipped:color=color.darkened(.28)
 			var branch=RoutePlan.node_branch(info)
-			if branch=="headquarters":MINI.headquarters(node)
+			if branch=="headquarters":MINI.depot(node)
 			elif branch=="vehicle":MINI.service(node,true,Color("839c9f").darkened(.28 if skipped else 0.0))
 			elif info.type in RoutePlan.CHALLENGES:MINI.challenge(node,info.type,color)
-			else:MINI.battle(node,posmod(wave_seed+stage+info.lane,4),color,visited,info.difficulty)
-			var caption={"vehicle":"Техника","headquarters":"Штаб"}.get(branch,ChallengeRooms.TITLES.get(info.type,"%02d" % (stage+1)))
+			elif stage in Campaign.BOSSES:MINI.boss(node,color)
+			else:MINI.battle(node,posmod(wave_seed+stage*3+info.lane*7,4),color,visited,info.difficulty)
+			if branch=="" and not skipped:MINI.weather(node,MINI.weather_for(preload("res://scripts/biome_catalog.gd").entry(wave_seed,stage)))
+			var caption={"vehicle":"Техника","headquarters":"Депо"}.get(branch,ChallengeRooms.TITLES.get(info.type,"%02d" % (stage+1)))
 			Visuals.label3d(node,"✓ "+caption if visited else caption,Vector3(0,.35,3.65),Color("f3eee0"),30).pixel_size=.025
 			if not visited and not skipped and branch=="":
 				for badge in range(info.difficulty):MINI.star(node,info.difficulty,badge)
@@ -147,7 +149,7 @@ func _ready():
 		for i in range(choices.size()):
 			var branch=choices[i];var pos=Vector3((i-(choices.size()-1)*.5)*6.5,0,stage_z(service_stage)+RoutePlan.STAGE_STEP)
 			var base=Node3D.new();add_child(base);base.position=pos;base.scale=Vector3.ONE*MINI_SCALE;service_nodes.append(base)
-			if branch=="headquarters":MINI.headquarters(base)
+			if branch=="headquarters":MINI.depot(base)
 			elif branch=="merchant":MINI.merchant(base)
 			else:MINI.service(base,branch=="vehicle",Color("839c9f") if branch=="vehicle" else Color("a99b79"))
 			Visuals.label3d(base,{"vehicle":"Техника","ability":"Способность","headquarters":"Штаб","merchant":"Торговец"}[branch],Vector3(0,.35,3.65),Color("f3eee0"),30).pixel_size=.025
@@ -195,8 +197,6 @@ func build_ui():
 	UiKit.label(plate,"WASD — ехать · E — войти · колесо, перетаскивание — обзор",Vector2(16,66),Vector2(530,22),15,UiKit.MUTED)
 	UiKit.button(root,"В хаб",Vector2(size.x-300,18),Vector2(130,44),func():hub_requested.emit()).add_theme_font_size_override("font_size",16)
 	UiKit.button(root,"Рюкзак [Esc]",Vector2(size.x-160,18),Vector2(140,44),show_pause).add_theme_font_size_override("font_size",16)
-	if OS.is_debug_build():
-		UiKit.button(root,"unlock-dev",Vector2(20,size.y-44),Vector2(110,28),func():Game.progression.cleared_worlds=[1,2,3];Game.save_progress()).add_theme_font_size_override("font_size",12)
 func choose_service(branch:String):
 	if travelling or is_instance_valid(modal) or not needs_service or branch not in fork_positions:return
 	pending_service=branch;pending_info={};preview_only=false

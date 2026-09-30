@@ -8,7 +8,9 @@
 				"items": [
 					"Колесо мыши приближает и отдаляет карту.",
 					"Чтобы вернуться в хаб, заедь обратно в гараж на старте и нажми E.",
-					"Тест: «Инструменты» → «Дев-режим карты». Клик по любой комнате — «Перейти» или «Перейти с прокачкой» (с наградами всех комнат до неё)."
+					"Тест: «Инструменты» → «Дев-режим карты». Клик по любой комнате — «Перейти» или «Перейти с прокачкой» (с наградами всех комнат до неё).",
+					"Точка прокачки на карте — депо-питстоп: заезжаешь, берёшь карточки, едешь дальше.",
+					"У полей боя больше разных миниатюр, над каждой видна погода комнаты: снег, дождь, солнце, туман или угли. Босс стоит в собственной миниатюре с прожекторами."
 				]
 			},
 			"en": {
@@ -16,7 +18,9 @@
 				"items": [
 					"The mouse wheel zooms the map in and out.",
 					"To return to the hub, drive back into the garage at the start and press E.",
-					"Test: Tools → Map dev mode. Click any room — Jump, or Jump with upgrades (with the rewards of every room before it)."
+					"Test: Tools → Map dev mode. Click any room — Jump, or Jump with upgrades (with the rewards of every room before it).",
+					"The upgrade point on the map is a pit-stop depot: drive in, take cards, drive on.",
+					"Battle fields have more varied miniatures, each shows the room's weather: snow, rain, sun, fog or embers. The boss has its own miniature with searchlights."
 				]
 			}
 		},
