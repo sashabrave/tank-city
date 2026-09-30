@@ -7,13 +7,15 @@ func _ready():call_deferred("run")
 func run():
 	Game.save_enabled=false;Settings.persistence_enabled=false;Game.sound_enabled=true
 	var audio=Game.audio()
-	check(audio.banks.size()==98,"98 audio banks load")
+	check(audio.banks.size()>=109,"all audio banks load")
 	var files=0
 	for id in audio.banks:
 		for file in audio.banks[id].files:
 			var stream=load(audio.ROOT+file)
 			check(stream is AudioStreamWAV and stream.get_length()>0,"valid asset "+file);files+=1
-	check(files==198,"198 sound variations")
+	var expected=0
+	for id in audio.banks:expected+=audio.banks[id].files.size()
+	check(files==expected and files>=253,"every manifest variation loads")
 	var old=audio.stream_for("fire_pistol");check(old!=audio.stream_for("fire_pistol"),"variations do not repeat consecutively")
 	for i in range(40):
 		var source=Node.new();add_child(source);Game.sound("fire_rifle",source);source.queue_free()

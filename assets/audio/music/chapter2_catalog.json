@@ -58,5 +58,201 @@
   "battle_muted_pulse": {
     "title": "Тихий импульс",
     "context": "battle"
+  },
+  "break_azimuth": {
+    "title": "Азимут",
+    "context": "battle"
+  },
+  "break_morse": {
+    "title": "Морзе",
+    "context": "battle"
+  },
+  "break_dry_ice": {
+    "title": "Сухой лёд",
+    "context": "battle"
+  },
+  "break_kaleidoscope": {
+    "title": "Калейдоскоп",
+    "context": "battle"
+  },
+  "break_dust_road": {
+    "title": "Пыльный тракт",
+    "context": "map"
+  },
+  "break_quartet": {
+    "title": "Квартет",
+    "context": "hub"
+  },
+  "break_highway": {
+    "title": "Трасса",
+    "context": "miniboss"
+  },
+  "break_storm": {
+    "title": "Гроза",
+    "context": "boss"
+  },
+  "break_square": {
+    "title": "Квадрат",
+    "context": "battle"
+  },
+  "break_mercury": {
+    "title": "Ртуть",
+    "context": "battle"
+  },
+  "break_nomad": {
+    "title": "Кочевник",
+    "context": "battle"
+  },
+  "break_tailwind": {
+    "title": "Попутный ветер",
+    "context": "map"
+  },
+  "break_landmark": {
+    "title": "Ориентир",
+    "context": "map"
+  },
+  "break_samovar": {
+    "title": "Самовар",
+    "context": "hub"
+  },
+  "break_night_shift": {
+    "title": "Ночная смена",
+    "context": "hub"
+  },
+  "break_breakthrough": {
+    "title": "Прорыв",
+    "context": "miniboss"
+  },
+  "break_vice": {
+    "title": "Тиски",
+    "context": "miniboss"
+  },
+  "break_millstones": {
+    "title": "Жернова",
+    "context": "boss"
+  },
+  "break_tsunami": {
+    "title": "Цунами",
+    "context": "boss"
+  },
+  "folk_halt_battle": {
+    "title": "Полустанок",
+    "context": "battle"
+  },
+  "folk_halt_hub": {
+    "title": "Полустанок · хаб",
+    "context": "hub"
+  },
+  "folk_halt_map": {
+    "title": "Полустанок · карта",
+    "context": "map"
+  },
+  "folk_halt_miniboss": {
+    "title": "Полустанок · командир",
+    "context": "miniboss"
+  },
+  "folk_halt_boss": {
+    "title": "Полустанок · босс",
+    "context": "boss"
+  },
+  "folk_fireflies_battle": {
+    "title": "Светлячки",
+    "context": "battle"
+  },
+  "folk_fireflies_hub": {
+    "title": "Светлячки · хаб",
+    "context": "hub"
+  },
+  "folk_fireflies_map": {
+    "title": "Светлячки · карта",
+    "context": "map"
+  },
+  "folk_fireflies_miniboss": {
+    "title": "Светлячки · командир",
+    "context": "miniboss"
+  },
+  "folk_fireflies_boss": {
+    "title": "Светлячки · босс",
+    "context": "boss"
+  },
+  "folk_crooked_path_battle": {
+    "title": "Кривая тропа",
+    "context": "battle"
+  },
+  "folk_crooked_path_hub": {
+    "title": "Кривая тропа · хаб",
+    "context": "hub"
+  },
+  "folk_crooked_path_map": {
+    "title": "Кривая тропа · карта",
+    "context": "map"
+  },
+  "folk_crooked_path_miniboss": {
+    "title": "Кривая тропа · командир",
+    "context": "miniboss"
+  },
+  "folk_crooked_path_boss": {
+    "title": "Кривая тропа · босс",
+    "context": "boss"
+  },
+  "night_neon_battle": {
+    "title": "Неон",
+    "context": "battle"
+  },
+  "night_neon_hub": {
+    "title": "Неон · хаб",
+    "context": "hub"
+  },
+  "night_neon_map": {
+    "title": "Неон · карта",
+    "context": "map"
+  },
+  "night_neon_miniboss": {
+    "title": "Неон · командир",
+    "context": "miniboss"
+  },
+  "night_neon_boss": {
+    "title": "Неон · босс",
+    "context": "boss"
+  },
+  "night_district_battle": {
+    "title": "Спальный район",
+    "context": "battle"
+  },
+  "night_district_hub": {
+    "title": "Спальный район · хаб",
+    "context": "hub"
+  },
+  "night_district_map": {
+    "title": "Спальный район · карта",
+    "context": "map"
+  },
+  "night_district_miniboss": {
+    "title": "Спальный район · командир",
+    "context": "miniboss"
+  },
+  "night_district_boss": {
+    "title": "Спальный район · босс",
+    "context": "boss"
+  },
+  "night_static_battle": {
+    "title": "Помехи",
+    "context": "battle"
+  },
+  "night_static_hub": {
+    "title": "Помехи · хаб",
+    "context": "hub"
+  },
+  "night_static_map": {
+    "title": "Помехи · карта",
+    "context": "map"
+  },
+  "night_static_miniboss": {
+    "title": "Помехи · командир",
+    "context": "miniboss"
+  },
+  "night_static_boss": {
+    "title": "Помехи · босс",
+    "context": "boss"
   }
 }

@@ -1,0 +1,170 @@
+{
+  "halt": {
+    "title": "Полустанок",
+    "battle": "folk_halt_battle",
+    "hub": "folk_halt_hub",
+    "map": "folk_halt_map",
+    "miniboss": "folk_halt_miniboss",
+    "boss": "folk_halt_boss",
+    "greeting": [
+      "folk_halt_greeting_1",
+      "folk_halt_greeting_2",
+      "folk_halt_greeting_3"
+    ],
+    "start": [
+      "folk_halt_start_1",
+      "folk_halt_start_2",
+      "folk_halt_start_3"
+    ],
+    "victory": [
+      "folk_halt_victory_1",
+      "folk_halt_victory_2",
+      "folk_halt_victory_3"
+    ],
+    "defeat": [
+      "folk_halt_defeat_1",
+      "folk_halt_defeat_2",
+      "folk_halt_defeat_3"
+    ]
+  },
+  "fireflies": {
+    "title": "Светлячки",
+    "battle": "folk_fireflies_battle",
+    "hub": "folk_fireflies_hub",
+    "map": "folk_fireflies_map",
+    "miniboss": "folk_fireflies_miniboss",
+    "boss": "folk_fireflies_boss",
+    "greeting": [
+      "folk_fireflies_greeting_1",
+      "folk_fireflies_greeting_2",
+      "folk_fireflies_greeting_3"
+    ],
+    "start": [
+      "folk_fireflies_start_1",
+      "folk_fireflies_start_2",
+      "folk_fireflies_start_3"
+    ],
+    "victory": [
+      "folk_fireflies_victory_1",
+      "folk_fireflies_victory_2",
+      "folk_fireflies_victory_3"
+    ],
+    "defeat": [
+      "folk_fireflies_defeat_1",
+      "folk_fireflies_defeat_2",
+      "folk_fireflies_defeat_3"
+    ]
+  },
+  "crooked_path": {
+    "title": "Кривая тропа",
+    "battle": "folk_crooked_path_battle",
+    "hub": "folk_crooked_path_hub",
+    "map": "folk_crooked_path_map",
+    "miniboss": "folk_crooked_path_miniboss",
+    "boss": "folk_crooked_path_boss",
+    "greeting": [
+      "folk_crooked_path_greeting_1",
+      "folk_crooked_path_greeting_2",
+      "folk_crooked_path_greeting_3"
+    ],
+    "start": [
+      "folk_crooked_path_start_1",
+      "folk_crooked_path_start_2",
+      "folk_crooked_path_start_3"
+    ],
+    "victory": [
+      "folk_crooked_path_victory_1",
+      "folk_crooked_path_victory_2",
+      "folk_crooked_path_victory_3"
+    ],
+    "defeat": [
+      "folk_crooked_path_defeat_1",
+      "folk_crooked_path_defeat_2",
+      "folk_crooked_path_defeat_3"
+    ]
+  },
+  "neon": {
+    "title": "Неон",
+    "battle": "night_neon_battle",
+    "hub": "night_neon_hub",
+    "map": "night_neon_map",
+    "miniboss": "night_neon_miniboss",
+    "boss": "night_neon_boss",
+    "greeting": [
+      "night_neon_greeting_1",
+      "night_neon_greeting_2",
+      "night_neon_greeting_3"
+    ],
+    "start": [
+      "night_neon_start_1",
+      "night_neon_start_2",
+      "night_neon_start_3"
+    ],
+    "victory": [
+      "night_neon_victory_1",
+      "night_neon_victory_2",
+      "night_neon_victory_3"
+    ],
+    "defeat": [
+      "night_neon_defeat_1",
+      "night_neon_defeat_2",
+      "night_neon_defeat_3"
+    ]
+  },
+  "district": {
+    "title": "Спальный район",
+    "battle": "night_district_battle",
+    "hub": "night_district_hub",
+    "map": "night_district_map",
+    "miniboss": "night_district_miniboss",
+    "boss": "night_district_boss",
+    "greeting": [
+      "night_district_greeting_1",
+      "night_district_greeting_2",
+      "night_district_greeting_3"
+    ],
+    "start": [
+      "night_district_start_1",
+      "night_district_start_2",
+      "night_district_start_3"
+    ],
+    "victory": [
+      "night_district_victory_1",
+      "night_district_victory_2",
+      "night_district_victory_3"
+    ],
+    "defeat": [
+      "night_district_defeat_1",
+      "night_district_defeat_2",
+      "night_district_defeat_3"
+    ]
+  },
+  "static": {
+    "title": "Помехи",
+    "battle": "night_static_battle",
+    "hub": "night_static_hub",
+    "map": "night_static_map",
+    "miniboss": "night_static_miniboss",
+    "boss": "night_static_boss",
+    "greeting": [
+      "night_static_greeting_1",
+      "night_static_greeting_2",
+      "night_static_greeting_3"
+    ],
+    "start": [
+      "night_static_start_1",
+      "night_static_start_2",
+      "night_static_start_3"
+    ],
+    "victory": [
+      "night_static_victory_1",
+      "night_static_victory_2",
+      "night_static_victory_3"
+    ],
+    "defeat": [
+      "night_static_defeat_1",
+      "night_static_defeat_2",
+      "night_static_defeat_3"
+    ]
+  }
+}

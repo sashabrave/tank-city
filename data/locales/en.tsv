@@ -1727,3 +1727,90 @@ F2 — админ	F2 — admin
 Машина ждёт у старта	Vehicle waits at the start
 Вылазка пешком	Run on foot
 Оборудование улучшено	Equipment upgraded
+Азимут	Azimuth
+Морзе	Morse
+Сухой лёд	Dry Ice
+Калейдоскоп	Kaleidoscope
+Пыльный тракт	Dusty Road
+Квартет	Quartet
+Трасса	Highway
+Гроза	Thunderstorm
+Квадрат	Square
+Ртуть	Mercury
+Кочевник	Nomad
+Попутный ветер	Tailwind
+Ориентир	Landmark
+Самовар	Samovar
+Ночная смена	Night Shift
+Прорыв	Breakthrough
+Тиски	Vice
+Жернова	Millstones
+Цунами	Tsunami
+Фонарь	Lantern
+Тёплый свет	Warm Light
+Компас	Compass
+Облака	Clouds
+Патруль	Patrol
+Мозаика	Mosaic
+Течение	Current
+Позывной	Call Sign
+Механизм	Clockwork
+Обход	Flank
+Вектор	Vector
+Редут	Redoubt
+Вечерний эфир	Evening Broadcast
+Маяк на маршруте	Beacon on the Route
+Тихий импульс	Quiet Pulse
+Осада	Siege
+Архив	Archive
+Темы	Themes
+Общие подборки	Shared playlists
+Время	Time
+Активная тема	Active theme
+Фанфара	Fanfare
+Приветствие	Greeting
+Начало боя	Battle start
+Тема хаба и карты: %s · тема боя: %s	Hub and map theme: %s · battle theme: %s
+Тема «%s» · %s	Theme “%s” · %s
+♪ Приветствие 1	♪ Greeting 1
+♪ Приветствие 2	♪ Greeting 2
+♪ Приветствие 3	♪ Greeting 3
+♪ Начало боя 1	♪ Battle start 1
+♪ Начало боя 2	♪ Battle start 2
+♪ Начало боя 3	♪ Battle start 3
+♪ Победа 1	♪ Victory 1
+♪ Победа 2	♪ Victory 2
+♪ Победа 3	♪ Victory 3
+♪ Поражение 1	♪ Defeat 1
+♪ Поражение 2	♪ Defeat 2
+♪ Поражение 3	♪ Defeat 3
+Полустанок	Halt
+Полустанок · хаб	Halt · hub
+Полустанок · карта	Halt · map
+Полустанок · командир	Halt · commander
+Полустанок · босс	Halt · boss
+Светлячки	Fireflies
+Светлячки · хаб	Fireflies · hub
+Светлячки · карта	Fireflies · map
+Светлячки · командир	Fireflies · commander
+Светлячки · босс	Fireflies · boss
+Кривая тропа	Crooked Path
+Кривая тропа · хаб	Crooked Path · hub
+Кривая тропа · карта	Crooked Path · map
+Кривая тропа · командир	Crooked Path · commander
+Кривая тропа · босс	Crooked Path · boss
+Неон	Neon
+Неон · хаб	Neon · hub
+Неон · карта	Neon · map
+Неон · командир	Neon · commander
+Неон · босс	Neon · boss
+Спальный район	Sleeping District
+Спальный район · хаб	Sleeping District · hub
+Спальный район · карта	Sleeping District · map
+Спальный район · командир	Sleeping District · commander
+Спальный район · босс	Sleeping District · boss
+Помехи	Static
+Помехи · хаб	Static · hub
+Помехи · карта	Static · map
+Помехи · командир	Static · commander
+Помехи · босс	Static · boss
