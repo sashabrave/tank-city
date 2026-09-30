@@ -105,7 +105,7 @@ func weapon_details(id:String):
 	var text="Постоянная сила оружия: ×%s\nУрон оружия за вылазку: +%s%%\nИнтервал между выстрелами: ×%s\nДобавка к напору: +%s п.п." % [UiKit.number(Game.weapon_factor(id)),UiKit.number(mods.damage*100),UiKit.number(mods.interval),UiKit.number(mods.intercept*100)]
 	if is_instance_valid(arena):text+="\nОбщий бонус урона: +%s%% · интервал: ×%s" % [UiKit.number(arena.run.damage_bonus*30),UiKit.number(arena.run.fire_multiplier)]
 	UiKit.label(card,text,Vector2(24,279),Vector2(602,130),16).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-	UiKit.label(card,"Изменить улучшения можно только на верстаке.",Vector2(24,432),Vector2(602,30),15,UiKit.MUTED)
+	UiKit.label(card,"Изменить улучшения можно на станциях хаба.",Vector2(24,432),Vector2(602,30),15,UiKit.MUTED)
 	UiKit.button(card,"Закрыть",Vector2(24,480),Vector2(602,38),overlay.queue_free)
 func radio():
 	UiKit.label(content,"Радио",Vector2(22,18),Vector2(710,40),24)

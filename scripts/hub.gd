@@ -314,21 +314,13 @@ func interact():
 	if station.visible or weapon_station.visible or bonus_station.visible or is_instance_valid(build_menu):close_station();return
 	if moving:return
 	if not mounted and avatar.position.distance_to(recycling_pos)<1.3:show_recycling();return
-	if not mounted and avatar.position.distance_to(hq_bench_pos)<1.2:
-		if "headquarters" in Game.built_workshops:show_hq_workshop()
-		else:build_tab=0;show_build_menu()
-		return
+	if not mounted and avatar.position.distance_to(hq_bench_pos)<1.2:open_station("hq");return
 	if not mounted and avatar.position.distance_to(command_pos)<1.65:show_command();return
-	if not mounted and avatar.position.distance_to(printer_pos)<1.4:show_classes();return
-	if not mounted and "garage" in Game.built_workshops and avatar.position.distance_to(Vector3(6,0,1))<1.65:show_garage();return
+	if not mounted and avatar.position.distance_to(printer_pos)<1.4:open_station("fighter");return
+	if not mounted and "garage" in Game.built_workshops and avatar.position.distance_to(Vector3(6,0,1))<1.65:open_station("garage");return
 	var locked=nearest_locked()
 	if locked!="":build_tab=1 if locked in ["garage","range"] else 0;show_build_menu();return
-	if not mounted and avatar.position.distance_to(bonus_bench_pos)<1.2:
-		open_workshop(false,true);return
-	if not mounted and avatar.position.distance_to(weapon_bench_pos)<1.25:
-		open_workshop(true);return
-	if not mounted and avatar.position.distance_to(Vector3(0,0,-1))<1.25:
-		open_workshop(false);return
+	if not mounted and avatar.position.distance_to(weapon_bench_pos)<1.25:open_station("arsenal");return
 	if mounted:
 		var exit_cell=cell
 		for dir in [Vector2i.LEFT,Vector2i.RIGHT,Vector2i.DOWN,Vector2i.UP]:
@@ -530,6 +522,16 @@ func update_bench_visuals():
 	if is_instance_valid(dummy):dummy.visible="range" in Game.built_workshops
 func show_build_menu():preload("res://scripts/ui/build_menu.gd").show(self)
 
+## The four stations share one screen (scripts/ui/station_screen.gd); only «Боец» needs no building.
+const STATIONS={"fighter":["","res://scripts/ui/stations/fighter_station.gd"],"arsenal":["weapons","res://scripts/ui/stations/arsenal_station.gd"],"hq":["headquarters","res://scripts/ui/stations/hq_station.gd"],"garage":["garage","res://scripts/ui/stations/garage_station.gd"]}
+func open_station(kind:String):
+	var building=STATIONS[kind][0]
+	if building!="" and building not in Game.built_workshops:build_tab=0;show_build_menu();return
+	if building!="":preload("res://scripts/ui/build_catalog.gd").mark(building)
+	close_station();phase="workshop";Game.reset_input();dpad.clear();fire_pad.clear();dpad.enabled=false;fire_pad.enabled=false;start_button.disabled=true
+	var screen=preload("res://scripts/ui/station_screen.gd").new();screen.name="Station_"+kind;screen.provider=load(STATIONS[kind][1]).new()
+	build_menu=screen;root.add_child(screen);screen.closed.connect(close_station);screen.changed.connect(refresh)
+
 func nearest_locked() -> String:
 	if mounted:return ""
 	for id in Game.BUILD_COST:
@@ -538,6 +540,12 @@ func nearest_locked() -> String:
 	return ""
 
 func bench_available(id:String)->bool:
+	if id=="headquarters":
+		for tech in Game.hq_unlocks:
+			if HQCatalog.available(tech) and int(Game.hq_levels.get(tech,0))<HQCatalog.cap() and Game.credits>=HQCatalog.permanent_cost(tech):return true
+	if id=="weapons":
+		for bonus in Game.bonus_unlocks:
+			if Game.bonus_level(bonus)<Balance.CONFIG.economy.bonus_level_cap and Game.credits>=Game.bonus_cost(bonus):return true
 	if id=="character":
 		for branch in Game.UNLOCK_COSTS:
 			if Game.level(branch)<Game.upgrade_cap(branch) and Game.credits>=(Game.cost(branch) if Game.branch_unlocked(branch) else Game.UNLOCK_COSTS[branch]):return true
@@ -593,11 +601,10 @@ func present_unlock():
 	UiKit.button(panel,"Перейти",Vector2(345,300),Vector2(310,55),func():
 		close_station()
 		if recipe.category=="research":show_build_menu()
-		elif recipe.category=="weapon":open_workshop(true)
-		elif recipe.category=="bonus":open_workshop(false,true)
-		elif recipe.category=="hq":show_hq_workshop()
-		elif recipe.category=="garage":show_garage()
-		else:workshop_tab=3;open_workshop(false)
+		elif recipe.category in ["weapon","bonus","ability"]:open_station("arsenal")
+		elif recipe.category=="hq":open_station("hq")
+		elif recipe.category=="garage":open_station("garage")
+		else:open_station("fighter")
 	,true)
 	Game.music_stinger("wave_victory")
 

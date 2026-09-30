@@ -61,7 +61,12 @@ var hq_slots=1
 var pressure_level=0
 var research_unlocks: Array=["character"]
 var built_workshops: Array=[]
-const RESEARCH={"headquarters":{"name":"Верстак штаба","rarity":0},"rescue":{"name":"Страховка чертежей","rarity":1},"character":{"name":"Прокачка базы","rarity":0},"weapons":{"name":"Оружейный верстак","rarity":0},"bonuses":{"name":"Верстак бонусов","rarity":1},"reroll":{"name":"Переброс карточек","rarity":1},"garage":{"name":"Стоянка","rarity":0},"range":{"name":"Стрелковый тир","rarity":0}}
+const RESEARCH={"headquarters":{"name":"Штаб","rarity":0},"rescue":{"name":"Страховка чертежей","rarity":1},"character":{"name":"Прокачка базы","rarity":0},"weapons":{"name":"Арсенал","rarity":0},"bonuses":{"name":"Верстак бонусов","rarity":1},"reroll":{"name":"Переброс карточек","rarity":1},"garage":{"name":"Стоянка","rarity":0},"range":{"name":"Полигон","rarity":0}}
+## Former buildings folded into stations: Прокачка базы → Боец/Штаб, Верстак бонусов → Арсенал.
+const RETIRED_BUILDINGS={"character":168,"bonuses":144}
+## Which built station a permanent branch needs: supply branches live in «Боец» (always there), defence in «Штаб».
+const BRANCH_STATION={"base":"headquarters","turret":"headquarters"}
+func station_ready(id:String)->bool:return id=="" or id in built_workshops
 var BUILD_COST=Balance.CONFIG.economy.building_costs
 var bonus_unlocks: Array=["heart"]
 var bonus_levels: Dictionary={}
@@ -150,7 +155,7 @@ func rarity_roll(value: float,stage:int=-1) -> int:
 	return 0
 
 func purchase(branch: String) -> bool:
-	if branch not in ["health","damage","mobility","pressure"] and "character" not in built_workshops:return false
+	if not station_ready(BRANCH_STATION.get(branch,"")):return false
 	if branch not in ["health","damage","luck","turret","rarity","base","heal","mobility","supplies","pressure"] or (branch not in ["health","damage","mobility","pressure"] and not branch_unlocked(branch)) or level(branch)>=upgrade_cap(branch) or credits<cost(branch):return false
 	credits-=cost(branch)
 	match branch:
@@ -283,6 +288,11 @@ func apply_profile(data:Dictionary):
 		if "character" not in research_unlocks:research_unlocks.append("character")
 		for id in BUILD_COST:
 			if id in data.get("built",[]):built_workshops.append(id)
+		# Retired buildings: bonuses turn into the Arsenal when it is missing, the rest is refunded once.
+		for id in RETIRED_BUILDINGS:
+			if id not in data.get("built",[]):continue
+			if id=="bonuses" and "weapons" not in built_workshops:built_workshops.append("weapons");research_unlocks.append("weapons")
+			else:credits+=RETIRED_BUILDINGS[id]
 		if not data.has("progression"):
 			progression.level=maxi(1,ceili(maxi(health_level,maxi(damage_level,maxi(base_level,mobility_level)))/3.0))
 		if int(data.get("version",0))<8:
@@ -307,7 +317,7 @@ func weapon_sound(actor):
 	if weapon in ["shotgun","sniper","tank"]:sound("weapon_mechanism",actor)
 
 func unlock_or_equip_ability(id: String) -> bool:
-	if "character" not in built_workshops:return false
+	if "weapons" not in built_workshops:return false
 	if id not in AbilityCatalog.DATA:return false
 	if not ability_available(id):return false
 	if id not in ["barrier","mine","laser","airstrike"]:return false
@@ -318,13 +328,13 @@ func unlock_or_equip_ability(id: String) -> bool:
 
 func branch_unlocked(id: String) -> bool:return id in branch_unlocks or level(id)>0
 func unlock_branch(id: String) -> bool:
-	if "character" not in built_workshops:return false
+	if not station_ready(BRANCH_STATION.get(id,"")):return false
 	if id=="recovery" or id not in UNLOCK_COSTS or branch_unlocked(id) or credits<UNLOCK_COSTS[id]:return false
 	credits-=UNLOCK_COSTS[id];branch_unlocks.append(id);save_progress();return true
 func bonus_level(id: String) -> int:return int(bonus_levels.get(id,0))
 func bonus_power(id: String) -> float:return 1.0+bonus_level(id)*.1
 func upgrade_bonus(id: String) -> bool:
-	if "bonuses" not in built_workshops:return false
+	if "weapons" not in built_workshops:return false
 	var price=bonus_cost(id)
 	if id not in bonus_unlocks or bonus_level(id)>=Balance.CONFIG.economy.bonus_level_cap or credits<price:return false
 	credits-=price;bonus_levels[id]=bonus_level(id)+1;save_progress();return true
@@ -334,7 +344,7 @@ func recipe_owned(category: String) -> Array:
 	return garage.unlocks if category=="garage" else hq_unlocks if category=="hq" else ability_unlocks if category=="ability" else weapon_unlocks if category=="weapon" else bonus_unlocks if category=="bonus" else research_unlocks
 func roll_recipe(rng: RandomNumberGenerator,pending: Array,ground: Array=[],stage:int=0) -> Dictionary:
 	var held=pending+ground
-	for early in ["character","weapons","headquarters"]:
+	for early in ["weapons","headquarters","garage"]:
 		if early not in research_unlocks and not held.any(func(item):return item.id==early and item.category=="research"):
 			return {"id":early,"category":"research"}
 	if rng.randf()>.80:return {}
@@ -387,7 +397,7 @@ func recipe_offers(rng: RandomNumberGenerator,pending: Array,stage:int=0) -> Arr
 				for weight in range(GarageCatalog.weight(id,stage) if category=="garage" else TIERS.weight(id,stage)):options.append({"category":category,"id":id})
 		var pick: Dictionary={}
 		if i==0:
-			for early in ["character","weapons","headquarters"]:
+			for early in ["weapons","headquarters","garage"]:
 				if early not in research_unlocks and not held.any(func(r):return r.category=="research" and r.id==early):pick={"category":"research","id":early};break
 		if pick.is_empty() and not options.is_empty():pick=options[rng.randi_range(0,options.size()-1)]
 		if pick.is_empty():pick={"category":"upgrade","id":["health","damage","speed","fire","intercept"][rng.randi_range(0,4)],"tier":rarity_roll(rng.randf())}
@@ -404,7 +414,7 @@ func music_stinger(id: String):
 	if is_instance_valid(music_controller):music_controller.celebrate(id,3 if id=="boss_victory" else 2)
 
 func buy_special(id:String)->bool:
-	if "character" not in built_workshops:return false
+	if "headquarters" not in built_workshops:return false
 	var price=special_cost(id)
 	if price<0 or (cores if id=="slots" else credits)<price:return false
 	if id=="slots":cores-=price

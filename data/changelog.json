@@ -4,6 +4,28 @@
 			"date": "2026-09-30",
 			"version": "0.2.1",
 			"ru": {
+				"title": "Четыре станции хаба",
+				"items": [
+					"Хаб стал проще: вместо шести верстаков — четыре станции с одинаковым экраном. Слева вкладки, в центре карточки, справа подробности «было → станет», цена и одна понятная кнопка.",
+					"«Боец» есть сразу: оболочки и их способности, общие улучшения, снабжение (лечение, аптечки, дроп, удача), рюкзак и перебросы.",
+					"«Арсенал» строится по чертежу: оружие, бонусы боя и гаджеты. «Штаб» — технологии поддержки, оборона базы, страховка и постройки. «Стоянка» — техника и её оборудование.",
+					"«Прокачка базы» и «Верстак бонусов» больше не строятся: их улучшения переехали на станции. Если они были построены, «Верстак бонусов» стал Арсеналом, а стоимость «Прокачки базы» вернулась сплавом."
+				]
+			},
+			"en": {
+				"title": "Four hub stations",
+				"items": [
+					"The hub is simpler: instead of six workbenches there are four stations with the same screen. Tabs on the left, cards in the middle, before → after details, the price and one clear button on the right.",
+					"Soldier is available from the start: shells and their abilities, general upgrades, supply (healing, medkits, drops, luck), backpack and rerolls.",
+					"Arsenal is built from a blueprint: weapons, combat bonuses and gadgets. HQ has support technologies, base defence, insurance and buildings. Parking has vehicles and their equipment.",
+					"Base upgrades and the bonus workbench are no longer built: their upgrades moved to the stations. If you had built them, the bonus workbench became the Arsenal and the base upgrades cost was refunded in alloy."
+				]
+			}
+		},
+		{
+			"date": "2026-09-30",
+			"version": "0.2.1",
+			"ru": {
 				"title": "Прокачка без уровня базы",
 				"items": [
 					"Уровень базы больше ничего не ограничивает: прокачка упирается только в цену и понятные пределы — оружие до 10, бонусы до 3, технологии штаба и оборудование техники до 5, страховка до 6.",

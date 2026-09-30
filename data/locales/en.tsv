@@ -1684,3 +1684,46 @@ F2 — админ	F2 — admin
 Арсенал	Arsenal
 Достигнут предел	Limit reached
 %d сплава	%d alloy
+Донеси чертёж Арсенала и построй его через «Строительство» в хабе.	Bring the Arsenal blueprint and build it via Construction in the hub.
+В «Бойце» → Снабжение открой и улучши аптечки передышки.	In Soldier → Supply unlock and upgrade the rest stop medkits.
+Донеси чертёж Штаба из сундука командира и построй его.	Bring the HQ blueprint from a commander chest and build it.
+В Штабе → Технологии выбери модуль или активную технологию.	In HQ → Technologies pick a module or an active technology.
+В Арсенале купи первый уровень открытого оружия.	Buy the first level of an unlocked weapon in the Arsenal.
+Найди чертёж Стоянки и построй её — в «Строительстве» или в Штабе → Постройки.	Find the Parking blueprint and build it via Construction or HQ → Buildings.
+В Штабе купи постоянный уровень технологии.	Buy a permanent technology level in the HQ.
+Изменить улучшения можно на станциях хаба.	Upgrades are changed at the hub stations.
+Оболочки, способности и общие улучшения — действуют в каждой вылазке.	Shells, abilities and general upgrades — active in every run.
+Оружие, бонусы боя и гаджеты. Открываются чертежами, развиваются сплавом.	Weapons, combat bonuses and gadgets. Unlocked by blueprints, upgraded with alloy.
+Поддержка в бою, оборона базы, страховка добычи и постройки хаба.	Combat support, base defence, loot insurance and hub buildings.
+Своя техника ждёт у старта вылазки. Сначала багги, потом БТР и танк.	Your own vehicle waits at the start of a run. Buggy first, then APC and tank.
+Технологии	Technologies
+Оборона	Defence
+Страховка	Insurance
+Надета	Equipped
+Надеть	Equip
+Куплен	Bought
+Выстрелов в с	Shots per s
+Ячейки	Slots
+За забег	Per run
+Взять на вылазку	Take on the run
+Идти пешком	Go on foot
+Потеря при гибели	Loss on death
+Шанс	Chance
+Выбрана	Selected
+В гараже	In the garage
+Клавиша F в бою	F key in battle
+Оружие взято в бой	Weapon taken into battle
+Оружие улучшено	Weapon upgraded
+Бонус улучшен	Bonus upgraded
+Гаджет выбран	Gadget selected
+Оболочка улучшена	Shell upgraded
+Улучшено для всех оболочек	Upgraded for all shells
+Общие улучшения сброшены	General upgrades reset
+Улучшено	Upgraded
+Технология выбрана	Technology selected
+Технология улучшена	Technology upgraded
+Страховка улучшена	Insurance upgraded
+Машина куплена	Vehicle bought
+Машина ждёт у старта	Vehicle waits at the start
+Вылазка пешком	Run on foot
+Оборудование улучшено	Equipment upgraded

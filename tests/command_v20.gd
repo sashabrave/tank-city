@@ -13,10 +13,10 @@ func run_test():
 	await get_tree().create_timer(.6).timeout
 	hub.phase="combat";hub._physics_process(.4)
 	assert(hub.command_alert.visible and hub.command_alert.modulate==Color("f1cf55"))
-	assert(hub.build_arrows.character.visible)
+	assert(hub.build_arrows.weapons.visible)
 	var y=hub.command_alert.position.y;hub._physics_process(.5);assert(not is_equal_approx(y,hub.command_alert.position.y))
-	Game.built_workshops.append("character");hub.update_bench_visuals();assert(not hub.build_arrows.has("character"))
-	p.claimed=["institute_character","shield","supply"];hub._physics_process(.4);assert(hub.build_arrows.headquarters.visible)
+	Game.built_workshops.append("weapons");hub.update_bench_visuals();assert(not hub.build_arrows.has("weapons"))
+	p.claimed=["institute_arsenal","shield","supply"];hub._physics_process(.4);assert(hub.build_arrows.headquarters.visible)
 	hub.phase="workshop"
 	var command=load("res://scripts/progression/command_screen.gd").new();hub.root.add_child(command)
 	assert(command.find_children("TelegramOffer","Panel",true,false).size()==1)

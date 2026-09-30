@@ -7,7 +7,7 @@ func run():
 	DevUnlocks.set_purchase("classes","gunner",true);assert("gunner" in Game.class_unlocks and "gunner" in Game.class_first_slots)
 	DevUnlocks.second_skill("gunner",true);assert(Game.class_levels.gunner>=5 and "gunner" in Game.class_second_slots)
 	DevUnlocks.toggle("classes","gunner",false);assert("gunner" not in Game.class_first_slots and "gunner" not in Game.class_second_slots)
-	for pair in [["ability","barrier"],["hq","hq_medbay"],["garage","vehicle_tank"],["research","character"]]:
+	for pair in [["ability","barrier"],["hq","hq_medbay"],["garage","vehicle_tank"],["research","weapons"]]:
 		DevUnlocks.set_purchase(pair[0],pair[1],true);assert(DevUnlocks.purchased(pair[0],pair[1]))
 		DevUnlocks.set_purchase(pair[0],pair[1],false);assert(not DevUnlocks.purchased(pair[0],pair[1]))
 	var shop=load("res://scripts/garage/recipe_shop.gd").new();add_child(shop)
