@@ -359,7 +359,9 @@ func _physics_process(delta):
 func hub_free(p: Vector2i) -> bool:
 	if p in training_barriers or p in [Vector2i(-2,3),Vector2i(3,3),Vector2i(6,3)]:return false
 	if p.x< -4 or p.x>7 or p.y< -2 or p.y>4:return false
-	if p in [Vector2i(-4,0),Vector2i(-4,1),Vector2i(-4,2),Vector2i(-3,-1),Vector2i(0,3),Vector2i(2,-2),Vector2i(-2,-2),Vector2i(-1,-2),Vector2i(-1,-1),Vector2i(0,-1),Vector2i(1,-1)]:return false
+	# Command centre (left edge), crates by the back wall, the range pad and the arsenal spot. The retired
+	# workbench cells (character at 0,-1 and bonuses at -3,-1) are walkable floor now.
+	if p in [Vector2i(-4,0),Vector2i(-4,1),Vector2i(-4,2),Vector2i(0,3),Vector2i(2,-2),Vector2i(-2,-2),Vector2i(-1,-2)]:return false
 	if not mounted and training_tank.visible and Vector2i(roundi(training_tank.position.x),roundi(training_tank.position.z))==p:return false
 	return true
 
