@@ -1,0 +1,25 @@
+{
+  "icons": 82,
+  "unique_sha256": 82,
+  "all_png_rgba_512": true,
+  "transparent_margins": true,
+  "resource_coverage": "38 upgrades,15 stats,10 resource abilities+1 dynamic ability,9 HQ,9 garage",
+  "atlas_dimensions_preserved": true,
+  "code_hookup": "pending_other_agent",
+  "windowed_godot": {
+    "textures_loaded": 82,
+    "catalog_themes": [
+      "dark",
+      "light"
+    ],
+    "enemy_sizes": [
+      32,
+      40,
+      48
+    ],
+    "miniatures": true,
+    "persistence_disabled": true,
+    "known_warning": "ObjectDB instances leaked at temporary scene exit",
+    "runtime_key_hookup_verified": false
+  }
+}
