@@ -241,7 +241,7 @@ func refresh_library():
 		filename=filename.trim_suffix(".import")
 		if not filename.ends_with(".wav"):continue
 		var id=filename.trim_suffix(".wav")
-		if "greeting" in id or "victory" in id or "defeat" in id or id.begins_with("folk_") or id.begins_with("night_"):continue
+		if "greeting" in id or "victory" in id or "defeat" in id or id.begins_with("folk_") or id.begins_with("night_") or id.begins_with("disco_") or id.begins_with("anthem_"):continue
 		var known=false
 		for theme in themes:
 			if id in theme_tracks(theme):known=true

@@ -327,6 +327,53 @@ def felt(m, d, vel=1.0):
 	return filt(x, 'low', 1600)
 
 
+def synth_bass(m, d, vel=1.0, bright=1.0):
+	"""Disco synth bass: saw + sub through a quickly closing lowpass (plucky, round)."""
+	t = _t(d + .03)
+	f = midi(m)
+	x = .6 * (2 * ((f * t) % 1) - 1) + .6 * np.sin(2 * np.pi * f * t)
+	hi = filt(x, 'low', 1400 * bright)
+	lo = filt(x, 'low', 380)
+	e = np.exp(-t * 16)
+	return np.tanh(1.4 * (hi * e + lo * (1 - e))) * adsr(len(t), .003, .2, .75, .04, d + .03) * vel
+
+
+def strings(ms, d, vel=1.0, attack=.35, cutoff=2600):
+	"""Bowed string section: many detuned saws with slow vibrato, soft attack."""
+	t = _t(d + attack)
+	x = np.zeros(len(t))
+	rng = np.random.default_rng(int(sum(ms)))
+	for m in ms:
+		for k in range(4):
+			vib = 1 + .004 * np.sin(2 * np.pi * (5 + rng.uniform(-.5, .5)) * t + rng.uniform(0, 6))
+			ph = np.cumsum(midi(m) * (1 + rng.normal(0, .003)) * vib) / R
+			x += 2 * (ph % 1) - 1
+	x = filt(x / (4 * len(ms)), 'low', cutoff, 2)
+	x = filt(x, 'high', 180)
+	return x * adsr(len(t), attack, 9, 1, attack * .8, d + attack) * vel
+
+
+def glock(m, d, vel=1.0):
+	"""Soft glockenspiel: sine with a quiet inharmonic partial, gentle mallet."""
+	t = _t(d + .9)
+	f = midi(m)
+	x = np.sin(2 * np.pi * f * t) * np.exp(-t * 2.8) + .18 * np.sin(2 * np.pi * f * 2.76 * t) * np.exp(-t * 9)
+	x[:round(.004 * R)] *= np.linspace(0, 1, round(.004 * R))
+	return filt(x, 'low', 5000) * adsr(len(t), .001, 9, 1, .2) * vel
+
+
+def reed(ms, d, vel=1.0):
+	"""Reed organ / accordion pad: two slightly detuned pulse banks, bellows swell."""
+	t = _t(d + .15)
+	x = np.zeros(len(t))
+	for m in ms:
+		for det in (-.003, .003):
+			ph = np.cumsum(np.full(len(t), midi(m) * (1 + det))) / R
+			x += np.where(ph % 1 < .35, 1.0, -.54)
+	x = filt(x / (2 * len(ms)), 'low', 2200)
+	return x * (1 + .06 * np.sin(2 * np.pi * 5.8 * t)) * adsr(len(t), .08, 9, 1, .12, d + .15) * vel
+
+
 def bass808(m, d, vel=1.0, glide_from=None):
 	"""Long 808 sub with click and optional slide; soft saturation."""
 	t = _t(d)

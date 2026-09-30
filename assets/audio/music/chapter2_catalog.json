@@ -254,5 +254,125 @@
   "night_static_boss": {
     "title": "Помехи · босс",
     "context": "boss"
+  },
+  "disco_fountain_battle": {
+    "title": "Фонтан",
+    "context": "battle"
+  },
+  "disco_fountain_hub": {
+    "title": "Фонтан · хаб",
+    "context": "hub"
+  },
+  "disco_fountain_map": {
+    "title": "Фонтан · карта",
+    "context": "map"
+  },
+  "disco_fountain_miniboss": {
+    "title": "Фонтан · командир",
+    "context": "miniboss"
+  },
+  "disco_fountain_boss": {
+    "title": "Фонтан · босс",
+    "context": "boss"
+  },
+  "disco_plombir_battle": {
+    "title": "Пломбир",
+    "context": "battle"
+  },
+  "disco_plombir_hub": {
+    "title": "Пломбир · хаб",
+    "context": "hub"
+  },
+  "disco_plombir_map": {
+    "title": "Пломбир · карта",
+    "context": "map"
+  },
+  "disco_plombir_miniboss": {
+    "title": "Пломбир · командир",
+    "context": "miniboss"
+  },
+  "disco_plombir_boss": {
+    "title": "Пломбир · босс",
+    "context": "boss"
+  },
+  "disco_tram_battle": {
+    "title": "Трамвай",
+    "context": "battle"
+  },
+  "disco_tram_hub": {
+    "title": "Трамвай · хаб",
+    "context": "hub"
+  },
+  "disco_tram_map": {
+    "title": "Трамвай · карта",
+    "context": "map"
+  },
+  "disco_tram_miniboss": {
+    "title": "Трамвай · командир",
+    "context": "miniboss"
+  },
+  "disco_tram_boss": {
+    "title": "Трамвай · босс",
+    "context": "boss"
+  },
+  "anthem_belfry_battle": {
+    "title": "Колокольня",
+    "context": "battle"
+  },
+  "anthem_belfry_hub": {
+    "title": "Колокольня · хаб",
+    "context": "hub"
+  },
+  "anthem_belfry_map": {
+    "title": "Колокольня · карта",
+    "context": "map"
+  },
+  "anthem_belfry_miniboss": {
+    "title": "Колокольня · командир",
+    "context": "miniboss"
+  },
+  "anthem_belfry_boss": {
+    "title": "Колокольня · босс",
+    "context": "boss"
+  },
+  "anthem_outskirts_battle": {
+    "title": "Окраина",
+    "context": "battle"
+  },
+  "anthem_outskirts_hub": {
+    "title": "Окраина · хаб",
+    "context": "hub"
+  },
+  "anthem_outskirts_map": {
+    "title": "Окраина · карта",
+    "context": "map"
+  },
+  "anthem_outskirts_miniboss": {
+    "title": "Окраина · командир",
+    "context": "miniboss"
+  },
+  "anthem_outskirts_boss": {
+    "title": "Окраина · босс",
+    "context": "boss"
+  },
+  "anthem_beacons_battle": {
+    "title": "Маяки",
+    "context": "battle"
+  },
+  "anthem_beacons_hub": {
+    "title": "Маяки · хаб",
+    "context": "hub"
+  },
+  "anthem_beacons_map": {
+    "title": "Маяки · карта",
+    "context": "map"
+  },
+  "anthem_beacons_miniboss": {
+    "title": "Маяки · командир",
+    "context": "miniboss"
+  },
+  "anthem_beacons_boss": {
+    "title": "Маяки · босс",
+    "context": "boss"
   }
 }

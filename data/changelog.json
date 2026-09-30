@@ -1,6 +1,21 @@
 {
 	"entries": [
 		{
+			"date": "2026-09-30",
+			"ru": {
+				"title": "Новые музыкальные темы",
+				"items": [
+					"Шесть новых музыкальных тем. Дневные — мягкое ретро-диско и синт-поп: Фонтан, Пломбир, Трамвай. Ночные — инди-рок с оркестровыми красками: Колокольня, Окраина, Маяки. Они сразу входят в ротацию своего времени суток."
+				]
+			},
+			"en": {
+				"title": "New music themes",
+				"items": [
+					"Six new music themes. Day: soft retro disco and synth-pop — Fountain, Ice Cream, Tram. Night: indie rock with orchestral colours — Belfry, Outskirts, Beacons. They join the rotation for their time of day right away."
+				]
+			}
+		},
+		{
 			"date": "2026-10-01",
 			"version": "0.2.1",
 			"ru": {
