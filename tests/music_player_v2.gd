@@ -33,7 +33,7 @@ func run():
 		c.skip(-1);check(c.current_track==ids[-1],"previous wraps "+context)
 		c.skip(1);check(c.current_track==original,"next wraps "+context)
 	# Themes: hub/map theme is held for the session, battle theme rolls per fight.
-	check(c.themes.size()==6,"six music themes")
+	check(c.themes.size()==12,"twelve music themes")
 	for theme in c.themes:
 		for key in ["battle","hub","map","miniboss","boss"]:check(ResourceLoader.exists("res://assets/audio/music/"+c.themes[theme][key]+".wav"),"theme track "+theme+" "+key)
 		for kind in c.FANFARES:check(c.themes[theme][kind].size()==3,"three fanfares "+theme+" "+kind)

@@ -172,5 +172,179 @@
       "night_static_defeat_3"
     ],
     "mood": "night"
+  },
+  "fountain": {
+    "title": "Фонтан",
+    "mood": "day",
+    "battle": "disco_fountain_battle",
+    "hub": "disco_fountain_hub",
+    "map": "disco_fountain_map",
+    "miniboss": "disco_fountain_miniboss",
+    "boss": "disco_fountain_boss",
+    "greeting": [
+      "disco_fountain_greeting_1",
+      "disco_fountain_greeting_2",
+      "disco_fountain_greeting_3"
+    ],
+    "start": [
+      "disco_fountain_start_1",
+      "disco_fountain_start_2",
+      "disco_fountain_start_3"
+    ],
+    "victory": [
+      "disco_fountain_victory_1",
+      "disco_fountain_victory_2",
+      "disco_fountain_victory_3"
+    ],
+    "defeat": [
+      "disco_fountain_defeat_1",
+      "disco_fountain_defeat_2",
+      "disco_fountain_defeat_3"
+    ]
+  },
+  "plombir": {
+    "title": "Пломбир",
+    "mood": "day",
+    "battle": "disco_plombir_battle",
+    "hub": "disco_plombir_hub",
+    "map": "disco_plombir_map",
+    "miniboss": "disco_plombir_miniboss",
+    "boss": "disco_plombir_boss",
+    "greeting": [
+      "disco_plombir_greeting_1",
+      "disco_plombir_greeting_2",
+      "disco_plombir_greeting_3"
+    ],
+    "start": [
+      "disco_plombir_start_1",
+      "disco_plombir_start_2",
+      "disco_plombir_start_3"
+    ],
+    "victory": [
+      "disco_plombir_victory_1",
+      "disco_plombir_victory_2",
+      "disco_plombir_victory_3"
+    ],
+    "defeat": [
+      "disco_plombir_defeat_1",
+      "disco_plombir_defeat_2",
+      "disco_plombir_defeat_3"
+    ]
+  },
+  "tram": {
+    "title": "Трамвай",
+    "mood": "day",
+    "battle": "disco_tram_battle",
+    "hub": "disco_tram_hub",
+    "map": "disco_tram_map",
+    "miniboss": "disco_tram_miniboss",
+    "boss": "disco_tram_boss",
+    "greeting": [
+      "disco_tram_greeting_1",
+      "disco_tram_greeting_2",
+      "disco_tram_greeting_3"
+    ],
+    "start": [
+      "disco_tram_start_1",
+      "disco_tram_start_2",
+      "disco_tram_start_3"
+    ],
+    "victory": [
+      "disco_tram_victory_1",
+      "disco_tram_victory_2",
+      "disco_tram_victory_3"
+    ],
+    "defeat": [
+      "disco_tram_defeat_1",
+      "disco_tram_defeat_2",
+      "disco_tram_defeat_3"
+    ]
+  },
+  "belfry": {
+    "title": "Колокольня",
+    "mood": "night",
+    "battle": "anthem_belfry_battle",
+    "hub": "anthem_belfry_hub",
+    "map": "anthem_belfry_map",
+    "miniboss": "anthem_belfry_miniboss",
+    "boss": "anthem_belfry_boss",
+    "greeting": [
+      "anthem_belfry_greeting_1",
+      "anthem_belfry_greeting_2",
+      "anthem_belfry_greeting_3"
+    ],
+    "start": [
+      "anthem_belfry_start_1",
+      "anthem_belfry_start_2",
+      "anthem_belfry_start_3"
+    ],
+    "victory": [
+      "anthem_belfry_victory_1",
+      "anthem_belfry_victory_2",
+      "anthem_belfry_victory_3"
+    ],
+    "defeat": [
+      "anthem_belfry_defeat_1",
+      "anthem_belfry_defeat_2",
+      "anthem_belfry_defeat_3"
+    ]
+  },
+  "outskirts": {
+    "title": "Окраина",
+    "mood": "night",
+    "battle": "anthem_outskirts_battle",
+    "hub": "anthem_outskirts_hub",
+    "map": "anthem_outskirts_map",
+    "miniboss": "anthem_outskirts_miniboss",
+    "boss": "anthem_outskirts_boss",
+    "greeting": [
+      "anthem_outskirts_greeting_1",
+      "anthem_outskirts_greeting_2",
+      "anthem_outskirts_greeting_3"
+    ],
+    "start": [
+      "anthem_outskirts_start_1",
+      "anthem_outskirts_start_2",
+      "anthem_outskirts_start_3"
+    ],
+    "victory": [
+      "anthem_outskirts_victory_1",
+      "anthem_outskirts_victory_2",
+      "anthem_outskirts_victory_3"
+    ],
+    "defeat": [
+      "anthem_outskirts_defeat_1",
+      "anthem_outskirts_defeat_2",
+      "anthem_outskirts_defeat_3"
+    ]
+  },
+  "beacons": {
+    "title": "Маяки",
+    "mood": "night",
+    "battle": "anthem_beacons_battle",
+    "hub": "anthem_beacons_hub",
+    "map": "anthem_beacons_map",
+    "miniboss": "anthem_beacons_miniboss",
+    "boss": "anthem_beacons_boss",
+    "greeting": [
+      "anthem_beacons_greeting_1",
+      "anthem_beacons_greeting_2",
+      "anthem_beacons_greeting_3"
+    ],
+    "start": [
+      "anthem_beacons_start_1",
+      "anthem_beacons_start_2",
+      "anthem_beacons_start_3"
+    ],
+    "victory": [
+      "anthem_beacons_victory_1",
+      "anthem_beacons_victory_2",
+      "anthem_beacons_victory_3"
+    ],
+    "defeat": [
+      "anthem_beacons_defeat_1",
+      "anthem_beacons_defeat_2",
+      "anthem_beacons_defeat_3"
+    ]
   }
 }
