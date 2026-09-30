@@ -6,7 +6,7 @@
 			"ru": {
 				"title": "Карта маршрута",
 				"items": [
-					"Колесо мыши приближает и отдаляет карту.",
+					"Колесо мыши прокручивает путь по карте.",
 					"Чтобы вернуться в хаб, заедь обратно в гараж на старте и нажми E.",
 					"Тест: «Инструменты» → «Дев-режим карты». Клик по любой комнате — «Перейти» или «Перейти с прокачкой» (с наградами всех комнат до неё).",
 					"Точка прокачки на карте — депо-питстоп: заезжаешь, берёшь карточки, едешь дальше.",
@@ -16,7 +16,7 @@
 			"en": {
 				"title": "Route map",
 				"items": [
-					"The mouse wheel zooms the map in and out.",
+					"The mouse wheel scrolls along the route.",
 					"To return to the hub, drive back into the garage at the start and press E.",
 					"Test: Tools → Map dev mode. Click any room — Jump, or Jump with upgrades (with the rewards of every room before it).",
 					"The upgrade point on the map is a pit-stop depot: drive in, take cards, drive on.",

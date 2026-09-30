@@ -316,11 +316,11 @@ func tap_at(screen_pos:Vector2):
 		if not previews[id].visible:continue
 		var delta=point-previews[id].position
 		if absf(delta.x)<=3.15*MINI_SCALE and absf(delta.z)<=3.15*MINI_SCALE:travel_to_room(previews[id].get_meta("info").stage,id);return
-## Mouse wheel zooms the map. Handled in _input: the map UI layer would swallow it otherwise.
+## Mouse wheel scrolls along the route. Handled in _input: the map UI layer would swallow it otherwise.
 func _input(event):
 	if travelling or is_instance_valid(modal) or not event is InputEventMouseButton or not event.pressed:return
 	if event.button_index in [MOUSE_BUTTON_WHEEL_UP,MOUSE_BUTTON_WHEEL_DOWN]:
-		camera.size=clampf(camera.size+(-2.0 if event.button_index==MOUSE_BUTTON_WHEEL_UP else 2.0),16.0,42.0);move_camera()
+		scroll+=1.6 if event.button_index==MOUSE_BUTTON_WHEEL_UP else -1.6;follow_camera=false;move_camera()
 		get_viewport().set_input_as_handled()
 func _unhandled_input(event):
 	if travelling:return
