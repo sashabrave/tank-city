@@ -64,7 +64,13 @@ var hint_clock=0.0
 var hint_refresh=0.0
 var build_arrows:Dictionary={}
 var command_alert:Label3D
-var command_pos=Vector3(-4,0,2)
+var command_pos=Vector3(-4,0,1)  # main screen: middle of the left edge
+## Visual-only: each hub visit gets a biome, sun moment and weather like a battle room (no RNG consumed).
+var run_seed=Game.visual_run_seed+int(Time.get_ticks_usec()%9973)
+var room_index=int(Time.get_ticks_usec()/7)%15
+func room_palette()->Dictionary:return preload("res://scripts/biome_catalog.gd").entry(run_seed,room_index)
+var command_screen:ShaderMaterial
+var command_beams:Node3D
 var hq_bench_pos=Vector3(-2,0,3)
 var weapon_bench_pos=Vector3(0,0,3)
 
@@ -72,7 +78,8 @@ func _ready():
 	add_to_group("profile_hub")
 	add_to_group("notification_context")
 	Visuals.setup_world(self,11.8,Vector3(0,0,0))
-	preload("res://scripts/base_surroundings.gd").hub(self)
+	preload("res://scripts/base_surroundings.gd").hub(self,Color(room_palette().floor).darkened(.12))
+	var outskirts=preload("res://scripts/hub_outskirts.gd").new();outskirts.hub=self;add_child(outskirts)
 	Visuals.box(self,Vector3(1,-.4,.5),Vector3(13.3,.6,8.3),Color("8b9585"))
 	var positions: Array=[]
 	for x in range(-5,8):
@@ -112,7 +119,9 @@ func _ready():
 	dummy_label=Visuals.label3d(dummy,"",Vector3(0,1.7,0),Color("f7d891"),26)
 	Game.progression.prepare_telegrams()
 	command_model=Visuals.model("command_center",self,command_pos)
-	command_meshes=command_model.find_children("*","MeshInstance3D",true,false)
+	command_model.rotation.y=.55  # screen turned toward the hub centre and the camera
+	build_command_screen()
+	command_meshes=command_model.find_children("*","MeshInstance3D",true,false).filter(func(m):return not command_beams.is_ancestor_of(m))
 	command_alert=Visuals.label3d(self,"!",command_pos+Vector3(0,3.3,0),Color("ed4f40"),85)
 	command_alert.no_depth_test=true
 	refresh_command_alert()
@@ -226,9 +235,26 @@ func buy(branch: String):
 		Texts.set_text(status,"Улучшено.")
 		refresh()
 
+## Idle: dark screen paging abstract maps and dossiers. News: turquoise glow and rays on the floor.
+func build_command_screen():
+	var screen=command_model.find_child("CommandScreen",true,false)
+	if screen is MeshInstance3D:
+		command_screen=ShaderMaterial.new();command_screen.shader=preload("res://shaders/world/command_screen.gdshader");screen.material_override=command_screen
+	command_beams=Node3D.new();command_beams.name="CommandBeams";command_model.add_child(command_beams)
+	var ray_mat=ShaderMaterial.new();ray_mat.shader=preload("res://shaders/fx/loot_beam.gdshader")
+	ray_mat.set_shader_parameter("tint",Color("5fe6d6"));ray_mat.set_shader_parameter("strength",.5)
+	for x in [-.36,0.0,.36]:
+		var ray=MeshInstance3D.new();var quad=QuadMesh.new();quad.size=Vector2(.3,2.1);ray.mesh=quad;ray.material_override=ray_mat
+		ray.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF;command_beams.add_child(ray)
+		ray.position=Vector3(x*1.3,.62,1.0);ray.rotation=Vector3(deg_to_rad(-58),0,0)
+	var glow=SpotLight3D.new();glow.light_color=Color("5fe6d6");glow.light_energy=2.4;glow.spot_range=4.0;glow.spot_angle=42;glow.shadow_enabled=false
+	command_beams.add_child(glow);glow.position=Vector3(0,1.4,.3);glow.rotation.x=deg_to_rad(-52)
+
 func refresh_command_alert():
 	if not is_instance_valid(command_alert):return
 	var news=Game.progression.news_kind()
+	if command_screen:command_screen.set_shader_parameter("alert",news!="")
+	if is_instance_valid(command_beams):command_beams.visible=news!=""
 	command_alert.visible=news!=""
 	command_alert.modulate=Color("ed4f40") if news=="general" else Color("f1cf55")
 
@@ -302,7 +328,7 @@ func _physics_process(delta):
 func hub_free(p: Vector2i) -> bool:
 	if p in training_barriers or p in [Vector2i(-2,3),Vector2i(3,3),Vector2i(6,3)]:return false
 	if p.x< -4 or p.x>7 or p.y< -2 or p.y>4:return false
-	if p in [Vector2i(-4,1),Vector2i(-4,2),Vector2i(-4,3),Vector2i(-3,-1),Vector2i(0,3),Vector2i(2,-2),Vector2i(-2,-2),Vector2i(-1,-2),Vector2i(-1,-1),Vector2i(0,-1),Vector2i(1,-1)]:return false
+	if p in [Vector2i(-4,0),Vector2i(-4,1),Vector2i(-4,2),Vector2i(-3,-1),Vector2i(0,3),Vector2i(2,-2),Vector2i(-2,-2),Vector2i(-1,-2),Vector2i(-1,-1),Vector2i(0,-1),Vector2i(1,-1)]:return false
 	if not mounted and training_tank.visible and Vector2i(roundi(training_tank.position.x),roundi(training_tank.position.z))==p:return false
 	return true
 

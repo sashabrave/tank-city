@@ -23,6 +23,7 @@ var support_grip:Node3D
 var muzzle:Node3D
 var protection:MeshInstance3D
 var preview_biome:Dictionary={}
+var fur_override=-1  # coat for scenery cats outside combat
 var beacon_phase=0.0
 var aim_timer=0.0  # seconds the rifle stays shouldered after the last shot
 var aim_blend=0.0  # camo source outside an arena (galleries, tests)
@@ -191,6 +192,8 @@ func fit_support_hand():
 	rotate_bone_toward(forearm,hand,target)
 
 
+## Enemy ranks follow the usual rarity ladder: brick red (rank and file), purple (elite), gold (commander).
+const RANK_COLORS=[Color("a8412f"),Color("6d4aa0"),Color("c9a03a")]
 var paint_materials:Array[ShaderMaterial]=[]
 var paint_mode="friendly"
 var paint_rank=1
@@ -201,7 +204,7 @@ func apply_palette():
 	var camo={}
 	if paint_mode=="enemy" and actor is CombatActor and is_instance_valid(actor.arena):camo=InfantryPalette.biome_camo(actor.arena.room_palette())
 	elif paint_mode=="enemy":camo=InfantryPalette.biome_camo(preview_biome)
-	var fur=0 if (actor is CombatActor and actor.player_owned) or not actor is CombatActor else 1+posmod(hash(get_instance_id()),InfantryPalette.FURS.size()-1)
+	var fur=fur_override if fur_override>=0 else 0 if (actor is CombatActor and actor.player_owned) or not actor is CombatActor else 1+posmod(hash(get_instance_id()),InfantryPalette.FURS.size()-1)
 	for mesh in find_children("*","MeshInstance3D",true,false):
 		if weapon_socket and weapon_socket.is_ancestor_of(mesh):continue
 		for index in range(mesh.mesh.get_surface_count()):
@@ -231,9 +234,10 @@ func set_paint(mode:String,rank:int=1):
 				mat.set_meta("barrel",barrel)
 				mat.set_shader_parameter("barrel_end",mesh.get_aabb().position.z+mesh.get_aabb().size.z*(.5 if str(mesh.name)=="buggy_mg" else 1.01))
 				mesh.set_surface_override_material(index,mat);paint_materials.append(mat)
-	var color={"friendly":Color("82956b") if kind in ["tank","boss","apc","buggy","flyer","drone"] else Color("ddd9c5"),"enemy":Color("191e1c") if rank==3 else Color("702d2b"),"capture":Color("259642"),"explode":Color("af231b")}.get(mode,Color.WHITE)
+	var color={"friendly":Color("82956b") if kind in ["tank","boss","apc","buggy","flyer","drone"] else Color("ddd9c5"),"enemy":RANK_COLORS[clampi(rank,1,3)-1],"capture":Color("259642"),"explode":Color("af231b")}.get(mode,Color.WHITE)
 	for mat in paint_materials:
 		mat.set_shader_parameter("paint_color",color)
 		mat.set_shader_parameter("barrel_white",mode=="friendly" and mat.get_meta("barrel",false))
-		mat.set_shader_parameter("striped",mode=="enemy" and rank==2)
-		mat.set_shader_parameter("flash",0.0)
+		mat.set_shader_parameter("striped",false)
+		# Commanders get a faint gold glint (the paint shader's flash term), others stay matte.
+		mat.set_shader_parameter("flash",.12 if mode=="enemy" and rank==3 else 0.0)

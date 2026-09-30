@@ -140,7 +140,7 @@ def build(family, variant):
                 t.face([mid + side * w, end, mid], PALM); t.face([mid, end, mid - side * w], TIPS)
                 t.face([mid - side * w, mid + side * w, top], PALM)
         elif family == "charred":
-            h = .9 * scale
+            h = 1.15 * scale
             t.trunk((x, y, 0), (x + .02, y, h), .085, .045, CHAR)
             t.trunk((x + .02, y, h), (x + .05, y + .01, h + .08), .045, .012, CHAR)
             for k in range(2):
