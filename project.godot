@@ -21,7 +21,7 @@ run/main_scene="res://scenes/main.tscn"
 config/use_custom_user_dir=true
 config/custom_user_dir_name="Godot/app_userdata/Рубеж - 13"
 config/features=PackedStringArray("4.7", "Forward Plus")
-config/build="98"
+config/build="102"
 
 [audio]
 
