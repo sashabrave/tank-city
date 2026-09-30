@@ -212,7 +212,7 @@ func refresh():
 		UiKit.label(card,names[branch],Vector2(132,14),Vector2(650,32),22)
 		UiKit.label(card,details[branch],Vector2(132,52),Vector2(650,45),16,UiKit.MUTED).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 		UiKit.label(card,"Уровень %d / %d" % [Game.level(branch),Game.upgrade_cap(branch)],Vector2(132,115),Vector2(275,32),17)
-		var title=("Уровень базы" if Game.level(branch)>=Game.upgrade_cap(branch) and Game.upgrade_cap(branch)<(3 if branch=="supplies" else 20) else "Максимум" if Game.level(branch)>=Game.upgrade_cap(branch) else "+1 · %d ◈" % Game.cost(branch)) if unlocked else "Открыть · %d ◈" % Game.UNLOCK_COSTS[branch]
+		var title=("Максимум" if Game.level(branch)>=Game.upgrade_cap(branch) else "+1 · %d ◈" % Game.cost(branch)) if unlocked else "Открыть · %d ◈" % Game.UNLOCK_COSTS[branch]
 		var button=UiKit.button(card,title,Vector2(450,115),Vector2(340,42),func():buy(branch))
 		button.disabled=(Game.level(branch)>=Game.upgrade_cap(branch) or Game.credits<Game.cost(branch)) if unlocked else Game.credits<Game.UNLOCK_COSTS[branch];UiKit.muted_locked_button(button)
 
@@ -419,7 +419,7 @@ func show_systems():
 	for i in range(2):
 		var alloy=i==0
 		var price=Game.insurance_cost() if alloy else Game.special_cost("rescue")
-		var capped=Game.progression.insurance>=mini(6,Game.progression.level*2) if alloy else price<0
+		var capped=Game.progression.insurance>=Balance.CONFIG.economy.insurance_cap if alloy else price<0
 		var known=alloy or "rescue" in Game.research_unlocks
 		var card=UiKit.panel(workshop_content,Vector2(0,i*226),Vector2(810,212),Color("30382f"))
 		UiKit.locked_preview(UiKit.icon(card,"alloy" if alloy else "documents",Vector2(18,34),Vector2(96,96)),not known)
@@ -427,7 +427,7 @@ func show_systems():
 		var description="При гибели теряется %d%% сплава, добытого за вылазку." % roundi(Game.death_loss_fraction()*100) if alloy else "Шанс сохранить каждый найденный чертёж при гибели."
 		UiKit.label(card,description,Vector2(136,58),Vector2(650,45),16,UiKit.MUTED).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 		var detail="Потеря: %d%% → %d%%" % [roundi(Game.death_loss_fraction()*100),roundi(maxf(.2,Game.death_loss_fraction()-.05)*100)] if alloy else "Сохранение: %d%% → %d%%" % [Game.rescue_level*6,mini(60,(Game.rescue_level+1)*6)]
-		if capped and known:detail="Достигнут предел · повысь уровень базы" if alloy and Game.progression.insurance<6 else "Достигнут максимум"
+		if capped and known:detail="Достигнут предел" if alloy and Game.progression.insurance<Balance.CONFIG.economy.insurance_cap else "Достигнут максимум"
 		UiKit.label(card,detail,Vector2(136,108),Vector2(650,30),18)
 		var button=UiKit.button(card,"Нужен чертёж" if not known else "Предел улучшений" if capped else "Улучшить · %d ◈" % price,Vector2(136,156),Vector2(650,40),func():
 			if alloy:Game.buy_insurance()
@@ -466,8 +466,8 @@ func refresh_catalogs():
 					var compact_style=compact.get_theme_stylebox(state).duplicate();compact_style.content_margin_top=3;compact_style.content_margin_bottom=3;compact.add_theme_stylebox_override(state,compact_style)
 				compact.custom_minimum_size=Vector2.ZERO;compact.size=Vector2(244,28)
 			tune.add_theme_font_size_override("font_size",13)
-			if unlocked and Game.weapon_level(id)>=mini(10,Game.progression.level):Texts.set_text(tune,"Ур. %d · %s" % [Game.weapon_level(id),"максимум" if Game.weapon_level(id)>=10 else "🔒 База "+str(Game.progression.level+1)])
-			tune.disabled=not unlocked or Game.weapon_level(id)>=mini(10,Game.progression.level) or Game.credits<Game.weapon_upgrade_cost(id)
+			if unlocked and Game.weapon_level(id)>=Balance.CONFIG.economy.weapon_level_cap:Texts.set_text(tune,"Ур. %d · %s" % [Game.weapon_level(id),"максимум"])
+			tune.disabled=not unlocked or Game.weapon_level(id)>=Balance.CONFIG.economy.weapon_level_cap or Game.credits<Game.weapon_upgrade_cost(id)
 			UiKit.muted_locked_button(tune)
 	if bonus_station.visible:
 		for child in bonus_content.get_children():bonus_content.remove_child(child);child.queue_free()
@@ -491,8 +491,8 @@ func refresh_catalogs():
 			card.get_node("Description").text=info.effect;card.get_node("Description").tooltip_text=detail if owned else ""
 			if owned and level<3:UiKit.numeric_description(card.get_node("Description"),bonus_change(id,level))
 			var price=Game.bonus_cost(id)
-			var button=card.get_node("ChooseButton");Texts.set_text(button,"🔒 Нужен чертёж" if not owned else ("Максимум" if level>=mini(3,Game.progression.level) else "+1 · %d ◈" % price))
-			button.pressed.connect(func():Game.upgrade_bonus(id);refresh());button.disabled=not owned or level>=mini(3,Game.progression.level) or Game.credits<price
+			var button=card.get_node("ChooseButton");Texts.set_text(button,"🔒 Нужен чертёж" if not owned else ("Максимум" if level>=Balance.CONFIG.economy.bonus_level_cap else "+1 · %d ◈" % price))
+			button.pressed.connect(func():Game.upgrade_bonus(id);refresh());button.disabled=not owned or level>=Balance.CONFIG.economy.bonus_level_cap or Game.credits<price
 			UiKit.muted_locked_button(button)
 
 func update_bench_visuals():
@@ -546,7 +546,7 @@ func bench_available(id:String)->bool:
 	if id=="weapons":return Game.weapon_unlocks.size()>1
 	if id=="bonuses":
 		for bonus in Game.bonus_unlocks:
-			if Game.bonus_level(bonus)<mini(3,Game.progression.level) and Game.credits>=Game.bonus_cost(bonus):return true
+			if Game.bonus_level(bonus)<Balance.CONFIG.economy.bonus_level_cap and Game.credits>=Game.bonus_cost(bonus):return true
 	return false
 func show_classes():preload("res://scripts/ui/fighter_station.gd").shell(self)
 

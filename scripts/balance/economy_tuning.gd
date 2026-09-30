@@ -19,6 +19,14 @@ extends Resource
 @export_range(0,10000,5) var chest_alloy:int=60
 @export_range(0,1000,5) var chest_alloy_per_room:int=25
 
+@export_group("Пределы постоянной прокачки — ограничивает только цена")
+@export_range(1,100,1) var branch_cap:int=20
+@export_range(1,20,1) var supplies_cap:int=3
+@export_range(1,20,1) var insurance_cap:int=6
+@export_range(1,50,1) var weapon_level_cap:int=10
+@export_range(1,20,1) var bonus_level_cap:int=3
+@export_range(1,20,1) var hq_level_cap:int=5
+@export_range(1,20,1) var vehicle_equipment_cap:int=5
 @export_group("Жетоны — валюта забега для торговца")
 @export_range(0,1,0.005) var token_chance:float=0.06
 @export_range(0,1,0.005) var token_vehicle_chance:float=0.15

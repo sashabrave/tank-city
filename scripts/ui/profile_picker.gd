@@ -32,7 +32,7 @@ func build_card(slot:int):
 	var art=TextureRect.new();card.add_child(art);art.name="Art";art.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;art.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;art.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	art.texture=preload("res://assets/ui/illustrations/route.tres") if info.empty else preload("res://scripts/ui/class_gallery.gd").texture(info.get("class","recruit"))
 	art.modulate.a=.5 if info.empty else 1.0
-	var summary="Чистый старт · новая база" if info.empty else info.error if info.has("error") else "База %d · %d сплава" % [info.level,info.credits]
+	var summary="Чистый старт · новая база" if info.empty else info.error if info.has("error") else "%d сплава" % info.credits
 	var caption=UiKit.label(card,summary,Vector2.ZERO,Vector2.ZERO,17,UiKit.MUTED);caption.name="Summary";caption.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	var choose=UiKit.button(card,"Создать мир" if info.empty else "Продолжить",Vector2.ZERO,Vector2.ZERO,func():choose_slot(slot,info.empty),true);choose.name="Choose";choose.focus_mode=Control.FOCUS_ALL
 	choose.disabled=current and not Game.save_blocked

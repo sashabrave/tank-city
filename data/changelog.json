@@ -4,6 +4,26 @@
 			"date": "2026-09-30",
 			"version": "0.2.1",
 			"ru": {
+				"title": "Прокачка без уровня базы",
+				"items": [
+					"Уровень базы больше ничего не ограничивает: прокачка упирается только в цену и понятные пределы — оружие до 10, бонусы до 3, технологии штаба и оборудование техники до 5, страховка до 6.",
+					"Гаджеты, технологии штаба и техника доступны сразу после чертежа — без ожидания уровня базы. БТР и танк по-прежнему покупаются по порядку: сначала багги, потом БТР.",
+					"Командный центр открывается на заданиях. Вместо «Развития базы» — короткая «Сводка»: станции, оболочки, оружие, техника и отслеживаемые задания."
+				]
+			},
+			"en": {
+				"title": "Upgrades without a base level",
+				"items": [
+					"The base level no longer limits anything: upgrades are limited only by price and clear caps — weapons up to 10, bonuses up to 3, HQ technologies and vehicle equipment up to 5, insurance up to 6.",
+					"Gadgets, HQ technologies and vehicles are available right after their blueprint, without waiting for a base level. The APC and tank are still bought in order: buggy first, then APC.",
+					"The command centre opens on quests. Base development is replaced by a short Summary: stations, shells, weapons, vehicles and tracked quests."
+				]
+			}
+		},
+		{
+			"date": "2026-09-30",
+			"version": "0.2.1",
+			"ru": {
 				"title": "Задания и живой интерфейс",
 				"items": [
 					"Задания переписаны под мир 1 и бесконечный режим: больше нет ссылок на закрытые миры. Новые задания — на каждое испытание, торговца и жетоны, бочки, карты «Тактика», механика и мастерскую, секторы бесконечного режима.",

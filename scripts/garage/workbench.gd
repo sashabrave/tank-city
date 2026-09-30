@@ -21,13 +21,13 @@ func refresh():
 		if known or owned:preload("res://scripts/ui/build_catalog.gd").item_dot(card,"garage","vehicle_"+kind,Vector2(650,12))
 		var preview=preload("res://scripts/garage/model_preview.gd").new();preview.kind=kind;preview.position=Vector2(46,275);preview.size=Vector2(204,170);card.add_child(preview)
 		UiKit.label(card,("" if known or owned else "🔒 ")+v.name,Vector2(14,16),Vector2(182,35),23)
-		UiKit.label(card,"База %d · мир %d" % [v.base,v.world],Vector2(14,54),Vector2(268,24),13,UiKit.MUTED)
+		UiKit.label(card,"%d ◈" % v.price,Vector2(14,54),Vector2(268,24),13,UiKit.MUTED)
 		if known or owned:
 			var stats=GarageCatalog.stats(kind)
 			var base=Balance.CONFIG.enemy(kind)
 			UiKit.stat_bars(card,Vector2(14,92),266,[["Броня",stats.hp,base.health*1.15],["Урон",stats.damage,(base.damage+Game.meta_damage()*(.25 if kind=="buggy" else 1.0))*1.15],["Темп",1/stats.interval,1/base.fire_interval*1.1," /с"]],29)
 		else:UiKit.label(card,"🔒 Найди чертёж в вылазке",Vector2(14,106),Vector2(266,60),16,UiKit.MUTED)
-		var caption="Выбрано" if Game.garage.selected==kind else "Выбрать" if owned else "🔒 Чертёж" if not known else "🔒 Сначала "+GarageCatalog.VEHICLES[v.previous].name if v.previous!="" and v.previous not in Game.garage.owned else "🔒 База %d" % v.base if Game.progression.level<v.base else "Купить · %d ◈" % v.price
+		var caption="Выбрано" if Game.garage.selected==kind else "Выбрать" if owned else "🔒 Чертёж" if not known else "🔒 Сначала "+GarageCatalog.VEHICLES[v.previous].name if v.previous!="" and v.previous not in Game.garage.owned else "Купить · %d ◈" % v.price
 		var purchase=UiKit.button(card,caption,Vector2(14,193),Vector2(266,42),func():
 			if owned:Game.garage.choose(kind)
 			else:Game.garage.buy(kind)
@@ -39,6 +39,6 @@ func refresh():
 			var branch=branches[j];var info=GarageCatalog.BRANCHES[branch];var unlocked=kind+"_"+branch in Game.garage.unlocks;var n=Game.garage.level(kind,branch);var y=65+j*130
 			if unlocked:preload("res://scripts/ui/build_catalog.gd").item_dot(card,"garage",kind+"_"+branch,Vector2(658,y))
 			UiKit.label(card,("" if unlocked else "🔒 ")+info.name+(" · %d/%d" % [n,Game.garage.cap(kind)] if unlocked else ""),Vector2(340,y),Vector2(320,24),14)
-			var buy=UiKit.button(card,"🔒 Чертёж" if not unlocked else "🔒 Купи транспорт" if not owned else "🔒 Уровень базы" if n>=Game.garage.cap(kind) and n<5 else "Максимум" if n>=5 else "+%d%% · %d ◈" % [roundi(info.step*100),Game.garage.cost(kind,branch)],Vector2(340,y+38),Vector2(320,42),func():Game.garage.upgrade(kind,branch);changed.emit();refresh())
+			var buy=UiKit.button(card,"🔒 Чертёж" if not unlocked else "🔒 Купи транспорт" if not owned else "Максимум" if n>=Game.garage.cap(kind) else "+%d%% · %d ◈" % [roundi(info.step*100),Game.garage.cost(kind,branch)],Vector2(340,y+38),Vector2(320,42),func():Game.garage.upgrade(kind,branch);changed.emit();refresh())
 			buy.add_theme_font_size_override("font_size",13);var style=buy.get_theme_stylebox("normal").duplicate();style.content_margin_top=3;style.content_margin_bottom=3;buy.add_theme_stylebox_override("normal",style)
 			buy.disabled=not unlocked or not owned or n>=Game.garage.cap(kind) or Game.credits<Game.garage.cost(kind,branch);UiKit.muted_locked_button(buy)

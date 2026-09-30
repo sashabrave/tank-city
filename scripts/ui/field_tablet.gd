@@ -49,6 +49,7 @@ func _ready():
 	page_scrolls=saved.get("scrolls",{}).duplicate(true)
 	if tab=="":tab=saved.get("manage_tab" if manage else "tab","quests" if manage else "inventory")
 	if tab=="base" and not manage:tab="inventory"
+	if manage and tab not in ["quests","base","notifications","guide","tech"]:tab="quests"
 	memory_ready=true
 	Texts.changed.connect(func():refresh.call_deferred())
 	if is_instance_valid(Game.music_controller):
@@ -73,7 +74,8 @@ func refresh():
 	if tab in ["active","tracked","completed","orders"]:
 		quest_filter={"completed":"completed","orders":"operations"}.get(tab,"all");tab="quests"
 	var tabs=[["inventory","Снаряжение"],["fighter","Боец"],["quests","Задачи · %d" % p.quests("available" if manage else "active").size()],["notifications","Лента · %d" % Game.notifications.unread()],["music","Радио"],["settings","Настройки"],["guide","Энциклопедия"],["about","Об игре"],["tech","Тех. информация"]]
-	if manage:tabs.insert(0,["base","Развитие базы"])
+	# Command centre: quests first, then a compact summary; loadout, radio and settings stay in the field tablet.
+	if manage:tabs=[tabs[2],["base","Сводка"],tabs[3],["guide","Энциклопедия"],["tech","Тех. информация"]]
 	for i in range(tabs.size()):
 		var key=tabs[i][0]
 		var b=sidebar_button(tabs[i][1],key,80+i*(44 if manage or can_quit() else 48),40,func():tab=key;mark_section(key);refresh())

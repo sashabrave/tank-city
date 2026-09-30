@@ -326,7 +326,7 @@ func bonus_power(id: String) -> float:return 1.0+bonus_level(id)*.1
 func upgrade_bonus(id: String) -> bool:
 	if "bonuses" not in built_workshops:return false
 	var price=bonus_cost(id)
-	if id not in bonus_unlocks or bonus_level(id)>=mini(3,progression.level) or credits<price:return false
+	if id not in bonus_unlocks or bonus_level(id)>=Balance.CONFIG.economy.bonus_level_cap or credits<price:return false
 	credits-=price;bonus_levels[id]=bonus_level(id)+1;save_progress();return true
 func recipe_catalog(category: String) -> Dictionary:
 	return GarageCatalog.recipes() if category=="garage" else HQCatalog.DATA if category=="hq" else AbilityCatalog.DATA if category=="ability" else LOOT.WEAPONS if category=="weapon" else LOOT.BONUSES if category=="bonus" else RESEARCH
@@ -500,18 +500,19 @@ func set_all_recipes(unlocked:bool):
 func health_upgrade_bonus()->int:return health_level*2
 
 func cost(branch:String)->int:return ceili(raw_cost(branch)*1.2)
-func upgrade_cap(branch:String)->int:return 2147483647 if branch in ["health","damage","mobility","pressure"] else mini(3,progression.level) if branch=="supplies" else progression.cap()
+## Permanent upgrades are limited by price and fixed caps from economy.tres; there is no base level gate.
+func upgrade_cap(branch:String)->int:return 2147483647 if branch in ["health","damage","mobility","pressure"] else Balance.CONFIG.economy.supplies_cap if branch=="supplies" else Balance.CONFIG.economy.branch_cap
 func bonus_cost(id:String)->int:return ceili((80+60*bonus_level(id))*1.2)
 func death_loss_fraction()->float:return maxf(.2,.5-progression.insurance*.05)
 func insurance_cost()->int:return roundi(180*pow(1.5,progression.insurance))
 func buy_insurance()->bool:
-	if progression.insurance>=mini(6,progression.level*2) or credits<insurance_cost():return false
+	if progression.insurance>=Balance.CONFIG.economy.insurance_cap or credits<insurance_cost():return false
 	credits-=insurance_cost();progression.insurance+=1;save_progress();return true
 func weapon_level(id:String)->int:return int(progression.weapon_levels.get(id,0))
 func weapon_factor(id:String)->float:return 1.0+weapon_level(id)*.015
 func weapon_upgrade_cost(id:String)->int:return roundi(350*pow(1.65,weapon_level(id)))
 func upgrade_weapon(id:String)->bool:
-	if "weapons" not in built_workshops or id not in weapon_unlocks or weapon_level(id)>=mini(10,progression.level) or credits<weapon_upgrade_cost(id):return false
+	if "weapons" not in built_workshops or id not in weapon_unlocks or weapon_level(id)>=Balance.CONFIG.economy.weapon_level_cap or credits<weapon_upgrade_cost(id):return false
 	credits-=weapon_upgrade_cost(id);progression.weapon_levels[id]=weapon_level(id)+1;save_progress();return true
 
 const CLASS_SECOND={"recruit":"comrade","gunner":"gas","driver":"ally_drone","marksman":"grenade","engineer":"field_repair","heavy":"shield"}
@@ -528,7 +529,7 @@ func buy_class_slot(id:String)->bool:
 func ability_required_level(id:String)->int:return mini(3,TIERS.tier(id)+1)
 func ability_available(id:String)->bool:
 	if id in CLASS_SKILLS.values() or id in CLASS_SECOND.values():return id in class_loadout() and selected_class in class_unlocks
-	return id in ability_unlocks and progression.level>=ability_required_level(id)
+	return id in ability_unlocks
 
 func hq_loadout()->Array:return ([hq_active] if hq_active!="" else [])+hq_modules
 func normalize_hq():
