@@ -14,7 +14,8 @@ func run():
 	var original=route.player_marker.position
 	route.travel_to_room(route.available,route.reachable[0])
 	await get_tree().create_timer(1).timeout
-	assert(is_instance_valid(route.modal));route.cancel_entry()
+	# Arriving shows the compact node card (not a modal); E / the card button would enter.
+	assert(is_instance_valid(route.node_card) and not is_instance_valid(route.modal));route.cancel_entry()
 	await get_tree().create_timer(.7).timeout
 	assert(route.player_marker.position.is_equal_approx(original));assert(not route.travelling)
 	print("ROUTE V8 PASS: footprints, elite badges, briefing and return")

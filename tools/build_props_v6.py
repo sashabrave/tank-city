@@ -328,24 +328,36 @@ def printer():
 
 
 def command_center():
+    """Main hub screen: a tall portrait monolith. The screen is its own node (CommandScreen) with
+    0..1 UVs; hub.gd drives it with shaders/world/command_screen.gdshader (idle pages / turquoise alert)."""
     scene, k, soft = fresh(); k.add_special("metal", metal_mat(k))
-    k.rbox("deck", (0, 0, .08), (2.6, 2.2, .16), "concrete_dark", bevel=.03)
-    k.rbox("console", (0, .3, .45), (1.6, .5, .5), "hull", bevel=.04)
-    k.rbox("console_top", (0, .42, .72), (1.64, .4, .05), "desk", bevel=.01, rot=RX(12))
-    for i in range(8): k.rbox("key", (-.6 + i * .17, .5, .76), (.12, .08, .015), "gun_light" if i % 3 else "screen_amber", bevel=.004, rot=RX(12))
-    k.rbox("wall", (0, -.2, 1.1), (1.9, .12, 1.3), "hull_dark", bevel=.03)
-    monitor(k, (0, -.12, 1.25), 1.0, .6, cell="screen", tilt=0)
-    for s in (-1, 1): monitor(k, (s * .72, -.12, 1.2), .34, .4, cell="screen_amber" if s > 0 else "screen", tilt=0)
-    k.cylinder("mast", (.95, -.8, .16), (.95, -.8, 2.4), .035, "metal", sides=6, face_cell=GUN)
-    soft.ellipsoid("dish", (.95, -.62, 2.0), (.28, .08, .28), "hull_light", seg=10, rings=4)
-    k.cylinder("dish_feed", (.95, -.62, 2.0), (.95, -.4, 2.0), .015, "metal", sides=4, face_cell=STEEL)
-    k.ellipsoid("mast_lamp", (.95, -.8, 2.44), (.03, .03, .03), "glow_red", seg=6, rings=3)
-    for i in range(6):
-        soft.ellipsoid("sandbag", (-1.1 + (i % 3) * .26, -.9, .24 + (i // 3) * .12), (.13, .08, .06), "canvas", seg=6, rings=3)
-    k.rbox("crate", (-1.0, .75, .32), (.34, .34, .32), "hull", bevel=.03)
-    k.rbox("crate2", (-.7, .82, .26), (.22, .22, .2), "furniture", bevel=.02)
-    for s in (-1, 1): k.rbox("rail", (s * 1.25, 0, .45), (.04, 1.9, .04), "hazard", bevel=.008)
-    export(scene, [k, soft], "command_center", ENV)
+    k.rbox("plinth", (0, 0, .07), (1.5, .8, .14), "concrete_dark", bevel=.03)
+    k.rbox("frame", (0, -.05, 1.3), (1.3, .26, 2.3), "hull_dark", bevel=.05)
+    k.rbox("bezel_top", (0, .09, 2.38), (1.24, .04, .1), "gun", bevel=.01)
+    for s_ in (-1, 1):
+        k.rbox("side_rib", (s_ * .66, .03, 1.3), (.06, .2, 2.2), "metal", bevel=.01, face_cell=STEEL)
+        k.rbox("side_lamp", (s_ * .69, .08, 2.1), (.03, .05, .2), "screen", bevel=.006)
+    k.rbox("console", (0, .38, .42), (1.0, .34, .12), "hull", bevel=.03)
+    k.rbox("console_top", (0, .42, .5), (1.02, .3, .04), "desk", bevel=.01, rot=RX(10))
+    for i in range(6): k.rbox("key", (-.38 + i * .15, .46, .525), (.1, .07, .014), "gun_light" if i % 2 else "screen_amber", bevel=.003, rot=RX(10))
+    for s_ in (-1, 1): k.rbox("console_leg", (s_ * .4, .38, .2), (.08, .2, .36), "hull_dark", bevel=.01)
+    k.cylinder("mast", (.5, -.15, 2.45), (.5, -.15, 3.1), .025, "metal", sides=6, face_cell=GUN)
+    k.ellipsoid("mast_lamp", (.5, -.15, 3.13), (.03, .03, .03), "glow_red", seg=6, rings=3)
+    soft.ellipsoid("dish", (-.35, -.12, 2.62), (.2, .06, .2), "hull_light", seg=10, rings=4)
+    for i in range(4):
+        soft.ellipsoid("sandbag", (-.55 + i * .3, -.32, .22), (.15, .09, .07), "canvas", seg=6, rings=3)
+    export(scene, [k, soft], "command_center", None, flip=True)
+    # Screen quad with its own UVs (front face, flipped like the rest).
+    me = bpy.data.meshes.new("CommandScreen")
+    w, h, y, z0 = 1.08, 2.0, .082, .32
+    me.from_pydata([(-w / 2, y, z0), (w / 2, y, z0), (w / 2, y, z0 + h), (-w / 2, y, z0 + h)], [], [(0, 1, 2, 3)])
+    uv = me.uv_layers.new(name="UVMap").data
+    for li, c in enumerate(((0, 0), (1, 0), (1, 1), (0, 1))): uv[li].uv = c
+    me.transform(Matrix.Rotation(math.pi, 4, 'Z'))
+    me.materials.append(k.material("V6_command_screen", "0b1210", .4))
+    ob = bpy.data.objects.new("CommandScreen", me); bpy.context.scene.collection.objects.link(ob)
+    bpy.ops.object.select_all(action='SELECT')
+    bpy.ops.export_scene.gltf(filepath=os.path.join(ENV, "command_center.glb"), use_selection=True, export_yup=True, export_animations=False)
 
 
 def gate():
@@ -403,16 +415,13 @@ def hq_supplies():
 
 
 def recycler():
+    """Small abstract bin: tapered body, lid with a slot, one recycle band."""
     scene, k, soft = fresh(); k.add_special("metal", metal_mat(k))
-    k.rbox("pad", (0, 0, .02), (1.1, 1.1, .04), "hazard", bevel=.006)
-    k.rbox("pad_inner", (0, 0, .03), (.95, .95, .03), "concrete_dark", bevel=.006)
-    k.rbox("bin", (0, 0, .36), (.66, .66, .6), "hull", bevel=.04)
-    k.rbox("rim", (0, 0, .68), (.76, .76, .08), "hull_light", bevel=.02)
-    k.rbox("mouth", (0, 0, .72), (.44, .16, .02), "gun", bevel=.004)
-    for i in range(3):
-        a = D(i * 120)
-        k.rbox("arrow", (math.cos(a) * .09, .335, .38 + math.sin(a) * .09), (.08, .008, .025), "screen", bevel=.002,
-               rot=Matrix.Rotation(-a + D(90), 3, 'Y'))
+    k.cylinder("body", (0, 0, 0), (0, 0, .5), .24, "hull", sides=8, radius_b=.27)
+    k.cylinder("lid", (0, 0, .5), (0, 0, .56), .29, "hull_light", sides=8)
+    k.rbox("slot", (0, 0, .565), (.24, .06, .01), "gun", bevel=.003)
+    k.band("stripe", Vector((0, 0, .3)), .262, .07, "screen", sides=8)
+    k.cylinder("foot", (0, 0, 0), (0, 0, .03), .3, "hazard", sides=8)
     export(scene, [k, soft], "recycler", ENV)
 
 

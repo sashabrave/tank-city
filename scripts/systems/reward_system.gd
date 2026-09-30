@@ -129,7 +129,7 @@ func drop_recipe(cell: Vector2i,_recipe: Dictionary):
 	column.top_radius=.26;column.bottom_radius=.3;column.height=2.6;column.radial_segments=12;column.rings=1;column.cap_top=false;column.cap_bottom=false
 	beam.mesh=column;beam.position.y=1.3;beam.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF;node.add_child(beam)
 	var beam_mat=ShaderMaterial.new();beam_mat.shader=preload("res://shaders/fx/loot_beam.gdshader");beam_mat.set_shader_parameter("tint",tint)
-	beam_mat.set_shader_parameter("strength",[.35,.45,.55,.65][tier]);beam.material_override=beam_mat
+	beam_mat.set_shader_parameter("strength",[.6,.75,.9,1.0][tier]);beam.material_override=beam_mat
 	Visuals.label3d(node,"Сундук "+EncounterRules.STARS[2 if arena.room.boss_room else arena.room.difficulty]+" · E",Vector3(0,1.4,0),Color("fff0ac"),40)
 	preload("res://scripts/interaction_prompt.gd").attach(node,arena,"Сундук",Vector3.ZERO,1.65)
 	arena.room.pickups.append({"kind":"recipe_draft","elite":elite,"final":arena.room.boss_room,"offers":[],"node":node,"visual":visual})

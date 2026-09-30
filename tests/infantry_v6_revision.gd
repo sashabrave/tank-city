@@ -40,8 +40,12 @@ func run():
 	# Support hand lands on the rifle's fore grip.
 	var hand=m.skeleton.global_transform*m.skeleton.get_bone_global_pose(m.skeleton.find_bone("hand.L")).origin
 	var grip_gap=hand.distance_to(m.support_grip.global_position);assert(grip_gap<.03,str(grip_gap))
-	models[2].kick();assert(models[2].player.current_animation=="hero_fire")
-	models[1].kick();assert(models[1].player.current_animation=="hero_walk")  # no fire clip while running
+	# Firing shoulders the weapon as a layer over the clip (running legs keep running).
+	models[2].kick();models[1].kick();assert(models[2].aim_timer>0 and models[1].player.current_animation=="hero_walk")
+	await get_tree().create_timer(.25).timeout
+	assert(models[2].aim_blend>.9 and models[1].aim_blend>.9)
+	var forward=-models[2].global_basis.z;var barrel=(models[2].muzzle.global_position-models[2].weapon_socket.global_position).normalized()
+	assert(forward.dot(barrel)>.9,str(forward.dot(barrel)))
 	models[3].play_death()
 	await get_tree().create_timer(.1).timeout;await shot("lineup-a")
 	await get_tree().create_timer(.9).timeout

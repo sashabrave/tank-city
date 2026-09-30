@@ -50,6 +50,17 @@ var intro_tween:Tween
 var fork_positions={}
 var service_choices:Array=[]
 var selection_index=0
+## Driving: the player steers the HQ car; it stays on the roads that lead to this stage's choices.
+const ROAD_HALF=.62
+const CARD_RADIUS=2.5    # the node card shows up
+const ENTER_RADIUS=3.1   # E works a little before the card, so it can be pressed early
+const DRIVE_SPEED=6.5
+var road_paths:Array=[]
+var open_roads:Array=[]
+var drive_velocity=Vector3.ZERO
+var follow_camera=true
+var node_card:Control
+var card_key=""
 var selection_ring:Node3D
 func stage_z(stage:int)->float:
 	var camps=Campaign.SERVICES.filter(func(i):return i<=stage).size()
@@ -61,11 +72,26 @@ func path_line(a:Vector3,b:Vector3):
 	if path_keys.has(key):return
 	path_keys[key]=true
 	var road=Node3D.new();road.name="RouteRoad";add_child(road)
-	road.position=(a+b)*.5;road.rotation.y=atan2(b.x-a.x,b.z-a.z)
-	var length=a.distance_to(b)
-	Visuals.box(road,Vector3(0,-.42,0),Vector3(1.28,.035,length),Color("827c69"))
-	Visuals.box(road,Vector3(0,-.395,0),Vector3(1.05,.025,length),Color("626655"))
-	for side in [-1,1]:Visuals.box(road,Vector3(side*.32,-.375,0),Vector3(.12,.014,length),Color("4c5247"))
+	# Smooth S-curve: the road leaves and enters each node along the map axis.
+	var bend=(b.z-a.z)*.5;var points=[]
+	for i in range(21):
+		var t=i/20.0;var u=1.0-t
+		points.append(a*u*u*u+(a+Vector3(0,0,bend))*3*u*u*t+(b-Vector3(0,0,bend))*3*u*t*t+b*t*t*t)
+	road.add_child(ribbon(points,2.05,-.43,Color("8f8a74")))
+	road.add_child(ribbon(points,1.45,-.41,Color("6b6e5c")))
+	road_paths.append({"a":a,"b":b,"points":points,"node":road})
+func ribbon(points:Array,width:float,height:float,color:Color)->MeshInstance3D:
+	var surface=SurfaceTool.new();surface.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var left=[];var right=[]
+	for i in range(points.size()):
+		var tangent=(points[mini(i+1,points.size()-1)]-points[maxi(i-1,0)]).normalized()
+		var side=Vector3(-tangent.z,0,tangent.x)*width*.5
+		left.append(points[i]+side+Vector3.UP*height);right.append(points[i]-side+Vector3.UP*height)
+	for i in range(points.size()-1):
+		for p in [left[i],right[i],right[i+1],left[i],right[i+1],left[i+1]]:surface.set_normal(Vector3.UP);surface.add_vertex(p)
+	var mesh=MeshInstance3D.new();mesh.mesh=surface.commit();mesh.material_override=Visuals.material(color)
+	mesh.material_override.cull_mode=BaseMaterial3D.CULL_DISABLED;mesh.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	return mesh
 
 func selection_point()->Vector3:
 	return fork_positions[service_choices[selection_index%service_choices.size()]] if needs_service else previews[reachable[selection_index%reachable.size()]].position
@@ -110,7 +136,7 @@ func _ready():
 			if branch=="headquarters":MINI.headquarters(node)
 			elif branch=="vehicle":MINI.service(node,true,Color("839c9f").darkened(.28 if skipped else 0.0))
 			elif info.type in RoutePlan.CHALLENGES:MINI.challenge(node,info.type,color)
-			else:MINI.battle(node,posmod(wave_seed+stage+info.lane,4),color,visited)
+			else:MINI.battle(node,posmod(wave_seed+stage+info.lane,4),color,visited,info.difficulty)
 			var caption={"vehicle":"Техника","headquarters":"Штаб"}.get(branch,ChallengeRooms.TITLES.get(info.type,"%02d" % (stage+1)))
 			Visuals.label3d(node,"✓ "+caption if visited else caption,Vector3(0,.35,3.65),Color("f3eee0"),30).pixel_size=.025
 			if not visited and not skipped and branch=="":
@@ -143,6 +169,7 @@ func _ready():
 	MINI.start(start_pad);Visuals.label3d(start_pad,"Старт",Vector3(0,.35,3.65),Color("f3eee0"),30).pixel_size=.025
 	selection_ring=Node3D.new();add_child(selection_ring);selection_ring.scale=Vector3.ONE*MINI_SCALE;MINI.border(selection_ring,Color("ffb52c"),needs_service)
 	scroll=maxf(0,-stage_z(available)-7);move_camera();update_selection()
+	setup_driving()
 	intro_tween=create_tween();camera.size=31;intro_tween.tween_property(camera,"size",28.0,.65).set_trans(Tween.TRANS_SINE)
 	if available==0:
 		travelling=true
@@ -158,24 +185,17 @@ func current_point()->Vector3:
 func build_ui():
 	var canvas=CanvasLayer.new();add_child(canvas);root=Control.new();canvas.add_child(root)
 	root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);root.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	var heading_plate=UiKit.panel(root,Vector2(25,20),Vector2(475,120),Color("242d27ed"));heading_plate.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	var legend_plate=UiKit.panel(root,Vector2(25,238),Vector2(360,115),Color("242d27ed"));legend_plate.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	UiKit.label(root,"Бесконечный / сектор %d" % (Campaign.cycle+1) if Campaign.endless else "Мир %d / %s" % [Campaign.world,Campaign.WORLDS[Campaign.world].name],Vector2(35,25),Vector2(670,65),29)
-	UiKit.label(root,"WASD — выбор · E — перейти",Vector2(35,95),Vector2(580,40),18)
-	UiKit.button(root,"Вернуться в хаб",Vector2(35,155),Vector2(260,58),func():hub_requested.emit())
-	UiKit.label(root,"Без ★ — простая\n★ Средняя · частые чертежи\n★★ Сложная · редкие чертежи",Vector2(35,245),Vector2(540,110),19,UiKit.MUTED)
-	UiKit.button(root,"Рюкзак / статы [Esc]",Vector2(35,365),Vector2(320,52),show_pause)
-	UiKit.button(root,"К текущему пути",Vector2(35,430),Vector2(260,48),update_selection)
-	UiKit.button(root,"unlock-dev",Vector2(35,490),Vector2(140,32),func():Game.progression.cleared_worlds=[1,2,3];Game.save_progress()).add_theme_font_size_override("font_size",13)
+	# One quiet plate: world, a one-line legend and the controls. Two small buttons top right.
 	var size=get_viewport().get_visible_rect().size
-	if needs_service:
-		UiKit.label(root,"Сначала выбери передышку",Vector2(size.x/2-250,size.y-155),Vector2(500,40),25)
-		for i in range(service_choices.size()):
-			var branch=service_choices[i]
-			UiKit.button(root,{"vehicle":"Техника","ability":"Способность","headquarters":"Штаб","merchant":"Торговец"}[branch],Vector2(size.x/2-330+i*350,size.y-100),Vector2(310,65),func():choose_service(branch),i==0)
-	else:
-		var hint_plate=UiKit.panel(root,Vector2(size.x-535,size.y-93),Vector2(515,58),Color("242d27ed"));hint_plate.mouse_filter=Control.MOUSE_FILTER_IGNORE
-		UiKit.label(root,"WASD — выбор поля боя · E — войти",Vector2(size.x-520,size.y-90),Vector2(500,55),22)
+	var plate=UiKit.panel(root,Vector2(20,18),Vector2(560,96),Color("242d27d8"));plate.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	UiKit.label(plate,"Бесконечный · сектор %d" % (Campaign.cycle+1) if Campaign.endless else "Мир %d · %s" % [Campaign.world,Campaign.WORLDS[Campaign.world].name],Vector2(16,8),Vector2(530,36),24)
+	var hint="Сначала заедь на передышку" if needs_service else "★ средняя · ★★ сложная · редкие чертежи"
+	UiKit.label(plate,hint,Vector2(16,44),Vector2(530,22),15,UiKit.MUTED)
+	UiKit.label(plate,"WASD — ехать · E — войти · колесо, перетаскивание — обзор",Vector2(16,66),Vector2(530,22),15,UiKit.MUTED)
+	UiKit.button(root,"В хаб",Vector2(size.x-300,18),Vector2(130,44),func():hub_requested.emit()).add_theme_font_size_override("font_size",16)
+	UiKit.button(root,"Рюкзак [Esc]",Vector2(size.x-160,18),Vector2(140,44),show_pause).add_theme_font_size_override("font_size",16)
+	if OS.is_debug_build():
+		UiKit.button(root,"unlock-dev",Vector2(20,size.y-44),Vector2(110,28),func():Game.progression.cleared_worlds=[1,2,3];Game.save_progress()).add_theme_font_size_override("font_size",12)
 func choose_service(branch:String):
 	if travelling or is_instance_valid(modal) or not needs_service or branch not in fork_positions:return
 	pending_service=branch;pending_info={};preview_only=false
@@ -189,7 +209,7 @@ func choose_service(branch:String):
 	tween.tween_property(player_marker,"position",target,.45).set_trans(Tween.TRANS_SINE)
 	tween.tween_method(func(value):scroll=value;move_camera(),scroll,-target.z,.45)
 	tween.tween_property(camera,"size",25.0,.45)
-	tween.chain().tween_callback(func():travelling=false;modal=preload("res://scripts/route_service_dialog.gd").build(self,branch))
+	tween.chain().tween_callback(func():travelling=false)
 func confirm_service():
 	if travelling or not needs_service or pending_service not in fork_positions:return
 	var branch=pending_service;travelling=true;close_dialog();service_requested.emit(branch,available)
@@ -226,7 +246,7 @@ func travel_to_room(index:int,node_id:String=""):
 	travel_tween.tween_property(camera,"size",24.0,.85)
 	travel_tween.chain().tween_callback(func():
 		if hero.has_method("equip_weapon"):hero.preview_moving=false
-		travelling=false;modal=node_dialog(pending_info,confirm_entry))
+		travelling=false)
 ## Battle nodes show the wave preview; service nodes show the service description.
 func node_dialog(info:Dictionary,confirm:Callable)->Control:
 	var branch=RoutePlan.node_branch(info)
@@ -300,31 +320,134 @@ func _unhandled_input(event):
 		get_viewport().set_input_as_handled();return
 	if is_instance_valid(modal):return
 	if event.is_pressed() and not event.is_echo():
-		var step=0
-		if event.is_action("east") or event.is_action("south"):step=1
-		if event.is_action("west") or event.is_action("north"):step=-1
-		if step!=0:
-			selection_index=clampi(selection_index+step,0,(service_choices.size() if needs_service else reachable.size())-1);update_selection();get_viewport().set_input_as_handled();return
 		if event.is_action("interact"):
 			get_viewport().set_input_as_handled()
-			if needs_service:choose_service(service_choices[selection_index%service_choices.size()])
-			else:travel_to_room(available,reachable[selection_index%reachable.size()])
+			var target=nearest_target(ENTER_RADIUS)
+			if not target.is_empty():enter_target(target)
 			return
 	if event is InputEventMouseButton:
 		if event.button_index==MOUSE_BUTTON_LEFT:
 			dragging=event.pressed
 			if event.pressed:drag_distance=0
 			elif drag_distance<8:tap_at(event.position)
-		if event.pressed and event.button_index==MOUSE_BUTTON_WHEEL_UP:scroll+=2;move_camera()
-		if event.pressed and event.button_index==MOUSE_BUTTON_WHEEL_DOWN:scroll-=2;move_camera()
+		if event.pressed and event.button_index==MOUSE_BUTTON_WHEEL_UP:scroll+=1.6;follow_camera=false;move_camera()
+		if event.pressed and event.button_index==MOUSE_BUTTON_WHEEL_DOWN:scroll-=1.6;follow_camera=false;move_camera()
 	if event is InputEventMouseMotion and dragging:
-		drag_distance+=event.relative.length();scroll+=event.relative.y*.04;move_camera()
+		drag_distance+=event.relative.length();scroll+=event.relative.y*.04;follow_camera=false;move_camera()
 	if event is InputEventScreenTouch:
 		if event.pressed:drag_distance=0
 		elif drag_distance<8:tap_at(event.position)
 	if event is InputEventScreenDrag:
-		drag_distance+=event.relative.length();scroll+=event.relative.y*.04;move_camera()
+		drag_distance+=event.relative.length();scroll+=event.relative.y*.04;follow_camera=false;move_camera()
 
-func _process(_delta):
+func _process(delta):
 	if is_instance_valid(foreground_hangar) and is_instance_valid(camera):
 		foreground_hangar.follow_camera(scroll,camera.size)
+	drive(delta)
+
+# ---------------------------------------------------------------- driving
+func anchor_point()->Vector3:
+	var p=current_point();return Vector3(p.x,0,p.z)
+func open_ends()->Array:
+	var ends=[]
+	if needs_service:
+		for branch in fork_positions:ends.append(fork_positions[branch])
+	else:
+		for id in reachable:ends.append(previews[id].position)
+	return ends
+func setup_driving():
+	selection_ring.hide()
+	var start=anchor_point();var ends=open_ends()
+	var starts=[start] if available>0 else [START_POINT]
+	var flat=func(v:Vector3):return Vector3(v.x,0,v.z)
+	var is_end=func(v:Vector3):return ends.any(func(p):return flat.call(v).distance_to(flat.call(p))<.2)
+	for road in road_paths:
+		if not starts.any(func(p):return flat.call(road.a).distance_to(p)<.2):continue
+		if is_end.call(road.b):open_roads.append(road);continue
+		# Two-leg route through a rest camp: open both legs if the camp continues to a choice.
+		var onward=road_paths.filter(func(next):return flat.call(next.a).distance_to(flat.call(road.b))<.2 and is_end.call(next.b))
+		if onward.is_empty():barrier(road)
+		else:
+			open_roads.append(road)
+			for next in onward:
+				if next not in open_roads:open_roads.append(next)
+	# Also close every other road touching the open area: other routes into our choices and the
+	# roads leading on from them (the car is held to open roads anyway; this shows it).
+	for road in road_paths:
+		if road in open_roads:continue
+		if is_end.call(road.b):barrier(road,true)
+		elif is_end.call(road.a):barrier(road)
+	# The start apron joins the first roads.
+	if available==0:open_roads.append({"points":[START_POINT+Vector3(0,0,4.7),START_POINT]})
+func barrier(road:Dictionary,at_end:=false):
+	# Closed branch: a short line of minimal czech hedgehogs across the road (near its start, or its end).
+	var points:Array=road.points
+	var i=points.size()-6 if at_end else 4
+	i=clampi(i,0,points.size()-2)
+	var at:Vector3=points[i];var next:Vector3=points[i+1]
+	var along=(next-at).normalized();var side=Vector3(-along.z,0,along.x)
+	var line=Node3D.new();line.name="RoadBlock";add_child(line)
+	for k in range(-1,2):
+		var hog=Node3D.new();line.add_child(hog);hog.position=at+side*k*.55+Vector3(0,-.4,0);hog.rotation.y=k*.6
+		for axis in [Vector3(1,1,0),Vector3(-1,1,0),Vector3(0,1,1)]:
+			var beam=Visuals.box(hog,Vector3(0,.22,0),Vector3(.07,.62,.07),Color("4f5443"))
+			beam.basis=Basis(Vector3.UP.cross(axis.normalized()).normalized() if Vector3.UP.cross(axis.normalized()).length()>.01 else Vector3.RIGHT,Vector3.UP.angle_to(axis.normalized()))
+		Visuals.box(hog,Vector3(0,.02,0),Vector3(.5,.03,.08),Color("e0692a"))
+func road_clamp(p:Vector3)->Vector3:
+	var best=p;var best_d=INF
+	for road in open_roads:
+		var pts:Array=road.points
+		for i in range(pts.size()-1):
+			var a=Vector3(pts[i].x,0,pts[i].z);var b=Vector3(pts[i+1].x,0,pts[i+1].z)
+			var ab=b-a;var t=clampf((p-a).dot(ab)/maxf(ab.length_squared(),.0001),0,1);var q=a+ab*t
+			var d=p.distance_to(q)
+			if d<best_d:best_d=d;best=q
+	if best_d<=ROAD_HALF:return p
+	return best+(p-best).normalized()*ROAD_HALF if best_d<INF else p
+func drive(delta):
+	if not is_instance_valid(player_marker) or open_roads.is_empty():return
+	if travelling or is_instance_valid(modal) or showing_pause:
+		update_card();return
+	var input=Input.get_vector("west","east","north","south")
+	var wish=Vector3(input.x,0,input.y).rotated(Vector3.UP,deg_to_rad(10))*DRIVE_SPEED
+	drive_velocity=drive_velocity.move_toward(wish,delta*(22.0 if wish.length()>.1 else 16.0))
+	var hero=player_marker.get_node_or_null("CurrentHero")
+	if wish.length()>.1 and get_viewport().gui_get_focus_owner()!=null:get_viewport().gui_release_focus()  # WASD drives, not menus
+	if drive_velocity.length()>.05:
+		var ground=Vector3(player_marker.position.x,0,player_marker.position.z)
+		var next=road_clamp(ground+drive_velocity*delta)
+		player_marker.position=Vector3(next.x,player_marker.position.y,next.z)
+		if hero:hero.rotation.y=PI
+		player_marker.rotation.y=lerp_angle(player_marker.rotation.y,atan2(-drive_velocity.x,-drive_velocity.z),minf(1,delta*9))
+		follow_camera=true
+	if follow_camera and not dragging:
+		scroll=lerpf(scroll,-player_marker.position.z-2.0,minf(1,delta*3));move_camera()
+	update_card()
+func nearest_target(radius:float)->Dictionary:
+	var here=Vector3(player_marker.position.x,0,player_marker.position.z);var best={};var best_d=radius
+	if needs_service:
+		for branch in fork_positions:
+			var d=here.distance_to(Vector3(fork_positions[branch].x,0,fork_positions[branch].z))
+			if d<best_d:best_d=d;best={"branch":branch,"pos":fork_positions[branch]}
+	else:
+		for id in reachable:
+			var d=here.distance_to(Vector3(previews[id].position.x,0,previews[id].position.z))
+			if d<best_d:best_d=d;best={"id":id,"pos":previews[id].position}
+	return best
+func enter_target(target:Dictionary):
+	if travelling or is_instance_valid(modal):return
+	if target.has("branch"):
+		pending_service=target.branch;pending_info={};confirm_service()
+	else:
+		pending_info=previews[target.id].get_meta("info");pending_service="";preview_only=false;confirm_entry()
+func update_card():
+	var target={} if (travelling or is_instance_valid(modal) or showing_pause) else nearest_target(CARD_RADIUS)
+	var key=str(target.get("id",target.get("branch","")))
+	if key==card_key:return
+	card_key=key
+	if is_instance_valid(node_card):node_card.queue_free()
+	node_card=null
+	if target.is_empty():return
+	Game.sound("route_select",Game)
+	var info=previews[target.id].get_meta("info") if target.has("id") else {}
+	node_card=preload("res://scripts/route_node_card.gd").open(self,target.pos,info,target.get("branch",""))
