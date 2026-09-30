@@ -329,7 +329,7 @@ func show_recipe_draft():
 		var card_name=Game.recipe_name(offer) if not special else "+%d сплава" % offer.amount if offer.category=="alloy" else "+%d док." % offer.amount if offer.category=="documents" else "Секретное усиление" if offer.category=="secret" else UpgradeRegistry.get_def(offer.id).title if UpgradeRegistry.has(offer.id) else "Улучшение героя"
 		var detail="Откроется после возврата в хаб"
 		if offer.category=="alloy":detail="Сохрани при возврате в хаб"
-		elif offer.category=="documents":detail="Документы для оболочек и открытий"
+		elif offer.category=="documents":detail="Документы для классов и открытий"
 		elif offer.category=="secret":
 			detail={"weapon":"+75% базового урона: "+LOOT.WEAPONS.get(offer.id,{"name":""}).name,"ability":"+3 уровня силы: "+AbilityCatalog.DATA.get(offer.id,{"name":""}).name,"bonus":"+3 уровня: "+LOOT.BONUSES.get(offer.id,{"name":""}).name,"stat":"+5 HP" if offer.id=="health" else "Напор: +20 % против равных"}[offer.type]
 		elif offer.category=="upgrade":detail=arena.reward.upgrade_preview(offer.id,offer.get("tier",0))

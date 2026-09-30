@@ -92,6 +92,7 @@ func finish_run(won: bool,reason: String):
 	arena.phase="result"
 	if not won:
 		arena.run.lost_run=true
+		if not arena.sandbox:Game.progression.event("deaths")
 		var loss=mini(Game.credits,roundi(arena.run.earned*Game.death_loss_fraction()))
 		arena.run.lost_alloy=loss;Game.credits-=loss;Game.save_progress()
 		var carried=arena.run.pending_recipes.duplicate(true)

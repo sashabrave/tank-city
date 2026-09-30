@@ -9,7 +9,7 @@ static func render(tablet):
 	var stations=[["Казарма",true],["Арсенал","weapons" in Game.built_workshops],["Штаб","headquarters" in Game.built_workshops],["Стоянка","garage" in Game.built_workshops]]
 	var rows=[
 		["base","Станции","  ·  ".join(stations.map(func(s):return ("✓ " if s[1] else "🔒 ")+s[0]))],
-		["fighter","Оболочки","%d / %d" % [Game.class_unlocks.size(),Game.CLASSES.size()]],
+		["fighter","Классы","%d / %d" % [Game.class_unlocks.size(),Game.CLASSES.size()]],
 		["inventory","Оружие","%d / %d" % [Game.weapon_unlocks.size(),Game.LOOT.WEAPONS.size()]],
 		["vehicle","Техника","%d / %d" % [Game.garage.owned.size(),GarageCatalog.VEHICLES.size()]],
 		["blueprint","Бонусы и гаджеты","%d бонусов · %d гаджетов" % [Game.bonus_unlocks.size(),Game.ability_unlocks.size()]],

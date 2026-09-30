@@ -847,9 +847,20 @@ func hub_stand(pos:Vector3)->bool:
 	return true
 
 func show_arrival():
-	if arrival_reason=="":phase="combat";present_unlock();return
+	if arrival_reason=="":phase="combat";present_call();return
 	phase="intro";dpad.enabled=false;fire_pad.enabled=false
 	var dialog=preload("res://scripts/ui/arrival_dialog.gd").new();dialog.reason=arrival_reason;arrival_reason=""
 	root.add_child(dialog)
 	dialog.closed.connect(func():
+		phase="combat";dpad.enabled=true;fire_pad.enabled=true;Game.reset_input();call_deferred("present_call"))
+
+## Tutorial video call from HQ (once per trigger), then pending unlock cards.
+func present_call():
+	if not is_inside_tree() or is_queued_for_deletion():return
+	var VideoCall=preload("res://scripts/ui/video_call.gd")
+	var call=VideoCall.due(self)
+	if call=="" or phase!="combat":present_unlock();return
+	phase="intro";dpad.enabled=false;fire_pad.enabled=false
+	var view=VideoCall.new();view.id=call;root.add_child(view)
+	view.closed.connect(func():
 		phase="combat";dpad.enabled=true;fire_pad.enabled=true;Game.reset_input();call_deferred("present_unlock"))

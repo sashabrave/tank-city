@@ -28,7 +28,9 @@
 					"Один раз за вылазку смертельное попадание оставляет бойцу 1 здоровье и короткую неуязвимость: «На волоске!».",
 					"Если две выдачи подряд прошли без редкой карты, третья точно покажет редкую или лучше.",
 					"Быстрые убийства складываются в серию: над целью золотое «×2», «×3»… С третьего убийства серии выпадает немного сплава сверху.",
-					"В энциклопедии появился «Справочник»: 70 статей о каждой карточке, характеристике, классе, боссе и машине. Он собирается из игровых данных, поэтому цифры всегда актуальны."
+					"В энциклопедии появился «Справочник»: 70 статей о каждой карточке, характеристике, классе, боссе и машине. Он собирается из игровых данных, поэтому цифры всегда актуальны.",
+					"Обучение через видеосвязь: майор Кравец из штаба округа выходит на связь в хабе. Он рассказывает, почему Рубеж — 13 держит один невезучий боец, и объясняет главное в нужный момент: после первой гибели, после постройки стоянки и перед генералом.",
+					"Везде в интерфейсе «оболочка» заменена на «класс»."
 				]
 			},
 			"en": {
@@ -56,7 +58,9 @@
 					"Once per run a lethal hit leaves the soldier at 1 HP with brief invulnerability: \"Close call!\".",
 					"If two card screens in a row had no rare card, the third one is guaranteed to show a rare or better.",
 					"Quick kills chain into a series: a gold ×2, ×3… appears over the target, and from the third kill the series drops a little extra alloy.",
-					"The encyclopedia has a new Reference section: 70 articles on every card, characteristic, class, boss and vehicle. It is built from game data, so the numbers are always current."
+					"The encyclopedia has a new Reference section: 70 articles on every card, characteristic, class, boss and vehicle. It is built from game data, so the numbers are always current.",
+					"Video-call tutorial: Major Kravets from district HQ calls you in the hub. He explains why Line 13 is held by one unlucky soldier and covers the essentials at the right time: after your first death, after the motor pool is built and before the general.",
+					"The interface now says \"class\" everywhere instead of \"shell\"."
 				]
 			}
 		},

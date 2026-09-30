@@ -13,7 +13,7 @@ const STORY=[
 {"id":"general1","text":"Пограничье под контролем","event":"world_clear_1","goal":1,"alloy":160,"docs":2,"xp":130,"hint":"Уничтожь генерала в конце мира 1. Откроется бесконечный режим."},
 {"id":"endless_entry","text":"Удержать рубеж","event":"enter_endless","goal":1,"alloy":90,"docs":0,"xp":70,"hint":"В хабе нажми «В бой» и выбери бесконечный режим."},
 {"id":"endless_cycle2","text":"Второй сектор","event":"endless_cycle","goal":2,"alloy":150,"docs":2,"xp":110,"hint":"В бесконечном режиме пройди семь комнат и начни второй сектор."},
-{"id":"another_class","text":"Новая тактика","event":"boss_classes","goal":2,"alloy":300,"docs":2,"xp":250,"hint":"Выбери другую оболочку в принтере и снова победи генерала мира 1."},
+{"id":"another_class","text":"Новая тактика","event":"boss_classes","goal":2,"alloy":300,"docs":2,"xp":250,"hint":"Выбери другой класс в Казарме и снова победи генерала мира 1."},
 {"id":"endless_cycle5","text":"Несокрушимый рубеж","event":"endless_cycle","goal":5,"alloy":500,"docs":3,"xp":400,"hint":"Дойди до пятого сектора бесконечного режима. Нужна сильная сборка карт."}]
 const INSTITUTE=[
 {"id":"institute_arsenal","text":"Арсенал","event":"build_weapons","goal":1,"alloy":50,"docs":0,"xp":40,"hint":"Донеси чертёж Арсенала и построй его через «Строительство» в хабе."},
@@ -23,11 +23,11 @@ const INSTITUTE=[
 {"id":"hq_equip","text":"Комплект поддержки","event":"equip_hq","goal":1,"alloy":80,"docs":0,"xp":70,"hint":"В Штабе → Технологии выбери модуль или активную технологию."},
 {"id":"hq_support","text":"Связь со штабом","event":"use_hq","goal":3,"alloy":110,"docs":0,"xp":100,"hint":"Используй активный гаджет штаба три раза."},
 {"id":"weapon_tune","text":"Доводка оружия","event":"weapon_level","goal":1,"alloy":100,"docs":0,"xp":100,"hint":"В Арсенале купи первый уровень открытого оружия."},
-{"id":"shell_second","text":"Вторая оболочка","event":"shells","goal":2,"alloy":90,"docs":1,"xp":80,"hint":"Купи в принтере вторую оболочку бойца. Все оболочки доступны в мире 1."},
+{"id":"shell_second","text":"Второй класс","event":"shells","goal":2,"alloy":90,"docs":1,"xp":80,"hint":"Открой второй класс бойца. Все классы доступны в мире 1."},
 {"id":"drone","text":"Воздушный помощник","event":"recipe_ally_drone","goal":1,"alloy":130,"docs":1,"xp":110,"hint":"Найди чертёж дрона-помощника во второй половине пути и доставь в хаб."},
 {"id":"comrade","text":"Совместная операция","event":"upgrade_comrade","goal":1,"alloy":170,"docs":1,"xp":140,"hint":"Возьми товарища и улучши его у инструктора."},
 {"id":"airstrike","text":"Поддержка авиации","event":"recipe_airstrike","goal":1,"alloy":220,"docs":2,"xp":180,"hint":"Чертёж авиаудара выпадает на сложных точках ближе к генералу и с него самого."},
-{"id":"shell_all","text":"Полный арсенал оболочек","event":"shells","goal":6,"alloy":400,"docs":3,"xp":300,"hint":"Собери все шесть оболочек бойца."}]
+{"id":"shell_all","text":"Все классы","event":"shells","goal":6,"alloy":400,"docs":3,"xp":300,"hint":"Открой все классы бойца."}]
 const BRIEFINGS=[
 {"id":"garage_build","text":"Стоянка","event":"build_garage","goal":1,"alloy":70,"docs":0,"xp":65,"requires":"world_depth_1","threshold":2,"hint":"Найди чертёж Стоянки и построй её — в «Строительстве» или в Штабе → Постройки."},
 {"id":"garage_buggy","text":"Личный багги","event":"own_buggy","goal":1,"alloy":100,"docs":0,"xp":90,"requires":"build_garage","threshold":1,"hint":"Добудь чертёж багги и купи машину на стоянке."},
@@ -70,4 +70,4 @@ static func hint(id:String)->String:
 static func counter_name(event:String)->String:
 	if event.begins_with("world_depth"):return "Полей пройдено"
 	if event.begins_with("challenge_"):return "Испытаний пройдено"
-	return {"armor":"Техники уничтожено","infantry":"Пехоты уничтожено","drones":"Дронов уничтожено","waves":"Волн зачищено","kills_buggy":"Убийств на багги","kills_apc":"Убийств на БТР","kills_tank":"Убийств на танке","extracted":"Сплава доставлено","endless_fields":"Полей рубежа","endless_cycle":"Сектор","merchant_buy":"Покупок","tokens":"Жетонов собрано","slot_play":"Игр на автомате","barrel_kills":"Врагов взорвано","behavior_cards":"Карт «Тактика»","card_stack":"Одинаковых карт","shells":"Оболочек","visit_vehicle":"Визитов","visit_headquarters":"Визитов"}.get(event,"Прогресс")
+	return {"armor":"Техники уничтожено","infantry":"Пехоты уничтожено","drones":"Дронов уничтожено","waves":"Волн зачищено","kills_buggy":"Убийств на багги","kills_apc":"Убийств на БТР","kills_tank":"Убийств на танке","extracted":"Сплава доставлено","endless_fields":"Полей рубежа","endless_cycle":"Сектор","merchant_buy":"Покупок","tokens":"Жетонов собрано","slot_play":"Игр на автомате","barrel_kills":"Врагов взорвано","behavior_cards":"Карт «Тактика»","card_stack":"Одинаковых карт","shells":"Классов","visit_vehicle":"Визитов","visit_headquarters":"Визитов"}.get(event,"Прогресс")

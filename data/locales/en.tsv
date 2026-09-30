@@ -418,10 +418,10 @@ Esc — открыть / закрыть планшет (постоянная к�
 Командиры крупнее обычной техники; возможен бой с двумя сразу. В финальном бою четыре генератора защищают командира от урона: сначала уничтожь генераторы по углам.	Commanders are larger than normal vehicles; you may face two at once. In the final battle, four generators protect the commander from damage. Destroy the corner generators first.
 Усиленные враги	Elite enemies
 Повышенный ранг усиливает противника, в том числе его напор. Привычный процент перехвата не гарантирует такой же результат против сильного врага. Сложность встречи отмечается звёздами на маршруте.	Higher ranks strengthen enemies, including their pressure. Your usual interception percentage will not hold against stronger enemies. Route stars indicate encounter difficulty.
-Оболочка и уровень персонажа	Shell and character level
-Общие характеристики: здоровье, сила, скорость и напор. Их уровни суммируются в общий уровень персонажа и действуют для всех классов. Прокачку оболочки можно бесплатно сбросить с возвратом потраченных ресурсов. Уровень базы — отдельная система.	Shared stats are health, strength, speed and pressure. Their levels add up to your character level and affect every class. You can reset shell upgrades for free and recover all resources spent. Base level is a separate system.
+Класс и уровень персонажа	Class and character level
+Общие характеристики: здоровье, сила, скорость и напор. Их уровни суммируются в общий уровень персонажа и действуют для всех классов. Общую прокачку можно бесплатно сбросить с возвратом потраченных ресурсов. Уровень базы — отдельная система.	Shared stats are health, strength, speed and pressure. Their levels add up to your character level and affect every class. You can reset class upgrades for free and recover all resources spent. Base level is a separate system.
 Классы, способности и гаджет	Classes, abilities and gadgets
-Класс задаёт особенности бойца и личные способности. Общая оболочка усиливает все классы. Гаджет выбирается на верстаке; доступные слоты и способности показаны в снаряжении планшета.	Your class defines soldier traits and personal abilities. The shared shell improves every class. Choose a gadget at the workbench; the tablet's equipment screen shows available slots and abilities.
+Класс задаёт особенности бойца и личные способности. Общая прокачка усиливает все классы. Гаджет выбирается на верстаке; доступные слоты и способности показаны в снаряжении планшета.	Your class defines soldier traits and personal abilities. The shared class improves every class. Choose a gadget at the workbench; the tablet's equipment screen shows available slots and abilities.
 Модули поддержки выбираются и улучшаются на верстаке штаба. Активную поддержку вызывай назначенной клавишей, автоматическая срабатывает сама. Доступность зависит от установленного модуля.	Choose and upgrade support modules at the HQ workbench. Trigger active support with its assigned key; automatic support works by itself. Available effects depend on the equipped module.
 Сплав, чертежи и возвращение	Alloy, blueprints and returning
 Сплав подбирается на поле, остатки собираются в конце волны. Найденные чертежи нужно доставить в хаб. Добровольное возвращение сохраняет добычу; смерть отнимает часть. Страховка базы уменьшает потери.	Collect alloy on the battlefield; leftovers are collected at the end of a wave. Deliver recovered blueprints to the hub. Voluntary return preserves loot; death takes a portion. Base insurance reduces losses.
@@ -441,14 +441,14 @@ Esc — открыть / закрыть планшет (постоянная к�
 Гараж и стоянка	Garage and parking
 Гараж отвечает за собственную технику и её развитие. Открывай доступные машины, улучшай их и выбирай транспорт. Стоянка позволяет взаимодействовать с подготовленной машиной перед вылазкой.	The garage manages owned vehicles and their upgrades. Unlock vehicles, improve them and choose your transport. The parking area lets you interact with your prepared vehicle before a run.
 Принтер и классы	Printer and classes
-В принтере улучшаются общие характеристики оболочки и выбираются классы. Общие статы относятся ко всем классам; особенности класса меняют его роль. Уровень персонажа складывается из общих статов, а не из уровня базы.	The printer upgrades shared shell stats and selects classes. Shared stats affect every class; class traits define its role. Character level is the sum of shared stat levels, separate from base level.
+В Казарме улучшаются общие характеристики бойца и выбираются классы. Общие статы относятся ко всем классам; особенности класса меняют его роль. Уровень персонажа складывается из общих статов, а не из уровня базы.	The printer upgrades shared class stats and selects classes. Shared stats affect every class; class traits define its role. Character level is the sum of shared stat levels, separate from base level.
 Основная валюта для покупок и улучшений в хабе. Выпадает за уничтоженных врагов и выдается за задания. Стоимость указана возле действия. Не путай сплав с временными усилениями вылазки.	The main currency for hub purchases and upgrades. Drops from destroyed enemies and is awarded for tasks. Prices appear beside actions. Alloy is separate from temporary run upgrades.
 Документы	Documents
 Отдельный ресурс, показанный рядом со сплавом. Используется, в частности, для открытия новых классов. Перед покупкой смотри значок валюты и цену: сплав и документы не взаимозаменяемы.	A separate resource shown beside alloy. Used to unlock new classes, among other things. Check the currency icon and price before buying: alloy and documents are not interchangeable.
 Чертежи и рюкзак	Blueprints and backpack
 Чертёж открывает соответствующий предмет или улучшение после доставки в хаб. Находки занимают ячейки рюкзака; при заполнении придётся решить, что оставить. Увеличение рюкзака открывает дополнительные места.	Deliver a blueprint to the hub to unlock its item or upgrade. Finds use backpack slots; when full, choose what to keep. Backpack upgrades provide more slots.
 Опыт базы	Base experience
-Опыт и сплав нужны для повышения уровня базы. База открывает новые пределы развития. Это отдельный прогресс: сброс оболочки не равен сбросу базы.	Leveling up the base costs XP and alloy. Base levels unlock higher upgrade limits. This progress is separate: resetting your shell does not reset the base.
+Опыт и сплав нужны для повышения уровня базы. База открывает новые пределы развития. Это отдельный прогресс: сброс прокачки бойца не равен сбросу базы.	Leveling up the base costs XP and alloy. Base levels unlock higher upgrade limits. This progress is separate: resetting your class does not reset the base.
 Как работают карточки	How reward cards work
 При выборе награды применяется одна карточка. Усиления вылазки меняют текущий забег; постоянные покупки в хабе сохраняются между вылазками. Карточка показывает категорию и изменение значения. Усиление конкретного оружия отличается от общего усиления героя.	Choosing a reward applies one card. Run upgrades affect the current run; permanent hub purchases carry over between runs. Cards show the category and value change. A specific weapon upgrade differs from a general soldier upgrade.
 Урон, темп и стабилизатор	Damage, fire rate and stabilizer
@@ -1384,52 +1384,52 @@ WASD — Герой · пробел — огонь · тяни мышью — о
 Принтер бойца	Soldier printer
 Общие улучшения	Shared upgrades
 Способность открыта · Q — использовать	Ability unlocked · Q to use
-Способность открыта для этой оболочки	Ability unlocked for this shell
+Способность открыта для этого класса	Ability unlocked for this class
 Вторая способность открыта · 1 — использовать	Second ability unlocked · 1 to use
-Оболочка надета	Shell equipped
-Улучшена только эта оболочка	Only this shell was upgraded
+Класс выбран	Class equipped
+Улучшен только этот класс	Only this class was upgraded
 Откроется в мире %d	Unlocks in world %d
 Купить и надеть · %d ◈	Buy and equip · %d ◈
 Купить и надеть · %d док.	Buy and equip · %d docs
 Надета · ур. %d / 10	Equipped · lvl. %d / 10
-Оболочка · ур. %d / 10	Shell · lvl. %d / 10
-Особенности оболочки	Shell traits
-Сменить оболочку	Change shell
-← Все оболочки	← All shells
-Способности оболочки	Shell abilities
+Класс · ур. %d / 10	Class · lvl. %d / 10
+Особенности класса	Class traits
+Сменить класс	Change class
+← Все классы	← All classes
+Способности класса	Class abilities
 Первая способность ещё не куплена. Открой её здесь.	Your first ability is not purchased yet. Unlock it here.
-Способности закреплены за этой оболочкой.	These abilities belong to this shell.
-Купи оболочку, чтобы открыть её способности.	Buy this shell to unlock its abilities.
-Развитие этой оболочки	Upgrade this shell
+Способности закреплены за этим классом.	These abilities belong to this class.
+Открой класс, чтобы получить его способности.	Buy this class to unlock its abilities.
+Развитие этого класса	Upgrade this class
 HP и урон +0,2% · скорость +0,1% за уровень	HP and damage +0.2% · speed +0.1% per level
 Максимальный уровень	Maximum level
 Улучшить · %d док.	Upgrade · %d docs
-Вторая способность доступна с уровня оболочки 5	The second ability requires shell level 5
+Вторая способность доступна с уровня класса 5	The second ability requires class level 5
 Скрыть характеристики	Hide stats
 Итоговые характеристики ▾	Resulting stats ▾
-Общие улучшения + оболочка + надетое оружие	Shared upgrades + shell + equipped weapon
+Общие улучшения + класс + надетое оружие	Shared upgrades + class + equipped weapon
 Готова к бою · Q	Ready · Q
 Готова к бою · 1	Ready · 1
 Первая способность · Q	First ability · Q
 Вторая способность · 1	Second ability · 1
-Сначала купи оболочку	Buy this shell first
+Сначала открой класс	Buy this class first
 Купить способность · 30 ◈	Buy ability · 30 ◈
 Не хватает %d ◈	Need %d more ◈
-Уровень оболочки 5 · 2500 ◈	Shell level 5 · 2500 ◈
+Уровень класса 5 · 2500 ◈	Class level 5 · 2500 ◈
 Сначала открой первую способность	Unlock the first ability first
 Купить способность · 2500 ◈	Buy ability · 2500 ◈
-← К надетой оболочке	← Equipped shell
-Выбрать оболочку	Choose a shell
+← К текущему классу	← Equipped class
+Выбрать класс	Choose a class
 У каждой свои особенности, уровень и две способности.	Each has its own traits, level and two abilities.
-Оболочка и способности	Shell and abilities
-Сильнее в любой оболочке	Stronger in every shell
-Эти улучшения действуют всегда, даже после смены оболочки.	These upgrades always apply, even after changing shells.
+Класс и способности	Class and abilities
+Сильнее в любом классе	Stronger in every class
+Эти улучшения действуют всегда, даже после смены класса.	These upgrades always apply, even after changing classes.
 %s · ур. %d	%s · lvl. %d
 Улучшить · %d ◈	Upgrade · %d ◈
-Улучшение действует на все оболочки	Upgrade applies to every shell
+Улучшение действует на все классы	Upgrade applies to every class
 Сбросить · вернуть %d ◈	Reset · refund %d ◈
-Общие улучшения сброшены. Оболочки сохранены.	Shared upgrades reset. Shells retained.
-Оболочка	Shell
+Общие улучшения сброшены. Классы сохранены.	Shared upgrades reset. Classes retained.
+Класс	Class
 Выйти из игры	Quit game
 Выйти из игры?	Quit the game?
 Прогресс сохранится.	Your progress will be saved.
@@ -1481,7 +1481,7 @@ Changelog	Changelog
 Продержись	Hold on
 Засада отбита · забери награду	Ambush repelled · take your reward
 +%d док.	+%d docs
-Документы для оболочек и открытий	Documents for shells and unlocks
+Документы для классов и открытий	Documents for classes and unlocks
 Сундук в центре поля. Откроешь — с двух сторон придёт засада ветеранов. Можно уйти через выход, не открывая.	A chest in the middle of the field. Opening it brings a veteran ambush from both sides. You can leave through the exit without opening it.
 Награда: Сплав и обычные карты	Reward: alloy and common cards
 Награда: Редкие карты или чертёж	Reward: rare cards or a blueprint
@@ -1587,7 +1587,6 @@ F2 — админ	F2 — admin
 Редкость	Rarity
 Карты улучшений	Upgrade cards
 Техника рядом	Vehicle nearby
-Оболочка (возрождение)	Shell (respawn)
 Звёзды	Stars
 Без звёзд	No stars
 Запустить	Start
@@ -1609,19 +1608,18 @@ F2 — админ	F2 — admin
 В хабе нажми «В бой» и выбери бесконечный режим.	In the hub press To battle and choose endless mode.
 Второй сектор	Second sector
 В бесконечном режиме пройди семь комнат и начни второй сектор.	In endless mode clear seven rooms and start the second sector.
-Выбери другую оболочку в принтере и снова победи генерала мира 1.	Pick another shell in the printer and beat the world 1 general again.
 Несокрушимый рубеж	Unbreakable line
 Дойди до пятого сектора бесконечного режима. Нужна сильная сборка карт.	Reach the fifth sector of endless mode. You will need a strong card build.
 Улучши аптечки передышки.	Upgrade the rest stop medkits.
 Донеси чертёж верстака штаба из сундука командира и построй его.	Bring the HQ workbench blueprint from a commander chest and build it.
 Используй активный гаджет штаба три раза.	Use the active HQ gadget three times.
-Вторая оболочка	Second shell
-Купи в принтере вторую оболочку бойца. Все оболочки доступны в мире 1.	Buy a second soldier shell in the printer. All shells are available in world 1.
+Второй класс	Second class
+Открой второй класс бойца. Все классы доступны в мире 1.	Buy a second soldier class in the printer. All classes are available in world 1.
 Найди чертёж дрона-помощника во второй половине пути и доставь в хаб.	Find the helper drone blueprint in the second half of the route and bring it to the hub.
 Возьми товарища и улучши его у инструктора.	Take the comrade and upgrade him at the instructor.
 Чертёж авиаудара выпадает на сложных точках ближе к генералу и с него самого.	The airstrike blueprint drops on hard points near the general and from the general himself.
-Полный арсенал оболочек	Full set of shells
-Собери все шесть оболочек бойца.	Collect all six soldier shells.
+Все классы	Full set of classes
+Открой все классы бойца.	Collect all six soldier classes.
 Добудь чертёж багги и купи машину на стоянке.	Get the buggy blueprint and buy the vehicle at the parking lot.
 Чертёж БТР выпадает во второй половине пути мира 1. Купи машину на стоянке.	The APC blueprint drops in the second half of the world 1 route. Buy it at the parking lot.
 Чертёж танка — самый редкий: сложные точки у генерала и сам генерал.	The tank blueprint is the rarest: hard points near the general and the general himself.
@@ -1666,14 +1664,14 @@ F2 — админ	F2 — admin
 Врагов взорвано	Enemies blown up
 Карт «Тактика»	Tactics cards
 Одинаковых карт	Identical cards
-Оболочек	Shells
+Классов	Classes
 Визитов	Visits
 Анимации интерфейса	Interface animations
 Карточки и сообщения выезжают, кнопки пружинят при нажатии.	Cards and messages slide in, buttons bounce when pressed.
 %d вылазки · %d ◈	%d runs · %d ◈
 Сводка	Summary
 Станции	Stations
-Оболочки	Shells
+Классы	Classes
 Бонусы и гаджеты	Bonuses and gadgets
 %d бонусов · %d гаджетов	%d bonuses · %d gadgets
 %d%% сплава при гибели	%d%% of alloy on death
@@ -1692,7 +1690,6 @@ F2 — админ	F2 — admin
 Найди чертёж Стоянки и построй её — в «Строительстве» или в Штабе → Постройки.	Find the Parking blueprint and build it via Construction or HQ → Buildings.
 В Штабе купи постоянный уровень технологии.	Buy a permanent technology level in the HQ.
 Изменить улучшения можно на станциях хаба.	Upgrades are changed at the hub stations.
-Оболочки, способности и общие улучшения — действуют в каждой вылазке.	Shells, abilities and general upgrades — active in every run.
 Оружие, бонусы боя и гаджеты. Открываются чертежами, развиваются сплавом.	Weapons, combat bonuses and gadgets. Unlocked by blueprints, upgraded with alloy.
 Поддержка в бою, оборона базы, страховка добычи и постройки хаба.	Combat support, base defence, loot insurance and hub buildings.
 Своя техника ждёт у старта вылазки. Сначала багги, потом БТР и танк.	Your own vehicle waits at the start of a run. Buggy first, then APC and tank.
@@ -1716,8 +1713,6 @@ F2 — админ	F2 — admin
 Оружие улучшено	Weapon upgraded
 Бонус улучшен	Bonus upgraded
 Гаджет выбран	Gadget selected
-Оболочка улучшена	Shell upgraded
-Улучшено для всех оболочек	Upgraded for all shells
 Общие улучшения сброшены	General upgrades reset
 Улучшено	Upgraded
 Технология выбрана	Technology selected
@@ -1827,7 +1822,6 @@ F2 — админ	F2 — admin
 Дорога на карте ветвится. Ищу торговца и испытания — прямо ходят только поезда.	The road on the map branches. I look for the merchant and challenges — only trains go straight.
 В напёрстках штаб прячут под колпаком. Слежу, не моргаю. Глаз-алмаз.	In thimbles they hide the HQ under a cup. I watch and don't blink. Eagle eye.
 Задания выдают в командном центре, там же платят сплавом и документами. Бесплатно только советы, как этот.	Quests are handed out at the command centre, and that's where they pay alloy and documents. Only advice like this is free.
-«Боец» открыт сразу: оболочки, здоровье, аптечки. С него и начинаю — классика.	Soldier is open from the start: shells, health, medkits. That's where I begin — a classic.
 У торговца стоит автомат удачи. Знаю, что глупо. Знаю. Дёргаю.	The merchant has a slot machine. I know it's silly. I know. I pull the lever.
 Сплав — на станции, документы — на редкие открытия. Считать умею, хоть и делаю вид, что нет.	Alloy goes to the stations, documents to rare unlocks. I can count, though I pretend I can't.
 Проиграл — не беда: прокачка на базе остаётся. Возвращаюсь сильнее и чуть злее.	Lost? No big deal: base upgrades stay. I come back stronger and a bit angrier.
@@ -1930,9 +1924,7 @@ FPS в углу экрана во всех режимах, в хабе — ещ�
 HP штаба и техники за каждое убийство.	HQ and vehicle HP per kill.
 Редкость карточек и наград, дроп и немного крит. Прокачивается в «Снабжении».	Card and reward rarity, drops and a bit of crit. Upgraded in Supply.
 Казарма	Barracks
-Классы	Classes
 Выучка	Training
-Класс выбран	Class selected
 Класс улучшен	Class upgraded
 Улучшено для всех классов	Upgraded for all classes
 Выучка улучшена	Training upgraded
@@ -2201,3 +2193,29 @@ E — в хаб	E — to the hub
 лечение	healing
 сила способности	ability power
 перезарядка способности	ability cooldown
+Майор Кравец	Major Kravets
+Видеосвязь · штаб округа	Video call · district HQ
+Пропустить	Skip
+Дальше	Next
+Конец связи	End call
+Видеосвязь: Майор Кравец	Video call: Major Kravets
+Рядовой, приём. Майор Кравец, штаб округа.	Private, come in. Major Kravets, district HQ.
+Слышу, товарищ майор. Опять я?	Reading you, Major. Me again?
+Опять ты. Рубеж — 13 держит один человек. Остальных перевели, тебя забыли вписать в приказ.	You again. Line 13 is held by one man. Everyone else was transferred; they forgot to put you on the order.
+Везёт как обычно.	Lucky as always.
+Задача простая: «В бой», держи мобильный штаб, собирай сплав. Штаб падает — вылазка окончена.	Simple job: hit Deploy, hold the mobile HQ, collect alloy. If the HQ falls, the run is over.
+Погибнешь — принтер соберёт заново. Часть сплава потеряешь, прокачка в Казарме останется.	If you die, the printer rebuilds you. You lose some alloy; Barracks upgrades stay.
+То есть умирать можно. Главное — не бесплатно.	So dying is allowed. Just not for free.
+Именно. Задания бери в командном центре. Конец связи.	Exactly. Pick up orders at the command centre. Over and out.
+Рядовой, ты жив? Принтер говорит, что да.	Private, are you alive? The printer says yes.
+Частично. Сплав растерял.	Partly. Lost my alloy.
+Страховка в Штабе снижает потерю. Прокачка в Казарме переживает любую гибель.	Insurance at HQ cuts the loss. Barracks upgrades survive any death.
+И ещё: один раз за вылазку смертельный удар оставит тебе 1 здоровье. Беги в этот момент.	One more thing: once per run a lethal hit leaves you at 1 health. That's when you run.
+Понял: сначала вкладываюсь, потом героически умираю.	Got it: invest first, then die heroically.
+Стоянка готова. Первая машина — багги, потом БТР и танк.	The motor pool is ready. First the buggy, then the APC and the tank.
+Подбитую технику врага можно занять: вокруг неё расходятся зелёные волны.	You can take over knocked-out enemy vehicles: green waves ripple around them.
+Наконец-то между мной и пулями будет железо.	Finally some steel between me and the bullets.
+Разведка видит генерала на последнем поле Пограничья.	Recon spotted the general on the last field of the Borderland.
+На 60% и 30% здоровья он включает щит. Питает его генератор на фланге — разбей его.	At 60% and 30% health he raises a shield. A flank generator powers it; smash it.
+Сначала розетка, потом генерал. Как дома.	Socket first, then the general. Just like home.
+Выбери другой класс в Казарме и снова победи генерала мира 1.	Pick another class in the Barracks and beat the world 1 general again.
