@@ -10,7 +10,8 @@ static func build(arena):
 		Visuals.box(root,Vector3(0,-.57,side*middle),Vector3(arena.grid_size,1.08,WIDTH),edge)
 		Visuals.box(root,Vector3(side*middle,-.035,0),Vector3(WIDTH,.055,arena.grid_size+WIDTH*2),tint)
 		Visuals.box(root,Vector3(0,-.035,side*middle),Vector3(arena.grid_size,.055,WIDTH),tint)
-		for z in [-half+1,half-1]:preload("res://scripts/base_surroundings.gd").lamp(root,Vector3(side*middle,0,z))
+		# Lamps sit on the outer lip so their heads do not hang over edge cells.
+		for z in [-half+1,half-1]:preload("res://scripts/base_surroundings.gd").lamp(root,Vector3(side*(middle+.22),0,z))
 	var rng=RandomNumberGenerator.new();rng.seed=arena.run_seed+arena.room_index*6203+119
 	var count=rng.randi_range(2,3);var used=[]
 	for i in range(count):
@@ -21,19 +22,44 @@ static func build(arena):
 		# Leave the front-center HQ apron free.
 		if side==3 and absf(along)<2:along=-half+2
 		var prop=Node3D.new();prop.name=["Barrier","Wire","CementBags"][i];root.add_child(prop)
-		prop.position=Vector3(-middle,0,along) if side==0 else Vector3(middle,0,along) if side==1 else Vector3(along,0,-middle) if side==2 else Vector3(along,0,middle)
+		var out=middle+.18
+		prop.position=Vector3(-out,0,along) if side==0 else Vector3(out,0,along) if side==1 else Vector3(along,0,-out) if side==2 else Vector3(along,0,out)
 		prop.rotation.y=PI*.5 if side<2 else 0.0
 		match i:
 			0:barrier(prop,tint)
 			1:wire(prop)
 			2:bags(prop,tint)
 	cargo(root,arena,half,middle)
-## Cargo under tarps along the far edge and the upper sides (visual only, own RNG).
+	scatter(root,arena,half)
+
+## Light biome props on the outer half of the rim, own RNG. Tall pieces only on the far edge and the
+## upper sides; the near edge gets flat ones, because from the tilted camera anything tall there
+## would cover the first row of cells. Positions, turns and sizes vary per room.
+const BIOME_SETS={"forest":["rock_0","rock_1","bush","tuft","stump","log"],"desert":["rock_flat","cactus","dune","tuft","rock_1"],
+	"marsh":["reeds","tuft","rock_flat","bush","log"],"mountains":["crystal","snow_mound","rock_0","rock_flat"],"inferno":["ash_cone","stump","log","rock_1"]}
+const FLAT=["rock_flat","dune","snow_mound","tuft","log"]
+static func scatter(root:Node3D,arena,half:float):
+	var rng=RandomNumberGenerator.new();rng.seed=arena.run_seed+arena.room_index*6203+5011
+	var palette=arena.room_palette()
+	var kinds:Array=BIOME_SETS.get(str(palette.get("ambience","forest")),BIOME_SETS.forest)
+	if palette.get("vegetation","")=="frost":kinds=BIOME_SETS.mountains
+	for side in range(4):
+		var count=rng.randi_range(3,6)
+		for k in range(count):
+			var along=lerpf(-half+.6,half-.6,(k+rng.randf_range(.1,.9))/float(count))
+			if side==3 and absf(along)<2.4:continue  # HQ apron stays clear
+			var near=side==3 or (side<2 and along>half*.35)
+			var pool=kinds.filter(func(id):return id in FLAT) if near else kinds
+			if pool.is_empty():pool=["rock_flat"]
+			var out=half+rng.randf_range(.5,.85)
+			var pos=Vector3(-out,0,along) if side==0 else Vector3(out,0,along) if side==1 else Vector3(along,0,-out) if side==2 else Vector3(along,0,out)
+			var prop=Visuals.model("biome_"+pool[rng.randi_range(0,pool.size()-1)],root,pos)
+			prop.rotation.y=rng.randf()*TAU;prop.scale=Vector3.ONE*rng.randf_range(1.3,2.0)
+## Cargo under tarps along the far edge (visual only, own RNG), pushed past the rim so it never covers cells.
 static func cargo(root:Node3D,arena,half:float,middle:float):
 	var rng=RandomNumberGenerator.new();rng.seed=arena.run_seed+arena.room_index*6203+947
 	var spots=[]
-	for k in range(3):spots.append([Vector3(lerpf(-half+2.2,half-2.2,(k+rng.randf_range(.2,.8))/3.0),0,-middle),0.0])
-	for side in [-1,1]:spots.append([Vector3(side*middle,0,rng.randf_range(-half+2.5,-1.5)),PI*.5])
+	for k in range(rng.randi_range(2,3)):spots.append([Vector3(lerpf(-half+2.2,half-2.2,(k+rng.randf_range(.2,.8))/3.0),0,-middle-.2),0.0])
 	for spot in spots:
 		var pile=load("res://assets/models/environment_v7/tarp_%d.glb" % rng.randi_range(0,2)).instantiate()
 		root.add_child(pile);pile.position=spot[0];pile.rotation.y=spot[1]+rng.randf_range(-.2,.2);pile.scale=Vector3.ONE*rng.randf_range(.72,.88)

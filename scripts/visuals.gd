@@ -9,7 +9,7 @@ const VEHICLES=["tank","apc","buggy","drone","flyer","boss"]
 static func model(kind: String, parent: Node3D, pos = Vector3.ZERO, species:String="cat") -> Node3D:
 	if kind in ["soldier","grenadier","shield","sniper","rpg_soldier","boss","tank","apc","buggy","drone","flyer","mortar"] or kind.begins_with("weapon_"):return kit_model(kind,parent,pos,species)
 	var environment_kind="bench_mechanic" if kind=="workbench" else kind
-	var environment_path=("res://assets/models/cover_v1/" if kind in ["net","trench"] else "res://assets/models/concrete_v1/" if kind.begins_with("concrete_") else "res://assets/models/environment_v7/")+environment_kind+".glb"
+	var environment_path=("res://assets/models/cover_v1/" if kind in ["net","trench"] else "res://assets/models/concrete_v1/" if kind.begins_with("concrete_") else "res://assets/models/biome_props/" if kind.begins_with("biome_") else "res://assets/models/environment_v7/")+environment_kind.trim_prefix("biome_")+".glb"
 	var obj = load(environment_path if ResourceLoader.exists(environment_path) else "res://assets/models/" + kind + ".glb").instantiate()
 	normalize_materials(obj)
 	if ResourceLoader.exists(environment_path):apply_environment_palette(obj,parent,0.0,kind in ["net","trench"])
@@ -248,7 +248,8 @@ static func apply_environment_palette(node:Node,context:Node,shade:float=0.0,ter
 	var floor_color:Color=owner_node.get_meta("environment_floor") if owner_node else Color("92958e")
 	var wall_color:Color=owner_node.get_meta("environment_wall",floor_color) if owner_node else floor_color
 	var brick_color:Color=owner_node.get_meta("environment_brick",Color("bf772b")) if owner_node else Color("bf772b")
-	var colors={"light":floor_color,"concrete":wall_color.darkened(.07),"brick":brick_color.lerp(floor_color,.12),"bag":Color("b0ac91").lerp(floor_color,.42),"olive":Color("74816b").lerp(floor_color,.4),"steel":floor_color.darkened(.32),"dark":floor_color.darkened(.62),"orange":brick_color,"paper":floor_color.lightened(.12)}
+	var colors={"light":floor_color,"concrete":wall_color.darkened(.26).lerp(Color("5d625a"),.12),  # indestructible blocks must read against the floor
+		"brick":brick_color.lerp(floor_color,.12),"bag":Color("b0ac91").lerp(floor_color,.42),"olive":Color("74816b").lerp(floor_color,.4),"steel":floor_color.darkened(.32),"dark":floor_color.darkened(.62),"orange":brick_color,"paper":floor_color.lightened(.12)}
 	if terrain_cover:
 		colors["bag"]=floor_color.darkened(.12);colors["olive"]=floor_color.darkened(.1)
 	for mesh in node.find_children("*","MeshInstance3D",true,false):

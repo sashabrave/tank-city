@@ -50,7 +50,8 @@ func apply():
 	if not weather.is_empty():
 		haze.visible=cozy
 		haze.material.set_shader_parameter("haze_color",Color(weather.haze).darkened(.6) if night else Color(weather.haze))
-	haze.material.set_shader_parameter("amount",(float(style.get("haze_amount",.3))+float(weather.get("haze_add",0.0)))*(.8 if night else 1.0))
+	# Readability first: haze only hints at depth (it washed out the field before).
+	haze.material.set_shader_parameter("amount",(float(style.get("haze_amount",.3))+float(weather.get("haze_add",0.0)))*(.8 if night else 1.0)*.55)
 func battle_clouds(grid_size:int,seed_value:int):
 	for entry in drifters:
 		clouds.erase(entry.node)
