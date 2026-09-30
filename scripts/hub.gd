@@ -119,10 +119,7 @@ func _ready():
 	avatar.rotation.y=PI
 	Visuals.ring(avatar,Color("fac47a"),.44)
 	dummy=Node3D.new();add_child(dummy);dummy.position=YARD_DUMMY
-	Visuals.box(dummy,Vector3(0,.65,0),Vector3(.14,1.3,.14),Color("77634b"))
-	Visuals.box(dummy,Vector3(0,1.05,0),Vector3(.95,.13,.13),Color("77634b"))
-	Visuals.box(dummy,Vector3(0,.9,0),Vector3(.58,.75,.3),Color("be9a62"))
-	Visuals.box(dummy,Vector3(0,.9,.17),Vector3(.25,.25,.04),Color("994837"))
+	Visuals.model("training_dummy",dummy)  # tools/build_yard_props.py
 	dummy.visible="range" in Game.built_workshops
 	build_yard()
 	dummy_label=Visuals.label3d(dummy,"",Vector3(0,1.7,0),Color("f7d891"),26)
