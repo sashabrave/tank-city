@@ -120,6 +120,8 @@ func fire_comrade_weapon(buddy):
 		var bullet=arena.spawn_bullet(buddy,buddy.position,buddy.facing,buddy.damage,true);bullet.travel_direction=bullet.travel_direction.rotated(Vector3.UP,(i-(data.pellets-1)*.5)*.1);bullet.speed=data.speed;bullet.lifetime=data.range/data.speed;bullet.piercing=data.pierce;bullet.rocket_radius=data.blast
 
 func interact_vehicle():
+	# No player between death and respawn (or after the run ended): nothing to board or leave.
+	if not is_instance_valid(arena.room.player) or arena.room.player.dead:return
 	if arena.room.player.kind!="soldier":
 		var safe=arena.find_free_near(arena.room.player.cell)
 		if not arena.can_enter(safe): return

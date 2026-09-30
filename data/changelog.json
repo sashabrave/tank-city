@@ -11,7 +11,7 @@
 					"Бонусы спускаются на парашюте-крыле из пяти секций, ткань матовая, без свечения.",
 					"Исправлен вылет при переходе из песочницы в бой с боссом.",
 					"Экстремальная прокачка больше не ломает игру: темп стрельбы ограничен 12,5 выстрела в секунду, у маскировки, электроудара и мародёра появились пределы. Лишний крит сверх предела переходит в крит-урон, лишнее уклонение — в защиту.",
-					"Исправлены редкие ошибки при хаотичных переходах: погода после смены комнаты, выбор точки на пустом этапе карты, вход в комнату без доступных узлов.",
+					"Исправлены редкие ошибки при хаотичных переходах: погода после смены комнаты, выбор точки на пустом этапе карты, вход в комнату без доступных узлов, посадка в машину в момент гибели.",
 					"Фильтры задач — горизонтальные табы на всю ширину, «Выполненные» теперь «Готово».",
 					"Список изменений разбит по версиям: табы сверху, под ними сводка и компактные разделы со счётчиком."
 				]
@@ -24,7 +24,7 @@
 					"Bonuses drop under a five-cell ram-air wing with matte cloth, no glow.",
 					"Fixed a crash when entering a boss fight from the sandbox.",
 					"Extreme builds no longer break the game: fire rate is capped at 12.5 shots per second, and stealth, shock and marauder have caps. Crit chance over the cap turns into crit damage, extra dodge into protection.",
-					"Fixed rare errors from chaotic transitions: weather after a room change, map selection on an empty stage, entering a room with no reachable node.",
+					"Fixed rare errors from chaotic transitions: weather after a room change, map selection on an empty stage, entering a room with no reachable node, boarding a vehicle at the moment of death.",
 					"Task filters are full-width horizontal tabs; \"Completed\" is now \"Done\".",
 					"The changelog is split by version: tabs on top, a summary line and compact sections with item counts."
 				]
