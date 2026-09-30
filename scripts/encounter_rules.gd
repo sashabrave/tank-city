@@ -26,6 +26,7 @@ static func recipe_pool(level:int,pending:Array,stage:int,include_owned:bool=fal
 			if category=="garage" and GarageCatalog.weight(id,stage)==0:continue
 			var tier=Game.TIERS.tier(id)
 			if (level==1 and tier>1) or (level==2 and tier<2):continue
+			if Campaign.unified_content() and tier>Game.TIERS.unlocked(stage):continue
 			options.append({"category":category,"id":id})
 	return options
 static func recipe(level:int,rng:RandomNumberGenerator,pending:Array,stage:int)->Dictionary:

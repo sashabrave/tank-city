@@ -32,14 +32,14 @@ func boss_step(actor,delta:float):
 			state.timer=.35;return
 		state.phase="charge";state.timer=1.1;state.direction=diff.normalized();state.target=arena.player.position
 		state.attack=spec.patterns[state.index%spec.patterns.size()]
-		actor.warning_ring.show();actor.attack_label.show()
+		actor.warning_ring.set_instance_shader_parameter("urgency",1.0);actor.warning_ring.show();actor.attack_label.show()
 		Texts.set_text(actor.attack_label,{"salvo":"Прицельный залп","fan":"Веерный залп","mortar":"Миномётный залп"}[state.attack])
 		Game.sound("danger_warning",actor)
 		state.warning=Node3D.new();actor.add_child(state.warning)
 		if state.attack!="mortar":
 			for angle in ([-.36,-.18,0.0,.18,.36] if state.attack=="fan" else [-.10,0.0,.10]):
 				var ray=Node3D.new();state.warning.add_child(ray);ray.rotation.y=atan2(state.direction.x,state.direction.z)+angle
-				var mark=Visuals.box(ray,Vector3(0,.07,7),Vector3(.10,.02,14),Color("efae54"));mark.material_override=EffectLighting.glow(Color("efae54"),true)
+				var mark=Visuals.box(ray,Vector3(0,.07,7),Vector3(.10,.02,14),Color("efae54"));mark.material_override=EffectLighting.laser(Color("efae54"),true)
 		return
 	if not actor.moving and actor.movement_pause<=0:
 		var toward=Vector2i(signi(roundi(diff.x)),0) if absf(diff.x)>absf(diff.z) else Vector2i(0,signi(roundi(diff.z)))
@@ -166,7 +166,7 @@ func activate_generator():
 	if room.generator_stage>=room.generator_order.size():return
 	var cell=room.generator_order[room.generator_stage];room.generator_stage+=1
 	var generator=room.generators[cell];generator.active=true;generator.ring.show();generator.bar.show()
-	generator.ring.material_override=EffectLighting.glow(Color("61d8ff"))
+	generator.ring.set_instance_shader_parameter("tint",Color("61d8ff"));generator.ring.set_instance_shader_parameter("urgency",.6)
 	Texts.set_text(generator.label,"Генератор · щит активен")
 	Game.sound_loop("generator_loop",generator.node)
 	arena.toast("Щит активен — уничтожь светящийся генератор")

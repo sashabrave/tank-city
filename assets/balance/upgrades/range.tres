@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="UpgradeDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrades/upgrade_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "range"
+title = "Дальность"
+category = "Герой"
+icon = "range"
+tags = PackedStringArray("infantry", "range")
+weight = 10
+modifiers = Array[Dictionary]([{"stat": "range_multiplier", "op": "add", "value": 0.12}])
+preview = "range"

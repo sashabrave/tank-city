@@ -87,7 +87,7 @@ func fighter():
 		for id in arena.headquarters.loadout():entries.append([HQCatalog.DATA[id].name,HQCatalog.stat(id,arena.headquarters.level(id))])
 		for i in range(arena.run.upgrade_history.size()):
 			var choice=arena.run.upgrade_history[i];var id=choice.id
-			var title=BehaviorCards.DATA[id].name if id in BehaviorCards.DATA else AbilityCatalog.DATA.get(id,HQCatalog.DATA.get(id,Game.LOOT.WEAPONS.get(id,{}))).get("name",{"damage":"Урон","intercept":"Напор","speed":"Скорость","fire":"Темп","health":"Здоровье","recovery":"Защита","weapon_damage":"Урон оружия","weapon_fire":"Темп оружия","weapon_intercept":"Напор оружия"}.get(id,id))
+			var title=UpgradeRegistry.get_def(id).title if UpgradeRegistry.has(id) else AbilityCatalog.DATA.get(id,HQCatalog.DATA.get(id,Game.LOOT.WEAPONS.get(id,{}))).get("name",{"damage":"Урон","intercept":"Напор","speed":"Скорость","fire":"Темп","health":"Здоровье","recovery":"Защита","weapon_damage":"Урон оружия","weapon_fire":"Темп оружия","weapon_intercept":"Напор оружия"}.get(id,id))
 			entries.append(["%d. %s" % [i+1,title],choice.get("detail",Game.LOOT.RARITY_NAMES[clampi(choice.tier,0,2)])])
 	for i in range(entries.size()):
 		var b=cell(body,Vector2((i%4)*174,upgrades_y+45+floori(i/4.0)*100),"",str(entries[i][0]),"Текущее усиление: "+str(entries[i][1]),false,Vector2(162,90))
@@ -152,9 +152,23 @@ func settings():
 	if view.settings_tab=="Видео":
 		preload("res://scripts/ui/appearance_card.gd").build(body)
 		var shaders=CheckButton.new();body.add_child(shaders);shaders.position.y=256;Texts.set_text(shaders,"Шейдеры · уютный свет и металл");shaders.size=Vector2(700,40);shaders.button_pressed=Settings.values.get("shaders",true)
-		shaders.toggled.connect(func(enabled):Settings.change("shaders",enabled))
+		shaders.toggled.connect(func(enabled):Settings.change("shaders",enabled);view.refresh.call_deferred())
 		UiKit.label(body,"Единый режим для хаба, карты и боя: мягкие тени, объём и блики.",Vector2(0,300),Vector2(700,36),14,UiKit.MUTED)
-		y=346
+		setting_choice(body,["shader_style","Стиль картинки",["Пастель · мягкий мульт","Уютный · как раньше","Золотой час","Пасмурный фронт"],Settings.SHADER_STYLES,"Цвет солнца, заполняющий свет теней, дымка и небо для отражений металла."],346)
+		var night=Settings.values.get("world_lighting","day")=="night"
+		if night:setting_choice(body,["sun_night","Луна и солнце в бою",["Случайно","Конец заката","Луна","Перед рассветом"],["random","dusk","moon","predawn"],"Ночное поле: от последнего света заката через луну до раннего рассвета."],434)
+		else:setting_choice(body,["sun_day","Солнце в бою",["Случайно","Рассвет","Утро","Полдень","Золотой час","Закат"],["random","dawn","morning","noon","golden","sunset"],"Случайно — своё положение солнца в каждой комнате, чаще рассвет и золотые часы."],434)
+		setting_choice(body,["weather","Погода в бою",["Случайно","Ясно","Дождь","Снег","Туман","Песчаная буря"],["random","clear","rain","snow","fog","sandstorm"],"Случайно — на новом этапе погода иногда меняется. Только оформление, на бой не влияет."],522)
+		y=610
+		var names={"soft_shadows":"Мягкие тени","ambient_occlusion":"Затенение углов","glow":"Блики и свечение","haze":"Дымка вдали","rim_light":"Контурный свет","shiny_metal":"Блестящий металл"}
+		for i in range(Settings.SHADER_OPTIONS.size()):
+			var key=Settings.SHADER_OPTIONS[i]
+			var toggle=CheckButton.new();body.add_child(toggle);Texts.set_text(toggle,names[key]);toggle.position=Vector2((i%2)*355,y+int(i/2.0)*42);toggle.size=Vector2(340,38)
+			toggle.button_pressed=Settings.values[key];toggle.disabled=not Settings.values.get("shaders",true)
+			toggle.toggled.connect(func(enabled):Settings.change(key,enabled))
+		y+=128
+		var note=UiKit.label(body,"Затенение углов доступно на компьютере (Forward+). На слабых устройствах сначала выключи затенение и мягкие тени.",Vector2(0,y),Vector2(700,40),14,UiKit.MUTED);note.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+		y+=54
 		for entry in [["atmosphere","Атмосферные частицы",["Выключены","Включены"],[false,true],"Редкая пыль, листья и ночные светлячки. Без физических столкновений."],["tilt_shift","Размытие краёв",["Выключено","Включено"],[false,true],"Мягкий tilt-shift сверху и снизу. Центр поля и интерфейс остаются чёткими."],["light_budget","Источники света",["Экономно · 6","Обычно · 10","Больше света · 14"],[6,10,14],"Ближайшие фонари; в режиме шейдеров до трёх источников отбрасывают тени."],["fullscreen","Режим экрана",["Окно","Полный экран"],[false,true],"Полный экран занимает весь дисплей."],["vsync","Вертикальная синхронизация",["Выключена","Включена"],[false,true],"Убирает разрывы изображения; может ограничивать FPS."],["quality","Сглаживание MSAA",["Выключено","2×","4×"],[0,1,2],"Сглаживает края моделей. 4× сильнее нагружает графику."],["fps","Лимит кадров",["30 FPS","60 FPS","120 FPS","Без ограничения"],[30,60,120,0],"Верхняя граница; реальная частота зависит от устройства и VSync."]]:
 			setting_choice(body,entry,y);y+=88
 	elif view.settings_tab=="Звук":
@@ -184,7 +198,7 @@ func settings():
 	UiKit.button(content,"Сбросить вкладку",Vector2(22,535),Vector2(240,36),func():
 		if view.settings_tab=="Управление":Settings.keys=Settings.DEFAULT_KEYS.duplicate()
 		else:
-			var group={"Видео":["atmosphere","tilt_shift","ui_theme","shaders","world_lighting","light_budget","fullscreen","vsync","quality","fps"],"Звук":["master","music","effects"],"Интерфейс":["screen_controls","biome_info","language"]}[view.settings_tab]
+			var group={"Видео":["atmosphere","tilt_shift","ui_theme","shaders","shader_style","sun_day","sun_night","weather","soft_shadows","ambient_occlusion","glow","haze","rim_light","shiny_metal","world_lighting","light_budget","fullscreen","vsync","quality","fps"],"Звук":["master","music","effects"],"Интерфейс":["screen_controls","biome_info","language"]}[view.settings_tab]
 			for key in group:Settings.values[key]=Settings.DEFAULT_VALUES[key]
 		Settings.apply();Settings.save();view.waiting_key="";view.refresh()).add_theme_font_size_override("font_size",15)
 func setting_choice(body,entry,y):

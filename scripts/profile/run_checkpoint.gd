@@ -1,6 +1,6 @@
 extends RefCounted
 const VERSION=1
-const RUN_KEYS=["run_seed","upgrade_history","soldier_hp","soldier_max_hp","damage_bonus","fire_multiplier","speed_multiplier","earned","kills","elapsed","weapon","rerolls_left","weapon_mods","recovery_bonus","run_bonus_levels","pending_recipes","vehicle_mods","pending_vehicle","visited_services","intercept_chance","route_choices","range_multiplier","healing_multiplier","ability_power_multiplier","ability_cooldown_multiplier","behavior_cards"]
+const RUN_KEYS=["run_seed","upgrade_history","soldier_hp","soldier_max_hp","damage_bonus","fire_multiplier","speed_multiplier","earned","kills","elapsed","weapon","rerolls_left","weapon_mods","recovery_bonus","run_bonus_levels","pending_recipes","vehicle_mods","pending_vehicle","visited_services","intercept_chance","route_choices","range_multiplier","healing_multiplier","ability_power_multiplier","ability_cooldown_multiplier","behavior_cards","tokens"]
 static func capture(arena,index:int,mode:String,choices:Dictionary)->Dictionary:
 	var data={"version":VERSION,"world":Campaign.world,"endless":Campaign.endless,"cycle":Campaign.cycle,"strength":Campaign.endless_strength,"index":index,"mode":mode,"seed":Game.visual_run_seed,"choices":choices.duplicate(true),"run":{},"abilities":{},"hq":{},"hero":{},"class":Game.selected_class,"start_documents":Game.cores}
 	if not is_instance_valid(arena):return data
@@ -32,6 +32,22 @@ static func restore(arena,data:Dictionary):
 		arena.abilities.selected="";arena.abilities.select(data.abilities.selected)
 	if not data.hq.is_empty():
 		for key in ["modules","active","levels","basic_hp"]:arena.headquarters.set(key,data.hq[key])
+## Completes a snapshot written by an older build: new RunState fields, weapons and vehicles get
+## their defaults, removed weapons fall back to the first one. Structural damage is still rejected by valid().
+static func upgrade(data:Dictionary)->Dictionary:
+	if data.is_empty() or not data.get("run") is Dictionary or data.run.is_empty():return data
+	var run=data.run;var defaults=preload("res://scripts/state/run_state.gd").new()
+	for key in RUN_KEYS:
+		if not run.has(key):run[key]=defaults.get(key) if not defaults.get(key) is Dictionary and not defaults.get(key) is Array else defaults.get(key).duplicate(true)
+	if run.get("weapon_mods") is Dictionary:
+		for id in Game.LOOT.WEAPONS:
+			if not run.weapon_mods.get(id) is Dictionary:run.weapon_mods[id]={"damage":0.0,"interval":1.0,"intercept":0.0}
+	if run.get("weapon") not in Game.LOOT.WEAPONS:run.weapon=Game.LOOT.WEAPONS.keys()[0]
+	if run.get("vehicle_mods") is Dictionary:
+		for id in ["buggy","apc","tank"]:
+			if not run.vehicle_mods.get(id) is Dictionary:run.vehicle_mods[id]=defaults.vehicle_mods[id].duplicate()
+	if run.get("behavior_cards") is Array:run.behavior_cards=run.behavior_cards.filter(func(id):return UpgradeRegistry.has(str(id)))
+	return data
 static func valid(data:Dictionary)->bool:
 	if data.is_empty():return true
 	for key in ["version","world","cycle","strength","index","seed","start_documents"]:

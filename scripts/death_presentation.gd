@@ -7,6 +7,7 @@ static func play(arena,base_destroyed:bool,done:Callable):
 		arena.presentation.heading.hide();arena.presentation.caption.hide()
 		if arena.presentation.text_tween and arena.presentation.text_tween.is_valid():arena.presentation.text_tween.kill()
 	var tween=arena.create_tween().set_parallel(true)
+	var hold=.35
 	tween.tween_property(camera,"position",camera.position+(focus-camera.position+Vector3(0,19,14).rotated(Vector3.UP,deg_to_rad(10)))*.25,.42).set_trans(Tween.TRANS_SINE)
 	tween.tween_property(camera,"size",camera.size*.82,.42).set_trans(Tween.TRANS_SINE)
 	if base_destroyed:
@@ -22,7 +23,12 @@ static func play(arena,base_destroyed:bool,done:Callable):
 		Game.sound("vehicle_destroy",arena)
 	else:
 		var fallen=Visuals.model("soldier",arena,focus)
-		if is_instance_valid(arena.player):fallen.rotation.y=arena.player.rotation.y;arena.player.hide()
-		tween.tween_property(fallen,"rotation:z",PI/2,.38).set_trans(Tween.TRANS_QUAD)
-		tween.tween_property(fallen,"position:y",.12,.38)
-	tween.chain().tween_interval(.35);tween.chain().tween_callback(done)
+		Visuals.equip_model(fallen,arena.weapon)
+		if is_instance_valid(arena.player):
+			fallen.rotation.y=arena.player.rotation.y;arena.player.hide()
+			if is_instance_valid(arena.player.model):fallen.rotation.y=arena.player.model.global_rotation.y
+		if fallen.has_method("play_death") and fallen.play_death():hold=.8
+		else:
+			tween.tween_property(fallen,"rotation:z",PI/2,.38).set_trans(Tween.TRANS_QUAD)
+			tween.tween_property(fallen,"position:y",.12,.38)
+	tween.chain().tween_interval(hold);tween.chain().tween_callback(done)

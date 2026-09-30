@@ -20,7 +20,7 @@ var medkits: Array=[]
 var facing=Vector2i.UP
 func _ready():
 	add_to_group("notification_context")
-	vehicle=["buggy","apc","tank"][Campaign.world-1]
+	vehicle=current_vehicle()
 	Visuals.setup_world(self,12,Vector3.ZERO)
 	var positions=[]
 	for x in range(-4,5):
@@ -53,6 +53,12 @@ func _ready():
 	UiKit.button(root,"Вернуться в хаб",Vector2(40,165),Vector2(250,48),func():hub_requested.emit())
 	preload("res://scripts/interaction_prompt.gd").attach(self,self,{"vehicle":"Механик","ability":"Инструктор","headquarters":"Штаб"}[branch],Vector3(0,0,-1),1.8,func():return not claimed)
 	offers=arena.reward.service_offers(branch)
+## The mechanic works on the player's vehicle: the one driven now, the one waiting for the next room, or the starting one.
+func current_vehicle()->String:
+	if is_instance_valid(arena.player) and arena.player.kind in GarageCatalog.VEHICLES:return arena.player.kind
+	if arena.pending_vehicle in GarageCatalog.VEHICLES:return arena.pending_vehicle
+	var start=Game.garage.starting_vehicle()
+	return start if start in GarageCatalog.VEHICLES else "buggy"
 func _physics_process(delta):
 	if not is_instance_valid(modal):collect_medkits()
 	if is_instance_valid(modal):
@@ -91,7 +97,7 @@ func interact():
 		if i>=offers.size():panel.get_node("Card"+str(i+1)).hide();continue
 		if branch=="headquarters":
 			preload("res://scripts/ui/choice_card.gd").configure(panel.get_node("Card"+str(i+1)),arena.headquarters.card(offers[i]),func():claim(i));continue
-		var offer=offers[i];var n=[1.0,1.5,2.0][offer.tier]
+		var offer=offers[i];var n=Balance.tier_power(offer.tier)
 		var title={"damage":"Урон транспорта","hp":"Броня транспорта","speed":"Передвижение","power":"Прочность / урон","cooldown":"Перезарядка","utility":"Особенность"}[offer.id]
 		var description=arena.abilities.description(offer.id,offer.tier) if branch=="ability" else {"damage":"+%.2f урона" % ((.15 if vehicle=="buggy" else 1.0)*n),"hp":"+%d брони" % roundi(3*n),"speed":"+%.1f %% скорости машины" % (4*n)}[offer.id]
 
@@ -105,7 +111,7 @@ func interact():
 				"hp":
 					var driver=1.15+Game.class_specialization()*.05 if Game.selected_class=="driver" else 1.0
 					description=UiKit.change_text("Броня",(tuning.health+mods.hp)*driver,(tuning.health+mods.hp+mini(index,6)+roundi(3*n))*driver)
-				"speed":description=UiKit.change_text("Скорость",minf(5.2,tuning.player_speed*arena.speed_multiplier*mods.speed),minf(5.2,tuning.player_speed*arena.speed_multiplier*minf(1.25,mods.speed+.04*n)))
+				"speed":description=UiKit.change_text("Скорость",minf(Balance.speed_cap(),tuning.player_speed*arena.speed_multiplier*mods.speed),minf(Balance.speed_cap(),tuning.player_speed*arena.speed_multiplier*minf(1.25,mods.speed+.04*n)))
 		var view={"category":"Транспорт" if branch=="vehicle" else "Способность","title":title,"detail":description,"icon":offer.id,"heading":LootCatalog.RARITY_NAMES[offer.tier],"color":Color(LootCatalog.RARITY_COLORS[offer.tier])}
 		preload("res://scripts/ui/choice_card.gd").configure(panel.get_node("Card"+str(i+1)),view,func():claim(i))
 	var reroll=panel.get_node("RerollButton");Texts.set_text(reroll,"Переброс · осталось %d" % arena.rerolls_left);reroll.pressed.connect(reroll_cards)

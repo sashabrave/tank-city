@@ -137,7 +137,7 @@ func build_catalog()->float:
 		var id=IDS[i];var card=UiKit.panel(body,Vector2((i%columns)*(width+16),154+floori(float(i)/columns)*212),Vector2(width,196),Color("30382f"))
 		picture(card,id,Vector2(10,10),Vector2(78,110),true)
 		label(card,Game.CLASSES[id].name,Vector2(100,12),Vector2(width-114,30),22)
-		label(card,"Надета" if id==Game.selected_class else "Открыта" if id in Game.class_unlocks else "Мир %d" % Game.class_world(id),Vector2(100,47),Vector2(width-114,24),14,true)
+		label(card,"Надета" if id==Game.selected_class else "Открыта" if id in Game.class_unlocks else ("%d ◈" if id in ["gunner","driver"] else "%d док.") % Game.class_price(id),Vector2(100,47),Vector2(width-114,24),14,true)
 		label(card,Game.CLASSES[id].desc,Vector2(100,78),Vector2(width-114,63),14,true)
 		action(card,"Оболочка и способности",Vector2(12,148),Vector2(width-24,36),func():detail(id),"Shell_"+id)
 	return 154+ceili(float(IDS.size())/columns)*212

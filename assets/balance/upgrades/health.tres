@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="UpgradeDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrades/upgrade_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "health"
+title = "Здоровье"
+category = "Герой"
+icon = "health"
+tags = PackedStringArray("infantry", "survival")
+weight = 10
+modifiers = Array[Dictionary]([{"stat": "soldier_max_hp", "op": "add_round", "value": 1.0}, {"stat": "soldier_hp", "op": "add_round", "value": 1.0}])
+preview = "hp"

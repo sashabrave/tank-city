@@ -27,6 +27,16 @@ static func build(arena):
 			0:barrier(prop,tint)
 			1:wire(prop)
 			2:bags(prop,tint)
+	cargo(root,arena,half,middle)
+## Cargo under tarps along the far edge and the upper sides (visual only, own RNG).
+static func cargo(root:Node3D,arena,half:float,middle:float):
+	var rng=RandomNumberGenerator.new();rng.seed=arena.run_seed+arena.room_index*6203+947
+	var spots=[]
+	for k in range(3):spots.append([Vector3(lerpf(-half+2.2,half-2.2,(k+rng.randf_range(.2,.8))/3.0),0,-middle),0.0])
+	for side in [-1,1]:spots.append([Vector3(side*middle,0,rng.randf_range(-half+2.5,-1.5)),PI*.5])
+	for spot in spots:
+		var pile=load("res://assets/models/environment_v7/tarp_%d.glb" % rng.randi_range(0,2)).instantiate()
+		root.add_child(pile);pile.position=spot[0];pile.rotation.y=spot[1]+rng.randf_range(-.2,.2);pile.scale=Vector3.ONE*rng.randf_range(.72,.88)
 static func barrier(parent,color):
 	Visuals.box(parent,Vector3(0,.055,0),Vector3(.65,.11,.27),color.darkened(.15))
 	Visuals.box(parent,Vector3(0,.17,0),Vector3(.58,.18,.16),color)

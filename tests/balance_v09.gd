@@ -22,6 +22,7 @@ func _physics_process(_delta):
 	elif arena.phase=="paused" and arena.boss_defeated:advance()
 	elif arena.phase=="upgrade" and arena.reward_claimed:advance()
 	elif arena.phase=="upgrade":
+		if arena.upgrade_offers.is_empty():return # cards appear after the wave announcement
 		var offer=arena.upgrade_offers[0]
 		for candidate in arena.upgrade_offers:
 			if candidate.id==("weapon_damage" if arena.next_is_room else "damage"):offer=candidate

@@ -19,7 +19,7 @@ static func fighter(arena=null)->Array:
 		if actor.kind=="soldier":
 			rows[1].current=actor.speed
 			rows[2].current=actor.damage
-			rows[3].current=1.0/actor.fire_interval*BehaviorCards.rate_multiplier(arena)
+			rows[3].current=1.0/actor.fire_interval*arena.effects.modify("fire_rate",1.0)
 	return rows
 static func add_bars(parent:Control,pos:Vector2,width:float,rows:Array,row_height:float=48,adaptive:bool=false):
 	var bars=preload("res://scripts/ui/comparison_bars.gd").new();bars.rows=rows;bars.row_height=row_height;bars.adaptive_columns=adaptive;parent.add_child(bars);bars.position=pos;bars.size=Vector2(width,0);bars.reflow();return bars

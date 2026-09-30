@@ -243,10 +243,14 @@ var board=preload("res://scripts/systems/board_system.gd").new(self)
 var terrain=preload("res://scripts/systems/terrain_system.gd").new(self)
 var surprises=preload("res://scripts/systems/surprise_system.gd").new(self)
 var flow=preload("res://scripts/systems/flow_system.gd").new(self)
+## Run event bus: card effects react to events and adjust live values (see scripts/upgrades/run_effects.gd).
+var effects=preload("res://scripts/upgrades/run_effects.gd").new(self)
+var challenges=preload("res://scripts/systems/challenge_rooms.gd").new(self)
 
 var resume_checkpoint:Dictionary={}
 func _ready():
 	set_meta("start_documents",Game.cores)
+	ResourceStrip.track_run(run)
 	weapon=Game.selected_weapon;rerolls_left=3+Game.reroll_level
 	for id in LOOT.WEAPONS:weapon_mods[id]={"damage":0.0,"interval":1.0,"intercept":0.0}
 	abilities=load("res://scripts/run_ability.gd").new();abilities.arena=self;abilities.selected=Game.selected_ability;abilities.setup()
@@ -268,6 +272,7 @@ func _ready():
 
 func begin_room(index: int):
 	Game.progression.combat_entered=true
+	effects.emit("room_start",{"index":index})
 	Game.music_context("boss" if index in Campaign.BOSSES else "battle",true)
 	star_time=0.0;recipe_offer={};draft_pickup={};generators.clear()
 	var carried_kind="soldier"
@@ -290,6 +295,8 @@ func begin_room(index: int):
 	twin_boss=index in Campaign.BOSSES and BossCatalog.encounter(run_seed,index).count==2
 	var route_node=RoutePlan.chosen(RoutePlan.build(run_seed),index,run.route_choices)
 	room.difficulty=route_node.difficulty;room.route_node_id=route_node.id
+	room.mode=route_node.get("type","battle") if route_node.get("type","battle") in RoutePlan.CHALLENGES else "battle"
+	challenges.reset()
 	room.commander_elite=room.difficulty>0
 	room.commander=null;room.commander_help_timer=0;room.commander_help_waves=0;room.commander_help_pool.clear()
 	room_index=index;grid_size=ROOM_SIZES[index];boss_room=index in Campaign.BOSSES;boss_defeated=false
@@ -301,6 +308,9 @@ func begin_room(index: int):
 	camera.size=grid_size+5.0
 	_build_map()
 	preload("res://scripts/world_lighting.gd").field(self)
+	preload("res://scripts/systems/block_decor.gd").decorate(self)
+	var weather=preload("res://scripts/systems/weather.gd").new();add_child(weather);weather.setup(self)
+	get_node("WorldLighting").apply()
 	get_node("WorldAtmosphere").apply()
 	var ambience=load("res://scripts/location_ambience.gd").new()
 	ambience.seed_value=Game.visual_run_seed;ambience.room_index=index;ambience.biome=room_palette().ambience;ambience.radius=grid_size*.5;add_child(ambience)
@@ -308,7 +318,9 @@ func begin_room(index: int):
 	player.salvaged=carried_salvaged
 	if carried_kind!="soldier" and carried_armor>0:player.hp=minf(carried_armor,player.max_hp);player.refresh_health()
 	toast("Атакуй босса. При включении щита уничтожь светящийся генератор." if Campaign.is_final(room_index) else "Бой с генералом. Уничтожь командирский танк." if boss_room else "")
-	start_wave(0)
+	preload("res://scripts/effect_warmup.gd").run(self)
+	if challenges.active():challenges.start();phase="combat"
+	else:start_wave(0)
 	if boss_room:drop_pickup(Vector2i(base_cell.x-3,grid_size-2),"vehicle")
 
 func world_pos(cell: Vector2i) -> Vector3:
@@ -348,27 +360,34 @@ func _build_map():
 				for cell in cluster:
 					BattleMapGenerator.put(current_layout,cell,"B")
 		BattleMapGenerator.thin_obstacles(current_layout,run_seed+room_index*991,false)
+		board.reinforce_layout(current_layout)
 		for z in range(grid_size):
 			for x in range(grid_size):
 				if current_layout[z][x]=="B":add_wall(Vector2i(x,z),4)
+				elif current_layout[z][x]=="K":board.add_reinforced_wall(Vector2i(x,z),16)
+		if Campaign.unified_content():board.corner_barrels(current_layout)
 		board.shape_map_walls()
 		terrain.build()
 		if Campaign.is_final(room_index):spawn_generators()
 		base_model=Visuals.model("base",self,world_pos(base_cell));base_model.rotation.y=preload("res://scripts/mobile_hq.gd").orientation(run_seed+room_index*719)
 		return
 	current_layout=layout.rows
-	if Campaign.zone(room_index)>=2:ruin_layout(current_layout)
-	BattleMapGenerator.thin_obstacles(current_layout,run_seed+room_index*100003)
+	if room.mode!="battle":ChallengeLayouts.apply(current_layout,grid_size,room.mode,run_seed+room_index*977)
+	elif Campaign.zone(room_index)>=2:ruin_layout(current_layout)
+	elif Campaign.unified_content():board.scatter_barrels(current_layout)
+	if room.mode=="battle":
+		BattleMapGenerator.thin_obstacles(current_layout,run_seed+room_index*100003)
+		board.reinforce_layout(current_layout)
 	for x in spawn_columns():
 		create_spawn_marker(Vector2i(x,0),Vector2i.DOWN)
 	for z in range(grid_size):
 		for x in range(grid_size):
 			var cell=Vector2i(x,z)
 			match layout.rows[z][x]:
-				"A":add_armored_wall(cell)
 				"X":add_barrel(cell)
 				"R":add_rubble(cell)
 				"B":add_wall(cell,3)
+				"K":board.add_reinforced_wall(cell,12)
 				"C":add_wall(cell,-1)
 				"T":add_trench(cell)
 				"N":nets[cell]=Visuals.model("net",self,world_pos(cell))
@@ -473,11 +492,12 @@ func _physics_process(delta):
 			spawn_index+=1;spawn_timer=Balance.CONFIG.combat.spawn_interval
 		else:spawn_index+=1;spawn_timer=.35
 	collect_nearby_pickups(delta)
+	if challenges.active():challenges.tick(delta)
 	if room_cleared and is_instance_valid(flag) and is_instance_valid(player):
 		var near=flat_distance(player.position,flag.position)<1.1
 		if not near:flag_armed=true
 		if near and flag_armed:open_flag()
-	if not room_cleared and spawn_queue.is_empty() and enemy_count()==0 and grenades.is_empty():
+	if not room_cleared and spawn_queue.is_empty() and enemy_count()==0 and grenades.is_empty() and not challenges.blocks_waves():
 		finish_wave()
 
 func wave_enemy_count()->int:
@@ -544,6 +564,8 @@ func interact():
 	if phase not in ["combat","countdown"] or not is_instance_valid(player) or player.moving: return
 	var recipe=nearest_recipe()
 	if not recipe.is_empty():open_recipe_draft(recipe);return
+	if not challenges.nearest_cache().is_empty():challenges.open_cache();return
+	if challenges.nearest_cup()!=null:challenges.pick_cup(challenges.nearest_cup());return
 	if room_cleared and is_instance_valid(flag) and flat_distance(player.position,flag.position)<1.8:
 		open_flag();return
 	if player.kind=="soldier" and board.interact_trench():return
@@ -731,9 +753,6 @@ func spawn_columns()->Array:
 	return [1,int(grid_size/3.0),int(grid_size*2/3.0),grid_size-2] if Campaign.zone(room_index)>=2 else [1,base_cell.x,grid_size-2]
 func ruin_layout(rows:Array):
 	return board.ruin_layout(rows)
-
-func add_armored_wall(cell):
-	return board.add_armored_wall(cell)
 
 func add_barrel(cell):
 	return board.add_barrel(cell)

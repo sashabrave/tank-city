@@ -23,6 +23,17 @@ extends Resource
 @export_range(0.1,5,0.1) var grenade_fuse:float=1
 @export_range(0.01,1,0.01) var interception_base_scale:float=0.5
 @export_range(0.1,20,0.1) var allied_turret_interval:float=2.4
+@export_group("Пределы характеристик")
+## Абсолютный предел скорости техники и бойца игрока, клеток в секунду.
+@export_range(1,15,0.1) var player_speed_cap:float=5.2
+## Предел множителя скорости бойца от карт забега.
+@export_range(1,5,0.01) var speed_multiplier_cap:float=1.45
+## Пределы шанса перехвата снарядов (напор).
+@export_range(0,1,0.01) var interception_floor:float=0.05
+@export_range(0,1,0.01) var interception_cap:float=0.9
+@export_group("Сила наград")
+## Множитель силы наград по тиру: обычная, редкая, эпическая.
+@export var reward_tier_power:PackedFloat32Array=PackedFloat32Array([1.0,1.5,2.0])
 @export_group("Ритм боя")
 @export_range(0.5,15,0.25) var wave_delay:float=3.75
 @export_range(0.1,15,0.1) var spawn_interval:float=2.4

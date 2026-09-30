@@ -81,6 +81,8 @@ static func icon_texture(id:String)->Texture2D:
 	var key={"range":"sniper","healing":"heart","device_power":"damage","device_cooldown":"fire","weapon_intercept":"pressure","recovery":"shield","intercept":"pressure","weapon_damage":"damage","weapon_fire":"fire","cooldown":"fire","power":"damage","utility":"slots","hp":"health"}.get(id,id)
 	var path="res://assets/icons/v1/"+key+".png"
 	if not ResourceLoader.exists(path):path="res://assets/icons/v09/"+key+".png"
+	# Missing artwork falls back to the Straight interface set before the generic recipe icon.
+	if not ResourceLoader.exists(path) and ResourceLoader.exists("res://assets/icons/interface_straight/"+key+".svg"):return interface_icon(key)
 	if not ResourceLoader.exists(path):path="res://assets/icons/v1/recipe.png"
 	return load(path) if ResourceLoader.exists(path) else null
 

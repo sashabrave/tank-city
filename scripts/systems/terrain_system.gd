@@ -53,6 +53,7 @@ func eligible(p:Vector2i)->bool:
 		if abs(c.x-arena.base_cell.x)<=2:return false
 		for corner in [Vector2i(2,2),Vector2i(arena.grid_size-3,2),Vector2i(2,arena.grid_size-3),Vector2i(arena.grid_size-3,arena.grid_size-3)]:
 			if (c-corner).length()<2:return false
+	if arena.room.mode!="battle" and ChallengeLayouts.keeps_clear(arena.grid_size,arena.room.mode,c):return false
 	return arena.current_layout[c.y][c.x]=="." and not patches.has(p)
 func set_cell(c:Vector2i,kind:String):
 	for x in range(2):

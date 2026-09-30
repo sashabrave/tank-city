@@ -108,7 +108,7 @@ func offers(_at_service:bool=false)->Array:
 func apply(id:String,tier:int):
 	var parts=id.split(":");var tech=parts[1];var oldmax=max_hp()
 	arena.run.upgrade_history.append({"id":tech,"detail":"Штаб","tier":tier})
-	if parts[0]=="hq_up":levels[tech]=minf(10,level(tech)+[1,1.5,2][tier])
+	if parts[0]=="hq_up":levels[tech]=minf(10,level(tech)+Balance.tier_power(tier))
 	else:
 		var equipped=loadout();var slot=clampi(int(parts[2]),0,Game.hq_slots-1)
 		if HQCatalog.DATA[tech].mode=="active" and active!="":equipped.erase(active)
@@ -125,7 +125,7 @@ func apply(id:String,tier:int):
 	Game.progression.event("hq_run_upgrade")
 func card(offer:Dictionary)->Dictionary:
 	var parts=offer.id.split(":");var id=parts[1];var data=HQCatalog.DATA[id];var description=""
-	if parts[0]=="hq_up":description=stat_change(id,level(id),minf(10,level(id)+[1,1.5,2][offer.tier]))
+	if parts[0]=="hq_up":description=stat_change(id,level(id),minf(10,level(id)+Balance.tier_power(offer.tier)))
 	else:
 		var equipped=loadout();var old=equipped[int(parts[2])] if int(parts[2])<equipped.size() else ""
 		description=("Вместо: "+HQCatalog.DATA[old].name+"\n" if old!="" else "Свободный слот\n")+data.description

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="UpgradeDef" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrades/upgrade_def.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/upgrades/effects/exit_dash.gd" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = "exit_dash"
+title = "Смена позиции"
+category = "Тактика"
+icon = "speed"
+tags = PackedStringArray("behavior", "vehicle", "mobility")
+weight = 10
+max_stacks = 1
+detail = "После выхода из машины: +25% скорости на 3 с. Откат 8 с."
+effect = ExtResource("2")

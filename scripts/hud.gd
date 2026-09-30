@@ -122,7 +122,8 @@ func _process(_delta):
 	dpad.visible=Settings.values.screen_controls;fire_pad.visible=Settings.values.screen_controls;biome_panel.visible=Settings.values.biome_info
 	Texts.set_text(biome_label,arena.BIOMES.caption(arena.run_seed,arena.room_index))
 	Texts.set_text(wave_label,"Босс мира" if data.boss_room else "Поле %d / %d" % [data.stage,6])
-	Texts.set_text(enemy_label,BossCatalog.encounter(arena.run_seed,arena.room_index).name if data.boss_room else "Волна %d / 3 · %s" % [data.wave,WaveDirector.wave_title(data.wave-1)])
+	if arena.challenges.active():Texts.set_text(enemy_label,arena.challenges.status())
+	else:Texts.set_text(enemy_label,BossCatalog.encounter(arena.run_seed,arena.room_index).name if data.boss_room else "Волна %d / 3 · %s" % [data.wave,WaveDirector.wave_title(data.wave-1)])
 	tip.hide();Texts.set_text(star_label,"★ Звезда · %.1f с" % data.star);star_label.visible=data.star>0
 	ability_button.hide()
 	for i in range(skill_buttons.size()):
@@ -256,14 +257,15 @@ func show_recipe_draft():
 	var panel=choice_screen("chest_screen","Сундук "+EncounterRules.STARS[difficulty],"Выбери награду",EncounterRules.reward_text(difficulty)+". Один предмет на выбор.")
 	panel.get_node("ReturnButton").pressed.connect(func():arena.pause_battle())
 	for i in range(3):
-		var offer=arena.draft_pickup.offers[i];var special=offer.category in ["secret","alloy","upgrade"]
+		var offer=arena.draft_pickup.offers[i];var special=offer.category in ["secret","alloy","upgrade","documents"]
 		var tier=offer.get("tier",0) if special else Game.TIERS.tier(offer.id)
-		var card_name=Game.recipe_name(offer) if not special else "+%d сплава" % offer.amount if offer.category=="alloy" else "Секретное усиление" if offer.category=="secret" else "Улучшение героя"
+		var card_name=Game.recipe_name(offer) if not special else "+%d сплава" % offer.amount if offer.category=="alloy" else "+%d док." % offer.amount if offer.category=="documents" else "Секретное усиление" if offer.category=="secret" else UpgradeRegistry.get_def(offer.id).title if UpgradeRegistry.has(offer.id) else "Улучшение героя"
 		var detail="Откроется после возврата в хаб"
 		if offer.category=="alloy":detail="Сохрани при возврате в хаб"
+		elif offer.category=="documents":detail="Документы для оболочек и открытий"
 		elif offer.category=="secret":
 			detail={"weapon":"+75% базового урона: "+LOOT.WEAPONS.get(offer.id,{"name":""}).name,"ability":"+3 уровня силы: "+AbilityCatalog.DATA.get(offer.id,{"name":""}).name,"bonus":"+3 уровня: "+LOOT.BONUSES.get(offer.id,{"name":""}).name,"stat":"+5 HP" if offer.id=="health" else "Напор: +20 % против равных"}[offer.type]
-		elif offer.category=="upgrade":detail=arena.reward.upgrade_preview(offer.id,[1.0,1.5,2.0][offer.get("tier",0)])
+		elif offer.category=="upgrade":detail=arena.reward.upgrade_preview(offer.id,offer.get("tier",0))
 		if offer.get("duplicate",false):detail="Уже открыт. Донеси в хаб и продай в урне за %d сплава." % Game.duplicate_price(offer)
 		var view={"category":"Транспорт" if offer.category=="garage" else "Штаб" if offer.category=="hq" or offer.id=="headquarters" else "Чертёж" if not special else "Трофей","title":card_name,"detail":detail,"icon":offer.id if special else "recipe","heading":LOOT.RARITY_NAMES[tier],"color":Color(LOOT.RARITY_COLORS[tier])}
 		preload("res://scripts/ui/choice_card.gd").configure(panel.get_node("Card"+str(i+1)),view,func():arena.choose_recipe_card(i))

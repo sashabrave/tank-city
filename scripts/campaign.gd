@@ -21,6 +21,12 @@ static func configure(id:int,infinite:bool=false):
 	BOSSES=[6,7] if world==3 and not endless else [SIZES.size()-1]
 	SERVICES=[2,4,6,7] if world==3 and not endless else [2,4,6]
 static func progress_index(index:int)->int:return mini(22,int(WORLDS[world].offset)+index) if not endless else mini(22,7+cycle*2+index)
+## Share of brick blocks that become reinforced: none before mid-route, 15% there, 35% at the boss.
+static func reinforced_share(index:int)->float:
+	if endless:return minf(.35,.15+cycle*.05+index*.01)
+	var start=ceili(BOSSES[0]*.5)
+	if index<start:return 0.0
+	return lerpf(.15,.35,clampf(float(index-start)/maxf(1,BOSSES[0]-start),0,1))
 static func zone(_index:int)->int:return world if not endless else mini(3,1+cycle/2)
 static func is_final(index:int)->bool:return not endless and world==3 and index==7
 static func hp_scale(index:int)->float:return endless_strength*(1+cycle*.30+cycle*cycle*.025+index*.065) if endless else WORLDS[world].hp*(1+index*(.13 if world==1 else .08))
@@ -33,9 +39,13 @@ static func title(index:int)->String:
 static func unlocked(id:int)->bool:return id==1 or id-1 in Game.progression.cleared_worlds
 static func infinite_unlocked()->bool:return 1 in Game.progression.cleared_worlds
 static func service_options(seed_value:int,index:int)->Array:
+	# World 1 rows hold the two key stops — instructor and merchant; mechanic and workshop are route nodes.
+	if world==1 and not endless:return ["ability","merchant"]
 	var options=["vehicle","ability","headquarters"];var rng=RandomNumberGenerator.new();rng.seed=seed_value+index*977+world*181+cycle*371
 	if not endless:
 		var removed=rng.randi_range(0,2);options.remove_at(removed)
 	return options
-static func recipe_world()->int:return world if not endless else maxi(1,Game.progression.cleared_worlds.size())
+## World 1 and endless hold all content of the three worlds; locked worlds 2–3 keep their original gating.
+static func recipe_world()->int:return 3 if world==1 else world
+static func unified_content()->bool:return world==1 and not endless
 static func weapon_world(id:String)->int:return 3 if id=="rpg" else 2 if id=="sniper" else 1

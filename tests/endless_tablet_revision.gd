@@ -54,7 +54,7 @@ func run():
 	Campaign.cycle=30;hp=Campaign.hp_scale(0);Campaign.cycle=31
 	check(Campaign.hp_scale(0)>hp and Campaign.active_cap(0)<=8,"late cycles grow with bounded simultaneous enemies")
 	Campaign.cycle=1
-	arena.room.wave=2;arena.room.room_boss_spawned=true;arena.phase="combat";arena.room.pickups.clear();arena.flow.finish_wave()
+	arena.room.wave=2;arena.room.room_boss_spawned=true;arena.phase="combat";arena.room.pickups.clear();arena.room.spawn_queue.clear();arena.flow.finish_wave()
 	check(arena.phase=="upgrade" and arena.room.room_cleared,"miniboss clear opens reward automatically")
 	arena.reward.skip_upgrade();check(arena.phase=="map","reward advances endless automatically")
 	main.queue_free();await settle()

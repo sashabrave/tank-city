@@ -124,7 +124,7 @@ static func thin_obstacles(rows:Array,seed_value:int,protect_base=true):
 	for y in range(width):
 		for x in range(width):
 			var kind=rows[y][x];var cell=Vector2i(x,y)
-			if kind not in ["B","C","A","X","R","T","N"]:continue
+			if kind not in ["B","C","X","R","T","N"]:continue
 			if protect_base and kind=="N" and x in [0,width-1]:continue
 			if protect_base and y>=width-2 and absi(x-middle)<=1:continue
 			if protect_base and kind=="C" and absi(x-middle)<=1 and not central.has(x):central[x]=true;continue

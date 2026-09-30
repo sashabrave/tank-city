@@ -22,6 +22,7 @@ func start_wave(index: int):
 		arena.drop_pickup(Vector2i(arena.room.base_cell.x,arena.room.grid_size-3),"vehicle")
 	if not arena.room.boss_room and "turret" in Game.bonus_unlocks and arena.room.room_index>=2 and index==0:arena.drop_pickup(arena.room.base_cell,"turret")
 	arena.surprises.start_wave()
+	arena.effects.emit("wave_start",{"wave":index})
 	for marker in arena.room.spawn_markers:
 		if is_instance_valid(marker):marker.queue_free()
 	arena.room.spawn_markers.clear()
@@ -70,10 +71,7 @@ func finish_wave():
 		arena.room.room_cleared=true
 		var reward=4+Campaign.progress_index(arena.room.room_index)*2
 		Game.earn(reward);arena.run.earned+=reward
-		arena.room.flag=Node3D.new();arena.add_child(arena.room.flag);arena.room.flag.position=arena.world_pos(Vector2i(arena.room.base_cell.x,arena.room.grid_size-3))
-		Visuals.box(arena.room.flag,Vector3(0,1,0),Vector3(.06,2,.06),Color("eee9d8"))
-		Visuals.box(arena.room.flag,Vector3(.35,1.7,0),Vector3(.7,.45,.07),Color("7cb56b"))
-		Visuals.label3d(arena.room.flag,"Награда · +%d ◈" % reward,Vector3(0,2.4,0),Color("f5edcc"),25)
+		place_flag("Награда · +%d ◈" % reward)
 		arena.toast("Маршрут открыт")
 		if Campaign.endless:open_flag()
 		return
@@ -111,6 +109,11 @@ func pause_battle():
 	elif arena.phase=="paused":
 		arena.phase=arena.room.previous_phase;arena.hud.close_modal()
 
+## Exit flag in front of the HQ; the room is left through it.
+func place_flag(caption:String):
+	arena.room.flag=Node3D.new();arena.add_child(arena.room.flag);arena.room.flag.position=arena.world_pos(Vector2i(arena.room.base_cell.x,arena.room.grid_size-3))
+	ExitFlag.build(arena.room.flag)
+	Visuals.label3d(arena.room.flag,caption,Vector3(0,3.35,0),Color("f5edcc"),25)
 func open_flag():
 	arena.room.flag_armed=false;arena.phase="upgrade";Game.reset_input()
 	if arena.room.reward_claimed:arena.hud.show_departure()

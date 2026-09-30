@@ -26,8 +26,17 @@ func stream_for(id:String):
 	if files.size()>1 and index==last_variant.get(id,-1):index=(index+1)%files.size()
 	last_variant[id]=index
 	var path=ROOT+files[index]
-	if not cache.has(path):cache[path]=load(path)
+	if not cache.has(path):
+		# Warmed in the background at start; a finished threaded load is picked up without blocking.
+		if ResourceLoader.load_threaded_get_status(path)==ResourceLoader.THREAD_LOAD_LOADED:cache[path]=ResourceLoader.load_threaded_get(path)
+		else:cache[path]=load(path)
 	return cache[path]
+## Starts background loading of every effect variant so the first shots do not wait for the disk.
+func warm():
+	for id in banks:
+		for file in banks[id].files:
+			var path=ROOT+file
+			if not cache.has(path) and ResourceLoader.load_threaded_get_status(path)==ResourceLoader.THREAD_LOAD_INVALID_RESOURCE:ResourceLoader.load_threaded_request(path)
 func gain(id:String)->float:
 	if id=="ui_hover":return -27.0
 	if id.begins_with("reward_reveal_"):return -23.0

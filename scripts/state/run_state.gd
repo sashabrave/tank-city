@@ -8,6 +8,8 @@ var damage_bonus = 0.0
 var fire_multiplier = 1.0
 var speed_multiplier = 1.0
 var earned = 0
+## Run-only merchant currency; lost when the run ends.
+var tokens=0
 var lost_alloy=0
 var kills = 0
 var elapsed = 0.0

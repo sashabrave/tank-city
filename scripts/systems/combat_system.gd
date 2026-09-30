@@ -136,7 +136,17 @@ func actor_destroyed(actor):
 				arena.drop_recipe(actor.cell,{});Game.music_stinger("boss_victory");arena.toast("Победа! Забери сундук командира")
 		else:
 			arena.reward.drop_enemy_loot(actor)
+	if not actor.player_owned:leave_body(actor)
 	actor.queue_free()
+
+func leave_body(actor):
+	# Visual only: the model plays its fall, lingers, then sinks away.
+	var body=actor.model
+	if not is_instance_valid(body) or not body.has_method("has_death") or not body.has_death():return
+	body.reparent(arena);body.play_death()
+	var tween=body.create_tween()
+	tween.tween_interval(2.4);tween.tween_property(body,"position:y",body.position.y-.45,.9).set_trans(Tween.TRANS_SINE)
+	tween.tween_callback(body.queue_free)
 
 func drone_death_explosion(pos:Vector3):
 	var radius=Balance.CONFIG.combat.drone_death_radius
@@ -223,7 +233,8 @@ func player_pressure()->float:
 
 func fire_weapon(actor):
 	var data=arena.LOOT.WEAPONS[arena.run.weapon]
-	var multiplier=BehaviorCards.shot_multiplier(arena)
+	var multiplier=arena.effects.modify("shot_damage",1.0,{"actor":actor})
+	arena.effects.emit("shot",{"actor":actor})
 	for i in range(data.pellets):
 		var bullet=spawn_bullet(actor,actor.position,actor.facing,actor.damage*multiplier,true)
 		var spread=(i-(data.pellets-1)*.5)*.10

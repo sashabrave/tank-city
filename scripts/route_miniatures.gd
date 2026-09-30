@@ -76,3 +76,51 @@ static func headquarters(parent:Node3D):
 	var rover=Visuals.model("base",parent);rover.scale=Vector3.ONE*1.8;rover.position=Vector3(0,.28,0);rover.rotation.y=PI*.5
 	Visuals.box(parent,Vector3(2,1.4,1.1),Vector3(.08,2.4,.08),Color("d8d9ca"))
 	Visuals.box(parent,Vector3(2.4,2.4,1.1),Vector3(.85,.5,.07),Color("79bd9b"))
+
+## Start pad: round concrete platform with a launch gate and chevrons the vehicle leaves from.
+static func start(parent:Node3D):
+	var concrete=Color("8d9186")
+	base(parent,concrete,true)
+	for x in [-2.1,2.1]:Visuals.box(parent,Vector3(x,1.05,-1.6),Vector3(.32,1.55,.32),concrete.darkened(.35))
+	Visuals.box(parent,Vector3(0,1.9,-1.6),Vector3(4.6,.26,.4),Color("e5b34f"))
+	for i in range(5):Visuals.box(parent,Vector3(-1.9+i*.95,1.9,-1.38),Vector3(.45,.2,.03),Color("2f332d"))
+	for i in range(3):
+		for side in [-1,1]:
+			var chevron=Visuals.box(parent,Vector3(side*.38,.3,1.3-i*.95),Vector3(.9,.03,.18),Color("f0d27a"));chevron.rotation.y=side*.75
+	Visuals.box(parent,Vector3(2.3,.55,1.6),Vector3(.7,.55,.7),concrete.darkened(.2))
+	Visuals.box(parent,Vector3(2.3,.95,1.6),Vector3(.18,.3,.18),Color("cf613f"))
+
+## Merchant stall: striped awning over a counter with crates.
+static func merchant(parent:Node3D):
+	var wood=Color("8a6a48")
+	base(parent,Color("a99b79"),true)
+	Visuals.box(parent,Vector3(0,.6,-.4),Vector3(3,.8,1),wood)
+	for x in [-1.4,1.4]:Visuals.box(parent,Vector3(x,1.3,-.9),Vector3(.18,1.9,.18),wood.darkened(.3))
+	for i in range(5):Visuals.box(parent,Vector3(-1.2+i*.6,2.25,-.6),Vector3(.6,.14,1.4),Color("c9793f") if i%2==0 else Color("e8dcc0"))
+	Visuals.box(parent,Vector3(1.8,.45,1.1),Vector3(.7,.6,.7),Color("9c8156"))
+	Visuals.box(parent,Vector3(-1.8,.45,1),Vector3(.6,.5,.6),Color("9c8156"))
+
+## Challenge tile: battlefield plate with the challenge prop (cache chest…).
+static func challenge(parent:Node3D,type:String,color:Color):
+	base(parent,color)
+	match type:
+		"cache":
+			Visuals.box(parent,Vector3(0,.75,0),Vector3(2.2,1.1,1.4),Color("5d5a4a"))
+			Visuals.box(parent,Vector3(0,1.38,0),Vector3(2.3,.25,1.5),Color("7b7660"))
+			for x in [-.7,.7]:Visuals.box(parent,Vector3(x,.8,-.72),Vector3(.2,1,.06),Color("d4bd73"))
+			Visuals.box(parent,Vector3(0,.95,-.73),Vector3(.35,.35,.05),Color("cf613f"))
+		"hold":
+			Visuals.ring(parent,Color("e5b34f"),2.1)
+			Visuals.box(parent,Vector3(0,1.4,0),Vector3(.18,2.4,.18),Color("eee9d8"))
+			Visuals.box(parent,Vector3(.7,2.2,0),Vector3(1.3,.8,.1),Color("e5b34f"))
+		"thimbles":
+			for x in [-1.3,0,1.3]:
+				var cup=MeshInstance3D.new();var shape=CylinderMesh.new();shape.top_radius=.28;shape.bottom_radius=.48;shape.height=.9;cup.mesh=shape;cup.position=Vector3(x,.75,0);cup.material_override=Visuals.material(Color("56645a"));parent.add_child(cup)
+		"switches":
+			var colors=[Color("d8453a"),Color("e5b34f"),Color("5aa469"),Color("4f86c6")]
+			for i in range(4):Visuals.box(parent,Vector3(-1.2+(i%2)*2.4,.36,-1.2+int(i/2)*2.4),Vector3(1.1,.1,1.1),colors[i])
+			Visuals.box(parent,Vector3(0,.8,0),Vector3(1,1,1),Color("59605a"))
+		"survive":
+			for p in [Vector3(-1.2,0,-.8),Vector3(1,0,.6),Vector3(-.2,0,1.3)]:
+				var ring=Visuals.ring(parent,Color("d8453a"),.9);ring.position=p+Vector3(0,.32,0)
+			Visuals.box(parent,Vector3(.9,.7,-1),Vector3(.5,.8,.5),Color("6d6a5c"))

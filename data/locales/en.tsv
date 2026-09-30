@@ -1438,3 +1438,130 @@ HP и урон +0,2% · скорость +0,1% за уровень	HP and damage
 Changelog	Changelog
 Комната начнётся заново.	The room starts over.
 Продолжение с карты маршрута.	Continue from the route map.
+Старт	Start
+Торговец	Merchant
+Жетоны с врагов меняются здесь на усиления	Trade enemy tokens for upgrades here
+Торговать [E]	Trade [E]
+Дальше →	Continue →
+Торговец · E	Merchant · E
+Жетоны: %d	Tokens: %d
+Продано	Sold
+Купить · %d	Buy · %d
+Сыграть · %d	Play · %d
+Полевая аптечка	Field medkit
+Ремонт машины	Vehicle repair
+Восстанавливает броню техники полностью	Fully restores vehicle armor
++1 переброс карт на этот забег	+1 card reroll for this run
+Чертёж · %s	Blueprint · %s
+Попадёт в рюкзак — его нужно донести до хаба	Goes to the backpack — bring it back to the hub
+Игровой автомат	Slot machine
+Ставка %d: пусто, жетоны назад, лечение или карта — иногда эпическая	Bet %d: nothing, tokens back, healing or a card — sometimes epic
+Куплено: %s	Bought: %s
+Боец вылечен	Soldier healed
+Машина отремонтирована	Vehicle repaired
+Переброс добавлен	Reroll added
+Чертёж в рюкзаке	Blueprint in the backpack
+Автомат: жетоны вернулись вдвойне	Slot machine: tokens paid back double
+Автомат: полное лечение	Slot machine: full heal
+Автомат: %s · %s	Slot machine: %s · %s
+Автомат: пусто	Slot machine: nothing
+Жетоны с врагов меняются на карты, лечение, перебросы и чертежи.\nЕсть игровой автомат.	Enemy tokens buy cards, healing, rerolls and blueprints.\nThere is a slot machine too.
+Переброс	Reroll
+Жетоны	Tokens
+%d док.	%d docs
+Тайник	Cache
+Тайник ★	Cache ★
+Тайник ★★	Cache ★★
+Тайник · E	Cache · E
+Тайник [E]	Cache [E]
+Тайник · засада	Cache · ambush
+Выход	Exit
+Тайник. Откроешь — будет засада. Можно уйти через выход	Cache. Opening it calls an ambush. You can leave through the exit
+Засада!	Ambush!
+Продержись	Hold on
+Засада отбита · забери награду	Ambush repelled · take your reward
++%d док.	+%d docs
+Документы для оболочек и открытий	Documents for shells and unlocks
+Сундук в центре поля. Откроешь — с двух сторон придёт засада ветеранов. Можно уйти через выход, не открывая.	A chest in the middle of the field. Opening it brings a veteran ambush from both sides. You can leave through the exit without opening it.
+Награда: Сплав и обычные карты	Reward: alloy and common cards
+Награда: Редкие карты или чертёж	Reward: rare cards or a blueprint
+Награда: Эпические карты, документы или редкий чертёж	Reward: epic cards, documents or a rare blueprint
+Испытание	Challenge
+Удержание	Hold
+Держи точку	Hold the point
+Стой в зоне, пока враги наступают	Stay in the zone while enemies advance
+Патроны кончились	Out of ammo
+Уклоняйся от обстрела	Dodge the barrage
+Выживание: оружие не стреляет — уходи из красных меток	Survival: weapons won't fire — get out of the red markers
+Испытание пройдено	Challenge complete
+Забери награду	Take your reward
+Удержание · %d / %d с	Hold · %d / %d s
+Выживание · %d / %d с	Survival · %d / %d s
+Удержание · готово	Hold · done
+Выживание · готово	Survival · done
+Удержание ★	Hold ★
+Удержание ★★	Hold ★★
+Выживание ★	Survival ★
+Выживание ★★	Survival ★★
+Займи точку и стой в ней, пока враги наступают. Шкала растёт, только если в зоне нет врагов. Штаб тоже нужно беречь.	Take the point and stay in it while enemies advance. Progress grows only while no enemy is inside. Keep the HQ safe too.
+Патроны кончились: оружие не стреляет. Уклоняйся от красных меток артобстрела, пока не выйдет время.	Out of ammo: weapons won't fire. Dodge the red artillery markers until time runs out.
+Напёрстки	Thimbles
+Напёрстки ★	Thimbles ★
+Напёрстки ★★	Thimbles ★★
+Напёрстки · смотри	Thimbles · watch
+Напёрстки · следи	Thimbles · follow
+Напёрстки · выбирай [E]	Thimbles · pick [E]
+Напёрстки · готово	Thimbles · done
+Запомни, где штаб	Remember where the HQ is
+Подойди к колпаку со штабом и нажми E	Walk up to the cup with the HQ and press E
+Этот [E]	This one [E]
+Мимо	Miss
+Штаб был под другим колпаком	The HQ was under another cup
+Мини-штаб прячут под одним из броневых колпаков и перемешивают. Подойди к нужному и нажми E. Попытка одна; звёзды — больше колпаков и быстрее.	A mini HQ is hidden under one of the armoured cups and they get shuffled. Walk up to the right one and press E. One guess; stars mean more cups and faster shuffling.
+Переключатели	Switches
+Переключатели ★	Switches ★
+Переключатели ★★	Switches ★★
+Переключатели · запоминай	Switches · memorize
+Переключатели · шаг %d / %d · попыток %d	Switches · step %d / %d · tries %d
+Переключатели · готово	Switches · done
+Запомни порядок огней	Remember the order of the lights
+Наступай на плиты в том же порядке	Step on the plates in the same order
+Сейф заблокирован	Safe locked
+Попытки кончились	No tries left
+Не тот порядок · попыток: %d	Wrong order · tries left: %d
+Плиты по очереди загораются. Наступай на них в том же порядке, чтобы открыть сейф. Три попытки; звёзды — больше плит и длиннее порядок.	Plates light up one by one. Step on them in the same order to open the safe. Three tries; stars mean more plates and a longer order.
+Переключатели · смотри	Switches · watch
+Переключатели · %d / %d	Switches · %d / %d
+Напёрстки · выбор [E]	Thimbles · pick [E]
+Стиль картинки	Picture style
+Пастель · мягкий мульт	Pastel · soft cartoon
+Уютный · как раньше	Cozy · classic
+Золотой час	Golden hour
+Пасмурный фронт	Overcast front
+Цвет солнца, заполняющий свет теней, дымка и небо для отражений металла.	Sun colour, shadow fill light, haze and the sky reflected by metal.
+Мягкие тени	Soft shadows
+Затенение углов	Ambient occlusion
+Блики и свечение	Highlights and glow
+Дымка вдали	Distant haze
+Контурный свет	Rim light
+Блестящий металл	Shiny metal
+Затенение углов доступно на компьютере (Forward+). На слабых устройствах сначала выключи затенение и мягкие тени.	Ambient occlusion is available on desktop (Forward+). On weak devices, turn off occlusion and soft shadows first.
+Луна и солнце в бою	Moon and sun in battle
+Солнце в бою	Sun in battle
+Случайно	Random
+Конец заката	End of sunset
+Луна	Moonlight
+Перед рассветом	Before dawn
+Рассвет	Dawn
+Полдень	Noon
+Закат	Sunset
+Ночное поле: от последнего света заката через луну до раннего рассвета.	Night field: from the last light of sunset through moonlight to early dawn.
+Случайно — своё положение солнца в каждой комнате, чаще рассвет и золотые часы.	Random gives each room its own sun position, most often dawn and golden hours.
+Погода в бою	Battle weather
+Ясно	Clear
+Дождь	Rain
+Снег	Snow
+Туман	Fog
+Песчаная буря	Sandstorm
+Случайно — на новом этапе погода иногда меняется. Только оформление, на бой не влияет.	Random: the weather sometimes changes on a new stage. Visual only, no effect on combat.
+HP стен +1/ур. На ур. 2 — армированный кирпич, на ур. 3 — неразрушимый забор.	Wall HP +1 per level. Level 2 builds reinforced brick, level 3 an indestructible fence.

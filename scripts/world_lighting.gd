@@ -4,6 +4,48 @@ var environment:Environment
 var sun:DirectionalLight3D
 var day_background:Color
 var elapsed=0.0
+## Shader style profiles. Only lighting/post values; geometry and gameplay are untouched.
+const STYLES={
+	"pastel":{"fill":"b4bfdc","sun":"ffe9cc","sun_energy":1.12,"sun_angle":Vector3(-50,-38,0),"ambient":.5,"exposure":.88,"white":1.7,"contrast":1.02,"saturation":1.25,"softness":2.6,"shadow":.95,"specular":.9,"ssao":1.2,"glow":.5,"haze":"e2e7f0","haze_amount":.32,"sky_top":"a9c9ea","sky_horizon":"f6efe3","ground":"cfc6b4"},
+	"cozy":{"fill":"c9cdc3","sun":"ffdbad","sun_energy":.95,"sun_angle":Vector3(-42,-32,0),"ambient":.48,"exposure":1.0,"white":1.0,"contrast":1.0,"saturation":1.0,"softness":1.5,"shadow":1.0,"specular":.6,"ssao":1.45,"glow":.35,"haze":"d9dccf","haze_amount":.18,"sky_top":"8fb0cc","sky_horizon":"e6e6dc","ground":"b9b6a4"},
+	"golden":{"fill":"c4b3d8","sun":"ffc58a","sun_energy":1.18,"sun_angle":Vector3(-30,-62,0),"ambient":.42,"exposure":.9,"white":1.5,"contrast":1.06,"saturation":1.2,"softness":2.2,"shadow":.95,"specular":1.0,"ssao":1.25,"glow":.65,"haze":"f3d6b4","haze_amount":.34,"sky_top":"9cb6d8","sky_horizon":"ffe0bb","ground":"d4b996"},
+	"overcast":{"fill":"d3d8de","sun":"eef1f4","sun_energy":.62,"sun_angle":Vector3(-62,-28,0),"ambient":.66,"exposure":.92,"white":1.5,"contrast":.96,"saturation":.92,"softness":7.0,"shadow":.7,"specular":.7,"ssao":1.5,"glow":.3,"haze":"c9d0d6","haze_amount":.42,"sky_top":"c3ccd6","sky_horizon":"e3e6e8","ground":"b8bcb8"},
+}
+## Sun moments for battle rooms. Day theme: dawn to sunset, weighted toward golden light;
+## night theme: end of sunset, moonlight, early pre-dawn. Elevation in degrees.
+const MOMENTS={
+	"dawn":{"night":false,"weight":.22,"sun":"ffc6a6","energy":.95,"elevation":Vector2(15,22),"fill":"b3b6d8","ambient":.95,"horizon":"ffdcc8","haze":"eee0dc"},
+	"morning":{"night":false,"weight":.2,"sun":"ffe2b4","energy":1.0,"elevation":Vector2(24,36),"fill":"b4c2dc","ambient":1.0,"horizon":"f7ecdc","haze":"e4e8ee"},
+	"noon":{"night":false,"weight":.1,"sun":"fff4e2","energy":1.05,"elevation":Vector2(55,68),"fill":"bcc6d8","ambient":1.05,"horizon":"eef1ee","haze":"e2e7ee"},
+	"golden":{"night":false,"weight":.26,"sun":"ffc98a","energy":1.05,"elevation":Vector2(19,28),"fill":"c3b3d6","ambient":.92,"horizon":"ffe0b8","haze":"f4dcc0"},
+	"sunset":{"night":false,"weight":.22,"sun":"ffa874","energy":1.0,"elevation":Vector2(14,19),"fill":"aeb0cf","ambient":.88,"horizon":"ffcaa6","haze":"efd6c8"},
+	"dusk":{"night":true,"weight":.3,"sun":"ff9c7c","energy":.4,"elevation":Vector2(5,9),"fill":"8174ac","ambient":1.0,"horizon":"c08aa0","haze":"4a3f66"},
+	"moon":{"night":true,"weight":.45,"sun":"9ab7e0","energy":.32,"elevation":Vector2(35,58),"fill":"869fbc","ambient":1.0,"horizon":"7f97b8","haze":"33405a"},
+	"predawn":{"night":true,"weight":.25,"sun":"b3cfe8","energy":.3,"elevation":Vector2(6,11),"fill":"6f8fb4","ambient":1.05,"horizon":"c9a898","haze":"3d4f68"},
+}
+const DAY_MOMENTS=["dawn","morning","noon","golden","sunset"]
+const NIGHT_MOMENTS=["dusk","moon","predawn"]
+## Battle-only moment; hub and route map keep the style sun. Deterministic per run and room,
+## seeded from the visual seed so gameplay RNG is never touched.
+static func moment(context:Node,night:bool)->Dictionary:
+	if context==null or not context.has_method("room_palette") or not "room_index" in context:return {}
+	var choice=str(Settings.values.get("sun_night" if night else "sun_day","random"))
+	var ids=NIGHT_MOMENTS if night else DAY_MOMENTS
+	var rng=RandomNumberGenerator.new();rng.seed=hash([Game.visual_run_seed,int(context.room_index),"sun"])
+	if choice not in ids:
+		var total=0.0
+		for id in ids:total+=float(MOMENTS[id].weight)
+		var roll=rng.randf()*total;choice=ids[-1]
+		for id in ids:
+			roll-=float(MOMENTS[id].weight)
+			if roll<=0:choice=id;break
+	var entry:Dictionary=MOMENTS[choice].duplicate()
+	var span:Vector2=entry.elevation
+	var elevation=rng.randf_range(span.x,span.y)
+	# Avoid the sun straight behind the camera (yaw ~10°): it flattens every shadow.
+	var yaw=wrapf(10.0+rng.randf_range(35,325),-180,180)
+	entry.id=choice;entry.angle=Vector3(-elevation,yaw,0)
+	return entry
 func _ready():
 	process_mode=Node.PROCESS_MODE_ALWAYS
 	Settings.changed.connect(apply)
@@ -21,25 +63,70 @@ func apply():
 	sun.light_energy=.28 if night else .95
 	var cozy=bool(Settings.values.get("shaders",true))
 	var advanced=RenderingServer.get_current_rendering_method()=="forward_plus"
+	var style:Dictionary=STYLES.get(Settings.values.get("shader_style","pastel"),STYLES.pastel)
+	var option=func(key):return cozy and bool(Settings.values.get(key,true))
 	environment.tonemap_mode=Environment.TONE_MAPPER_FILMIC if cozy else Environment.TONE_MAPPER_LINEAR
-	environment.tonemap_exposure=1.15 if cozy else 1.0
-	environment.ssao_enabled=cozy and advanced
+	environment.tonemap_exposure=float(style.exposure) if cozy else 1.0
+	environment.tonemap_white=float(style.white) if cozy else 1.0
+	environment.adjustment_enabled=cozy
+	environment.adjustment_brightness=1.0
+	environment.adjustment_contrast=float(style.contrast)
+	environment.adjustment_saturation=float(style.saturation)
+	environment.ssao_enabled=option.call("ambient_occlusion") and advanced
 	environment.ssao_radius=.65
-	environment.ssao_intensity=1.45
+	environment.ssao_intensity=float(style.ssao)
 	environment.ssao_detail=.6
-	environment.glow_enabled=cozy and advanced
-	environment.glow_intensity=.35
-	environment.glow_bloom=.02
+	environment.ssao_light_affect=.15
+	# Glow picks only bright highlights (metal glints, gold, lamps) instead of washing the frame.
+	environment.glow_enabled=option.call("glow")
+	environment.glow_intensity=float(style.glow)
+	environment.glow_bloom=.03
+	environment.glow_hdr_threshold=.92
+	environment.glow_blend_mode=Environment.GLOW_BLEND_MODE_SOFTLIGHT
+	environment.fog_enabled=false
 	environment.volumetric_fog_enabled=cozy and advanced and night
 	environment.volumetric_fog_density=.012
 	environment.volumetric_fog_length=48.0
 	environment.volumetric_fog_albedo=Color("a7b9d0")
 	environment.volumetric_fog_ambient_inject=.15
-	sun.light_angular_distance=1.5 if cozy else 0.0
+	# Reflection sky: light pastel colours keep metal and gold from mirroring a dark ground.
+	var sky_material=environment.sky.sky_material if environment.sky else null
+	if sky_material is ProceduralSkyMaterial:
+		var bright=cozy and bool(Settings.values.get("shiny_metal",true))
+		sky_material.sky_top_color=Color(style.sky_top) if bright else Color("7394b0")
+		sky_material.sky_horizon_color=Color(style.sky_horizon) if bright else Color("d9dfdd")
+		sky_material.ground_horizon_color=Color(style.ground) if bright else Color("a1a394")
+		sky_material.ground_bottom_color=Color(style.ground).darkened(.25) if bright else Color("44483d")
+		sky_material.energy_multiplier=(.45 if night else 1.0)
+	var soft=option.call("soft_shadows")
+	sun.light_angular_distance=float(style.softness) if soft else 0.0
+	sun.shadow_blur=1.6 if soft else 1.0
+	sun.shadow_opacity=float(style.shadow) if cozy else 1.0
+	sun.light_specular=float(style.specular) if cozy else .5
+	var time:Dictionary=moment(get_parent(),night) if cozy else {}
+	if cozy and not time.is_empty():
+		style=style.duplicate();style.sun_angle=time.angle;style.sun=time.sun;style.fill=time.fill
+		style.sun_energy=float(time.energy) if night else float(style.sun_energy)*float(time.energy)
+		style.ambient=float(style.ambient)*float(time.ambient)
+		if sky_material is ProceduralSkyMaterial and bool(Settings.values.get("shiny_metal",true)):
+			sky_material.sky_horizon_color=Color(time.horizon);sky_material.ground_horizon_color=Color(style.ground).lerp(Color(time.horizon),.35)
+		environment.background_color=(day_background.darkened(.78) if night else day_background).lerp(Color(time.sun),.1 if not night else .06)
+	# Weather dims the sun, softens shadows and tints the fill; visual only.
+	var weather:Dictionary=preload("res://scripts/systems/weather.gd").look(get_parent()) if cozy else {}
+	if not weather.is_empty():
+		style=style.duplicate();style.sun_energy=float(style.sun_energy)*float(weather.sun)
+		style.ambient=float(style.ambient)*float(weather.ambient);style.fill=Color(style.fill).lerp(Color(weather.fill),.6).to_html()
+		sun.shadow_opacity=float(style.shadow)*float(weather.shadow)
+		environment.adjustment_saturation=float(style.saturation)*float(weather.saturation)
 	if cozy:
-		sun.rotation_degrees=Vector3(-42,-32,0)
-		sun.light_color=Color("9ab7e0") if night else Color("ffdbad")
-		environment.ambient_light_energy=.32 if night else .55
+		sun.rotation_degrees=style.sun_angle
+		sun.light_color=Color(style.sun) if not night or not time.is_empty() else Color("9ab7e0")
+		sun.light_energy=float(style.sun_energy) if not night or not time.is_empty() else .3
+		# Fill light is a style colour (lilac-blue shadows); the bright sky is used only for reflections.
+		if not night or not time.is_empty():
+			environment.ambient_light_source=Environment.AMBIENT_SOURCE_COLOR
+			environment.ambient_light_color=Color(style.fill)
+		environment.ambient_light_energy=(.34*float(time.get("ambient",1.0))) if night else float(style.ambient)
 	else:sun.rotation_degrees=Vector3(-55,-32,0)
 	refresh_materials()
 	update_lamps()
@@ -75,6 +162,7 @@ func update_lamps():
 			if not board.wall_contacts(light.global_position,forward,.04).is_empty():light.visible=false
 		light.shadow_enabled=light.visible and (light.get_meta("occluded_beam",false) or (cozy and i<3))
 		light.light_volumetric_fog_energy=1.5 if cozy else 0.0
+		light.shadow_blur=1.5 if cozy and Settings.values.get("soft_shadows",true) else 1.0
 		if light is SpotLight3D and not light.get_meta("occluded_beam",false):
 			if not light.has_node("SoftCone"):add_cone(light)
 			var cone=light.get_node("SoftCone");cone.visible=light.visible
@@ -100,7 +188,13 @@ static func headlights(parent:Node3D,vehicle=false,always=false):
 	var rig=Node3D.new();rig.name="HeadlightRig";parent.add_child(rig)
 	if vehicle:
 		var lamps=parent.find_children("Amber headlamp*","MeshInstance3D",true,false)
-		if not lamps.is_empty():
+		var mounts=parent.find_children("HeadlightMount*","Node3D",true,false)
+		if not mounts.is_empty():
+			# v6 vehicles: beams sit on the modelled lamps and follow the hull.
+			for mount in mounts:
+				var light=beam(mount,Vector3.ZERO,always,3)
+				light.set_meta("occluded_beam",true);light.shadow_enabled=true
+		elif not lamps.is_empty():
 			# Authored HQ points +Z; attach to the actual lamp surfaces, including map scale.
 			for fixture in lamps:
 				var pos=parent.to_local(fixture.global_position)+Vector3(0,0,.025)
@@ -119,7 +213,11 @@ static func headlights(parent:Node3D,vehicle=false,always=false):
 				Visuals.box(rig,pos,Vector3(.095,.065,.035),Color("ffe6a8")).material_override=Visuals.material(Color("ffe6a8"),true)
 				var light=beam(rig,pos+Vector3(0,0,-.025),always,3)
 				light.set_meta("occluded_beam",true);light.shadow_enabled=true
-	else:beam(rig,Vector3(.12,.65,-.24),false,4)
+	else:
+		# v6 infantry carry a chest lamp: the beam rides on it and follows the animation.
+		var lamp=parent.find_child("Flashlight",true,false)
+		if lamp is Node3D:beam(lamp,Vector3.ZERO,false,4)
+		else:beam(rig,Vector3(.12,.65,-.24),false,4)
 
 static func floodlight(parent:Node3D,pos:Vector3,yaw:float):
 	var rig=Node3D.new();rig.name="Floodlight";parent.add_child(rig);rig.position=pos;rig.rotation.y=yaw

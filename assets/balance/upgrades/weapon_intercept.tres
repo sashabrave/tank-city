@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="UpgradeDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrades/upgrade_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "weapon_intercept"
+title = "Стабилизатор"
+category = "Оружие"
+icon = "weapon_intercept"
+tags = PackedStringArray("weapon", "pressure")
+weight = 0
+modifiers = Array[Dictionary]([{"stat": "weapon_mods.@weapon.intercept", "op": "add", "value": 0.05}])
+preview = "intercept"
+detail = "{{pressure.description}}"

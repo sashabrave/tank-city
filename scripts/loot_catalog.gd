@@ -5,7 +5,7 @@ const BONUSES={
  "freeze":{"name":"Фриз","color":"91cadc","shape":"ice","rarity":1,"effect":"Замораживает всех врагов"},
  "heart":{"name":"Аптечка","color":"db676f","shape":"cross","rarity":0,"effect":"Лечение героя +10%/ур."},
  "repair":{"name":"Ремонт базы","color":"6ab7da","shape":"cube","rarity":0,"effect":"Ремонт базы +10%/ур."},
- "wall":{"name":"Укрепление","color":"b5b8c5","shape":"brick","rarity":0,"effect":"HP стен +1/ур."},
+ "wall":{"name":"Укрепление","color":"b5b8c5","shape":"brick","rarity":0,"effect":"HP стен +1/ур. На ур. 2 — армированный кирпич, на ур. 3 — неразрушимый забор."},
  "vehicle_repair":{"name":"Броня","color":"71c7a2","shape":"hex","rarity":1,"effect":"Восстановление брони +10%/ур."},
  "turret":{"name":"Турель","color":"b894d9","shape":"pyramid","rarity":1,"effect":"HP турели +1/ур."},
  "vehicle":{"name":"Десант техники","color":"e8b957","shape":"diamond","rarity":2,"effect":"Доставка быстрее на 8%/ур."},

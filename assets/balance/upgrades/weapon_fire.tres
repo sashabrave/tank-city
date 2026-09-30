@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="UpgradeDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrades/upgrade_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "weapon_fire"
+title = "Скорострельность"
+category = "Оружие"
+icon = "weapon_fire"
+tags = PackedStringArray("weapon", "fire_rate")
+weight = 0
+modifiers = Array[Dictionary]([{"stat": "weapon_mods.@weapon.interval", "op": "scale", "value": -0.15}])
+preview = "rate"

@@ -1,9 +1,131 @@
 {
 	"entries": [
 		{
+			"date": "2026-09-30",
+			"ru": {
+				"title": "Укрепление базы и советский забор",
+				"items": [
+					"Бронеблоки убраны. Теперь есть только два вида кирпича — обычный и армированный — и два вида неразрушимого бетона: сплошной и с узором советского забора.",
+					"Узор забора перерисован: рамка, утопленная панель и гранёные фигуры, как на настоящих бетонных плитах.",
+					"Бонус «Укрепление» на втором уровне ставит вокруг штаба армированный кирпич, а на третьем — неразрушимые полублоки забора."
+				]
+			},
+			"en": {
+				"title": "Base fortification and the Soviet fence",
+				"items": [
+					"Armoured blocks are gone. There are now only two kinds of brick, regular and reinforced, and two kinds of indestructible concrete: plain and with the Soviet fence pattern.",
+					"The fence pattern is redone: a frame, a recessed panel and faceted figures, like real concrete fence panels.",
+					"The Fortification bonus now surrounds the headquarters with reinforced brick at level 2 and with indestructible fence halves at level 3."
+				]
+			}
+		},
+		{
 			"date": "2026-09-29",
 			"ru": {
-				"title": "Сохранения и выход из игры",
+				"title": "Кирпич и армированный кирпич",
+				"items": [
+					"Кирпичные блоки теперь выглядят как настоящая кладка: оранжевые кирпичи с перевязкой и заметными швами.",
+					"Из разбитой кладки летят обломки, и их размер зависит от силы выстрела: от крошки и половинок кирпича до целых кусков стены от снаряда танка.",
+					"Новый армированный кирпич в стальной обвязке. В нём не прострелить узкий проход: блок ломается только целиком, когда получит столько же урона, сколько нужно на обычный кирпичный блок.",
+					"Армированный кирпич появляется со второй половины маршрута, на арене босса и в бесконечном режиме; ближе к боссу его становится больше."
+				]
+			},
+			"en": {
+				"title": "Brick and reinforced brick",
+				"items": [
+					"Brick blocks now look like real masonry: orange bricks laid in a bond with visible mortar joints.",
+					"Broken masonry throws debris sized by the shot: from crumbs and half bricks up to whole chunks of wall from a tank shell.",
+					"New reinforced brick bound with steel bars. You cannot shoot a narrow gap through it: it breaks only as a whole, after taking as much damage as a regular brick block.",
+					"Reinforced brick appears from the second half of the route, in the boss arena and in endless mode, and there is more of it closer to the boss."
+				]
+			}
+		},
+		{
+			"date": "2026-09-29",
+			"ru": {
+				"title": "Погода и мелочи на блоках",
+				"items": [
+					"На новом этапе погода иногда меняется: дождь, снег, туман, а в пустыне — песчаная буря. На бой она не влияет.",
+					"В снег на блоках лежат шапки, у некоторых — сугробы в углу; в пустыне бывают песчаные наносы.",
+					"На блоках появились мелкие обломки, камешки и доски в цвет стен.",
+					"Погоду можно выбрать в настройках видео рядом с солнцем."
+				]
+			},
+			"en": {
+				"title": "Weather and small props on blocks",
+				"items": [
+					"The weather sometimes changes on a new stage: rain, snow, fog, or a sandstorm in the desert. It does not affect combat.",
+					"In snow, blocks get snow caps and some get corner drifts; the desert can leave sand drifts.",
+					"Blocks now carry small chips, pebbles and planks in the wall colour.",
+					"The weather can be chosen in video settings next to the sun."
+				]
+			}
+		},
+		{
+			"date": "2026-09-29",
+			"ru": {
+				"title": "Солнце, взрывы и облака",
+				"items": [
+					"В каждой комнате боя своё солнце: днём от рассвета до заката, чаще золотые часы, ночью — от конца заката через луну до рассвета. Момент можно выбрать в настройках видео.",
+					"Взрывы стали мультяшными: вспышка, огненные клубы, дым, кольцо пыли и копоть на земле.",
+					"Кольца персонажа, зоны гранат и предупреждения мягко дышат, опасные — пульсируют. Лазерный прицел мерцает бегущими импульсами.",
+					"Все снаряды собраны в один стиль со светящимся следом; ракеты получили корпус и пламя.",
+					"На карте мира вместо пятен у камеры — редкие пухлые облака по краям."
+				]
+			},
+			"en": {
+				"title": "Sun, explosions and clouds",
+				"items": [
+					"Each battle room has its own sun: from dawn to sunset by day, mostly golden hours, and from the end of sunset through moonlight to dawn at night. The moment can be chosen in video settings.",
+					"Explosions are now cartoony: a flash, fire puffs, smoke, a dust ring and a scorch mark.",
+					"Character, grenade and warning rings gently breathe, danger rings pulse. The laser sight flickers with travelling pulses.",
+					"All projectiles share one style with a glowing trail; rockets have a body and a flame.",
+					"The world map shows rare puffy clouds at the edges instead of spots near the camera."
+				]
+			}
+		},
+		{
+			"date": "2026-09-29",
+			"ru": {
+				"title": "Стили картинки и блестящий металл",
+				"items": [
+					"В настройках видео появился выбор стиля: пастель, уютный, золотой час и пасмурный фронт.",
+					"Отдельно включаются мягкие тени, затенение углов, блики, дымка вдали, контурный свет и блестящий металл.",
+					"Стволы, гусеницы и рамы техники теперь выглядят металлическими, краска слегка лакированная.",
+					"Сплав блестит как золото, а крупные жетоны подсвечивают пол рядом с собой."
+				]
+			},
+			"en": {
+				"title": "Picture styles and shiny metal",
+				"items": [
+					"Video settings now offer a picture style: pastel, cozy, golden hour and overcast front.",
+					"Soft shadows, ambient occlusion, highlights, distant haze, rim light and shiny metal can be toggled separately.",
+					"Vehicle barrels, tracks and frames now look metallic, and paint has a light lacquer.",
+					"Alloy shines like gold, and large tokens cast a glint on the floor."
+				]
+			}
+		},
+		{
+			"date": "2026-09-29",
+			"ru": {
+				"title": "Штаб на поле боя",
+				"items": [
+					"Штаб теперь всегда стоит боком — влево или вправо, а не носом к тебе или от тебя.",
+					"Сзади у штаба горят красные фары, их свет падает на землю."
+				]
+			},
+			"en": {
+				"title": "Headquarters on the battlefield",
+				"items": [
+					"The headquarters now always stands sideways, facing left or right, never toward or away from you.",
+					"The headquarters has red taillights at the back that light up the ground."
+				]
+			}
+		},
+		{
+			"date": "2026-09-30",
+			"ru": {
+				"title": "Альфа 0.2.0: мир 1, испытания, торговец",
 				"items": [
 					"Если выйти из игры во время боя, при возвращении ты окажешься на карте маршрута перед этой комнатой. Сам бой не сохраняется: добыча и события начатой комнаты пропадают, а усиления, полученные до неё, остаются.",
 					"В бесконечном режиме карты нет, поэтому прерванная комната просто начнётся заново.",
@@ -11,11 +133,31 @@
 					"Исправлено: покупки в хабе могли не сохраниться, если перед этим открыть карту маршрута и вернуться в хаб, не заходя в бой.",
 					"Исправлено: сохранённая вылазка от старой версии игры больше не блокирует весь профиль. Сбрасывается только незаконченная вылазка.",
 					"Исправлены ошибки при быстром переключении страниц планшета.",
-					"В разделе «Об игре» появилась вкладка Changelog со списком изменений."
+					"В разделе «Об игре» появилась вкладка Changelog со списком изменений.",
+					"Число на карточке улучшения теперь всегда совпадает с результатом выбора. Раньше карта «Напор» обещала больше перехвата, чем давала на самом деле.",
+					"Карты, которые уже упёрлись в предел (скорость, перехват), больше не предлагаются.",
+					"Карта маршрута: у старта появилась площадка с воротами, все точки стоят на одинаковом расстоянии, машина на карте стала меньше.",
+					"Мир 1: сложные точки (★★) больше не встречаются в начале пути — сложность растёт к боссу.",
+					"Мир 1: механик и мастерская штаба стали обычными точками маршрута со своими дорогами. Раньше к ним можно было попасть из любой точки, а дорог на карте не было.",
+					"Жетоны: с врагов иногда падают жетоны (с командира — всегда). Они видны вверху рядом со сплавом и сгорают после забега.",
+					"Торговец: новая остановка на карте мира 1 рядом с инструктором. За жетоны — карты улучшений, аптечка, ремонт машины, переброс, иногда чертёж и игровой автомат.",
+					"Сервисные ряды мира 1 теперь соединены дорогами: левая точка ведёт к инструктору, правая — к торговцу, средняя — к обоим.",
+					"Мир 1 теперь содержит всё: снайперка, РПГ, БТР, танк, лазер и авиаудар падают чертежами. Редкие — только во второй половине пути и с босса.",
+					"Все оболочки бойца (Таран, Сокол, Умелец) можно купить сразу в мире 1 — ограничивает только цена.",
+					"Механик улучшает твою машину, а не случайную технику по номеру мира.",
+					"Взрывающиеся бочки появились в мире 1: ближе к боссу их больше, в бою с боссом — по углам.",
+					"Мир 1: на каждом этапе со второго по шестой одна точка — особая. Первое испытание — «Тайник»: сундук в центре поля, выход открыт сразу. Откроешь — засада ветеранов, отобьёшься — награда по звёздам точки.",
+					"Новое испытание «Удержание»: займи точку и стой в ней, пока враги наступают. Шкала растёт, только когда в зоне нет врагов.",
+					"Новое испытание «Выживание»: патроны кончились — уклоняйся от меток артобстрела, пока не выйдет время. Бочки рядом с метками тоже взрываются.",
+					"Новое испытание «Напёрстки»: мини-штаб прячут под одним из броневых колпаков и перемешивают. Подойди к нужному и нажми E — попытка одна. Больше звёзд — больше колпаков и быстрее.",
+					"Новое испытание «Переключатели»: плиты по очереди загораются — наступай на них в том же порядке и открой сейф. Три попытки.",
+					"У испытаний своё оформление поля: военная рамка из бетона и кирпича по краям, шевроны у входов, траншеи вдоль бортов и свободная площадь в центре.",
+					"Производительность: убраны фризы при первых выстрелах, попаданиях и появлении новых врагов (дронов, техники) — эффекты и модели готовятся заранее при загрузке первой комнаты.",
+					"Производительность: музыка загружается в фоне и больше не останавливает игру при смене трека; звуки эффектов подгружаются заранее."
 				]
 			},
 			"en": {
-				"title": "Saving and quitting",
+				"title": "Alpha 0.2.0: world 1, challenges, merchant",
 				"items": [
 					"If you quit during a battle, you will return to the route map in front of that room. The battle itself is not saved: loot and events of the started room are lost, while upgrades earned before it are kept.",
 					"Endless mode has no map, so an interrupted room simply starts over.",
@@ -23,9 +165,30 @@
 					"Fixed: hub purchases could be lost after opening the route map and returning to the hub without entering a battle.",
 					"Fixed: a saved run from an older game version no longer blocks the whole profile. Only the unfinished run is discarded.",
 					"Fixed errors when switching tablet pages quickly.",
-					"The About section now has a Changelog tab listing changes."
+					"The About section now has a Changelog tab listing changes.",
+					"The number on an upgrade card now always matches the result. Previously the Pressure card promised more interception than it actually gave.",
+					"Cards whose stat has reached its limit (speed, interception) are no longer offered.",
+					"Route map: the start now has a launch pad with a gate, all points are evenly spaced, and the vehicle on the map is smaller.",
+					"World 1: hard (★★) points no longer appear at the start of the route — difficulty grows towards the boss.",
+					"World 1: the mechanic and the HQ workshop are now ordinary route points with their own roads. Previously they were reachable from any point with no roads drawn.",
+					"Tokens: enemies sometimes drop tokens (commanders always do). They show at the top next to alloy and are lost when the run ends.",
+					"Merchant: a new stop on the world 1 map next to the instructor. Tokens buy upgrade cards, a medkit, vehicle repair, a reroll, sometimes a blueprint, and a slot machine.",
+					"World 1 service rows are now connected by roads: the left point leads to the instructor, the right one to the merchant, the middle one to both.",
+					"World 1 now holds everything: sniper rifle, RPG, APC, tank, laser and airstrike drop as blueprints. Rare ones appear only in the second half of the route and from the boss.",
+					"All soldier shells (Ram, Falcon, Tinker) can be bought right away in world 1 — only the price limits them.",
+					"The mechanic now upgrades your own vehicle instead of one picked by the world number.",
+					"Explosive barrels now appear in world 1: more of them closer to the boss, and in the corners of the boss arena.",
+					"World 1: every stage from the second to the sixth has one special point. The first challenge is the Cache: a chest in the middle of the field with the exit open from the start. Opening it calls a veteran ambush; survive it for a reward matching the point's stars.",
+					"New Hold challenge: take the point and stay in it while enemies advance. Progress grows only while the zone is free of enemies.",
+					"New Survival challenge: you're out of ammo — dodge the artillery markers until time runs out. Barrels near the markers explode too.",
+					"New Thimbles challenge: a mini HQ is hidden under one of the armoured cups and shuffled. Walk up to the right one and press E — one guess only. More stars mean more cups and faster shuffling.",
+					"New Switches challenge: plates light up in turn — step on them in the same order to open the safe. Three tries.",
+					"Challenges get their own field design: a military frame of concrete and brick along the edges, chevrons at the entrances, trenches along the sides and a free plaza in the middle.",
+					"Performance: removed freezes on the first shots, hits and when new enemies (drones, vehicles) appear — effects and models are prepared while the first room loads.",
+					"Performance: music now loads in the background and no longer stalls the game on track changes; sound effects are preloaded."
 				]
-			}
+			},
+			"version": "0.2.0"
 		}
 	]
 }

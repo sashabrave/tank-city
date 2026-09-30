@@ -1,0 +1,170 @@
+extends Node3D
+## Merchant stop: spend run tokens on cards, healing, rerolls, a blueprint or the slot machine.
+## Stock is rolled once per visit from the run's combat RNG; the slot machine can be played repeatedly.
+signal completed(index: int)
+signal hub_requested
+const CARD_PRICES=[3,5,8]
+const SLOT_PRICE=2
+## Slot machine outcomes and weights: nothing, tokens back, full heal, card of a tier.
+const SLOT_TABLE=[["empty",40],["tokens",20],["heal",10],["card0",18],["card1",9],["card2",3]]
+var arena
+var index=2
+var avatar:Node3D
+var cell=Vector2i(0,3)
+var destination=Vector3(0,0,3)
+var moving=false
+var facing=Vector2i.UP
+var root:Control
+var dpad:Control
+var modal:Control
+var interact_button:Button
+var stock:Array=[]
+var status_text=""
+const COUNTER=Vector3(0,0,-1)
+func _ready():
+	add_to_group("notification_context")
+	Visuals.setup_world(self,12,Vector3.ZERO)
+	var positions=[]
+	for x in range(-4,5):
+		for z in range(-3,5):positions.append(Vector3(x,0,z))
+	Visuals.tiled_floor(self,positions,Color("98917f"))
+	Visuals.box(self,Vector3(0,-.4,.5),Vector3(9.3,.6,8.3),Color("7d7462"))
+	build_stall()
+	avatar=Visuals.model("soldier",self,destination)
+	var canvas=CanvasLayer.new();add_child(canvas);root=Control.new();canvas.add_child(root);root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);root.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	var heading=UiKit.panel(root,Vector2(25,25),Vector2(590,120),Color("242d27ed"));heading.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	UiKit.label(root,"Торговец",Vector2(40,30),Vector2(800,60),32)
+	UiKit.label(root,"Жетоны с врагов меняются здесь на усиления",Vector2(40,100),Vector2(1000,40),18)
+	var size=get_viewport().get_visible_rect().size
+	dpad=load("res://scripts/touch_controls.gd").new();root.add_child(dpad);dpad.apply_movement_layout()
+	interact_button=UiKit.button(root,"Торговать [E]",Vector2(size.x-330,size.y-170),Vector2(290,60),interact)
+	UiKit.button(root,"Дальше →",Vector2(size.x-330,size.y-90),Vector2(290,60),func():completed.emit(index),true)
+	UiKit.button(root,"Вернуться в хаб",Vector2(40,165),Vector2(250,48),func():hub_requested.emit())
+	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Торговец",COUNTER,1.8,func():return true)
+	stock=roll_stock()
+func build_stall():
+	var wood=Color("8a6a48");var cloth=Color("c9793f")
+	Visuals.box(self,COUNTER+Vector3(0,.45,0),Vector3(2.6,.9,.9),wood)
+	for x in [-1.25,1.25]:Visuals.box(self,COUNTER+Vector3(x,1.25,-.35),Vector3(.12,2.5,.12),wood.darkened(.3))
+	for i in range(5):Visuals.box(self,COUNTER+Vector3(-1.1+i*.55,2.45,-.1),Vector3(.55,.08,1.1),cloth if i%2==0 else Color("e8dcc0"))
+	for p in [Vector3(-2,0,-1.5),Vector3(2.1,0,-1.4),Vector3(2.3,0,-.4)]:Visuals.box(self,p+Vector3(0,.3,0),Vector3(.6,.6,.6),Color("9c8156"))
+	Visuals.box(self,Vector3(-2.3,.6,.4),Vector3(.8,1.2,.6),Color("5b6770"))
+	Visuals.box(self,Vector3(-2.3,1.0,.71),Vector3(.55,.3,.02),Color("e5b34f"))
+	Visuals.label3d(self,"Торговец · E",COUNTER+Vector3(0,2.9,0),Color("fff0ce"),28)
+
+## Stock entries: {kind, id, tier, price, sold}. Cards use UpgradeRegistry; the blueprint appears in 40% of visits.
+func roll_stock()->Array:
+	var rng=arena.run.combat_rng;var result=[]
+	for id in RunUpgrades.roll(arena,2):
+		var tier=Game.rarity_roll(rng.randf(),index)
+		result.append({"kind":"card","id":id,"tier":tier,"price":CARD_PRICES[tier],"sold":false})
+	result.append({"kind":"heal","price":3,"sold":false})
+	if arena.room.player!=null and is_instance_valid(arena.room.player) and arena.room.player.kind in GarageCatalog.VEHICLES:
+		result.append({"kind":"repair","price":3,"sold":false})
+	result.append({"kind":"reroll","price":2,"sold":false})
+	if rng.randf()<.4:
+		var recipe=EncounterRules.recipe(1,rng,arena.run.pending_recipes,Campaign.progress_index(index))
+		if not recipe.is_empty():result.append({"kind":"blueprint","recipe":recipe,"price":10,"sold":false})
+	result.append({"kind":"slot","price":SLOT_PRICE,"sold":false})
+	return result
+
+func _physics_process(delta):
+	if is_instance_valid(modal):
+		if Input.is_action_just_pressed("pause"):close_shop()
+		return
+	if Input.is_action_just_pressed("pause"):preload("res://scripts/ui/pause_tablet.gd").open(self,Callable(),func():hub_requested.emit());return
+	if moving:
+		avatar.position=avatar.position.move_toward(destination,3.8*delta)
+		if avatar.position.distance_to(destination)<.01:moving=false
+	else:
+		var dir=Game.direction()
+		if dir!=Vector2i.ZERO:
+			var next=cell+dir;facing=dir;avatar.rotation.y=atan2(-float(dir.x),-float(dir.y))
+			if next.x>=-3 and next.x<=3 and next.y>=0 and next.y<=4:
+				cell=next;destination=Vector3(cell.x,0,cell.y);moving=true
+	interact_button.disabled=avatar.position.distance_to(COUNTER)>2.2
+	if Game.wants_interact():interact()
+func interact():
+	if is_instance_valid(modal) or avatar.position.distance_to(COUNTER)>2.2:return
+	Game.reset_input();dpad.clear();dpad.enabled=false
+	open_shop()
+func open_shop():
+	modal=Control.new();modal.name="MerchantShop";root.add_child(modal);modal.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);modal.add_to_group("selection_scope")
+	var shade=ColorRect.new();modal.add_child(shade);shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);shade.color=Color(0,0,0,.5)
+	var size=get_viewport().get_visible_rect().size;var width=minf(900,size.x-40);var height=minf(620,size.y-40)
+	var panel=UiKit.panel(modal,(size-Vector2(width,height))*.5,Vector2(width,height))
+	UiKit.label(panel,"Торговец",Vector2(25,18),Vector2(width-260,40),28)
+	var wallet=UiKit.icon(panel,"token",Vector2(width-265,24),Vector2(28,28));wallet.modulate=UiKit.INK
+	var count=UiKit.label(panel,"Жетоны: %d" % arena.run.tokens,Vector2(width-230,20),Vector2(160,36),20);count.name="Wallet"
+	var close=UiKit.button(panel,"",Vector2(width-62,18),Vector2(44,40),close_shop);close.icon=UiKit.interface_icon("close");close.expand_icon=true;close.add_theme_constant_override("icon_max_width",18)
+	if status_text!="":UiKit.label(panel,status_text,Vector2(25,62),Vector2(width-50,30),17,UiKit.MUTED).name="Status"
+	var scroll=ScrollContainer.new();panel.add_child(scroll);scroll.position=Vector2(25,100);scroll.size=Vector2(width-50,height-125);scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
+	var list=VBoxContainer.new();scroll.add_child(list);list.size_flags_horizontal=Control.SIZE_EXPAND_FILL;list.add_theme_constant_override("separation",10);list.name="Stock"
+	for i in range(stock.size()):row(list,i,width-70)
+func row(list:VBoxContainer,i:int,width:float):
+	var entry=stock[i];var view=describe(entry)
+	var card=Panel.new();list.add_child(card);card.custom_minimum_size=Vector2(width,86);card.add_theme_stylebox_override("panel",UiKit.style(Color("dce3d5"),9))
+	var picture=UiKit.icon(card,view.icon,Vector2(14,19),Vector2(48,48));picture.modulate=view.get("tint",UiKit.INK)
+	UiKit.label(card,view.title,Vector2(76,8),Vector2(width-320,30),19)
+	var detail=UiKit.label(card,view.detail,Vector2(76,38),Vector2(width-320,44),15,UiKit.MUTED);detail.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	var label="Продано" if entry.sold else "Купить · %d" % entry.price
+	if entry.kind=="slot":label="Сыграть · %d" % entry.price
+	var buy=UiKit.button(card,label,Vector2(width-220,20),Vector2(200,46),func():purchase(i),not entry.sold and arena.run.tokens>=entry.price)
+	buy.name="Buy%d" % i;buy.disabled=entry.sold or arena.run.tokens<entry.price or not available(entry)
+	UiKit.muted_locked_button(buy)
+func describe(entry:Dictionary)->Dictionary:
+	match entry.kind:
+		"card":
+			var view=RunUpgrades.card(arena,{"id":entry.id,"tier":entry.tier})
+			return {"icon":UpgradeRegistry.get_def(entry.id).icon,"title":view.heading+" · "+view.title,"detail":view.detail,"tint":Color(LootCatalog.RARITY_COLORS[entry.tier]).darkened(.35)}
+		"heal":return {"icon":"medkit","title":"Полевая аптечка","detail":UiKit.change_text("HP",arena.run.soldier_hp,arena.run.soldier_max_hp)}
+		"repair":return {"icon":"vehicle","title":"Ремонт машины","detail":"Восстанавливает броню техники полностью"}
+		"reroll":return {"icon":"reroll","title":"Переброс","detail":"+1 переброс карт на этот забег"}
+		"blueprint":return {"icon":"blueprint","title":"Чертёж · "+Game.recipe_name(entry.recipe),"detail":"Попадёт в рюкзак — его нужно донести до хаба"}
+		"slot":return {"icon":"slot_machine","title":"Игровой автомат","detail":"Ставка %d: пусто, жетоны назад, лечение или карта — иногда эпическая" % entry.price}
+	return {"icon":"token","title":entry.kind,"detail":""}
+func available(entry:Dictionary)->bool:
+	match entry.kind:
+		"heal":return arena.run.soldier_hp<arena.run.soldier_max_hp
+		"repair":return is_instance_valid(arena.room.player) and arena.room.player.hp<arena.room.player.max_hp
+		"blueprint":return arena.run.pending_recipes.size()<Game.backpack_slots
+	return true
+func purchase(i:int)->bool:
+	if i<0 or i>=stock.size():return false
+	var entry=stock[i]
+	if entry.sold or arena.run.tokens<entry.price or not available(entry):return false
+	arena.run.tokens-=entry.price
+	match entry.kind:
+		"card":RunUpgrades.apply(arena,entry.id,entry.tier);status_text="Куплено: "+UpgradeRegistry.get_def(entry.id).title
+		"heal":heal_full();status_text="Боец вылечен"
+		"repair":arena.room.player.hp=arena.room.player.max_hp;arena.room.player.refresh_health();status_text="Машина отремонтирована"
+		"reroll":arena.run.rerolls_left+=1;status_text="Переброс добавлен"
+		"blueprint":arena.run.pending_recipes.append(entry.recipe);status_text="Чертёж в рюкзаке"
+		"slot":status_text=play_slot()
+	if entry.kind!="slot":entry.sold=true
+	Game.sound("upgrade" if entry.kind=="card" else "pickup",self)
+	if is_instance_valid(modal):close_shop(false);open_shop()
+	return true
+func heal_full():
+	arena.run.soldier_hp=arena.run.soldier_max_hp
+	if is_instance_valid(arena.room.player) and arena.room.player.kind=="soldier":arena.room.player.hp=arena.run.soldier_hp;arena.room.player.refresh_health()
+## One pull of the slot machine; returns the result line.
+func play_slot()->String:
+	var total=0
+	for outcome in SLOT_TABLE:total+=outcome[1]
+	var pick=arena.run.combat_rng.randi_range(0,total-1);var result="empty"
+	for outcome in SLOT_TABLE:
+		pick-=outcome[1]
+		if pick<0:result=outcome[0];break
+	match result:
+		"tokens":arena.run.tokens+=SLOT_PRICE*2;return "Автомат: жетоны вернулись вдвойне"
+		"heal":heal_full();return "Автомат: полное лечение"
+		"card0","card1","card2":
+			var ids=RunUpgrades.roll(arena,1)
+			if ids.is_empty():return "Автомат: пусто"
+			var tier=int(result.right(1));RunUpgrades.apply(arena,ids[0],tier)
+			return "Автомат: %s · %s" % [LootCatalog.RARITY_NAMES[tier],UpgradeRegistry.get_def(ids[0]).title]
+	return "Автомат: пусто"
+func close_shop(restore_controls:bool=true):
+	if is_instance_valid(modal):modal.get_parent().remove_child(modal);modal.queue_free();modal=null
+	if restore_controls:Game.reset_input();dpad.clear();dpad.enabled=true

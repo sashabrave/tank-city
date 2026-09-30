@@ -52,5 +52,6 @@ func run():
 	check(arena.phase=="upgrade","Final kill ends wave without waiting for drone cooldown")
 	check(arena.enemy_count()==0 and arena.bombs.is_empty(),"Residual ordnance clears only after final enemy")
 	check(arena.base_hp==hp and Game.credits==credits,"Cleanup has no damage or fabricated kill reward")
+	var battle=RoutePlan.build(arena.run_seed)[1].filter(func(n):return n.type=="battle")[0];arena.run.route_choices[1]=battle.id
 	arena.begin_room(1);check(arena.room.surprise_timer>=15 and arena.room.surprise_timer<=30,"New room resets first delay")
 	print("DRONE BACKGROUND COOLDOWN failures ",errors);get_tree().quit(1 if errors else 0)

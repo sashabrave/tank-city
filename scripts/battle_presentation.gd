@@ -52,5 +52,5 @@ func _process(delta):
 	arena.camera.size=lerpf(arena.camera.size,target,minf(1,delta*4.5))
 	var offset=Vector3(0,24,11) if overview else Vector3(0,19,14)
 	arena.camera.position=arena.camera.position.lerp(offset.rotated(Vector3.UP,deg_to_rad(10)),minf(1,delta*3.5));arena.camera.look_at(Vector3.ZERO)
-	if phase=="combat" and last_phase=="countdown":announce("Контакт", "Волна %d / 3" % (arena.wave+1) if not arena.boss_room else "Уничтожь командира",.4)
+	if phase=="combat" and last_phase=="countdown" and not arena.challenges.active():announce("Контакт", "Волна %d / 3" % (arena.wave+1) if not arena.boss_room else "Уничтожь командира",.4)
 	last_phase=phase

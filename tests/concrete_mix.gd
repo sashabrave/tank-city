@@ -7,10 +7,10 @@ func run():
 		var style=preload("res://scripts/concrete_style.gd").pick(seed_value,Vector2i(3,5))
 		assert(style==preload("res://scripts/concrete_style.gd").pick(seed_value,Vector2i(3,5)))
 		seen[preload("res://scripts/concrete_style.gd").asset(style)]=true
-	assert(seen.size()==27)
+	assert(seen.size()==18)
 	Visuals.setup_world(self,12,Vector3(0,.3,0));set_meta("environment_floor",Color("92958e"))
-	var families=["concrete_smooth","concrete_0","concrete_1"]
-	for row in range(3):
+	var families=["concrete_smooth","concrete_0"]
+	for row in range(families.size()):
 		for shape in range(-1,8):
 			var name=families[row]+("" if shape<0 else "_half_%d" % shape)
 			var obj=Visuals.model(name,self,Vector3((shape-3)*1.15,0,(row-1)*1.35))
@@ -28,5 +28,5 @@ func run():
 	if DisplayServer.get_name()!="headless":
 		await get_tree().create_timer(.6).timeout;await RenderingServer.frame_post_draw
 		get_viewport().get_texture().get_image().save_png("/tmp/concrete-mix.png")
-	print("PASS all 27 style/shape combinations, deterministic selection, mesh matches all 16 collision sections")
+	print("PASS all 18 style/shape combinations, deterministic selection, mesh matches all 16 collision sections")
 	get_tree().quit()

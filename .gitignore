@@ -15,3 +15,6 @@ tmp/
 # Системное
 .DS_Store
 .asset-library-backups/
+
+# Python
+__pycache__/
