@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="StatDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/stats/stat_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "marauder"
+title = "Мародёр"
+icon = "token"
+family = "logistics"
+order = 0
+run_field = "marauder"
+format = "percent"
+cap = 0.0
+description = "Больше сплава и жетонов с врагов."
+step = 0.05
+max_level = 5
+cost_base = 60
+cost_step = 30
+requires = ""
+requires_level = 2
+meta_field = ""

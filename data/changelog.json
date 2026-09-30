@@ -4,6 +4,30 @@
 			"date": "2026-09-30",
 			"version": "0.2.1",
 			"ru": {
+				"title": "Казарма и выучка",
+				"items": [
+					"Станция-принтер теперь называется «Казарма», а вместо оболочек в ней классы.",
+					"Новая вкладка «Выучка»: постоянная прокачка новых характеристик по пяти веткам — огневая мощь, живучесть, спецпатроны, разведка и тыл. Следующий узел ветки открывается после двух уровней предыдущего.",
+					"Сундуки, торговец и испытания выдают карточки из общего пула, с редкостью и семьями, поэтому новые карточки встречаются везде. У торговца бывают легендарные.",
+					"В планшете в разделе «Боец» показаны все характеристики: с чем начнёшь забег и сколько сейчас. Устаревшие подсказки в «Снаряжении» ведут на актуальные станции.",
+					"В песочнице появилась вкладка «Статы»: любую характеристику можно поднять или опустить кнопками."
+				]
+			},
+			"en": {
+				"title": "Barracks and training",
+				"items": [
+					"The printer station is now called the Barracks, and it holds classes instead of shells.",
+					"New Training tab: permanent upgrades for the new stats in five branches — firepower, survival, special ammo, recon and logistics. The next node of a branch opens after two levels of the previous one.",
+					"Chests, the merchant and challenges now offer cards from the shared pool, with rarity and families, so the new cards show up everywhere. The merchant can have legendary ones.",
+					"The Soldier page of the tablet lists every stat: what a run starts with and the current value. Outdated hints in Kit point to the current stations.",
+					"The sandbox has a Stats tab: any stat can be raised or lowered with buttons."
+				]
+			}
+		},
+		{
+			"date": "2026-09-30",
+			"version": "0.2.1",
+			"ru": {
 				"title": "Новые характеристики и карточки",
 				"items": [
 					"В бою появились крит, уклонение, защита от пуль, взрывов и техники, пробитие, зажигательные, ЭМИ и контузящие патроны, маскировка, мародёр и полевой ремонт.",

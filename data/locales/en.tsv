@@ -1915,3 +1915,37 @@ FPS в углу экрана во всех режимах, в хабе — ещ�
 Чаще редкие карточки и награды, больше дропа, чуть выше крит. Сердце %.1f%% · бонус %.1f%% с врага.	Rarer cards and rewards more often, more drops, slightly higher crit. Heart %.1f%% · bonus %.1f%% per enemy.
 Урон 3 с, огонь перекидывается на соседей, бочки взрываются с одного попадания.	Damage for 3 s, fire spreads to neighbours, barrels blow up in one hit.
 И заметно выше крит-урон.	And much higher crit damage.
+Шанс крита	Crit chance
+Шанс, что выстрел нанесёт крит-урон.	Chance a shot deals crit damage.
+Во сколько раз крит сильнее обычного выстрела.	How much stronger a crit is than a normal shot.
+Сколько врагов пуля проходит насквозь.	How many enemies a bullet passes through.
+Шанс не получить пулю или снаряд техники. Взрывы не уклоняются.	Chance to avoid a bullet or a vehicle shell. Blasts can't be dodged.
+Снижает урон от пуль.	Reduces bullet damage.
+Гранаты, ракеты, бочки, дроны и артиллерия.	Grenades, rockets, barrels, drones and artillery.
+Снаряды танков, БТР, багги, миномётов и босса.	Shells from tanks, APCs, buggies, mortars and the boss.
+Шанс поджечь врага: урон 3 с, огонь перекидывается, бочки взрываются с одного попадания.	Chance to set an enemy on fire: damage for 3 s, fire spreads, barrels blow up in one hit.
+ЭМИ по технике	EMP vs vehicles
+Шанс оглушить врага на 0,8 с.	Chance to stun an enemy for 0.8 s.
+Враги открывают огонь ближе; первый удар по целому врагу сильнее.	Enemies open fire from closer; the first hit on an unhurt enemy is stronger.
+HP штаба и техники за каждое убийство.	HQ and vehicle HP per kill.
+Редкость карточек и наград, дроп и немного крит. Прокачивается в «Снабжении».	Card and reward rarity, drops and a bit of crit. Upgraded in Supply.
+Казарма	Barracks
+Классы	Classes
+Выучка	Training
+Класс выбран	Class selected
+Класс улучшен	Class upgraded
+Улучшено для всех классов	Upgraded for all classes
+Выучка улучшена	Training upgraded
+В начале забега	At run start
+Карточки забега прибавляются сверху.	Run cards add on top.
+Классы, выучка и снабжение — действуют в каждой вылазке.	Classes, training and supply — active in every run.
+«Казарма» открыта сразу: классы, выучка, аптечки. С неё и начинаю — классика.	The Barracks are open from the start: classes, training, medkits. That's where I begin — a classic.
+В «Казарме» → Снабжение открой и улучши аптечки передышки.	In Barracks → Supply unlock and upgrade the rest stop medkits.
+Купить и выбрать · 	Buy and select · 
+Ветка: 	Branch: 
+Нужно: %s %d	Needs: %s %d
+Выбирается в «Арсенале» → Гаджеты.	Chosen in Arsenal → Gadgets.
+Выбери модуль в «Штабе» → Технологии.	Pick a module in HQ → Technologies.
+«Казарма» → Снаряжение → Рюкзак. Следующая ячейка: %d сплава.	Barracks → Kit → Backpack. Next slot: %d alloy.
+Статы	Stats
+Класс (возрождение)	Class (respawn)

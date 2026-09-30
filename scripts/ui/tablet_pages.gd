@@ -38,18 +38,18 @@ func inventory():
 	var abilities=Game.class_loadout()
 	for i in range(2):
 		var id=abilities[i] if i<abilities.size() else ""
-		cell(body,Vector2(225+i*85,362),id,AbilityCatalog.DATA.get(id,{}).get("name","Второй навык класса"),AbilityCatalog.DATA.get(id,{}).get("description","Открывается у принтера: уровень класса 5, затем 2500 сплава."),i>=abilities.size(),Vector2(76,76))
+		cell(body,Vector2(225+i*85,362),id,AbilityCatalog.DATA.get(id,{}).get("name","Второй навык класса"),AbilityCatalog.DATA.get(id,{}).get("description","Открывается в «Казарме»: уровень класса 5, затем 2500 сплава."),i>=abilities.size(),Vector2(76,76))
 	UiKit.label(body,"Гаджет",Vector2(425,326),Vector2(110,28),17)
-	cell(body,Vector2(425,362),Game.gadget,AbilityCatalog.DATA.get(Game.gadget,{}).get("name","Гаджет"),AbilityCatalog.DATA.get(Game.gadget,{}).get("description","Открывается в «Прокачке базы»."),Game.gadget=="",Vector2(76,76))
+	cell(body,Vector2(425,362),Game.gadget,AbilityCatalog.DATA.get(Game.gadget,{}).get("name","Гаджет"),AbilityCatalog.DATA.get(Game.gadget,{}).get("description","Выбирается в «Арсенале» → Гаджеты."),Game.gadget=="",Vector2(76,76))
 	UiKit.label(body,"Штаб",Vector2(540,326),Vector2(140,28),17)
 	var hq=Game.hq_loadout();var module=hq[0] if not hq.is_empty() else ""
-	cell(body,Vector2(540,362),module,HQCatalog.DATA.get(module,{}).get("name","Поддержка штаба"),HQCatalog.DATA.get(module,{}).get("description","Выбери модуль на верстаке штаба."),false,Vector2(76,76))
+	cell(body,Vector2(540,362),module,HQCatalog.DATA.get(module,{}).get("name","Поддержка штаба"),HQCatalog.DATA.get(module,{}).get("description","Выбери модуль в «Штабе» → Технологии."),false,Vector2(76,76))
 	UiKit.label(body,"Трофеи · открыто %d из 6 ячеек" % Game.backpack_slots,Vector2(0,462),Vector2(690,30),20)
 	var recipes=arena.pending_recipes if is_instance_valid(arena) else []
 	for i in range(6):
 		var locked=i>=Game.backpack_slots;var recipe=recipes[i] if i<recipes.size() else {}
 		var title=Game.recipe_name(recipe) if not recipe.is_empty() else "Закрытая ячейка" if locked else "Пустая ячейка"
-		var info="Хаб → Строительство → Снаряжение → Рюкзак. Следующая ячейка: %d сплава." % Game.bag_cost() if locked else "Сюда попадает найденный чертёж. Донеси его в хаб." if recipe.is_empty() else "Чертёж найден в вылазке. Доставь в хаб, чтобы открыть: "+title
+		var info="«Казарма» → Снаряжение → Рюкзак. Следующая ячейка: %d сплава." % Game.bag_cost() if locked else "Сюда попадает найденный чертёж. Донеси его в хаб." if recipe.is_empty() else "Чертёж найден в вылазке. Доставь в хаб, чтобы открыть: "+title
 		var discard:Callable=Callable()
 		if not recipe.is_empty():discard=func():arena.pending_recipes.erase(recipe);view.refresh()
 		var b=cell(body,Vector2(i*115,505),str(recipe.get("id","")),title,info,locked,Vector2(104,100),discard)
@@ -88,7 +88,7 @@ func fighter():
 		for i in range(arena.run.upgrade_history.size()):
 			var choice=arena.run.upgrade_history[i];var id=choice.id
 			var title=UpgradeRegistry.get_def(id).title if UpgradeRegistry.has(id) else AbilityCatalog.DATA.get(id,HQCatalog.DATA.get(id,Game.LOOT.WEAPONS.get(id,{}))).get("name",{"damage":"Урон","intercept":"Напор","speed":"Скорость","fire":"Темп","health":"Здоровье","recovery":"Защита","weapon_damage":"Урон оружия","weapon_fire":"Темп оружия","weapon_intercept":"Напор оружия"}.get(id,id))
-			entries.append(["%d. %s" % [i+1,title],choice.get("detail",Game.LOOT.RARITY_NAMES[clampi(choice.tier,0,2)])])
+			entries.append(["%d. %s" % [i+1,title],choice.get("detail",RunUpgrades.TIER_NAMES[clampi(int(choice.tier),0,3)])])
 	for i in range(entries.size()):
 		var b=cell(body,Vector2((i%4)*174,upgrades_y+45+floori(i/4.0)*100),"",str(entries[i][0]),"Текущее усиление: "+str(entries[i][1]),false,Vector2(162,90))
 		UiKit.label(b,str(entries[i][0]),Vector2(8,5),Vector2(147,30),14);UiKit.label(b,str(entries[i][1]) if str(entries[i][1]).length()<18 else "Подробнее…",Vector2(8,39),Vector2(147,40),16)

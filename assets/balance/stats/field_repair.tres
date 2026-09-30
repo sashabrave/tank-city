@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="StatDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/stats/stat_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "field_repair"
+title = "Полевой ремонт"
+icon = "repair"
+family = "logistics"
+order = 1
+run_field = "field_repair"
+format = "number"
+cap = 0.0
+description = "HP штаба и техники за каждое убийство."
+step = 0.05
+max_level = 5
+cost_base = 70
+cost_step = 35
+requires = "marauder"
+requires_level = 2
+meta_field = ""

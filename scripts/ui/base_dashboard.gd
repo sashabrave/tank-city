@@ -6,7 +6,7 @@ static func render(tablet):
 	var scroll=ScrollContainer.new();tablet.content.add_child(scroll);scroll.position=Vector2(22,16);scroll.size=Vector2(731,550);scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
 	var body=VBoxContainer.new();scroll.add_child(body);body.name="Summary";body.size_flags_horizontal=Control.SIZE_EXPAND_FILL;body.add_theme_constant_override("separation",10)
 	UiKit.label(body,"Сводка",Vector2.ZERO,Vector2(0,40),25)
-	var stations=[["Боец",true],["Арсенал","weapons" in Game.built_workshops],["Штаб","headquarters" in Game.built_workshops],["Стоянка","garage" in Game.built_workshops]]
+	var stations=[["Казарма",true],["Арсенал","weapons" in Game.built_workshops],["Штаб","headquarters" in Game.built_workshops],["Стоянка","garage" in Game.built_workshops]]
 	var rows=[
 		["base","Станции","  ·  ".join(stations.map(func(s):return ("✓ " if s[1] else "🔒 ")+s[0]))],
 		["fighter","Оболочки","%d / %d" % [Game.class_unlocks.size(),Game.CLASSES.size()]],

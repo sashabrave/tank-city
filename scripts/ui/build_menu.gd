@@ -8,7 +8,7 @@ static func show(hub):
 	UiKit.label(panel,"Строительство",Vector2(24,18),Vector2(750,40),UiKit.PAGE_TITLE_SIZE)
 	UiKit.button(panel,"×",Vector2(984,18),Vector2(50,42),hub.close_station)
 	UiKit.label(panel,"Развивай базу между вылазками · %d ◈" % Game.credits,Vector2(24,65),Vector2(980,28),16,UiKit.MUTED)
-	# Stations and the range; the backpack and rerolls moved to «Боец» → Снаряжение.
+	# Stations and the range; the backpack and rerolls moved to «Казарма» → Снаряжение.
 	hub.build_tab=0
 	var scroll=ScrollContainer.new();panel.add_child(scroll);scroll.position=Vector2(24,106);scroll.size=Vector2(1012,530);scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
 	var grid=GridContainer.new();scroll.add_child(grid);grid.columns=2;grid.size_flags_horizontal=Control.SIZE_EXPAND_FILL;grid.add_theme_constant_override("h_separation",16);grid.add_theme_constant_override("v_separation",16)

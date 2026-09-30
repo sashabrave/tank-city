@@ -268,6 +268,7 @@ func _ready():
 	soldier_max_hp = CombatStats.initial_health()
 	soldier_hp = soldier_max_hp
 	speed_multiplier=CombatStats.initial_speed_multiplier()
+	StatRegistry.apply_meta(run)
 	camera = Visuals.setup_world(self,15.5,Vector3.ZERO)
 	hud = load("res://scenes/hud.tscn").instantiate()
 	hud.arena = self

@@ -344,10 +344,10 @@ func drop_reward():
 ## ★ simple: alloy and common cards; ★ rare cards or a blueprint; ★★ epic cards, documents or a rare blueprint.
 func reward_offers(difficulty:int)->Array:
 	var rng=arena.run.combat_rng
-	var cards=RunUpgrades.roll(arena,2)
+	var cards=RunUpgrades.roll_offers(arena,2)
 	var tier=clampi(difficulty,0,2)
 	var result=[]
-	for id in cards:result.append({"category":"upgrade","id":id,"tier":tier})
+	for offer in cards:result.append({"category":"upgrade","id":offer.id,"tier":maxi(tier,int(offer.tier))})
 	var extra={"category":"alloy","id":"alloy","amount":EncounterRules.chest_alloy(arena.room.room_index,difficulty),"tier":0}
 	if difficulty>=2:extra={"category":"documents","id":"documents","amount":1,"tier":2}
 	if difficulty>=1:

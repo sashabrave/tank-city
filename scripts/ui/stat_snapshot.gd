@@ -14,6 +14,7 @@ static func fighter(arena=null)->Array:
 	rows.append_array(weapon(arena,run.weapon if run!=null else Game.selected_weapon))
 	for spec in [["healing_multiplier","Эффективность лечения"],["ability_power_multiplier","Сила способностей"],["ability_cooldown_multiplier","Время перезарядки способностей"]]:
 		rows.append(row(spec[1],100,100*float(run.get(spec[0])) if run!=null else 100,"%"))
+	rows.append_array(registry(arena))
 	if is_instance_valid(arena) and is_instance_valid(arena.player):
 		var actor=arena.player
 		if actor.kind=="soldier":
@@ -21,6 +22,17 @@ static func fighter(arena=null)->Array:
 			rows[2].current=actor.damage
 			rows[3].current=1.0/actor.fire_interval*arena.effects.modify("fire_rate",1.0)
 	return rows
+## Every StatRegistry characteristic: base = what a run starts with (hub training included), current = now.
+## A new stat file shows up here without UI changes.
+static func registry(arena=null)->Array:
+	var result=[]
+	for def in StatRegistry.all():
+		var base=StatRegistry.value(def,null);var current=StatRegistry.value(def,arena if is_instance_valid(arena) else null)
+		match def.format:
+			"percent":result.append(row(def.title,base*100,current*100,"%"))
+			"multiplier":result.append(row(def.title,base,current,"×"))
+			_:result.append(row(def.title,base,current))
+	return result
 static func add_bars(parent:Control,pos:Vector2,width:float,rows:Array,row_height:float=48,adaptive:bool=false):
 	var bars=preload("res://scripts/ui/comparison_bars.gd").new();bars.rows=rows;bars.row_height=row_height;bars.adaptive_columns=adaptive;parent.add_child(bars);bars.position=pos;bars.size=Vector2(width,0);bars.reflow();return bars
 static func status(arena=null)->Array:

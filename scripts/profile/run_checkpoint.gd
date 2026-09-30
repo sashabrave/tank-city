@@ -1,10 +1,16 @@
 extends RefCounted
 const VERSION=1
-const RUN_KEYS=["run_seed","upgrade_history","soldier_hp","soldier_max_hp","damage_bonus","fire_multiplier","speed_multiplier","earned","kills","elapsed","weapon","rerolls_left","weapon_mods","recovery_bonus","run_bonus_levels","pending_recipes","vehicle_mods","pending_vehicle","visited_services","intercept_chance","route_choices","range_multiplier","healing_multiplier","ability_power_multiplier","ability_cooldown_multiplier","behavior_cards","tokens","crit_chance","crit_damage","dodge","guard_bullet","guard_blast","guard_vehicle","pierce","burn_chance","shock_bonus","stun_chance","stealth","marauder","field_repair","luck"]
+const RUN_KEYS=["run_seed","upgrade_history","soldier_hp","soldier_max_hp","damage_bonus","fire_multiplier","speed_multiplier","earned","kills","elapsed","weapon","rerolls_left","weapon_mods","recovery_bonus","run_bonus_levels","pending_recipes","vehicle_mods","pending_vehicle","visited_services","intercept_chance","route_choices","range_multiplier","healing_multiplier","ability_power_multiplier","ability_cooldown_multiplier","behavior_cards","tokens"]
+## Checkpoint fields: the fixed list plus every registry stat, so a new stat file is saved automatically.
+static func keys()->Array:
+	var result=RUN_KEYS.duplicate()
+	for field in StatRegistry.run_fields():
+		if field not in result:result.append(field)
+	return result
 static func capture(arena,index:int,mode:String,choices:Dictionary)->Dictionary:
 	var data={"version":VERSION,"world":Campaign.world,"endless":Campaign.endless,"cycle":Campaign.cycle,"strength":Campaign.endless_strength,"index":index,"mode":mode,"seed":Game.visual_run_seed,"choices":choices.duplicate(true),"run":{},"abilities":{},"hq":{},"hero":{},"class":Game.selected_class,"start_documents":Game.cores}
 	if not is_instance_valid(arena):return data
-	for key in RUN_KEYS:data.run[key]=arena.run.get(key)
+	for key in keys():data.run[key]=arena.run.get(key)
 	data.run=data.run.duplicate(true)
 	data.start_documents=arena.get_meta("start_documents",Game.cores)
 	data.abilities={"slots":arena.abilities.slots.duplicate(),"selected":arena.abilities.selected,"levels":{}}
@@ -19,7 +25,7 @@ static func integer_keys(source:Dictionary)->Dictionary:
 	for key in source:result[int(key)]=source[key]
 	return result
 static func restore(arena,data:Dictionary):
-	for key in RUN_KEYS:
+	for key in keys():
 		if data.run.has(key):arena.run.set(key,data.run[key])
 	arena.run.route_choices=integer_keys(data.choices)
 	arena.run.visited_services=integer_keys(arena.run.visited_services)
@@ -37,7 +43,7 @@ static func restore(arena,data:Dictionary):
 static func upgrade(data:Dictionary)->Dictionary:
 	if data.is_empty() or not data.get("run") is Dictionary or data.run.is_empty():return data
 	var run=data.run;var defaults=preload("res://scripts/state/run_state.gd").new()
-	for key in RUN_KEYS:
+	for key in keys():
 		if not run.has(key):run[key]=defaults.get(key) if not defaults.get(key) is Dictionary and not defaults.get(key) is Array else defaults.get(key).duplicate(true)
 	if run.get("weapon_mods") is Dictionary:
 		for id in Game.LOOT.WEAPONS:
@@ -61,7 +67,7 @@ static func valid(data:Dictionary)->bool:
 	if data.mode=="room" and (data.run.is_empty() or data.hero.is_empty()):return false
 	var defaults=preload("res://scripts/state/run_state.gd").new()
 	if not data.run.is_empty():
-		for key in RUN_KEYS:
+		for key in keys():
 			if not data.run.has(key):return false
 			var value=data.run[key];var example=defaults.get(key)
 			if example is int or example is float:

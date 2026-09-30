@@ -95,7 +95,7 @@ func _ready():
 	var parked=Visuals.model("base",self,Vector3(3.7,0,-5.9));parked.rotation.y=PI*.65
 	Visuals.model("hq_supplies",self,Vector3(5.15,0,-5.7))
 	printer_model=Visuals.model("printer",self,printer_pos)
-	Visuals.label3d(self,"Боец",printer_pos+Vector3(0,1.95,0),Color("dcf6ec"),24)
+	Visuals.label3d(self,"Казарма",printer_pos+Vector3(0,1.95,0),Color("dcf6ec"),24)
 	Visuals.model("crate",self,Vector3(-2,0,-2))
 	Visuals.model("supply_stack",self,Vector3(-1,0,-2.4))
 	displayed_vehicle=Game.garage.starting_vehicle()
@@ -131,7 +131,7 @@ func _ready():
 	preload("res://scripts/ui/recycling_station.gd").model(self,recycling_pos)
 	build_ui()
 	hub_skills=preload("res://scripts/ui/hub_skills.gd").new();hub_skills.hub=self;root.add_child(hub_skills)
-	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Боец",printer_pos,1.4)
+	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Казарма",printer_pos,1.4)
 	preload("res://scripts/interaction_prompt.gd").attach(self,self,"В бой",Vector3(5,0,-2),2.2)
 	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Стоянка",Vector3(6,0,1),1.65,func():return "garage" in Game.built_workshops and not mounted)
 	preload("res://scripts/printer_intro.gd").play(self)
@@ -572,7 +572,7 @@ func update_bench_visuals():
 	if is_instance_valid(dummy):dummy.visible="range" in Game.built_workshops
 func show_build_menu():preload("res://scripts/ui/build_menu.gd").show(self)
 
-## The four stations share one screen (scripts/ui/station_screen.gd); only «Боец» needs no building.
+## The four stations share one screen (scripts/ui/station_screen.gd); only «Казарма» needs no building.
 const STATIONS={"fighter":["","res://scripts/ui/stations/fighter_station.gd"],"arsenal":["weapons","res://scripts/ui/stations/arsenal_station.gd"],"hq":["headquarters","res://scripts/ui/stations/hq_station.gd"],"garage":["garage","res://scripts/ui/stations/garage_station.gd"]}
 func open_station(kind:String):
 	var building=STATIONS[kind][0]

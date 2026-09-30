@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="StatDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/stats/stat_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "pierce"
+title = "Пробитие"
+icon = "legendary"
+family = "fire"
+order = 2
+run_field = "pierce"
+format = "integer"
+cap = 0.0
+description = "Сколько врагов пуля проходит насквозь."
+step = 1.0
+max_level = 1
+cost_base = 450
+cost_step = 0
+requires = "crit_damage"
+requires_level = 3
+meta_field = ""

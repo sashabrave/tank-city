@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="StatDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/stats/stat_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "guard_vehicle"
+title = "Защита от техники"
+icon = "vehicle"
+family = "survival"
+order = 3
+run_field = "guard_vehicle"
+format = "percent"
+cap = 0.6
+description = "Снаряды танков, БТР, багги, миномётов и босса."
+step = 0.03
+max_level = 5
+cost_base = 70
+cost_step = 35
+requires = "guard_blast"
+requires_level = 2
+meta_field = ""

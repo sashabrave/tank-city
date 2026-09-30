@@ -5,7 +5,7 @@ extends CanvasLayer
 signal exit_requested
 const ENEMIES=[["soldier","Стрелок"],["grenadier","Гранатомётчик"],["shield","Щитовой"],["sniper","Снайпер"],["buggy","Багги"],["apc","БТР"],["tank","Танк"],["mortar","Миномёт"],["drone","Дрон"],["flyer","Летающий"]]
 const SIZES=[13,15,17,19,21,23,25]
-const TABS=[["field","Поле"],["enemies","Враги"],["bonuses","Бонусы"],["cards","Карты"],["gear","Техника"],["challenges","Испытания"]]
+const TABS=[["field","Поле"],["enemies","Враги"],["bonuses","Бонусы"],["cards","Карты"],["stats","Статы"],["gear","Техника"],["challenges","Испытания"]]
 var arena
 var tab="field"
 var rank=1
@@ -82,11 +82,19 @@ func render():
 			action(grid,"+10 жетонов",func():arena.run.tokens+=10)
 		"cards":
 			header(grid,"Редкость")
-			for t in range(3):
-				var value=t;action(grid,arena.LOOT.RARITY_NAMES[t],func():tier=value;render(),tier==t)
+			for t in range(RunUpgrades.TIER_NAMES.size()):
+				var value=t;action(grid,RunUpgrades.TIER_NAMES[t],func():tier=value;render(),tier==t)
 			header(grid,"Карты улучшений")
 			for def in UpgradeRegistry.all():
 				var id=def.id;action(grid,def.title+(" ×%d" % RunUpgrades.stacks(arena,id) if RunUpgrades.stacks(arena,id)>0 else ""),func():RunUpgrades.apply(arena,id,tier);render())
+		"stats":
+			# Every registry stat, built from assets/balance/stats: a new stat file appears here by itself.
+			for def in StatRegistry.all():
+				var stat=def;var nudge={"percent":.05,"multiplier":.25,"integer":1.0,"number":.25}[def.format]
+				var label=Label.new();grid.add_child(label);label.custom_minimum_size=Vector2(230,40);label.vertical_alignment=VERTICAL_ALIGNMENT_CENTER
+				Texts.set_text(label,"%s · %s" % [def.title,StatRegistry.text(def,StatRegistry.value(def,arena))])
+				action(grid,"−",func():nudge_stat(stat,-nudge))
+				action(grid,"+",func():nudge_stat(stat,nudge))
 		"gear":
 			header(grid,"Техника рядом")
 			for kind in GarageCatalog.VEHICLES:
@@ -94,7 +102,7 @@ func render():
 			header(grid,"Оружие")
 			for id in Game.LOOT.WEAPONS:
 				var weapon=id;action(grid,Game.LOOT.WEAPONS[id].name,func():arena.run.weapon=weapon;RunUpgrades.refresh_player(arena);render(),arena.run.weapon==id)
-			header(grid,"Оболочка (возрождение)")
+			header(grid,"Класс (возрождение)")
 			for id in Game.CLASSES:
 				var shell=id;action(grid,Game.CLASSES[id].name,func():Game.selected_class=shell;respawn();render(),Game.selected_class==id)
 		"challenges":
@@ -104,6 +112,11 @@ func render():
 			header(grid,"Запустить")
 			for mode in RoutePlan.CHALLENGES:
 				var id=mode;action(grid,ChallengeRooms.TITLES.get(mode,mode),func():rebuild({"mode":id}))
+func nudge_stat(def:StatDef,amount:float):
+	var current=float(arena.run.get(def.run_field))
+	var next=maxf(0.0,current+amount)
+	arena.run.set(def.run_field,int(round(next)) if typeof(arena.run.get(def.run_field))==TYPE_INT else next)
+	render()
 func header(grid:GridContainer,text:String):
 	for i in range(grid.get_child_count()%grid.columns,grid.columns if grid.get_child_count()%grid.columns else 0):grid.add_child(Control.new())
 	var label=Label.new();grid.add_child(label);Texts.set_text(label,text);label.add_theme_color_override("font_color",UiKit.MUTED);label.custom_minimum_size=Vector2(230,28)

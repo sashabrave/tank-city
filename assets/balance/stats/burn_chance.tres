@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="StatDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/stats/stat_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "burn_chance"
+title = "Поджог"
+icon = "damage"
+family = "ammo"
+order = 0
+run_field = "burn_chance"
+format = "percent"
+cap = 0.8
+description = "Шанс поджечь врага: урон 3 с, огонь перекидывается, бочки взрываются с одного попадания."
+step = 0.02
+max_level = 5
+cost_base = 70
+cost_step = 35
+requires = ""
+requires_level = 2
+meta_field = ""

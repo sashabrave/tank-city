@@ -18,7 +18,7 @@ const STORY=[
 const INSTITUTE=[
 {"id":"institute_arsenal","text":"Арсенал","event":"build_weapons","goal":1,"alloy":50,"docs":0,"xp":40,"hint":"Донеси чертёж Арсенала и построй его через «Строительство» в хабе."},
 {"id":"shield","text":"Защита на марше","event":"use_shield","goal":1,"alloy":80,"docs":0,"xp":65,"hint":"Выбери щит и возьми его в вылазку."},
-{"id":"supply","text":"Полевой запас","event":"camp_level","goal":1,"alloy":65,"docs":0,"xp":60,"hint":"В «Бойце» → Снабжение открой и улучши аптечки передышки."},
+{"id":"supply","text":"Полевой запас","event":"camp_level","goal":1,"alloy":65,"docs":0,"xp":60,"hint":"В «Казарме» → Снабжение открой и улучши аптечки передышки."},
 {"id":"hq_bench","text":"Штаб","event":"build_headquarters","goal":1,"alloy":100,"docs":0,"xp":90,"hint":"Донеси чертёж Штаба из сундука командира и построй его."},
 {"id":"hq_equip","text":"Комплект поддержки","event":"equip_hq","goal":1,"alloy":80,"docs":0,"xp":70,"hint":"В Штабе → Технологии выбери модуль или активную технологию."},
 {"id":"hq_support","text":"Связь со штабом","event":"use_hq","goal":3,"alloy":110,"docs":0,"xp":100,"hint":"Используй активный гаджет штаба три раза."},

@@ -2,7 +2,8 @@ extends Control
 ## One template for every hub station: tabs on the left, a grid of item cards in the middle and a detail panel
 ## on the right with before → after rows, the price and the actions. A provider object supplies the data:
 ##   title()->String, subtitle()->String, tabs()->Array of [key,title,icon],
-##   items(tab)->Array of {id,title,icon,caption,state(locked|ready|owned|active|max),dot},
+##   items(tab)->Array of {id,title,icon,caption,state(locked|ready|owned|active|max),dot,group},
+##     items with a "group" are laid out as titled rows (station trees: one row per branch),
 ##   detail(tab,id)->{title,icon,text,rows:[[name,before,after]],lines:[String],actions:[{id,text,enabled,primary}]},
 ##   act(tab,id,action)->String (message shown on success, "" when nothing happened).
 signal closed
@@ -44,11 +45,23 @@ func build():
 		var b=UiKit.button(panel,tabs[i][1],Vector2(22,96+i*54),Vector2(190,46),func():tab=key;selected="";notice="";animate_cards=true;build(),key==tab);b.name="Tab_"+key
 		b.icon=UiKit.icon_texture(tabs[i][2]) if tabs[i].size()>2 else null;b.expand_icon=true;b.add_theme_constant_override("icon_max_width",22);b.alignment=HORIZONTAL_ALIGNMENT_LEFT;b.add_theme_font_size_override("font_size",16)
 	var scroll=ScrollContainer.new();panel.add_child(scroll);scroll.position=Vector2(232,96);scroll.size=Vector2(530,532);scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
-	grid=GridContainer.new();grid.name="Items";scroll.add_child(grid);grid.columns=3;grid.add_theme_constant_override("h_separation",10);grid.add_theme_constant_override("v_separation",10)
 	var items=provider.items(tab)
 	if selected=="" and not items.is_empty():selected=items[0].id
-	for item in items:card(item)
-	if animate_cards:UiKit.reveal_list(grid);animate_cards=false
+	var grouped=items.any(func(item):return item.has("group"))
+	var column=VBoxContainer.new();column.name="Items";scroll.add_child(column);column.add_theme_constant_override("separation",8)
+	var current_group=null;grid=null
+	for item in items:
+		if grouped and item.get("group")!=current_group:
+			current_group=item.get("group")
+			var header=UiKit.label(column,str(current_group),Vector2.ZERO,Vector2(510,24),15,UiKit.MUTED);header.custom_minimum_size=Vector2(510,24);header.clip_text=false
+			grid=null
+		if grid==null:
+			grid=GridContainer.new();column.add_child(grid);grid.columns=3;grid.add_theme_constant_override("h_separation",10);grid.add_theme_constant_override("v_separation",10)
+		card(item)
+	if animate_cards:
+		for child in column.get_children():
+			if child is GridContainer:UiKit.reveal_list(child)
+		animate_cards=false
 	detail_box=UiKit.panel(panel,Vector2(778,96),Vector2(320,532),Color("2c352e"));detail_box.name="Detail"
 	render_detail()
 func card(item:Dictionary):

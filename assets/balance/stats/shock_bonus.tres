@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="StatDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/stats/stat_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "shock_bonus"
+title = "ЭМИ по технике"
+icon = "device_power"
+family = "ammo"
+order = 1
+run_field = "shock_bonus"
+format = "percent"
+cap = 0.0
+description = "Бонус урона по технике и дронам."
+step = 0.05
+max_level = 5
+cost_base = 70
+cost_step = 35
+requires = "burn_chance"
+requires_level = 2
+meta_field = ""

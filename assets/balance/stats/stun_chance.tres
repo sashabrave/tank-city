@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="StatDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/stats/stat_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "stun_chance"
+title = "Контузия"
+icon = "device_cooldown"
+family = "ammo"
+order = 2
+run_field = "stun_chance"
+format = "percent"
+cap = 0.4
+description = "Шанс оглушить врага на 0,8 с."
+step = 0.01
+max_level = 5
+cost_base = 80
+cost_step = 40
+requires = "shock_bonus"
+requires_level = 2
+meta_field = ""

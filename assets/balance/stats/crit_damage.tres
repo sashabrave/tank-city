@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="StatDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/stats/stat_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "crit_damage"
+title = "Крит-урон"
+icon = "damage"
+family = "fire"
+order = 1
+run_field = "crit_damage"
+format = "multiplier"
+cap = 0.0
+description = "Во сколько раз крит сильнее обычного выстрела."
+step = 0.05
+max_level = 5
+cost_base = 80
+cost_step = 40
+requires = "crit_chance"
+requires_level = 2
+meta_field = ""

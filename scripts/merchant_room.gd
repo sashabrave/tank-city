@@ -3,7 +3,7 @@ extends Node3D
 ## Stock is rolled once per visit from the run's combat RNG; the slot machine can be played repeatedly.
 signal completed(index: int)
 signal hub_requested
-const CARD_PRICES=[3,5,8]
+const CARD_PRICES=[3,5,8,12]
 const SLOT_PRICE=2
 ## Slot machine outcomes and weights: nothing, tokens back, full heal, card of a tier.
 const SLOT_TABLE=[["empty",40],["tokens",20],["heal",10],["card0",18],["card1",9],["card2",3]]
@@ -56,9 +56,9 @@ func build_stall():
 ## Stock entries: {kind, id, tier, price, sold}. Cards use UpgradeRegistry; the blueprint appears in 40% of visits.
 func roll_stock()->Array:
 	var rng=arena.run.combat_rng;var result=[]
-	for id in RunUpgrades.roll(arena,2):
-		var tier=Game.rarity_roll(rng.randf(),index)
-		result.append({"kind":"card","id":id,"tier":tier,"price":CARD_PRICES[tier],"sold":false})
+	for offer in RunUpgrades.roll_offers(arena,2):
+		var tier=clampi(int(offer.tier),0,CARD_PRICES.size()-1)
+		result.append({"kind":"card","id":offer.id,"tier":tier,"price":CARD_PRICES[tier],"sold":false})
 	result.append({"kind":"heal","price":3,"sold":false})
 	if arena.room.player!=null and is_instance_valid(arena.room.player) and arena.room.player.kind in GarageCatalog.VEHICLES:
 		result.append({"kind":"repair","price":3,"sold":false})

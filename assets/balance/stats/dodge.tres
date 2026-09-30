@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="StatDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/stats/stat_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "dodge"
+title = "Уклонение"
+icon = "speed"
+family = "survival"
+order = 0
+run_field = "dodge"
+format = "percent"
+cap = 0.5
+description = "Шанс не получить пулю или снаряд техники. Взрывы не уклоняются."
+step = 0.01
+max_level = 5
+cost_base = 60
+cost_step = 30
+requires = ""
+requires_level = 2
+meta_field = ""

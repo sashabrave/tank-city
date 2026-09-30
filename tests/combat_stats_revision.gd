@@ -17,7 +17,9 @@ func run():
 	var run=arena.run
 	# Crit and electric
 	run.crit_chance=1.0;run.crit_damage=2.0
-	check(is_equal_approx(CombatMods.outgoing(arena,bullet_from(player,1.0),enemy),2.0*(1.0)),"guaranteed crit doubles damage")
+	var hits=[]
+	for i in range(60):hits.append(CombatMods.outgoing(arena,bullet_from(player,1.0),enemy))
+	check(hits.has(2.0) and hits.has(1.0),"crit doubles damage and stays below certainty")
 	check(CombatMods.crit_chance(arena)<=CombatMods.CAPS.crit_chance,"crit chance is capped")
 	run.crit_chance=0.0;run.crit_damage=1.5;Game.luck_level=0
 	run.shock_bonus=.5
@@ -88,5 +90,14 @@ func run():
 	# One luck: the former rarity branch folds into luck
 	Game.apply_profile({"luck":2,"rarity":3,"branch_unlocks":["health","rarity"]})
 	check(Game.luck_level==5 and Game.rarity_level==0 and "luck" in Game.branch_unlocks and "rarity" not in Game.branch_unlocks,"rarity levels move into luck")
+	# Registry: every stat file is saved in checkpoints and shown in the dossier
+	var keys=preload("res://scripts/profile/run_checkpoint.gd").keys()
+	check(StatRegistry.all().all(func(d):return d.run_field in keys),"checkpoint saves every registry stat")
+	check(preload("res://scripts/ui/stat_snapshot.gd").registry(arena).size()==StatRegistry.all().size(),"dossier lists every registry stat")
+	Game.stat_levels={"dodge":2,"future_stat":4}
+	var saved=Game.serialize_progress();Game.apply_profile(saved)
+	check(int(Game.stat_levels.get("dodge",0))==2 and int(Game.stat_levels.get("future_stat",0))==4,"station levels persist, unknown ids are kept")
+	var fresh=preload("res://scripts/state/run_state.gd").new();StatRegistry.apply_meta(fresh)
+	check(is_equal_approx(fresh.dodge,StatRegistry.get_def("dodge").step*2),"station levels apply at run start")
 	print("COMBAT STATS: %d failures" % failures)
 	get_tree().quit(failures)
