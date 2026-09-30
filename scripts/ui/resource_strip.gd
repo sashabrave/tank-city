@@ -24,6 +24,9 @@ func _ready():
 	documents=UiKit.label(panel,"",Vector2(147,3),Vector2(60,32),17)
 	token_icon=UiKit.icon(panel,"token",Vector2(0,5),Vector2(28,28));token_icon.modulate=UiKit.INK;token_icon.name="TokenIcon"
 	pickup_targets["tokens"]=token_icon
+	# Hover (mouse) or tap (touch) explains each currency.
+	for pair in [[pickup_targets["alloy"],"Сплав — покупки и прокачка. При гибели теряется часть добытого за вылазку."],[document_icon,"Документы — открытия и исследования."],[token_icon,"Жетоны — валюта торговца. Сгорают после вылазки."]]:
+		pair[0].mouse_filter=Control.MOUSE_FILTER_PASS;pair[0].tooltip_text=Texts.localized(pair[1])
 	tokens=UiKit.label(panel,"",Vector2(0,3),Vector2(40,32),17);tokens.name="Tokens"
 func track_run(run):run_ref=weakref(run) if run!=null else null
 func run_tokens()->int:

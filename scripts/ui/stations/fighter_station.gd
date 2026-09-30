@@ -4,7 +4,7 @@ extends RefCounted
 const GENERAL=[["health","Здоровье","+2 HP за уровень"],["damage","Сила","+5% базового урона за уровень"],["mobility","Скорость","Прирост уменьшается с каждым уровнем"],["pressure","Напор","Шанс, что твой снаряд переживёт столкновение"]]
 const SUPPLY=[["heal","Сила лечения","heart"],["supplies","Аптечки в передышках","heart"],["luck","Удача","star"]]
 func title()->String:return "Казарма"
-func subtitle()->String:return "Классы, выучка и снабжение — действуют в каждой вылазке."
+func subtitle()->String:return "Классы, выучка, снабжение — на все вылазки."
 func tabs()->Array:return [["shells","Классы","fighter"],["general","Общие улучшения","health"],["training","Выучка","rare"],["supply","Снабжение","heart"],["kit","Снаряжение","inventory"]]
 func items(tab:String)->Array:
 	var result=[]

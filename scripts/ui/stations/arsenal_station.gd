@@ -2,7 +2,7 @@ extends RefCounted
 ## «Арсенал» (weapons blueprint): weapons to take and level up, combat bonuses, gadgets.
 const GADGETS=["barrier","mine","laser","airstrike"]
 func title()->String:return "Арсенал"
-func subtitle()->String:return "Оружие, бонусы боя и гаджеты. Открываются чертежами, развиваются сплавом."
+func subtitle()->String:return "Оружие, бонусы, гаджеты. Чертёж открывает, сплав прокачивает."
 func tabs()->Array:return [["weapons","Оружие","inventory"],["bonuses","Бонусы","heart"],["gadgets","Гаджеты","mine"]]
 func items(tab:String)->Array:
 	var result=[]

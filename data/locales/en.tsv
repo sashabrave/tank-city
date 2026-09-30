@@ -1345,14 +1345,12 @@ WASD — Герой · пробел — огонь · тяни мышью — о
 Проходит по внешнему флангу и доставляет бомбу к боковой стене штаба. Следи за краями поля. Наземные и летающие дроны атакуют вне состава волн: первый выезд через случайные 15–30 секунд активного боя, следующие через 18–30 секунд. Одновременно не более двух; общей квоты нет. В передышках новые дроны не появляются. Они не задерживают завершение волны: оставшиеся уходят, их бомбы обезвреживаются.	Flanks along the edge and delivers a bomb to a side wall of HQ. Watch the edges. Ground and flying drones attack outside the wave roster: first after a random 15–30 seconds of active combat, then every 18–30 seconds. At most two are active; there is no total quota. No new drones arrive during breaks. They never delay wave completion: remaining drones leave and their bombs are disarmed.
 Бастион — тяжёлый танк: прицельный залп, затем веер. Клещи — два быстрых багги, атакуют по очереди. Батарея — средний БТР: миномёт, затем прицельный залп. Перед атакой есть предупреждение, после — пауза для контратаки. На 60% и 30% здоровья босс включает щит: его питает генератор на фланге под охраной. Уничтожь светящийся генератор, и щит пропадёт. Во втором и третьем мирах Бастион добавляет миномётный залп. В третьем мире после генерала выбери одну из двух комнат усиления, затем сразись с Цитаделью. На 80%, 60%, 40% и 20% здоровья гигабосса по очереди включаются генераторы. Уничтожь активный генератор под охраной, чтобы снять щит. Неактивные генераторы неуязвимы.	Bastion is a heavy tank: an aimed volley followed by a spread. Pincers are two fast buggies that attack in turns. Battery is a medium APC: a mortar barrage followed by an aimed volley. Every attack has a warning and a recovery window for counterattacks. At 60% and 30% health the boss raises a shield powered by a guarded flank generator. Destroy the glowing generator to drop the shield. In worlds 2 and 3, Bastion adds a mortar barrage. After the general in world 3, choose one of two upgrade rooms, then fight the Citadel. At 80%, 60%, 40% and 20% boss health, generators activate one at a time. Destroy the guarded active generator to remove the shield. Dormant generators cannot be damaged.
 6 полей + генерал\nПередышка → гигабосс\nТанк · РПГ	6 fields + general\nRest stop → gigaboss\nTank · RPG
-
 Тех. информация	Technical information
 Документов: %d · %s	Documents: %d · %s
 В папке пока нет Markdown-документов.	This folder has no Markdown documents yet.
 Документ недоступен. Нажми «Обновить».	Document unavailable. Select Refresh.
 Документ слишком большой для просмотра.	Document too large to display.
 Обновить	Refresh
-
 Передышка между боями	A break between battles
 Выбери одну комнату. После улучшения — сразу в следующий бой.	Choose one room. Upgrade, then head straight into battle.
 Улучши транспорт для следующих боёв.	Upgrade your vehicle for the next battles.
@@ -1360,12 +1358,10 @@ WASD — Герой · пробел — огонь · тяни мышью — о
 Выбери модуль или усиление штаба.	Choose an HQ module or upgrade.
 В следующий бой →	Next battle →
 Следующая комната	Next room
-
 Альфа и проверки	Alpha and checks
 Геймдизайн	Game design
 Начать здесь	Start here
 Разработка	Development
-
 Растительность	Vegetation
 растительность	vegetation
 Медная роща	Copper grove
@@ -1376,11 +1372,9 @@ WASD — Герой · пробел — огонь · тяни мышью — о
 Лиловое болото	Lilac marsh
 Обгоревший берег	Scorched shore
 Серебряный перевал	Silver pass
-
 Непроходима для пехоты и наземной техники, но пропускает пули и гранаты. Летающие юниты проходят сверху.	Blocks infantry and ground vehicles, but lets bullets and grenades pass. Flying units can pass overhead.
 Непроходима для пехоты и наземной техники, но пропускает пули и гранаты. Летающие юниты проходят сверху. В каждом биоме свой минилес: ели, пальмы, обгоревшие деревья, лиственная роща или снежные ели. Чем дальше комната, тем больше сложной местности; открытые обходы сохраняются.	Blocks infantry and ground vehicles, but lets bullets and grenades pass. Flying units can pass overhead. Each biome has a miniature forest: spruce, palms, burned trees, leafy groves or snowy spruce. Later rooms have more difficult terrain while keeping open routes.
 15 сочетаний палитры и местности: пустыни, берега, леса, болота, пепельные земли и перевалы. Растительность есть во всех биомах; песок, вода и лёд зависят от локации. Плотность сложных клеток растёт с глубиной комнаты и сложностью маршрута. Номер комбинации можно включить в настройках интерфейса.	15 combinations of palette and terrain: deserts, shores, forests, marshes, ash lands and mountain passes. All biomes feature vegetation; sand, water and ice depend on the location. Difficult terrain becomes denser in later rooms and on harder routes. Enable the biome number in interface settings.
-
 Принтер бойца	Soldier printer
 Общие улучшения	Shared upgrades
 Способность открыта · Q — использовать	Ability unlocked · Q to use
@@ -1690,9 +1684,6 @@ F2 — админ	F2 — admin
 Найди чертёж Стоянки и построй её — в «Строительстве» или в Штабе → Постройки.	Find the Parking blueprint and build it via Construction or HQ → Buildings.
 В Штабе купи постоянный уровень технологии.	Buy a permanent technology level in the HQ.
 Изменить улучшения можно на станциях хаба.	Upgrades are changed at the hub stations.
-Оружие, бонусы боя и гаджеты. Открываются чертежами, развиваются сплавом.	Weapons, combat bonuses and gadgets. Unlocked by blueprints, upgraded with alloy.
-Поддержка в бою, оборона базы, страховка добычи и постройки хаба.	Combat support, base defence, loot insurance and hub buildings.
-Своя техника ждёт у старта вылазки. Сначала багги, потом БТР и танк.	Your own vehicle waits at the start of a run. Buggy first, then APC and tank.
 Технологии	Technologies
 Оборона	Defence
 Страховка	Insurance
@@ -1930,7 +1921,6 @@ HP штаба и техники за каждое убийство.	HQ and vehic
 Выучка улучшена	Training upgraded
 В начале забега	At run start
 Карточки забега прибавляются сверху.	Run cards add on top.
-Классы, выучка и снабжение — действуют в каждой вылазке.	Classes, training and supply — active in every run.
 «Казарма» открыта сразу: классы, выучка, аптечки. С неё и начинаю — классика.	The Barracks are open from the start: classes, training, medkits. That's where I begin — a classic.
 В «Казарме» → Снабжение открой и улучши аптечки передышки.	In Barracks → Supply unlock and upgrade the rest stop medkits.
 Купить и выбрать · 	Buy and select · 
@@ -2244,3 +2234,29 @@ E — в хаб	E — to the hub
 Не хватает	Not enough
 Можно улучшить	Can upgrade
 Новое	New
+Техника к старту вылазки: багги → БТР → танк.	Vehicles for the start of a run: buggy → APC → tank.
+Поддержка, оборона, страховка, постройки.	Support, defence, insurance, buildings.
+Оружие, бонусы, гаджеты. Чертёж открывает, сплав прокачивает.	Weapons, bonuses, gadgets. Blueprints unlock, alloy upgrades.
+Классы, выучка, снабжение — на все вылазки.	Classes, training, supply — for every run.
+Сплав — покупки и прокачка. При гибели теряется часть добытого за вылазку.	Alloy — purchases and upgrades. Dying loses part of what the run earned.
+Документы — открытия и исследования.	Documents — unlocks and research.
+Жетоны — валюта торговца. Сгорают после вылазки.	Tokens — the merchant's currency. They burn after the run.
+Неуязвимость	Invulnerable
+Звезда: неуязвимость и мощный огонь	Star: invulnerable, heavy fire
+Щит: блокирует попадания	Shield: blocks hits
+Маскировка: враги не видят	Cloak: enemies cannot see you
+Враги заморожены	Enemies frozen
+Десант: пули мимо, крит выше	Landing: bullets miss, higher crit
+Выдержка: первый выстрел сильнее	Opening shot: the first shot hits harder
+Рывок	Dash
+В окопе: урон меньше	In a trench: less damage
+Нужен чертёж или предыдущий шаг	Needs a blueprint or a previous step
+Появится в следующих обновлениях	Coming in a later update
+Хватает ресурсов — можно купить	Enough resources — you can buy it
+Не хватает ресурсов	Not enough resources
+Уже есть	Already owned
+Можно улучшить сейчас	Can be upgraded now
+На улучшение пока не хватает	Not enough for the upgrade yet
+Используется сейчас	In use now
+Прокачано до предела	Fully upgraded
+Открыто недавно	Recently unlocked

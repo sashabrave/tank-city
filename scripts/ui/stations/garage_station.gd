@@ -1,7 +1,7 @@
 extends RefCounted
 ## «Стоянка» (garage blueprint): buy and choose vehicles, buy their equipment.
 func title()->String:return "Стоянка"
-func subtitle()->String:return "Своя техника ждёт у старта вылазки. Сначала багги, потом БТР и танк."
+func subtitle()->String:return "Техника к старту вылазки: багги → БТР → танк."
 func tabs()->Array:return [["vehicles","Техника","vehicle"],["equipment","Оборудование","settings"]]
 func items(tab:String)->Array:
 	var result=[];var g=Game.garage

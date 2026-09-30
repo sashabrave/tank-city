@@ -69,7 +69,8 @@ func purchase_action(id:String)->Dictionary:
 	return {}
 func status_chip(parent:Control,kind:String,pos:Vector2)->Control:
 	var spec:Array=STATUS.get(kind,STATUS.owned)
-	var chip=PanelContainer.new();chip.name="Status";parent.add_child(chip);chip.position=pos;chip.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	var chip=PanelContainer.new();chip.name="Status";parent.add_child(chip);chip.position=pos;chip.mouse_filter=Control.MOUSE_FILTER_PASS
+	chip.tooltip_text=Texts.localized({"locked":"Нужен чертёж или предыдущий шаг","soon":"Появится в следующих обновлениях","buy":"Хватает ресурсов — можно купить","short":"Не хватает ресурсов","owned":"Уже есть","upgrade":"Можно улучшить сейчас","upgrade_short":"На улучшение пока не хватает","active":"Используется сейчас","max":"Прокачано до предела","new":"Открыто недавно"}.get(kind,""))
 	var box=UiKit.style(Color(spec[1],.16),5,Color(spec[1],.5));box.content_margin_left=6;box.content_margin_right=6;box.content_margin_top=1;box.content_margin_bottom=1
 	chip.add_theme_stylebox_override("panel",box)
 	var label=Label.new();chip.add_child(label);Texts.set_text(label,spec[0]);label.add_theme_font_size_override("font_size",11);label.add_theme_color_override("font_color",spec[1].lightened(.15))

@@ -3,7 +3,7 @@ extends RefCounted
 const DEFENCE=[["base","Прочность базы","repair"],["turret","Союзные турели","turret"]]
 const BUILDINGS=["weapons","yard","garage","range"]
 func title()->String:return "Штаб"
-func subtitle()->String:return "Поддержка в бою, оборона базы, страховка добычи и постройки хаба."
+func subtitle()->String:return "Поддержка, оборона, страховка, постройки."
 func tabs()->Array:return [["tech","Технологии","base"],["defence","Оборона","repair"],["insurance","Страховка","alloy"],["build","Постройки","settings"]]
 func items(tab:String)->Array:
 	var result=[]
