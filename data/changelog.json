@@ -14,7 +14,8 @@
 					"Экран итогов забега: строки появляются лесенкой со щелчком — поля, враги, время, сплав, документы; полосы наполняются, числа бегут. Рекорд по врагам отмечен. Чертежи показаны карточками, потерянные притушены.",
 					"Брошенная граната взрывается сразу, если попадает во врага по пути.",
 					"Поля боя меньше и только нечётного размера, чтобы штаб стоял по центру: 11, 13, 15, 15, 17, 17 и босс на 19. В бесконечном режиме — от 15 до 21.",
-					"Музыка меняется мягко: старый трек затихает до тишины, короткая пауза, новый плавно нарастает."
+					"Музыка меняется мягко: старый трек затихает до тишины, короткая пауза, новый плавно нарастает.",
+					"Если нажать на точку карты, машина едет к ней по изгибам дороги, а не по прямой. Ручная езда по-прежнему свободна."
 				]
 			},
 			"en": {
@@ -28,7 +29,8 @@
 					"Run summary: rows arrive one by one with a click — fields, enemies, time, alloy, documents; bars fill, numbers count up. An enemy record is marked. Blueprints show as cards, lost ones dimmed.",
 					"A thrown grenade explodes at once when it hits an enemy on the way.",
 					"Battle fields are smaller and always odd-sized so the HQ sits in the centre: 11, 13, 15, 15, 17, 17 and the boss at 19. Endless runs from 15 to 21.",
-					"Music changes gently: the old track fades to silence, a short pause, the new one rises smoothly."
+					"Music changes gently: the old track fades to silence, a short pause, the new one rises smoothly.",
+					"Tapping a map point makes the car drive there along the road's curves instead of a straight line. Manual driving stays free."
 				]
 			}
 		},

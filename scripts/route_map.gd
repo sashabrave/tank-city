@@ -240,14 +240,49 @@ func travel_to_room(index:int,node_id:String=""):
 	if hero.has_method("equip_weapon"):hero.preview_moving=true
 	var target=previews[node_id].position+Vector3(0,.17,2)*MINI_SCALE
 	player_marker.get_node("CurrentHero").rotation.y=PI
-	player_marker.rotation.y=atan2(-(target.x-player_marker.position.x),-(target.z-player_marker.position.z))
+	# Auto-drive follows the road curves to the node (manual driving stays free, only held to the road).
+	var path=road_path_to(previews[node_id].position,target)
+	var length=0.0
+	for i in range(path.size()-1):length+=path[i].distance_to(path[i+1])
+	var duration=clampf(length/9.0,.6,1.6)
 	travel_tween=create_tween().set_parallel(true)
-	travel_tween.tween_property(player_marker,"position",target,.85).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	travel_tween.tween_method(func(value):scroll=value;move_camera(),scroll,-target.z,.85)
-	travel_tween.tween_property(camera,"size",24.0,.85)
+	travel_tween.tween_method(func(t:float):follow_path(path,length,t),0.0,1.0,duration).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	travel_tween.tween_method(func(value):scroll=value;move_camera(),scroll,-target.z,duration)
+	travel_tween.tween_property(camera,"size",24.0,duration)
 	travel_tween.chain().tween_callback(func():
 		if hero.has_method("equip_weapon"):hero.preview_moving=false
 		travelling=false)
+## Road polyline from the car to a node: the road ending at the node (and the leg before it through a
+## rest camp), cut at the point nearest to the car. Falls back to a straight line.
+func road_path_to(node_pos:Vector3,target:Vector3)->Array:
+	var flat=func(v:Vector3):return Vector3(v.x,0,v.z)
+	var here=player_marker.position;var y=here.y
+	var chain=[]
+	for road in road_paths:
+		if flat.call(road.b).distance_to(flat.call(node_pos))<.2:
+			chain=road.points.duplicate()
+			for before in road_paths:
+				if flat.call(before.b).distance_to(flat.call(road.a))<.2 and flat.call(before.a).distance_to(flat.call(here))<flat.call(road.a).distance_to(flat.call(here)):
+					chain=before.points.duplicate()+chain;break
+			break
+	if chain.is_empty():return [here,target]
+	var nearest=0;var best=INF
+	for i in range(chain.size()):
+		var d=flat.call(chain[i]).distance_to(flat.call(here))
+		if d<best:best=d;nearest=i
+	var path=[here]
+	for i in range(nearest+1,chain.size()):path.append(Vector3(chain[i].x,y,chain[i].z))
+	path.append(target);return path
+func follow_path(path:Array,length:float,t:float):
+	var d=t*length
+	for i in range(path.size()-1):
+		var segment=path[i].distance_to(path[i+1])
+		if d<=segment or i==path.size()-2:
+			var k=clampf(d/maxf(segment,.0001),0.0,1.0);var p=path[i].lerp(path[i+1],k);var dir=path[i+1]-path[i]
+			player_marker.position=p
+			if dir.length()>.01:player_marker.rotation.y=lerp_angle(player_marker.rotation.y,atan2(-dir.x,-dir.z),.35)
+			return
+		d-=segment
 ## Battle nodes show the wave preview; service nodes show the service description.
 func node_dialog(info:Dictionary,confirm:Callable)->Control:
 	var branch=RoutePlan.node_branch(info)
