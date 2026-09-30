@@ -33,22 +33,46 @@ static func hub(parent:Node3D,ground:=Color("7c8176")):
 static func route(parent:Node3D,length:float):
 	var decor=Node3D.new();decor.name="RouteSurroundings";parent.add_child(decor)
 	Visuals.box(decor,Vector3(0,-.47,8),Vector3(9,.025,6),Color("898c80"))
-	for x in [-4.3,4.3]:
-		for z in [5.5,7.0,8.5,10.0]:Visuals.box(decor,Vector3(x,-.44,z),Vector3(.13,.02,.8),Color("b29a65"))
-	# Edges: abstract one-tone mountains and hints of distant bases, no detail.
+	# Edges: stepped mountains with strata and light tops, a derelict industrial belt in front of them.
 	var rng=RandomNumberGenerator.new();rng.seed=40417
-	var rock=Color("969a8b");var ruin=Color("8b8f84")
 	for side in [-1,1]:
 		for index in range(int(length/6)+3):
 			var z=10-index*6.0+rng.randf_range(-1.5,1.5)
-			for k in range(2):
-				var peak=preload("res://scripts/route_miniatures.gd").cylinder(decor,Vector3(side*rng.randf_range(15.5,20.0),-.5,z+k*2.4),rng.randf_range(1.8,3.0),rng.randf_range(2.0,4.2),rock.darkened(rng.randf_range(.04,.12)),rng.randi_range(5,7),rng.randf_range(.15,.5))
-				peak.rotation.y=rng.randf()*TAU;peak.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-			if index%3==1:
-				var chunk=Node3D.new();decor.add_child(chunk);chunk.position=Vector3(side*12.6,-.45,z);chunk.rotation.y=rng.randf_range(-.3,.3)
-				match rng.randi_range(0,2):
-					0:Visuals.box(chunk,Vector3(0,.45,0),Vector3(.4,.9,3.2),ruin)
-					1:
-						Visuals.box(chunk,Vector3(0,1.1,0),Vector3(.9,2.2,.9),ruin);Visuals.box(chunk,Vector3(0,2.35,0),Vector3(1.3,.3,1.3),ruin)
-					_:
-						Visuals.box(chunk,Vector3(0,.35,0),Vector3(2.2,.7,1.4),ruin);Visuals.box(chunk,Vector3(0,.55,.71),Vector3(1.2,.12,.02),ruin.darkened(.35))
+			mountain(decor,Vector3(side*rng.randf_range(16.0,20.5),-.5,z),rng)
+			if index%2==1:industry(decor,Vector3(side*rng.randf_range(12.2,13.4),-.45,z+rng.randf_range(-1.2,1.2)),rng)
+static func mountain(parent:Node3D,base:Vector3,rng:RandomNumberGenerator):
+	var mini=preload("res://scripts/route_miniatures.gd")
+	var rock=Color("8f9384").darkened(rng.randf_range(0,.12));var height=rng.randf_range(2.6,5.0);var radius=rng.randf_range(2.2,3.2)
+	var sides=rng.randi_range(5,7);var yaw=rng.randf()*TAU
+	var tiers=[[1.0,.42],[.7,.34],[.42,.24]]
+	var y=base.y;var offset=Vector3.ZERO
+	for t in range(tiers.size()):
+		var h=height*tiers[t][1];var r=radius*tiers[t][0]
+		var piece=mini.cylinder(parent,base+offset+Vector3(0,y-base.y,0),r,h,rock.lightened(t*.05),sides,r*.78)
+		piece.rotation.y=yaw+t*.4;piece.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		y+=h*.92;offset+=Vector3(rng.randf_range(-.3,.3),0,rng.randf_range(-.3,.3))
+	var band=mini.cylinder(parent,base+Vector3(0,height*.3,0),radius*.86,.12,rock.darkened(.22),sides,radius*.84);band.rotation.y=yaw;band.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	if height>3.6:
+		var cap=mini.cylinder(parent,base+offset+Vector3(0,y-base.y-.05,0),radius*.34,.35,Color("e6e4dc"),sides,.05);cap.rotation.y=yaw;cap.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	for k in range(3):
+		var boulder=mini.cylinder(parent,base+Vector3(rng.randf_range(-radius,radius)*1.2,0,rng.randf_range(-radius,radius)*1.2),rng.randf_range(.25,.55),rng.randf_range(.2,.5),rock.darkened(.1),5,.12)
+		boulder.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+## Derelict industry: a banded chimney, a broken shop wall with window gaps, or a cooling tower.
+static func industry(parent:Node3D,pos:Vector3,rng:RandomNumberGenerator):
+	var mini=preload("res://scripts/route_miniatures.gd")
+	var brick=Color("8a7a6a");var concrete=Color("8b8f84")
+	var node=Node3D.new();parent.add_child(node);node.position=pos;node.rotation.y=rng.randf_range(-.4,.4)
+	match rng.randi_range(0,2):
+		0:
+			mini.cylinder(node,Vector3.ZERO,.35,3.4,brick,8,.28)
+			for y in [2.4,2.9]:mini.cylinder(node,Vector3(0,y,0),.33,.14,Color("c8452f") if y<2.6 else Color("e8e2d0"),8)
+			Visuals.box(node,Vector3(.8,.4,0),Vector3(1.2,.8,1.0),concrete)
+		1:
+			for i in range(4):
+				var h=rng.randf_range(.7,1.9)
+				Visuals.box(node,Vector3(-1.2+i*.8,h*.5,0),Vector3(.72,h,.25),concrete if i%2 else brick)
+				if h>1.2:Visuals.box(node,Vector3(-1.2+i*.8,h*.6,.13),Vector3(.3,.35,.02),Color("2a2c2a"))
+			Visuals.box(node,Vector3(.2,.1,.8),Vector3(1.6,.2,.9),concrete.darkened(.15))
+		_:
+			mini.cylinder(node,Vector3.ZERO,1.1,2.4,concrete,10,.75)
+			mini.cylinder(node,Vector3(0,2.3,0),.78,.25,concrete.darkened(.2),10,.82)

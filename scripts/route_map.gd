@@ -109,7 +109,8 @@ func _ready():
 	camera=Visuals.setup_world(self,28,Vector3.ZERO)
 	get_node("WorldAtmosphere").anchor_to_map(-stage_z(plan.size()-1))
 	preload("res://scripts/base_surroundings.gd").route(self,-stage_z(plan.size()-1))
-	Visuals.box(self,Vector3(0,-.55,stage_z(plan.size()-1)*.5),Vector3(23,.2,-stage_z(plan.size()-1)+35),Color("8c918c"))
+	# Ground of the whole theatre (earth tone, not a road); battlefield clutter is scattered after the roads.
+	Visuals.box(self,Vector3(0,-.55,stage_z(plan.size()-1)*.5),Vector3(46,.2,-stage_z(plan.size()-1)+35),Color("8e8c7e"))
 	for stage in range(plan.size()):
 		wave_rosters.append(PREVIEW.waves(wave_seed,stage))
 		for info in plan[stage]:
@@ -166,6 +167,7 @@ func _ready():
 	Visuals.ring(player_marker,Color("f3b95f"),2.0/1.5)
 	player_marker.position=current_point()+Vector3(0,.17,2)*MINI_SCALE
 	foreground_hangar=preload("res://scripts/route_foreground.gd").new();add_child(foreground_hangar)
+	scatter_battlefield()
 	for info in plan[0]:path_line(START_POINT,previews[info.id].position)
 	start_pad=Node3D.new();start_pad.name="StartPad";add_child(start_pad);start_pad.position=START_POINT;start_pad.scale=Vector3.ONE*MINI_SCALE
 	MINI.start(start_pad);Visuals.label3d(start_pad,"Старт",Vector3(0,.35,3.65),Color("f3eee0"),30).pixel_size=.025
@@ -283,6 +285,38 @@ func follow_path(path:Array,length:float,t:float):
 			if dir.length()>.01:player_marker.rotation.y=lerp_angle(player_marker.rotation.y,atan2(-dir.x,-dir.z),.35)
 			return
 		d-=segment
+## Random battlefield clutter between the roads: craters, hedgehogs, sandbag arcs and wrecks. Visual RNG
+## seeded by the map; kept clear of roads and nodes.
+func scatter_battlefield():
+	var rng=RandomNumberGenerator.new();rng.seed=hash([wave_seed,"route_clutter"])
+	var node_points=previews.values().map(func(n):return Vector3(n.position.x,0,n.position.z))
+	var road_points=[]
+	for road in road_paths:
+		for p in road.points:road_points.append(Vector3(p.x,0,p.z))
+	var length=-stage_z(plan.size()-1)+10
+	var clutter=Node3D.new();clutter.name="RouteClutter";add_child(clutter)
+	var placed=0;var tries=0
+	while placed<int(length*.9) and tries<1200:
+		tries+=1
+		var p=Vector3(rng.randf_range(-10.5,10.5),0,rng.randf_range(stage_z(plan.size()-1)-8,12))
+		if node_points.any(func(q):return q.distance_to(p)<3.2):continue
+		if road_points.any(func(q):return q.distance_to(p)<1.6):continue
+		var item=Node3D.new();clutter.add_child(item);item.position=p+Vector3(0,-.44,0);item.rotation.y=rng.randf()*TAU;placed+=1
+		match rng.randi_range(0,4):
+			0:
+				MINI.cylinder(item,Vector3.ZERO,rng.randf_range(.45,.8),.05,Color("5d5a4e"),10)
+				MINI.cylinder(item,Vector3(0,.02,0),rng.randf_range(.25,.4),.05,Color("3f3d36"),8)
+			1:
+				for axis in [Vector3(1,1,0),Vector3(-1,1,0),Vector3(0,1,1)]:
+					var beam=Visuals.box(item,Vector3(0,.2,0),Vector3(.06,.5,.06),Color("4f5443"))
+					beam.basis=Basis(Vector3.UP.cross(axis.normalized()).normalized() if Vector3.UP.cross(axis.normalized()).length()>.01 else Vector3.RIGHT,Vector3.UP.angle_to(axis.normalized()))
+			2:MINI.sandbags(item,Vector3.ZERO,5,.5,Color("b0a582"))
+			3:
+				Visuals.box(item,Vector3(0,.16,0),Vector3(.9,.3,.55),Color("4c4f45"))
+				Visuals.box(item,Vector3(.05,.36,0),Vector3(.4,.14,.36),Color("3f423a"))
+				Visuals.box(item,Vector3(.45,.38,0),Vector3(.5,.05,.05),Color("33352f")).rotation.z=.25
+			_:
+				for i in range(3):Visuals.box(item,Vector3(-.3+i*.3,.08,0),Vector3(.26,.16,.26),Color("8a7a6a").darkened(rng.randf_range(0,.2))).rotation.y=rng.randf()
 ## Battle nodes show the wave preview; service nodes show the service description.
 func node_dialog(info:Dictionary,confirm:Callable)->Control:
 	var branch=RoutePlan.node_branch(info)
