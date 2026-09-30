@@ -28,7 +28,8 @@
 					"Новое испытание «Удержание»: займи точку и стой в ней, пока враги наступают. Шкала растёт, только когда в зоне нет врагов.",
 					"Новое испытание «Выживание»: патроны кончились — уклоняйся от меток артобстрела, пока не выйдет время. Бочки рядом с метками тоже взрываются.",
 					"Новое испытание «Напёрстки»: мини-штаб прячут под одним из броневых колпаков и перемешивают. Подойди к нужному и нажми E — попытка одна. Больше звёзд — больше колпаков и быстрее.",
-					"Новое испытание «Переключатели»: плиты по очереди загораются — наступай на них в том же порядке и открой сейф. Три попытки."
+					"Новое испытание «Переключатели»: плиты по очереди загораются — наступай на них в том же порядке и открой сейф. Три попытки.",
+					"У испытаний своё оформление поля: военная рамка из бетона и кирпича по краям, шевроны у входов, траншеи вдоль бортов и свободная площадь в центре."
 				]
 			},
 			"en": {
@@ -57,7 +58,8 @@
 					"New Hold challenge: take the point and stay in it while enemies advance. Progress grows only while the zone is free of enemies.",
 					"New Survival challenge: you're out of ammo — dodge the artillery markers until time runs out. Barrels near the markers explode too.",
 					"New Thimbles challenge: a mini HQ is hidden under one of the armoured cups and shuffled. Walk up to the right one and press E — one guess only. More stars mean more cups and faster shuffling.",
-					"New Switches challenge: plates light up in turn — step on them in the same order to open the safe. Three tries."
+					"New Switches challenge: plates light up in turn — step on them in the same order to open the safe. Three tries.",
+					"Challenges get their own field design: a military frame of concrete and brick along the edges, chevrons at the entrances, trenches along the sides and a free plaza in the middle."
 				]
 			}
 		}

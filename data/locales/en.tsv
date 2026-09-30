@@ -1530,3 +1530,6 @@ Changelog	Changelog
 Попытки кончились	No tries left
 Не тот порядок · попыток: %d	Wrong order · tries left: %d
 Плиты по очереди загораются. Наступай на них в том же порядке, чтобы открыть сейф. Три попытки; звёзды — больше плит и длиннее порядок.	Plates light up one by one. Step on them in the same order to open the safe. Three tries; stars mean more plates and a longer order.
+Переключатели · смотри	Switches · watch
+Переключатели · %d / %d	Switches · %d / %d
+Напёрстки · выбор [E]	Thimbles · pick [E]

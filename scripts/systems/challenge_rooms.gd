@@ -109,8 +109,8 @@ func tick(delta:float=0.0):
 func status()->String:
 	match arena.room.mode:
 		"cache":return TITLES.cache+(" · засада" if opened and not rewarded else "")
-		"thimbles":return TITLES.thimbles+{"show":" · смотри","shuffle":" · следи","pick":" · выбирай [E]"}.get(thimble_state," · готово")
-		"switches":return TITLES.switches+({"show":" · запоминай","input":" · шаг %d / %d · попыток %d" % [step+1,sequence.size(),tries]}.get(switch_state," · готово"))
+		"thimbles":return TITLES.thimbles+{"show":" · смотри","shuffle":" · следи","pick":" · выбор [E]"}.get(thimble_state," · готово")
+		"switches":return TITLES.switches+({"show":" · смотри","input":" · %d / %d" % [step+1,sequence.size()]}.get(switch_state," · готово"))
 		"hold","survive":return TITLES[arena.room.mode]+(" · %d / %d с" % [floori(progress),roundi(goal)] if not rewarded else " · готово")
 	return ""
 
