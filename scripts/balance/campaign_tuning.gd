@@ -3,7 +3,7 @@ class_name CampaignTuning
 extends Resource
 ## В кампании 17 этапов. Порядок боссов сохраняется; X/Y/Z — три волны поля боя.
 @export_group("Размеры и одновременные враги — по 17 этапам")
-@export var room_sizes:Array[int]=[13,15,17,18,19,20,21,22,23,24,25,26,27,28,29,30,35]
+@export var room_sizes:Array[int]=[11,13,15,15,17,17,19,22,23,24,25,26,27,28,29,30,35]
 @export var active_enemy_caps:Array[int]=[2,3,4,4,4,4,3,5,5,5,5,5,5,5,5,3,4]
 @export_group("Шесть полей боя первой зоны — X/Y/Z это волны 1/2/3")
 @export var wave_counts:Array[Vector3i]=[Vector3i(4,5,6),Vector3i(5,6,7),Vector3i(6,7,8),Vector3i(6,7,8),Vector3i(6,7,8),Vector3i(6,7,8)]

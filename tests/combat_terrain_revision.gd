@@ -9,7 +9,10 @@ func run():
 	# High allied muzzle clears the neighbouring base cover even at maximum range.
 	var mortar=arena.spawn_actor("grenadier",arena.base_cell+Vector2i.LEFT,false,true);mortar.set_physics_process(false)
 	var origin=mortar.position
-	for offset in [Vector3(0,0,-6),Vector3(6,0,0),Vector3(0,0,-2)]:
+	# Only the base cover next to the muzzle stays: tall layout pieces further along the arcs are cleared.
+	for cell in arena.room.walls.keys():
+		if (cell-mortar.cell).length()>1.5 and (cell.x==mortar.cell.x or cell.y==mortar.cell.y):arena.room.walls[cell].node.queue_free();arena.room.walls.erase(cell)
+	for offset in [Vector3(0,0,-6),Vector3(5,0,0),Vector3(0,0,-2)]:  # 5 across: the first field is 11 wide
 		arena.throw_grenade(mortar,origin+offset)
 		var grenade=arena.grenades.back();grenade.set_physics_process(false)
 		for step in range(96):grenade._physics_process(1.0/60.0)

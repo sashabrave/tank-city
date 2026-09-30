@@ -13,10 +13,11 @@ func run():
 	assert(is_equal_approx(grenade.marker.get_meta("blast_radius"),arena.abilities.radius()))
 	assert(grenade.target==arena.world_pos(Vector2i(5,3)))
 	assert(not grenade.marker.visible and is_equal_approx(Balance.CONFIG.combat.grenade_radius,1.5))
-	grenade._physics_process(.3);assert(not grenade.marker.visible)
-	grenade._physics_process(.36);assert(grenade.marker.visible)
 	var before=enemy.hp
-	grenade._physics_process(grenade.flight_time+grenade.fuse+.01)
+	grenade._physics_process(.3);assert(not grenade.spent and not grenade.marker.visible)
+	# Impact fuse: reaching the enemy it explodes at once, without waiting for the landing fuse.
+	for i in range(30):
+		if not grenade.spent:grenade._physics_process(.05)
 	assert(grenade.spent and enemy.hp<before)
 	assert(arena.grenades.is_empty() and arena.find_children("GrenadeShockwave","Node3D",true,false).size()==1)
 	arena.queue_free();await get_tree().process_frame

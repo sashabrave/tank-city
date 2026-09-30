@@ -26,6 +26,11 @@ func _physics_process(delta):
 	if spent or not is_instance_valid(arena) or arena.phase not in ["combat","countdown"]:return
 	if friendly:
 		motion.advance(delta);position=motion.position;elapsed+=delta
+		# Impact fuse: a friendly grenade that touches an enemy on its way explodes at once.
+		if position.y<1.1:
+			for enemy in arena.room.actors:
+				if is_instance_valid(enemy) and not enemy.dead and not enemy.player_owned and not enemy.allied and arena.flat_distance(position,enemy.position)<(.55 if enemy.footprint<=1 else enemy.footprint*.5):
+					target=Vector3(position.x,0,position.z);arena.grenade_explosion(target,damage,friendly,blast_radius);consume();return
 		if motion.landed and not landed_audio:Game.sound("grenade_land",self);landed_audio=true
 		target=Vector3(position.x,0,position.z)
 		marker.visible=motion.landed

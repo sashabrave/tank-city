@@ -5,10 +5,10 @@ static var world=1
 static var endless=false
 static var cycle=0
 static var endless_strength=1.0
-static var SIZES:Array=[13,15,17,18,19,20,21]
+static var SIZES:Array=[11,13,15,15,17,17,19]
 static var BOSSES:Array=[6]
 static var SERVICES:Array=[2,4,6]
-const WORLDS={1:{"name":"Пограничье","offset":0,"sizes":[13,15,17,18,19,20,21],"boss_hp":700.0,"hp":1.0,"damage":1.0},2:{"name":"Линия фронта","offset":7,"sizes":[22,23,24,25,26,27,30],"boss_hp":1100.0,"hp":1.75,"damage":1.35},3:{"name":"Цитадель","offset":16,"sizes":[25,26,27,28,29,30,35],"boss_hp":1600.0,"hp":2.7,"damage":1.7}}
+const WORLDS={1:{"name":"Пограничье","offset":0,"sizes":[11,13,15,15,17,17,19],"boss_hp":700.0,"hp":1.0,"damage":1.0},2:{"name":"Линия фронта","offset":7,"sizes":[22,23,24,25,26,27,30],"boss_hp":1100.0,"hp":1.75,"damage":1.35},3:{"name":"Цитадель","offset":16,"sizes":[25,26,27,28,29,30,35],"boss_hp":1600.0,"hp":2.7,"damage":1.7}}
 static func configure(id:int,infinite:bool=false):
 	world=clampi(id,1,3);endless=infinite;cycle=0
 	var hp=CombatStats.initial_health()
@@ -16,7 +16,8 @@ static func configure(id:int,infinite:bool=false):
 	var stats=CombatStats.weapon()
 	var dps=stats.damage*weapon.pellets/stats.interval
 	endless_strength=clampf(.8+.12*sqrt(maxf(0,hp-3))+.10*sqrt(maxf(0,dps-2.5))+.12*Game.garage.owned.size(),1,2.5)
-	SIZES=WORLDS[world].sizes.duplicate() if not endless else [17,18,19,20,21,22,23]
+	# Odd sizes only (the HQ needs a centre column); growth slows toward the boss.
+	SIZES=WORLDS[world].sizes.duplicate() if not endless else [15,17,17,19,19,21,21]
 	if world==3 and not endless:SIZES=[25,26,27,28,29,30,32,35]
 	BOSSES=[6,7] if world==3 and not endless else [SIZES.size()-1]
 	SERVICES=[2,4,6,7] if world==3 and not endless else [2,4,6]
