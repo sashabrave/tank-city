@@ -62,6 +62,7 @@ func show_map(index: int):
 	if is_instance_valid(run_arena):
 		if run_arena.pending_vehicle!="":current.hero_kind=run_arena.pending_vehicle
 		elif is_instance_valid(run_arena.player):current.hero_kind=run_arena.player.kind
+		elif not run_arena.resume_checkpoint.get("hero",{}).is_empty():current.hero_kind=str(run_arena.resume_checkpoint.hero.kind)
 	add_child(current)
 	Game.checkpoint_run(run_arena,index,"map",route_choices)
 	current.dev_requested.connect(test_jump);current.test_requested.connect(test_jump);current.route_selected.connect(enter_room);current.hub_requested.connect(show_hub);current.service_requested.connect(show_service)
@@ -145,7 +146,7 @@ func request_run():
 	current.root.add_child(dialog);current.build_menu=dialog;current.phase="workshop";current.exit_queued=false
 	dialog.cancelled.connect(current.close_station)
 	dialog.new_run.connect(func():current.close_station();Game.clear_run_checkpoint();Game.progression.end_run();select_world())
-	dialog.continued.connect(func():current.close_station();resume_run())
+	dialog.continued.connect(func():current.close_station();preload("res://scripts/ui/loading_veil.gd").run(self,resume_run))
 func resume_run(restart:bool=false):
 	var data=Game.run_checkpoint.duplicate(true)
 	if data.is_empty():return
@@ -154,7 +155,9 @@ func resume_run(restart:bool=false):
 	route_choices=preload("res://scripts/profile/run_checkpoint.gd").integer_keys(data.choices)
 	clear_current()
 	if not data.run.is_empty():
-		run_arena=load("res://scenes/arena.tscn").instantiate();run_arena.resume_checkpoint=data;run_arena.run_seed=int(data.seed);current=run_arena;add_child(current);run_arena.run.route_choices=route_choices
+		run_arena=load("res://scenes/arena.tscn").instantiate();run_arena.resume_checkpoint=data;run_arena.run_seed=int(data.seed)
+		run_arena.defer_room=not (restart and data.mode=="room") and not data.endless
+		current=run_arena;add_child(current);run_arena.run.route_choices=route_choices
 		current.exit_requested.connect(show_hub);current.map_requested.connect(show_map);current.restart_requested.connect(restart_room)
 	# Battle state is never restored: a room checkpoint returns to the route map in front of that room.
 	# Only the explicit «Заново» action restarts the same room immediately.

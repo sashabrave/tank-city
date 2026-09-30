@@ -32,7 +32,8 @@
 					"Обучение через видеосвязь: майор Кравец из штаба округа выходит на связь в хабе. Он рассказывает, почему Рубеж — 13 держит один невезучий боец, и объясняет главное в нужный момент: после первой гибели, после постройки стоянки и перед генералом.",
 					"Везде в интерфейсе «оболочка» заменена на «класс».",
 					"Рябь на песке теперь мягкая и гладкая: фонарик больше не рисует на ней треугольную сетку теней.",
-					"Производительность на больших и Retina-экранах: мир рисуется в меньшем разрешении с чётким масштабированием, интерфейс остаётся резким. В полном экране 3420×2146 хаб вырос с 50 до 80+ кадров, бой — с 67 до 100+. В настройках видео новый пункт «Разрешение 3D»: авто, 100%, 75%, 50%."
+					"Производительность на больших и Retina-экранах: мир рисуется в меньшем разрешении с чётким масштабированием, интерфейс остаётся резким. В полном экране 3420×2146 хаб вырос с 50 до 80+ кадров, бой — с 67 до 100+. В настройках видео новый пункт «Разрешение 3D»: авто, 100%, 75%, 50%.",
+					"Продолжение сохранённого забега стало быстрее и без рывка: карта открывается без лишней сборки невидимого поля боя, а загрузку прикрывает короткий тёмный экран «Загрузка»."
 				]
 			},
 			"en": {
@@ -64,7 +65,8 @@
 					"Video-call tutorial: Major Kravets from district HQ calls you in the hub. He explains why Line 13 is held by one unlucky soldier and covers the essentials at the right time: after your first death, after the motor pool is built and before the general.",
 					"The interface now says \"class\" everywhere instead of \"shell\".",
 					"Sand ripples are now soft and smooth: the flashlight no longer draws a triangular shadow grid on them.",
-					"Performance on large and Retina screens: the world renders at a lower resolution with sharp upscaling while the interface stays crisp. At fullscreen 3420×2146 the hub went from 50 to 80+ FPS and battles from 67 to 100+. New video setting \"3D resolution\": auto, 100%, 75%, 50%."
+					"Performance on large and Retina screens: the world renders at a lower resolution with sharp upscaling while the interface stays crisp. At fullscreen 3420×2146 the hub went from 50 to 80+ FPS and battles from 67 to 100+. New video setting \"3D resolution\": auto, 100%, 75%, 50%.",
+					"Continuing a saved run is faster and no longer stutters: the map opens without building a hidden battlefield, and a short dark Loading screen covers the switch."
 				]
 			}
 		},

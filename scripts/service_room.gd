@@ -59,6 +59,8 @@ func _ready():
 func current_vehicle()->String:
 	if is_instance_valid(arena.player) and arena.player.kind in GarageCatalog.VEHICLES:return arena.player.kind
 	if arena.pending_vehicle in GarageCatalog.VEHICLES:return arena.pending_vehicle
+	var saved=str(arena.resume_checkpoint.get("hero",{}).get("kind",""))
+	if saved in GarageCatalog.VEHICLES:return saved
 	var start=Game.garage.starting_vehicle()
 	return start if start in GarageCatalog.VEHICLES else "buggy"
 func _physics_process(delta):

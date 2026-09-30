@@ -249,6 +249,8 @@ var challenges=preload("res://scripts/systems/challenge_rooms.gd").new(self)
 
 var resume_checkpoint:Dictionary={}
 ## Sandbox (test field from the hub): overrides applied by begin_room; the admin panel sets them.
+## Resume to the route map: restore the run but build no battle room until a room is entered.
+var defer_room=false
 var sandbox=false
 var sandbox_size=0
 var sandbox_mode="battle"
@@ -277,6 +279,7 @@ func _ready():
 	presentation=load("res://scripts/battle_presentation.gd").new();presentation.arena=self;add_child(presentation)
 	pending_vehicle=Game.garage.starting_vehicle()
 	if not resume_checkpoint.is_empty():preload("res://scripts/profile/run_checkpoint.gd").restore(self,resume_checkpoint)
+	if defer_room:return
 	begin_room(int(resume_checkpoint.index) if not resume_checkpoint.is_empty() else 0)
 
 func begin_room(index: int):
