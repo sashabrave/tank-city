@@ -1,6 +1,6 @@
 class_name DevUnlocks
 extends RefCounted
-const GROUPS={"research":"Постройки","weapon":"Оружие","classes":"Классы / навыки","ability":"Гаджеты","hq":"Штаб","bonus":"Бонусы","garage":"Транспорт"}
+const GROUPS={"research":"Постройки","weapon":"Оружие","classes":"Классы","ability":"Гаджеты","hq":"Штаб","bonus":"Бонусы","garage":"Транспорт"}
 const GADGETS=["barrier","mine","laser","airstrike"]
 static func catalog(group:String)->Dictionary:
 	if group=="classes":return Game.CLASSES

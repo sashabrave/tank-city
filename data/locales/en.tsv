@@ -1988,3 +1988,25 @@ HP +1 · защита от пуль +10% · дробовик +10% · скоро�
 Охотник	Hunter
 Одна пуля	One bullet
 «%s». Класс в разработке: цифры и способности — набросок.	“%s”. Class in development: numbers and abilities are a sketch.
+Чертежи · тест	Blueprints · test
+Открывай и закрывай чертежи и покупки, чтобы проверить игру.	Grant and revoke blueprints and purchases to test the game.
+Профиль	Profile
+Открыть все чертежи во всех группах.	Unlock every blueprint in every group.
+Закрыть все чертежи, кроме стартовых.	Lock every blueprint except the starting ones.
+Обнулить прогресс текущего мира: сплав, чертежи, станции и прокачку.	Reset this world's progress: alloy, blueprints, stations and upgrades.
+Выполнить	Run
+Стартовый	Starting
+Открыт	Unlocked
+Закрыт	Locked
+Закрыть чертёж	Lock blueprint
+Открыть чертёж	Unlock blueprint
+Открыть всю группу	Unlock the whole group
+Закрыть всю группу	Lock the whole group
+Стартовый чертёж — есть всегда.	Starting blueprint — always owned.
+Чертёж открыт.	Blueprint unlocked.
+Чертёж закрыт.	Blueprint locked.
+Все чертежи открыты	All blueprints unlocked
+Чертежи закрыты	Blueprints locked
+Профиль обнулён	Profile reset
+Группа обновлена	Group updated
+Оборудование · 	Equipment · 

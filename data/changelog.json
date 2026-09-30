@@ -7,14 +7,16 @@
 				"title": "Окоп",
 				"items": [
 					"Боец в окопе сидит глубже, а спереди появился бруствер из мешков: видны голова и плечи, в укрытии — только каска.",
-					"Подсказки окопа больше не закрывают поле. Рядом с окопом — маленькая клавиша входа на самой клетке окопа. В окопе — клавиша укрытия под клеткой и маленькая клавиша выхода над головой. На телефоне их можно нажимать пальцем."
+					"Подсказки окопа больше не закрывают поле. Рядом с окопом — маленькая клавиша входа на самой клетке окопа. В окопе — клавиша укрытия под клеткой и маленькая клавиша выхода над головой. На телефоне их можно нажимать пальцем.",
+					"Тестовый магазин чертежей переделан в общем стиле станций: вкладки-группы со счётчиком, карточки чертежей, действия справа; общие переключатели — во вкладке «Профиль»."
 				]
 			},
 			"en": {
 				"title": "Trench",
 				"items": [
 					"A soldier sits deeper in the trench, and a sandbag parapet covers the front: head and shoulders show, only the helmet when hiding.",
-					"Trench hints no longer cover the field. Next to a trench a small enter key sits on the trench cell. Inside, the hide key is under the cell and a small leave key above the head. On a phone they can be tapped."
+					"Trench hints no longer cover the field. Next to a trench a small enter key sits on the trench cell. Inside, the hide key is under the cell and a small leave key above the head. On a phone they can be tapped.",
+					"The test blueprint shop now uses the common station style: group tabs with counters, blueprint cards, actions on the right; global switches live in the Profile tab."
 				]
 			}
 		},
