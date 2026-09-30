@@ -4,6 +4,22 @@
 			"date": "2026-09-30",
 			"version": "0.2.1",
 			"ru": {
+				"title": "Советы бойца",
+				"items": [
+					"При входе в хаб боец больше не просто здоровается, а делится коротким советом о механиках — с иронией и смекалкой. Советов двадцать, подряд один и тот же не повторяется."
+				]
+			},
+			"en": {
+				"title": "Soldier's tips",
+				"items": [
+					"When you enter the hub, the soldier now shares a short tip about the mechanics — with irony and wit — instead of a plain greeting. There are twenty tips, and the same one never shows twice in a row."
+				]
+			}
+		},
+		{
+			"date": "2026-09-30",
+			"version": "0.2.1",
+			"ru": {
 				"title": "Четыре станции хаба",
 				"items": [
 					"Хаб стал проще: вместо шести верстаков — четыре станции с одинаковым экраном. Слева вкладки, в центре карточки, справа подробности «было → станет», цена и одна понятная кнопка.",

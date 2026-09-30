@@ -1,7 +1,7 @@
 extends Control
 signal closed
-const WAKE=["Я проснулся и готов!","Снова на ногах. Я готов!","Новый день — новый шанс!","Выспался. Можно начинать!","Я в строю! Что у нас сегодня?"]
-const RETURN=["Наконец-то я вернулся!","Дома! Как же здесь хорошо.","Вернулся целым. Уже неплохо!","Вот и база. Можно выдохнуть!","Я вернулся! Есть что рассказать."]
+## Hub greeting: short first-person tips about the game from the ironic, resourceful soldier.
+const TIPS=["Бочку я не обхожу. Я подвожу к ней врагов. Бум — и спор окончен.","Жетоны с врагов живут до конца вылазки. Копить их незачем — несу торговцу.","Штаб за спиной — не мебель. Упадёт штаб — упаду и я. Так что прикрываю.","Тайник всегда с сюрпризом: откроешь — набегут. Открываю, но сперва встаю поудобнее.","Одна карта — прибавка. Три похожих — уже схема, от которой враги плачут.","Не нравятся карты — есть переброс. Я не гордый, перетасую.","Чертежи лежат в сундуках командиров. Донёс до базы — построил станцию. Не донёс — ну, бывает.","В «Штабе» есть страховка сплава. Я человек осторожный: страхую и сплав, и нервы.","Пешком далеко не уйдёшь. Вижу машину — сажусь. Это смекалка, а не лень.","Пройденная комната — отметка на карте. Выйду из игры — продолжу с неё же. Удобно, как старые валенки.","Дорога на карте ветвится. Ищу торговца и испытания — прямо ходят только поезда.","В напёрстках штаб прячут под колпаком. Слежу, не моргаю. Глаз-алмаз.","Задания выдают в командном центре, там же платят сплавом и документами. Бесплатно только советы, как этот.","«Боец» открыт сразу: оболочки, здоровье, аптечки. С него и начинаю — классика.","У торговца стоит автомат удачи. Знаю, что глупо. Знаю. Дёргаю.","Сплав — на станции, документы — на редкие открытия. Считать умею, хоть и делаю вид, что нет.","Проиграл — не беда: прокачка на базе остаётся. Возвращаюсь сильнее и чуть злее.","Бесконечный режим не кончается. Как и мои идеи, как всё это сломать.","Хочу проверить сборку без риска — иду в песочницу. Там я бессмертный и очень смелый.","Турели в «Штабе» стреляют, пока я думаю. Люблю, когда за меня работают."]
 static var last_lines:Dictionary={}
 var reason="wake"
 var panel:Panel
@@ -19,16 +19,15 @@ func _ready():
 	portrait=TextureRect.new();panel.add_child(portrait);portrait.texture=preload("res://scripts/ui/class_gallery.gd").texture(Game.selected_class);portrait.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;portrait.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;portrait.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	speaker=UiKit.label(panel,"Боец",Vector2.ZERO,Vector2.ZERO,20,UiKit.MUTED)
 	words=HFlowContainer.new();panel.add_child(words);words.add_theme_constant_override("h_separation",9);words.add_theme_constant_override("v_separation",8);words.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	var lines=RETURN if reason=="return" else WAKE
-	var available=lines.filter(func(line):return line!=last_lines.get(reason,""))
-	var line=available.pick_random();last_lines[reason]=line
+	var available=TIPS.filter(func(line):return line!=last_lines.get("tip",""))
+	var line=available.pick_random();last_lines["tip"]=line
 	# Translate the whole sentence before splitting so words retain their natural case.
 	var spoken=Texts.render(line)
 	for word in spoken.split(" ",false):
 		var slot=Control.new();words.add_child(slot)
 		var label=Label.new();slot.add_child(label);label.set_meta("text_editor",true);label.text=word;label.add_theme_font_override("font",UiKit.field_font());label.add_theme_color_override("font_color",UiKit.INK)
 		label.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	for caption in (["Супер","Молодец!"] if reason=="return" else ["Да","Конечно"]):
+	for caption in ["Понял","Учту"]:
 		var button=UiKit.button(panel,caption,Vector2.ZERO,Vector2.ZERO,dismiss,answers.is_empty());button.focus_mode=Control.FOCUS_ALL;answers.append(button)
 	resized.connect(layout);layout()
 	animation=create_tween().set_parallel(true)
@@ -44,7 +43,7 @@ func layout():
 	portrait.position=Vector2(12,16);portrait.size=Vector2(left,height-32)
 	speaker.position=Vector2(body_x,22);speaker.size=Vector2(body_width,28)
 	words.position=Vector2(body_x,68);words.size=Vector2(body_width,height-164)
-	var font_size=32 if width>=750 else 23
+	var font_size=28 if width>=750 else 21
 	for slot in words.get_children():
 		var label=slot.get_child(0);label.add_theme_font_size_override("font_size",font_size);slot.custom_minimum_size=label.get_minimum_size();label.size=slot.custom_minimum_size
 	for i in range(answers.size()):
