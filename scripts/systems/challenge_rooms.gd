@@ -5,7 +5,14 @@ extends RefCounted
 ## surviving it drops a reward chest whose value follows the room difficulty.
 ## hold — stand in the zone while enemies keep coming; progress grows only while no enemy is inside.
 ## survive — weapons are out of ammo; dodge artillery markers until the timer ends.
-const TITLES={"cache":"Тайник","hold":"Удержание","survive":"Выживание"}
+## thimbles — a mini HQ hides under one of the armoured cups, the cups shuffle, one guess with E.
+const TITLES={"cache":"Тайник","hold":"Удержание","survive":"Выживание","thimbles":"Напёрстки"}
+const CUPS=[3,4,5]
+const SWAPS=[5,8,12]
+const SWAP_TIME=[.55,.4,.28]
+var cups:Array=[]
+var hidden_cup:Node3D
+var thimble_state=""
 const AMBUSH_SIZE=[4,6,8]
 const HOLD_SECONDS=[30,40,50]
 const HOLD_RADIUS=1.6
@@ -27,7 +34,7 @@ func _init(context):
 	arena=context
 func active()->bool:return arena.room.mode!="battle"
 ## Rooms that finish by their own rule, not by an empty wave queue.
-func blocks_waves()->bool:return arena.room.mode in ["hold","survive"] and not rewarded
+func blocks_waves()->bool:return arena.room.mode in ["hold","survive","thimbles"] and not rewarded
 func weapons_locked()->bool:return arena.room.mode=="survive" and not rewarded
 func start():
 	opened=false;rewarded=false;chest={}
@@ -36,10 +43,14 @@ func start():
 	for shell in shells:
 		if is_instance_valid(shell.node):shell.node.queue_free()
 	shells.clear();zone=null
+	for cup in cups:
+		if is_instance_valid(cup):cup.queue_free()
+	cups.clear();hidden_cup=null;thimble_state=""
 	match arena.room.mode:
 		"cache":start_cache()
 		"hold":start_hold()
 		"survive":start_survive()
+		"thimbles":start_thimbles()
 func start_cache():
 	# The exit is open from the start: taking the risk is optional.
 	arena.room.room_cleared=true;arena.room.reward_claimed=true;arena.room.next_is_room=true
@@ -83,6 +94,7 @@ func tick(delta:float=0.0):
 func status()->String:
 	match arena.room.mode:
 		"cache":return TITLES.cache+(" · засада" if opened and not rewarded else "")
+		"thimbles":return TITLES.thimbles+{"show":" · смотри","shuffle":" · следи","pick":" · выбирай [E]"}.get(thimble_state," · готово")
 		"hold","survive":return TITLES[arena.room.mode]+(" · %d / %d с" % [floori(progress),roundi(goal)] if not rewarded else " · готово")
 	return ""
 
@@ -159,6 +171,69 @@ func explode_shell(shell:Dictionary):
 	if is_instance_valid(player) and not player.dead and arena.flat_distance(pos,player.position)<shell.radius:player.take_damage(1,player.position-pos+Vector3(.01,0,.01))
 	for cell in arena.room.walls.keys():
 		if arena.flat_distance(pos,arena.world_pos(cell))<shell.radius:arena.damage_wall(cell,2)
+
+func start_thimbles():
+	var level=clampi(arena.room.difficulty,0,2);var count=CUPS[level];var g=arena.room.grid_size
+	var row=int(g/2)-1
+	for i in range(count):
+		var cell=Vector2i(int(g/2)+roundi((i-(count-1)*.5)*2),row)
+		for clear in [cell,cell+Vector2i.DOWN,cell+Vector2i.UP]:
+			if arena.room.walls.has(clear):
+				var wall=arena.room.walls[clear]
+				if is_instance_valid(wall.get("node")):wall.node.queue_free()
+				arena.room.walls.erase(clear);arena.navigation.invalidate(clear)
+		var cup=Node3D.new();cup.name="Cup%d" % i;arena.add_child(cup);cup.position=arena.world_pos(cell)
+		var shell=MeshInstance3D.new();var shape=CylinderMesh.new();shape.top_radius=.3;shape.bottom_radius=.5;shape.height=.9;shell.mesh=shape;shell.position.y=.45;shell.material_override=Visuals.material(Color("56645a"));shell.name="Shell";cup.add_child(shell)
+		Visuals.box(cup,Vector3(0,.93,0),Vector3(.3,.08,.3),Color("e5b34f"))
+		cups.append(cup)
+		# Cups are solid for movement so the soldier walks up to them.
+		arena.room.walls[cell]={"node":cup,"hp":-1,"max_hp":-1,"cup":true};arena.navigation.invalidate(cell)
+	hidden_cup=cups[arena.run.combat_rng.randi_range(0,count-1)]
+	var prize=Visuals.model("base",hidden_cup);prize.name="Prize";prize.scale=Vector3.ONE*.42;prize.position.y=0
+	var glow=Visuals.ring(hidden_cup,Color("ffd56a"),.75);glow.name="Glow"
+	thimble_state="show";lift(true)
+	if is_instance_valid(arena.presentation):arena.presentation.announce("Напёрстки","Запомни, где штаб",.8)
+	arena.get_tree().create_timer(1.4).timeout.connect(func():
+		if is_instance_valid(arena) and thimble_state=="show":lift(false);shuffle())
+func lift(up:bool):
+	for cup in cups:
+		if is_instance_valid(cup) and cup==hidden_cup:
+			var tween=arena.create_tween();tween.tween_property(cup.get_node("Shell"),"position:y",1.9 if up else .45,.25)
+			if cup.has_node("Glow"):cup.get_node("Glow").visible=up
+## Pairs of cups trade places along arcs; cup logic positions swap with them.
+func shuffle():
+	thimble_state="shuffle"
+	var level=clampi(arena.room.difficulty,0,2);var rng=arena.run.combat_rng
+	var tween=arena.create_tween()
+	for step in range(SWAPS[level]):
+		var a=rng.randi_range(0,cups.size()-1);var b=(a+rng.randi_range(1,cups.size()-1))%cups.size()
+		tween.tween_callback(func():swap(a,b,SWAP_TIME[level]))
+		tween.tween_interval(SWAP_TIME[level]+.05)
+	tween.tween_callback(func():thimble_state="pick";arena.toast("Подойди к колпаку со штабом и нажми E"))
+func swap(a:int,b:int,time:float):
+	var first=cups[a];var second=cups[b]
+	if not is_instance_valid(first) or not is_instance_valid(second):return
+	var from=first.position;var to=second.position
+	var tween=arena.create_tween().set_parallel(true)
+	tween.tween_property(first,"position",to,time).set_trans(Tween.TRANS_SINE)
+	tween.tween_property(second,"position",from,time).set_trans(Tween.TRANS_SINE)
+	cups[a]=second;cups[b]=first
+func nearest_cup()->Node3D:
+	if thimble_state!="pick" or not is_instance_valid(arena.room.player):return null
+	for cup in cups:
+		if is_instance_valid(cup) and arena.flat_distance(cup.position,arena.room.player.position)<1.3:return cup
+	return null
+func pick_cup(cup:Node3D):
+	if thimble_state!="pick" or cup==null:return
+	thimble_state="done"
+	var shell=cup.get_node("Shell");arena.create_tween().tween_property(shell,"position:y",1.9,.25)
+	if cup==hidden_cup:
+		Game.sound("rare_reveal",arena);complete(cup.position+Vector3(0,0,1.2))
+	else:
+		lift(true);Game.sound("defeat",arena)
+		rewarded=true;arena.room.room_cleared=true;arena.room.reward_claimed=true;arena.room.next_is_room=true
+		arena.flow.place_flag("Выход")
+		if is_instance_valid(arena.presentation):arena.presentation.announce("Мимо","Штаб был под другим колпаком",.8)
 
 ## Challenge won: remaining enemies withdraw, the exit and the reward chest appear.
 func complete(pos:Vector3):

@@ -26,7 +26,8 @@
 					"Взрывающиеся бочки появились в мире 1: ближе к боссу их больше, в бою с боссом — по углам.",
 					"Мир 1: на каждом этапе со второго по шестой одна точка — особая. Первое испытание — «Тайник»: сундук в центре поля, выход открыт сразу. Откроешь — засада ветеранов, отобьёшься — награда по звёздам точки.",
 					"Новое испытание «Удержание»: займи точку и стой в ней, пока враги наступают. Шкала растёт, только когда в зоне нет врагов.",
-					"Новое испытание «Выживание»: патроны кончились — уклоняйся от меток артобстрела, пока не выйдет время. Бочки рядом с метками тоже взрываются."
+					"Новое испытание «Выживание»: патроны кончились — уклоняйся от меток артобстрела, пока не выйдет время. Бочки рядом с метками тоже взрываются.",
+					"Новое испытание «Напёрстки»: мини-штаб прячут под одним из броневых колпаков и перемешивают. Подойди к нужному и нажми E — попытка одна. Больше звёзд — больше колпаков и быстрее."
 				]
 			},
 			"en": {
@@ -53,7 +54,8 @@
 					"Explosive barrels now appear in world 1: more of them closer to the boss, and in the corners of the boss arena.",
 					"World 1: every stage from the second to the sixth has one special point. The first challenge is the Cache: a chest in the middle of the field with the exit open from the start. Opening it calls a veteran ambush; survive it for a reward matching the point's stars.",
 					"New Hold challenge: take the point and stay in it while enemies advance. Progress grows only while the zone is free of enemies.",
-					"New Survival challenge: you're out of ammo — dodge the artillery markers until time runs out. Barrels near the markers explode too."
+					"New Survival challenge: you're out of ammo — dodge the artillery markers until time runs out. Barrels near the markers explode too.",
+					"New Thimbles challenge: a mini HQ is hidden under one of the armoured cups and shuffled. Walk up to the right one and press E — one guess only. More stars mean more cups and faster shuffling."
 				]
 			}
 		}

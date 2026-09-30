@@ -555,6 +555,7 @@ func interact():
 	var recipe=nearest_recipe()
 	if not recipe.is_empty():open_recipe_draft(recipe);return
 	if not challenges.nearest_cache().is_empty():challenges.open_cache();return
+	if challenges.nearest_cup()!=null:challenges.pick_cup(challenges.nearest_cup());return
 	if room_cleared and is_instance_valid(flag) and flat_distance(player.position,flag.position)<1.8:
 		open_flag();return
 	if player.kind=="soldier" and board.interact_trench():return
