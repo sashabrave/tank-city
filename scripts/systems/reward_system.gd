@@ -44,7 +44,7 @@ func collect_pickup(pickup: Dictionary):
 		if arena.run.pending_recipes.size()>=Game.backpack_slots:
 			arena.room.recipe_offer=pickup;pickup["blocked"]=true;arena.pause_battle();return
 		arena.run.pending_recipes.append(pickup.recipe);arena.toast("В рюкзаке: "+Game.recipe_name(pickup.recipe))
-		arena.room.pickups.erase(pickup);pickup.node.queue_free();Game.sound("pickup",arena);return
+		arena.room.pickups.erase(pickup);preload("res://scripts/battle_stage.gd").vanish(pickup.node);Game.sound("pickup",arena);return
 	match pickup.kind:
 		"star":
 			arena.room.star_time=6+effective_bonus_level("star")*1.5;arena.toast("Звезда · неуязвимость и сокрушительный огонь!")
@@ -95,7 +95,7 @@ func collect_pickup(pickup: Dictionary):
 				arena.toast({"buggy":"Багги","apc":"БТР","tank":"Танк"}[kind]+" доставлен к базе. Садись в любое время.")
 	Game.sound({"heart":"heal","repair":"repair","vehicle_repair":"armor_recover","star":"rare_reveal","wall":"barrier_deploy","freeze":"shield_restore","pressure":"pressure"}.get(pickup.kind,"pickup"),arena)
 	arena.room.pickups.erase(pickup)
-	pickup.node.queue_free()
+	preload("res://scripts/battle_stage.gd").vanish(pickup.node)
 
 # Stat and behaviour cards come from UpgradeRegistry; weapons and headquarters offers keep their own catalogs.
 func apply_upgrade(id: String,tier: int=0):
@@ -224,7 +224,7 @@ func apply_secret(offer):
 func consume_chest(chest):
 	if chest not in arena.room.pickups:return
 	# Documents now drop from the final boss, independently of chest selection.
-	arena.room.pickups.erase(chest);chest.node.queue_free()
+	arena.room.pickups.erase(chest);preload("res://scripts/battle_stage.gd").vanish(chest.node,.2,.2)
 func bonus_strength(id:String)->float:return Game.bonus_power(id)+arena.run.run_bonus_levels.get(id,0)*.1
 
 func effective_bonus_level(id:String)->int:return Game.bonus_level(id)+int(arena.run.run_bonus_levels.get(id,0))

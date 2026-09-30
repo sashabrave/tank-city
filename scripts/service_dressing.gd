@@ -131,10 +131,7 @@ func tyre(pos:Vector3):
 	m.material_override=Visuals.material(Color("25282a"));add_child(m)
 
 func barrel(pos:Vector3,color:Color):
-	var m=MeshInstance3D.new();var c=CylinderMesh.new();c.top_radius=.26;c.bottom_radius=.26;c.height=.8;m.mesh=c;m.position=pos+Vector3(0,.4,0)
-	m.material_override=Visuals.material(color);add_child(m)
-	for y in [.15,.65]:
-		var hoop=MeshInstance3D.new();var h=CylinderMesh.new();h.top_radius=.27;h.bottom_radius=.27;h.height=.04;hoop.mesh=h;hoop.position=pos+Vector3(0,y,0);hoop.material_override=Visuals.material(color.darkened(.3));add_child(hoop)
+	preload("res://scripts/fire_barrel.gd").drum(self,color,pos)
 
 func _process(delta):
 	clock+=delta

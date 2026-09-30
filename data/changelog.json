@@ -33,7 +33,12 @@
 					"Везде в интерфейсе «оболочка» заменена на «класс».",
 					"Рябь на песке теперь мягкая и гладкая: фонарик больше не рисует на ней треугольную сетку теней.",
 					"Производительность на больших и Retina-экранах: мир рисуется в меньшем разрешении с чётким масштабированием, интерфейс остаётся резким. В полном экране 3420×2146 хаб вырос с 50 до 80+ кадров, бой — с 67 до 100+. В настройках видео новый пункт «Разрешение 3D»: авто, 100%, 75%, 50%.",
-					"Продолжение сохранённого забега стало быстрее и без рывка: карта открывается без лишней сборки невидимого поля боя, а загрузку прикрывает короткий тёмный экран «Загрузка»."
+					"Продолжение сохранённого забега стало быстрее и без рывка: карта открывается без лишней сборки невидимого поля боя, а загрузку прикрывает короткий тёмный экран «Загрузка».",
+					"Начало боя поставлено: штаб заезжает на позицию по дуге, боец выходит и встаёт на место, стена из кирпичей собирается лесенкой. Камера плавно облетает поле вместе со штабом.",
+					"Конец боя: боец садится в штаб, и тот уезжает, раскидывая оставшиеся кирпичи защиты. Камера поднимается и провожает его.",
+					"Меньше резких появлений: флаг выхода вырастает из земли, стрелки спавна появляются и гаснут, подобранные бонусы и сундуки схлопываются.",
+					"По краям поля боя медленно проплывают крупные размытые облака.",
+					"Взрывающиеся бочки теперь той же модели, что и горящие: красные с жёлтой табличкой. Горящие — тёмные, в тон карты."
 				]
 			},
 			"en": {
@@ -66,7 +71,12 @@
 					"The interface now says \"class\" everywhere instead of \"shell\".",
 					"Sand ripples are now soft and smooth: the flashlight no longer draws a triangular shadow grid on them.",
 					"Performance on large and Retina screens: the world renders at a lower resolution with sharp upscaling while the interface stays crisp. At fullscreen 3420×2146 the hub went from 50 to 80+ FPS and battles from 67 to 100+. New video setting \"3D resolution\": auto, 100%, 75%, 50%.",
-					"Continuing a saved run is faster and no longer stutters: the map opens without building a hidden battlefield, and a short dark Loading screen covers the switch."
+					"Continuing a saved run is faster and no longer stutters: the map opens without building a hidden battlefield, and a short dark Loading screen covers the switch.",
+					"Battle start is staged: the HQ drives to its spot on an arc, the soldier steps out to his post and the brick wall builds up course by course. The camera swoops in along with the HQ.",
+					"Battle end: the soldier boards the HQ and it drives off, scattering the defence bricks still standing. The camera rises and follows it.",
+					"Fewer pop-ins: the exit flag grows out of the ground, spawn arrows fade in and out, collected bonuses and chests shrink away.",
+					"Large blurry clouds drift slowly along the edges of the battlefield.",
+					"Explosive barrels now share the burning drum model: red with a yellow plate. Burning drums are dark, matching the map."
 				]
 			}
 		},

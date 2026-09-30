@@ -24,7 +24,7 @@ func start_wave(index: int):
 	arena.surprises.start_wave()
 	arena.effects.emit("wave_start",{"wave":index})
 	for marker in arena.room.spawn_markers:
-		if is_instance_valid(marker):marker.queue_free()
+		if is_instance_valid(marker):preload("res://scripts/battle_stage.gd").vanish(marker,.14,0.0)
 	arena.room.spawn_markers.clear()
 	if not arena.room.boss_room:
 		for cell in WaveDirector.side_spawn_cells(arena.room.grid_size,index):
@@ -119,6 +119,7 @@ func place_flag(caption:String):
 	arena.room.flag=Node3D.new();arena.add_child(arena.room.flag);arena.room.flag.position=arena.world_pos(Vector2i(arena.room.base_cell.x,arena.room.grid_size-3))
 	ExitFlag.build(arena.room.flag)
 	Visuals.label3d(arena.room.flag,caption,Vector3(0,3.35,0),Color("f5edcc"),25)
+	preload("res://scripts/battle_stage.gd").rise(arena.room.flag,.35)
 func open_flag():
 	arena.room.flag_armed=false;arena.phase="upgrade";Game.reset_input()
 	if arena.room.reward_claimed:arena.hud.show_departure()
@@ -132,7 +133,8 @@ func depart_room():
 	arena.hud.close_modal();arena.phase="map";Game.reset_input()
 	if is_instance_valid(arena.presentation):
 		arena.presentation.announce("Путь открыт","Следующая комната" if Campaign.endless else "Возвращаемся на карту",.35)
-		arena.get_tree().create_timer(.6).timeout.connect(func():
+		# The soldier boards, the HQ drives off and knocks the leftover defence bricks; then the map opens.
+		preload("res://scripts/battle_stage.gd").outro(arena,func():
 			if is_instance_valid(arena) and arena.is_inside_tree() and arena.phase=="map":arena.map_requested.emit(arena.room.room_index+1))
 	else:arena.map_requested.emit(arena.room.room_index+1)
 

@@ -242,7 +242,7 @@ static func field(arena):
 	for i in range(rng.randi_range(1,2)):
 		var side=-1 if (i+rng.randi_range(0,1))%2==0 else 1
 		var row=rng.randi_range(2,arena.grid_size-3)
-		var drum=preload("res://scripts/fire_barrel.gd").new();arena.add_child(drum)
+		var drum=preload("res://scripts/fire_barrel.gd").new();drum.tint=Color(arena.room_palette().wall).darkened(.62).lerp(Color("3a2c24"),.3);arena.add_child(drum)
 		drum.position=arena.world_pos(Vector2i(-1 if side<0 else arena.grid_size,row))+Vector3(side*.35,0,0)
 
 static func add_cone(light:SpotLight3D):

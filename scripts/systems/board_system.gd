@@ -193,8 +193,9 @@ func reinforce_layout(rows:Array):
 func add_barrel(cell):
 	arena.navigation.invalidate(cell)
 	var node=Node3D.new();arena.add_child(node);node.position=arena.world_pos(cell)
-	var mesh=MeshInstance3D.new();var shape=CylinderMesh.new();shape.top_radius=.27;shape.bottom_radius=.27;shape.height=.7;mesh.mesh=shape;mesh.position.y=.35;mesh.material_override=Visuals.material(Color("a26d49"));node.add_child(mesh)
-	Visuals.box(node,Vector3(0,.38,-.28),Vector3(.2,.25,.025),Color("f5ca6e"))
+	# Same drum as the burning barrel, painted red, with a hazard plate facing the camera.
+	preload("res://scripts/fire_barrel.gd").drum(node,Color("c23b2c"))
+	Visuals.box(node,Vector3(0,.4,.245),Vector3(.18,.2,.02),Color("f5ca6e"))
 	arena.room.walls[cell]={"node":node,"hp":2.0,"max_hp":2.0,"barrel":true}
 func add_rubble(cell):
 	for i in range(3):Visuals.box(arena,arena.world_pos(cell)+Vector3(-.25+i*.23,.04,.12 if i%2 else -.15),Vector3(.23,.08,.25),Color("94988a"))

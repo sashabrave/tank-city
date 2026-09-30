@@ -7,6 +7,18 @@ var text_tween:Tween
 var pulse=0.0
 var last_phase=""
 var departing=false
+## Camera as an orbit around the field: yaw, elevation, distance and zoom are smoothed separately,
+## so moving between framings is a clean arc instead of a straight slide with a spinning field.
+## A "swoop" blends toward a scripted framing: in at the start of a room, out when the HQ leaves.
+const YAW=10.0
+const NORMAL={"yaw":YAW,"elev":53.6,"dist":23.6,"zoom":1.0}
+const OVERVIEW={"yaw":YAW,"elev":62.0,"dist":25.5,"zoom":1.08}
+var view={"yaw":YAW,"elev":53.6,"dist":23.6,"zoom":1.0}
+var focus=Vector3.ZERO
+var swoop={}
+var swoop_weight=0.0
+var swoop_tween:Tween
+var follow:Node3D
 func _ready():
 	layer=30
 	heading=Label.new();heading.set_meta("keep_theme_colors",true);add_child(heading);heading.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
@@ -38,7 +50,6 @@ func fade_in():
 func prepare_wave(index:int):
 	departing=false;pulse=0;last_phase="countdown"
 	if index==0:fade_in()
-	arena.camera.size=(arena.grid_size+5.0)*(1.16 if index==0 else 1.08)
 	# Big letters only when they tell something new: the next wave, the boss, the last fight. The first wave just fades in.
 	if Campaign.is_final(arena.room_index):announce("Последний бой","Приготовься",.9)
 	elif arena.boss_room:announce("Бой с генералом","Приготовься",.9)
@@ -51,10 +62,32 @@ func _process(delta):
 	heading.visible=phase!="paused";caption.visible=phase!="paused"
 	if phase=="paused":return
 	var overview=phase in ["upgrade","map","result"] or (phase=="countdown" and arena.countdown>.85)
-	var target=base*(1.08 if overview else 1.0)
-	if pulse>0:pulse=maxf(0,pulse-delta);target=base*.985
-	arena.camera.size=lerpf(arena.camera.size,target,minf(1,delta*4.5))
-	var offset=Vector3(0,24,11) if overview else Vector3(0,19,14)
-	arena.camera.position=arena.camera.position.lerp(offset.rotated(Vector3.UP,deg_to_rad(10)),minf(1,delta*3.5));arena.camera.look_at(Vector3.ZERO)
+	var goal:Dictionary=(OVERVIEW if overview else NORMAL).duplicate()
+	if pulse>0:pulse=maxf(0,pulse-delta);goal.zoom=.985
+	if swoop_weight>0:
+		for key in goal:goal[key]=lerpf(goal[key],swoop[key],swoop_weight)
+	var k=minf(1.0,delta*(9.0 if swoop_weight>0 else 4.0))
+	for key in view:view[key]=lerpf(view[key],goal[key],k)
+	var target=follow.global_position*.3 if is_instance_valid(follow) and swoop_weight>0 else Vector3.ZERO
+	focus=focus.lerp(target,k)
+	var elev=deg_to_rad(view.elev);var yaw=deg_to_rad(view.yaw)
+	var offset=Vector3(0,sin(elev),cos(elev))*view.dist
+	arena.camera.position=focus+offset.rotated(Vector3.UP,yaw);arena.camera.look_at(focus)
+	arena.camera.size=base*view.zoom
 	if phase=="combat" and last_phase=="countdown" and arena.boss_room and not arena.challenges.active():announce("","Уничтожь командира",.4)
 	last_phase=phase
+
+## Swoop in: start high and turned to the HQ's side, settle into the play framing as it parks.
+func swoop_in(side:float,duration:=1.1):
+	swoop={"yaw":YAW+side*26.0,"elev":68.0,"dist":27.0,"zoom":1.28}
+	view=swoop.duplicate();focus=Vector3.ZERO;follow=null
+	run_swoop(1.0,0.0,duration,Tween.EASE_OUT)
+## Swoop out: rise and turn after the departing HQ, drifting a little after it.
+func swoop_out(side:float,hq:Node3D,duration:=1.2):
+	swoop={"yaw":YAW-side*18.0,"elev":64.0,"dist":26.0,"zoom":1.14};follow=hq
+	run_swoop(0.0,1.0,duration,Tween.EASE_IN_OUT)
+func run_swoop(from:float,to:float,duration:float,ease:int):
+	if swoop_tween:swoop_tween.kill()
+	swoop_weight=from
+	swoop_tween=create_tween();swoop_tween.tween_property(self,"swoop_weight",to,duration).set_trans(Tween.TRANS_CUBIC).set_ease(ease)
+

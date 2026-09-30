@@ -325,6 +325,7 @@ func begin_room(index: int):
 	preload("res://scripts/systems/block_decor.gd").decorate(self)
 	var weather=preload("res://scripts/systems/weather.gd").new();add_child(weather);weather.setup(self)
 	get_node("WorldLighting").apply()
+	get_node("WorldAtmosphere").battle_clouds(grid_size,Game.visual_run_seed+index*131)
 	get_node("WorldAtmosphere").apply()
 	var ambience=load("res://scripts/location_ambience.gd").new()
 	ambience.seed_value=Game.visual_run_seed;ambience.room_index=index;ambience.biome=room_palette().ambience;ambience.radius=grid_size*.5;add_child(ambience)
@@ -333,6 +334,8 @@ func begin_room(index: int):
 	if carried_kind!="soldier" and carried_armor>0:player.hp=minf(carried_armor,player.max_hp);player.refresh_health()
 	toast("Атакуй босса. При включении щита уничтожь светящийся генератор." if Campaign.is_final(room_index) else "Бой с генералом. Когда включится щит, уничтожь светящийся генератор на фланге." if boss_room else "")
 	preload("res://scripts/effect_warmup.gd").run(self)
+	# HQ arrives on an arc, the soldier steps out, the brick defence builds up; visual only.
+	preload("res://scripts/battle_stage.gd").intro(self)
 	if challenges.active():challenges.start();phase="combat"
 	elif sandbox and not sandbox_waves and not boss_room:room.spawn_queue.clear();room.wave_roster.clear();phase="combat"
 	else:start_wave(0)
@@ -820,6 +823,7 @@ func create_spawn_marker(cell:Vector2i,direction:Vector2i)->Node3D:
 	Visuals.box(marker,Vector3(0,.01,0),Vector3(.8,.025,.8),Color("b97150"))
 	var arrow="▼" if direction==Vector2i.DOWN else "▶" if direction==Vector2i.RIGHT else "◀"
 	Visuals.label3d(marker,arrow,Vector3(-direction.x*.65,.14,-direction.y*.65),Color("8b4433"),45)
+	preload("res://scripts/battle_stage.gd").pop(marker,.2)
 	return marker
 
 func wall_contacts(pos:Vector3,direction:Vector3,width:float)->Array:

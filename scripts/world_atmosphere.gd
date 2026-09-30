@@ -6,6 +6,10 @@ var tilt:CanvasLayer
 var haze:ColorRect
 var clouds:Array[GeometryInstance3D]=[]
 var anchored=false
+## Battle edge clouds: two big blurry clusters near the camera that drift slowly along the left
+## and right edges of the field (up or down), wrapping around. Visual RNG only.
+var drifters:Array=[]
+var drift_span=20.0
 func _ready():
 	process_mode=Node.PROCESS_MODE_ALWAYS
 	var rng=RandomNumberGenerator.new();rng.seed=74983
@@ -47,7 +51,37 @@ func apply():
 		haze.visible=cozy
 		haze.material.set_shader_parameter("haze_color",Color(weather.haze).darkened(.6) if night else Color(weather.haze))
 	haze.material.set_shader_parameter("amount",(float(style.get("haze_amount",.3))+float(weather.get("haze_add",0.0)))*(.8 if night else 1.0))
+func battle_clouds(grid_size:int,seed_value:int):
+	for entry in drifters:
+		clouds.erase(entry.node)
+		if is_instance_valid(entry.node):entry.node.queue_free()
+	drifters.clear()
+	var rng=RandomNumberGenerator.new();rng.seed=hash([seed_value,"edge_clouds"])
+	drift_span=grid_size+14.0
+	for side in [-1.0,1.0]:
+		var discs:Array=[];var scale_value=rng.randf_range(6.0,8.4)
+		for i in range(rng.randi_range(5,7)):
+			var offset=Vector3(rng.randf_range(-1.6,1.6),rng.randf_range(-.3,.6),rng.randf_range(-1.0,1.0))*scale_value*.55
+			discs.append([offset,(rng.randf_range(1.5,2.3)-absf(offset.x)*.08)*scale_value*.6,rng.randf_range(.75,1.0),rng.randf()])
+		var multi=MultiMesh.new();multi.transform_format=MultiMesh.TRANSFORM_3D;multi.use_custom_data=true
+		var quad=QuadMesh.new();quad.size=Vector2.ONE;multi.mesh=quad;multi.instance_count=discs.size()
+		for i in range(discs.size()):
+			multi.set_instance_transform(i,Transform3D(Basis.IDENTITY.scaled(Vector3.ONE*discs[i][1]),discs[i][0]))
+			multi.set_instance_custom_data(i,Color(discs[i][2],discs[i][3],0,1))
+		var node=MultiMeshInstance3D.new();node.name="EdgeCloud";node.multimesh=multi;node.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF;node.extra_cull_margin=12
+		var mat=ShaderMaterial.new();mat.shader=preload("res://shaders/world/map_clouds.gdshader");mat.set_shader_parameter("opacity",.5);node.material_override=mat
+		add_child(node);clouds.append(node)
+		node.position=Vector3(side*(grid_size*.5+rng.randf_range(9.0,11.5)),rng.randf_range(10.0,12.5),rng.randf_range(-drift_span*.5,drift_span*.5))
+		drifters.append({"node":node,"speed":rng.randf_range(.18,.32)*(1.0 if rng.randf()<.5 else -1.0)})
+	apply()
+
 func _process(_delta):
+	for entry in drifters:
+		var node:Node3D=entry.node
+		if not is_instance_valid(node):continue
+		node.position.z+=float(entry.speed)*_delta
+		if node.position.z>drift_span*.5+6.0:node.position.z=-drift_span*.5-6.0
+		elif node.position.z<-drift_span*.5-6.0:node.position.z=drift_span*.5+6.0
 	var camera=get_viewport().get_camera_3d()
 	if camera:
 		var forward=-camera.global_basis.z
