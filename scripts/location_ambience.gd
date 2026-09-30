@@ -28,7 +28,7 @@ func _ready():
 		Game.sound_loop("ambience_"+biome,self)
 		var canvas=CanvasLayer.new();canvas.layer=0;add_child(canvas)
 		var cloud=ColorRect.new();cloud.mouse_filter=Control.MOUSE_FILTER_IGNORE;canvas.add_child(cloud);cloud.size=get_viewport().get_visible_rect().size
-		get_viewport().size_changed.connect(func():cloud.size=get_viewport().get_visible_rect().size)
+		get_viewport().size_changed.connect(func():if is_inside_tree() and is_instance_valid(cloud):cloud.size=get_viewport().get_visible_rect().size)
 		cloud_material=ShaderMaterial.new();cloud_material.shader=preload("res://assets/weather/clouds.gdshader");cloud.material=cloud_material
 		cloud_material.set_shader_parameter("coverage",minf(LocationStyle.cloud_cover(room_index),weather.maximum_cover))
 		for key in ["opacity","drift_speed","cycle_seconds","minimum_activity"]:cloud_material.set_shader_parameter(key,weather.get(key))

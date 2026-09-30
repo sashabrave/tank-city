@@ -22,7 +22,8 @@
 					"Техника стала заметно сильнее бойца: у багги больше брони и скорострельности, БТР быстрее и бьёт сильнее, танк держит почти вдвое больше попаданий и сносит пехоту одним выстрелом. Трофейные машины теряют меньше мощи.",
 					"Экономика ускорена: сплава за врагов вдвое больше, награда за зачищенное поле выросла, при гибели теряется 40% добычи вместо 50%. До первого босса — около двух часов, победа над ним — около трёх.",
 					"Подбитая вражеская техника, которую можно занять, теперь заметна: вокруг корпуса расходятся зелёные волны, над ним светится столб, стрелка мигает. Если машина за краем экрана, на краю появляется указатель.",
-					"У боссов мира появилась маленькая головоломка: на 60% и 30% здоровья босс закрывается щитом, а питает его генератор на фланге под охраной. Разбей генератор, и щит пропадёт."
+					"У боссов мира появилась маленькая головоломка: на 60% и 30% здоровья босс закрывается щитом, а питает его генератор на фланге под охраной. Разбей генератор, и щит пропадёт.",
+					"Комнаты механика, инструктора и штаба оформлены заново: у механика ангар с подъёмником и шинами, у инструктора тренировочная площадка с мешками и мишенями, у штаба пост связи с антенной и терминалами. Тёплый свет на станции, холодный контровой сзади. Справа ворота выхода: красные до выбора, зелёные после. Через них можно просто выйти на карту."
 				]
 			},
 			"en": {
@@ -44,7 +45,8 @@
 					"Vehicles now clearly outclass the soldier: the buggy has more armour and fire rate, the APC is faster and hits harder, and the tank takes almost twice the hits and one-shots infantry. Captured vehicles lose less power.",
 					"Faster economy: enemies drop twice the alloy, field clear rewards are higher, and dying costs 40% of the haul instead of 50%. Expect the first boss after about two hours and to beat it after about three.",
 					"Enemy vehicles you can capture now stand out: green waves ripple around the hull, a light column rises above it and the arrow blinks. If the hull is off-screen, a pointer appears at the edge.",
-					"World bosses now have a small puzzle: at 60% and 30% health the boss raises a shield powered by a guarded flank generator. Break the generator to drop the shield."
+					"World bosses now have a small puzzle: at 60% and 30% health the boss raises a shield powered by a guarded flank generator. Break the generator to drop the shield.",
+					"Mechanic, instructor and HQ rooms are redesigned: a hangar with a lift and tyres, a training yard with sandbags and targets, a comms post with an antenna and terminals. Warm light on the station, cool rim light behind it. The exit gate on the right is red until you choose and green after; walk through it to return to the map."
 				]
 			}
 		},

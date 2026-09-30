@@ -18,6 +18,7 @@ var claimed=false
 var offers: Array=[]
 var medkits: Array=[]
 var facing=Vector2i.UP
+var dressing
 func _ready():
 	add_to_group("notification_context")
 	vehicle=current_vehicle()
@@ -25,11 +26,12 @@ func _ready():
 	var positions=[]
 	for x in range(-4,5):
 		for z in range(-3,5):positions.append(Vector3(x,0,z))
-	Visuals.tiled_floor(self,positions,Color("8b9996"))
-	Visuals.box(self,Vector3(0,-.4,.5),Vector3(9.3,.6,8.3),Color("73847d"))
+	Visuals.tiled_floor(self,positions,Color("7d8784"))
+	Visuals.box(self,Vector3(0,-.4,.5),Vector3(9.3,.6,8.3),Color("4e5856"))
+	dressing=preload("res://scripts/service_dressing.gd").new();dressing.branch=branch;dressing.vehicle=vehicle;add_child(dressing)
 	if branch=="vehicle":
 		Visuals.model("workbench",self,Vector3(0,0,-1))
-		Visuals.model(vehicle,self,Vector3(2,0,-1))
+		Visuals.model(vehicle,self,Vector3(2.2,.16,-1.2))
 		Visuals.label3d(self,"Механик · E",Vector3(0,2,-1),Color("fff0ce"),28)
 	elif branch=="headquarters":
 		Visuals.model("base",self,Vector3(0,0,-1))
@@ -72,8 +74,10 @@ func _physics_process(delta):
 		var dir=Game.direction()
 		if dir!=Vector2i.ZERO:
 			var next=cell+dir;facing=dir;avatar.rotation.y=atan2(-float(dir.x),-float(dir.y))
-			if next.x>=-3 and next.x<=3 and next.y>=-2 and next.y<=4 and next not in [Vector2i(0,-1),Vector2i(2,-1)]:
+			var exit=next==dressing.EXIT_CELL and claimed
+			if exit or (next.x>=-3 and next.x<=3 and next.y>=-2 and next.y<=4 and next not in [Vector2i(0,-1),Vector2i(2,-1)]):
 				cell=next;destination=Vector3(cell.x,0,cell.y);moving=true
+	if claimed and not moving and cell==dressing.EXIT_CELL:completed.emit(index);set_physics_process(false);return
 	interact_button.disabled=claimed or avatar.position.distance_to(Vector3(0,0,-1))>1.8
 	if Game.wants_interact():interact()
 func interact():
@@ -126,7 +130,7 @@ func reroll_cards():
 func claim(i: int):
 	if claimed or i<0 or i>=offers.size():return
 	arena.reward.apply_service_reward(branch,vehicle,index,offers[i])
-	Game.sound("upgrade",self);claimed=true;close_cards();continue_button.disabled=false;interact_button.disabled=true
+	Game.sound("upgrade",self);claimed=true;close_cards();continue_button.disabled=false;interact_button.disabled=true;dressing.set_open(true)
 func close_cards():
 	if is_instance_valid(modal):modal.get_parent().remove_child(modal);modal.queue_free();modal=null
 	Game.reset_input();dpad.clear();dpad.enabled=true
@@ -141,4 +145,4 @@ func collect_medkits():
 
 func skip_choice():
 	if claimed:return
-	claimed=true;close_cards();continue_button.disabled=false;interact_button.disabled=true
+	claimed=true;close_cards();continue_button.disabled=false;interact_button.disabled=true;dressing.set_open(true)

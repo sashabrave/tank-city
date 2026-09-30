@@ -17,6 +17,7 @@ func _ready():
 	caption.add_theme_color_override("font_shadow_color",Color(0,0,0,.7));caption.add_theme_constant_override("shadow_offset_y",2)
 	layout();get_viewport().size_changed.connect(layout);heading.modulate.a=0;caption.modulate.a=0
 func layout():
+	if not is_inside_tree():return
 	var size=get_viewport().get_visible_rect().size
 	heading.size=Vector2(size.x*.88,140);heading.pivot_offset=heading.size*.5
 	heading.position=Vector2(size.x*.06,size.y*.25);heading.scale=Vector2(.72,1.18)
