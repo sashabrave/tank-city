@@ -172,15 +172,29 @@ func draw_patch(p:Vector2i,tint:Color):
 	if kind=="ice":
 		for i in range(2):batch_box(pos+Vector3(-.07+i*.13,height+.003,-.12+i*.21),Vector3(.19,.004,.009),(color.darkened(.16) if kind=="ice" else color.lightened(.2)),.9,.25 if kind=="water" else -.45+i*.7)
 	elif kind=="sand":
-		if sand_mesh==null:
-			var surface=SurfaceTool.new();surface.begin(Mesh.PRIMITIVE_TRIANGLES)
-			for i in range(3):
-				var z=-.17+i*.16
-				var a=Vector3(-.24,0,z-.06);var b=Vector3(.24,0,z-.06);var c=Vector3(.24,0,z+.06);var d=Vector3(-.24,0,z+.06)
-				var l=Vector3(-.24,.04,z);var r=Vector3(.24,.07,z+.018)
-				for v in [a,l,b,b,l,r,l,d,r,r,d,c]:surface.add_vertex(v)
-			surface.generate_normals();sand_mesh=surface.commit()
+		if sand_mesh==null:sand_mesh=sand_ripples()
 		batch("ridges",sand_mesh,Transform3D(Basis.IDENTITY,pos),color.lightened(.035),.9)
+		batches.ridges["no_shadow"]=true
+## Wind ripples on sand: three soft, low waves with smooth normals, fading into the floor at the ends.
+## Smooth indexed grid instead of faceted triangles; no shadow casting, so a flashlight shows no triangle grid.
+func sand_ripples()->ArrayMesh:
+	var surface=SurfaceTool.new();surface.begin(Mesh.PRIMITIVE_TRIANGLES)
+	const NX=10;const NZ=6;var base=0
+	for i in range(3):
+		var z0=-.17+i*.16
+		for iz in range(NZ+1):
+			for ix in range(NX+1):
+				var u=float(ix)/NX;var v=float(iz)/NZ
+				var x=lerpf(-.24,.24,u);var z=z0+lerpf(-.065,.065,v)+sin(u*PI*1.6+i)*.012
+				var fade=sin(u*PI)
+				surface.set_uv(Vector2(u,v))
+				surface.add_vertex(Vector3(x,.022*pow(sin(v*PI),1.5)*fade+.001,z))
+		for iz in range(NZ):
+			for ix in range(NX):
+				var k=base+iz*(NX+1)+ix
+				for id in [k,k+1,k+NX+1,k+1,k+NX+2,k+NX+1]:surface.add_index(id)
+		base+=(NX+1)*(NZ+1)
+	surface.generate_normals();return surface.commit()
 func batch_box(pos:Vector3,size:Vector3,color:Color,rough:float,rotation:float=0):
 	var mesh=BoxMesh.new();mesh.size=Vector3.ONE
 	batch(str(color)+str(rough),mesh,Transform3D(Basis(Vector3.UP,rotation).scaled_local(size),pos),color,rough)
@@ -196,5 +210,6 @@ func flush_batches():
 			var water=ShaderMaterial.new();water.shader=preload("res://shaders/world/water.gdshader");var tint:Color=data.shader_tint
 			water.set_shader_parameter("deep",tint.darkened(.38));water.set_shader_parameter("shallow",tint.lightened(.18));node.material_override=water
 		else:node.material_override=Visuals.material(data.color);node.material_override.roughness=data.rough
+		if data.get("no_shadow",false):node.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		arena.add_child(node)
 	batches.clear()

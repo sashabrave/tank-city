@@ -7,7 +7,7 @@ static var tinted:={}
 
 static func meshes():
 	if sphere:return
-	sphere=SphereMesh.new();sphere.radius=.5;sphere.height=1.0;sphere.radial_segments=12;sphere.rings=6
+	sphere=SphereMesh.new();sphere.radius=.5;sphere.height=1.0;sphere.radial_segments=16;sphere.rings=8
 	box=BoxMesh.new();box.size=Vector3.ONE
 
 static func material(color:Color)->StandardMaterial3D:
