@@ -106,10 +106,10 @@ func interact():
 			match offer.id:
 				"damage":
 					var current=tuning.damage+(Game.meta_damage()+arena.damage_bonus)*(.25 if vehicle=="buggy" else 1.0)+mods.damage
-					var driver=1.1+Game.class_specialization()*.05 if Game.selected_class=="driver" else 1.0
+					var driver=1.1+Game.class_specialization()*.05 if Game.selected_class in ["driver","engineer"] else 1.0
 					description=UiKit.change_text("Урон",current*driver,(current+(.15 if vehicle=="buggy" else 1.0)*n)*driver)
 				"hp":
-					var driver=1.15+Game.class_specialization()*.05 if Game.selected_class=="driver" else 1.0
+					var driver=1.15+Game.class_specialization()*.05 if Game.selected_class in ["driver","engineer"] else 1.0
 					description=UiKit.change_text("Броня",(tuning.health+mods.hp)*driver,(tuning.health+mods.hp+mini(index,6)+roundi(3*n))*driver)
 				"speed":description=UiKit.change_text("Скорость",minf(Balance.speed_cap(),tuning.player_speed*arena.speed_multiplier*mods.speed),minf(Balance.speed_cap(),tuning.player_speed*arena.speed_multiplier*minf(1.25,mods.speed+.04*n)))
 		var view={"category":"Транспорт" if branch=="vehicle" else "Способность","title":title,"detail":description,"icon":offer.id,"heading":LootCatalog.RARITY_NAMES[offer.tier],"color":Color(LootCatalog.RARITY_COLORS[offer.tier])}

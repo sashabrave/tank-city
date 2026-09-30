@@ -34,7 +34,9 @@ var superboss_defeated=false
 var equipped_abilities:Array=["barrier"]
 var rescue_level=0
 var shield_capacity_level=0
-const CLASSES={"recruit":{"name":"Стрелок","price":0,"desc":"Без штрафов и специализации"},"heavy":{"name":"Таран","price":2,"desc":"HP +15% · скорость −5% · дробовик +10%"},"gunner":{"name":"Бык","price":2,"desc":"Щит · HP +20% · дробовик +10% · напор +4%"},"marksman":{"name":"Сокол","price":3,"desc":"Снайперка +15% урона · HP −5%"},"engineer":{"name":"Умелец","price":3,"desc":"Способности перезаряжаются на 10% быстрее"},"driver":{"name":"Механик","price":3,"desc":"Полевой ремонт · броня +15% · орудие +10%"}}
+## Class names and short stats; roles, start modifiers and unlock goals live in ClassCatalog. "driver" is the
+## legacy Механик, merged into Инженер (profiles move over on load).
+const CLASSES={"recruit":{"name":"Стрелок","price":0,"desc":"Крит +5% · граната"},"heavy":{"name":"Штурмовик","price":0,"desc":"HP +1 · защита от пуль +10% · дробовик +10% · скорость −5%"},"gunner":{"name":"Подрывник","price":0,"desc":"Поджог +10% · защита от взрывов +15% · газ"},"marksman":{"name":"Разведчик","price":0,"desc":"Маскировка +12% · крит-урон +25% · снайперка +15%"},"engineer":{"name":"Инженер","price":0,"desc":"Ремонт за убийство +0,3 · мародёр +10% · техника +15% · дрон"},"driver":{"name":"Механик","price":0,"desc":"Объединён с инженером"}}
 var credits = 0
 var health_level = 0
 var damage_level = 0
@@ -251,6 +253,8 @@ func apply_profile(data:Dictionary):
 		class_second_slots=data.get("class_second_slots",[]);gadget=str(data.get("gadget","barrier"))
 		if gadget not in ["barrier","mine","laser","airstrike"]:gadget=""
 		cores=maxi(0,int(extra.get("cores",0)));selected_class=extra.get("class","recruit");class_unlocks=extra.get("classes",["recruit"])
+		if "driver" in class_unlocks and "engineer" not in class_unlocks:class_unlocks.append("engineer")
+		if selected_class=="driver":selected_class="engineer"
 		if selected_class not in CLASSES:selected_class="recruit"
 		class_first_slots=data.get("class_first_slots",class_unlocks.duplicate())
 		purchased_gadgets=data.get("purchased_gadgets",ability_unlocks.filter(func(id):return id in ["barrier","mine","laser","airstrike"]))
@@ -443,19 +447,17 @@ func special_cost(id:String)->int:
 		"rescue":return 144+rescue_level*120 if rescue_level<10 and "rescue" in research_unlocks else -1
 		"shield":return -1
 	return -1
-const CLASS_SKILLS={"recruit":"grenade","gunner":"shield","driver":"field_repair","marksman":"cloak","engineer":"ally_drone","heavy":"gas"}
+const CLASS_SKILLS={"recruit":"grenade","gunner":"gas","driver":"field_repair","marksman":"cloak","engineer":"ally_drone","heavy":"shield"}
 func class_skill()->String:return CLASS_SKILLS.get(selected_class,"")
 ## Every shell is available from world 1; the price (alloy or documents) is the only gate.
 func class_world(_id:String)->int:return 1
-func class_price(id:String)->int:return 120 if id=="gunner" else 200 if id=="driver" else CLASSES[id].price
+func class_price(_id:String)->int:return 0
+## A class opens by its goal (ClassCatalog); taking it is free.
 func can_select_class(id:String)->bool:
-	return id in class_unlocks or (Campaign.unlocked(class_world(id)) and (credits>=class_price(id) if id in ["gunner","driver"] else cores>=class_price(id)))
+	return id in class_unlocks or (id in ClassCatalog.ROSTER and ClassCatalog.goal_met(id))
 func select_class(id:String)->bool:
 	if id not in CLASSES or not can_select_class(id):return false
-	if id not in class_unlocks:
-		if id in ["gunner","driver"]:credits-=class_price(id)
-		else:cores-=class_price(id)
-		class_unlocks.append(id)
+	if id not in class_unlocks:class_unlocks.append(id)
 	selected_class=id
 	var skill=class_skill()
 	if skill not in ability_unlocks:ability_unlocks.append(skill)
@@ -538,7 +540,7 @@ func upgrade_weapon(id:String)->bool:
 	if "weapons" not in built_workshops or id not in weapon_unlocks or weapon_level(id)>=Balance.CONFIG.economy.weapon_level_cap or credits<weapon_upgrade_cost(id):return false
 	credits-=weapon_upgrade_cost(id);progression.weapon_levels[id]=weapon_level(id)+1;save_progress();return true
 
-const CLASS_SECOND={"recruit":"comrade","gunner":"gas","driver":"ally_drone","marksman":"grenade","engineer":"field_repair","heavy":"shield"}
+const CLASS_SECOND={"recruit":"comrade","gunner":"grenade","driver":"ally_drone","marksman":"grenade","engineer":"field_repair","heavy":"comrade"}
 func class_loadout()->Array:
 	var result=[class_skill()] if selected_class in class_first_slots else []
 	if selected_class in class_second_slots:result.append(CLASS_SECOND[selected_class])
@@ -580,9 +582,9 @@ func upgrade_hq(id:String)->bool:
 	credits-=HQCatalog.permanent_cost(id);hq_levels[id]=int(hq_levels.get(id,0))+1;progression.event("upgrade_hq");save_progress();return true
 
 # Keep the old gunner profile key so existing unlocks and levels are preserved.
-func class_health_bonus()->float:
-	return (Balance.CONFIG.combat.hero_health+health_upgrade_bonus())*(.2+class_specialization()*.01 if selected_class=="gunner" else .15 if selected_class=="heavy" else -.05 if selected_class=="marksman" else 0)
-func class_pressure_bonus()->float:return .04+class_specialization()*.005 if selected_class=="gunner" else 0.0
+## Class health now comes from ClassCatalog start modifiers.
+func class_health_bonus()->float:return 0.0
+func class_pressure_bonus()->float:return 0.0
 
 func buy_first_class_skill(id:String)->bool:
 	if id not in class_unlocks or id in class_first_slots or credits<30:return false

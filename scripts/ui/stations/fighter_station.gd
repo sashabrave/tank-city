@@ -10,9 +10,13 @@ func items(tab:String)->Array:
 	var result=[]
 	match tab:
 		"shells":
-			for id in Game.CLASSES:
+			for id in ClassCatalog.ROSTER:
 				var owned=id in Game.class_unlocks
-				result.append({"id":id,"title":Game.CLASSES[id].name,"icon":id,"texture":preload("res://scripts/ui/class_gallery.gd").texture(id,true),"caption":"Выбран" if id==Game.selected_class else "ур. %d / 10" % int(Game.class_levels.get(id,0)) if owned else price_text(id),"state":"active" if id==Game.selected_class else "owned" if owned else "ready" if Game.can_select_class(id) else "locked"})
+				var caption="Выбран" if id==Game.selected_class else "ур. %d / 10" % int(Game.class_levels.get(id,0)) if owned else "Можно открыть" if Game.can_select_class(id) else "%d / %d" % ClassCatalog.progress(id)
+				result.append({"id":id,"title":Game.CLASSES[id].name,"icon":id,"group":"Классы","texture":preload("res://scripts/ui/class_gallery.gd").texture(id,true),"caption":caption,"state":"active" if id==Game.selected_class else "owned" if owned else "ready" if Game.can_select_class(id) else "locked"})
+			for i in range(ClassCatalog.CONCEPTS.size()):
+				var concept=ClassCatalog.CONCEPTS[i]
+				result.append({"id":"concept_%d" % i,"title":concept[0],"icon":"fighter","group":"В разработке","caption":concept[1],"state":"locked"})
 		"general":
 			for row in GENERAL:result.append({"id":row[0],"title":row[1],"icon":row[0] if row[0]!="mobility" else "speed","caption":"ур. %d" % Game.level(row[0]),"state":"owned"})
 		"supply":
@@ -33,16 +37,19 @@ func price_text(id:String)->String:return ("%d ◈" if id in ["gunner","driver"]
 func detail(tab:String,id:String)->Dictionary:
 	match tab:
 		"shells":
+			if id.begins_with("concept_"):
+				var concept=ClassCatalog.CONCEPTS[int(id.trim_prefix("concept_"))]
+				return {"title":concept[0],"icon":"fighter","text":"«%s». Класс в разработке: цифры и способности — набросок." % concept[1],"lines":[concept[2],concept[3]],"actions":[]}
 			var owned=id in Game.class_unlocks;var level=int(Game.class_levels.get(id,0))
 			var now=CombatStats.shell_preview(Game.selected_class);var then=CombatStats.shell_preview(id)
 			var first=Game.CLASS_SKILLS[id];var second=Game.CLASS_SECOND[id]
 			var actions=[]
-			if id!=Game.selected_class:actions.append({"id":"equip","text":"Выбрать" if owned else "Купить и выбрать · "+price_text(id),"enabled":Game.can_select_class(id),"primary":true})
+			if id!=Game.selected_class:actions.append({"id":"equip","text":"Выбрать" if owned else "Открыть и выбрать" if Game.can_select_class(id) else ClassCatalog.unlock_text(id),"enabled":Game.can_select_class(id),"primary":true})
 			if owned and id not in Game.class_first_slots:actions.append({"id":"first","text":"%s · 30 ◈" % AbilityCatalog.DATA[first].name,"enabled":Game.credits>=30})
 			if owned and id in Game.class_first_slots and id not in Game.class_second_slots:actions.append({"id":"second","text":"%s · 2500 ◈" % AbilityCatalog.DATA[second].name if level>=5 else "Вторая способность · ур. 5","enabled":level>=5 and Game.credits>=2500})
 			if owned:actions.append({"id":"level","text":"Максимум" if level>=10 else "Уровень %d · %d док." % [level+1,Game.class_upgrade_cost(id,false)],"enabled":level<10 and Game.cores>=Game.class_upgrade_cost(id,false)})
-			return {"title":Game.CLASSES[id].name,"icon":id,"texture":preload("res://scripts/ui/class_gallery.gd").texture(id),"text":Game.CLASSES[id].desc,"rows":[["Здоровье",UiKit.number(now.health),UiKit.number(then.health)],["Урон",UiKit.number(now.damage),UiKit.number(then.damage)],["Скорость",UiKit.number(now.speed),UiKit.number(then.speed)],["Напор",UiKit.number(now.pressure)+"%",UiKit.number(then.pressure)+"%"]],
-				"lines":["Q · %s%s" % [AbilityCatalog.DATA[first].name," ✓" if id in Game.class_first_slots else ""],"1 · %s%s" % [AbilityCatalog.DATA[second].name," ✓" if id in Game.class_second_slots else ""]],"actions":actions}
+			return {"title":Game.CLASSES[id].name,"icon":id,"texture":preload("res://scripts/ui/class_gallery.gd").texture(id),"text":"%s. %s%s" % [ClassCatalog.info(id).role,Game.CLASSES[id].desc,("" if owned or ClassCatalog.unlock_text(id)=="" else "\nОткрытие: "+ClassCatalog.unlock_text(id))]+"\nЛюбимая семья карточек: "+RunUpgrades.FAMILIES[ClassCatalog.info(id).family],"rows":[["Здоровье",UiKit.number(now.health),UiKit.number(then.health)],["Урон",UiKit.number(now.damage),UiKit.number(then.damage)],["Скорость",UiKit.number(now.speed),UiKit.number(then.speed)],["Напор",UiKit.number(now.pressure)+"%",UiKit.number(then.pressure)+"%"]],
+				"lines":ClassCatalog.modifier_lines(id)+["Q · %s%s" % [AbilityCatalog.DATA[first].name," ✓" if id in Game.class_first_slots else ""],"1 · %s%s" % [AbilityCatalog.DATA[second].name," ✓" if id in Game.class_second_slots else ""]],"actions":actions}
 		"general":
 			var row=GENERAL.filter(func(r):return r[0]==id)[0]
 			return {"title":row[1],"icon":id if id!="mobility" else "speed","text":row[2]+". Действует во всех классах; бесплатный сброс возвращает всё вложенное.","rows":[["Уровень",Game.level(id),Game.level(id)+1]],"actions":[{"id":"buy","text":"Улучшить · %d ◈" % Game.cost(id),"enabled":Game.credits>=Game.cost(id),"primary":true},{"id":"reset","text":"Сбросить · вернуть %d ◈" % Game.shell_refund(),"enabled":Game.shell_refund()>0}]}

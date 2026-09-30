@@ -19,7 +19,7 @@ func run():
 	hub.open_station("fighter");await settle()
 	var view=screen(hub)
 	check(view!=null and view.find_child("StationPanel",true,false)!=null,"fighter station opens on the template")
-	check(view.provider.tabs().size()==5 and view.find_child("Items",true,false).find_children("Item_*","Button",true,false).size()==Game.CLASSES.size(),"classes listed as cards")
+	check(view.provider.tabs().size()==5 and view.find_child("Items",true,false).find_children("Item_*","Button",true,false).size()==ClassCatalog.ROSTER.size()+ClassCatalog.CONCEPTS.size(),"classes and concepts listed as cards")
 	# «Выучка»: the stat tree comes from StatRegistry, grouped by family, roots open and the rest locked.
 	var tree=view.provider.items("training")
 	check(tree.size()==StatRegistry.all().filter(func(d):return d.step>0 and d.meta_field=="").size() and tree.all(func(i):return i.has("group")),"training tree lists every station stat by family")
@@ -28,7 +28,9 @@ func run():
 	check(view.provider.act("training","guard_bullet","buy")=="","locked node needs its parent level")
 	view.provider.act("training","dodge","buy");check(view.provider.act("training","guard_bullet","buy")!="","parent level opens the next node")
 	var p=view.provider
-	check(p.act("shells","gunner","equip")!="" and Game.selected_class=="gunner","buy and equip a shell")
+	check(p.act("shells","gunner","equip")=="","class stays closed until its goal")
+	Game.progression.counters["barrel_kills"]=10
+	check(p.act("shells","gunner","equip")!="" and Game.selected_class=="gunner","goal opens and selects a class")
 	check(p.act("shells","gunner","first")!="" and "gunner" in Game.class_first_slots,"buy the first ability")
 	check(p.act("general","health","buy")!="" and Game.health_level==1,"general upgrade")
 	check(p.act("supply","heal","buy")!="" and Game.branch_unlocked("heal"),"supply branch unlocks without a building")

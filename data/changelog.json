@@ -4,6 +4,28 @@
 			"date": "2026-09-30",
 			"version": "0.2.1",
 			"ru": {
+				"title": "Новые классы",
+				"items": [
+					"Пять классов с разными ролями: Стрелок (крит, граната), Штурмовик (живучесть, щит), Подрывник (поджог, защита от взрывов, газ), Разведчик (маскировка, засада, невидимость) и Инженер (ремонт, мародёр, дрон).",
+					"Классы открываются в бою, а не за валюту: Штурмовик — 25 уничтоженных машин, Подрывник — 10 врагов, подорванных бочками, Разведчик — 3 пройденных испытания. Инженер — только после победы над боссом мира.",
+					"Механик объединён с Инженером: если он был открыт, открыт и Инженер.",
+					"В «Казарме» видны эскизы будущих классов: Медик, Связист, Огнемётчик, Пулемётчик, Кинолог, Минёр, Десантник, Охотник."
+				]
+			},
+			"en": {
+				"title": "New classes",
+				"items": [
+					"Five classes with distinct roles: Rifleman (crit, grenade), Stormtrooper (survival, shield), Demolisher (ignite, blast protection, gas), Scout (stealth, ambush, cloak) and Engineer (repair, marauder, drone).",
+					"Classes unlock in battle, not for currency: Stormtrooper — 25 destroyed vehicles, Demolisher — 10 enemies blown up by barrels, Scout — 3 completed challenges. Engineer — only after defeating the world boss.",
+					"The Mechanic merged into the Engineer: if it was unlocked, the Engineer is too.",
+					"The Barracks show sketches of future classes: Medic, Signaller, Flamethrower, Machine gunner, Dog handler, Sapper, Paratrooper, Hunter."
+				]
+			}
+		},
+		{
+			"date": "2026-09-30",
+			"version": "0.2.1",
+			"ru": {
 				"title": "Казарма и выучка",
 				"items": [
 					"Станция-принтер теперь называется «Казарма», а вместо оболочек в ней классы.",

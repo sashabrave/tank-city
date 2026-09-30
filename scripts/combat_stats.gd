@@ -2,7 +2,7 @@ class_name CombatStats
 extends RefCounted
 ## Shared calculations for actors, workshop/tablet values and card previews.
 static func class_weapon_multiplier(id:String)->float:
-	if Game.selected_class in ["heavy","gunner"] and id=="shotgun":return 1.1+Game.class_specialization()*.01
+	if Game.selected_class=="heavy" and id=="shotgun":return 1.1+Game.class_specialization()*.01
 	if Game.selected_class=="marksman" and id=="sniper":return 1.15+Game.class_specialization()*.01
 	return 1.0
 static func initial_health()->float:return (Balance.CONFIG.combat.hero_health+Game.health_upgrade_bonus()+Game.class_health_bonus())*(1+Game.class_level()*.002)
@@ -32,12 +32,15 @@ static func probability(arena=null,kind:String="soldier",weapon_id:String="",ori
 
 static func shell_preview(id:String)->Dictionary:
 	var level=int(Game.class_levels.get(id,0));var spec=clampi(int(Game.specializations.get(id,0)),0,3)
-	var health_factor=.2+spec*.01 if id=="gunner" else .15 if id=="heavy" else -.05 if id=="marksman" else 0.0
+	# Class stat bonuses come from ClassCatalog start modifiers; only the flat HP ones show here.
+	var extra_hp=0.0
+	for modifier in ClassCatalog.info(id).modifiers:
+		if modifier.stat=="soldier_max_hp":extra_hp+=float(modifier.value)
 	var weapon_id=Game.selected_weapon
-	var factor=1.1+spec*.01 if id in ["heavy","gunner"] and weapon_id=="shotgun" else 1.15+spec*.01 if id=="marksman" and weapon_id=="sniper" else 1.0
+	var factor=1.1+spec*.01 if id=="heavy" and weapon_id=="shotgun" else 1.15+spec*.01 if id=="marksman" and weapon_id=="sniper" else 1.0
 	return {
-		"health":(Balance.CONFIG.combat.hero_health+Game.health_upgrade_bonus())*(1+health_factor)*(1+level*.002),
+		"health":(Balance.CONFIG.combat.hero_health+Game.health_upgrade_bonus())*(1+level*.002)+extra_hp,
 		"speed":minf(Balance.speed_cap(),Balance.CONFIG.combat.hero_speed*Game.mobility_multiplier()*(.95 if id=="heavy" else 1.0)*(1+level*.001)),
 		"damage":weapon().damage/((1+Game.class_level()*.002)*class_weapon_multiplier(weapon_id))*(1+level*.002)*factor,
-		"pressure":clampf(Game.LOOT.WEAPONS[weapon_id].intercept*Balance.CONFIG.combat.interception_base_scale+Game.shell_pressure_bonus()+(.04+spec*.005 if id=="gunner" else 0.0),Balance.CONFIG.combat.interception_floor,Balance.CONFIG.combat.interception_cap)*100
+		"pressure":clampf(Game.LOOT.WEAPONS[weapon_id].intercept*Balance.CONFIG.combat.interception_base_scale+Game.shell_pressure_bonus(),Balance.CONFIG.combat.interception_floor,Balance.CONFIG.combat.interception_cap)*100
 	}

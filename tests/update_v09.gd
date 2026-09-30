@@ -64,8 +64,8 @@ func run():
 		var model=Visuals.model(kind,owner);check(model.find_children("*","MeshInstance3D",true,false).size()>0,"model "+kind)
 	for id in Game.LOOT.BONUSES:check(Game.LOOT.visual(owner,id)!=null,"physical bonus "+id)
 	Game.built_workshops=["character"];Game.credits=10000;check(Game.buy_special("rescue") and Game.rescue_level==1,"rescue purchase")
-	Game.cores=10;check(Game.select_class("driver"),"class purchase")
+	Game.progression.boss_classes=["recruit"];check(Game.select_class("engineer"),"class opens by goal")
 	var path=Game.save_path;Game.save_path="/private/tmp/v09-save.json";Game.save_enabled=true;Game.save_progress();Game.save_enabled=false;Game.reset_upgrades();Game.load_progress();Game.save_path=path
-	check(Game.selected_class=="driver" and Game.rescue_level==1 and Game.ability_slots==2,"v09 persistence clamps legacy three slots to two")
+	check(Game.selected_class=="engineer" and Game.rescue_level==1 and Game.ability_slots==2,"v09 persistence clamps legacy three slots to two")
 	arena.queue_free();owner.queue_free();await get_tree().process_frame
 	print("V09: %d checks, %d failures" % [checks,failures]);get_tree().quit(1 if failures else 0)

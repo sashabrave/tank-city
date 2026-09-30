@@ -5,8 +5,6 @@ const PREVIEW_LABELS={"hp":["HP",""],"speed":["Скорость",""],"rate":["Т
 	"crit_chance":["Крит","%"],"crit_damage":["Крит-урон","%"],"dodge":["Уклонение","%"],"guard_bullet":["Защита от пуль","%"],"guard_blast":["Защита от взрывов","%"],"guard_vehicle":["Защита от техники","%"],
 	"pierce":["Пробитие",""],"burn":["Поджог","%"],"shock":["По технике","%"],"stun":["Оглушение","%"],"stealth":["Маскировка","%"],"marauder":["Добыча","%"],"field_repair":["Ремонт за убийство",""],"luck":["Удача",""]}
 const FAMILIES={"fire":"Огневая мощь","survival":"Живучесть","ammo":"Спецпатроны","recon":"Разведка","logistics":"Тыл"}
-## Each shell leans toward one family: its cards show up more often and the first offer of a run holds one.
-const CLASS_FAMILY={"recruit":"fire","heavy":"survival","gunner":"ammo","marksman":"recon","engineer":"logistics","driver":"logistics"}
 const TIER_NAMES=["Обычное","Редкое","Эпическое","Легендарное"]
 ## Chance of rare / epic / legendary per stage band (progress index 0-1, 2-3, 4-5, 6+). Rarer cards appear
 ## rarely at the start; ★★ rooms and bosses use the next band; luck multiplies all three.
@@ -48,13 +46,13 @@ static func family_counts(arena)->Dictionary:
 ## the shell's favourite family ×1.5.
 static func attracted_weight(arena,def:UpgradeDef,counts:Dictionary)->float:
 	var weight=float(def.weight)*minf(3.0,1.0+.35*int(counts.get(def.family,0)))
-	if CLASS_FAMILY.get(Game.selected_class,"")==def.family:weight*=1.5
+	if ClassCatalog.info(Game.selected_class).family==def.family:weight*=1.5
 	return weight
 ## Offers {id, tier}: each card rolls its own rarity, then a card that exists at that rarity is drawn
 ## without replacement. The first offer of a run holds a card of the shell's favourite family.
 static func roll_offers(arena,count:int)->Array:
 	var counts=family_counts(arena);var result=[];var taken=[]
-	var favourite=CLASS_FAMILY.get(Game.selected_class,"")
+	var favourite=ClassCatalog.info(Game.selected_class).family
 	for slot in range(count):
 		var tier=roll_tier(arena)
 		var pool=UpgradeRegistry.all().filter(func(def):return def.id not in taken and eligible(arena,def,tier))
