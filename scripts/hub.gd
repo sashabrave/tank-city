@@ -8,6 +8,7 @@ var recycling_pos=Vector3(6,0,3)
 var printer_pos=Vector3(3,0,3)
 var printer_model:Node3D
 var avatar: Node3D
+var avatar_rim: SpotLight3D
 var root: Control
 var station: Panel
 var credits: Label
@@ -125,6 +126,9 @@ func _ready():
 	preload("res://scripts/world_lighting.gd").headlights(avatar)
 	avatar.rotation.y=PI
 	Visuals.ring(avatar,Color("fac47a"),.44)
+	# Cool rim light from behind and above keeps the soldier readable against the floor.
+	avatar_rim=SpotLight3D.new();avatar_rim.name="AvatarRim";add_child(avatar_rim);avatar_rim.light_color=Color("8cc4ff");avatar_rim.light_energy=2.4
+	avatar_rim.spot_range=4.0;avatar_rim.spot_angle=22;avatar_rim.shadow_enabled=false
 	dummy=Node3D.new();add_child(dummy);dummy.position=YARD_DUMMY
 	Visuals.model("training_dummy",dummy).scale=Vector3.ONE*1.3  # tools/build_yard_props.py; stands apart in the range pen
 	dummy.visible="range" in Game.built_workshops
@@ -304,6 +308,7 @@ func sync_model_animation():
 
 func _physics_process(delta):
 	follow_yard(delta)
+	if is_instance_valid(avatar_rim) and is_instance_valid(avatar):avatar_rim.look_at_from_position(avatar.position+Vector3(-.6,2.6,-1.8),avatar.position+Vector3(0,.6,0))
 	sync_model_animation()
 	if is_instance_valid(dpad):dpad.visible=InputScheme.touch();fire_pad.visible=InputScheme.touch()
 	if phase in ["intro","profiles"]:return

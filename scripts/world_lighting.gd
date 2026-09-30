@@ -238,6 +238,12 @@ static func field(arena):
 	for i in range(mini(2,candidates.size())):
 		var index=rng.randi_range(0,candidates.size()-1);var cell=candidates.pop_at(index)
 		floodlight(arena.walls[cell].node,Vector3(0,1.02,0),rng.randf()*TAU)
+	# Burning drums just outside the field edge: warm story light on the flanks, never on playable cells.
+	for i in range(rng.randi_range(1,2)):
+		var side=-1 if (i+rng.randi_range(0,1))%2==0 else 1
+		var row=rng.randi_range(2,arena.grid_size-3)
+		var drum=preload("res://scripts/fire_barrel.gd").new();arena.add_child(drum)
+		drum.position=arena.world_pos(Vector2i(-1 if side<0 else arena.grid_size,row))+Vector3(side*.35,0,0)
 
 static func add_cone(light:SpotLight3D):
 	var cone=MeshInstance3D.new();cone.name="SoftCone";cone.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
