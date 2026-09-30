@@ -411,7 +411,7 @@ func music_context(context: String,refresh:bool=false):
 	music_controller.change(context,refresh)
 func music_stinger(id: String):
 	if not sound_enabled:return
-	if is_instance_valid(music_controller):music_controller.celebrate(id,3 if id=="boss_victory" else 2)
+	if is_instance_valid(music_controller):music_controller.celebrate(id,3 if id in ["boss_victory","defeat"] else 2)
 
 func buy_special(id:String)->bool:
 	if "headquarters" not in built_workshops:return false

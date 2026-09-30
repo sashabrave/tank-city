@@ -8,13 +8,15 @@ func _ready():call_deferred("run")
 func run():
 	Game.save_enabled=false;Settings.persistence_enabled=false;Game.sound_enabled=true
 	var music=load("res://scripts/music_controller.gd").new();add_child(music)
-	for context in music.TRACKS:
+	for context in music.PLAYLISTS:
 		var previous=""
 		for i in range(15):
 			var chosen=music.choose_variant(context,music.TRACKS[context]);check(chosen!=previous,"no immediate repeat "+context);previous=chosen
 		for id in music.TRACKS[context]:
 			var stream=load("res://assets/audio/music/"+id+".wav")
 			check(stream is AudioStreamWAV and stream.get_length()>25,"valid loop "+id)
+	for id in music.TRACKS.archive:check(load("res://assets/audio/music/"+id+".wav") is AudioStreamWAV,"archive track "+id)
+	music.change("archive");check(music.context!="archive","archive is never an automatic context")
 	for id in music.GREETINGS:
 		var stream=load("res://assets/audio/music/"+id+".wav");check(stream.get_length()>2 and stream.get_length()<5,"short greeting")
 	music.change("battle");var first=music.backgrounds[music.active].stream.resource_path
@@ -22,6 +24,6 @@ func run():
 	music.change("battle",true);check(music.selections.battle==count+1,"next room refreshes track")
 	music.change("miniboss");check(music.context=="miniboss" and music.TRACKS.miniboss.size()>=2,"dedicated miniboss pool")
 	music.change("boss");check(music.context=="boss","major boss music")
-	music.celebrate("battle_greeting",3);check(music.GREETINGS.has(music.last_tracks.greeting),"greeting alias uses new variants")
+	music.celebrate("battle_greeting",3);check(music.themes[music.battle_theme].start.has(music.last_tracks.get("fanfare_start","")),"battle greeting uses the theme start fanfare")
 	Game.sound_enabled=false;music.queue_free()
 	print("MUSIC EXPANSION: %d checks, %d failures" % [checks,failures]);get_tree().quit(failures)

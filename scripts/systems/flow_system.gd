@@ -86,7 +86,9 @@ func finish_run(won: bool,reason: String):
 	# Sandbox never ends a run: the soldier and the HQ come back on the spot.
 	if arena.sandbox and not won:sandbox_respawn.call_deferred(reason);return
 	if won:arena.reward.collect_resources()
-	Game.sound("rare_reveal" if won else "defeat",arena)
+	# Defeat fanfare comes from the battle theme; the effect stays when music is muted.
+	if won or Settings.values.music<=.01 or not is_instance_valid(Game.music_controller):Game.sound("rare_reveal" if won else "defeat",arena)
+	else:Game.music_stinger("defeat")
 	arena.phase="result"
 	if not won:
 		arena.run.lost_run=true
