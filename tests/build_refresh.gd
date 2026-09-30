@@ -20,7 +20,7 @@ func run():
 		if id not in Game.research_unlocks:Game.research_unlocks.append(id)
 	var old_credits=Game.credits;var old_insurance=Game.progression.insurance;var old_level=Game.progression.level
 	Game.credits=10000;Game.progression.level=1;Game.progression.insurance=0
-	var insurance_price=Game.insurance_cost();assert(Game.buy_insurance());assert(Game.credits==10000-insurance_price);assert(is_equal_approx(Game.death_loss_fraction(),.45))
+	var insurance_price=Game.insurance_cost();assert(Game.buy_insurance());assert(Game.credits==10000-insurance_price);assert(is_equal_approx(Game.death_loss_fraction(),.35))
 	assert(Game.buy_insurance());assert(not Game.buy_insurance())
 	Game.credits=old_credits;Game.progression.insurance=old_insurance;Game.progression.level=old_level
 	var sample=TextureRect.new();UiKit.locked_preview(sample,true);assert(sample.material is ShaderMaterial);UiKit.locked_preview(sample,false);assert(sample.material==null);sample.free()

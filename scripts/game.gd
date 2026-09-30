@@ -547,7 +547,8 @@ func cost(branch:String)->int:return ceili(raw_cost(branch)*1.2)
 ## Permanent upgrades are limited by price and fixed caps from economy.tres; there is no base level gate.
 func upgrade_cap(branch:String)->int:return 2147483647 if branch in ["health","damage","mobility","pressure"] else Balance.CONFIG.economy.supplies_cap if branch=="supplies" else Balance.CONFIG.economy.branch_cap
 func bonus_cost(id:String)->int:return ceili((80+60*bonus_level(id))*1.2)
-func death_loss_fraction()->float:return maxf(.2,.5-progression.insurance*.05)
+func death_loss_fraction(insurance:int=-1)->float:
+	var e=Balance.CONFIG.economy;return maxf(e.death_loss_floor,e.death_loss-(progression.insurance if insurance<0 else insurance)*.05)
 func insurance_cost()->int:return roundi(180*pow(1.5,progression.insurance))
 func buy_insurance()->bool:
 	if progression.insurance>=Balance.CONFIG.economy.insurance_cap or credits<insurance_cost():return false

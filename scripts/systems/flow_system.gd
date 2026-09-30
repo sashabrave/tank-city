@@ -69,7 +69,7 @@ func finish_wave():
 	arena.room.upgrade_offers.clear()
 	if arena.room.next_is_room:
 		arena.room.room_cleared=true
-		var reward=4+Campaign.progress_index(arena.room.room_index)*2
+		var reward=Balance.CONFIG.economy.clear_reward+Campaign.progress_index(arena.room.room_index)*Balance.CONFIG.economy.clear_reward_per_room
 		Game.earn(reward);arena.run.earned+=reward
 		place_flag("Награда · +%d ◈" % reward)
 		arena.toast("Маршрут открыт")

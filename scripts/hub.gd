@@ -624,7 +624,7 @@ func show_systems():
 		UiKit.label(card,"Страховка сплава" if alloy else "Страховка чертежей",Vector2(136,16),Vector2(650,34),23)
 		var description="При гибели теряется %d%% сплава, добытого за вылазку." % roundi(Game.death_loss_fraction()*100) if alloy else "Шанс сохранить каждый найденный чертёж при гибели."
 		UiKit.label(card,description,Vector2(136,58),Vector2(650,45),16,UiKit.MUTED).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-		var detail="Потеря: %d%% → %d%%" % [roundi(Game.death_loss_fraction()*100),roundi(maxf(.2,Game.death_loss_fraction()-.05)*100)] if alloy else "Сохранение: %d%% → %d%%" % [Game.rescue_level*6,mini(60,(Game.rescue_level+1)*6)]
+		var detail="Потеря: %d%% → %d%%" % [roundi(Game.death_loss_fraction()*100),roundi(Game.death_loss_fraction(Game.progression.insurance+1)*100)] if alloy else "Сохранение: %d%% → %d%%" % [Game.rescue_level*6,mini(60,(Game.rescue_level+1)*6)]
 		if capped and known:detail="Достигнут предел" if alloy and Game.progression.insurance<Balance.CONFIG.economy.insurance_cap else "Достигнут максимум"
 		UiKit.label(card,detail,Vector2(136,108),Vector2(650,30),18)
 		var button=UiKit.button(card,"Нужен чертёж" if not known else "Предел улучшений" if capped else "Улучшить · %d ◈" % price,Vector2(136,156),Vector2(650,40),func():

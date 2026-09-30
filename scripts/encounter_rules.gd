@@ -13,7 +13,7 @@ static func kill_alloy(kind:String,rank:int,stage:int,commander:bool=false,level
 	var amount=int(KILL_ALLOY[kind])
 	if rank>=2:amount=ceili(amount*(2.0 if rank==3 else 1.5))
 	if commander:amount+=[3+stage,5+stage*2,8+stage*3][difficulty(level)]
-	return roundi(amount*2*(1+(Campaign.world-1)*.35+(Campaign.cycle*.15 if Campaign.endless else 0)))
+	return roundi(amount*Balance.CONFIG.economy.kill_alloy_scale*(1+(Campaign.world-1)*.35+(Campaign.cycle*.15 if Campaign.endless else 0)))
 static func recipe_pool(level:int,pending:Array,stage:int,include_owned:bool=false)->Array:
 	if level==0:return []
 	var options=[]

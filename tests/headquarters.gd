@@ -18,8 +18,8 @@ func run():
 	arena.weapon="shotgun";assert(is_equal_approx(arena.player.class_weapon_multiplier(),1.1))
 	arena.weapon="smg";assert(is_equal_approx(arena.player.class_weapon_multiplier(),1.0))
 	Game.selected_class="recruit"
-	assert(is_equal_approx(Game.death_loss_fraction(),.5))
-	Game.progression.insurance=1;assert(is_equal_approx(Game.death_loss_fraction(),.45))
+	assert(is_equal_approx(Game.death_loss_fraction(),.4))
+	Game.progression.insurance=1;assert(is_equal_approx(Game.death_loss_fraction(),.35))
 	Game.progression.insurance=6;assert(is_equal_approx(Game.death_loss_fraction(),.2))
 	assert(not Game.buy_insurance());Game.progression.insurance=0
 	var h=arena.headquarters

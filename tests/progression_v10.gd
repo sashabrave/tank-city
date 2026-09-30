@@ -7,7 +7,7 @@ func _ready():call_deferred("run")
 func run():
 	Game.save_enabled=false;Game.sound_enabled=true;Game.reset_upgrades()
 	check(Game.camp_level==0,"no starting medkits")
-	check(is_equal_approx(Game.death_loss_fraction(),.5),"50 percent loss")
+	check(is_equal_approx(Game.death_loss_fraction(),.4),"40 percent loss")
 	Game.credits=100000;Game.built_workshops=["character","weapons","bonuses"]
 	check(Game.upgrade_cap("health")==3,"base cap")
 	for i in range(3):check(Game.purchase("health"),"health upgrade")

@@ -19,7 +19,8 @@
 					"Карта маршрута стала полем войны: вместо серой полосы — земля с воронками, мешками, ежами и остовами техники. Горы ступенчатые, со снежными вершинами, перед ними заброшенная промзона: трубы, руины цехов, градирни.",
 					"Миниатюры боёв похожи на места сражений: руины угла здания с обломками, ряд противотанковых ежей и воронка на каждой.",
 					"Депо на карте работает как питстоп: заехал — карточки «Штаба» открываются прямо поверх карты, выбрал и поехал дальше. Если технологий «Штаба» ещё нет, депо даёт ремонт базы, заправку или ящик жетонов.",
-					"Техника стала заметно сильнее бойца: у багги больше брони и скорострельности, БТР быстрее и бьёт сильнее, танк держит почти вдвое больше попаданий и сносит пехоту одним выстрелом. Трофейные машины теряют меньше мощи."
+					"Техника стала заметно сильнее бойца: у багги больше брони и скорострельности, БТР быстрее и бьёт сильнее, танк держит почти вдвое больше попаданий и сносит пехоту одним выстрелом. Трофейные машины теряют меньше мощи.",
+					"Экономика ускорена: сплава за врагов вдвое больше, награда за зачищенное поле выросла, при гибели теряется 40% добычи вместо 50%. До первого босса — около двух часов, победа над ним — около трёх."
 				]
 			},
 			"en": {
@@ -38,7 +39,8 @@
 					"The route map is now a war zone: instead of a grey strip, ground with craters, sandbags, hedgehogs and wrecks. The mountains are stepped with snowy tops, fronted by a derelict industrial belt: chimneys, ruined shops, cooling towers.",
 					"Battle miniatures look like battle sites: a ruined building corner with rubble, a row of anti-tank hedgehogs and a crater on each.",
 					"The map depot works as a pit stop: drive in, HQ cards open right over the map, pick one and drive on. Without HQ technologies the depot offers a base repair, a refuel or a token box.",
-					"Vehicles now clearly outclass the soldier: the buggy has more armour and fire rate, the APC is faster and hits harder, and the tank takes almost twice the hits and one-shots infantry. Captured vehicles lose less power."
+					"Vehicles now clearly outclass the soldier: the buggy has more armour and fire rate, the APC is faster and hits harder, and the tank takes almost twice the hits and one-shots infantry. Captured vehicles lose less power.",
+					"Faster economy: enemies drop twice the alloy, field clear rewards are higher, and dying costs 40% of the haul instead of 50%. Expect the first boss after about two hours and to beat it after about three."
 				]
 			}
 		},

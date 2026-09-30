@@ -16,6 +16,15 @@ extends Resource
 @export_range(0,2,0.01) var heal_per_level:float=0.15
 @export_range(0.1,100,0.05) var turret_damage:float=2
 @export_range(0,10,0.01) var turret_damage_per_level:float=0.05
+@export_group("Доход за вылазку — темп до первого босса ≈2 ч, победа ≈3 ч")
+## Множитель сплава за убийство (база из EncounterRules.KILL_ALLOY).
+@export_range(0,20,0.05) var kill_alloy_scale:float=4.0
+## Награда за зачищенное поле: база + шаг за каждую пройденную точку маршрута.
+@export_range(0,500,1) var clear_reward:int=10
+@export_range(0,200,1) var clear_reward_per_room:int=5
+## Доля добытого за вылазку сплава, которая теряется при гибели без страховки.
+@export_range(0,1,0.01) var death_loss:float=0.4
+@export_range(0,1,0.01) var death_loss_floor:float=0.2
 @export_group("Сундук — награда сплавом")
 @export_range(0,10000,5) var chest_alloy:int=60
 @export_range(0,1000,5) var chest_alloy_per_room:int=25
@@ -23,7 +32,7 @@ extends Resource
 @export_group("Пределы постоянной прокачки — ограничивает только цена")
 @export_range(1,100,1) var branch_cap:int=20
 @export_range(1,20,1) var supplies_cap:int=3
-@export_range(1,20,1) var insurance_cap:int=6
+@export_range(1,20,1) var insurance_cap:int=4
 @export_range(1,50,1) var weapon_level_cap:int=10
 @export_range(1,20,1) var bonus_level_cap:int=3
 @export_range(1,20,1) var hq_level_cap:int=5
