@@ -2168,3 +2168,36 @@ E — в хаб	E — to the hub
 Трофей: подойди и займи	Trophy: walk up and take it
 Бой с генералом. Когда включится щит, уничтожь светящийся генератор на фланге.	Boss fight. When the shield comes up, destroy the glowing flank generator.
 На волоске! Второго шанса в этой вылазке не будет	Close call! No second chance this run
+Справочник	Reference
+Карточки	Cards
+Семейство карточек:	Card family:
+Семейство:	Family:
+Минимальная редкость:	Minimum rarity:
+Лимит в вылазке: %d	Run limit: %d
+Меняет поведение боя: один раз за вылазку.	Changes combat behaviour; one copy per run.
+Предел в бою:	Combat cap:
+Станция: +%s за уровень, уровней: %d, цена от %d ◈.	Station: +%s per level, %d levels, from %d ◈.
+Роль:	Role:
+Открытие:	Unlock:
+В разработке:	In development:
+Корпус: %d×%d, машин: %d.	Hull: %d×%d, vehicles: %d.
+Атаки:	Attacks:
+прицельный залп	aimed volley
+веер	spread
+миномёт	mortar
+Щит: четыре генератора на 80, 60, 40 и 20% здоровья.	Shield: four generators at 80, 60, 40 and 20% health.
+Щит: два генератора на флангах, на 60 и 30% здоровья.	Shield: two flank generators at 60 and 30% health.
+Цена: %d ◈.	Price: %d ◈.
+Броня: %s · урон: %s · темп: %s /с · скорость: %s	Armour: %s · damage: %s · rate: %s /s · speed: %s
+Сначала купи:	Buy first:
+Трофейная машина врага даёт 85% этих значений.	A captured enemy vehicle has 85% of these values.
+Меняет:	Changes:
+здоровье	health
+скорость	speed
+темп	rate
+урон	damage
+напор	pressure
+дальность	range
+лечение	healing
+сила способности	ability power
+перезарядка способности	ability cooldown

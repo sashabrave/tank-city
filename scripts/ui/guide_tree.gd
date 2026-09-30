@@ -8,7 +8,7 @@ func build():
 	box.get_parent().set_deferred("scroll_vertical",view.guide_scroll)
 	box.get_parent().get_v_scroll_bar().value_changed.connect(func(value):view.guide_scroll=value)
 	row("Все","",false,true)
-	for category in Texts.document.categories:
+	for category in preload("res://scripts/ui/encyclopedia_catalog.gd").all_categories():
 		row(category.name,"",true,category.builtin)
 		if view.guide_expanded.get(category.name,false):
 			for section in category.sections:row(section.name,category.name,false,section.builtin)

@@ -363,7 +363,7 @@ func render_guide():
 		var heading=Label.new();body.add_child(heading);Texts.set_text(heading,entry.title);heading.add_theme_font_size_override("font_size",20);heading.add_theme_color_override("font_color",UiKit.INK);heading.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 		if entry.term!="":
 			var summary=Label.new();body.add_child(summary);Texts.set_text(summary,Texts.description(entry.term));summary.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;summary.add_theme_color_override("font_color",UiKit.ORANGE)
-		if dev_edit:UiKit.button(body,"Редактировать"+(" · общий термин" if entry.term!="" else ""),Vector2.ZERO,Vector2(0,30),func():preload("res://scripts/ui/encyclopedia_editor.gd").open(self,entry.id)).add_theme_font_size_override("font_size",14)
+		if dev_edit and not entry.get("auto",false):UiKit.button(body,"Редактировать"+(" · общий термин" if entry.term!="" else ""),Vector2.ZERO,Vector2(0,30),func():preload("res://scripts/ui/encyclopedia_editor.gd").open(self,entry.id)).add_theme_font_size_override("font_size",14)
 		var text=Label.new();body.add_child(text);Texts.set_text(text,entry.text);text.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;text.add_theme_font_size_override("font_size",17);text.add_theme_color_override("font_color",UiKit.INK)
 	UiKit.reveal_list(guide_box)
 
