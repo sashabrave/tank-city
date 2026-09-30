@@ -3,9 +3,10 @@ extends RefCounted
 
 const DIRS=[Vector2i.UP,Vector2i.RIGHT,Vector2i.DOWN,Vector2i.LEFT]
 
-static func generate(seed_value: int, room: int, reduce_obstacles:bool=true) -> Dictionary:
+## size overrides the room's field width (sandbox); 0 keeps Campaign.SIZES.
+static func generate(seed_value: int, room: int, reduce_obstacles:bool=true,size:int=0) -> Dictionary:
 	var rng=RandomNumberGenerator.new();rng.seed=seed_value
-	var width=Campaign.SIZES[room]
+	var width=size if size>0 else Campaign.SIZES[room]
 	var stage=mini(room,5)
 	var middle=int(width/2.0)
 	for attempt in range(80):

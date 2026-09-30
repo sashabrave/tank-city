@@ -2,6 +2,26 @@
 	"entries": [
 		{
 			"date": "2026-09-30",
+			"version": "0.2.1",
+			"ru": {
+				"title": "Песочница",
+				"items": [
+					"В хабе появилась кнопка «Песочница»: тестовое поле, где всё открыто и ничего не сохраняется в профиль.",
+					"Меню админа (кнопка или F2): размер поля, новая генерация, обычная волна, бой с боссом, день и ночь, любой биом; вызов врагов нужного ранга и командира; бонусы; любые карты улучшений нужной редкости; техника рядом, смена оружия и оболочки; запуск любого испытания со звёздами.",
+					"В песочнице боец и штаб возрождаются на месте. Выход — кнопкой «Выйти» в меню админа, профиль возвращается ровно таким, каким был."
+				]
+			},
+			"en": {
+				"title": "Sandbox",
+				"items": [
+					"The hub now has a Sandbox button: a test field where everything is unlocked and nothing is saved to the profile.",
+					"Admin menu (button or F2): field size, new generation, a regular wave, a boss fight, day and night, any biome; spawn enemies of any rank and a commander; bonuses; any upgrade card of any rarity; a vehicle nearby, weapon and shell switching; start any challenge with stars.",
+					"In the sandbox the soldier and the HQ respawn on the spot. Leave with the Exit button in the admin menu; the profile comes back exactly as it was."
+				]
+			}
+		},
+		{
+			"date": "2026-09-30",
 			"ru": {
 				"title": "Укрепление базы и советский забор",
 				"items": [

@@ -2,6 +2,7 @@ extends Node3D
 const LOOT=preload("res://scripts/loot_catalog.gd")
 signal start_requested
 signal gallery_requested
+signal sandbox_requested
 var arrival_reason=""
 var recycling_pos=Vector3(6,0,3)
 var printer_pos=Vector3(3,0,3)
@@ -144,6 +145,8 @@ func build_ui():
 	root.get_node("BuildButton").pressed.connect(show_build_menu)
 	var recipe_button=UiKit.button(root,"Магазин чертежей · тест",Vector2(30,385),Vector2(300,50),show_recipe_shop)
 	recipe_button.add_theme_font_size_override("font_size",18);root.move_child(recipe_button,0)
+	var sandbox_button=UiKit.button(root,"Песочница",Vector2(30,445),Vector2(300,50),func():sandbox_requested.emit());sandbox_button.name="SandboxButton"
+	sandbox_button.add_theme_font_size_override("font_size",18);root.move_child(sandbox_button,0)
 	dpad=root.get_node("MovePad");dpad.apply_movement_layout();fire_pad=root.get_node("FirePad")
 	start_button=root.get_node("StartButton");start_button.pressed.connect(launch)
 	root.get_node("SettingsButton").hide()

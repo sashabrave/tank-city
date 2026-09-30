@@ -135,6 +135,7 @@ func _process(delta):
 	if elapsed<.25:return
 	elapsed=0.0;update_lamps()
 func update_lamps():
+	if not is_inside_tree():return
 	var night=Settings.values.get("world_lighting","day")=="night"
 	var camera=get_viewport().get_camera_3d()
 	var lamps=get_tree().get_nodes_in_group("night_lamps").filter(func(n):return get_parent().is_ancestor_of(n))
