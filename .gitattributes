@@ -1,0 +1,14 @@
+# Текст с LF на всех платформах
+* text=auto eol=lf
+
+# Бинарные ассеты
+*.png binary
+*.jpg binary
+*.wav binary
+*.ogg binary
+*.mp3 binary
+*.glb binary
+*.blend binary
+*.ttf binary
+*.otf binary
+*.zip binary

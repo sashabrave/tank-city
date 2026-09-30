@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="EnemyBalance" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/balance/enemy_balance.gd" id="1"]
+[resource]
+resource_name="tank"
+script=ExtResource("1")
+id = "tank"
+health = 9
+move_speed = 1.9
+fire_interval = 1.25
+damage = 3.75
+enemy_damage = 1.5
+enemy_interval = 1.25
+player_speed = 2.5
+pressure = 1.5
+wave_cost = 6

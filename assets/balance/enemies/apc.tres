@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="EnemyBalance" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/balance/enemy_balance.gd" id="1"]
+[resource]
+resource_name="apc"
+script=ExtResource("1")
+id = "apc"
+health = 5
+move_speed = 2.7
+fire_interval = 0.8
+damage = 1.25
+enemy_damage = 1
+enemy_interval = 1.15
+player_speed = 2.7
+pressure = 1.1
+wave_cost = 4

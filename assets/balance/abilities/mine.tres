@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="AbilityBalance" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/balance/ability_balance.gd" id="1"]
+[resource]
+resource_name="Мина"
+script=ExtResource("1")
+id = "mine"
+name = "Мина"
+price = 240
+cooldown = 28.0
+power = 7.0
+description = "Взводится через 2 с · взрыв крестом"

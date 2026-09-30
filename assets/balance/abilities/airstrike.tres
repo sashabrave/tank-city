@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="AbilityBalance" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/balance/ability_balance.gd" id="1"]
+[resource]
+resource_name="Авиаудар"
+script=ExtResource("1")
+id = "airstrike"
+name = "Авиаудар"
+price = 450
+cooldown = 100.0
+power = 2.0
+description = "Вертолёт обстреливает врагов"

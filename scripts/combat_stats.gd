@@ -1,0 +1,43 @@
+class_name CombatStats
+extends RefCounted
+## Shared calculations for actors, workshop/tablet values and card previews.
+static func class_weapon_multiplier(id:String)->float:
+	if Game.selected_class in ["heavy","gunner"] and id=="shotgun":return 1.1+Game.class_specialization()*.01
+	if Game.selected_class=="marksman" and id=="sniper":return 1.15+Game.class_specialization()*.01
+	return 1.0
+static func initial_health()->float:return (Balance.CONFIG.combat.hero_health+Game.health_upgrade_bonus()+Game.class_health_bonus())*(1+Game.class_level()*.002)
+static func initial_speed_multiplier()->float:return Game.mobility_multiplier()*(.95 if Game.selected_class=="heavy" else 1.0)*(1+Game.class_level()*.001)
+static func soldier_speed(run=null,extra:float=0.0)->float:
+	var multiplier=initial_speed_multiplier() if run==null else run.speed_multiplier
+	return minf(5.2,Balance.CONFIG.combat.hero_speed*(minf(1.45,multiplier+extra) if extra>0 else multiplier))
+static func weapon(arena=null,id:String="",changes:Dictionary={})->Dictionary:
+	if id=="":id=Game.selected_weapon if arena==null else arena.run.weapon
+	var data=Game.LOOT.WEAPONS[id]
+	var run=arena.run if arena!=null else null
+	var mods={"damage":0.0,"interval":1.0,"intercept":0.0} if run==null else run.weapon_mods[id]
+	var bonus=(0.0 if run==null else run.damage_bonus)+changes.get("damage_bonus",0.0)
+	var damage=(1+Game.class_level()*.002)*class_weapon_multiplier(id)*data.damage*Game.weapon_factor(id)*(1+Game.damage_level*.05+bonus*.3+mods.damage+changes.get("weapon_damage",0.0))
+	var interval=data.interval*(1.0 if run==null else run.fire_multiplier)*mods.interval*changes.get("fire",1.0)*changes.get("weapon_fire",1.0)
+	return {"damage":damage,"interval":interval,"rate":1.0/interval,"range":data.range*(1.0 if run==null else run.range_multiplier),"intercept":probability(arena,"soldier",id)*100}
+static func probability(arena=null,kind:String="soldier",weapon_id:String="",origin:String="owned")->float:
+	if kind in GarageCatalog.VEHICLES and origin=="captured":return .35
+	if weapon_id=="":weapon_id=Game.selected_weapon if arena==null else arena.run.weapon
+	var run=arena.run if arena!=null else null
+	var bonus=0.0 if run==null else run.intercept_chance-.70+run.weapon_mods[weapon_id].intercept
+	var chance=clampf((Game.LOOT.WEAPONS[weapon_id].intercept*Balance.CONFIG.combat.interception_base_scale if kind=="soldier" else .35)+bonus+Game.class_pressure_bonus()+Game.shell_pressure_bonus(),.05,.9)
+	if arena!=null and arena.room.pressure_time>0:
+		var odds=chance/(1-chance)*(2.0+arena.effective_bonus_level("pressure")*.3)
+		return odds/(1+odds)
+	return chance
+
+static func shell_preview(id:String)->Dictionary:
+	var level=int(Game.class_levels.get(id,0));var spec=clampi(int(Game.specializations.get(id,0)),0,3)
+	var health_factor=.2+spec*.01 if id=="gunner" else .15 if id=="heavy" else -.05 if id=="marksman" else 0.0
+	var weapon_id=Game.selected_weapon
+	var factor=1.1+spec*.01 if id in ["heavy","gunner"] and weapon_id=="shotgun" else 1.15+spec*.01 if id=="marksman" and weapon_id=="sniper" else 1.0
+	return {
+		"health":(Balance.CONFIG.combat.hero_health+Game.health_upgrade_bonus())*(1+health_factor)*(1+level*.002),
+		"speed":minf(5.2,Balance.CONFIG.combat.hero_speed*Game.mobility_multiplier()*(.95 if id=="heavy" else 1.0)*(1+level*.001)),
+		"damage":weapon().damage/((1+Game.class_level()*.002)*class_weapon_multiplier(weapon_id))*(1+level*.002)*factor,
+		"pressure":clampf(Game.LOOT.WEAPONS[weapon_id].intercept*Balance.CONFIG.combat.interception_base_scale+Game.shell_pressure_bonus()+(.04+spec*.005 if id=="gunner" else 0.0),.05,.9)*100
+	}

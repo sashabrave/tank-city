@@ -1,0 +1,1 @@
+Interface-only SVGs extracted from user-provided Straight.svg (Uicons / Flaticon, Straight Corners). Source artwork unchanged except white tint and 24px viewBox. Source sheet links to https://www.flaticon.com/uicons . Keep source licensing/attribution with release assets. Item and ability icons are not replaced.

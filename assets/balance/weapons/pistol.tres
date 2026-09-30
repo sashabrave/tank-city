@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="WeaponBalance" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/balance/weapon_balance.gd" id="1"]
+[resource]
+resource_name="Пистолет"
+script=ExtResource("1")
+id = "pistol"
+name = "Пистолет"
+rarity = 0
+damage = 1.5
+interval = 0.6
+speed = 16.0
+range = 13.0
+pellets = 1
+pierce = false
+blast = 0.0
+intercept = 0.8
+icon = "pistol"
+role = "Надёжный огонь · перехват 80%"

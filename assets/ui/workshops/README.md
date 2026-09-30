@@ -1,0 +1,12 @@
+# Workshop menu atlas
+
+Generated with the built-in image_gen tool. One shared 3 × 2 atlas, reused at large size in construction cards and small size in workshop headers. Runtime AtlasTexture regions avoid six duplicate files. Objects in reading order: character, weapons, bonuses, headquarters, garage, range.
+
+Prompt:
+Create ONE production game sprite atlas, 3 columns x 2 rows, six equally sized isolated objects, transparent background. NO text, no labels, no borders. Tank City low-poly toy military Soviet industrial style, olive drab painted metal, warm ivory concrete, small orange highlights, restrained cyan screens, flat polygon shapes, gentle ambient occlusion. Consistent isometric front three-quarter view, equal visual scale, each object entirely inside its cell with generous 12% transparent margins. Row1 left: character supply workbench with medical box and small backpack, center: weapons workbench with mounted gun and orange tool board, right: upgrade laboratory workbench with three amber power canisters and tiny cyan display. Row2 left: headquarters communications desk with large cyan map monitor and radio antenna, center: small garage bay with low-poly olive armored buggy, right: shooting-range square platform with target and sandbags. These are clear compact GAME MENU ICONS, simple and readable, not elaborate environment scenes. Six objects only. 1536x1024 atlas.
+
+## Universal shell mannequin
+
+`shell-mannequin.png`, generated with built-in image_gen, used only in Fighter / General stats. Other class portraits stay class-specific.
+
+Prompt: Single isolated game UI character thumbnail, full body centered with generous transparent margins, genuine transparent background. Minimalist low-poly stylized male-proportioned mannequin representing a universal cybernetic character shell, NOT an equipped soldier. Compact toy-like heroic proportions, slightly oversized head, neutral standing pose, arms gently apart, front three-quarter view. Pale icy blue translucent polygonal cloud shaped like a human, indistinct smooth faceted face with no distinct eyes, no clothes, no weapons, no equipment, no anatomical details. Soft subtle cyan glow, a few elegant curved luminous wave contours flowing around torso and limbs, very restrained wispy edges. Clear readable silhouette, simple faceted geometry, Tank City low-poly game asset aesthetic. Entire feet and head visible. No pedestal, no text, no scenery, no border. Portrait composition.

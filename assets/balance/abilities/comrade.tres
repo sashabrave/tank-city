@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="AbilityBalance" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/balance/ability_balance.gd" id="1"]
+[resource]
+resource_name="Вызов товарища"
+script=ExtResource("1")
+id = "comrade"
+name = "Вызов товарища"
+price = 420
+cooldown = 150.0
+power = 0.5
+description = "Парашют · случайный ствол · занимает технику"

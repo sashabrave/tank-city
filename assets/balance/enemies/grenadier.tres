@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="EnemyBalance" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/balance/enemy_balance.gd" id="1"]
+[resource]
+resource_name="grenadier"
+script=ExtResource("1")
+id = "grenadier"
+health = 3
+move_speed = 2.2
+fire_interval = 3.8
+damage = 1
+enemy_damage = 1
+enemy_interval = 3.8
+player_speed = 2.2
+pressure = 0.9
+wave_cost = 3

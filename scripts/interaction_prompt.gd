@@ -1,0 +1,56 @@
+extends Node3D
+var context:Node
+var caption=""
+var radius=1.65
+var panel:Panel
+var text_label:Label
+var amount=0.0
+var key_label:Label
+var enabled_check:Callable
+static func attach(parent:Node3D,world_context:Node,text:String,at:Vector3=Vector3.ZERO,reach:float=1.65,condition:Callable=Callable()):
+	var prompt=load("res://scripts/interaction_prompt.gd").new();prompt.context=world_context;prompt.caption=text;prompt.position=at;prompt.radius=reach;prompt.enabled_check=condition;parent.add_child(prompt);return prompt
+func _ready():
+	add_to_group("world_interaction_prompts")
+	var canvas=CanvasLayer.new();canvas.layer=4;add_child(canvas)
+	panel=UiKit.panel(canvas,Vector2.ZERO,Vector2(300,44),Color("29372f"))
+	panel.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	var key=UiKit.panel(panel,Vector2(7,6),Vector2(32,32),Color("394b40"))
+	key.add_theme_stylebox_override("panel",UiKit.style(Color("394b40"),5,Color("d4ddce")));key.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	var letter=UiKit.label(key,"E",Vector2.ZERO,Vector2(32,32),19,Color("f2f1df"));letter.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;letter.vertical_alignment=VERTICAL_ALIGNMENT_CENTER;key_label=letter
+	text_label=UiKit.label(panel,caption,Vector2(48,5),Vector2(244,34),17,Color("f2f1df"))
+	text_label.vertical_alignment=VERTICAL_ALIGNMENT_CENTER
+	panel.modulate.a=0
+	if "Окоп" in caption:
+		panel.size=Vector2(46,44);text_label.hide()
+func _process(delta):
+	if not is_instance_valid(context):return
+	var observer:Node3D
+	if "avatar" in context:
+		observer=context.training_tank if "mounted" in context and context.mounted else context.avatar
+	elif "player" in context and is_instance_valid(context.player):observer=context.player
+	var active=is_instance_valid(observer) and observer.global_position.distance_to(global_position)<radius
+	if "phase" in context:
+		active=active and context.phase in ["combat","countdown"]
+		if context.phase not in ["combat","countdown"]:amount=0
+	if "modal" in context:active=active and not is_instance_valid(context.modal)
+	if enabled_check.is_valid():active=active and enabled_check.call()
+	if active:
+		for other in get_tree().get_nodes_in_group("world_interaction_prompts"):
+			if other==self or other.context!=context or not other.is_visible_in_tree():continue
+			if other.enabled_check.is_valid() and not other.enabled_check.call():continue
+			var distance=observer.global_position.distance_to(other.global_position)
+			if distance<other.radius and (distance<observer.global_position.distance_to(global_position)-.001 or (is_equal_approx(distance,observer.global_position.distance_to(global_position)) and other.get_instance_id()<get_instance_id())):active=false;amount=0;break
+	amount=move_toward(amount,1.0 if active else 0.0,delta*7)
+	var camera=get_viewport().get_camera_3d()
+	panel.modulate.a=amount;panel.visible=amount>0 and is_visible_in_tree() and is_instance_valid(camera)
+	if panel.visible:
+		var compact=is_instance_valid(observer) and "hidden_in_trench" in observer and observer.hidden_in_trench and "Окоп" in caption
+		Texts.set_text(text_label,caption)
+		Texts.set_text(key_label,OS.get_keycode_string(Settings.keys.hide_trench if compact else Settings.keys.interact))
+		var width=clampf(text_label.get_theme_font("font").get_string_size(Texts.render(caption),HORIZONTAL_ALIGNMENT_LEFT,-1,17).x+66,90,360)
+		panel.size=Vector2(46 if "Окоп" in caption else width,44)
+		text_label.size=Vector2(panel.size.x-58,34)
+		panel.scale=Vector2.ONE*(.42 if compact else 1.0)
+		var anchor=global_position+Vector3.UP*(.05 if compact else 2.05+amount*.2)
+		panel.visible=not camera.is_position_behind(anchor)
+		panel.position=camera.unproject_position(anchor)-Vector2(panel.size.x*.5,44)*panel.scale+Vector2(0,30 if compact else 0)

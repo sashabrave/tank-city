@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="EnemyBalance" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/balance/enemy_balance.gd" id="1"]
+[resource]
+resource_name="flyer"
+script=ExtResource("1")
+id = "flyer"
+health = 2
+move_speed = 3.4
+fire_interval = 4.0
+damage = 1.0
+enemy_damage = 1.0
+enemy_interval = 4.0
+player_speed = 3.4
+pressure = 0.8
+wave_cost = 2

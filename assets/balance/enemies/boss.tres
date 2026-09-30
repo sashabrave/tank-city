@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="EnemyBalance" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/balance/enemy_balance.gd" id="1"]
+[resource]
+resource_name="boss"
+script=ExtResource("1")
+id = "boss"
+health = 700
+move_speed = 1.05
+fire_interval = 2.2
+damage = 2
+enemy_damage = 2
+enemy_interval = 2.2
+player_speed = 1.05
+pressure = 1.6
+wave_cost = 30

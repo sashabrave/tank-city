@@ -1,0 +1,5 @@
+[gd_resource type="Resource" script_class="CampaignTuning" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/balance/campaign_tuning.gd" id="1"]
+[resource]
+resource_name="campaign"
+script=ExtResource("1")

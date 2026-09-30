@@ -1,0 +1,31 @@
+{
+	"entries": [
+		{
+			"date": "2026-09-29",
+			"ru": {
+				"title": "Сохранения и выход из игры",
+				"items": [
+					"Если выйти из игры во время боя, при возвращении ты окажешься на карте маршрута перед этой комнатой. Сам бой не сохраняется: добыча и события начатой комнаты пропадают, а усиления, полученные до неё, остаются.",
+					"В бесконечном режиме карты нет, поэтому прерванная комната просто начнётся заново.",
+					"В полевом планшете появилась кнопка «Выйти из игры». Она сохраняет прогресс и закрывает игру. Закрытие окна тоже сохраняет прогресс.",
+					"Исправлено: покупки в хабе могли не сохраниться, если перед этим открыть карту маршрута и вернуться в хаб, не заходя в бой.",
+					"Исправлено: сохранённая вылазка от старой версии игры больше не блокирует весь профиль. Сбрасывается только незаконченная вылазка.",
+					"Исправлены ошибки при быстром переключении страниц планшета.",
+					"В разделе «Об игре» появилась вкладка Changelog со списком изменений."
+				]
+			},
+			"en": {
+				"title": "Saving and quitting",
+				"items": [
+					"If you quit during a battle, you will return to the route map in front of that room. The battle itself is not saved: loot and events of the started room are lost, while upgrades earned before it are kept.",
+					"Endless mode has no map, so an interrupted room simply starts over.",
+					"The field tablet now has a Quit game button. It saves your progress and closes the game. Closing the window also saves progress.",
+					"Fixed: hub purchases could be lost after opening the route map and returning to the hub without entering a battle.",
+					"Fixed: a saved run from an older game version no longer blocks the whole profile. Only the unfinished run is discarded.",
+					"Fixed errors when switching tablet pages quickly.",
+					"The About section now has a Changelog tab listing changes."
+				]
+			}
+		}
+	]
+}

@@ -1,0 +1,67 @@
+{
+  "tool": "built-in imagegen",
+  "icons": {
+    "heart": {
+      "file": "heart.png",
+      "subject": "a rounded coral-red first aid kit with a raised cream medical cross"
+    },
+    "repair": {
+      "file": "repair.png",
+      "subject": "a miniature sage-green military base bunker with a large dusty-blue repair wrench"
+    },
+    "wall": {
+      "file": "wall.png",
+      "subject": "a small stack of three rounded pale gray military masonry bricks"
+    },
+    "vehicle_repair": {
+      "file": "vehicle_repair.png",
+      "subject": "a mint-green armored plate with a cream repair wrench"
+    },
+    "turret": {
+      "file": "turret.png",
+      "subject": "a compact lilac and olive automated defense gun turret on a squat pedestal"
+    },
+    "vehicle": {
+      "file": "vehicle.png",
+      "subject": "a little sage-green tank suspended beneath an inflated cream parachute"
+    },
+    "barrier": {
+      "file": "barrier.png",
+      "subject": "one dusty-blue steel military fence panel with raised diagonal concrete-fence-style ribs"
+    },
+    "grenade": {
+      "file": "grenade.png",
+      "subject": "a rounded olive-green hand grenade with a mustard safety ring"
+    },
+    "laser": {
+      "file": "laser.png",
+      "subject": "a chunky cream and sage laser emitter firing a short bright cyan beam"
+    },
+    "recipe": {
+      "file": "recipe.png",
+      "subject": "a rolled cream blueprint with a simple tank silhouette and a gold seal"
+    },
+    "alloy": {
+      "file": "alloy.png",
+      "subject": "three softly rounded mustard-gold metal ingots"
+    },
+    "rifle": {
+      "file": "rifle.png",
+      "subject": "one simple stylized olive and cream military rifle, chunky friendly toy proportions"
+    },
+    "smg": {
+      "file": "smg.png",
+      "subject": "one compact dusty-blue and olive submachine gun, chunky friendly toy proportions",
+      "prompt": "Use case: stylized-concept. Single Tank City UI icon: a compact dusty-blue and olive submachine gun with chunky friendly toy proportions. Soft rounded premium casual 3D clay render, isometric view, matte surfaces, gentle upper-left light and ambient occlusion. Muted sage #9aa78c, cream #eef0e2, dusty blue #6ab7da. Centered at 75% of square frame. Truly transparent background. No text, no tile, no extra objects, no watermark."
+    },
+    "heavy": {
+      "file": "heavy.png",
+      "subject": "one heavy long-barreled lilac and olive rifle, chunky friendly toy proportions"
+    },
+    "star": {
+      "file": "star.png",
+      "prompt": "Use case: stylized-concept. Create one production game UI icon for Tank City: a chunky softly rounded five-point golden invincibility star, gentle bevels, matte toy-clay material, subtle warm highlights, soft ambient occlusion, charming premium casual 3D game style. Isometric three-quarter view. Centered standalone object occupying 75% of square canvas. Muted mustard gold #e8b957, cream highlights, sage-green reflected light to match a muted military tabletop game. Transparent background, no tile, no text, no border, no watermark, no extra objects. Save the generated asset."
+    }
+  },
+  "prompt_template": "Use case: stylized-concept. Asset: standalone production UI icon for Tank City. Subject: {subject}. Softly rounded premium casual 3D clay/toy rendering, like colorful casual-game menu illustrations. Consistent isometric three-quarter view, soft upper-left studio lighting, matte surfaces, subtle bevels, gentle ambient occlusion. Muted sage #9aa78c, cream #eef0e2, dusty blue #6ab7da, restrained coral #db676f, mustard #e8b957 accents; subject-specific colors take priority. Center object at 75% square canvas, clean readable silhouette. Truly transparent background, no tile, no text, no watermark, no extra objects. Single icon."
+}

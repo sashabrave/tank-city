@@ -1,0 +1,46 @@
+extends RefCounted
+## Shared reward styling; geometry remains editable in the choice scenes.
+static func create(parent:Node,pos:Vector2,dimensions:Vector2,data:Dictionary,choose:Callable,layout="upgrade")->Panel:
+	var card=load("res://scenes/ui/choice_"+layout+".tscn").instantiate()
+	parent.add_child(card);card.position=pos;card.size=dimensions
+	configure(card,data,choose)
+	return card
+static func configure(card:Panel,data:Dictionary,choose:Callable):
+	card.set_meta("reward_tier",LootCatalog.RARITY_COLORS.find(data.color.to_html(false)))
+	var style=card.get_theme_stylebox("panel").duplicate()
+	style.bg_color=Color("232c29").lerp(data.color,.10);style.border_color=data.color.darkened(.25);card.add_theme_stylebox_override("panel",style)
+	card.set_meta("idle_border",style)
+	var active=style.duplicate()
+	active.set_border_width_all(3);active.border_color=data.color
+	active.shadow_color=Color(data.color,.18);active.shadow_size=8
+	card.set_meta("selected_border",active)
+	var category=data.get("category","")
+	if category=="":category="Способность" if data.icon in AbilityCatalog.DATA else "Транспорт" if data.icon in ["vehicle","apc","tank","buggy"] else "Бонус" if data.icon in Game.LOOT.BONUSES else "Усиление"
+	card.get_node("Rarity").text=category+"\n"+data.heading
+	card.get_node("Rarity").add_theme_font_size_override("font_size",12)
+	card.get_node("Rarity").add_theme_color_override("font_color",data.color)
+	var stripe=ColorRect.new();stripe.name="CategoryStripe";card.add_child(stripe)
+	stripe.mouse_filter=Control.MOUSE_FILTER_IGNORE;stripe.position=Vector2(0,16);stripe.size=Vector2(9,48);stripe.color=data.color
+	var silhouette=TextureRect.new();silhouette.name="CategoryIcon";card.add_child(silhouette)
+	var symbol={"Герой":"hero","Штаб":"hq","Оружие":"weapon","Способность":"ability","Транспорт":"vehicle","Чертёж":"blueprint","Бонус":"bonus","Тактика":"hero"}.get(category,"trophy")
+	silhouette.texture=load("res://assets/ui/reward_categories/"+symbol+".svg")
+	silhouette.position=Vector2(20,20);silhouette.size=Vector2(36,36);silhouette.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;silhouette.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	silhouette.modulate=data.color;silhouette.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	var frame=Panel.new();frame.name="IconFrame";card.add_child(frame);card.move_child(frame,0)
+	frame.position=Vector2(208,12);frame.size=Vector2(62,62);frame.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	var frame_style=UiKit.style(Color("232c29").lerp(data.color,.19),12,data.color.darkened(.12))
+	frame_style.set_border_width_all(2);frame.add_theme_stylebox_override("panel",frame_style)
+	card.get_node("Title").text=data.title
+	var old=card.get_node_or_null("NumericDescription")
+	if old:old.get_parent().remove_child(old);old.queue_free()
+	card.get_node("Description").show()
+	if data.icon in ["pressure","intercept","weapon_intercept"] and not "{{pressure.description}}" in data.detail:
+		data=data.duplicate();data.detail+="\n{{pressure.description}}"
+	card.get_node("Description").text=data.detail
+	if "→" in data.detail:UiKit.numeric_description(card.get_node("Description"),data.detail)
+	card.get_node("Icon").texture=UiKit.icon_texture(data.icon)
+	var button=card.get_node("ChooseButton")
+	Texts.set_text(button,data.get("button","Выбрать"));button.disabled=data.get("disabled",false)
+	button.mouse_entered.connect(func():
+		if not button.disabled:button.grab_focus())
+	button.add_to_group("reward_choice");button.pressed.connect(choose)

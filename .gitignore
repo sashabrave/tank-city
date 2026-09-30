@@ -1,0 +1,17 @@
+# Godot
+.godot/
+export_credentials.cfg
+*.translation
+
+# Сборки и временные файлы
+build/
+tmp/
+*.log
+
+# Blender
+*.blend1
+*.blend2
+
+# Системное
+.DS_Store
+.asset-library-backups/

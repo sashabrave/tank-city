@@ -1,0 +1,155 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/v09/damage.png" id="1_okjqi"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dokff"]
+content_margin_left = 18.0
+content_margin_top = 12.0
+content_margin_right = 18.0
+content_margin_bottom = 12.0
+bg_color = Color(0.14, 0.175, 0.15, 0.985)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.43, 0.46, 0.41, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4ynpl"]
+content_margin_left = 18.0
+content_margin_top = 12.0
+content_margin_right = 18.0
+content_margin_bottom = 12.0
+bg_color = Color(1, 0.596, 0.122, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.43, 0.46, 0.41, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_n3tqh"]
+content_margin_left = 18.0
+content_margin_top = 12.0
+content_margin_right = 18.0
+content_margin_bottom = 12.0
+bg_color = Color(1, 0.596, 0.122, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.43, 0.46, 0.41, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vwv8j"]
+content_margin_left = 18.0
+content_margin_top = 12.0
+content_margin_right = 18.0
+content_margin_bottom = 12.0
+bg_color = Color(1, 0.596, 0.122, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.43, 0.46, 0.41, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_43ev7"]
+content_margin_left = 18.0
+content_margin_top = 12.0
+content_margin_right = 18.0
+content_margin_bottom = 12.0
+bg_color = Color(0.14, 0.175, 0.15, 0.985)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.43, 0.46, 0.41, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[node name="ChoiceService" type="Panel" unique_id=1891032796]
+offset_right = 285.0
+offset_bottom = 352.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_dokff")
+
+[node name="Rarity" type="Label" parent="." unique_id=835256166]
+layout_mode = 0
+offset_left = 68.0
+offset_top = 16.0
+offset_right = 202.0
+offset_bottom = 60.0
+theme_override_colors/font_color = Color(0.945, 0.933, 0.859, 1)
+theme_override_font_sizes/font_size = 14
+text = "Обычное"
+autowrap_mode = 3
+clip_text = true
+
+[node name="Icon" type="TextureRect" parent="." unique_id=1406577668]
+texture_filter = 2
+layout_mode = 0
+offset_left = 214.0
+offset_top = 18.0
+offset_right = 264.0
+offset_bottom = 68.0
+mouse_filter = 2
+texture = ExtResource("1_okjqi")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Title" type="Label" parent="." unique_id=194637862]
+layout_mode = 0
+offset_left = 17.0
+offset_top = 80.0
+offset_right = 263.0
+offset_bottom = 138.0
+theme_override_colors/font_color = Color(0.945, 0.933, 0.859, 1)
+theme_override_font_sizes/font_size = 22
+text = "Название награды"
+autowrap_mode = 3
+clip_text = true
+
+[node name="Description" type="Label" parent="." unique_id=1915770911]
+layout_mode = 0
+offset_left = 17.0
+offset_top = 144.0
+offset_right = 263.0
+offset_bottom = 272.0
+theme_override_colors/font_color = Color(0.945, 0.933, 0.859, 1)
+theme_override_font_sizes/font_size = 17
+text = "Описание эффекта улучшения"
+autowrap_mode = 3
+clip_text = true
+
+vertical_alignment = 0
+[node name="ChooseButton" type="Button" parent="." unique_id=246487886]
+layout_mode = 0
+offset_left = 17.0
+offset_top = 282.0
+offset_right = 263.0
+offset_bottom = 332.0
+focus_mode = 0
+theme_override_colors/font_color = Color(0.12, 0.15, 0.12, 1)
+theme_override_colors/font_pressed_color = Color(0.12, 0.15, 0.12, 1)
+theme_override_colors/font_hover_color = Color(0.12, 0.15, 0.12, 1)
+theme_override_colors/font_disabled_color = Color(0.55, 0.58, 0.53, 1)
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("StyleBoxFlat_4ynpl")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_n3tqh")
+theme_override_styles/hover = SubResource("StyleBoxFlat_vwv8j")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_43ev7")
+text = "Выбрать"

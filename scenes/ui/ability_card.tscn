@@ -1,0 +1,156 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://assets/icons/v1/pistol.png" id="1_ra7uv"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hclfo"]
+content_margin_left = 18.0
+content_margin_top = 12.0
+content_margin_right = 18.0
+content_margin_bottom = 12.0
+bg_color = Color(0.14, 0.175, 0.15, 0.985)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.43, 0.46, 0.41, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_36pbs"]
+content_margin_left = 18.0
+content_margin_top = 12.0
+content_margin_right = 18.0
+content_margin_bottom = 12.0
+bg_color = Color(0.14, 0.175, 0.15, 0.985)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.43, 0.46, 0.41, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_phxxg"]
+content_margin_left = 18.0
+content_margin_top = 12.0
+content_margin_right = 18.0
+content_margin_bottom = 12.0
+bg_color = Color(1, 0.596, 0.122, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.43, 0.46, 0.41, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_243ac"]
+content_margin_left = 18.0
+content_margin_top = 12.0
+content_margin_right = 18.0
+content_margin_bottom = 12.0
+bg_color = Color(0.14, 0.175, 0.15, 0.985)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.43, 0.46, 0.41, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ut8i4"]
+content_margin_left = 18.0
+content_margin_top = 12.0
+content_margin_right = 18.0
+content_margin_bottom = 12.0
+bg_color = Color(0.14, 0.175, 0.15, 0.985)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.43, 0.46, 0.41, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[node name="AbilityCard" type="Panel" unique_id=1096146200]
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 196.0
+offset_bottom = 201.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_hclfo")
+metadata/weapon_card = true
+
+
+
+[node name="Icon" type="TextureRect" parent="." unique_id=1310522750]
+texture_filter = 2
+layout_mode = 0
+offset_left = 68.0
+offset_top = 6.0
+offset_right = 128.0
+offset_bottom = 66.0
+mouse_filter = 2
+texture = ExtResource("1_ra7uv")
+expand_mode = 1
+stretch_mode = 5
+
+
+
+[node name="Title" type="Label" parent="." unique_id=764402380]
+theme_override_font_sizes/font_size = 14
+layout_mode = 0
+offset_left = 8.0
+offset_top = 69.0
+offset_right = 188.0
+offset_bottom = 99.0
+theme_override_colors/font_color = Color(0.945, 0.933, 0.859, 1)
+text = "Пистолет"
+clip_text = true
+
+
+
+[node name="Description" type="Label" parent="." unique_id=566218710]
+theme_override_font_sizes/font_size = 13
+layout_mode = 0
+offset_left = 8.0
+offset_top = 104.0
+offset_right = 188.0
+offset_bottom = 148.0
+theme_override_colors/font_color = Color(0.945, 0.933, 0.859, 1)
+text = "1.50 × 1 · 1.67 выстр./с
+Надёжный огонь · перехват 80%"
+autowrap_mode = 3
+clip_text = true
+
+
+
+[node name="ChooseButton" type="Button" parent="." unique_id=807487463]
+theme_override_font_sizes/font_size = 14
+layout_mode = 0
+offset_left = 8.0
+offset_top = 157.0
+offset_right = 188.0
+offset_bottom = 191.0
+focus_mode = 0
+theme_override_colors/font_color = Color(0.945, 0.933, 0.859, 1)
+theme_override_colors/font_pressed_color = Color(0.945, 0.933, 0.859, 1)
+theme_override_colors/font_hover_color = Color(0.945, 0.933, 0.859, 1)
+theme_override_colors/font_disabled_color = Color(0.55, 0.58, 0.53, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_36pbs")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_phxxg")
+theme_override_styles/hover = SubResource("StyleBoxFlat_243ac")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_ut8i4")
+disabled = true
+text = "Взято в бой"
+
+

@@ -1,0 +1,1440 @@
+Полевой планшет	Field tablet
+Сплав подбирается на поле, остатки собираются в конце волны. Бонусы и ресурсы появляются на доступном участке; радиус подбора — 1,1 клетки, стены мешают подбору. Сплав и документы при подборе летят к своим значкам в верхнем счётчике. Найденные чертежи нужно доставить в хаб. Добровольное возвращение сохраняет добычу; смерть отнимает часть. Страховка базы уменьшает потери.	Alloy is collected on the battlefield; remaining drops are gathered at the end of the wave. Bonuses and resources appear on accessible ground. The pickup radius is 1.1 tiles, and walls block collection. Alloy and documents fly to their icons in the top resource counter when collected. Blueprints must be brought back to the hub. Returning voluntarily keeps the loot; death loses part of it. Base insurance reduces losses.
+Снаряжение	Equipment
+Боец	Soldier
+Задачи	Tasks
+Лента	Messages
+Радио	Radio
+Настройки	Settings
+Энциклопедия	Encyclopedia
+Об игре	About
+Продолжить	Resume
+В хаб	To hub
+Вернуться в хаб	Return to hub
+Развитие базы	Base development
+Прокачка базы	Base upgrades
+Строительство	Construction
+Полигон	Firing range
+Магазин чертежей	Blueprint shop
+Видео	Video
+Звук	Audio
+Управление	Controls
+Интерфейс	Interface
+Освещение поля	World lighting
+День	Day
+Ночь	Night
+Меняет свет 3D-сцен. Ночью включаются фонари; интерфейс остаётся прежним.	Changes 3D lighting. Lamps turn on at night; UI colors stay the same.
+Язык интерфейса. Названия своих статей сохраняются как написаны.	Interface language. Custom article names remain as written.
+Язык / Language	Language
+Русский	Russian
+Режим экрана	Display mode
+Экран	Display
+Окно	Windowed
+Полный экран	Fullscreen
+Полный экран занимает весь дисплей.	Fullscreen uses the entire display.
+Вертикальная синхронизация	Vertical sync
+Выключена	Off
+Включена	On
+Выключено	Off
+Включено	On
+Убирает разрывы изображения; может ограничивать FPS.	Prevents screen tearing; may limit the frame rate.
+Сглаживание MSAA	MSAA antialiasing
+Сглаживание	Antialiasing
+Без сглаживания	Off
+Сглаживает края моделей. 4× сильнее нагружает графику.	Smooths model edges. 4× uses more graphics power.
+Лимит кадров	Frame rate limit
+Ограничение кадров	Frame rate limit
+Без ограничения	Unlimited
+Верхняя граница; реальная частота зависит от устройства и VSync.	Maximum frame rate; actual FPS depends on hardware and VSync.
+Общая громкость	Master volume
+Музыка	Music
+Эффекты	Effects
+Звуки игры	Game sounds
+Меняет громкость всей игры.	Adjusts all game audio.
+Музыкальные композиции и радио.	Music tracks and radio.
+Выстрелы, взрывы и звуковые сигналы.	Gunfire, explosions and interface sounds.
+Экранные кнопки	On-screen controls
+Скрыты	Hidden
+Показаны	Visible
+Скрыта	Hidden
+Показана	Visible
+Кнопки движения и огня в хабе и бою. Клавиатура работает всегда.	Movement and fire buttons in the hub and combat. Keyboard controls stay active.
+Подпись биома	Biome details
+Номер, название и покрытия карты под характеристиками оружия.	Map ID, name and terrain below weapon stats.
+Нажми кнопку и новую клавишу. Esc — отмена. Занятые клавиши меняются местами.	Click a binding, then press a key. Esc cancels. Used keys swap places.
+Движение	Movement
+Бой и действия	Combat and actions
+Способности	Abilities
+Вверх / вперёд	Up / forward
+Вниз / назад	Down / back
+Вверх / карта вперёд	Up / map forward
+Вниз / карта назад	Down / map back
+Влево	Left
+Вправо	Right
+Огонь	Fire
+Стрелять	Fire
+Выбрать / взаимодействовать	Select / interact
+Спрятаться в окопе	Enter trench
+Гаджет	Gadget
+Навык класса	Class skill
+Второй навык класса	Second class skill
+Поддержка штаба	HQ support
+Гаджет штаба	HQ gadget
+Нажми клавишу…	Press a key…
+Нажми…	Press…
+Esc — открыть / закрыть планшет (постоянная клавиша).	Esc opens / closes the tablet (fixed binding).
+Изменения применяются сразу и сохраняются автоматически.	Changes apply immediately and are saved automatically.
+Настройки применяются сразу и сохраняются автоматически.	Settings apply immediately and are saved automatically.
+Сбросить вкладку	Reset tab
+Сбросить настройки	Reset settings
+Готово	Done
+Все	All
+Избранное	Favorites
+Все технологии	All technologies
+Пассивные	Passive
+Автоматические	Automatic
+Активные	Active
+Важные	Important
+Технические	Technical
+Сообщения	Messages
+Задания, развитие и открытия	Tasks, progress and discoveries
+Прочитать эту вкладку	Mark this tab as read
+Пока нет сообщений	No messages yet
+Командование	Command
+Генштаб	General staff
+Институт	Institute
+Оперштаб	Operations
+Выполненные	Completed
+Новое задание	New task
+Задание выполнено	Task completed
+Разведка границы	Border reconnaissance
+Подготовка бойца	Soldier preparation
+Плацдарм	Bridgehead
+Поиск по статьям…	Search articles…
+Все подразделы	All sections
+Добавить категорию	Add category
+Новая категория	New category
+Удалить категорию	Delete category
+Сохранить	Save
+Отмена	Cancel
+Удалить	Delete
+Название	Name
+Описание	Description
+Категория	Category
+Подраздел	Section
+Статья	Article
+Новая статья	New article
+Добавить статью	Add article
+Редактировать	Edit
+Поиск	Search
+Оружие	Weapons
+Способности бойца	Soldier abilities
+Штаб	Headquarters
+Трофеи	Loot
+Подробнее	Details
+Общие характеристики	Shared stats
+Классы и способности	Classes and abilities
+Для всех классов	For all classes
+Постоянное развитие · сохраняется между вылазками	Permanent upgrades · retained between runs
+Здоровье	Health
+Сила	Strength
+Скорость	Speed
+Напор	Pressure
+Определяет, чей снаряд переживёт столкновение.	Determines whose projectile survives a collision.
++2 HP за уровень	+2 HP per level
++5% базового урона за уровень	+5% base damage per level
+Прирост уменьшается с каждым уровнем	Gain decreases with each level
+Уровень персонажа	Character level
+Общий уровень	Total level
+Уровень класса	Class level
+Сумма уровней здоровья, силы, скорости и напора	Sum of health, strength, speed and pressure levels
+Бесплатный сброс возвращает все вложенные ресурсы	Free reset refunds all resources spent
+Сбросить	Reset
+Выбран	Selected
+Выбрать	Select
+Выбрано	Selected
+Стрелок	Rifleman
+Пулемётчик	Gunner
+Водитель	Driver
+Тяжёлый	Heavy
+Снайпер	Sniper
+Инженер	Engineer
+Без штрафов и специализации	No penalties or specialization
+Усиления вылазки	Run upgrades
+Усиления появятся во время вылазки	Upgrades will appear during a run
+Текущий билд	Current build
+Базовое	Base
+Бонус	Bonus
+Урон	Damage
+Темп	Fire rate
+Дальность	Range
+Лечение	Healing
+Прочность	Durability
+Броня	Armor
+Мощность	Power
+Перезарядка	Cooldown
+Пистолет	Pistol
+Автомат	Assault rifle
+Дробовик	Shotgun
+Пулемёт	Machine gun
+Гранатомёт	Grenade launcher
+Ракетомёт	Rocket launcher
+Лазер	Laser
+Снайперская винтовка	Sniper rifle
+Граната	Grenade
+Щит	Shield
+Аптечка	Medkit
+Ремкомплект	Repair kit
+Снабжение	Supplies
+Поддержка	Support
+Разведка	Recon
+Системы	Systems
+Сила лечения	Healing power
+Аптечки передышки	Rest-stop medkits
+Страховка сплава	Alloy insurance
+Страховка чертежей	Blueprint insurance
+Шанс сохранить каждый найденный чертёж при гибели.	Chance to keep each recovered blueprint on death.
+При гибели теряется %d%% сплава, добытого за вылазку.	On death, you lose %d%% of the alloy earned during the run.
+Потеря: %d%% → %d%%	Loss: %d%% → %d%%
+Сохранение: %d%% → %d%%	Retention: %d%% → %d%%
+Достигнут предел · повысь уровень базы	Limit reached · upgrade the base
+Достигнут максимум	Maximum reached
+Предел улучшений	Upgrade limit
+Нужен чертёж	Blueprint required
+Максимум	Maximum
+Макс.	Max.
+Улучшить	Upgrade
+Открыть	Open
+Купить	Buy
+Взять	Equip
+Уровень базы	Base level
+Обнулить профиль	Reset profile
+Верстаки	Workbenches
+Площадки	Facilities
+Построено	Built
+Можно построить	Ready to build
+Построить	Build
+К полигону	To firing range
+Найди чертёж в вылазке	Find a blueprint during a run
+Оружейный верстак	Weapons workbench
+Верстак усилений	Upgrades workbench
+Верстак бонусов	Upgrades workbench
+Верстак штаба	HQ workbench
+Гараж	Garage
+Стоянка	Parking
+Стрелковый тир	Firing range
+Рюкзак	Backpack
+Перебросы	Rerolls
+Переброс карточек	Card reroll
+Взято в бой	Equipped
+Взять в бой	Equip for combat
+Опыт	Experience
+На уровне %d	At level %d
+До следующего уровня: %d опыта	Next level: %d XP remaining
+Опыт накоплен · можно повысить уровень	XP goal reached · level up available
+Опыт за задания открывает новые пределы улучшений	Task XP unlocks higher upgrade limits
+Повысить до %d · %d ◈	Upgrade to %d · %d ◈
+Не хватает %d сплава	Need %d more alloy
+Улучшения поддержки	Support upgrades
+Модули штаба	HQ modules
+Усиления и снабжение	Upgrades and supplies
+Основные пределы улучшений уже открыты.	All main upgrade limits are unlocked.
+База сейчас	Base overview
+Постройки	Facilities
+Сохранение добычи	Loot retention
+Штаб · выбранная поддержка	HQ · equipped support
+Модуль не выбран. Настрой поддержку на верстаке штаба.	No module equipped. Choose support at the HQ workbench.
+К заданиям · получить опыт	Tasks · earn XP
+Медблок	Medbay
+Бронепанели	Armor plates
+Ремонтный автомат	Repair unit
+Техснабжение	Vehicle supplies
+Активная защита	Active protection
+Катушка Теслы	Tesla coil
+Ремонтный импульс	Repair pulse
+Защитный купол	Protective dome
+ЭМИ-разряд	EMP burst
+В бой	To battle
+Взаимодействовать	Interact
+Занять	Enter
+Покинуть	Leave
+Выйти	Exit
+Войти	Enter
+Пограничье	Borderlands
+Мир	World
+Поле	Field
+Волна	Wave
+Босс	Boss
+Минибосс	Miniboss
+Пауза	Pause
+Победа	Victory
+Поражение	Defeat
+Продолжить вылазку	Continue run
+Начать заново	Restart
+Песок	Sand
+Вода	Water
+Лёд	Ice
+Окоп	Trench
+Пустыня	Desert
+Пляж	Beach
+Ресурсы	Resources
+Сплав	Alloy
+Чертежи	Blueprints
+док.	BP
+Техника	Vehicles
+Танк	Tank
+БТР	APC
+Багги	Buggy
+Пехота	Infantry
+Противники	Enemies
+Механики	Mechanics
+Основы	Basics
+База	Base
+Уровень	Level
+Версия	Version
+Билд	Build
+В разработке	In development
+Автор	Author
+Тактический экшен с развитием между вылазками. Защищай штаб, захватывай технику и пробивайся к командиру.	Tactical action with permanent progression. Defend your HQ, capture vehicles and fight your way to the commander.
+Лечение, снабжение, гаджеты и системы поддержки. Улучшения остаются после вылазки.	Healing, supplies, gadgets and support systems. Upgrades persist between runs.
+Выбирай стартовое оружие и повышай его постоянный урон. Новое оружие открывается чертежами.	Choose a starting weapon and upgrade its permanent damage. Blueprints unlock new weapons.
+Улучшай найденные усиления и вероятность их выпадения в бою.	Improve discovered upgrades and their combat drop chance.
+Открывай и выбирай модуль поддержки: пассивный, автоматический или активный.	Unlock and equip a passive, automatic or active support module.
+Покупай и улучшай технику. Выбранная машина начинает вылазку с полной бронёй.	Buy and upgrade vehicles. Your chosen vehicle starts each run with full armor.
+Проверяй оружие на мишени рядом с верстаками, прежде чем отправиться в бой.	Test weapons on the target beside the workbenches before heading into battle.
+Больше места для чертежей. Ресурсы не занимают ячейки.	More room for blueprints. Resources do not use slots.
+Повторный выбор карточек. Запас восстанавливается в начале вылазки.	Reroll upgrade cards. Charges refill at the start of each run.
+Улучшения доступны только на верстаке	Upgrades are available only at the workbench
+Текущая прокачка	Current upgrades
+Нет доступных треков	No available tracks
+Исключить из случайного выбора	Exclude from shuffle
+Исключено из случайного выбора	Excluded from shuffle
+Случайный порядок	Shuffle
+Повтор	Repeat
+Все композиции	All tracks
+В хабе	In the hub
+Карта	Map
+Бой	Combat
+Следующий	Next
+Предыдущий	Previous
+Нет результатов	No results
+Закрыть	Close
+Недоступно	Unavailable
+Осталось	Remaining
+Получить	Claim
+Награда	Reward
+Прогресс	Progress
+Отслеживать	Track
+Снять отслеживание	Untrack
+Принять	Accept
+Завершено	Completed
+Серый — база · оранжевый + · красный −	Gray: base · orange: bonus · red: penalty
+Трофеи · открыто %d из %d ячеек	Loot · %d of %d slots unlocked
+Ресурсы / не занимают ячейки	Resources / no slots needed
+Боец / текущий билд	Soldier / current build
+База включает хаб · цветом — изменения вылазки и активные эффекты	Base includes hub upgrades · colors show run bonuses and active effects
+Постоянный бонус урона: %d%% · Ячеек рюкзака: %d	Permanent damage bonus: %d%% · Backpack slots: %d
+Потеря сплава при гибели: %d%%	Alloy lost on death: %d%%
+Телеграмма · оперштаб	Telegram · operations
+Выбери сложность задания или откажись.	Choose task difficulty or decline.
+Лёгкий	Easy
+Обычный	Normal
+Сложный	Hard
+Уничтожь %d дронов	Destroy %d drones
+Зачисти %d волн	Clear %d waves
+Уничтожь %d пехотинцев	Eliminate %d infantry
+вылазки	Runs
+вылазок	Runs
+Принять или отказаться можно в хабе.	Accept or decline in the hub.
+Поступила телеграмма: выбери сложность задания в командном центре.	Telegram received: choose task difficulty in the command center.
+Повысить до %d	Upgrade to %d
+Не хватает %d	Need %d more
+предел	Limit
+построено	Built
+%d%% сплава при гибели · улучшение в «Прокачке базы»	%d%% alloy retained on death · upgrade at Base upgrades
+%d аптечек передышки · лечение %d HP	%d rest-stop medkits · %d HP healing
+Подборка появится в игре	The playlist becomes available in game
+Командный центр	Command center
+Закрыть планшет	Close tablet
+Начать бой	Start battle
+Старт боя	Battle start
+Контакт	Contact
+Угроза впереди · изучи противника	Threat ahead · assess the enemy
+Биом	Biome
+Оливковый берег	Olive coast
+Влажный лес	Wet forest
+Выбрать поле боя	Select battlefield
+Карта маршрута	Route map
+К текущему пути	To current route
+Постоянный бонус урона	Permanent damage bonus
+Ячеек рюкзака	Backpack slots
+Боец / способности	Soldier / abilities
+Урон за попадание	Damage per hit
+Выстрелов в секунду	Shots per second
+База / вылазка	Base / run
+Основное оружие	Primary weapon
+Источники света	Light sources
+Экономно · 6	Low · 6
+Обычно · 10	Normal · 10
+Больше света · 14	More lights · 14
+Ближайшие фонари без теней. Фонарик бойца и фары получают приоритет.	Nearby lights without shadows. Flashlights and headlights take priority.
+Цель вылазки	Run objective
+Защищай штаб, переживи три волны на поле и выбирай следующий участок маршрута. В конце мира ждет командир. Потеря героя или штаба завершает вылазку.	Defend HQ, survive three waves on each battlefield and choose the next route node. A commander awaits at the end of each world. Losing your soldier or HQ ends the run.
+Напор и перехват снарядов	Pressure and projectile interception
+Когда встречаются дружественный и вражеский снаряды, один уничтожается, другой продолжает полёт. Шанс победы равен своему напору, делённому на сумму напоров обоих снарядов. При равном напоре это 50%. Процент в характеристиках рассчитан против базового напора 1; против усиленного врага шанс ниже. Напор не оглушает и не увеличивает урон попадания.	When friendly and enemy projectiles collide, one is destroyed and the other keeps flying. Your chance to win equals your projectile's pressure divided by the combined pressure of both projectiles. Equal pressure means a 50% chance. The stat percentage assumes enemy pressure of 1; stronger enemies reduce your chance. Pressure does not stun or increase hit damage.
+Урон, темп и дальность	Damage, fire rate and range
+Урон снимает здоровье цели при попадании. Темп — число выстрелов в секунду: выше темп, короче пауза. Дальность ограничивает путь снаряда. Прокачка оружия, класса и усиления вылазки меняют итоговые характеристики.	Damage reduces the target's health on impact. Fire rate is shots per second: higher means shorter intervals. Range limits projectile travel. Weapon upgrades, class upgrades and run bonuses determine the final stats.
+Броня и захват техники	Armor and vehicle capture
+Броня — здоровье машины. Подбитую вражескую технику можно занять один раз через взаимодействие. После повторного уничтожения она взрывается. Захваченная машина и собственная техника могут иметь разные характеристики.	Armor is a vehicle's health. A disabled enemy vehicle can be entered once using Interact. Destroying it again causes an explosion. Captured and owned vehicles can have different stats.
+Разрушаемые стены и узкие проходы	Destructible walls and narrow passages
+Выстрелы выбивают отдельные части стены. Пехота помещается в сквозной проход шириной в половину клетки; технике нужен более широкий путь. Целые и половинные бетонные блоки служат прочным укрытием, обычными выстрелами не разрушаются.	Shots destroy individual wall sections. Infantry can fit through a clear half-cell passage; vehicles need more room. Full and half concrete blocks provide solid cover and resist normal shots.
+Один окоп занимает только один пехотинец, строго по центру. Взаимодействие позволяет занять или покинуть его; действие укрытия позволяет спрятаться. Игрок в окопе получает 50% урона от выстрелов и взрывов. Полностью спрятавшийся боец не получает урон и не может стрелять. Занятый окоп недоступен другим юнитам.	Only one infantry unit can occupy a trench, centered in the cell. Interact enters or exits it; the cover action hides your soldier. The player takes 50% damage from shots and explosions while occupying a trench. Fully hidden soldiers take no damage and cannot fire. Occupied trenches are unavailable to other units.
+Маскировочная сетка	Camouflage net
+Сетка скрывает героя от обычного прицеливания противников. Это маскировка, а не броня: она не делает героя неуязвимым к уже летящим снарядам и взрывам.	The net hides your soldier from normal enemy targeting. It provides concealment, not armor: projectiles already in flight and explosions can still hurt you.
+Взрывы и бочки	Explosions and barrels
+Взрывы поражают область и повреждают разрушаемые укрытия. Бочки и подбитая техника могут взрываться — не задерживайся рядом. Уходи из отмеченной зоны до падения снаряда.	Explosions deal area damage and damage destructible cover. Barrels and wrecked vehicles can explode, so keep your distance. Leave marked impact zones before shells land.
+Рельефные песчаные клетки снижают скорость наземной пехоты, техники и союзников до 55% обычной. Летающих врагов покрытие не замедляет.	Raised sand cells reduce ground infantry, vehicle and ally speed to 55% of normal. Flying enemies are unaffected.
+Непроходима для наземных юнитов и техники, но пропускает пули. Генерируется редкими лужами и короткими ручьями шириной в клетку, иногда с Г-поворотом. Ищи сухой обход.	Blocks ground units and vehicles, but lets bullets through. Appears as sparse puddles and short one-cell-wide streams, sometimes with an L-shaped turn. Find a dry route around it.
+Наземные юниты и техника скользят в направлении движения. После выезда сохраняется короткая инерция. Стена, вода или другой юнит останавливают скольжение. Длинная ледяная полоса может унести под огонь.	Ground units and vehicles slide in their movement direction. Momentum briefly persists after leaving the ice. Walls, water and other units stop the slide. Long ice strips can carry you into enemy fire.
+Биомы и номера карт	Biomes and map IDs
+01 — песчаная пустыня, 02 — терракотовая: только песок. 03 — оливковый берег, 04 — розовый: песок и вода. 05 — влажный лес: вода. 06 — морозная равнина, 07 — сиреневый перевал: лёд. Номер комбинации виден под оружием; обычный пол и укрытия встречаются во всех биомах.	01: sandy desert; 02: terracotta desert — sand only. 03: olive coast; 04: pink beach — sand and water. 05: wet forest — water. 06: frozen plain; 07: lilac pass — ice. The combination ID appears below the weapon stats. Normal ground and cover occur in every biome.
+Солдат	Soldier
+Пехотинец с огнестрельным оружием. Передвигается короткими перебежками, пользуется узкими проходами и может занять окоп. Следи за его оружием: одинаковый тип бойца не означает одинаковую атаку.	An infantry unit with a firearm. Moves in short bursts, uses narrow passages and can occupy trenches. Watch its weapon: the same unit type can use different attacks.
+Гренадер	Grenadier
+Использует гранаты; вариант с РПГ готовит ракетный выстрел. Опасен рядом с укрытиями из-за взрывов. Меняй позицию, когда видишь подготовку атаки.	Uses grenades; the RPG variant prepares a rocket shot. Explosions make it dangerous near cover. Move when you see it preparing an attack.
+Щитоносец	Shield bearer
+Периодически поднимает щит и блокирует встречные выстрелы спереди. Обходи сбоку или атакуй в паузе, когда щит опущен.	Periodically raises a shield to block incoming shots from the front. Flank it or attack while the shield is lowered.
+Перед выстрелом показывает красную линию прицеливания. Цель фиксируется во время подготовки: уходи с линии, не жди самого выстрела.	Shows a red aiming line before firing. The target locks during preparation: leave the line before the shot.
+Подвижная лёгкая машина. Быстро сокращает дистанцию и угрожает штабу. Перехватывай на подходе, пока она не вышла на линию огня по базе.	A fast light vehicle. Closes the distance quickly and threatens HQ. Intercept it before it gets a clear shot at the base.
+Бронированная машина, чередующая перемещение и остановки. Ей требуется больше места, чем пехоте. Используй укрытия и атакуй во время пауз.	An armored vehicle that alternates movement and stops. Needs more room than infantry. Use cover and attack during pauses.
+Тяжёлая техника с заметными паузами между манёврами. Опасна на прямой линии огня. Отступай за укрытие и не позволяй выйти к штабу.	A heavy vehicle with clear pauses between maneuvers. Dangerous along a straight firing lane. Retreat behind cover and keep it away from HQ.
+Миномёт	Mortar
+Стоит на месте и обстреливает штаб навесными снарядами; в комнате босса целится в героя. Обычная стена не решает проблему навесного огня — уничтожай миномёт в приоритете.	Stays in place and shells HQ with arcing projectiles; in boss rooms it targets your soldier. Ordinary walls do not stop indirect fire. Prioritize the mortar.
+Наземный дрон	Ground drone
+Проходит по внешнему флангу и доставляет бомбу к боковой стене штаба. Может появляться отдельно от основного состава волны. Следи за краями поля.	Uses the outer flank to deliver a bomb to HQ's side wall. May appear separately from the main wave. Watch the edges of the battlefield.
+Летающий противник	Flying enemy
+Перелетает препятствия и атакует сериями после перемещения. Вода, песок и лёд не ограничивают его движение. Предпочитает технику и союзные цели, если они доступны.	Flies over obstacles and attacks in bursts after moving. Water, sand and ice do not restrict it. Prefers vehicles and allied targets when available.
+Командиры и генераторы	Commanders and generators
+Командиры крупнее обычной техники; возможен бой с двумя сразу. В финальном бою четыре генератора защищают командира от урона: сначала уничтожь генераторы по углам.	Commanders are larger than normal vehicles; you may face two at once. In the final battle, four generators protect the commander from damage. Destroy the corner generators first.
+Усиленные враги	Elite enemies
+Повышенный ранг усиливает противника, в том числе его напор. Привычный процент перехвата не гарантирует такой же результат против сильного врага. Сложность встречи отмечается звёздами на маршруте.	Higher ranks strengthen enemies, including their pressure. Your usual interception percentage will not hold against stronger enemies. Route stars indicate encounter difficulty.
+Оболочка и уровень персонажа	Shell and character level
+Общие характеристики: здоровье, сила, скорость и напор. Их уровни суммируются в общий уровень персонажа и действуют для всех классов. Прокачку оболочки можно бесплатно сбросить с возвратом потраченных ресурсов. Уровень базы — отдельная система.	Shared stats are health, strength, speed and pressure. Their levels add up to your character level and affect every class. You can reset shell upgrades for free and recover all resources spent. Base level is a separate system.
+Классы, способности и гаджет	Classes, abilities and gadgets
+Класс задаёт особенности бойца и личные способности. Общая оболочка усиливает все классы. Гаджет выбирается на верстаке; доступные слоты и способности показаны в снаряжении планшета.	Your class defines soldier traits and personal abilities. The shared shell improves every class. Choose a gadget at the workbench; the tablet's equipment screen shows available slots and abilities.
+Модули поддержки выбираются и улучшаются на верстаке штаба. Активную поддержку вызывай назначенной клавишей, автоматическая срабатывает сама. Доступность зависит от установленного модуля.	Choose and upgrade support modules at the HQ workbench. Trigger active support with its assigned key; automatic support works by itself. Available effects depend on the equipped module.
+Сплав, чертежи и возвращение	Alloy, blueprints and returning
+Сплав подбирается на поле, остатки собираются в конце волны. Найденные чертежи нужно доставить в хаб. Добровольное возвращение сохраняет добычу; смерть отнимает часть. Страховка базы уменьшает потери.	Collect alloy on the battlefield; leftovers are collected at the end of a wave. Deliver recovered blueprints to the hub. Voluntary return preserves loot; death takes a portion. Base insurance reduces losses.
+Задания и приказы	Tasks and orders
+Можно отслеживать до трёх заданий. Приказы ограничены числом вылазок; награда и оставшийся срок указаны в карточке. Принимать и сдавать задания можно в командном центре.	Track up to three tasks. Orders have a run limit; the card shows the reward and remaining deadline. Accept and turn in tasks at the command center.
+Маршрут и передышки	Routes and rest stops
+На карте выбирай бой по сложности и награде. Между боями доступны точки поддержки и улучшения. Решай, продолжать ли вылазку ради добычи или вернуться в хаб с найденными чертежами.	Choose battles by difficulty and reward. Support and upgrade stops are available between fights. Decide whether to keep pushing for loot or return to the hub with your blueprints.
+Клавиши движения, огня, взаимодействия, укрытия и способностей можно изменить в настройках планшета. Текущие назначения показаны там и в подсказках интерфейса.	Rebind movement, fire, interaction, cover and ability keys in tablet settings. Current bindings appear there and in interface hints.
+С чего начать	Getting started
+В хабе выбери доступное оружие и проверь снаряжение в планшете. Отправляйся на карту маршрута и выбери доступный бой. На поле защищай штаб и героя; между боями выбирай усиления. Возвращайся в хаб, чтобы потратить добычу.	Choose an available weapon in the hub and check your equipment in the tablet. Open the route map and pick an available battle. Protect your soldier and HQ; choose upgrades between fights. Return to the hub to spend your loot.
+Что уже доступно	What is available
+Стартовый класс — Стрелок. Открытые предметы можно выбирать; закрытые отмечены замком и условием доступа. Новое оружие, классы, постройки и модули открываются по мере развития. Точный набор зависит от твоего сохранения — смотри снаряжение, BUILD и магазин чертежей.	Your starting class is Rifleman. Unlocked items can be selected; locked ones show a padlock and their requirements. Progress unlocks weapons, classes, facilities and modules. Your save determines what is available: check Equipment, Construction and the blueprint shop.
+Выбирай открытое оружие для следующего боя и улучшай его за сплав. Чертёж открывает доступ к оружию; покупка уровня повышает его характеристики. Лимит улучшений зависит от развития базы.	Choose an unlocked weapon for the next battle and upgrade it with alloy. A blueprint unlocks access; buying levels improves its stats. Base development determines upgrade limits.
+Улучшает подбираемые на поле бонусы. Разные улучшения меняют длительность, силу эффекта или доставку. Это не постоянное включение эффекта: бонус нужно подобрать в бою. Смотри значения до и после в карточке.	Improves battlefield pickups. Upgrades can change effect duration, strength or delivery time. Effects are not permanently active: collect the pickup in combat. Compare before and after values on the card.
+Мастерская и постройки	Workshop and construction
+В BUILD можно строить открытые верстаки и площадки. В мастерской развиваются снабжение, поддержка, разведка, снаряжение и системы. Если объект закрыт, интерфейс показывает нужное условие или чертёж.	Construction lets you build unlocked workbenches and facilities. Base upgrades cover supplies, support, recon, equipment and systems. Locked objects show the required condition or blueprint.
+Гараж и стоянка	Garage and parking
+Гараж отвечает за собственную технику и её развитие. Открывай доступные машины, улучшай их и выбирай транспорт. Стоянка позволяет взаимодействовать с подготовленной машиной перед вылазкой.	The garage manages owned vehicles and their upgrades. Unlock vehicles, improve them and choose your transport. The parking area lets you interact with your prepared vehicle before a run.
+Принтер и классы	Printer and classes
+В принтере улучшаются общие характеристики оболочки и выбираются классы. Общие статы относятся ко всем классам; особенности класса меняют его роль. Уровень персонажа складывается из общих статов, а не из уровня базы.	The printer upgrades shared shell stats and selects classes. Shared stats affect every class; class traits define its role. Character level is the sum of shared stat levels, separate from base level.
+Основная валюта для покупок и улучшений в хабе. Выпадает за уничтоженных врагов и выдается за задания. Стоимость указана возле действия. Не путай сплав с временными усилениями вылазки.	The main currency for hub purchases and upgrades. Drops from destroyed enemies and is awarded for tasks. Prices appear beside actions. Alloy is separate from temporary run upgrades.
+Документы	Documents
+Отдельный ресурс, показанный рядом со сплавом. Используется, в частности, для открытия новых классов. Перед покупкой смотри значок валюты и цену: сплав и документы не взаимозаменяемы.	A separate resource shown beside alloy. Used to unlock new classes, among other things. Check the currency icon and price before buying: alloy and documents are not interchangeable.
+Чертежи и рюкзак	Blueprints and backpack
+Чертёж открывает соответствующий предмет или улучшение после доставки в хаб. Находки занимают ячейки рюкзака; при заполнении придётся решить, что оставить. Увеличение рюкзака открывает дополнительные места.	Deliver a blueprint to the hub to unlock its item or upgrade. Finds use backpack slots; when full, choose what to keep. Backpack upgrades provide more slots.
+Опыт базы	Base experience
+Опыт и сплав нужны для повышения уровня базы. База открывает новые пределы развития. Это отдельный прогресс: сброс оболочки не равен сбросу базы.	Leveling up the base costs XP and alloy. Base levels unlock higher upgrade limits. This progress is separate: resetting your shell does not reset the base.
+Как работают карточки	How reward cards work
+При выборе награды применяется одна карточка. Усиления вылазки меняют текущий забег; постоянные покупки в хабе сохраняются между вылазками. Карточка показывает категорию и изменение значения. Усиление конкретного оружия отличается от общего усиления героя.	Choosing a reward applies one card. Run upgrades affect the current run; permanent hub purchases carry over between runs. Cards show the category and value change. A specific weapon upgrade differs from a general soldier upgrade.
+Урон, темп и стабилизатор	Damage, fire rate and stabilizer
+Урон усиливает попадания, темп сокращает паузу между выстрелами. Стабилизатор повышает напор выбранного оружия: определяет, чей снаряд переживёт столкновение. Эти эффекты не равнозначны: быстрый огонь не делает отдельное попадание сильнее.	Damage strengthens hits; fire rate shortens the delay between shots. The stabilizer increases the chosen weapon's pressure, determining whose projectile survives a collision. These effects differ: faster fire does not strengthen individual hits.
+Здоровье и скорость	Health and speed
+Здоровье увеличивает максимальный запас HP и лечит. Передвижение повышает скорость в пределах игрового ограничения. Песок всё равно замедляет наземное движение, а лёд добавляет инерцию.	Health increases maximum HP and heals you. Movement upgrades increase speed up to the game limit. Sand still slows ground movement, and ice adds momentum.
+Медицина и устройства	Medicine and devices
+Медицина усиливает лечение героя. Мощность устройств усиливает способности; перезарядка устройств уменьшает время их восстановления. Улучшение перезарядки не увеличивает урон само по себе.	Medicine improves soldier healing. Device power strengthens abilities; device cooldown reduces their recovery time. Cooldown upgrades alone do not increase damage.
+Выдержка	Patience
+Для пехоты: после 1,5 секунды без стрельбы следующий выстрел наносит на 40% больше урона. Дай оружию паузу перед важным попаданием.	Infantry: after 1.5 seconds without firing, the next shot deals 40% more damage. Pause before an important hit.
+Последний рубеж	Last stand
+Для пехоты: при здоровье не выше 25% темп стрельбы повышается на 25%. Эффект зависит от текущего здоровья и не даёт неуязвимость.	Infantry: at 25% health or less, fire rate increases by 25%. The effect depends on current health and does not grant invulnerability.
+Смена позиции	Reposition
+После выхода из машины скорость повышается на 25% на 3 секунды. Повторное срабатывание возможно после отката 8 секунд.	After leaving a vehicle, gain 25% movement speed for 3 seconds. Can trigger again after an 8-second cooldown.
+Напор — временный бонус	Pressure: temporary pickup
+Временно повышает напор: определяет, чей снаряд переживёт столкновение. С ним твои выстрелы чаще уничтожают встречные. Улучшение бонуса продлевает действие; это не оглушение врага.	Temporarily increases pressure, determining whose projectile survives a collision. Your shots win more collisions. Upgrading this pickup extends its duration; it does not stun enemies.
+Фриз	Freeze
+Временно замораживает врагов. Используй передышку, чтобы сменить позицию или расправиться с опасной целью. Улучшение бонуса увеличивает время действия.	Temporarily freezes enemies. Use the pause to reposition or eliminate a dangerous target. Upgrading the pickup extends its duration.
+Аптечка, броня и ремонт базы	Medkits, armor and base repairs
+Аптечка лечит героя. Броня ремонтирует машину, в которой ты находишься. Ремонт базы восстанавливает штаб. Эти три эффекта лечат разные цели и не заменяют друг друга.	Medkits heal your soldier. Armor repairs the vehicle you occupy. Base repair restores HQ. These effects affect different targets and are not interchangeable.
+Укрепление	Fortification
+Восстанавливает или усиливает защитные стены у штаба. При полностью здоровой базе существующие разрушаемые стены могут получить дополнительную прочность. Это защита периметра, а не лечение героя.	Restores or strengthens defensive walls around HQ. At full base health, existing destructible walls can gain extra durability. This protects the perimeter rather than healing your soldier.
+Турель и десант техники	Turret and vehicle drop
+Турель устанавливает огневую поддержку. Десант доставляет доступную машину возле базы; дождись доставки и займи её. Улучшение десанта сокращает время доставки.	Turret deploys fire support. Vehicle drop delivers an available vehicle near the base; wait for it, then enter. Upgrading the drop reduces delivery time.
+Звезда	Star
+На короткое время даёт неуязвимость и сокрушительные выстрелы, позволяющие разрушать даже бетон. Улучшение увеличивает длительность. После окончания снова действуют обычные правила урона.	Briefly grants invulnerability and devastating shots that can destroy even concrete. Upgrades extend the duration. Normal damage rules return when the effect ends.
+Шейдеры · уютный свет и металл	Shaders · soft lighting and metal
+Единый режим для хаба, карты и боя: мягкие тени, объём и блики.	One mode for hub, map and combat: soft shadows, depth and reflections.
+Ближайшие фонари; в режиме шейдеров до трёх источников отбрасывают тени.	Nearby lights; up to three cast shadows with shaders enabled.
+Иллюстрация	Illustration
+Характеристики	Stats
+Враги	Enemies
+Покрытия	Terrain
+Развитие	Progression
+Усиления	Upgrades
+Хаб	Hub
+Начало игры	Getting started
+Предметы	Items
+Временно удваивает напор	Temporarily doubles pressure
+Замораживает всех врагов	Freezes all enemies
+Лечение героя +10%/ур.	Soldier healing +10% per level
+Ремонт базы +10%/ур.	Base repair +10% per level
+HP стен +1/ур.	Wall HP +1 per level
+Восстановление брони +10%/ур.	Armor repair +10% per level
+HP турели +1/ур.	Turret HP +1 per level
+Доставка быстрее на 8%/ур.	Delivery 8% faster per level
+Неуязвимость, смертельный выстрел, разрушение бетона	Invulnerability, lethal shots and concrete destruction
+Рельефные песчаные клетки снижают скорость наземной пехоты, техники и союзников до 55% обычной.	Sand reduces ground infantry, vehicle and ally speed to 55% of normal.
+Непроходима для наземных юнитов и техники, но пропускает пули.	Blocks ground units and vehicles, but lets bullets through.
+Наземные юниты и техника скользят в направлении движения.	Ground units and vehicles slide in their movement direction.
+Броня — здоровье машины.	Armor is a vehicle's health.
+Пехотинец с огнестрельным оружием.	An infantry unit with a firearm.
+Использует гранаты; вариант с РПГ готовит ракетный выстрел.	Uses grenades; the RPG variant prepares a rocket shot.
+Периодически поднимает щит и блокирует встречные выстрелы спереди.	Periodically raises a shield to block incoming shots from the front.
+Перед выстрелом показывает красную линию прицеливания.	Shows a red aiming line before firing.
+Подвижная лёгкая машина.	A fast light vehicle.
+Бронированная машина, чередующая перемещение и остановки.	An armored vehicle that alternates movement and stops.
+Тяжёлая техника с заметными паузами между манёврами.	A heavy vehicle with pauses between maneuvers.
+Стоит на месте и обстреливает штаб навесными снарядами; в комнате босса целится в героя.	Stays in place and shells HQ; targets the soldier in boss rooms.
+Основная валюта для покупок и улучшений в хабе.	The main currency for hub purchases and upgrades.
+Отдельный ресурс, показанный рядом со сплавом.	A separate resource shown beside alloy.
+Оформление и освещение	Appearance and lighting
+Тема интерфейса	Interface theme
+Время суток в игре	Time of day
+Тёмная	Dark
+Светлая	Light
+Настройки независимы · слева ночь, справа день	Independent settings · night on the left, day on the right
+тест	Test
+Объекты	Objects
+Развивай базу между вылазками	Develop your base between runs
+Нужно ещё %d	Need %d more
+Чертёж открывает постройку. Строительство и улучшения сохраняются после вылазки.	Blueprints unlock facilities. Construction and upgrades persist between runs.
+Выбери оружие и улучши его навсегда	Choose a weapon and upgrade it permanently
+Ур.	Lv.
+ПП	SMG
+Улучшение	Upgrade
+Штурм. винтовка	Assault rifle
+Снайперка	Sniper rifle
+РПГ	RPG
+Усиления выпадают в бою · развитие сохраняется	Collect upgrades in combat · progress is permanent
+Закрыто	Locked
+Обычное	Common
+Редкое	Rare
+Эпическое	Epic
+Секретное	Secret
+Ремонт базы	Base repair
+Турель	Turret
+Десант техники	Vehicle drop
+Сердце %s · база %s · броня %s; +0,15/ур.	Health %s · base %s · armor %s; +0.15 per level
+Аптечки в передышках	Rest-stop medkits
+%d аптечек у механика/генерала · подбираются вручную	%d medkits at mechanic/general stops · collect manually
+Прочность базы	Base durability
+%d HP базы · +1 HP за уровень	%d base HP · +1 HP per level
+Союзные турели	Allied turrets
+%s урона по площади · +0,05/ур.	%s area damage · +0.05 per level
+Удача улучшений	Upgrade rarity
+Редкие %s%% · эпик %s%%; эпик +0,6 %%/ур.	Rare %s%% · epic %s%%; epic +0.6%% per level
+Частота дропа	Drop rate
+Сердце %s%% · бонус %s%%; +0,5 %%/ур.	Health %s%% · bonus %s%%; +0.5%% per level
+Противотанковый ёж	Tank trap
+Ставит ежа перед героем. Принимает огонь и перекрывает клетку.	Places a tank trap ahead of your soldier. Blocks shots and occupies a cell.
+Мина	Mine
+Взводится через 2 с · взрыв крестом	Arms after 2 seconds · cross-shaped blast
+Луч сквозь бетон и всех на линии	Beam pierces concrete and all targets in its path
+Авиаудар	Airstrike
+Вертолёт обстреливает врагов	Helicopter fires on enemies
+Бесплатный сброс возвращает все вложенные в эти характеристики ресурсы.	A free reset refunds all resources spent on these stats.
+вернуть	Refund
+Бык	Bull
+Механик	Mechanic
+Полевой ремонт · броня +15% · орудие +10%	Field repairs · armor +15% · gun damage +10%
+Таран	Ram
+Сокол	Falcon
+Снайперка +15% урона · HP −5%	Sniper rifle damage +15% · HP −5%
+Умелец	Tinkerer
+Способности перезаряжаются на 10% быстрее	Abilities recharge 10% faster
+Атмосферные частицы	Atmospheric particles
+Выключены	Off
+Включены	On
+Редкая пыль, листья и ночные светлячки. Без физических столкновений.	Sparse dust, leaves and night fireflies. No physical collisions.
+Размытие краёв	Edge blur
+Мягкий tilt-shift сверху и снизу. Центр поля и интерфейс остаются чёткими.	Soft tilt-shift at the top and bottom. The field center and UI stay sharp.
+ / Канал	 / Channel
+ / в вылазке	 / on this run
+ /с	 /s
+ · выбрано	 · selected
+ · двойной клик для переименования	 · double-click to rename
+ · документы	 · documents
+ · командир	 · commander
+ · общий термин	 · shared term
+ · осталось вылазок: %d	 · runs remaining: %d
+ · продать за %d ◈	 · sell for %d ◈
+ · ранг 	 · rank 
+ · стартовый чертёж	 · starting blueprint
+ · текущий	 · current
+ · трофей	 · trophy
+ · улучшения	 · upgrades
+ · усилений: %d	 · boosts: %d
+ Напор: шанс против снаряда с силой 1.	 Pressure: chance against a projectile with strength 1.
+ доставлен к базе. Садись в любое время.	 delivered to the base. Board it at any time.
+ м	 m
+ м/с	 m/s
+ с	 s
+ стены базы!	 base walls!
+%.1f с до восстановления · −5%%/ур.	%.1f s recovery · −5%%/level
+%.2f клетки/с пешком · Убывающий прирост скорости	%.2f tiles/s on foot · diminishing speed gains
+%d HP · +2 HP/ур. Базе +1 каждые 5 ур.	%d HP · +2 HP/level. Base gains +1 every 5 levels.
+%d аптечек передышки · лечение %s HP	%d rest-stop medkits · heals %s HP
+%d врагов + помощь · %s	%d enemies + support · %s
+%d ◈ / малое усиление	%d ◈ / minor boost
+%d ◈ / чертёж / секрет	%d ◈ / blueprint / secret
+%s · Сила: %s · Перезарядка: %s с	%s · Power: %s · Cooldown: %s s
++%.0f%% базового урона ствола	+%.0f%% base weapon damage
++%.0f%% базового урона стволов	+%.0f%% base weapon damage
++%.0f%% выстрелов в секунду	+%.0f%% shots per second
++%.1f %% скорости машины	+%.1f %% vehicle speed
++%.2f урона	+%.2f damage
++%d %% перехвата	+%d %% interception
++%d брони	+%d armor
++%d к максимуму HP и лечение	+%d max HP and healing
++%d сплава	+%d alloy
++%d%% к передвижению	+%d%% movement speed
++3 прочности штаба. Улучшение: ещё +2.	+3 HQ health. Upgrade: another +2.
++3 уровня силы: 	+3 power levels: 
++3 уровня: 	+3 levels: 
++75% базового урона: 	+75% base damage: 
+. Один предмет на выбор.	. Choose one item.
+2 · Активный	2 · Active
+2: +3 прочности штабу, +1 HP герою рядом. Кулдаун 50 с.	2: +3 HQ health, +1 HP to a nearby hero. Cooldown: 50 s.
+2: 4 урона и 2 с оглушения врагам рядом. Кулдаун 45 с.	2: 4 damage and 2 s stun to nearby enemies. Cooldown: 45 s.
+2: 5 с защиты штаба и героя в радиусе 3 клеток. Кулдаун 55 с.	2: protects HQ and hero within 3 tiles for 5 s. Cooldown: 55 s.
+6 Полей + босс\nГенерал пограничья\nБагги · ПП · дробовик · винтовка	6 battlefields + boss\nBorderlands general\nBuggy · SMG · shotgun · rifle
+6 полей + босс\nГенерал фронта\nБтр · снайперка	6 battlefields + boss\nFrontline general\nAPC · sniper rifle
+6 полей + босс\nГигабосс цитадели\nТанк · Рпг	6 battlefields + boss\nCitadel gigaboss\nTank · RPG
+: неверный идентификатор	: invalid identifier
+E — выйти.	E — exit.
+Esc — пауза / отмена. Перетаскивание мышью — карта.\nНажми на клавишу, затем новую. Занятые клавиши меняются местами.	Esc — pause / cancel. Drag the mouse to move the map.\nClick a key, then press a new one. Assigned keys swap places.
+HP +15% · скорость −5% · дробовик +10%	HP +15% · speed −5% · shotgun +10%
+HP стен	Wall HP
+HP турели	Turret HP
+Q — первая · 1 — вторая · F — гаджет	Q — first · 1 — second · F — gadget
+WASD — выбор · E — перейти	WASD — select · E — travel
+WASD — выбор поля боя · E — войти	WASD — select battlefield · E — enter
+\nБаза %d · %d сплава	\nBase %d · %d alloy
+\nКомната начнётся заново.	\nThe room will restart.
+\nЛимит поля боя исчерпан	\nBattlefield limit reached
+\nНовая база	\nNew base
+\nОбщий бонус урона: +%s%% · интервал: ×%s	\nTotal damage bonus: +%s%% · interval: ×%s
+\nПродолжение с карты маршрута.	\nResume from the route map.
+Автоматический	Automatic
+Ангар / механик	Hangar / mechanic
+Аптечка каждые %s с	Medkit every %s s
+Аптечка рядом со штабом каждые 90 с боя. Улучшения сокращают интервал.	A medkit appears near HQ every 90 s of combat. Upgrades reduce the interval.
+Аптечки: %d · без боя · одна точка на выбор	Medkits: %d · no combat · choose one stop
+Арка · В бой!	Gate · To battle!
+Артиллерия	Artillery
+Атака вперёд · неподвижная цель	Forward attack · stationary target
+Атаки: вкл.	Attacks: on
+Атаки: выкл.	Attacks: off
+ББ	AP
+База %d · мир %d	Base %d · world %d
+База отремонтирована: +%.1f HP	Base repaired: +%.1f HP
+База под огнём!	Base under fire!
+База уничтожена	Base destroyed
+База, покупки и задания этой ячейки будут удалены.\nДругие профили сохранятся.	This slot's base, purchases and missions will be deleted.\nOther profiles will be kept.
+Без повтора	No repeat
+Без подраздела	No subsection
+Без чертежей · обычные усиления	No blueprints · regular boosts
+Без ★ — простая\n★ Средняя · частые чертежи\n★★ Сложная · редкие чертежи	No ★ — easy\n★ Medium · more blueprints\n★★ Hard · rare blueprints
+Бесконечный	Endless
+Бесконечный / сектор %d	Endless / sector %d
+Бесконечный · сектор %d	Endless · sector %d
+Бесконечный · сектор %d · поле %d	Endless · sector %d · field %d
+Бетон · непробиваемый	Concrete · indestructible
+Блоки и разрушение	Blocks and destruction
+Боевые реплики · без всплывающих уведомлений	Combat voice lines · no pop-up notifications
+Бой С генералом	General battle
+Бой с генералом. Уничтожь командирский танк.	General battle. Destroy the command tank.
+Болота	Swamps
+Больше залпов; уровень 3 — ракеты	More volleys; level 3 unlocks missiles
+Больше площадь облака	Larger cloud area
+Бомба	Bomb
+Бомба у 	Bomb at 
+Бонусы	Bonuses
+Бонусы [E]	Bonuses [E]
+Бонусы и трофеи	Bonuses and loot
+Бонусы на поле	Field bonuses
+Босс мира	World boss
+Боссы	Bosses
+Бронегруппа	Armored group
+Бронекомплект	Armor kit
+Броня потеряна. Отойди от корпуса!	Armor lost. Move away from the hull!
+Броня транспорта	Vehicle armor
+Бросок на 5 клеток перед собой. Граната отскакивает от препятствий и взрывается после короткого запала.	Throw 5 tiles forward. The grenade bounces off obstacles and explodes after a short fuse.
+Быстрее высадка и движение товарища	Faster deployment and companion movement
+В первом мире зачисти поле, три волны и командира.	Clear a field, three waves and its commander in the first world.
+В принтере открой «Общие статы» и купи +2 HP.	Open General stats at the printer and buy +2 HP.
+В рюкзаке нет чертежей.	No blueprints in the backpack.
+В рюкзаке: 	In backpack: 
+В хаб с наградами	Return to hub with rewards
+В хабе нажми «В бой», выбери второй мир и начни операцию.	In the hub, press To battle, select the second world and begin the operation.
+Валюты	Currencies
+Вернуться в паузу	Back to pause menu
+Вернуться на поле	Return to battlefield
+Вернуться с трофеями или продолжить поход.	Return with loot or continue the expedition.
+Версия %s · Билд %s\nВ разработке	Version %s · Build %s\nIn development
+Верстак	Workbench
+Взрывоопасная бочка	Explosive barrel
+Взят	Taken
+Вместо: 	Replaces: 
+Во втором мире найди чертёж дрона и доставь в хаб.	Find a drone blueprint in the second world and bring it back to the hub.
+Военный сундук	Military chest
+Возвращаемся на карту	Returning to the map
+Воздушный помощник	Airborne helper
+Возьми товарища и улучши его в точке способностей.	Take a companion and upgrade them at an ability stop.
+Волн зачищено	Waves cleared
+Волна завершена	Wave cleared
+Волна отражена	Wave repelled
+Волны	Waves
+Воспроизвести	Play
+Восстанавливает 3 брони своей машины или 1 HP пешком.	Restores 3 armor to your vehicle or 1 HP on foot.
+Восстановлена резервная копия	Backup restored
+Враги на БТР	APC enemies
+Враги на багги	Buggy enemies
+Враги на танке	Tank enemies
+Время доставки	Delivery time
+Время перезарядки способностей	Ability cooldowns
+Все открытые бонусы и текущие характеристики	All unlocked bonuses and current stats
+Все чертежи +	All blueprints +
+Все чертежи −	All blueprints −
+Всего: %d. В этой вылазке: %d.	Total: %d. This run: %d.
+Вторая способность открыта	Second ability unlocked
+Вторая способность: уровень класса 5 и 2500 сплава	Second ability: class level 5 and 2500 alloy
+Выбери другой класс в принтере и снова победи гигабосса.	Choose another class at the printer and defeat the gigaboss again.
+Выбери механику или способность, как на маршруте.	Choose mechanics or an ability, as on the route.
+Выбери модуль или активный гаджет штаба на его верстаке.	Choose a module or an active HQ gadget at its workbench.
+Выбери модуль на верстаке штаба.	Choose a module at the HQ workbench.
+Выбери награду	Choose a reward
+Выбери приказ на следующую вылазку	Choose an order for the next run
+Выбери щит и возьми его в вылазку.	Choose the shield and take it on a run.
+Выбор модуля или усиления штаба.\nДействует до конца вылазки.	Choose an HQ module or boost.\nLasts until the end of the run.
+Выбор одного усиления способности.\nСила, перезарядка или дополнительный эффект.	Choose one ability upgrade.\nPower, cooldown or an extra effect.
+Выбор одного усиления транспорта.\nМеханик подготовит машину к следующему бою.	Choose one vehicle upgrade.\nThe mechanic prepares it for the next battle.
+Выдержка · усиленный выстрел	Steady aim · powered shot
+Выполни приказ за несколько вылазок. Сдай в командном центре.	Complete the order over several runs. Claim the reward at the command center.
+Выполни приказ за указанные вылазки. Награда в командном центре.	Complete the order within the specified runs. Claim the reward at the command center.
+Выход занят	Exit blocked
+Гаджеты	Gadgets
+Газ	Gas
+Генерал	General
+Генерал I · 4×4	General I · 4×4
+Генерал I · вариант 2×2	General I · 2×2 variant
+Генерал II · 4×4	General II · 4×4
+Генерал II · вариант 2×2	General II · 2×2 variant
+Генерал повержен	General defeated
+Генератор	Generator
+Генератор силового поля	Force-field generator
+Генераторов осталось: %d	Generators left: %d
+Герой	Hero
+Герой / техника	Hero / vehicle
+Герой и оружие	Hero and weapons
+Гигабосс	Gigaboss
+Гигабосс · силовое поле	Gigaboss · force field
+Гигабосс уничтожен	Gigaboss destroyed
+Горизонт	Horizon
+Город	City
+Горы	Mountains
+Гранатная турель установлена 	Grenade turret deployed 
+Гранатомётчик	Grenadier
+Гренадёр	Grenadier
+Да, продолжить	Yes, continue
+Дальний путь	Long journey
+Дальность креста и лимит мин +1	Cross range and mine limit +1
+Два командира 2×2	Two 2×2 commanders
+Декорации локаций	Location decorations
+Длительность	Duration
+Для ремонта займи технику	Board a vehicle to repair it
+Доберись до третьего поля Пограничья и зачисти его.	Reach the third Borderlands field and clear it.
+Добудь чертёж багги в мире 1, купи машину на стоянке.	Find a buggy blueprint in world 1 and buy the vehicle at the parking area.
+Добыча	Loot
+Доводка оружия	Weapon tuning
+Дозор	Patrol
+Дольше невидимость; уровень 3 — пули насквозь	Longer invisibility; level 3 unlocks piercing bullets
+Донеси чертёж верстака бонусов, затем построй его.	Bring back a bonus workbench blueprint, then build it.
+Донеси чертёж верстака штаба из элитного сундука и построй его.	Bring back an HQ workbench blueprint from an elite chest, then build it.
+Донеси чертёж оборудования и купи улучшение на стоянке.	Bring back an equipment blueprint and buy the upgrade at the parking area.
+Доставка: %s с · лимит %d	Delivery: %s s · limit %d
+Доступно для постройки в хабе.	Available to build in the hub.
+Дрон	Drone
+Дрон-камикадзе	Kamikaze drone
+Дрон-помощник	Helper drone
+Дронов уничтожено	Drones destroyed
+Дроны	Drones
+Дроп: +0,2 %/ур.	Drop rate: +0.2 %/level
+Есть несохранённые изменения. Нажми «Сохранить» или «Отмена · без сохранения».	Unsaved changes. Press Save or Cancel without saving.
+Забрать награду	Claim reward
+Заголовок и текст не должны быть пустыми.	Title and body must not be empty.
+Заголовок статьи	Article title
+Задание завершено	Mission complete
+Закрытая ячейка	Locked slot
+Закрытая ячейка верстака	Locked workbench slot
+Закрыть группу	Close group
+Заново	Restart
+Занять транспорт	Board vehicle
+Заполни название и короткое описание.	Enter a name and a short description.
+Заходы с двух сторон · меняй позицию	Enemies on both sides · keep moving
+Зачисти три поля в бесконечном режиме. Можно за несколько вылазок.	Clear three fields in endless mode. Progress carries across runs.
+Зачисти четвёртое поле мира 2. Ищи чертежи БТР и снайперской винтовки.	Clear the fourth field in world 2. Look for APC and sniper rifle blueprints.
+Защита	Defense
+Защита на марше	March protection
+Защита: %s с · откат %s с	Protection: %s s · cooldown %s s
+Защитные стены укреплены	Defensive walls reinforced
+Защитный щит	Protective shield
+Защищай базу. Техника появится в конце первой поля боя.	Defend the base. A vehicle arrives at the end of the first battlefield.
+Звезда · неуязвимость и сокрушительный огонь!	Star · invulnerability and devastating fire!
+Здесь пока нет композиций	No tracks here yet
+Здоровье героя	Hero health
+Здоровье: %s / %s · Прочность штаба: %s	Health: %s / %s · HQ health: %s
+ИИ	AI
+Изменить улучшения можно только на верстаке.	Upgrades can only be changed at the workbench.
+Инструктор	Instructor
+Искры	Sparks
+Используй активный гаджет штаба на Q три раза.	Use the active HQ gadget with Q three times.
+К стенам Цитадели	To the Citadel walls
+Капсула персонажей	Character capsule
+Карточки вылазки	Run cards
+Категория не найдена.	Category not found.
+Кирпич · сильное разрушение	Brick · heavily damaged
+Кирпич · трещины	Brick · cracked
+Кирпич · целый	Brick · intact
+Класс · 	Class · 
+Классы / навыки	Classes / skills
+Клетка поля	Field tile
+Командир	Commander
+Командир 	Commander 
+Командир · %d	Commander · %d
+Командир · 3	Commander · 3
+Командир вызвал подкрепление	Commander called reinforcements
+Комплект поддержки	Support kit
+Короткое описание для карточек	Short card description
+Круговой залп	Radial volley
+Круговой залп! Отойди и найди промежуток между шарами.	Radial volley! Step back and find a gap between the projectiles.
+Кулдаун %.1f → %.1f с	Cooldown %.1f → %.1f s
+Кулдаун щита −%.0f%%	Shield cooldown −%.0f%%
+Кулдаун: %s → %s%%	Cooldown: %s → %s%%
+Купи первый уровень открытого оружия на оружейном верстаке.	Buy the first level of an unlocked weapon at the weapon workbench.
+Купи постоянный уровень технологии на верстаке штаба.	Buy a permanent technology level at the HQ workbench.
+Лазеры: уйди между лучами!	Lasers: move between the beams!
+Лес	Forest
+Летающий дрон	Flying drone
+Летающий стрелок	Flying gunner
+Лимит блоков %d → %d	Block limit %d → %d
+Лимит мин	Mine limit
+Лимит помощников	Helper limit
+Лимит помощников +1 (до 3)	Helper limit +1 (up to 3)
+Линия фронта	Frontline
+Личный багги	Personal buggy
+Максимум здоровья	Maximum health
+Манекен тира	Target dummy
+Манёвр	Maneuver
+Маршрут открыт	Route unlocked
+Маскировка	Camouflage
+Мастерская штаба	HQ workshop
+Машина остаётся на базе. Каждая вылазка — с полной бронёй.	The vehicle stays at the base. Every run starts with full armor.
+Машины	Vehicles
+Медицина	Medicine
+Механизм подачи	Feed mechanism
+Мешки цемента · зона 2	Cement bags · zone 2
+Минибосс · солдат ★	Miniboss · soldier ★
+Мир %d завершён · %s	World %d complete · %s
+Мир %d завершён\n	World %d complete\n
+Модель стационарной турели	Stationary turret model
+Модификация · 	Modification · 
+Модификация способности	Ability modification
+Модификация транспорта	Vehicle modification
+Модуль или усиление на вылазку	Module or boost for this run
+Можно вернуться и собрать оставшиеся бонусы.	You can return and collect the remaining bonuses.
+Морозная равнина	Frozen plain
+Мощность устройств	Device power
+На карту →	To map →
+На рубеже	On the line
+Навык 1	Skill 1
+Навык 2: 	Skill 2: 
+Награда за командира	Commander reward
+Нажми: открыть за 30 сплава	Click to unlock for 30 alloy
+Назад	Back
+Название во всей игре	Name throughout the game
+Название — до 48 символов, короткое описание — до 150.	Name: up to 48 characters. Short description: up to 150.
+Название: от 1 до 36 символов.	Name: 1 to 36 characters.
+Найди и донеси чертёж оружия	Find and bring back a weapon blueprint
+Найди чертёж авиаудара в Цитадели и доставь на базу.	Find an airstrike blueprint in the Citadel and bring it to the base.
+Найди чертёж стоянки в мире 1 и построй её в хабе.	Find a parking area blueprint in world 1 and build it in the hub.
+Напор оружия	Weapon pressure
+Напор оружия: +%s%%	Weapon pressure: +%s%%
+Напор: +20 % против равных	Pressure: +20 % against equal projectiles
+Начни мир 3 через экран операций. Здесь открываются танк и РПГ.	Start world 3 from the operations screen. The tank and RPG unlock here.
+Не отслеживать	Stop tracking
+Не удалось заменить сохранение	Could not replace the save
+Не удалось заменить файл: 	Could not replace the file: 
+Не удалось записать сохранение	Could not write the save
+Не удалось записать файл: 	Could not write the file: 
+Не удалось обновить резервную копию	Could not update the backup
+Не удалось открыть временный файл	Could not open the temporary file
+Не удалось создать папку сохранений	Could not create the save folder
+Не удалось создать первую резервную копию	Could not create the initial backup
+Не удалось создать резервную копию	Could not create a backup
+Не удалось сохранить забег: 	Could not save the run: 
+Не удалось сохранить продажу	Could not save the sale
+Не удалось сохранить резервную копию.	Could not save a backup.
+Не удалось удалить ячейку	Could not delete the slot
+Неверная активная ячейка	Invalid active slot
+Неверное имя: 	Invalid name: 
+Неверное число: 	Invalid number: 
+Неверный раздел: 	Invalid section: 
+Неверный список: 	Invalid list: 
+Неизвестное действие.	Unknown action.
+Неизвестный общий термин.	Unknown shared term.
+Некорректное поле статьи: 	Invalid article field: 
+Нет версии профиля	Missing profile version
+Нет заданий	No missions
+Нет места перед героем	No space in front of the hero
+Нет подборки	No playlist
+Нет статей или словаря.	Missing articles or dictionary.
+Нет, новый забег	No, start a new run
+Неуязвимость +0,5 с (до 8 с)	Invulnerability +0.5 s (up to 8 s)
+Неуязвимость · 1 выстрел\nБетон · %.1f с (+1,5/ур.)\nШанс II/III: %.2f / %.2f%%	Invulnerability · 1 shot\nConcrete · %.1f s (+1.5/level)\nChance II/III: %.2f / %.2f%%
+Ничего не найдено. Попробуй другое слово или раздел «Все».	Nothing found. Try another word or the All section.
+Новая тактика	New tactics
+Новая телеграмма после следующей вылазки	New telegram after the next run
+Новое открытие	New discovery
+Новый приказ\n	New order\n
+Нужно ещё %d ◈	Need %d more ◈
+ОФ	HE
+Оба места для турелей заняты или заблокированы	Both turret slots are occupied or blocked
+Обломки · проходимые	Rubble · passable
+Оборудование	Equipment
+Оборудование / 	Equipment / 
+Оборудование машины	Vehicle equipment
+Общий дроп: +0,1 %/ур.	Total drop rate: +0.1 %/level
+Общий термин: название и краткое описание обновятся в игре.	Shared term: its name and short description update throughout the game.
+Оглушение	Stun
+Один модуль поддержки · ручная активация: 2	One support module · manual activation: 2
+Ок	OK
+Окоп · C — укрыться	Trench · C to take cover
+Окоп · пули проходят	Trench · bullets pass over
+Окружение	Environment
+Операции / в бой	Operations / to battle
+Ориентир сильной сборки: %s урона / %s выстр./с. Полный хаб и класс; 8 эпических усилений атаки, 6 урона оружия, 4 темпа, 2 оружейных секрета. Это не предел: число может расти выше полной шкалы.	Strong build reference: %s damage / %s shots/s. Full hub and class; 8 epic attack boosts, 6 weapon damage boosts, 4 fire-rate boosts and 2 weapon secrets. This is not a cap: values can exceed the full bar.
+Ориентир сильной сборки: %s урона, %s выстр./с, %s скорости. Полный хаб, танкист и доступные передышки. Шкала может быть превышена; броня показывает текущий запас защиты.	Strong build reference: %s damage, %s shots/s, %s speed. Full hub, driver class and available rest stops. Values can exceed the bar; armor shows current protection.
+Орудие	Cannon
+Оружие на модели героя	Weapon on the hero model
+Основные силы под прикрытием	Main force under cover
+Особенность	Special trait
+Особые противники	Special enemies
+Оставить на поле	Leave on the battlefield
+Отдать честь · E	Salute · E
+Отказаться	Decline
+Отказаться от приказа	Decline order
+Отказаться от телеграммы	Decline telegram
+Откроется после возврата в хаб	Unlocks after returning to the hub
+Открой слот в хабе	Unlock a slot in the hub
+Открывает покупку на стоянке. Мир %d.	Unlocks purchase at the parking area. World %d.
+Открывает улучшение: +%d%% за уровень. Требуется купленный транспорт.	Unlocks an upgrade: +%d%% per level. Requires a purchased vehicle.
+Открывается в «Прокачке базы».	Unlocks in Base upgrades.
+Открывается у принтера: уровень класса 5, затем 2500 сплава.	Unlocks at the printer: class level 5, then 2500 alloy.
+Открыт мир 3	World 3 unlocked
+Открыто	Unlocked
+Открыты мир 2 и бесконечный режим	World 2 and endless mode unlocked
+Открыть группу	Open group
+Отмена · без сохранения	Cancel without saving
+Отсутствует раздел: 	Missing section: 
+Оценка до боя. Сундук — одна награда на выбор.	Pre-battle estimate. Choose one reward from the chest.
+Ошибка записи: 	Write error: 
+ПК	PC
+Парашют · доставка танка	Parachute · tank delivery
+Пассивный	Passive
+Пепельные земли	Ashlands
+Первый запуск	First launch
+Первый навык открыт	First skill unlocked
+Первый навык: 30 сплава	First skill: 30 alloy
+Первый навык: 30 ◈	First skill: 30 ◈
+Первый трофей	First trophy
+Переброс · осталось %d	Reroll · %d remaining
+Перебросов: %d · Уничтожено врагов: %d · Сплава за вылазку: %d	Rerolls: %d · Enemies destroyed: %d · Alloy this run: %d
+Перевал	Mountain pass
+Передвижение	Movement
+Передышка	Rest stop
+Передышка после этапа %d	Rest stop after stage %d
+Перезарядка устройств	Device cooldown
+Перезарядка щита	Shield cooldown
+Перейти	Go
+Перемешивание включено	Shuffle enabled
+Перемотка	Seek
+Перехват	Interception
+Перехват: %s с · радиус 2,5	Interception: %s s · radius 2.5
+Песчаная пустыня	Sandy desert
+Пехота и дроны	Infantry and drones
+Пехота: после 1,5 с без стрельбы следующий выстрел наносит +40% урона.	Infantry: after 1.5 s without firing, the next shot deals +40% damage.
+Пехота: при HP не выше 25% стрельба быстрее на 25%.	Infantry: fire rate increases by 25% when HP is at or below 25%.
+Пехоты уничтожено	Infantry destroyed
+Пешком	On foot
+Письма	Letters
+По порядку	In order
+Победа! Забери сундук командира	Victory! Claim the commander's chest
+Победи генерала девятого поля мира 2. Откроется Цитадель.	Defeat the general on field nine of world 2 to unlock the Citadel.
+Победи гигабосса новым классом	Defeat the gigaboss with a new class
+Повреждён JSON	Corrupted JSON
+Повреждён профиль: 	Corrupted profile: 
+Повторных чертежей пока нет.\nЕсли новые чертежи этого типа закончились,\nв сундуке может встретиться повтор для продажи.	No duplicate blueprints yet.\nOnce all new blueprints of a type are found,\na chest may offer a duplicate you can sell.
+Повторять все	Repeat all
+Повторять один	Repeat one
+Повторяющийся или пустой ID.	Duplicate or empty ID.
+Пограничье под контролем	Borderlands secured
+Подбери 30 сплава и вернись в хаб. Добровольный выход сохраняет добычу.	Collect 30 alloy and return to the hub. Voluntary extraction preserves your loot.
+Подбитая техника · 	Wrecked vehicle · 
+Поддержка авиации	Air support
+Подобрать: 	Pick up: 
+Подступы к генералу	Approaching the general
+Пойти дальше	Continue onward
+Покупка	Purchase
+Поле боя / 	Battlefield / 
+Поле боя зачищено	Battlefield cleared
+Полевой запас	Field supplies
+Полевой механик	Field mechanic
+Полевой ремонт	Field repair
+Полевой справочник	Field guide
+Полей пройдено	Fields completed
+Полей рубежа	Border fields
+Понятно	Got it
+После выхода из машины: +25% скорости на 3 с. Откат 8 с.	After leaving a vehicle: +25% speed for 3 s. Cooldown: 8 s.
+После третьего поля получен приказ. Победи первого генерала: откроется бесконечный режим.	Order received after the third field. Defeat the first general to unlock endless mode.
+Последний бой	Last stand
+Постоянная сила оружия: ×%s\nУрон оружия за вылазку: +%s%%\nИнтервал между выстрелами: ×%s\nДобавка к напору: +%s п.п.	Permanent weapon power: ×%s\nWeapon damage this run: +%s%%\nShot interval: ×%s\nPressure bonus: +%s pp
+Постройка	Building
+Потеря сплава при гибели: %s%%	Alloy lost on death: %s%%
+Потеряно: %d ◈ · чертежей %d	Lost: %d ◈ · blueprints: %d
+Правила боя	Combat rules
+Преграда · состояние 	Barrier · condition 
+Приготовься	Get ready
+Приказ не выполнен	Order incomplete
+Приказ провален: 	Order failed: 
+Приказ сдан	Order completed
+Приказ: удерживать рубеж	Order: hold the line
+Принтер	Printer
+Принять задание	Accept mission
+Пробивает ещё один бетон (до 4)	Pierces one more concrete block (up to 4)
+Проверка рубежа	Border inspection
+Продать [E]	Sell [E]
+Продать всё · %d ◈	Sell all · %d ◈
+Продать повторы	Sell duplicates
+Продолжить забег?	Continue the run?
+Пройди Цитадель. В финале отключи четыре генератора и уничтожь гигабосса.	Clear the Citadel. Disable the four generators in the final battle and destroy the gigaboss.
+Пройди пять полей первого мира. Подготовь оружие и штаб к генералу.	Clear five fields in the first world. Prepare your weapon and HQ for the general.
+Прокачка [E]	Upgrades [E]
+Прорыв фронта	Frontline breakthrough
+Простая	Easy
+Профили	Profiles
+Профили / сохранения	Profiles / saves
+Профили можно менять в хабе	Profiles can be changed in the hub
+Профиль %d%s	Profile %d%s
+Профиль обнулён.	Profile reset.
+Профиль создан более новой версией игры	Profile created by a newer game version
+Прочность / урон	Health / damage
+Пункт подготовки	Preparation point
+Пустая ячейка	Empty slot
+Путь открыт	Path open
+РПГшник	RPG trooper
+Радиус +0,25 клетки; запал короче	Radius +0.25 tiles; shorter fuse
+Раз в 14 с уничтожает вражеский снаряд в радиусе 2,5 клетки.	Destroys an enemy projectile within 2.5 tiles every 14 s.
+Раз в 18 с бьёт током до трёх врагов в радиусе 2,8 клетки.	Shocks up to three enemies within 2.8 tiles every 18 s.
+Развернуть меню	Expand menu
+Развитие базы · уровень %d	Base development · level %d
+Раздел	Section
+Раздел не найден.	Section not found.
+Разруши четыре генератора в углах, затем уничтожь командира.	Destroy the four corner generators, then destroy the commander.
+Редактирование доступно только в dev-сборке.	Editing is only available in dev builds.
+Редактор · DEV	Editor · Dev
+Редкие %.1f%% · эпик %.1f%%; эпик +0,6 %%/ур.	Rare %.1f%% · epic %.1f%%; epic +0.6 %%/level
+Редкие чертежи · эпические усиления	Rare blueprints · epic boosts
+Резерв	Reserve
+Ремкомплект для транспорта через 70 с. Один за поле боя.	Vehicle repair kit after 70 s. One per battlefield.
+Ремонт: %s / %s с	Repair: %s / %s s
+Ремонт: %s · %s с	Repair: %s · %s s
+Ремонтирует штаб каждые 14 с. После попадания ждёт 6 с.	Repairs HQ every 14 s. Waits 6 s after taking a hit.
+Розовый берег	Pink coast
+Рпгшник	RPG trooper
+Рубеж	Border
+Рубеж %02d	Border %02d
+Рюкзак / статы	Backpack / stats
+Рюкзак / статы [Esc]	Backpack / stats [Esc]
+Рюкзак полон	Backpack full
+Свернуть меню	Collapse menu
+Сверхпрочный бронеблок	Heavy armor block
+Свободный слот\n	Free slot\n
+Свой БТР	Your APC
+Свой багги	Your buggy
+Свой танк	Your tank
+Связь потеряна	Connection lost
+Связь со штабом	HQ link
+Секретное усиление	Secret boost
+Секретные документы	Secret documents
+Секретные документы: %d. Постоянная валюта исследований.	Secret documents: %d. Permanent research currency.
+Сектор зачищен	Sector cleared
+Секторы без конца\nСтарт под подготовку\nКаждый сектор сильнее	Endless sectors\nStart scales to your equipment\nEach sector is stronger
+Сердце %.1f%% · бонус %.1f%%; +0,5 %%/ур.	Heart %.1f%% · bonus %.1f%%; +0.5 %%/level
+Сила / HP / длительность %.1f → %.1f	Power / HP / duration %.1f → %.1f
+Сила атаки	Attack power
+Сила способностей	Ability power
+Сиреневый перевал	Lilac pass
+Склад снабжения	Supply depot
+Скорострельность	Fire rate
+Скорость передвижения	Movement speed
+Скорость пешком	Speed on foot
+Следующий сектор	Next sector
+Сложная ★★	Hard ★★
+Слот %d: 	Slot %d: 
+Смена позиции · рывок 3 с	Reposition · 3 s dash
+Снайпер заранее показывает линию прицеливания, затем выпускает быстрый снаряд над укрытиями. Стены не останавливают его и не получают урон. Снаряд поражает игрока и штаб по одному разу и продолжает полёт. Уйди с линии выстрела во время подготовки.	The sniper shows an aiming line, then fires a fast round above cover. Walls neither stop it nor take damage. The round hits the player and HQ once each and keeps flying. Move off the firing line while the sniper aims.
+Сначала выбери передышку	Choose a rest stop first
+Сначала открой и возьми способность в хабе	Unlock and equip an ability in the hub first
+Совместная операция	Joint operation
+Создать	Create
+Солдат погиб	Soldier killed
+Сохранение: data/encyclopedia.json · предыдущая версия остаётся в .bak	Saved to data/encyclopedia.json · previous version kept in .bak
+Сохранено	Saved
+Сохрани при возврате в хаб	Keep it by returning to the hub
+Сохранить и применить	Save and apply
+Союзная техника	Allied vehicles
+Союзники и доставка	Allies and delivery
+Сплава доставлено	Alloy delivered
+Способность	Ability
+Средняя ★	Medium ★
+Стабилизатор	Stabilizer
+Статей: %d / %d	Articles: %d / %d
+Статуя генерала	General statue
+Статья энциклопедии. Правки вступят в силу после сохранения.	Encyclopedia article. Changes take effect after saving.
+Стволы +%d%% базы; техника +%.2f урона	Weapons +%d%% base damage; vehicles +%.2f damage
+Стоянка · бетон	Parking area · concrete
+Стрелок · автомат	Rifleman · assault rifle
+Стрелок · дробовик	Rifleman · shotgun
+Стрелок · пистолет	Rifleman · pistol
+Сундук	Chest
+Сундук 	Chest 
+Сундук [E]	Chest [E]
+Счётчик общий на %d вылазки. Награду забери в командном центре.	Shared counter across %d runs. Claim the reward at the command center.
+Сюда попадает найденный чертёж. Донеси его в хаб.	Found blueprints go here. Bring them back to the hub.
+Такое название уже есть.	That name already exists.
+Тактика	Tactics
+Танк оставлен.	Tank left behind.
+Текст статьи	Article body
+Текущее усиление: 	Current boost: 
+Текущий ствол: 	Current weapon: 
+Темп огня	Fire rate
+Темп оружия	Weapon fire rate
+Терракотовая пустыня	Terracotta desert
+Тест · повтор наград	Test · replay rewards
+Тест: награда %d / %d · целевой этап %d	Test: reward %d / %d · target stage %d
+Техника · Броня: %s · Урон: %s · Темп: %s /с · Скорость: %s	Vehicle · Armor: %s · Damage: %s · Fire rate: %s /s · Speed: %s
+Техника и командиры	Vehicles and commanders
+Техники уничтожено	Vehicles destroyed
+Технологии [E]	Technologies [E]
+Технологии штаба	HQ technologies
+Технология штаба	HQ technology
+Типы поверхности	Surface types
+Тихий лагерь	Quiet camp
+Товарищ	Companion
+Товарищ уже в бою	Companion already in combat
+Только доставленные повторы. Открытые технологии сохранятся.	Only extracted duplicates. Unlocked technologies are kept.
+Транспорт	Vehicle
+Транспорт занят · броня 	Vehicle boarded · armor 
+Транспорт оставлен	Vehicle left behind
+Тропа	Trail
+Трофеи · открыто %d из 6 ячеек	Loot · %d of 6 slots unlocked
+Трофей	Trophy
+Трофей командира · подойди и нажми E	Commander loot · approach and press E
+Турель базы	Base turret
+Турель с гранатами	Grenade turret
+Тяжёлый прорыв	Heavy breakthrough
+У каждой ячейки своя база, покупки и задания	Each slot has its own base, purchases and missions
+У костра	By the campfire
+Убийств на БТР	Kills in an APC
+Убийств на багги	Kills in a buggy
+Убийств на танке	Kills in a tank
+Удалить «%s»?\nСтатьи сохранятся в «%s / Без подраздела».	Delete “%s”?\nArticles will be kept in “%s / No subsection”.
+Удалить профиль %d?	Delete profile %d?
+Удалять можно только созданные в Edit dev категории.	Only categories created in Edit dev can be deleted.
+Уже открыт. Донеси в хаб и продай в урне за %d сплава.	Already unlocked. Bring it to the hub and sell it at recycling for %d alloy.
+Укреплённая ограда базы	Reinforced base fence
+Укрытия	Cover
+Улучшение героя	Hero upgrade
+Улучшение персонажа до конца вылазки.	Character upgrade until the end of the run.
+Улучшено.	Upgraded.
+Улучши аптечки передышки в «Прокачке базы».	Upgrade rest-stop medkits in Base upgrades.
+Уничтожь %d врагов на БТР	Destroy %d enemies in an APC
+Уничтожь %d врагов на багги	Destroy %d enemies in a buggy
+Уничтожь %d врагов на танке	Destroy %d enemies in a tank
+Уничтожь %d машин	Destroy %d vehicles
+Уничтожь генерала в конце мира 1. Откроются мир 2 и бесконечный режим.	Destroy the general at the end of world 1 to unlock world 2 and endless mode.
+Уничтожь командира	Destroy the commander
+Ур. %d · сила ×%.1f	Lv. %d · power ×%.1f
+Уровень %d · сумма улучшений хаба	Level %d · total hub upgrades
+Уровень базы повышен до %d	Base upgraded to level %d
+Уровень класса 5, затем 2500 сплава	Class level 5, then 2500 alloy
+Урон %.2f · %.1f выстр./с\nНапор %.2f	Damage %.2f · %.1f shots/s\nPressure %.2f
+Урон оружия	Weapon damage
+Урон транспорта	Vehicle damage
+Урон: %s · %s с	Damage: %s · %s s
+Усиление	Boost
+Усиления отряда	Squad boosts
+Утилизация чертежей	Blueprint recycling
+Утро	Morning
+Флаг [E]	Flag [E]
+Флаг · награда поля боя	Flag · battlefield reward
+Фланги	Flanks
+Фронт прорван	Frontline breached
+Хаб и окружение	Hub and surroundings
+Хаб → Строительство → Снаряжение → Рюкзак. Следующая ячейка: %d сплава.	Hub → Construction → Equipment → Backpack. Next slot: %d alloy.
+Характеристики и улучшения — кнопка «Подробнее».	Stats and upgrades: press Details.
+Целей: %d · Время %d:%02d	Targets: %d · Time %d:%02d
+Цитадель	Citadel
+Частые чертежи · редкие усиления	More blueprints · rare boosts
+Чертежи в рюкзаке: 	Blueprints in backpack: 
+Чертёж	Blueprint
+Чертёж · 	Blueprint · 
+Чертёж БТР в мире 2. Для покупки нужны багги и база 3.	APC blueprint in world 2. Purchase requires a buggy and base level 3.
+Чертёж найден в вылазке. Доставь в хаб, чтобы открыть: 	Blueprint found on a run. Bring it to the hub to unlock: 
+Чертёж открыт. Построй верстак через «Строительство» в хабе.	Blueprint unlocked. Build the workbench via Construction in the hub.
+Чертёж танка в мире 3. Для покупки нужны БТР и база 5.	Tank blueprint in world 3. Purchase requires an APC and base level 5.
+Штаб: %s · нужен чертёж	HQ: %s · blueprint required
+Щит · HP +20% · дробовик +10% · напор +4%	Shield · HP +20% · shotgun +10% · pressure +4%
+Щит отключён — атакуй командира!	Shield disabled — attack the commander!
+Щитовик	Shield trooper
+Щитовой	Shield trooper
+Этап %d · разведданные	Stage %d · intel
+Эффективность	Efficiency
+Эффективность лечения	Healing efficiency
+Ячейка уже занята	Slot already occupied
+Ящик	Crate
+вкл	on
+выдать · класс до ур. 5	grant · class to lv. 5
+выдать бесплатно	grant for free
+выкл	off
+интервал	interval
+левой	left
+на поле	on the battlefield
+не выполнен	incomplete
+нет	none
+ожидает выхода	awaiting extraction
+песок + вода	sand + water
+поле %d / %d	field %d / %d
+поле %d / 6	field %d / 6
+правой	right
+приказ	order
+пусто	empty
+слева	on the left
+сплава	alloy
+справа	on the right
+уничтожен	destroyed
+↻ %.1f с	↻ %.1f s
+↻ 2.0 с	↻ 2.0 s
+★ Звезда · %.1f с	★ Star · %.1f s
+★ Элитный командир	★ Elite commander
+☆ Командир	☆ Commander
+✓ закрыть	✓ close
+✓ отменить	✓ cancel
+🔒 Второй слот · ур. 5 · 2500 ◈	🔒 Second slot · lv. 5 · 2500 ◈
+🔒 Добудь и донеси чертёж	🔒 Find and extract the blueprint
+🔒 Купи транспорт	🔒 Buy a vehicle
+🔒 Пройдите %d-й мир	🔒 Complete world %d
+🔒 Сначала 	🔒 First 
+🔒 Чертёж	🔒 Blueprint
+Я проснулся и готов!	I'm awake and ready!
+Снова на ногах. Я готов!	Back on my feet. Ready!
+Новый день — новый шанс!	A new day, a new chance!
+Выспался. Можно начинать!	Well rested. Let's get started!
+Я в строю! Что у нас сегодня?	Ready for duty! What's the plan?
+Наконец-то я вернулся!	Finally, I'm back!
+Дома! Как же здесь хорошо.	Home! Feels good to be back.
+Вернулся целым. Уже неплохо!	Back in one piece. Not bad!
+Вот и база. Можно выдохнуть!	Back at base. Time to breathe!
+Я вернулся! Есть что рассказать.	I'm back! Got stories to tell.
+Да	Yes
+Конечно	Of course
+Супер	Great
+Молодец!	Well done!
+выстр./с	shots/s
+Надёжный огонь · перехват 80%	Reliable fire · 80% interception
+3 HP · +1 HP/Ур. Базе +1 каждые 5 ур.	3 HP · +1 HP/level. Base gains +1 every 5 levels.
+5 дробин · дальность 6	5 pellets · range 6
+Tank City — баланс	Tank City — balance
+WASD — Герой · пробел — огонь · тяни мышью — обзор · + / − — масштаб · Esc — хаб	WASD — move · Space — fire · drag to look · + / − — zoom · Esc — hub
+В хаб · потерять чертежи	To hub · lose blueprints
+Временно удваивает напор. 	Temporarily doubles pressure. 
+Выкинуть	Discard
+Взрыв радиусом 1,6 клетки	Explosion with a 1.6-tile radius
+Враги теряют героя из виду на 5 с	Enemies lose sight of the hero for 5 s
+Вызов товарища	Call companion
+Герой неуязвим · враги возрождаются через 2 с · все стволы доступны для теста	Invulnerable hero · enemies respawn after 2 s · all weapons available to test
+Здоровье героя · 0/20	Hero health · 0/20
+К герою	To hero
+Название награды	Reward name
+Нужен чертёж из сундука	Requires a chest blueprint
+Описание эффекта улучшения	Upgrade effect description
+Облако оглушает людей на 5 с	Cloud stuns infantry for 5 s
+Побег из боя: для каждого чертежа сработает шанс сохранения.	Escape from combat: each blueprint rolls its survival chance.
+Подсказка игроку	Player hint
+После зачистки — все чертежи. При побеге или смерти шанс сохранить каждый: 0%.	After clearing: all blueprints. On escape or death, each has a 0% chance to survive.
+Предыдущий трек	Previous track
+Паралитический газ	Paralyzing gas
+Парашют · случайный ствол · занимает технику	Parachute · random weapon · boards vehicles
+Персонаж	Character
+Полевая пауза	Field pause
+Полигон · каталог объектов	Firing range · object catalog
+Полная неуязвимость на 4 с, затем откат 15 с	Full invulnerability for 4 s, then a 15 s cooldown
+Пробивает врагов · дальность 24	Pierces enemies · range 24
+Прокачка	Upgrades
+Радиус 2 · взрыв через 1 с после падения	Radius 2 · explodes 1 s after landing
+Сбросить ресурсы, прокачку, постройки и все найденные чертежи	Reset resources, upgrades, buildings and all discovered blueprints
+Следующий трек	Next track
+Статы / бонусы	Stats / bonuses
+Старый рубеж	Old border
+Стреляет рядом с героем · 3 HP	Fights alongside the hero · 3 HP
+Универсальная · дальность 13	Versatile · range 13
+Частый огонь · дальность 8	Rapid fire · range 8
+Экспонат	Exhibit
+Этап %d / %d	Stage %d / %d
+Выживание	Survival
+Атакуй босса. При включении щита уничтожь светящийся генератор.	Attack the boss. When its shield activates, destroy the glowing generator.
+Бастион	Bastion
+Батарея	Battery
+Клещи	Pincers
+Веерный залп	Spread volley
+Прицельный залп	Aimed volley
+Миномётный залп	Mortar barrage
+Генератор · резерв	Generator · standby
+Генератор · щит активен	Generator · shield active
+Щит активен — уничтожь светящийся генератор	Shield active — destroy the glowing generator
+Впереди — Цитадель	The Citadel awaits
+Выбери комнату усиления на карте, затем брось вызов гигабоссу.	Choose an upgrade room on the map, then challenge the gigaboss.
+К последней подготовке	Final preparations
+Модификация · БТР	Modification · APC
+Выбери мир	Choose a world
+Три независимых сохранения. Создай свой первый мир.	Three independent save slots. Create your first world.
+У каждого мира своя база, боец и прогресс.	Each world has its own base, soldier and progress.
+Мир %d	World %d
+Текущий	Current
+Новый мир	New world
+Сохранение	Save
+Чистый старт · новая база	Fresh start · new base
+Создать мир	Create world
+Назад [Esc]	Back [Esc]
+Удалить мир %d?	Delete world %d?
+База и прогресс этого мира будут удалены. Остальные миры сохранятся.	This world's base and progress will be deleted. Other worlds will be kept.
+Проходит по внешнему флангу и доставляет бомбу к боковой стене штаба. Следи за краями поля. Наземные и летающие дроны атакуют вне состава волн: первый выезд через случайные 15–30 секунд активного боя, следующие через 18–30 секунд. Одновременно не более двух; общей квоты нет. В передышках новые дроны не появляются. Они не задерживают завершение волны: оставшиеся уходят, их бомбы обезвреживаются.	Flanks along the edge and delivers a bomb to a side wall of HQ. Watch the edges. Ground and flying drones attack outside the wave roster: first after a random 15–30 seconds of active combat, then every 18–30 seconds. At most two are active; there is no total quota. No new drones arrive during breaks. They never delay wave completion: remaining drones leave and their bombs are disarmed.
+Бастион — тяжёлый танк: прицельный залп, затем веер. Клещи — два быстрых багги, атакуют по очереди. Батарея — средний БТР: миномёт, затем прицельный залп. Перед атакой есть предупреждение, после — пауза для контратаки. Во втором и третьем мирах Бастион добавляет миномётный залп. В третьем мире после генерала выбери одну из двух комнат усиления, затем сразись с Цитаделью. На 80%, 60%, 40% и 20% здоровья гигабосса по очереди включаются генераторы. Уничтожь активный генератор под охраной, чтобы снять щит. Неактивные генераторы неуязвимы.	Bastion is a heavy tank: an aimed volley followed by a spread. Pincers are two fast buggies that attack in turns. Battery is a medium APC: a mortar barrage followed by an aimed volley. Every attack has a warning and a recovery window for counterattacks. In worlds 2 and 3, Bastion adds a mortar barrage. After the general in world 3, choose one of two upgrade rooms, then fight the Citadel. At 80%, 60%, 40% and 20% boss health, generators activate one at a time. Destroy the guarded active generator to remove the shield. Dormant generators cannot be damaged.
+6 полей + генерал\nПередышка → гигабосс\nТанк · РПГ	6 fields + general\nRest stop → gigaboss\nTank · RPG
+
+Тех. информация	Technical information
+Документов: %d · %s	Documents: %d · %s
+В папке пока нет Markdown-документов.	This folder has no Markdown documents yet.
+Документ недоступен. Нажми «Обновить».	Document unavailable. Select Refresh.
+Документ слишком большой для просмотра.	Document too large to display.
+Обновить	Refresh
+
+Передышка между боями	A break between battles
+Выбери одну комнату. После улучшения — сразу в следующий бой.	Choose one room. Upgrade, then head straight into battle.
+Улучши транспорт для следующих боёв.	Upgrade your vehicle for the next battles.
+Усиль способность своего бойца.	Improve your soldier’s ability.
+Выбери модуль или усиление штаба.	Choose an HQ module or upgrade.
+В следующий бой →	Next battle →
+Следующая комната	Next room
+
+Альфа и проверки	Alpha and checks
+Геймдизайн	Game design
+Начать здесь	Start here
+Разработка	Development
+
+Растительность	Vegetation
+растительность	vegetation
+Медная роща	Copper grove
+Пепельный лес	Ash forest
+Ледяная тайга	Frozen taiga
+Бирюзовая дельта	Turquoise delta
+Золотой бор	Golden pine forest
+Лиловое болото	Lilac marsh
+Обгоревший берег	Scorched shore
+Серебряный перевал	Silver pass
+
+Непроходима для пехоты и наземной техники, но пропускает пули и гранаты. Летающие юниты проходят сверху.	Blocks infantry and ground vehicles, but lets bullets and grenades pass. Flying units can pass overhead.
+Непроходима для пехоты и наземной техники, но пропускает пули и гранаты. Летающие юниты проходят сверху. В каждом биоме свой минилес: ели, пальмы, обгоревшие деревья, лиственная роща или снежные ели. Чем дальше комната, тем больше сложной местности; открытые обходы сохраняются.	Blocks infantry and ground vehicles, but lets bullets and grenades pass. Flying units can pass overhead. Each biome has a miniature forest: spruce, palms, burned trees, leafy groves or snowy spruce. Later rooms have more difficult terrain while keeping open routes.
+15 сочетаний палитры и местности: пустыни, берега, леса, болота, пепельные земли и перевалы. Растительность есть во всех биомах; песок, вода и лёд зависят от локации. Плотность сложных клеток растёт с глубиной комнаты и сложностью маршрута. Номер комбинации можно включить в настройках интерфейса.	15 combinations of palette and terrain: deserts, shores, forests, marshes, ash lands and mountain passes. All biomes feature vegetation; sand, water and ice depend on the location. Difficult terrain becomes denser in later rooms and on harder routes. Enable the biome number in interface settings.
+
+Принтер бойца	Soldier printer
+Общие улучшения	Shared upgrades
+Способность открыта · Q — использовать	Ability unlocked · Q to use
+Способность открыта для этой оболочки	Ability unlocked for this shell
+Вторая способность открыта · 1 — использовать	Second ability unlocked · 1 to use
+Оболочка надета	Shell equipped
+Улучшена только эта оболочка	Only this shell was upgraded
+Откроется в мире %d	Unlocks in world %d
+Купить и надеть · %d ◈	Buy and equip · %d ◈
+Купить и надеть · %d док.	Buy and equip · %d docs
+Надета · ур. %d / 10	Equipped · lvl. %d / 10
+Оболочка · ур. %d / 10	Shell · lvl. %d / 10
+Особенности оболочки	Shell traits
+Сменить оболочку	Change shell
+← Все оболочки	← All shells
+Способности оболочки	Shell abilities
+Первая способность ещё не куплена. Открой её здесь.	Your first ability is not purchased yet. Unlock it here.
+Способности закреплены за этой оболочкой.	These abilities belong to this shell.
+Купи оболочку, чтобы открыть её способности.	Buy this shell to unlock its abilities.
+Развитие этой оболочки	Upgrade this shell
+HP и урон +0,2% · скорость +0,1% за уровень	HP and damage +0.2% · speed +0.1% per level
+Максимальный уровень	Maximum level
+Улучшить · %d док.	Upgrade · %d docs
+Вторая способность доступна с уровня оболочки 5	The second ability requires shell level 5
+Скрыть характеристики	Hide stats
+Итоговые характеристики ▾	Resulting stats ▾
+Общие улучшения + оболочка + надетое оружие	Shared upgrades + shell + equipped weapon
+Готова к бою · Q	Ready · Q
+Готова к бою · 1	Ready · 1
+Первая способность · Q	First ability · Q
+Вторая способность · 1	Second ability · 1
+Сначала купи оболочку	Buy this shell first
+Купить способность · 30 ◈	Buy ability · 30 ◈
+Не хватает %d ◈	Need %d more ◈
+Уровень оболочки 5 · 2500 ◈	Shell level 5 · 2500 ◈
+Сначала открой первую способность	Unlock the first ability first
+Купить способность · 2500 ◈	Buy ability · 2500 ◈
+← К надетой оболочке	← Equipped shell
+Выбрать оболочку	Choose a shell
+У каждой свои особенности, уровень и две способности.	Each has its own traits, level and two abilities.
+Оболочка и способности	Shell and abilities
+Сильнее в любой оболочке	Stronger in every shell
+Эти улучшения действуют всегда, даже после смены оболочки.	These upgrades always apply, even after changing shells.
+%s · ур. %d	%s · lvl. %d
+Улучшить · %d ◈	Upgrade · %d ◈
+Улучшение действует на все оболочки	Upgrade applies to every shell
+Сбросить · вернуть %d ◈	Reset · refund %d ◈
+Общие улучшения сброшены. Оболочки сохранены.	Shared upgrades reset. Shells retained.
+Оболочка	Shell
+Выйти из игры	Quit game
+Выйти из игры?	Quit the game?
+Прогресс сохранится.	Your progress will be saved.
+Бой не сохраняется: при возвращении ты окажешься на карте маршрута перед этой комнатой. Усиления забега сохранятся.	The battle is not saved: when you come back, you will be on the route map in front of this room. Run upgrades are kept.
+Бой не сохраняется: при возвращении эта комната начнётся заново. Усиления забега сохранятся.	The battle is not saved: when you come back, this room starts over. Run upgrades are kept.
+Changelog	Changelog
+Комната начнётся заново.	The room starts over.
+Продолжение с карты маршрута.	Continue from the route map.

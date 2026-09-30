@@ -1,0 +1,381 @@
+class_name CombatActor
+extends Node3D
+
+@export var kind = "soldier"
+var arena
+var enemy_weapon=""
+var volley_hits:Array=[]
+var pending_shots=0
+var burst_delay=0.0
+var burst_direction=Vector2i.UP
+var rocket_charge=0.0
+var rocket_target=Vector3.ZERO
+var wave_slot=-1
+var rank=1
+var strength_scale=1.0
+var flight_target=Vector3.ZERO
+var flight_state="choose"
+var flight_timer=0.0
+var flight_shots=0
+var flight_aim=Vector3.ZERO
+var companion=false
+var companion_weapon="pistol"
+var companion_factor=.5
+var parachute_left=0.0
+var parachute:Node3D
+var force_field:MeshInstance3D
+var stun_time=0.0
+var shield_phase="ready"
+var shield_time=.7
+var shield_visual: Node3D
+var shield_rest=Basis.IDENTITY
+var route_points: Array = []
+var footprint=1
+var flank=-1
+var turret_pivot: Node3D
+var turret_yaw=PI
+var artillery_timer=10.0
+var laser_timer=18.0
+var radial_timer=6.0
+var radial_charge=0.0
+var warning_ring: Node3D
+var attack_label: Label3D
+var player_owned = false
+var allied = false
+var hp = 2.0
+var max_hp = 2.0
+var cell = Vector2i.ZERO
+var destination = Vector2i.ZERO
+var quarter_destination=Vector3.ZERO
+var terrain_direction=Vector2i.ZERO
+var terrain_sliding=false
+var slide_remaining=0.0
+var facing = Vector2i.UP
+var moving = false
+var turn_left = 0.0
+var fire_cooldown = 0.0
+var brain_cooldown = 0.0
+var burst_steps = 0.0
+var burst_index = 0
+var movement_pause = 0.0
+var invulnerable = 0.0
+var dead = false
+var elite=false # Marks every room commander for existing combat AI.
+var commander_elite=false
+var commander_support=false
+var elite_timer=5.0
+var elite_charge=0.0
+var elite_star: Label3D
+var speed = 2.6
+var fire_interval = .65
+var damage = 1.0
+var model: Node3D
+var health_label: Sprite3D
+var turn_from = 0.0
+var turn_to = 0.0
+var sniper_charge=0.0
+var sniper_target=Vector3.ZERO
+var sniper_line: Node3D
+var surprise_spawn=false
+var assault_time=0.0
+var attention_timer=0.0
+var idle_progress_time=0.0
+var deepest_row=0
+var trench_return_delay=0.0
+var trench_time=0.0
+var hidden_in_trench=false
+var occupying_trench=false
+var salvaged=false
+var vehicle_origin="owned"
+var vehicle_zone=1
+var killed_by_vehicle=""
+var resource_blast=Vector3.ZERO
+
+func _ready():
+	attention_timer=(arena.room.surprise_rng if surprise_spawn else arena.combat_rng).randf_range(12,22);deepest_row=cell.y
+	add_child(load("res://scripts/actor_audio.gd").new())
+	if enemy_weapon.is_empty():enemy_weapon=EnemyLoadouts.default_for(kind)
+	var tuning=Balance.CONFIG.enemy(kind)
+	var stats=[tuning.health,tuning.move_speed,tuning.fire_interval,tuning.damage]
+	max_hp = stats[0]
+	hp = max_hp
+	speed = stats[1]
+	fire_interval = stats[2]
+	damage = stats[3]
+	if not player_owned and not allied:damage=tuning.enemy_damage
+	if not player_owned and not allied:fire_interval=tuning.enemy_interval
+	if not player_owned and not allied and rank>=2:
+		max_hp*=(2.1 if rank==3 else Balance.CONFIG.combat.rank_health);hp=max_hp;damage*=(1.55 if rank==3 else Balance.CONFIG.combat.rank_damage)
+	if not player_owned and not allied:
+		strength_scale=Campaign.hp_scale(arena.room_index) if kind!="boss" else 1.0
+		max_hp*=strength_scale;hp=max_hp;damage*=Campaign.damage_scale(arena.room_index) if kind!="boss" else 1.0
+	if kind=="boss":
+		max_hp=Campaign.boss_health()*BossCatalog.encounter(arena.run_seed,arena.room_index).hp;hp=max_hp
+		speed=BossCatalog.encounter(arena.run_seed,arena.room_index).speed
+		if arena.twin_boss:fire_interval=3.5;radial_timer=9.0+arena.actors.size()*4
+	if kind=="mortar":
+		fire_interval=Balance.CONFIG.combat.allied_turret_interval if allied else tuning.enemy_interval
+		fire_cooldown=1.0 if allied else 4.0
+	if player_owned:
+		speed=tuning.player_speed
+		if kind == "soldier":
+			max_hp = arena.soldier_max_hp
+			hp = arena.soldier_hp
+			speed = Balance.CONFIG.combat.hero_speed
+			fire_interval = .6
+		damage += (Game.meta_damage() + arena.damage_bonus)*(.25 if kind=="buggy" else 1.0)
+		fire_interval *= arena.fire_multiplier
+		speed *= arena.speed_multiplier
+	if player_owned and kind in arena.vehicle_mods:
+		var mods=arena.vehicle_mods[kind];max_hp+=mods.hp;hp=max_hp;damage+=mods.damage;speed*=mods.speed
+	if player_owned and kind!="soldier" and Game.selected_class=="driver":max_hp*=1.15+Game.class_specialization()*.01;hp=max_hp;damage*=1.1+Game.class_specialization()*.01
+	if player_owned and kind in GarageCatalog.VEHICLES:
+		var vehicle_stats=GarageCatalog.stats(kind,arena,vehicle_origin,vehicle_zone)
+		max_hp=vehicle_stats.hp;hp=max_hp;damage=vehicle_stats.damage;fire_interval=vehicle_stats.interval;speed=vehicle_stats.speed
+	if player_owned:speed=minf(speed,5.2)
+	model = Visuals.model(BossCatalog.encounter(arena.run_seed,arena.room_index).model if kind=="boss" else EnemyLoadouts.model_for(kind,enemy_weapon),self)
+	if player_owned or kind in ["tank","apc","buggy"]:preload("res://scripts/world_lighting.gd").headlights(model,kind!="soldier")
+	if kind=="shield":
+		shield_visual=Visuals.named_part(model,"shield_panel_pivot");shield_rest=shield_visual.basis
+		shield_visual.basis=shield_rest*Basis(Vector3.RIGHT,.5)
+	if kind in ["soldier","grenadier","shield","sniper"]:Visuals.equip_model(model,enemy_weapon)
+	if kind=="flyer":model.position.y=1.25
+	if kind=="boss":
+		model.scale=Vector3.ONE*BossCatalog.encounter(arena.run_seed,arena.room_index).scale
+		var bounds=Visuals.mesh_bounds(model,Transform3D.IDENTITY)
+		model.scale*=float(footprint-.25)/maxf(bounds.size.x,bounds.size.z)
+		turret_pivot=Visuals.named_part(model,"boss_main_yaw")
+		if Campaign.is_final(arena.room_index):
+			force_field=MeshInstance3D.new();var sphere=SphereMesh.new();sphere.radius=2.3;sphere.height=4.6;force_field.mesh=sphere;force_field.position.y=1.5
+			var material=StandardMaterial3D.new();material.transparency=BaseMaterial3D.TRANSPARENCY_ALPHA;material.albedo_color=Color(.3,.8,1,.16);material.shading_mode=BaseMaterial3D.SHADING_MODE_UNSHADED;force_field.material_override=material;add_child(force_field)
+		warning_ring=Visuals.ring(self,Color("f8ac48"),2.15);warning_ring.visible=false
+		attack_label=Visuals.label3d(self,"Круговой залп",Vector3(0,3.6,0),Color("ffd180"),34);attack_label.visible=false
+	if not player_owned and not allied:
+		movement_pause=(arena.room.surprise_rng if surprise_spawn else arena.combat_rng).randf_range(.2,.9)
+		Visuals.recolor_enemy(model,rank)
+		facing = Vector2i.DOWN
+	else:
+		Visuals.ring(self,Color("f8b542"),.45 if kind == "soldier" else .58)
+	model.rotation.y = angle_for(facing)
+	health_label=load("res://scripts/health_bar_3d.gd").new();add_child(health_label)
+	health_label.position=Vector3(0,{"boss":1.3,"tank":.82,"apc":.81,"buggy":.81,"drone":.67,"soldier":1.14,"shield":1.14,"sniper":1.14,"grenadier":1.14}.get(kind,1.5),0)
+	if kind=="flyer":health_label.position.y=2.25
+	if not player_owned and not allied:health_label.rank=rank
+	if kind=="drone":health_label.pixel_size=.006
+
+	if player_owned and kind=="soldier":apply_weapon()
+	refresh_health()
+
+func refresh_health():
+	if health_label:health_label.set_health(hp,max_hp)
+
+func angle_for(dir: Vector2i) -> float:
+	return atan2(-float(dir.x),-float(dir.y))
+
+func set_facing(dir: Vector2i):
+	if kind=="shield" and shield_phase=="active":return
+	if dir == Vector2i.ZERO or dir == facing: return
+	facing = dir
+	turn_from = model.rotation.y
+	turn_to = angle_for(dir)
+	turn_left = .105
+
+func _physics_process(delta):
+	if dead or not is_instance_valid(arena):return
+	if arena.phase!="combat" and not (player_owned and arena.phase=="countdown"):return
+	if is_instance_valid(force_field):force_field.visible=arena.boss.shield_active()
+	stun_time=maxf(0,stun_time-delta)
+	if not player_owned and not allied and (stun_time>0 or arena.freeze_time>0):return
+	if player_owned:
+		model.visible=arena.abilities.cloak_time<=0 or fmod(arena.abilities.cloak_time,.25)<.15
+	if not player_owned and not allied:
+		arena.enemy.attention_tick(self,delta)
+		EnemyLoadouts.tick(self,delta)
+	if companion:arena.comrade_step(self,delta);return
+	if kind=="flyer":
+		if allied:arena.allied_flyer_step(self,delta)
+		else:arena.flyer_step(self,delta)
+		return
+	if not player_owned and kind=="soldier" and trench_return_delay<=0 and arena.trenches.has(cell):
+		if not occupying_trench and not arena.board.occupy_trench(self,cell):return
+		trench_time=fmod(trench_time+delta,5.0)
+		hidden_in_trench=trench_time<1.8
+		model.position.y=-.85 if hidden_in_trench else 0.0
+		health_label.visible=not hidden_in_trench
+		if hidden_in_trench:return
+		fire_cooldown=maxf(0,fire_cooldown-delta)
+		var aim=arena.enemy_aim(self)
+		if aim!=Vector2i.ZERO and trench_time>2.6 and trench_time<3.6:
+			facing=aim;model.rotation.y=angle_for(aim);shoot()
+		return
+	if kind=="sniper":
+		arena.sniper_step(self,delta);return
+	if elite:arena.elite_step(self,delta)
+	if kind=="shield":update_shield(delta)
+	if player_owned and kind=="soldier":speed=minf(5.2,CombatStats.soldier_speed(arena.run)*BehaviorCards.speed_multiplier(arena))
+	fire_cooldown = maxf(0,fire_cooldown-delta)
+	if enemy_weapon=="rpg" and not player_owned and arena.enemy.rpg_step(self,delta):return
+	movement_pause=maxf(0,movement_pause-delta)
+	invulnerable = maxf(0,invulnerable-delta)
+	if player_owned:
+		model.visible=arena.star_time<=0 or fmod(arena.elapsed,.18)<.12
+		for mesh in model.find_children("*","GeometryInstance3D",true,false):mesh.transparency=.65 if arena.abilities.cloak_time>0 else 0.0
+	if turn_left > 0:
+		turn_left = maxf(0,turn_left-delta)
+		model.rotation.y = lerp_angle(turn_from,turn_to,1.0-turn_left/.105)
+		if turn_left == 0: model.rotation.y = turn_to
+	if not moving:arena.terrain.begin_slide(self)
+	if moving:
+		var target=quarter_destination if uses_quarter_steps() or terrain_sliding else arena.actor_world_pos(self,destination)
+		var next_position=position.move_toward(target,(minf(speed,5.2) if player_owned else speed)*arena.terrain.speed_factor(self)*delta)
+		if arena.can_stand(next_position,self):position=next_position
+		else:moving=false
+		if position.distance_to(quarter_destination if uses_quarter_steps() or terrain_sliding else arena.actor_world_pos(self,destination)) < .005:
+			cell = destination
+			moving = false;terrain_sliding=false
+			if not player_owned and kind not in ["drone","buggy","mortar"]:
+				burst_steps+=.25 if uses_quarter_steps() else 1.0
+				var steps=2 if kind in ["apc","grenadier"] or (kind=="soldier" and burst_index%2==1) else 1
+				if burst_steps>=steps and assault_time<=0:
+					burst_steps=0;burst_index+=1
+					movement_pause={"soldier":.8,"apc":1.15,"tank":1.5,"boss":1.8,"drone":.65,"grenadier":1.1,"shield":1.0}[kind]*.8+arena.combat_rng.randf_range(0,.2)
+		if kind == "soldier": model.position.y = absf(sin(Time.get_ticks_msec()*.016))*.015
+	else: model.position.y = 0
+	if not moving:arena.terrain.begin_slide(self)
+	health_label.visible=player_owned or not arena.nets.has(arena.grid_pos(position))
+	if kind=="mortar":
+		arena.mortar_step(self)
+		return
+	if not player_owned and arena.abilities.cloak_time<=0 and kind=="grenadier" and enemy_weapon!="rpg" and fire_cooldown<=0 and is_instance_valid(arena.player):
+		if arena.flat_distance(position,arena.player.position)<=8:
+			arena.throw_grenade(self,arena.world_pos(arena.base_cell) if assault_time>0 and arena.flat_distance(position,arena.world_pos(arena.base_cell))<=8 else arena.player.position);model.kick();fire_cooldown=fire_interval
+	if not player_owned and kind=="drone":
+		arena.drone_step(self)
+		return
+	if get_meta("generator_guard",false):
+		if arena.abilities.cloak_time<=0 and is_instance_valid(arena.player) and arena.flat_distance(position,arena.player.position)<8 and fire_cooldown<=0 and arena.clear_shot(position,arena.player.position,.5):
+			var aim=(arena.player.position-position).normalized();aim.y=0
+			model.aim(atan2(-aim.x,-aim.z));arena.spawn_free_bullet(self,aim,damage,6,false);fire_cooldown=2.2
+		return
+	if not player_owned and kind=="boss" and arena.boss_room:
+		arena.boss_step(self,delta)
+		return
+	if not player_owned and kind=="buggy":
+		var aim=arena.enemy_aim(self)
+		if aim!=Vector2i.ZERO:
+			set_facing(aim)
+			if shoot() and aim==Vector2i.DOWN and cell.x==arena.base_cell.x:fire_cooldown=2.4
+		elif not moving:
+			brain_cooldown-=delta
+			if brain_cooldown>0:return
+			brain_cooldown=.16
+			var dir=arena.path_direction(self);set_facing(dir)
+			if turn_left==0:try_move(dir)
+		return
+	if player_owned:
+		if occupying_trench:
+			var aim=Game.direction()
+			if aim!=Vector2i.ZERO:set_facing(aim)
+			if Input.is_action_just_pressed("hide_trench"):hidden_in_trench=not hidden_in_trench
+			model.position.y=-.65 if hidden_in_trench else -.15
+			if Game.wants_fire() and not hidden_in_trench and arena.phase=="combat":shoot()
+			if Game.wants_interact():arena.interact()
+			return
+		var dir = Game.direction()
+		if dir != Vector2i.ZERO:
+			set_facing(dir)
+			# Finish only the current quarter-step; turning never stalls locomotion.
+			if not moving:try_move(dir)
+		if Game.wants_fire() and arena.phase=="combat": shoot()
+		if Game.wants_interact(): arena.interact()
+	else:
+		brain_cooldown -= delta
+		if not moving and brain_cooldown <= 0:
+			brain_cooldown = .04 if uses_quarter_steps() else .16
+			var aim = arena.enemy_aim(self)
+			if aim != Vector2i.ZERO:
+				set_facing(aim)
+				shoot()
+			else:
+				var dir = arena.path_direction(self)
+				set_facing(dir)
+				if turn_left == 0: try_move(dir)
+		if turn_left == 0 and arena.enemy_aim(self) == facing: shoot()
+
+func uses_quarter_steps()->bool:
+	return player_owned or kind in ["soldier","grenadier","sniper","shield"]
+
+func try_move(dir: Vector2i):
+	if kind=="mortar" or dir == Vector2i.ZERO or moving or (not player_owned and kind not in ["drone","buggy"] and movement_pause>0): return
+	if uses_quarter_steps():
+		var next_position=position+Vector3(dir.x,0,dir.y)*.25
+		next_position.x=snappedf(next_position.x,.25);next_position.z=snappedf(next_position.z,.25)
+		if arena.can_stand(next_position,self):
+			quarter_destination=next_position;destination=arena.grid_pos(next_position);moving=true;terrain_direction=dir;terrain_sliding=false
+		return
+	var next = cell+dir
+	if arena.can_enter(next,self):
+		destination = next
+		moving = true;terrain_direction=dir;terrain_sliding=false
+
+func shoot() -> bool:
+	if (kind=="shield" and shield_phase in ["raising","active"]) or kind in ["grenadier","mortar"] or turn_left > 0 or fire_cooldown > 0 or dead: return false
+	fire_cooldown = fire_interval/(BehaviorCards.rate_multiplier(arena) if player_owned and kind=="soldier" else 1.0)
+	if not player_owned and not allied and kind in ["soldier","shield"]:EnemyLoadouts.begin(self)
+	elif player_owned and kind=="soldier":arena.fire_weapon(self)
+	elif kind=="boss":
+		var perpendicular=Vector3(-facing.y,0,facing.x)
+		for offset in [-1.2,0.0,1.2]:arena.spawn_bullet(self,position+perpendicular*offset,facing,damage,player_owned)
+	else:arena.spawn_bullet(self,position,facing,damage,player_owned)
+	if model.has_method("kick"):model.kick()
+
+	return true
+
+func take_damage(amount: float,blast:Vector3=Vector3.ZERO,vehicle_credit:String=""):
+	resource_blast=blast
+	if kind=="boss" and Campaign.is_final(arena.room_index):
+		amount=arena.boss.limit_damage(self,amount)
+		if amount<=0:return
+	if dead or invulnerable > 0 or hidden_in_trench or (player_owned and arena.star_time>0): return
+	if player_owned and arena.abilities.cloak_time>0 and arena.abilities.cloak_ghost:return
+	if player_owned and arena.abilities.block_hit():arena.burst(position,Color("86daec"),.5);Game.sound("shield_hit",self);return
+	if player_owned and occupying_trench:amount*=.5
+	arena.floating_number(position,-minf(hp,amount))
+	hp = maxf(0,hp-amount)
+	if player_owned:
+		invulnerable = .65
+		if kind == "soldier": arena.soldier_hp = maxf(0,hp)
+		Game.sound("player_hurt",self)
+	else:Game.sound("hit_body" if kind in ["soldier","grenadier","sniper","shield"] else "hit_metal",self)
+	refresh_health()
+	arena.burst(position+Vector3.UP*.4,Color("ffbd61"),.3)
+	if hp <= 0:
+		killed_by_vehicle=vehicle_credit
+		dead = true
+		arena.actor_destroyed(self)
+
+func apply_weapon():
+	Visuals.equip_model(model,arena.weapon)
+	var stats=CombatStats.weapon(arena)
+	damage=stats.damage;fire_interval=stats.interval
+
+func update_shield(delta: float):
+	shield_time-=delta
+	if shield_time>0:return
+	match shield_phase:
+		"ready":
+			if is_instance_valid(arena.player) and arena.flat_distance(position,arena.player.position)<7:
+				shield_phase="raising";shield_time=.55;shield_visual.basis=shield_rest*Basis(Vector3.RIGHT,.25)
+		"raising":shield_phase="active";shield_time=1.1;shield_visual.basis=shield_rest
+		"active":shield_phase="cooldown";shield_time=2.2;shield_visual.basis=shield_rest*Basis(Vector3.RIGHT,.5)
+		"cooldown":shield_phase="ready";shield_time=0
+
+func blocks_shot(travel: Vector3) -> bool:
+	return kind=="shield" and shield_phase=="active" and travel.normalized().dot(Vector3(facing.x,0,facing.y))<-.7
+
+func class_weapon_multiplier()->float:
+	return CombatStats.class_weapon_multiplier(arena.weapon)
+func pressure()->float:
+	if companion:return arena.player_pressure()*companion_factor
+	if player_owned:return arena.player_pressure()
+	return Balance.CONFIG.enemy(kind).pressure*(1.4 if rank==3 else Balance.CONFIG.combat.rank_pressure if rank==2 else 1.0)

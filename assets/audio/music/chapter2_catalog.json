@@ -1,0 +1,62 @@
+{
+  "camp_lantern": {
+    "title": "Фонарь",
+    "context": "hub"
+  },
+  "camp_waltz": {
+    "title": "Тёплый свет",
+    "context": "hub"
+  },
+  "route_compass": {
+    "title": "Компас",
+    "context": "map"
+  },
+  "route_clouds": {
+    "title": "Облака",
+    "context": "map"
+  },
+  "battle_patrol": {
+    "title": "Патруль",
+    "context": "battle"
+  },
+  "battle_mosaic": {
+    "title": "Мозаика",
+    "context": "battle"
+  },
+  "battle_current": {
+    "title": "Течение",
+    "context": "battle"
+  },
+  "battle_signal": {
+    "title": "Позывной",
+    "context": "battle"
+  },
+  "commander_clock": {
+    "title": "Механизм",
+    "context": "miniboss"
+  },
+  "commander_flank": {
+    "title": "Обход",
+    "context": "miniboss"
+  },
+  "boss_vector": {
+    "title": "Вектор",
+    "context": "boss"
+  },
+  "boss_redoubt": {
+    "title": "Редут",
+    "context": "boss"
+  },
+  "hub_evening_dial": {
+    "title": "Вечерний эфир",
+    "context": "hub"
+  },
+  "route_soft_beacon": {
+    "title": "Маяк на маршруте",
+    "context": "map"
+  },
+  "battle_muted_pulse": {
+    "title": "Тихий импульс",
+    "context": "battle"
+  }
+}

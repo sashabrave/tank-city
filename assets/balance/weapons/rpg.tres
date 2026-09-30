@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="WeaponBalance" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/balance/weapon_balance.gd" id="1"]
+[resource]
+resource_name="РПГ"
+script=ExtResource("1")
+id = "rpg"
+name = "РПГ"
+rarity = 2
+damage = 4.0
+interval = 1.6
+speed = 9.0
+range = 16.0
+pellets = 1
+pierce = false
+blast = 1.6
+intercept = 0.6
+icon = "rpg"
+role = "Взрыв радиусом 1,6 клетки"

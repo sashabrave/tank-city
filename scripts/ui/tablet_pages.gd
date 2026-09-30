@@ -1,0 +1,195 @@
+extends RefCounted
+const STATS=preload("res://scripts/ui/stat_snapshot.gd")
+var view
+var arena
+var content
+func _init(owner):view=owner;arena=owner.arena;content=owner.content
+func page(title:String,height:float=720)->Control:
+	UiKit.label(content,title,Vector2(22,18),Vector2(730,40),UiKit.PAGE_TITLE_SIZE)
+	var box=view.scroller(Vector2(22,72),Vector2(731,489))
+	var body=Control.new();box.add_child(body);body.custom_minimum_size=Vector2(705,height);return body
+func details(title:String,body:String,action:Callable=Callable()):
+	var overlay=Control.new();view.add_child(overlay);overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	overlay.add_to_group("selection_scope")
+	var dim=ColorRect.new();overlay.add_child(dim);dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);dim.color=Color(0,0,0,.5)
+	var card=UiKit.panel(overlay,(view.get_viewport_rect().size-Vector2(570,300))*.5,Vector2(570,300))
+	UiKit.label(card,title,Vector2(22,15),Vector2(480,42),23)
+	var text=UiKit.label(card,body,Vector2(22,65),Vector2(520,155),18);text.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;text.vertical_alignment=VERTICAL_ALIGNMENT_TOP
+	UiKit.button(card,"Понятно",Vector2(22,235),Vector2(250 if action.is_valid() else 526,44),overlay.queue_free)
+	if action.is_valid():UiKit.button(card,"Оставить на поле",Vector2(284,235),Vector2(264,44),func():action.call();overlay.queue_free())
+func cell(parent,pos:Vector2,id:String,title:String,info:String,locked=false,dimensions=Vector2(96,96),action:Callable=Callable()):
+	var b=UiKit.button(parent,"🔒" if locked else "",pos,dimensions,func():details(title,info,action));b.tooltip_text=title+"\n"+info
+	if not locked and id!="":UiKit.icon(b,id,Vector2(9,7),dimensions-Vector2(18,22))
+	if locked:b.add_theme_stylebox_override("normal",UiKit.style(Color("d5dbcf"),9))
+	return b
+func inventory():
+	var body=page("Снаряжение",775)
+	var weapon=arena.weapon if is_instance_valid(arena) else Game.selected_weapon
+	var data=Game.LOOT.WEAPONS[weapon]
+	var weapon_stats=CombatStats.weapon(arena if is_instance_valid(arena) else null,weapon)
+	var portrait=TextureRect.new();body.add_child(portrait);portrait.texture=preload("res://scripts/ui/class_gallery.gd").texture(Game.selected_class,true);portrait.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;portrait.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;portrait.position=Vector2(0,5);portrait.size=Vector2(205,370)
+	UiKit.label(body,Game.CLASSES[Game.selected_class].name,Vector2(0,375),Vector2(205,30),18).horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+	cell(body,Vector2(225,0),weapon,data.name,"Характеристики и улучшения — кнопка «Подробнее».",false,Vector2(96,82))
+	UiKit.label(body,data.name,Vector2(337,4),Vector2(360,30),22)
+	UiKit.button(body,"Подробнее",Vector2(337,43),Vector2(180,34),func():weapon_details(weapon)).add_theme_font_size_override("font_size",15)
+	var bars=STATS.add_bars(body,Vector2(225,95),470,STATS.weapon(arena if is_instance_valid(arena) else null,weapon),64,true)
+	UiKit.label(body,"Серый — база · оранжевый + · красный −",Vector2(225,288),Vector2(475,28),12,UiKit.MUTED)
+	UiKit.label(body,"Способности",Vector2(225,326),Vector2(210,28),17)
+	var abilities=Game.class_loadout()
+	for i in range(2):
+		var id=abilities[i] if i<abilities.size() else ""
+		cell(body,Vector2(225+i*85,362),id,AbilityCatalog.DATA.get(id,{}).get("name","Второй навык класса"),AbilityCatalog.DATA.get(id,{}).get("description","Открывается у принтера: уровень класса 5, затем 2500 сплава."),i>=abilities.size(),Vector2(76,76))
+	UiKit.label(body,"Гаджет",Vector2(425,326),Vector2(110,28),17)
+	cell(body,Vector2(425,362),Game.gadget,AbilityCatalog.DATA.get(Game.gadget,{}).get("name","Гаджет"),AbilityCatalog.DATA.get(Game.gadget,{}).get("description","Открывается в «Прокачке базы»."),Game.gadget=="",Vector2(76,76))
+	UiKit.label(body,"Штаб",Vector2(540,326),Vector2(140,28),17)
+	var hq=Game.hq_loadout();var module=hq[0] if not hq.is_empty() else ""
+	cell(body,Vector2(540,362),module,HQCatalog.DATA.get(module,{}).get("name","Поддержка штаба"),HQCatalog.DATA.get(module,{}).get("description","Выбери модуль на верстаке штаба."),false,Vector2(76,76))
+	UiKit.label(body,"Трофеи · открыто %d из 6 ячеек" % Game.backpack_slots,Vector2(0,462),Vector2(690,30),20)
+	var recipes=arena.pending_recipes if is_instance_valid(arena) else []
+	for i in range(6):
+		var locked=i>=Game.backpack_slots;var recipe=recipes[i] if i<recipes.size() else {}
+		var title=Game.recipe_name(recipe) if not recipe.is_empty() else "Закрытая ячейка" if locked else "Пустая ячейка"
+		var info="Хаб → Строительство → Снаряжение → Рюкзак. Следующая ячейка: %d сплава." % Game.bag_cost() if locked else "Сюда попадает найденный чертёж. Донеси его в хаб." if recipe.is_empty() else "Чертёж найден в вылазке. Доставь в хаб, чтобы открыть: "+title
+		var discard:Callable=Callable()
+		if not recipe.is_empty():discard=func():arena.pending_recipes.erase(recipe);view.refresh()
+		var b=cell(body,Vector2(i*115,505),str(recipe.get("id","")),title,info,locked,Vector2(104,100),discard)
+		UiKit.label(b,str(i+1),Vector2(8,76),Vector2(88,24),13,UiKit.MUTED)
+	UiKit.label(body,"Ресурсы / не занимают ячейки",Vector2(0,626),Vector2(690,28),18)
+	cell(body,Vector2(0,666),"","Сплав","Всего: %d. В этой вылазке: %d." % [Game.credits,arena.earned if is_instance_valid(arena) else 0]);UiKit.label(body,"%d ◈" % Game.credits,Vector2(5,700),Vector2(90,30),18)
+	cell(body,Vector2(110,666),"","Документы","Секретные документы: %d. Постоянная валюта исследований." % Game.cores);UiKit.label(body,"%d док." % Game.cores,Vector2(115,700),Vector2(90,30),18)
+	if is_instance_valid(arena) and not arena.recipe_offer.is_empty():
+		var take=UiKit.button(body,"Подобрать: "+Game.recipe_name(arena.recipe_offer.recipe),Vector2(0,778),Vector2(680,45),func():arena.take_offered_recipe();view.closed.emit());take.disabled=recipes.size()>=Game.backpack_slots;body.custom_minimum_size.y=835
+	STATS.follow_grid(body,bars)
+func fighter():
+	var body=page("Боец / текущий билд",850)
+	var portrait=TextureRect.new();portrait.name="ClassPortrait";body.add_child(portrait);portrait.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;portrait.texture=preload("res://scripts/ui/class_gallery.gd").texture(Game.selected_class);portrait.position=Vector2(0,0);portrait.size=Vector2(110,116);portrait.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;portrait.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	UiKit.label(body,Game.CLASSES[Game.selected_class].name,Vector2(125,0),Vector2(550,35),25)
+	UiKit.label(body,"Общий уровень %d\n%s" % [Game.character_level(),Game.CLASSES[Game.selected_class].desc],Vector2(125,42),Vector2(550,70),17).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	var rows=STATS.fighter(arena if is_instance_valid(arena) else null)
+	UiKit.label(body,"База включает хаб · цветом — изменения вылазки и активные эффекты",Vector2(0,128),Vector2(690,28),13,UiKit.MUTED)
+	var bars=STATS.add_bars(body,Vector2(0,168),680,rows,64,true)
+	var upgrades_y=178+bars.content_height()
+	for line in STATS.status(arena if is_instance_valid(arena) else null):
+		UiKit.label(body,line,Vector2(0,upgrades_y),Vector2(690,44),15).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+		upgrades_y+=48
+	UiKit.label(body,"Усиления вылазки",Vector2(0,upgrades_y),Vector2(690,30),20)
+	var entries=[]
+	if is_instance_valid(arena):
+		if arena.run.damage_bonus!=0:entries.append(["Урон +",UiKit.number(arena.run.damage_bonus)])
+		if arena.run.fire_multiplier!=1:entries.append(["Темп ×",UiKit.number(1.0/arena.run.fire_multiplier)])
+		if arena.run.speed_multiplier!=1:entries.append(["Скорость ×",UiKit.number(arena.run.speed_multiplier)])
+		for key in arena.run.weapon_mods:
+			for stat in arena.run.weapon_mods[key]:
+				var value=arena.run.weapon_mods[key][stat]
+				if value==(1 if stat=="interval" else 0):continue
+				entries.append([Game.LOOT.WEAPONS[key].name+" / "+{"damage":"урон","interval":"интервал","intercept":"напор"}.get(stat,stat),UiKit.number(value)])
+		for key in arena.run.run_bonus_levels:entries.append([Game.LOOT.BONUSES.get(key,{}).get("name",key),str(arena.run.run_bonus_levels[key])])
+		for id in arena.headquarters.loadout():entries.append([HQCatalog.DATA[id].name,HQCatalog.stat(id,arena.headquarters.level(id))])
+		for i in range(arena.run.upgrade_history.size()):
+			var choice=arena.run.upgrade_history[i];var id=choice.id
+			var title=BehaviorCards.DATA[id].name if id in BehaviorCards.DATA else AbilityCatalog.DATA.get(id,HQCatalog.DATA.get(id,Game.LOOT.WEAPONS.get(id,{}))).get("name",{"damage":"Урон","intercept":"Напор","speed":"Скорость","fire":"Темп","health":"Здоровье","recovery":"Защита","weapon_damage":"Урон оружия","weapon_fire":"Темп оружия","weapon_intercept":"Напор оружия"}.get(id,id))
+			entries.append(["%d. %s" % [i+1,title],choice.get("detail",Game.LOOT.RARITY_NAMES[clampi(choice.tier,0,2)])])
+	for i in range(entries.size()):
+		var b=cell(body,Vector2((i%4)*174,upgrades_y+45+floori(i/4.0)*100),"",str(entries[i][0]),"Текущее усиление: "+str(entries[i][1]),false,Vector2(162,90))
+		UiKit.label(b,str(entries[i][0]),Vector2(8,5),Vector2(147,30),14);UiKit.label(b,str(entries[i][1]) if str(entries[i][1]).length()<18 else "Подробнее…",Vector2(8,39),Vector2(147,40),16)
+	if entries.is_empty():UiKit.label(body,"Усиления появятся во время вылазки",Vector2(0,upgrades_y+45),Vector2(690,35),17,UiKit.MUTED)
+	body.custom_minimum_size.y=maxf(upgrades_y+100,upgrades_y+65+ceilf(entries.size()/4.0)*100)
+	STATS.follow_grid(body,bars)
+func weapon_details(id:String):
+	var overlay=Control.new();view.add_child(overlay);overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);overlay.add_to_group("selection_scope")
+	var dim=ColorRect.new();overlay.add_child(dim);dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);dim.color=Color(0,0,0,.65)
+	var card=UiKit.panel(overlay,(view.get_viewport_rect().size-Vector2(650,540))*.5,Vector2(650,540))
+	UiKit.label(card,Game.LOOT.WEAPONS[id].name+" · улучшения",Vector2(24,18),Vector2(600,38),24)
+	STATS.add_bars(card,Vector2(24,70),600,STATS.weapon(arena if is_instance_valid(arena) else null,id))
+	var mods=arena.run.weapon_mods[id] if is_instance_valid(arena) else {"damage":0.0,"interval":1.0,"intercept":0.0}
+	var text="Постоянная сила оружия: ×%s\nУрон оружия за вылазку: +%s%%\nИнтервал между выстрелами: ×%s\nДобавка к напору: +%s п.п." % [UiKit.number(Game.weapon_factor(id)),UiKit.number(mods.damage*100),UiKit.number(mods.interval),UiKit.number(mods.intercept*100)]
+	if is_instance_valid(arena):text+="\nОбщий бонус урона: +%s%% · интервал: ×%s" % [UiKit.number(arena.run.damage_bonus*30),UiKit.number(arena.run.fire_multiplier)]
+	UiKit.label(card,text,Vector2(24,279),Vector2(602,130),16).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	UiKit.label(card,"Изменить улучшения можно только на верстаке.",Vector2(24,432),Vector2(602,30),15,UiKit.MUTED)
+	UiKit.button(card,"Закрыть",Vector2(24,480),Vector2(602,38),overlay.queue_free)
+func radio():
+	UiKit.label(content,"Радио",Vector2(22,18),Vector2(710,40),24)
+	var player=preload("res://scenes/ui/music_mini_player.tscn").instantiate();content.add_child(player);player.position=Vector2(22,68);player.size=Vector2(731,105)
+	var c=Game.music_controller
+	if not is_instance_valid(c):return
+	var groups={"all":"Все композиции","favorites":"Избранное","hub":"Хаб","map":"Карта","battle":"Бой","miniboss":"Командир","boss":"Босс"}
+	if view.music_folder not in groups:
+		view.music_folder="all";c.browser_folder="all";view.music_scroll=0;c.browser_scroll=0
+	var y=190
+	for group in groups:
+		var button=UiKit.button(content,groups[group],Vector2(22,y),Vector2(175,38),func():view.music_folder=group;c.browser_folder=group;view.music_scroll=0;c.browser_scroll=0;view.refresh())
+		button.add_theme_font_size_override("font_size",15)
+		if view.music_folder==group:button.add_theme_stylebox_override("normal",UiKit.style(Color("584a2c"),6))
+		y+=46
+	var box=view.scroller(Vector2(213,190),Vector2(content.size.x-235,362))
+	var scroll=box.get_parent();scroll.get_v_scroll_bar().value_changed.connect(func(value):view.music_scroll=int(value);c.browser_scroll=int(value));scroll.set_deferred("scroll_vertical",view.music_scroll)
+	var ids:Array=[]
+	for group in c.TRACKS:
+		if view.music_folder not in ["all","favorites",group]:continue
+		for id in c.TRACKS[group]:
+			if id in ids or (view.music_folder=="favorites" and int(c.ratings.get(id,0))!=1):continue
+			ids.append(id)
+	for id in ids:
+		var row=HBoxContainer.new();box.add_child(row);row.add_theme_constant_override("separation",6)
+		var title=c.catalog.get(id,{}).get("title",c.NAMES.get(id,id.replace("_"," ")))
+		var track=Button.new();row.add_child(track);Texts.set_text(track,title);track.custom_minimum_size=Vector2(0,44);track.size_flags_horizontal=Control.SIZE_EXPAND_FILL;track.clip_text=true;track.alignment=HORIZONTAL_ALIGNMENT_LEFT;track.add_theme_font_size_override("font_size",15);track.add_theme_stylebox_override("normal",UiKit.style(Color("584a2c") if c.current_track==id else Color("303a31"),6))
+		track.tooltip_text=title;track.pressed.connect(func():c.paused=false;c.play_track(id);view.refresh())
+		for value in [1,-1]:
+			var button=Button.new();row.add_child(button);Texts.set_text(button,"♥" if value==1 else "−");button.custom_minimum_size=Vector2(38,38);button.tooltip_text="Избранное" if value==1 else "Исключить из случайного выбора";button.modulate=UiKit.ORANGE if int(c.ratings.get(id,0))==value else Color.WHITE
+			button.pressed.connect(func():c.rate(id,value);view.refresh())
+	if ids.is_empty():UiKit.label(box,"Здесь пока нет композиций",Vector2.ZERO,Vector2(450,40),15,UiKit.MUTED)
+func settings():
+	UiKit.label(content,"Настройки",Vector2(22,18),Vector2(730,40),UiKit.PAGE_TITLE_SIZE)
+	var tabs=["Видео","Звук","Управление","Интерфейс"]
+	for i in range(tabs.size()):
+		var tab=tabs[i]
+		var button=UiKit.button(content,tab,Vector2(22+i*184,68),Vector2(175,40),func():view.settings_tab=tab;view.waiting_key="";view.refresh())
+		button.add_theme_font_size_override("font_size",16)
+		if tab==view.settings_tab:button.add_theme_stylebox_override("normal",UiKit.style(Color("584a2c"),6))
+	var box=view.scroller(Vector2(22,108+UiKit.TAB_CONTENT_GAP),Vector2(731,352))
+	var body=Control.new();box.add_child(body);body.custom_minimum_size=Vector2(705,350)
+	var y=0
+	if view.settings_tab=="Видео":
+		preload("res://scripts/ui/appearance_card.gd").build(body)
+		var shaders=CheckButton.new();body.add_child(shaders);shaders.position.y=256;Texts.set_text(shaders,"Шейдеры · уютный свет и металл");shaders.size=Vector2(700,40);shaders.button_pressed=Settings.values.get("shaders",true)
+		shaders.toggled.connect(func(enabled):Settings.change("shaders",enabled))
+		UiKit.label(body,"Единый режим для хаба, карты и боя: мягкие тени, объём и блики.",Vector2(0,300),Vector2(700,36),14,UiKit.MUTED)
+		y=346
+		for entry in [["atmosphere","Атмосферные частицы",["Выключены","Включены"],[false,true],"Редкая пыль, листья и ночные светлячки. Без физических столкновений."],["tilt_shift","Размытие краёв",["Выключено","Включено"],[false,true],"Мягкий tilt-shift сверху и снизу. Центр поля и интерфейс остаются чёткими."],["light_budget","Источники света",["Экономно · 6","Обычно · 10","Больше света · 14"],[6,10,14],"Ближайшие фонари; в режиме шейдеров до трёх источников отбрасывают тени."],["fullscreen","Режим экрана",["Окно","Полный экран"],[false,true],"Полный экран занимает весь дисплей."],["vsync","Вертикальная синхронизация",["Выключена","Включена"],[false,true],"Убирает разрывы изображения; может ограничивать FPS."],["quality","Сглаживание MSAA",["Выключено","2×","4×"],[0,1,2],"Сглаживает края моделей. 4× сильнее нагружает графику."],["fps","Лимит кадров",["30 FPS","60 FPS","120 FPS","Без ограничения"],[30,60,120,0],"Верхняя граница; реальная частота зависит от устройства и VSync."]]:
+			setting_choice(body,entry,y);y+=88
+	elif view.settings_tab=="Звук":
+		for entry in [["master","Общая громкость","Меняет громкость всей игры."],["music","Музыка","Музыкальные композиции и радио."],["effects","Звуки игры","Выстрелы, взрывы и звуковые сигналы."]]:
+			UiKit.label(body,entry[1],Vector2(0,y),Vector2(305,34),19)
+			var slider=HSlider.new();body.add_child(slider);slider.position=Vector2(320,y+7);slider.size=Vector2(290,28);slider.max_value=100;slider.step=1;slider.value=Settings.values[entry[0]]*100
+			var value_label=UiKit.label(body,str(roundi(slider.value))+"%",Vector2(625,y),Vector2(75,34),17)
+			slider.value_changed.connect(func(value):Settings.change(entry[0],value/100.0);Texts.set_text(value_label,str(roundi(value))+"%"))
+			UiKit.label(body,entry[2],Vector2(0,y+41),Vector2(700,30),14,UiKit.MUTED);y+=96
+	elif view.settings_tab=="Интерфейс":
+		setting_choice(body,["screen_controls","Экранные кнопки",["Скрыты","Показаны"],[false,true],"Кнопки движения и огня в хабе и бою. Клавиатура работает всегда."],0)
+		setting_choice(body,["biome_info","Подпись биома",["Скрыта","Показана"],[false,true],"Номер, название и покрытия карты под характеристиками оружия."],96)
+		setting_choice(body,["language","Язык / Language",["Русский","English"],["ru","en"],"Язык интерфейса. Названия своих статей сохраняются как написаны."],192)
+		y=288
+	else:
+		UiKit.label(body,"Нажми кнопку и новую клавишу. Esc — отмена. Занятые клавиши меняются местами.",Vector2(0,0),Vector2(700,46),14,UiKit.MUTED).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;y=55
+		for group in [["Движение",["north","south","west","east"]],["Бой и действия",["fire","interact","hide_trench"]],["Способности",["class_ability","skill_1","ability","hq_ability"]]]:
+			UiKit.label(body,group[0],Vector2(0,y),Vector2(700,30),15,UiKit.MUTED);y+=36
+			for action in group[1]:
+				UiKit.label(body,{"north":"Вверх / вперёд","south":"Вниз / назад","west":"Влево","east":"Вправо","fire":"Огонь","interact":"Выбрать / взаимодействовать","hide_trench":"Спрятаться в окопе","ability":"Гаджет","class_ability":"Навык класса","skill_1":"Второй навык класса","hq_ability":"Поддержка штаба"}[action],Vector2(0,y),Vector2(420,36),17)
+				var button=UiKit.button(body,OS.get_keycode_string(Settings.keys[action]),Vector2(440,y),Vector2(260,36),func():view.waiting_key=action;view.refresh())
+				if view.waiting_key==action:Texts.set_text(button,"Нажми клавишу…")
+				y+=46
+		UiKit.label(body,"Esc — открыть / закрыть планшет (постоянная клавиша).",Vector2(0,y),Vector2(700,36),14,UiKit.MUTED);y+=40
+	body.custom_minimum_size.y=maxf(350,y)
+	UiKit.label(content,"Изменения применяются сразу и сохраняются автоматически.",Vector2(22,498),Vector2(731,28),14,UiKit.MUTED)
+	UiKit.button(content,"Сбросить вкладку",Vector2(22,535),Vector2(240,36),func():
+		if view.settings_tab=="Управление":Settings.keys=Settings.DEFAULT_KEYS.duplicate()
+		else:
+			var group={"Видео":["atmosphere","tilt_shift","ui_theme","shaders","world_lighting","light_budget","fullscreen","vsync","quality","fps"],"Звук":["master","music","effects"],"Интерфейс":["screen_controls","biome_info","language"]}[view.settings_tab]
+			for key in group:Settings.values[key]=Settings.DEFAULT_VALUES[key]
+		Settings.apply();Settings.save();view.waiting_key="";view.refresh()).add_theme_font_size_override("font_size",15)
+func setting_choice(body,entry,y):
+	UiKit.label(body,entry[1],Vector2(0,y),Vector2(380,34),18)
+	var option=OptionButton.new();body.add_child(option);option.position=Vector2(395,y);option.size=Vector2(305,36);option.add_theme_font_size_override("font_size",17)
+	for label in entry[2]:option.add_item(label)
+	option.select(entry[3].find(Settings.values[entry[0]]));option.item_selected.connect(func(index):Settings.change(entry[0],entry[3][index]))
+	var hint=UiKit.label(body,entry[4],Vector2(0,y+42),Vector2(700,38),14,UiKit.MUTED);hint.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART

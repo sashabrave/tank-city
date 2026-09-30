@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="WeaponBalance" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/balance/weapon_balance.gd" id="1"]
+[resource]
+resource_name="Снайперка"
+script=ExtResource("1")
+id = "sniper"
+name = "Снайперка"
+rarity = 1
+damage = 4.2
+interval = 1.4
+speed = 26.0
+range = 24.0
+pellets = 1
+pierce = true
+blast = 0.0
+intercept = 0.55
+icon = "heavy"
+role = "Пробивает врагов · дальность 24"

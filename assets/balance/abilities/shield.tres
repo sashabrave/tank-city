@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="AbilityBalance" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/balance/ability_balance.gd" id="1"]
+[resource]
+resource_name="Щит"
+script=ExtResource("1")
+id = "shield"
+name = "Щит"
+price = 0
+cooldown = 15.0
+power = 4.0
+description = "Полная неуязвимость на 4 с, затем откат 15 с"

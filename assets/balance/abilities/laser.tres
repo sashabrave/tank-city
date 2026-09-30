@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="AbilityBalance" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/balance/ability_balance.gd" id="1"]
+[resource]
+resource_name="Лазер"
+script=ExtResource("1")
+id = "laser"
+name = "Лазер"
+price = 220
+cooldown = 20.0
+power = 6.0
+description = "Луч сквозь бетон и всех на линии"

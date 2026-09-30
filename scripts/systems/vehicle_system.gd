@@ -1,0 +1,170 @@
+extends RefCounted
+## Vehicle system. Owns rules; Arena remains the scene coordinator.
+var arena
+
+func _init(context):
+	arena=context
+
+func make_wreck(kind: String,cell: Vector2i,facing: Vector2i,unstable: bool,armor=0,origin:String="owned",zone:int=1):
+	var wreck=load("res://scenes/wreck.tscn").instantiate()
+	wreck.arena=arena; wreck.kind=kind; wreck.cell=cell; wreck.facing=facing; wreck.unstable=unstable; wreck.armor=armor;wreck.boardable=not unstable
+	wreck.vehicle_origin=origin;wreck.vehicle_zone=zone
+	wreck.max_armor=player_armor(kind,origin,zone)
+	wreck.position=arena.world_pos(cell)
+	arena.add_child(wreck)
+	preload("res://scripts/interaction_prompt.gd").attach(wreck,arena,"Занять транспорт",Vector3.ZERO,1.65,func():return is_instance_valid(wreck) and wreck.boardable and not wreck.spent)
+	arena.room.wrecks.append(wreck)
+	return wreck
+
+func nearest_wreck():
+	if not is_instance_valid(arena.room.player): return null
+	var best=null; var distance=1.65
+	for wreck in arena.room.wrecks:
+		if not is_instance_valid(wreck) or wreck.spent or not wreck.boardable or wreck.unstable: continue
+		var d=arena.flat_distance(arena.room.player.position,wreck.position)
+		if d<distance: best=wreck; distance=d
+	return best
+
+func unlocked_vehicle() -> String:
+	return ["buggy","apc","tank"][Campaign.world-1] if arena.room.room_index>0 or arena.room.wave>=2 else ""
+
+func install_turret():
+	for side in [-1,1]:
+		var cell=Vector2i(arena.room.base_cell.x+side*2,arena.room.grid_size-2)
+		if arena.room.actors.any(func(a):return is_instance_valid(a) and a.allied and a.cell==cell):continue
+		if not arena.can_enter(cell):continue
+		var turret=arena.spawn_actor("mortar",cell,false,true)
+		turret.max_hp+=arena.effective_bonus_level("turret");turret.hp=turret.max_hp;turret.refresh_health()
+		turret.fire_cooldown=1.0
+		arena.toast("Гранатная турель установлена "+("слева" if side<0 else "справа"))
+		return
+	arena.toast("Оба места для турелей заняты или заблокированы")
+
+func allied_flyer_step(actor,delta):
+	actor.fire_cooldown=maxf(0,actor.fire_cooldown-delta)
+	var target=null;var distance=INF
+	for enemy in arena.room.actors:
+		if not is_instance_valid(enemy) or enemy.dead or enemy.player_owned or enemy.allied:continue
+		var d=arena.flat_distance(actor.position,enemy.position)
+		if d<distance:target=enemy;distance=d
+	var destination=arena.room.player.position+Vector3(1,0,-1)
+	if target!=null:destination=target.position+Vector3(0,0,3)
+	actor.position=actor.position.move_toward(destination,delta*actor.speed);actor.cell=arena.grid_pos(actor.position)
+	if target!=null and distance<7 and actor.fire_cooldown<=0:
+		actor.fire_cooldown=1.1;var dir=(target.position-actor.position).normalized()
+		actor.model.aim(atan2(-dir.x,-dir.z),-.12);actor.model.kick()
+		var bullet=arena.spawn_bullet(actor,actor.position,Vector2i.UP,actor.damage,true);bullet.travel_direction=dir;bullet.flyer_round=true;bullet.position=actor.position+Vector3.UP*.9
+
+func summon_comrade(factor:float,utility:float):
+	var buddy=arena.spawn_actor("soldier",arena.find_free_near(arena.room.player.cell),false,true);buddy.companion=true;buddy.companion_factor=factor
+	var weapons=arena.LOOT.WEAPONS.keys();buddy.companion_weapon=weapons[arena.run.combat_rng.randi_range(0,weapons.size()-1)];var data=arena.LOOT.WEAPONS[buddy.companion_weapon]
+	buddy.max_hp=maxf(1,arena.run.soldier_max_hp*factor);buddy.hp=buddy.max_hp;buddy.speed=3.8*.8*(1+utility*.1);buddy.damage=data.damage*(1+Game.damage_level*.05+arena.run.damage_bonus*.3)*factor;buddy.fire_interval=data.interval
+	buddy.parachute_left=maxf(1,3-utility*.3);buddy.model.position.y=5;Visuals.equip_model(buddy.model,buddy.companion_weapon)
+	buddy.parachute=Node3D.new();buddy.model.add_child(buddy.parachute)
+	var canopy=MeshInstance3D.new();var dome=SphereMesh.new();dome.radius=.9;dome.height=1.8;canopy.mesh=dome;canopy.scale.y=.3;canopy.position.y=2;canopy.material_override=Visuals.material(Color("dddcc1"));buddy.parachute.add_child(canopy)
+	for side in [-1,1]:Visuals.box(buddy.parachute,Vector3(side*.45,1.5,0),Vector3(.025,1.2,.025),Color("b1b59c"))
+	Visuals.label3d(buddy,"Товарищ",Vector3(0,1.8,0),Color("a6eeb4"),22);buddy.refresh_health()
+func comrade_step(buddy,delta):
+	if buddy.parachute_left>0:
+		buddy.parachute_left=maxf(0,buddy.parachute_left-delta);buddy.model.position.y=buddy.parachute_left*1.7
+		if buddy.parachute_left==0:buddy.parachute.queue_free();buddy.model.position.y=0;Game.sound("delivery_land",buddy)
+		return
+	buddy.fire_cooldown=maxf(0,buddy.fire_cooldown-delta)
+	if not buddy.moving:arena.terrain.begin_slide(buddy)
+	if buddy.moving:
+		var target=buddy.quarter_destination if buddy.terrain_sliding else arena.world_pos(buddy.destination)
+		var next=buddy.position.move_toward(target,buddy.speed*arena.terrain.speed_factor(buddy)*delta)
+		if arena.can_stand(next,buddy):buddy.position=next
+		else:buddy.moving=false;buddy.terrain_sliding=false
+		if buddy.position.distance_to(target)<.01:buddy.cell=buddy.destination;buddy.moving=false;buddy.terrain_sliding=false
+		return
+	buddy.brain_cooldown-=delta
+	if buddy.brain_cooldown>0:return
+	buddy.brain_cooldown=.2
+	var goal=arena.room.player.cell;var target=null;var best=INF
+	if buddy.kind=="soldier":
+		for wreck in arena.room.wrecks.duplicate():
+			if not is_instance_valid(wreck) or wreck.spent or not wreck.boardable or wreck.unstable:continue
+			var d=arena.flat_distance(buddy.position,wreck.position)
+			if d<1.6:
+				var vehicle=arena.spawn_actor(wreck.kind,buddy.cell,false,true);vehicle.companion=true;vehicle.companion_factor=buddy.companion_factor;vehicle.damage*=1+buddy.companion_factor;vehicle.hp=minf(vehicle.max_hp,maxf(1,wreck.armor if not wreck.unstable else vehicle.max_hp*.6));vehicle.refresh_health()
+				wreck.spent=true;arena.room.wrecks.erase(wreck);wreck.queue_free();arena.room.actors.erase(buddy);buddy.queue_free();return
+			if d<8:goal=wreck.cell;best=-1
+	for enemy in arena.room.actors:
+		if not is_instance_valid(enemy) or enemy.dead or enemy.player_owned or enemy.allied:continue
+		var d=arena.flat_distance(buddy.position,enemy.position)
+		if d<best:best=d;target=enemy;goal=enemy.cell
+	if target!=null:
+		var direction=arena.aligned_direction(buddy.cell,target.cell)
+		if direction!=Vector2i.ZERO and arena.clear_line(buddy.cell,target.cell):
+			buddy.facing=direction;buddy.model.rotation.y=buddy.angle_for(direction)
+			if buddy.fire_cooldown<=0:
+				buddy.fire_cooldown=buddy.fire_interval
+				if buddy.kind=="soldier":fire_comrade_weapon(buddy)
+				else:arena.spawn_bullet(buddy,buddy.position,direction,buddy.damage,true)
+			return
+	var queue=[buddy.cell];var came={buddy.cell:buddy.cell};var head=0;var destination=buddy.cell
+	while head<queue.size():
+		var cell=queue[head];head+=1
+		if (cell-goal).length()<=1.1:destination=cell;break
+		for direction in arena.DIRS:
+			var next=cell+direction
+			if came.has(next) or not arena.can_enter(next,buddy):continue
+			came[next]=cell;queue.append(next)
+	if destination!=buddy.cell:
+		while came[destination]!=buddy.cell:destination=came[destination]
+		buddy.facing=destination-buddy.cell;buddy.model.rotation.y=buddy.angle_for(buddy.facing);buddy.destination=destination;buddy.moving=true;buddy.terrain_direction=buddy.facing;buddy.terrain_sliding=false
+func fire_comrade_weapon(buddy):
+	var data=arena.LOOT.WEAPONS[buddy.companion_weapon]
+	for i in range(data.pellets):
+		var bullet=arena.spawn_bullet(buddy,buddy.position,buddy.facing,buddy.damage,true);bullet.travel_direction=bullet.travel_direction.rotated(Vector3.UP,(i-(data.pellets-1)*.5)*.1);bullet.speed=data.speed;bullet.lifetime=data.range/data.speed;bullet.piercing=data.pierce;bullet.rocket_radius=data.blast
+
+func interact_vehicle():
+	if arena.room.player.kind!="soldier":
+		var safe=arena.find_free_near(arena.room.player.cell)
+		if not arena.can_enter(safe): return
+		var previous_actor=arena.room.player
+		var parked=arena.make_wreck(previous_actor.kind,previous_actor.cell,previous_actor.facing,false,previous_actor.hp,previous_actor.vehicle_origin,previous_actor.vehicle_zone);parked.salvaged=previous_actor.salvaged;parked.position=previous_actor.position
+		arena.room.actors.erase(previous_actor)
+		previous_actor.dead=true
+		arena.room.player=arena.spawn_actor("soldier",safe,true)
+		BehaviorCards.exited_vehicle(arena)
+		arena.room.player.invulnerable=.7
+		previous_actor.queue_free()
+		Game.sound("vehicle_exit",arena);Game.sound("engine_stop",arena)
+		arena.toast("Транспорт оставлен")
+		return
+	var wreck=arena.nearest_wreck()
+	if wreck==null or wreck.unstable: return
+	var old=arena.room.player
+	var cell: Vector2i=wreck.cell
+	var dir: Vector2i=wreck.facing
+	wreck.spent=true
+	arena.room.wrecks.erase(wreck)
+	arena.room.actors.erase(old)
+	old.dead=true
+	arena.room.player=arena.spawn_actor(wreck.kind,cell,true,false,1,false,"",wreck.vehicle_origin,wreck.vehicle_zone)
+	arena.room.player.position=wreck.position
+	arena.room.player.salvaged=wreck.salvaged
+	arena.room.player.hp=maxf(1,ceilf(arena.room.player.max_hp*.6)) if wreck.unstable else clampf(wreck.armor,.25,arena.room.player.max_hp)
+	arena.room.player.facing=dir
+	arena.room.player.model.rotation.y=arena.room.player.angle_for(dir)
+	arena.room.player.invulnerable=.8
+	arena.room.player.refresh_health()
+	old.queue_free()
+	wreck.queue_free()
+	Game.sound("vehicle_enter",arena);Game.sound("engine_start",arena)
+	arena.toast("Транспорт занят · броня "+str(arena.room.player.hp))
+
+
+func upgrade_at_service(kind:String,index:int,offer:Dictionary):
+	var n=[1.0,1.5,2.0][offer.tier]
+	var mods=arena.run.vehicle_mods[kind];mods.hp+=mini(index,6)
+	match offer.id:
+		"damage":mods.damage+=(.15 if kind=="buggy" else 1.0)*n
+		"hp":mods.hp+=roundi(3*n)
+		"speed":mods.speed=minf(1.25,mods.speed+.04*n)
+	arena.run.pending_vehicle=kind
+
+func player_armor(kind:String,origin:String="owned",zone:int=1)->float:
+	return GarageCatalog.stats(kind,arena,origin,zone).hp

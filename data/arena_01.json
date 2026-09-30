@@ -1,0 +1,19 @@
+{
+  "name": "Старый рубеж",
+  "legend": {".": "floor", "B": "brick", "C": "concrete", "N": "camouflage_net", "H": "base"},
+  "rows": [
+    ".............",
+    ".B.C...B.B.B.",
+    ".B.C..BB.BCB.",
+    "...B.....C...",
+    "NN.B.C...BNBC",
+    "NN...B..C.N..",
+    ".BBBBNNC..NB.",
+    "...CNB.B...B.",
+    "CB.C.B.B.B.B.",
+    ".B.B.BBB.BCB.",
+    ".............",
+    ".B...BBB.B.B.",
+    ".B...BHB.BBB."
+  ]
+}
