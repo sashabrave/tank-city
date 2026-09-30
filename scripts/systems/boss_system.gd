@@ -136,14 +136,24 @@ func elite_step(actor,delta: float):
 
 func spawn_generators():
 	var room=arena.room
-	room.generator_order=[Vector2i(3,3),Vector2i(room.grid_size-4,3),Vector2i(room.grid_size-4,room.grid_size-4),Vector2i(3,room.grid_size-4)]
+	var g=room.grid_size
+	if Campaign.is_final(room.room_index):
+		room.generator_order=[Vector2i(3,3),Vector2i(g-4,3),Vector2i(g-4,g-4),Vector2i(3,g-4)]
+		room.generator_thresholds=[.8,.6,.4,.2];room.generator_hp=18.0;room.generator_guards=2
+	else:
+		# Regular boss: a small puzzle — two flank generators switch the shield on at 60% and 30%.
+		# The first side follows the run seed so the route to it differs between runs.
+		var sides=[Vector2i(2,g/2-1),Vector2i(g-3,g/2-1)]
+		if posmod(arena.run.run_seed+room.room_index,2)==1:sides.reverse()
+		room.generator_order=sides
+		room.generator_thresholds=[.6,.3];room.generator_hp=10.0+6.0*(Campaign.world-1);room.generator_guards=1 if Campaign.world==1 else 2
 	for cell in room.generator_order:
 		var node=Node3D.new();arena.add_child(node);node.position=arena.world_pos(cell)
 		Visuals.box(node,Vector3(0,.6,0),Vector3(.8,1.2,.8),Color("689baf"))
 		var ring=Visuals.ring(node,Color("91dcf4"),.65);ring.hide()
-		var bar=load("res://scripts/health_bar_3d.gd").new();node.add_child(bar);bar.position.y=1.5;bar.set_health(18,18);bar.hide()
+		var bar=load("res://scripts/health_bar_3d.gd").new();node.add_child(bar);bar.position.y=1.5;bar.set_health(room.generator_hp,room.generator_hp);bar.hide()
 		var label=Visuals.label3d(node,"Генератор · резерв",Vector3(0,1.9,0),Color("a2aaad"),22)
-		room.generators[cell]={"node":node,"hp":18.0,"bar":bar,"active":false,"ring":ring,"label":label}
+		room.generators[cell]={"node":node,"hp":room.generator_hp,"bar":bar,"active":false,"ring":ring,"label":label}
 		# An L-shaped outer wall protects the post; its two inward approaches stay open.
 		var outer=Vector2i(-1 if cell.x<room.grid_size/2 else 1,-1 if cell.y<room.grid_size/2 else 1)
 		for offset in [Vector2i(outer.x,0),outer,Vector2i(0,outer.y)]:
@@ -156,8 +166,8 @@ func shield_active()->bool:
 func limit_damage(actor,amount:float)->float:
 	if shield_active():return 0.0
 	var stage=arena.room.generator_stage
-	if stage>=4:return amount
-	var threshold=actor.max_hp*[.8,.6,.4,.2][stage]
+	if stage>=arena.room.generator_thresholds.size():return amount
+	var threshold=actor.max_hp*arena.room.generator_thresholds[stage]
 	var allowed=minf(amount,maxf(0,actor.hp-threshold))
 	if actor.hp-allowed<=threshold+.001:activate_generator()
 	return allowed
@@ -171,7 +181,7 @@ func activate_generator():
 	Game.sound_loop("generator_loop",generator.node)
 	arena.toast("Щит активен — уничтожь светящийся генератор")
 	var inward=Vector2i(1 if cell.x<room.grid_size/2 else -1,1 if cell.y<room.grid_size/2 else -1)
-	for offset in [Vector2i(inward.x*2,0),Vector2i(0,inward.y*2)]:
+	for offset in [Vector2i(inward.x*2,0),Vector2i(0,inward.y*2)].slice(0,room.generator_guards):
 		var guard_cell=cell+offset
 		if not arena.can_enter(guard_cell):guard_cell=arena.find_free_near(guard_cell)
 		if not arena.can_enter(guard_cell):continue
@@ -183,7 +193,7 @@ func activate_generator():
 func damage_generator(cell,amount):
 	if not arena.room.generators.has(cell) or not arena.room.generators[cell].active:return
 	var generator=arena.room.generators[cell]
-	generator.hp-=amount;generator.bar.set_health(maxf(0,generator.hp),18)
+	generator.hp-=amount;generator.bar.set_health(maxf(0,generator.hp),arena.room.generator_hp)
 	if generator.hp<=0:
 		Game.sound("generator_off",arena)
 		generator.node.queue_free();arena.room.generators.erase(cell);arena.navigation.invalidate(cell);arena.burst(arena.world_pos(cell),Color("99d4df"),1)

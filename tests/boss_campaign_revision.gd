@@ -41,4 +41,18 @@ func run():
 	check(arena.actors.filter(func(a):return a.get_meta("generator_guard",false)).size()==8,"Two defenders per active position")
 	boss.take_damage(99999);check(boss.dead,"Final HP can be depleted after four phases")
 	arena.queue_free();await get_tree().process_frame
+	# Regular world-1 boss: two flank generators at 60% and 30%, one guard each.
+	Campaign.configure(1)
+	arena=load("res://scenes/arena.tscn").instantiate();arena.auto_pause_enabled=false;add_child(arena);arena.set_physics_process(false);arena.begin_room(Campaign.BOSSES[0]);arena.phase="combat"
+	for actor in arena.actors:actor.set_physics_process(false)
+	arena.spawn_queue.clear();boss=arena.spawn_actor("boss",Vector2i(9,1),false);boss.set_physics_process(false)
+	check(arena.generators.size()==2 and not arena.boss.shield_active(),"Regular boss: two dormant generators")
+	for i in range(2):
+		boss.take_damage(99999);check(is_equal_approx(boss.hp,boss.max_hp*[.6,.3][i]) and arena.boss.shield_active(),"Regular boss shield at threshold")
+		var live=arena.generators.keys().filter(func(cell):return arena.generators[cell].active)
+		arena.damage_generator(live[0],999);check(not arena.boss.shield_active(),"Regular generator drops the shield")
+		for actor in arena.actors:actor.set_physics_process(false)
+	check(arena.actors.filter(func(a):return a.get_meta("generator_guard",false)).size()==2,"One guard per regular generator in world 1")
+	boss.take_damage(99999);check(boss.dead,"Regular boss dies after two phases")
+	arena.queue_free();await get_tree().process_frame
 	print("BOSS/CAMPAIGN/MAPS failures: ",errors);get_tree().quit(1 if errors else 0)

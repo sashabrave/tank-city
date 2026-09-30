@@ -315,7 +315,7 @@ func begin_room(index: int):
 	headquarters.room_started()
 	reinforcement_timer=9.2
 	room.combat_elapsed=0.0;room.surprise_initialized=false;room.surprise_timer=0.0
-	room.generator_stage=0;room.generator_order.clear()
+	room.generator_stage=0;room.generator_order.clear();room.generator_thresholds.clear()
 	camera.size=grid_size+5.0
 	_build_map()
 	preload("res://scripts/world_lighting.gd").field(self)
@@ -328,7 +328,7 @@ func begin_room(index: int):
 	player=spawn_actor(carried_kind,Vector2i(base_cell.x,grid_size-2 if boss_room else grid_size-3),true,false,1,false,"",carried_origin,carried_zone)
 	player.salvaged=carried_salvaged
 	if carried_kind!="soldier" and carried_armor>0:player.hp=minf(carried_armor,player.max_hp);player.refresh_health()
-	toast("Атакуй босса. При включении щита уничтожь светящийся генератор." if Campaign.is_final(room_index) else "Бой с генералом. Уничтожь командирский танк." if boss_room else "")
+	toast("Атакуй босса. При включении щита уничтожь светящийся генератор." if Campaign.is_final(room_index) else "Бой с генералом. Когда включится щит, уничтожь светящийся генератор на фланге." if boss_room else "")
 	preload("res://scripts/effect_warmup.gd").run(self)
 	if challenges.active():challenges.start();phase="combat"
 	elif sandbox and not sandbox_waves and not boss_room:room.spawn_queue.clear();room.wave_roster.clear();phase="combat"
@@ -380,7 +380,7 @@ func _build_map():
 		if Campaign.unified_content():board.corner_barrels(current_layout)
 		board.shape_map_walls()
 		terrain.build()
-		if Campaign.is_final(room_index):spawn_generators()
+		spawn_generators()
 		base_model=Visuals.model("base",self,world_pos(base_cell));base_model.rotation.y=preload("res://scripts/mobile_hq.gd").orientation(run_seed+room_index*719)
 		return
 	current_layout=layout.rows

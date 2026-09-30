@@ -67,3 +67,6 @@ var spawn_markers:Array=[]
 
 var generator_stage=0
 var generator_order:Array=[]
+var generator_thresholds:Array=[]
+var generator_hp=18.0
+var generator_guards=2

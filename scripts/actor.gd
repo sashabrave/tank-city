@@ -148,8 +148,9 @@ func _ready():
 		var bounds=Visuals.mesh_bounds(model,Transform3D.IDENTITY)
 		model.scale*=float(footprint-.25)/maxf(bounds.size.x,bounds.size.z)
 		turret_pivot=Visuals.named_part(model,"boss_main_yaw")
-		if Campaign.is_final(arena.room_index):
-			force_field=MeshInstance3D.new();var sphere=SphereMesh.new();sphere.radius=2.3;sphere.height=4.6;force_field.mesh=sphere;force_field.position.y=1.5
+		if arena.boss_room:
+			var reach=maxf(1.3,footprint*.58)
+			force_field=MeshInstance3D.new();var sphere=SphereMesh.new();sphere.radius=reach;sphere.height=reach*2;force_field.mesh=sphere;force_field.position.y=reach*.65;force_field.visible=false
 			var material=StandardMaterial3D.new();material.transparency=BaseMaterial3D.TRANSPARENCY_ALPHA;material.albedo_color=Color(.3,.8,1,.16);material.shading_mode=BaseMaterial3D.SHADING_MODE_UNSHADED;force_field.material_override=material;add_child(force_field)
 		warning_ring=Visuals.ring(self,Color("f8ac48"),2.15);warning_ring.visible=false
 		attack_label=Visuals.label3d(self,"Круговой залп",Vector3(0,3.6,0),Color("ffd180"),34);attack_label.visible=false
@@ -342,7 +343,7 @@ func shoot() -> bool:
 
 func take_damage(amount: float,blast:Vector3=Vector3.ZERO,vehicle_credit:String="",source:String=""):
 	resource_blast=blast
-	if kind=="boss" and Campaign.is_final(arena.room_index):
+	if kind=="boss" and not arena.room.generator_order.is_empty():
 		amount=arena.boss.limit_damage(self,amount)
 		if amount<=0:return
 	if dead or invulnerable > 0 or hidden_in_trench or (player_owned and arena.star_time>0): return
