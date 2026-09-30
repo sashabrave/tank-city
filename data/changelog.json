@@ -4,6 +4,24 @@
 			"date": "2026-09-30",
 			"version": "0.2.1",
 			"ru": {
+				"title": "Стеклянные окна",
+				"items": [
+					"Окна станций, планшет, строительство, диалоги карты, торговец, выбор мира и таблички над полем стали стеклянными: мир за ними виден размытым. Боевой интерфейс остался плотным, чтобы не мешать в бою.",
+					"Главная кнопка теперь всегда справа от второстепенной: «Войти» на карте, «Понял» в совете бойца. В подтверждении выхода и удаления справа безопасная «Отмена»."
+				]
+			},
+			"en": {
+				"title": "Glass windows",
+				"items": [
+					"Station windows, the tablet, construction, map dialogs, the merchant, world selection and plates over the field are now glass: the world behind them shows blurred. The combat interface stays solid so it doesn't get in the way.",
+					"The main button is now always to the right of the secondary one: Enter on the map, Got it in the soldier's tip. In quit and delete confirmations the safe Cancel is on the right."
+				]
+			}
+		},
+		{
+			"date": "2026-09-30",
+			"version": "0.2.1",
+			"ru": {
 				"title": "Акцентный цвет",
 				"items": [
 					"Цвет главных кнопок, выделения и цен теперь можно выбрать: Абрикос, Коралл, Мята, Лимон, Небо или Лаванда. Настройки → Интерфейс → Акцентный цвет, меняется сразу."

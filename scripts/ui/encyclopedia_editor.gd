@@ -18,7 +18,7 @@ static func open_new(owner):
 func _ready():
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);set_meta("text_editor",true);add_to_group("selection_scope")
 	var dim=ColorRect.new();add_child(dim);dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);dim.color=Color(0,0,0,.7)
-	var panel=UiKit.panel(self,(get_viewport_rect().size-Vector2(930,690))*.5,Vector2(930,690))
+	var panel=UiKit.glass(self,(get_viewport_rect().size-Vector2(930,690))*.5,Vector2(930,690))
 	UiKit.label(panel,"Редактор · DEV",Vector2(24,16),Vector2(860,40),24)
 	var entry=new_article if not new_article.is_empty() else Texts.document.articles.filter(func(a):return a.id==article_id)[0]
 	var linked=entry.term!=""

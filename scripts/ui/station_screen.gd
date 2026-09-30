@@ -32,7 +32,7 @@ func fit():
 func build():
 	for child in get_children():child.queue_free()
 	var shade=ColorRect.new();add_child(shade);shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);shade.color=Color(0,0,0,.42)
-	panel=UiKit.panel(self,Vector2.ZERO,Vector2(1120,650),Color("242d27"));panel.name="StationPanel";fit()
+	panel=UiKit.glass(self,Vector2.ZERO,Vector2(1120,650),Color("242d27"));panel.name="StationPanel";fit()
 	UiKit.label(panel,provider.title(),Vector2(28,16),Vector2(600,40),28)
 	UiKit.label(panel,provider.subtitle(),Vector2(28,54),Vector2(700,24),15,UiKit.MUTED)
 	var alloy=UiKit.label(panel,"%d ◈" % Game.credits,Vector2(760,22),Vector2(150,30),18);alloy.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT;alloy.name="Alloy"

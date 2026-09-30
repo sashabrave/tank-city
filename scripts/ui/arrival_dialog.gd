@@ -27,15 +27,15 @@ func _ready():
 		var slot=Control.new();words.add_child(slot)
 		var label=Label.new();slot.add_child(label);label.set_meta("text_editor",true);label.text=word;label.add_theme_font_override("font",UiKit.field_font());label.add_theme_color_override("font_color",UiKit.INK)
 		label.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	for caption in ["Понял","Учту"]:
-		var button=UiKit.button(panel,caption,Vector2.ZERO,Vector2.ZERO,dismiss,answers.is_empty());button.focus_mode=Control.FOCUS_ALL;answers.append(button)
+	for caption in ["Учту","Понял"]:
+		var button=UiKit.button(panel,caption,Vector2.ZERO,Vector2.ZERO,dismiss,caption=="Понял");button.focus_mode=Control.FOCUS_ALL;answers.append(button)
 	resized.connect(layout);layout()
 	animation=create_tween().set_parallel(true)
 	for i in range(words.get_child_count()):
 		var label=words.get_child(i).get_child(0);label.modulate.a=0;label.position.y=7
 		animation.tween_property(label,"modulate:a",1.0,.12).set_delay(i*.045)
 		animation.tween_property(label,"position:y",0.0,.12).set_delay(i*.045).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	answers[0].grab_focus()
+	answers[-1].grab_focus()
 func layout():
 	const PAD=24.0
 	var width=minf(1000,size.x-32);var height=minf(300,size.y-32)

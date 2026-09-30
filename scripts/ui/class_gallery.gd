@@ -38,7 +38,7 @@ func refresh():
 	for node in get_children():remove_child(node);node.queue_free()
 	var shade=ColorRect.new();add_child(shade);shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);shade.color=Color(0,0,0,.5)
 	var area=get_viewport_rect().size;var dimensions=Vector2(minf(1120,area.x-24),minf(740,area.y-24))
-	var panel=UiKit.panel(self,(area-dimensions)*.5,dimensions);panel.name="PrinterPanel"
+	var panel=UiKit.glass(self,(area-dimensions)*.5,dimensions);panel.name="PrinterPanel"
 	label(panel,"Принтер бойца",Vector2(24,14),Vector2(dimensions.x-110,26),UiKit.PAGE_TITLE_SIZE)
 	action(panel,"×",Vector2(dimensions.x-66,10),Vector2(44,36),func():closed.emit(),"Close")
 	var width=(dimensions.x-60)*.5

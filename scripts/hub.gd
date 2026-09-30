@@ -141,7 +141,7 @@ func build_ui():
 	root=preload("res://scenes/ui/hub_screen.tscn").instantiate();canvas.add_child(root)
 	root.get_node("GalleryButton").pressed.connect(func():gallery_requested.emit())
 	title=root.get_node("GameTitle");credits=root.get_node("AlloyLabel")
-	var title_plate=UiKit.panel(root,Vector2(30,25),Vector2(300,130),Color("242d27ed"));title_plate.mouse_filter=Control.MOUSE_FILTER_IGNORE;root.move_child(title_plate,0)
+	var title_plate=UiKit.glass(root,Vector2(30,25),Vector2(300,130),Color("242d27ed"));title_plate.mouse_filter=Control.MOUSE_FILTER_IGNORE;root.move_child(title_plate,0)
 	for child in root.get_children():
 		if child is TextureRect and child.position==Vector2(48,109):child.hide()
 	credits.size.x=600;credits.add_theme_font_size_override("font_size",23)

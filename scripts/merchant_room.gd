@@ -33,7 +33,7 @@ func _ready():
 	build_stall()
 	avatar=Visuals.model("soldier",self,destination)
 	var canvas=CanvasLayer.new();add_child(canvas);root=Control.new();canvas.add_child(root);root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);root.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	var heading=UiKit.panel(root,Vector2(25,25),Vector2(590,120),Color("242d27ed"));heading.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	var heading=UiKit.glass(root,Vector2(25,25),Vector2(590,120),Color("242d27ed"));heading.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	UiKit.label(root,"Торговец",Vector2(40,30),Vector2(800,60),32)
 	UiKit.label(root,"Жетоны с врагов меняются здесь на усиления",Vector2(40,100),Vector2(1000,40),18)
 	var size=get_viewport().get_visible_rect().size
@@ -93,7 +93,7 @@ func open_shop():
 	modal=Control.new();modal.name="MerchantShop";root.add_child(modal);modal.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);modal.add_to_group("selection_scope")
 	var shade=ColorRect.new();modal.add_child(shade);shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);shade.color=Color(0,0,0,.5)
 	var size=get_viewport().get_visible_rect().size;var width=minf(900,size.x-40);var height=minf(620,size.y-40)
-	var panel=UiKit.panel(modal,(size-Vector2(width,height))*.5,Vector2(width,height))
+	var panel=UiKit.glass(modal,(size-Vector2(width,height))*.5,Vector2(width,height))
 	UiKit.label(panel,"Торговец",Vector2(25,18),Vector2(width-260,40),28)
 	var wallet=UiKit.icon(panel,"token",Vector2(width-265,24),Vector2(28,28));wallet.modulate=UiKit.INK
 	var count=UiKit.label(panel,"Жетоны: %d" % arena.run.tokens,Vector2(width-230,20),Vector2(160,36),20);count.name="Wallet"

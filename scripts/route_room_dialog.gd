@@ -3,7 +3,7 @@ static func build(route,info:Dictionary)->Control:
 	var modal=Control.new();modal.add_to_group("selection_scope");route.root.add_child(modal);modal.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	var dim=ColorRect.new();modal.add_child(dim);dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);dim.color=Color(0,0,0,.48)
 	var size=route.get_viewport().get_visible_rect().size
-	var panel=UiKit.panel(modal,(size-Vector2(680,460))*.5,Vector2(680,460))
+	var panel=UiKit.glass(modal,(size-Vector2(680,460))*.5,Vector2(680,460))
 	UiKit.label(panel,"Этап %d · разведданные" % (info.stage+1),Vector2(28,20),Vector2(630,35),25)
 	var banner=UiKit.panel(panel,Vector2(28,65),Vector2(624,58),Color("91a298"))
 	UiKit.label(banner,"Поле боя / "+Campaign.title(info.stage),Vector2(16,12),Vector2(595,35),19,Color("eef0e2"))
@@ -37,9 +37,9 @@ static func build(route,info:Dictionary)->Control:
 		var icon=preload("res://scripts/ui/enemy_type_icon.gd").new();icon.kind=enemy.kind;icon.weapon=enemy.get("weapon","");panel.add_child(icon);icon.position=Vector2(x,242);icon.size=Vector2(44,43)
 		x+=44
 	UiKit.label(panel,"Оценка до боя. Сундук — одна награда на выбор.",Vector2(28,291),Vector2(624,24),14,UiKit.MUTED)
-	var enter=UiKit.button(panel,"Войти [E]",Vector2(28,325),Vector2(300,48),route.confirm_entry,true)
+	var enter=UiKit.button(panel,"Войти [E]",Vector2(352,325),Vector2(300,48),route.confirm_entry,true)
 	enter.disabled=info.id not in route.reachable or info.stage!=route.available or route.needs_service
-	UiKit.button(panel,"Отказаться",Vector2(344,325),Vector2(308,48),route.cancel_entry)
+	UiKit.button(panel,"Отказаться",Vector2(28,325),Vector2(308,48),route.cancel_entry)
 	var dev=UiKit.button(panel,"dev run",Vector2(28,398),Vector2(145,34),func():route.dev_entry(false));dev.add_theme_font_size_override("font_size",13)
 	dev=UiKit.button(panel,"dev progress run",Vector2(185,398),Vector2(235,34),func():route.dev_entry(true));dev.add_theme_font_size_override("font_size",13)
 	UiKit.button(panel,"Рюкзак / статы",Vector2(432,398),Vector2(220,34),route.show_pause).add_theme_font_size_override("font_size",14)

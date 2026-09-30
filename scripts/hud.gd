@@ -165,7 +165,7 @@ func modal_base(kicker: String,heading: String,subtitle: String,height=410) -> P
 	modal=Control.new();modal.add_to_group("selection_scope");root.add_child(modal);modal.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	var dim=ColorRect.new();modal.add_child(dim);dim.color=Color(.10,.16,.12,.62);dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	var s=get_viewport().get_visible_rect().size
-	var panel=UiKit.panel(modal,Vector2(s.x/2-470,s.y/2-height/2.0),Vector2(940,height),UiKit.CREAM)
+	var panel=UiKit.glass(modal,Vector2(s.x/2-470,s.y/2-height/2.0),Vector2(940,height),UiKit.CREAM)
 	UiKit.label(panel,kicker,Vector2(30,23),Vector2(850,25),14,UiKit.MUTED)
 	UiKit.label(panel,heading,Vector2(30,60),Vector2(880,52),36)
 	UiKit.label(panel,subtitle,Vector2(30,119),Vector2(880,30),18,UiKit.MUTED)

@@ -4,7 +4,7 @@ signal cancelled
 func _ready():
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);add_to_group("selection_scope")
 	var dim=ColorRect.new();add_child(dim);dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);dim.color=Color(0,0,0,.6)
-	var panel=UiKit.panel(self,(get_viewport_rect().size-Vector2(1060,630))*.5,Vector2(1060,630))
+	var panel=UiKit.glass(self,(get_viewport_rect().size-Vector2(1060,630))*.5,Vector2(1060,630))
 	UiKit.label(panel,"Операции / в бой",Vector2(26,20),Vector2(850,45),30)
 	UiKit.button(panel,"×",Vector2(977,17),Vector2(56,46),func():cancelled.emit())
 	UiKit.button(panel,"unlock-dev",Vector2(770,22),Vector2(170,38),unlock_worlds).add_theme_font_size_override("font_size",14)

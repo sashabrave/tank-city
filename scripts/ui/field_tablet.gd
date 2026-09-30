@@ -63,7 +63,7 @@ func refresh():
 	nav_buttons.clear();nav_geometry.clear()
 	for child in get_children():remove_child(child);child.queue_free()
 	var dim=ColorRect.new();add_child(dim);dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);dim.color=Color(0,0,0,.38)
-	panel=UiKit.panel(self,Vector2.ZERO,Vector2(1060,690),Color("283b33"));fit_panel()
+	panel=UiKit.glass(self,Vector2.ZERO,Vector2(1060,690),Color("283b33"));fit_panel()
 	UiKit.label(panel,"Командный центр" if manage else "Полевой планшет",Vector2(82,18),Vector2(840,40),27,Color("e8ecdc"))
 	var close_button=UiKit.button(panel,"",Vector2(981,17),Vector2(52,44),func():closed.emit())
 	close_button.icon=UiKit.interface_icon("close");close_button.tooltip_text="Закрыть планшет";close_button.expand_icon=true;close_button.add_theme_constant_override("icon_max_width",20)
@@ -321,8 +321,8 @@ func confirm_quit():
 	if endless_battle:body_text="Бой не сохраняется: при возвращении эта комната начнётся заново. Усиления забега сохранятся."
 	elif in_battle:body_text="Бой не сохраняется: при возвращении ты окажешься на карте маршрута перед этой комнатой. Усиления забега сохранятся."
 	var body=UiKit.label(box,body_text,Vector2(24,78),Vector2(width-48,96),19);body.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-	UiKit.button(box,"Отмена",Vector2(24,194),Vector2((width-60)*.5,50),cancel_quit,true)
-	var quit_button=UiKit.button(box,"Выйти",Vector2(width*.5+6,194),Vector2((width-60)*.5,50),func():Game.quit_game())
+	UiKit.button(box,"Отмена",Vector2(width*.5+6,194),Vector2((width-60)*.5,50),cancel_quit,true)
+	var quit_button=UiKit.button(box,"Выйти",Vector2(24,194),Vector2((width-60)*.5,50),func():Game.quit_game())
 	quit_button.name="QuitAccept"
 func cancel_quit():
 	if is_instance_valid(quit_confirm):quit_confirm.queue_free();quit_confirm=null

@@ -11,7 +11,7 @@ func _ready():
 	var shade=ColorRect.new();add_child(shade);shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	shade.color=Color("17201c") if startup else Color(0,0,0,.65)
 	shade.set_meta("keep_theme_colors",true)
-	panel=UiKit.panel(self,Vector2.ZERO,Vector2.ZERO)
+	panel=UiKit.glass(self,Vector2.ZERO,Vector2.ZERO)
 	UiKit.label(panel,"Выбери мир",Vector2(28,22),Vector2(900,48),34)
 	var subtitle=UiKit.label(panel,"Три независимых сохранения. Создай свой первый мир." if startup and not any_profiles() else "У каждого мира своя база, боец и прогресс.",Vector2(28,78),Vector2(900,46),18,UiKit.MUTED);subtitle.name="Subtitle";subtitle.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	for slot in range(1,Game.profiles.COUNT+1):build_card(slot)
@@ -61,8 +61,8 @@ func confirm_delete(slot:int):
 	var width=minf(620,size.x-40);var box=UiKit.panel(confirm,(size-Vector2(width,260))*.5,Vector2(width,260))
 	UiKit.label(box,"Удалить мир %d?" % slot,Vector2(24,22),Vector2(width-48,40),28)
 	var body=UiKit.label(box,"База и прогресс этого мира будут удалены. Остальные миры сохранятся.",Vector2(24,78),Vector2(width-48,80),20);body.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-	UiKit.button(box,"Отмена",Vector2(24,184),Vector2((width-60)*.5,50),cancel_delete,true)
-	UiKit.button(box,"Удалить",Vector2(width*.5+6,184),Vector2((width-60)*.5,50),func():
+	UiKit.button(box,"Отмена",Vector2(width*.5+6,184),Vector2((width-60)*.5,50),cancel_delete,true)
+	UiKit.button(box,"Удалить",Vector2(24,184),Vector2((width-60)*.5,50),func():
 		if Game.profiles.remove(slot):
 			cancel_delete()
 			# Active deletion opens a fresh startup picker via the main scene.

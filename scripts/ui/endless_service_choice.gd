@@ -6,7 +6,7 @@ var picked=false
 func _ready():
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);add_to_group("selection_scope")
 	var background=ColorRect.new();add_child(background);background.color=Color("17231f");background.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	var panel=UiKit.panel(self,(get_viewport_rect().size-Vector2(1060,550))*.5,Vector2(1060,550))
+	var panel=UiKit.glass(self,(get_viewport_rect().size-Vector2(1060,550))*.5,Vector2(1060,550))
 	UiKit.label(panel,"Передышка между боями",Vector2(30,24),Vector2(980,45),30)
 	UiKit.label(panel,"Выбери одну комнату. После улучшения — сразу в следующий бой.",Vector2(30,79),Vector2(980,58),20)
 	var options=Campaign.service_options(Game.visual_run_seed,index)

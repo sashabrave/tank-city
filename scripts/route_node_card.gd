@@ -30,7 +30,7 @@ func build():
 	var battle=branch=="" and node_branch=="" and info.get("type","") not in RoutePlan.CHALLENGES
 	var height=58.0+lines.size()*26.0+(46.0 if battle else 0.0)+54.0
 	size=Vector2(WIDTH,height)
-	var panel=UiKit.panel(self,Vector2.ZERO,size,Color("232b25f0"))
+	var panel=UiKit.glass(self,Vector2.ZERO,size,Color("232b25f0"))
 	panel.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	UiKit.label(panel,title,Vector2(16,10),Vector2(WIDTH-32,32),20)
 	var y=46.0

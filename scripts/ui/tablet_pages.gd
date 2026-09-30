@@ -12,7 +12,7 @@ func details(title:String,body:String,action:Callable=Callable()):
 	var overlay=Control.new();view.add_child(overlay);overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	overlay.add_to_group("selection_scope")
 	var dim=ColorRect.new();overlay.add_child(dim);dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);dim.color=Color(0,0,0,.5)
-	var card=UiKit.panel(overlay,(view.get_viewport_rect().size-Vector2(570,300))*.5,Vector2(570,300))
+	var card=UiKit.glass(overlay,(view.get_viewport_rect().size-Vector2(570,300))*.5,Vector2(570,300))
 	UiKit.label(card,title,Vector2(22,15),Vector2(480,42),23)
 	var text=UiKit.label(card,body,Vector2(22,65),Vector2(520,155),18);text.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;text.vertical_alignment=VERTICAL_ALIGNMENT_TOP
 	UiKit.button(card,"Понятно",Vector2(22,235),Vector2(250 if action.is_valid() else 526,44),overlay.queue_free)
@@ -98,7 +98,7 @@ func fighter():
 func weapon_details(id:String):
 	var overlay=Control.new();view.add_child(overlay);overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);overlay.add_to_group("selection_scope")
 	var dim=ColorRect.new();overlay.add_child(dim);dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);dim.color=Color(0,0,0,.65)
-	var card=UiKit.panel(overlay,(view.get_viewport_rect().size-Vector2(650,540))*.5,Vector2(650,540))
+	var card=UiKit.glass(overlay,(view.get_viewport_rect().size-Vector2(650,540))*.5,Vector2(650,540))
 	UiKit.label(card,Game.LOOT.WEAPONS[id].name+" · улучшения",Vector2(24,18),Vector2(600,38),24)
 	STATS.add_bars(card,Vector2(24,70),600,STATS.weapon(arena if is_instance_valid(arena) else null,id))
 	var mods=arena.run.weapon_mods[id] if is_instance_valid(arena) else {"damage":0.0,"interval":1.0,"intercept":0.0}

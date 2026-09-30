@@ -187,7 +187,7 @@ func build_ui():
 	root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);root.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	# One quiet plate: world, a one-line legend and the controls. Two small buttons top right.
 	var size=get_viewport().get_visible_rect().size
-	var plate=UiKit.panel(root,Vector2(20,18),Vector2(560,96),Color("242d27d8"));plate.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	var plate=UiKit.glass(root,Vector2(20,18),Vector2(560,96),Color("242d27d8"));plate.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	UiKit.label(plate,"Бесконечный · сектор %d" % (Campaign.cycle+1) if Campaign.endless else "Мир %d · %s" % [Campaign.world,Campaign.WORLDS[Campaign.world].name],Vector2(16,8),Vector2(530,36),24)
 	var hint="Сначала заедь на передышку" if needs_service else "★ средняя · ★★ сложная · редкие чертежи"
 	UiKit.label(plate,hint,Vector2(16,44),Vector2(530,22),15,UiKit.MUTED)
