@@ -24,6 +24,22 @@ static func panel(parent: Node,pos: Vector2,dimensions: Vector2,color=Color("eef
 	widget.add_theme_stylebox_override("panel",style(color,18,Color("a9b2a1")))
 	return widget
 
+## Frosted glass panel (design system): blurred, tinted view of what is behind, soft top sheen,
+## thin light border. "Стекло интерфейса" in settings falls back to a plain translucent panel.
+static func glass(parent: Node,pos: Vector2,dimensions: Vector2,color=Color("242d27")) -> Panel:
+	var widget=Panel.new();parent.add_child(widget)
+	widget.position=pos;widget.size=dimensions
+	var s=style(Color(color,1.0),18,Color(1,1,1,.16))
+	s.set_corner_radius_all(18);s.border_color=Color(1,1,1,.16)
+	widget.add_theme_stylebox_override("panel",s)
+	if Settings.values.get("ui_glass",true):
+		var material=ShaderMaterial.new();material.shader=preload("res://shaders/ui/glass.gdshader")
+		widget.material=material
+		widget.resized.connect(func():material.set_shader_parameter("panel_height",maxf(widget.size.y,1.0)))
+		material.set_shader_parameter("panel_height",maxf(dimensions.y,1.0))
+	else:s.bg_color=Color(color,.94)
+	return widget
+
 static func label(parent: Node,text: String,pos: Vector2,dimensions: Vector2,font_size=20,color=INK) -> Label:
 	var widget=Label.new()
 	parent.add_child(widget)

@@ -1842,3 +1842,5 @@ F2 — админ	F2 — admin
 Показан	Shown
 FPS в углу экрана во всех режимах, в хабе — ещё и номер сборки.	FPS in the screen corner in every mode, plus the build number in the hub.
 Версия %s · Сборка %s\nВ разработке	Version %s · Build %s\nIn development
+Стекло интерфейса	Interface glass
+Размытый полупрозрачный фон у окон. Выключи на слабом устройстве.	Blurred translucent window backgrounds. Turn off on a weak device.

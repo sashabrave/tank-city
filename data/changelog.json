@@ -24,13 +24,15 @@
 			"ru": {
 				"title": "Советы бойца",
 				"items": [
-					"При входе в хаб боец больше не просто здоровается, а делится коротким советом о механиках — с иронией и смекалкой. Советов двадцать, подряд один и тот же не повторяется."
+					"При входе в хаб боец больше не просто здоровается, а делится коротким советом о механиках — с иронией и смекалкой. Советов двадцать, подряд один и тот же не повторяется.",
+					"Окно с советом бойца стало стеклянным: полупрозрачное, с размытым фоном и ровными отступами. Стекло можно выключить: Настройки → Интерфейс → Стекло интерфейса."
 				]
 			},
 			"en": {
 				"title": "Soldier's tips",
 				"items": [
-					"When you enter the hub, the soldier now shares a short tip about the mechanics — with irony and wit — instead of a plain greeting. There are twenty tips, and the same one never shows twice in a row."
+					"When you enter the hub, the soldier now shares a short tip about the mechanics — with irony and wit — instead of a plain greeting. There are twenty tips, and the same one never shows twice in a row.",
+					"The soldier's tip window is now glass: translucent, with a blurred background and even padding. Glass can be turned off: Settings → Interface → Interface glass."
 				]
 			}
 		},
