@@ -9,7 +9,8 @@
 					"Исправлена главная причина «сброса» прогресса: после посещения станций хаба игра ошибочно считала профиль повреждённым и переставала его записывать. Красная надпись «Повреждён профиль: viewed_updates» больше не появится.",
 					"Автосохранение при каждом возвращении в хаб, а также при сворачивании окна, потере фокуса и выходе через Cmd+Q.",
 					"Во время сохранения в правом верхнем углу крутится маленький значок.",
-					"Значок на кнопке «Строительство» гаснет после того, как здание построено и открыто."
+					"Значок на кнопке «Строительство» гаснет после того, как здание построено и открыто.",
+					"Портреты и миниатюры классов отражены: бойцы смотрят в другую сторону."
 				]
 			},
 			"en": {
@@ -18,7 +19,8 @@
 					"Fixed the main cause of progress «resetting»: after visiting hub stations the game wrongly treated the profile as damaged and stopped writing it. The red «Damaged profile: viewed_updates» note is gone.",
 					"Autosave on every return to the hub, and when the window is minimised, loses focus or the game is closed with Cmd+Q.",
 					"A small spinning icon in the top-right corner shows when the game saves.",
-					"The dot on the Build button goes out once the building is built and opened."
+					"The dot on the Build button goes out once the building is built and opened.",
+					"Class portraits and miniatures are mirrored to face the other way."
 				]
 			}
 		},
