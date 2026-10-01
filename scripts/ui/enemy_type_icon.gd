@@ -1,6 +1,22 @@
 extends Control
 ## The wave atlas comes from the chosen illustration set; drawn on demand, so a switch shows at once.
-static func atlas()->Texture2D:return Illustrations.texture("res://assets/ui/enemies/enemy_atlas_v1.png")
+## Small copy of the atlas (96 px cells, with mipmaps), built once per set and cached: the source sheet is
+## 1254 px without mipmaps, so drawing it into 30 px squares sampled missing mip levels (grey blocks), and
+## resolving the file on every draw of every icon stalled the frame.
+static var cached:Dictionary={}
+const CELL=96
+static func atlas()->Texture2D:
+	var set_id=Illustrations.current()
+	if cached.has(set_id):return cached[set_id]
+	var source:Texture2D=Illustrations.texture("res://assets/ui/enemies/enemy_atlas_v1.png")
+	var result:Texture2D=source
+	var image=source.get_image() if source else null
+	if image:
+		if image.is_compressed():image.decompress()
+		image.resize(CELL*4,CELL*4,Image.INTERPOLATE_LANCZOS);image.generate_mipmaps()
+		result=ImageTexture.create_from_image(image)
+	cached[set_id]=result
+	return result
 const IDS=["pistol","shotgun","smg","rifle","shield","grenade_launcher","sniper","rpg","buggy","mortar","apc","tank","boss","flyer","drone","commander"]
 const NAMES=["Стрелок · пистолет","Стрелок · дробовик","Стрелок · ПП","Стрелок · автомат","Щитовик","Гранатомётчик","Снайпер","Рпгшник","Багги","Турель с гранатами","Бтр","Танк","Командир","Летающий дрон","Дрон-хлопушка","Командир"]
 var kind="soldier"
@@ -15,6 +31,7 @@ func _draw():draw_icon(self,kind,size*.5,Color.WHITE,weapon,"",40)
 static func draw_icon(canvas:CanvasItem,type:String,p:Vector2,c:Color=Color.WHITE,loadout:String="",state:String="",extent:float=30):
 	var index=index_for(type,loadout);var sheet=atlas();var cell=Vector2(sheet.get_width()/4.0,sheet.get_height()/4.0)
 	var tint=Color(.63,.67,.60,.40) if state=="dead" else Color.WHITE
+	if sheet==null:return
 	canvas.draw_texture_rect_region(sheet,Rect2(p-Vector2.ONE*extent*.5,Vector2.ONE*extent),Rect2(Vector2(index%4,int(index/4))*cell,cell),tint)
 	if state.is_empty():return
 	var badge=p+Vector2(extent*.35,extent*.35)

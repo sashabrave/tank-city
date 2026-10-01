@@ -188,7 +188,13 @@ static func tab_row(parent:Control,pos:Vector2,width:float,tabs:Array,active:Str
 ## "headquarters/<id>", "garage/<vehicle>_<branch>". Looked up before any alias folding; a missing file
 ## falls back to the old lookup by the bare id, so semantic ids never have to change for graphics.
 const ART_GROUPS=["upgrades","stats","abilities","headquarters","garage"]
+static var icon_cache:Dictionary={}
+## Memoised: several call sites refresh icons every frame; disk lookups happen once per id and set.
 static func icon_texture(id:String)->Texture2D:
+	var key=Illustrations.current()+"|"+id
+	if not icon_cache.has(key):icon_cache[key]=icon_lookup(id)
+	return icon_cache[key]
+static func icon_lookup(id:String)->Texture2D:
 	if "/" in id:
 		if id.get_slice("/",0) in ART_GROUPS:
 			var art=Illustrations.texture("res://assets/icons/"+id+".png")

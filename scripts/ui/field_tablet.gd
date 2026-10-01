@@ -263,10 +263,7 @@ func orders_page():
 	quest_filter="operations";quest_page()
 func messages_page():
 	UiKit.label(content,"Лента",Vector2(UiKit.PAGE_PADDING,20),Vector2(720,28),UiKit.PAGE_TITLE_SIZE)
-	for i in range(2):
-		var key="important" if i==0 else "technical"
-		var button=UiKit.button(content,"Важные" if i==0 else "Технические",Vector2(22+i*190,68),Vector2(180,38),func():message_tab=key;refresh())
-		if message_tab==key:button.add_theme_stylebox_override("normal",UiKit.style(Color("584a2c"),6))
+	for button in UiKit.tab_row(content,Vector2(22,68),content.size.x-44,[["important","Важные"],["technical","Технические"]],message_tab,func(key):message_tab=key;refresh()):button.add_theme_font_size_override("font_size",16)
 	UiKit.label(content,"Задания, развитие и открытия" if message_tab=="important" else "Боевые реплики · без всплывающих уведомлений",Vector2(22,106+UiKit.TAB_CONTENT_GAP),Vector2(720,26),14,UiKit.MUTED)
 	var box=scroller(Vector2(22,164),Vector2(content.size.x-44,335))
 	for i in range(Game.notification_history.size()-1,-1,-1):
@@ -281,11 +278,8 @@ func inventory_page():preload("res://scripts/ui/tablet_pages.gd").new(self).inve
 
 func about_page():
 	UiKit.label(content,"Об игре",Vector2(UiKit.PAGE_PADDING,20),Vector2(720,28),UiKit.PAGE_TITLE_SIZE)
-	for i in range(2):
-		var key=["info","changelog"][i]
-		var button=UiKit.button(content,["Об игре","Changelog"][i],Vector2(22+i*190,68),Vector2(180,38),func():about_tab=key;refresh())
-		button.name="AboutTab_"+key
-		if about_tab==key:button.add_theme_stylebox_override("normal",UiKit.style(Color("584a2c"),6))
+	for button in UiKit.tab_row(content,Vector2(22,68),content.size.x-44,[["info","Об игре"],["changelog","Изменения"]],about_tab,func(key):about_tab=key;refresh()):
+		button.add_theme_font_size_override("font_size",16);button.name="AboutTab_"+button.name.trim_prefix("Tab_")
 	if about_tab=="changelog":changelog_page();return
 	UiKit.label(content,"War Cats",Vector2(22,130),Vector2(720,54),36)
 	var description=UiKit.label(content,"Тактический экшен с развитием между вылазками. Защищай штаб, захватывай технику и пробивайся к командиру.",Vector2(22,195),Vector2(690,90),20)
@@ -302,16 +296,16 @@ func changelog_page():
 	if changelog_version not in versions:changelog_version=versions[0]
 	var tabs=versions.slice(0,5).map(func(v):return [v,("Альфа "+v) if v!="earlier" else "Ранее"])
 	var width=content.size.x-44
-	UiKit.tab_row(content,Vector2(22,118),width,tabs,changelog_version,func(v):changelog_version=v;refresh(),36)
+	UiKit.tab_row(content,Vector2(22,124),width,tabs,changelog_version,func(v):changelog_version=v;refresh(),34)
 	var chosen:Array=notes.for_version(changelog_version)
 	var total=0;var newest=""
 	for entry in chosen:
 		total+=entry.get(Texts.language,entry.get("ru",{})).get("items",[]).size()
 		var day=str(entry.get("date",""))
 		if day>newest:newest=day
-	var summary=UiKit.label(content,"%s · %s · изменений: %d" % [("Альфа "+changelog_version) if changelog_version!="earlier" else "Ранее",notes.date_text(newest),total],Vector2(22,164),Vector2(width,24),14,UiKit.MUTED)
+	var summary=UiKit.label(content,"%s · %s · изменений: %d" % [("Альфа "+changelog_version) if changelog_version!="earlier" else "Ранее",notes.date_text(newest),total],Vector2(22,170),Vector2(width,24),14,UiKit.MUTED)
 	summary.set_meta("text_editor",true)
-	var box=scroller(Vector2(22,194),Vector2(width,content.size.y-210));box.name="ChangelogBox";box.set_meta("text_editor",true)
+	var box=scroller(Vector2(22,200),Vector2(width,content.size.y-216));box.name="ChangelogBox";box.set_meta("text_editor",true)
 	box.add_theme_constant_override("separation",10)
 	for entry in chosen:
 		var text:Dictionary=entry.get(Texts.language,entry.get("ru",{}))

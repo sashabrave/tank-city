@@ -15,6 +15,8 @@ func _ready():
 	play=control("▶",func():controller.toggle_play());row_node.move_child(play,1)
 	repeat_button=control("↻",func():controller.cycle_repeat())
 	shuffle_button=control("⇄",func():controller.toggle_shuffle())
+	# Transport together on the left (previous · play · next), the title in the middle, modes on the right.
+	row_node.move_child(row_node.get_node("Next"),2)
 	for button in [row_node.get_node("Previous"),row_node.get_node("Next"),play,repeat_button,shuffle_button]:
 		button.add_theme_color_override("font_color",UiKit.INK)
 		button.add_theme_stylebox_override("normal",UiKit.style(UiKit.CREAM,10,Color("adb6a4")))

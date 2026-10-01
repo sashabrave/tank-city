@@ -2,6 +2,26 @@
 	"entries": [
 		{
 			"date": "2026-09-30",
+			"version": "0.4.2",
+			"ru": {
+				"title": "Исправлены фризы и иконки волны",
+				"items": [
+					"Иконки состава волны снова видны: вместо белых и серых квадратов — псы и техника.",
+					"Убраны фризы: картинки интерфейса больше не ищутся на диске в каждом кадре.",
+					"Планшет ровнее: компактные полосы характеристик, одинаковые вкладки в ленте и «Об игре», цветные иконки в сводке, кнопки радио сгруппированы."
+				]
+			},
+			"en": {
+				"title": "Freeze and wave icon fixes",
+				"items": [
+					"Wave roster icons are visible again: dogs and vehicles instead of white and grey squares.",
+					"Freezes removed: interface pictures are no longer looked up on disk every frame.",
+					"Tidier tablet: compact stat bars, even tabs in the feed and About, colour icons in the summary, grouped radio buttons."
+				]
+			}
+		},
+		{
+			"date": "2026-09-30",
 			"version": "0.4.1",
 			"ru": {
 				"title": "Два набора иллюстраций и новая энциклопедия",

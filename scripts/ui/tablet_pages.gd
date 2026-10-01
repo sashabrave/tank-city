@@ -27,24 +27,26 @@ func inventory():
 	var weapon=arena.weapon if is_instance_valid(arena) else Game.selected_weapon
 	var data=Game.LOOT.WEAPONS[weapon]
 	var weapon_stats=CombatStats.weapon(arena if is_instance_valid(arena) else null,weapon)
-	var portrait=TextureRect.new();body.add_child(portrait);portrait.texture=preload("res://scripts/ui/class_gallery.gd").texture(Game.selected_class,true);portrait.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;portrait.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;portrait.position=Vector2(0,5);portrait.size=Vector2(205,370)
-	UiKit.label(body,Game.CLASSES[Game.selected_class].name,Vector2(0,375),Vector2(205,30),18).horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+	var portrait=TextureRect.new();body.add_child(portrait);portrait.texture=preload("res://scripts/ui/class_gallery.gd").texture(Game.selected_class,true);portrait.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;portrait.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;portrait.position=Vector2(0,5);portrait.size=Vector2(205,330)
+	UiKit.label(body,Game.CLASSES[Game.selected_class].name,Vector2(0,338),Vector2(205,30),18).horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
 	cell(body,Vector2(225,0),weapon,data.name,"Характеристики и улучшения — кнопка «Подробнее».",false,Vector2(96,82))
 	UiKit.label(body,data.name,Vector2(337,4),Vector2(360,30),22)
 	UiKit.button(body,"Подробнее",Vector2(337,43),Vector2(180,34),func():weapon_details(weapon)).add_theme_font_size_override("font_size",15)
 	var bars=STATS.add_bars(body,Vector2(225,95),470,STATS.weapon(arena if is_instance_valid(arena) else null,weapon),64,true)
-	UiKit.label(body,"Серый — база · оранжевый + · красный −",Vector2(225,288),Vector2(475,28),12,UiKit.MUTED)
-	UiKit.label(body,"Способности",Vector2(225,326),Vector2(210,28),17)
+	# Everything below the weapon bars flows from their real height (no fixed gap under compact rows).
+	var shift=95+bars.content_height()+6-288
+	UiKit.label(body,"Серый — база · оранжевый + · красный −",Vector2(225,288+shift),Vector2(475,28),12,UiKit.MUTED)
+	UiKit.label(body,"Способности",Vector2(225,326+shift),Vector2(210,28),17)
 	var abilities=Game.class_loadout()
 	for i in range(2):
 		var id=abilities[i] if i<abilities.size() else ""
-		cell(body,Vector2(225+i*85,362),id,AbilityCatalog.DATA.get(id,{}).get("name","Второй навык класса"),AbilityCatalog.DATA.get(id,{}).get("description","Открывается в «Казарме»: уровень класса 5, затем 2500 сплава."),i>=abilities.size(),Vector2(76,76))
-	UiKit.label(body,"Гаджет",Vector2(425,326),Vector2(110,28),17)
-	cell(body,Vector2(425,362),Game.gadget,AbilityCatalog.DATA.get(Game.gadget,{}).get("name","Гаджет"),AbilityCatalog.DATA.get(Game.gadget,{}).get("description","Выбирается в «Арсенале» → Гаджеты."),Game.gadget=="",Vector2(76,76))
-	UiKit.label(body,"Штаб",Vector2(540,326),Vector2(140,28),17)
+		cell(body,Vector2(225+i*85,362+shift),id,AbilityCatalog.DATA.get(id,{}).get("name","Второй навык класса"),AbilityCatalog.DATA.get(id,{}).get("description","Открывается в «Казарме»: уровень класса 5, затем 2500 сплава."),i>=abilities.size(),Vector2(76,76))
+	UiKit.label(body,"Гаджет",Vector2(425,326+shift),Vector2(110,28),17)
+	cell(body,Vector2(425,362+shift),Game.gadget,AbilityCatalog.DATA.get(Game.gadget,{}).get("name","Гаджет"),AbilityCatalog.DATA.get(Game.gadget,{}).get("description","Выбирается в «Арсенале» → Гаджеты."),Game.gadget=="",Vector2(76,76))
+	UiKit.label(body,"Штаб",Vector2(540,326+shift),Vector2(140,28),17)
 	var hq=Game.hq_loadout();var module=hq[0] if not hq.is_empty() else ""
-	cell(body,Vector2(540,362),module,HQCatalog.DATA.get(module,{}).get("name","Поддержка штаба"),HQCatalog.DATA.get(module,{}).get("description","Выбери модуль в «Штабе» → Технологии."),false,Vector2(76,76))
-	UiKit.label(body,"Трофеи · открыто %d из 6 ячеек" % Game.backpack_slots,Vector2(0,462),Vector2(690,30),UiKit.SECTION_SIZE)
+	cell(body,Vector2(540,362+shift),module,HQCatalog.DATA.get(module,{}).get("name","Поддержка штаба"),HQCatalog.DATA.get(module,{}).get("description","Выбери модуль в «Штабе» → Технологии."),false,Vector2(76,76))
+	UiKit.label(body,"Трофеи · открыто %d из 6 ячеек" % Game.backpack_slots,Vector2(0,462+shift),Vector2(690,30),UiKit.SECTION_SIZE)
 	var recipes=arena.pending_recipes if is_instance_valid(arena) else []
 	for i in range(6):
 		var locked=i>=Game.backpack_slots;var recipe=recipes[i] if i<recipes.size() else {}
@@ -52,13 +54,13 @@ func inventory():
 		var info="«Казарма» → Снаряжение → Рюкзак. Следующая ячейка: %d сплава." % Game.bag_cost() if locked else "Сюда попадает найденный чертёж. Донеси его в хаб." if recipe.is_empty() else "Чертёж найден в вылазке. Доставь в хаб, чтобы открыть: "+title
 		var discard:Callable=Callable()
 		if not recipe.is_empty():discard=func():arena.pending_recipes.erase(recipe);view.refresh()
-		var b=cell(body,Vector2(i*115,505),str(recipe.get("id","")),title,info,locked,Vector2(104,100),discard)
+		var b=cell(body,Vector2(i*115,505+shift),str(recipe.get("id","")),title,info,locked,Vector2(104,100),discard)
 		UiKit.label(b,str(i+1),Vector2(8,76),Vector2(88,24),13,UiKit.MUTED)
-	UiKit.label(body,"Ресурсы / не занимают ячейки",Vector2(0,626),Vector2(690,28),18)
-	cell(body,Vector2(0,666),"","Сплав","Всего: %d. В этой вылазке: %d." % [Game.credits,arena.earned if is_instance_valid(arena) else 0]);UiKit.label(body,"%d ◈" % Game.credits,Vector2(5,700),Vector2(90,30),18)
-	cell(body,Vector2(110,666),"","Документы","Секретные документы: %d. Постоянная валюта исследований." % Game.cores);UiKit.label(body,"%d док." % Game.cores,Vector2(115,700),Vector2(90,30),18)
+	UiKit.label(body,"Ресурсы / не занимают ячейки",Vector2(0,626+shift),Vector2(690,28),18)
+	cell(body,Vector2(0,666+shift),"","Сплав","Всего: %d. В этой вылазке: %d." % [Game.credits,arena.earned if is_instance_valid(arena) else 0]);UiKit.label(body,"%d ◈" % Game.credits,Vector2(5,700+shift),Vector2(90,30),18)
+	cell(body,Vector2(110,666+shift),"","Документы","Секретные документы: %d. Постоянная валюта исследований." % Game.cores);UiKit.label(body,"%d док." % Game.cores,Vector2(115,700+shift),Vector2(90,30),18)
 	if is_instance_valid(arena) and not arena.recipe_offer.is_empty():
-		var take=UiKit.button(body,"Подобрать: "+Game.recipe_name(arena.recipe_offer.recipe),Vector2(0,778),Vector2(680,45),func():arena.take_offered_recipe();view.closed.emit());take.disabled=recipes.size()>=Game.backpack_slots;body.custom_minimum_size.y=835
+		var take=UiKit.button(body,"Подобрать: "+Game.recipe_name(arena.recipe_offer.recipe),Vector2(0,778+shift),Vector2(680,45),func():arena.take_offered_recipe();view.closed.emit());take.disabled=recipes.size()>=Game.backpack_slots;body.custom_minimum_size.y=835
 	STATS.follow_grid(body,bars)
 func fighter():
 	var body=page("Боец",850)

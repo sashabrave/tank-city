@@ -9,16 +9,18 @@ static func render(tablet):
 	var stations=[["Казарма",true],["Арсенал","weapons" in Game.built_workshops],["Штаб","headquarters" in Game.built_workshops],["Стоянка","garage" in Game.built_workshops]]
 	var rows=[
 		["base","Станции","  ·  ".join(stations.map(func(s):return ("✓ " if s[1] else "🔒 ")+s[0]))],
-		["fighter","Классы","%d / %d" % [Game.class_unlocks.size(),Game.CLASSES.size()]],
-		["inventory","Оружие","%d / %d" % [Game.weapon_unlocks.size(),Game.LOOT.WEAPONS.size()]],
+		["comrade","Классы","%d / %d" % [Game.class_unlocks.size(),Game.CLASSES.size()]],
+		["rifle","Оружие","%d / %d" % [Game.weapon_unlocks.size(),Game.LOOT.WEAPONS.size()]],
 		["vehicle","Техника","%d / %d" % [Game.garage.owned.size(),GarageCatalog.VEHICLES.size()]],
-		["blueprint","Бонусы и гаджеты","%d бонусов · %d гаджетов" % [Game.bonus_unlocks.size(),Game.ability_unlocks.size()]],
+		["blueprint","Бонусы и гаджеты","Бонусы: %d · гаджеты: %d" % [Game.bonus_unlocks.size(),Game.ability_unlocks.size()]],
 		["alloy","Сохранение добычи","%d%% сплава при выбывании" % roundi((1.0-Game.death_loss_fraction())*100)],
-		["quests","Задания","%d сдано · %d в работе" % [p.claimed.size(),p.quests("active").size()]],
+		["recipe","Задания","%d сдано · %d в работе" % [p.claimed.size(),p.quests("active").size()]],
 	]
 	for row in rows:
 		var line=Panel.new();body.add_child(line);line.custom_minimum_size=Vector2(0,58);line.add_theme_stylebox_override("panel",UiKit.style(Color("2c352e"),8))
-		var picture=UiKit.icon(line,row[0],Vector2(12,13),Vector2(32,32));picture.modulate=UiKit.INK
+		# Coloured artwork for every row (line icons only where no art exists, tinted to the text colour).
+		var picture=UiKit.icon(line,row[0],Vector2(10,9),Vector2(40,40))
+		if picture.texture and picture.texture.resource_path.ends_with(".svg"):picture.modulate=UiKit.INK
 		UiKit.label(line,row[1],Vector2(58,6),Vector2(300,24),17);UiKit.label(line,row[2],Vector2(58,30),Vector2(640,24),14,UiKit.MUTED)
 	var tracked=p.quests("tracked")
 	if not tracked.is_empty():

@@ -16,8 +16,16 @@ static func current()->String:
 	return value if value in SETS else DEFAULT
 
 ## Classic asset path → the same picture in the chosen set (or the classic path for shared art).
+static var resolved:Dictionary={}  # "set|path" → final path: UI code asks every frame, the disk is asked once
 static func path(original:String,set_id:String="")->String:
 	if not original.begins_with("res://assets/"):return original
+	var key=(set_id if set_id!="" else current())+"|"+original
+	if resolved.has(key):return resolved[key]
+	var result=_resolve(original,set_id)
+	resolved[key]=result
+	return result
+
+static func _resolve(original:String,set_id:String)->String:
 	var relative=original.trim_prefix("res://assets/")
 	for prefix in PREFIXES:
 		if relative.begins_with(prefix):
@@ -27,9 +35,11 @@ static func path(original:String,set_id:String="")->String:
 			return original
 	return original
 
+static var textures:Dictionary={}
 static func texture(original:String)->Texture2D:
-	var resolved=path(original)
-	return load(resolved) if ResourceLoader.exists(resolved) else null
+	var final_path=path(original)
+	if not textures.has(final_path):textures[final_path]=load(final_path) if ResourceLoader.exists(final_path) else null
+	return textures[final_path]
 
 ## Live switch: every texture already on screen that comes from the old set is swapped for the same
 ## picture of the new set (plain textures, AtlasTexture atlases, button icons). Nothing is rebuilt.

@@ -37,7 +37,8 @@ func run():
 	var portrait=TextureRect.new();add_child(portrait);portrait.texture=preload("res://scripts/ui/class_gallery.gd").texture("recruit")
 	Settings.change("illustration_set","nano_banana")
 	check(icon.texture.resource_path.contains("/nano_banana/") and portrait.texture.atlas.resource_path.contains("/nano_banana/"),"live switch to Nano Banana")
-	check(preload("res://scripts/ui/enemy_type_icon.gd").atlas().resource_path.contains("/nano_banana/"),"wave atlas follows")
+	var icons=preload("res://scripts/ui/enemy_type_icon.gd");var sheet=icons.atlas()
+	check(icons.cached.has("nano_banana") and sheet==icons.cached["nano_banana"] and (DisplayServer.get_name()=="headless" or (sheet.get_width()==icons.CELL*4 and sheet.get_image().has_mipmaps())),"wave atlas follows, small and mipmapped")
 	Settings.change("illustration_set","gpt_image_2_5")
 	check(icon.texture.resource_path.contains("/gpt_image_2_5/") and portrait.texture.atlas.resource_path.contains("/gpt_image_2_5/"),"live switch back to GPT")
 	Settings.values["illustration_set"]="bogus"
