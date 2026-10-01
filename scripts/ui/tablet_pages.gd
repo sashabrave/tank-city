@@ -191,11 +191,9 @@ func radio():
 func settings():
 	UiKit.label(content,"Настройки",Vector2(UiKit.PAGE_PADDING,20),Vector2(727,28),UiKit.PAGE_TITLE_SIZE)
 	var tabs=["Видео","Звук","Управление","Интерфейс"]
-	for i in range(tabs.size()):
-		var tab=tabs[i]
-		var button=UiKit.button(content,tab,Vector2(UiKit.PAGE_PADDING+i*184,UiKit.PAGE_CONTENT_TOP),Vector2(175,40),func():view.settings_tab=tab;view.waiting_key="";view.refresh())
+	# Same full-width tab row as the quest filters: equal sizes, the active tab only changes colour.
+	for button in UiKit.tab_row(content,Vector2(UiKit.PAGE_PADDING,UiKit.PAGE_CONTENT_TOP),content.size.x-UiKit.PAGE_PADDING*2,tabs.map(func(t):return [t,t]),view.settings_tab,func(key):view.settings_tab=key;view.waiting_key="";view.refresh()):
 		button.add_theme_font_size_override("font_size",16)
-		if tab==view.settings_tab:button.add_theme_stylebox_override("normal",UiKit.style(Color("584a2c"),6))
 	var box=view.scroller(Vector2(UiKit.PAGE_PADDING,UiKit.PAGE_CONTENT_TOP+40+UiKit.TAB_CONTENT_GAP),Vector2(727,366))
 	var body=Control.new();box.add_child(body);body.custom_minimum_size=Vector2(705,350)
 	var y=0

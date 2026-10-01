@@ -104,8 +104,27 @@ static func icon(parent: Node,id: String,pos: Vector2,dimensions: Vector2) -> Te
 	var widget=TextureRect.new();widget.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;widget.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	widget.texture_filter=CanvasItem.TEXTURE_FILTER_LINEAR
 	widget.mouse_filter=Control.MOUSE_FILTER_IGNORE;widget.position=pos;widget.size=dimensions
-	widget.texture=icon_texture(id)
+	widget.texture=trimmed(icon_texture(id))
 	parent.add_child(widget);return widget
+
+## Icons come from several sets with very different transparent margins (a pistol filled a third of its
+## frame, a tank filled all of it). Cropping to the visible pixels plus a small even margin gives every
+## icon the same visual size in slots, tiles and cards. Cached per file; atlases are left as they are.
+static var trim_cache:Dictionary={}
+static func trimmed(texture:Texture2D)->Texture2D:
+	if texture==null or texture is AtlasTexture or texture.resource_path=="" or texture.resource_path.ends_with(".svg"):return texture
+	var key=texture.resource_path
+	if trim_cache.has(key):return trim_cache[key]
+	var image=texture.get_image()
+	if image==null or image.is_compressed():trim_cache[key]=texture;return texture
+	var used=image.get_used_rect()
+	if used.size.x<=0 or used.size.y<=0:trim_cache[key]=texture;return texture
+	var side=maxf(used.size.x,used.size.y);var pad=side*.06
+	var region=Rect2(Vector2(used.position)-Vector2.ONE*pad,Vector2(used.size)+Vector2.ONE*pad*2).intersection(Rect2(Vector2.ZERO,Vector2(image.get_size())))
+	# Barely any margin: keep the original file, nothing to gain.
+	if region.size.x*region.size.y>image.get_width()*image.get_height()*.85:trim_cache[key]=texture;return texture
+	var atlas=AtlasTexture.new();atlas.atlas=texture;atlas.region=region;atlas.set_meta("trim_source",key)
+	trim_cache[key]=atlas;return atlas
 
 ## Interface motion (design system). All list and card entrances go through reveal(); buttons get a short press bounce.
 ## "Анимации интерфейса" in settings turns motion off; content is always shown in its final state.

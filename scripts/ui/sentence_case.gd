@@ -20,6 +20,11 @@ static func normalize(value:String)->String:
 			var closing=line.find("]",first.get_start())
 			if closing<0:break
 			first=initial.search(line,closing+1)
-		if first!=null:line=line.substr(0,first.get_start())+first.get_string().to_upper()+line.substr(first.get_end())
+		# "2 вылазки", "+3 урона": a number opens the line, the word after it stays lower case.
+		var lead=line.substr(0,first.get_start()) if first!=null else ""
+		var numbered=false
+		for ch in lead:
+			if ch>="0" and ch<="9":numbered=true;break
+		if first!=null and not numbered:line=line.substr(0,first.get_start())+first.get_string().to_upper()+line.substr(first.get_end())
 		lines[i]=line
 	return "\n".join(lines)

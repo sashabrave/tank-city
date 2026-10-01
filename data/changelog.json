@@ -2,6 +2,28 @@
 	"entries": [
 		{
 			"date": "2026-09-30",
+			"version": "0.4.1",
+			"ru": {
+				"title": "Два набора иллюстраций и новая энциклопедия",
+				"items": [
+					"Настройки → Интерфейс → «Иллюстрации»: два набора рисованных портретов и иконок — GPT (по умолчанию) и Nano Banana. Переключение сразу, без перезапуска.",
+					"Энциклопедия стала карточками: категории в один ряд, крупные картинки, короткие подписи, полный текст открывается по нажатию.",
+					"Иконки одного размера во всех слотах и плитках, вкладки настроек ровные, числа больше не делают слово после себя заглавным.",
+					"На телефонах и планшетах планшет игры растягивается на весь экран — текст крупнее."
+				]
+			},
+			"en": {
+				"title": "Two illustration sets and a new handbook",
+				"items": [
+					"Settings → Interface → Illustrations: two sets of painted portraits and icons — GPT (default) and Nano Banana. Switches instantly, no restart.",
+					"The handbook is now cards: categories in one row, big pictures, short captions, the full text opens on tap.",
+					"Icons have one visual size in every slot and tile, settings tabs are even, numbers no longer capitalise the next word.",
+					"On phones and tablets the field tablet grows to fill the screen — larger text."
+				]
+			}
+		},
+		{
+			"date": "2026-09-30",
 			"version": "0.4.0",
 			"ru": {
 				"title": "Рисованная графика",

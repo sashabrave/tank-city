@@ -40,7 +40,10 @@ static func swap_tree(root:Node,from_set:String,to_set:String):
 		for property in ["texture","icon"]:
 			if not property in node:continue
 			var value=node.get(property)
-			if value is AtlasTexture:
+			if value is AtlasTexture and value.has_meta("trim_source"):
+				var source:String=value.get_meta("trim_source")
+				if source.begins_with(old_root):node.set(property,UiKit.trimmed(load(source.replace(old_root,ROOT+to_set+"/"))))
+			elif value is AtlasTexture:
 				var atlas:Texture2D=value.atlas
 				if atlas and atlas.resource_path.begins_with(old_root):
 					var copy:AtlasTexture=value.duplicate();copy.atlas=load(atlas.resource_path.replace(old_root,ROOT+to_set+"/"));node.set(property,copy)

@@ -8,7 +8,7 @@ var arena
 var manage=false
 var tab=""
 const MEMORY=preload("res://scripts/ui/tablet_memory.gd")
-const REMEMBERED=["selected_quest","message_tab","about_tab","quest_filter","music_folder","music_scroll","settings_tab","guide_query","guide_category","guide_section","guide_expanded","guide_scroll","nav_collapsed"]
+const REMEMBERED=["selected_quest","message_tab","about_tab","quest_filter","music_folder","music_scroll","settings_tab","guide_query","guide_category","guide_section","guide_expanded","guide_scroll","nav_collapsed","guide_open"]
 var page_key=""
 var page_scrolls:Dictionary={}
 var memory_ready=false
@@ -26,7 +26,7 @@ var settings_tab="Видео"
 var guide_query=""
 var guide_category="Все"
 var guide_section="Все подразделы"
-var guide_box:VBoxContainer
+var guide_box:Container
 var guide_count:Label
 var dev_edit=false
 var nav_collapsed=false
@@ -40,6 +40,7 @@ var guide_expanded:Dictionary={}
 var guide_tree
 var guide_status=""
 var guide_scroll=0.0
+var guide_open=""  # article id shown in the reader, "" = grid
 const GUIDE=preload("res://scripts/ui/encyclopedia_catalog.gd")
 var content:Control
 var panel:Panel
@@ -345,46 +346,98 @@ func confirm_quit():
 	quit_button.name="QuitAccept"
 func cancel_quit():
 	if is_instance_valid(quit_confirm):quit_confirm.queue_free();quit_confirm=null
+## Encyclopedia: picture-first and touch-friendly. A row of category chips, a grid of cards (big picture,
+## title, one short line), and a reader for the full article. The old tree of sections is gone: on a phone it
+## ate a third of the width.
 func guide_page():
 	var width=content.size.x
-	UiKit.label(content,"Энциклопедия",Vector2(22,18),Vector2(440,36),24)
-	if Texts.dev_enabled():UiKit.button(content,"Edit dev · "+("вкл" if dev_edit else "выкл"),Vector2(width-200,18),Vector2(178,36),func():dev_edit=not dev_edit;refresh()).add_theme_font_size_override("font_size",14)
+	if guide_open!="":guide_article(width);return
+	UiKit.label(content,"Энциклопедия",Vector2(22,18),Vector2(220,36),24)
 	var search=LineEdit.new();search.name="GuideSearch";content.add_child(search)
-	search.position=Vector2(22,66);search.size=Vector2(width-44,42);search.placeholder_text=Texts.localized("Поиск по статьям…");search.clear_button_enabled=true;Texts.set_text(search,guide_query);search.right_icon=UiKit.interface_icon("search")
-	search.add_theme_font_size_override("font_size",18);search.add_theme_color_override("font_color",UiKit.INK)
-	search.add_theme_stylebox_override("normal",UiKit.style(Color("1d2621"),6))
-	search.add_theme_stylebox_override("focus",UiKit.style(Color("1d2621"),6,UiKit.ORANGE))
+	var search_x=250.0;var search_w=width-search_x-22-(190 if Texts.dev_enabled() else 0)
+	search.position=Vector2(search_x,16);search.size=Vector2(search_w,42);search.placeholder_text=Texts.localized("Поиск по статьям…");search.clear_button_enabled=true;Texts.set_text(search,guide_query);search.right_icon=UiKit.interface_icon("search")
+	search.add_theme_font_size_override("font_size",17);search.add_theme_color_override("font_color",UiKit.INK)
+	search.add_theme_stylebox_override("normal",UiKit.style(Color("1d2621"),8))
+	search.add_theme_stylebox_override("focus",UiKit.style(Color("1d2621"),8,UiKit.ORANGE))
 	search.text_changed.connect(func(value):guide_query=value;render_guide())
-	guide_tree=preload("res://scripts/ui/guide_tree.gd").new(self);guide_tree.build()
-	guide_count=UiKit.label(content,"",Vector2(253,119),Vector2(width-275,28),14,UiKit.MUTED)
+	if Texts.dev_enabled():
+		UiKit.button(content,"Edit dev · "+("вкл" if dev_edit else "выкл"),Vector2(width-200,16),Vector2(178,42),func():dev_edit=not dev_edit;refresh()).add_theme_font_size_override("font_size",13)
+	# Category chips: one horizontal, scrollable row with big tap targets.
+	var chips_scroll=ScrollContainer.new();content.add_child(chips_scroll);chips_scroll.position=Vector2(22,70);chips_scroll.size=Vector2(width-44,48)
+	chips_scroll.vertical_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;chips_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_SHOW_NEVER
+	var chips=HBoxContainer.new();chips_scroll.add_child(chips);chips.add_theme_constant_override("separation",8)
+	for category in GUIDE.categories():
+		var chip=Button.new();chips.add_child(chip);Texts.set_text(chip,category);chip.custom_minimum_size=Vector2(0,40);chip.add_theme_font_size_override("font_size",15)
+		var active=category==guide_category
+		chip.add_theme_stylebox_override("normal",UiKit.style(Color("584a2c") if active else Color("2c352e"),20,UiKit.ORANGE if active else Color(1,1,1,.08)))
+		chip.add_theme_stylebox_override("hover",UiKit.style(Color("3d4639"),20,UiKit.ORANGE if active else Color(1,1,1,.16)))
+		for state in ["normal","hover","pressed"]:
+			var box=chip.get_theme_stylebox(state).duplicate();box.content_margin_left=16;box.content_margin_right=16;chip.add_theme_stylebox_override(state,box)
+		chip.add_theme_color_override("font_color",UiKit.INK if active else UiKit.MUTED)
+		chip.pressed.connect(func():guide_category=category;guide_section="Все подразделы";refresh())
 	if dev_edit:
-		UiKit.button(content,"+ Статья",Vector2(width-142,118),Vector2(120,30),func():preload("res://scripts/ui/encyclopedia_editor.gd").open_new(self)).add_theme_font_size_override("font_size",14)
-	guide_box=scroller(Vector2(253,157),Vector2(width-275,406));render_guide()
+		UiKit.button(content,"+ Статья",Vector2(width-142,128),Vector2(120,32),func():preload("res://scripts/ui/encyclopedia_editor.gd").open_new(self)).add_theme_font_size_override("font_size",14)
+	var scroll=ScrollContainer.new();content.add_child(scroll);scroll.position=Vector2(22,128+(40 if dev_edit else 0));scroll.size=Vector2(width-44,content.size.y-scroll.position.y-14)
+	scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
+	var grid=GridContainer.new();scroll.add_child(grid);grid.columns=3 if width>=700 else 2
+	grid.add_theme_constant_override("h_separation",12);grid.add_theme_constant_override("v_separation",12);grid.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+	guide_box=grid;render_guide()
+
+## Short line under a card title: the term description, or the first sentence of the text.
+func guide_teaser(entry:Dictionary)->String:
+	var text=Texts.description(entry.term) if entry.term!="" else Texts.render(str(entry.text))
+	text=text.split("\n")[0]
+	var stop=text.find(". ");if stop>0:text=text.substr(0,stop+1)
+	return text if text.length()<=58 else text.substr(0,56).rstrip(" ,.")+"…"
+
 func render_guide():
 	for child in guide_box.get_children():guide_box.remove_child(child);child.queue_free()
-	guide_box.get_parent().scroll_vertical=0
 	var entries=GUIDE.search(guide_query,guide_category,guide_section)
-	Texts.set_text(guide_count,"Статей: %d / %d" % [entries.size(),GUIDE.entries().size()])
+	var columns:int=guide_box.columns;var card_w=(content.size.x-44-12*(columns-1)-14)/float(columns)
 	if entries.is_empty():
-		var empty=Label.new();guide_box.add_child(empty);Texts.set_text(empty,"Ничего не найдено. Попробуй другое слово или раздел «Все».");empty.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+		var empty=Label.new();guide_box.add_child(empty);Texts.set_text(empty,"Ничего не найдено. Попробуй другое слово или раздел «Все».");empty.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;empty.custom_minimum_size=Vector2(card_w*2,0)
 	for entry in entries:
-		var card=PanelContainer.new();guide_box.add_child(card);card.add_theme_stylebox_override("panel",UiKit.style(Color("2c352e"),7))
-		var margin=MarginContainer.new();card.add_child(margin)
-		for side in ["left","right","top","bottom"]:margin.add_theme_constant_override("margin_"+side,14)
-		var row=VBoxContainer.new();margin.add_child(row);row.add_theme_constant_override("separation",12)
-		var picture=PanelContainer.new();row.add_child(picture);picture.custom_minimum_size=Vector2(0,180 if "ui/illustrations/" in entry.image else 84);picture.size_flags_vertical=Control.SIZE_SHRINK_BEGIN;picture.size_flags_horizontal=Control.SIZE_EXPAND_FILL;picture.add_theme_stylebox_override("panel",UiKit.style(Color("1c241f"),5))
-		if entry.image!="" and ResourceLoader.exists(entry.image):
-			var art=TextureRect.new();picture.add_child(art);art.texture=load(entry.image);art.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;art.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		else:
-			var placeholder=Label.new();picture.add_child(placeholder);Texts.set_text(placeholder,"Иллюстрация");placeholder.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;placeholder.vertical_alignment=VERTICAL_ALIGNMENT_CENTER;placeholder.add_theme_font_size_override("font_size",13);placeholder.add_theme_color_override("font_color",UiKit.MUTED)
-		var body=VBoxContainer.new();row.add_child(body);body.size_flags_horizontal=Control.SIZE_EXPAND_FILL;body.add_theme_constant_override("separation",8)
-		var section=Label.new();body.add_child(section);Texts.set_text(section,entry.category+" / "+entry.section);section.add_theme_font_size_override("font_size",12);section.add_theme_color_override("font_color",UiKit.MUTED)
-		var heading=Label.new();body.add_child(heading);Texts.set_text(heading,entry.title);heading.add_theme_font_size_override("font_size",20);heading.add_theme_color_override("font_color",UiKit.INK);heading.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-		if entry.term!="":
-			var summary=Label.new();body.add_child(summary);Texts.set_text(summary,Texts.description(entry.term));summary.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;summary.add_theme_color_override("font_color",UiKit.ORANGE)
-		if dev_edit and not entry.get("auto",false):UiKit.button(body,"Редактировать"+(" · общий термин" if entry.term!="" else ""),Vector2.ZERO,Vector2(0,30),func():preload("res://scripts/ui/encyclopedia_editor.gd").open(self,entry.id)).add_theme_font_size_override("font_size",14)
-		var text=Label.new();body.add_child(text);Texts.set_text(text,entry.text);text.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;text.add_theme_font_size_override("font_size",17);text.add_theme_color_override("font_color",UiKit.INK)
+		var card=Button.new();guide_box.add_child(card);card.custom_minimum_size=Vector2(card_w,236);card.focus_mode=Control.FOCUS_ALL
+		card.add_theme_stylebox_override("normal",UiKit.style(Color("2c352e"),10,Color(1,1,1,.06)))
+		card.add_theme_stylebox_override("hover",UiKit.style(Color("343e36"),10,UiKit.ORANGE))
+		card.add_theme_stylebox_override("pressed",UiKit.style(Color("3a4438"),10,UiKit.ORANGE))
+		card.add_theme_stylebox_override("focus",UiKit.style(Color(0,0,0,0),10,UiKit.ORANGE))
+		var id=str(entry.id);card.pressed.connect(func():guide_open=id;refresh())
+		var picture=Panel.new();card.add_child(picture);picture.position=Vector2(8,8);picture.size=Vector2(card_w-16,146);picture.mouse_filter=Control.MOUSE_FILTER_IGNORE
+		picture.add_theme_stylebox_override("panel",UiKit.style(Color("1f2722"),8))
+		guide_picture(picture,entry,Vector2(card_w-16,146))
+		var heading=UiKit.label(card,str(entry.title),Vector2(14,162),Vector2(card_w-28,26),17);heading.clip_text=true;heading.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS;heading.mouse_filter=Control.MOUSE_FILTER_IGNORE
+		var teaser=UiKit.label(card,guide_teaser(entry),Vector2(14,190),Vector2(card_w-28,40),13,UiKit.MUTED);teaser.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;teaser.max_lines_visible=2;teaser.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	UiKit.reveal_list(guide_box)
+
+func guide_picture(frame:Control,entry:Dictionary,area:Vector2):
+	if entry.image!="" and ResourceLoader.exists(entry.image):
+		var art=TextureRect.new();frame.add_child(art);art.texture=load(entry.image);art.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;art.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		var pad=6.0 if "illustrations/" in entry.image else 18.0
+		art.position=Vector2.ONE*pad;art.size=area-Vector2.ONE*pad*2;art.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	else:
+		# No picture of its own: a big icon of the topic instead of an empty frame.
+		var topic={"Бой":"rifle","Враги":"tank","Окружение":"wall","Хаб":"repair","Развитие":"star","Ресурсы":"alloy","Основы":"vehicle","Справочник":"recipe"}.get(str(entry.category),"recipe")
+		var mark=TextureRect.new();frame.add_child(mark);mark.texture=UiKit.icon_texture(topic);mark.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;mark.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		var side=minf(area.y-24,area.x-24);mark.size=Vector2(side,side);mark.position=(area-mark.size)*.5;mark.mouse_filter=Control.MOUSE_FILTER_IGNORE
+
+## Reader: big picture on top, then the title and the full text; back returns to the grid.
+func guide_article(width:float):
+	var entry={}
+	for candidate in GUIDE.entries():
+		if str(candidate.id)==guide_open:entry=candidate;break
+	if entry.is_empty():guide_open="";guide_page();return
+	var back=UiKit.button(content,"← Все статьи",Vector2(22,16),Vector2(170,42),func():guide_open="";refresh());back.add_theme_font_size_override("font_size",15)
+	UiKit.label(content,str(entry.category)+" · "+str(entry.section),Vector2(206,26),Vector2(width-230,24),14,UiKit.MUTED)
+	var scroll=ScrollContainer.new();content.add_child(scroll);scroll.position=Vector2(22,72);scroll.size=Vector2(width-44,content.size.y-86);scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
+	var column=VBoxContainer.new();scroll.add_child(column);column.size_flags_horizontal=Control.SIZE_EXPAND_FILL;column.add_theme_constant_override("separation",14)
+	var picture=Panel.new();column.add_child(picture);picture.custom_minimum_size=Vector2(width-58,270);picture.add_theme_stylebox_override("panel",UiKit.style(Color("1f2722"),10))
+	guide_picture(picture,entry,Vector2(width-58,270))
+	var heading=Label.new();column.add_child(heading);Texts.set_text(heading,entry.title);heading.add_theme_font_size_override("font_size",26);heading.add_theme_color_override("font_color",UiKit.INK);heading.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	if entry.term!="":
+		var summary=Label.new();column.add_child(summary);Texts.set_text(summary,Texts.description(entry.term));summary.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;summary.add_theme_color_override("font_color",UiKit.ORANGE);summary.add_theme_font_size_override("font_size",17)
+	var text=Label.new();column.add_child(text);Texts.set_text(text,entry.text);text.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;text.add_theme_font_size_override("font_size",18);text.add_theme_color_override("font_color",UiKit.INK)
+	if dev_edit and not entry.get("auto",false):UiKit.button(column,"Редактировать",Vector2.ZERO,Vector2(0,36),func():preload("res://scripts/ui/encyclopedia_editor.gd").open(self,entry.id))
 
 func _input(event):
 	if is_instance_valid(quit_confirm) and event.is_action_pressed("pause") and not event.is_echo():
@@ -421,7 +474,7 @@ func expand_layout(parent:Node,factor:float):
 		expand_layout(child,factor)
 
 func scroll_key()->String:
-	return tab+":"+str([guide_query,guide_category,guide_section]) if tab=="guide" else tab+":"+quest_filter if tab=="quests" else tab+":"+message_tab if tab=="notifications" else tab+":"+music_folder if tab=="music" else tab
+	return tab+":"+str([guide_query,guide_category,guide_section,guide_open]) if tab=="guide" else tab+":"+quest_filter if tab=="quests" else tab+":"+message_tab if tab=="notifications" else tab+":"+music_folder if tab=="music" else tab
 func collect_scrolls(node:Node,result:Array):
 	if node is ScrollContainer:result.append(node)
 	for child in node.get_children():collect_scrolls(child,result)
@@ -446,5 +499,7 @@ func _exit_tree():
 func fit_panel():
 	if not is_instance_valid(panel):return
 	var available=get_viewport_rect().size
-	var factor=minf(1.0,minf((available.x-24)/1060.0,(available.y-24)/690.0))
+	var fit=minf((available.x-24)/1060.0,(available.y-24)/690.0)
+	# Phones and tablets: grow to fill the screen (text stays readable); desktop keeps 1:1 at most.
+	var factor=minf(fit,1.35) if InputScheme.touch() else minf(1.0,fit)
 	panel.scale=Vector2.ONE*factor;panel.position=(available-panel.size*factor)*.5
