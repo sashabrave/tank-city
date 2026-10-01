@@ -10,7 +10,8 @@
 					"Автосохранение при каждом возвращении в хаб, а также при сворачивании окна, потере фокуса и выходе через Cmd+Q.",
 					"Во время сохранения в правом верхнем углу крутится маленький значок.",
 					"Значок на кнопке «Строительство» гаснет после того, как здание построено и открыто.",
-					"Портреты и миниатюры классов отражены: бойцы смотрят в другую сторону."
+					"Портреты и миниатюры классов отражены: бойцы смотрят в другую сторону.",
+					"Диалог бойца в хабе: 60 коротких советов о механиках и 20 историй из жизни заставы. Клавиши показаны плашками. Кнопка «Ещё» покажет ещё три реплики."
 				]
 			},
 			"en": {
@@ -20,7 +21,8 @@
 					"Autosave on every return to the hub, and when the window is minimised, loses focus or the game is closed with Cmd+Q.",
 					"A small spinning icon in the top-right corner shows when the game saves.",
 					"The dot on the Build button goes out once the building is built and opened.",
-					"Class portraits and miniatures are mirrored to face the other way."
+					"Class portraits and miniatures are mirrored to face the other way.",
+					"The soldier's hub chat: 60 short tips on mechanics and 20 tiny stories from the outpost. Keys are shown as key caps. «More» shows three more lines."
 				]
 			}
 		},
