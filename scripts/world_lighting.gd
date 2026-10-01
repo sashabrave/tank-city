@@ -103,8 +103,10 @@ func apply():
 		sky_material.ground_bottom_color=Color(style.ground).darkened(.25) if bright else Color("44483d")
 		sky_material.energy_multiplier=(.45 if night else 1.0)
 	var soft=option.call("soft_shadows")
-	sun.light_angular_distance=float(style.softness) if soft else 0.0
-	sun.shadow_blur=1.6 if soft else 1.0
+	# Softness is a filter blur, not an angular sun size: PCSS (angular distance) samples the penumbra
+	# with noise that reads as grain on small geometry like brick courses.
+	sun.light_angular_distance=0.0
+	sun.shadow_blur=clampf(1.0+float(style.softness)*.5,1.0,4.0) if soft else 1.0
 	sun.shadow_opacity=float(style.shadow) if cozy else 1.0
 	sun.light_specular=float(style.specular) if cozy else .5
 	var time:Dictionary=moment(get_parent(),night) if cozy else {}

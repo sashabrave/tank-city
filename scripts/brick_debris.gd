@@ -19,7 +19,7 @@ static func mesh(kind:String)->ArrayMesh:
 	if meshes.has(kind):return meshes[kind]
 	var surface=SurfaceTool.new();surface.begin(Mesh.PRIMITIVE_TRIANGLES)
 	var clay=Color(WALL.CLAY.r,WALL.CLAY.g,WALL.CLAY.b,.5);var mortar=Color(WALL.MORTAR.r,WALL.MORTAR.g,WALL.MORTAR.b,0)
-	var brick=Vector3(.226,.156,.107);var course=WALL.ROW_HEIGHT
+	var brick=WALL.BRICK;var course=WALL.ROW_HEIGHT
 	match kind:
 		"crumb":WALL.add_box(surface,Vector3.ZERO,Vector3.ONE,clay)
 		"half":WALL.add_box(surface,Vector3.ZERO,Vector3(brick.x*.5,brick.y,brick.z),clay)

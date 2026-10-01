@@ -4,23 +4,28 @@ static var brick_mesh:ArrayMesh
 static var brick_material:ShaderMaterial
 const ROWS=4
 const ROW_HEIGHT=.1875
-const MORTAR=Color(.52,.41,.30)
-const REINFORCED_TINT=Vector3(.80,.62,.56)
-const CLAY=Color(1.0,.52,.13)
+const MORTAR=Color(.66,.58,.50)
+const REINFORCED_TINT=Vector3(.66,.52,.48)
+const CLAY=Color(.94,.52,.29)
+const BRICK=Vector3(.246,.172,.1235)
+const CORE=.244
+const CORE_HEIGHT=.74
 static func prepare_visual():
 	if brick_mesh:return
 	# One section = 4 courses x 2 bricks around a mortar core; courses alternate direction.
+	# The core nearly fills the cell so neighbouring sections leave no see-through slit; bricks stand
+	# out of it by ~2 mm, which keeps thin, dense joints.
 	var surface=SurfaceTool.new();surface.begin(Mesh.PRIMITIVE_TRIANGLES)
-	add_box(surface,Vector3(0,.36,0),Vector3(.214,.72,.214),Color(MORTAR.r,MORTAR.g,MORTAR.b,0))
+	add_box(surface,Vector3(0,CORE_HEIGHT*.5,0),Vector3(CORE,CORE_HEIGHT,CORE),Color(MORTAR.r,MORTAR.g,MORTAR.b,0))
 	for row in range(ROWS):
 		for side in [-1,1]:
 			var id=row*2+(side+1)/2
 			var jitter=func(salt:int)->float:return fposmod(sin(float(id*37+salt*11))*43758.545,1.0)-.5
 			var along_x=row%2==0
-			var size=Vector3(.226+jitter.call(1)*.008,.156+jitter.call(2)*.006,.107)
-			var offset=Vector3(jitter.call(3)*.006,0,side*.0625+jitter.call(4)*.004)
+			var size=Vector3(BRICK.x+jitter.call(1)*.002,BRICK.y+jitter.call(2)*.004,BRICK.z)
+			var offset=Vector3(jitter.call(3)*.001,0,side*.0625+jitter.call(4)*.0008)
 			if not along_x:size=Vector3(size.z,size.y,size.x);offset=Vector3(offset.z,0,offset.x)
-			offset.y=row*ROW_HEIGHT+.0155+size.y*.5
+			offset.y=row*ROW_HEIGHT+.009+size.y*.5
 			var tint=.9+jitter.call(5)*.2
 			add_box(surface,offset,size,Color(CLAY.r*tint,CLAY.g*tint,CLAY.b*tint,(id+1)/8.0))
 	brick_mesh=surface.commit()

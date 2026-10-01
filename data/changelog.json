@@ -11,7 +11,9 @@
 					"Во время сохранения в правом верхнем углу крутится маленький значок.",
 					"Значок на кнопке «Строительство» гаснет после того, как здание построено и открыто.",
 					"Портреты и миниатюры классов отражены: бойцы смотрят в другую сторону.",
-					"Диалог бойца в хабе: 60 коротких советов о механиках и 20 историй из жизни заставы. Клавиши показаны плашками. Кнопка «Ещё» покажет ещё три реплики."
+					"Диалог бойца в хабе: 60 коротких советов о механиках и 20 историй из жизни заставы. Клавиши показаны плашками. Кнопка «Ещё» покажет ещё три реплики.",
+					"Тени без зерна: мягкость теперь даёт ровное размытие вместо шумной полутени. Кирпич без мелкого мерцающего шума.",
+					"Кладка плотнее: тонкие швы, сквозь стену больше не просвечивает. Кирпич оранжево-персиковый, армированный заметно темнее."
 				]
 			},
 			"en": {
@@ -22,7 +24,9 @@
 					"A small spinning icon in the top-right corner shows when the game saves.",
 					"The dot on the Build button goes out once the building is built and opened.",
 					"Class portraits and miniatures are mirrored to face the other way.",
-					"The soldier's hub chat: 60 short tips on mechanics and 20 tiny stories from the outpost. Keys are shown as key caps. «More» shows three more lines."
+					"The soldier's hub chat: 60 short tips on mechanics and 20 tiny stories from the outpost. Keys are shown as key caps. «More» shows three more lines.",
+					"Grain-free shadows: softness is now an even blur instead of a noisy penumbra. Bricks no longer shimmer with fine noise.",
+					"Denser brickwork: thin joints, no light shining through the wall. Bricks are orange-peach, reinforced ones clearly darker."
 				]
 			}
 		},
