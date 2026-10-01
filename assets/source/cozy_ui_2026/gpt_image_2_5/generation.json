@@ -1,0 +1,707 @@
+{
+  "provider": "Higgsfield",
+  "model": "gpt_image_2_5",
+  "reference_policy": "Only pre-Nano-Banana references and game model screenshots; no Nano Banana visual inputs.",
+  "requests": [
+    {
+      "index": 0,
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "high",
+        "resolution": "2k",
+        "variant": "flare",
+        "folder_id": "b6d33678-4471-43a8-bd76-4d910b162d50",
+        "use_unlim": false,
+        "aspect_ratio": "3:2",
+        "background": "opaque",
+        "medias": [
+          {
+            "role": "image",
+            "value": "9df5e202-e208-4971-8d79-b4944f2223a6"
+          }
+        ],
+        "prompt": "Replace reference with a production 3 columns by 2 rows atlas of SIX square illustrated cat soldier portraits, no borders or text. Reference is identity only; change faceted render into soft hand-painted cozy game illustration, smooth large clean shapes, NO polygon facets, not anime, little fine detail. Each square is a full-bleed atmospheric scene of just 2-3 blurry planes: camp, workshop, forest. Large waist-up character fills each cell. Ginger cats with living expressive cheeks, white short muzzle, whiskers, white helmet with pink-inner cat ears, dark charcoal visor with highlight, olive uniform with large soft camouflage patches, orange shoulder band, white HEXAGON on chest. Exact left-right order: top1 recruit holding rifle in camp; top2 burly machinegunner with belt-fed machinegun in camp; top3 cheerful driver with wrench AND radio in workshop; bottom1 broad heavy cat with riot shield AND grenade launcher; bottom2 slim sniper in olive hood with long scoped rifle in forest; bottom3 engineer with hovering companion drone in workshop. Friendly cozy military, warm restrained colors, light fur and cloth texture, soft rim light. Individual silhouettes/poses clearly distinct. Equipment must be recognizable. No stars, no text, no human faces. Follow the PREVIOUS reference visual language: chunky cozy military miniatures, restrained shapes, subtle soft volumetric painted shading, NO thick cartoon outlines, NO flat sticker look, NO anime. Apply reviewer correction: smooth forms WITHOUT polygon facets, minimal details, warm muted color. "
+      }
+    },
+    {
+      "index": 2,
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "high",
+        "resolution": "2k",
+        "variant": "flare",
+        "folder_id": "b6d33678-4471-43a8-bd76-4d910b162d50",
+        "use_unlim": false,
+        "aspect_ratio": "1:1",
+        "background": "transparent",
+        "medias": [
+          {
+            "role": "image",
+            "value": "740ed837-17f2-41d3-9f35-a2652860307c"
+          },
+          {
+            "role": "image",
+            "value": "a27d3a01-4cb4-4a00-ac8e-9c0030c0d4bf"
+          }
+        ],
+        "prompt": "Production enemy icon atlas EXACT 4 columns x4 rows,16 isolated objects, equal cells, each centered occupying70% cell with generous empty gaps. Truly transparent RGBA background, no ground shadows. Soft hand-painted cozy military game style, smooth large chunky forms NO polygon facets, minimal detail, readable32px. Reference1 dog model and colors, reference2 mortar structure. Dogs are cute stocky puppies, wide short fluffy muzzle, BIG black nose, floppy ears projecting sideways BELOW helmet, thick curled tail. Dark fur black-tan #4a3a30 with tan muzzle #c08a55, brown #7b5236, sable #b07a42 or gray #8c8a86. Brick-red #a8412f helmet WITHOUT cat ears, dark visor, olive uniform; NO orange armbands. Vehicles olive with brick red panels, bone/dog paw emblems. NO stars,crosses,cream-orange livery,text. Row1 puppy with pistol; puppy shotgun; puppy SMG; puppy rifle. Row2 bulky puppy shield; puppy grenade launcher; purple helmet hooded sniper; puppy RPG. Row3 open4wheel buggy; mortar round nest of puffy sandbags, rotating table, SHORT THICK mortar tube on bipod, red lamp, crate orange nose shells as reference2;6wheel APC; tracked tank. Row4 very broad TWIN BARREL command tank; quadcopter; low tracked explosive ground drone with red charge; commander puppy in GOLD #c9a03a helmet with antenna and BONE emblem. All16 unique and uncut, no overlap. Follow the PREVIOUS reference visual language: chunky cozy military miniatures, restrained shapes, subtle soft volumetric painted shading, NO thick cartoon outlines, NO flat sticker look, NO anime. Apply reviewer correction: smooth forms WITHOUT polygon facets, minimal details, warm muted color. "
+      }
+    },
+    {
+      "index": 3,
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "high",
+        "resolution": "2k",
+        "variant": "flare",
+        "folder_id": "b6d33678-4471-43a8-bd76-4d910b162d50",
+        "use_unlim": false,
+        "aspect_ratio": "3:2",
+        "background": "opaque",
+        "medias": [
+          {
+            "role": "image",
+            "value": "f51d7d9c-85e1-4fa5-8bad-d97a531fa6aa"
+          }
+        ],
+        "prompt": "Precise edit of this image. Change ONLY the orange five-point star on the shield in the TOP RIGHT workshop into an orange CAT PAW PRINT with one large rounded pad and four little toe pads. Keep shield shape and position, all other objects, background, style, camera, lighting and exact3x2 layout unchanged. No text. Do not change medical plus on adjacent box. Follow the PREVIOUS reference visual language: chunky cozy military miniatures, restrained shapes, subtle soft volumetric painted shading, NO thick cartoon outlines, NO flat sticker look, NO anime. Apply reviewer correction: smooth forms WITHOUT polygon facets, minimal details, warm muted color. "
+      }
+    },
+    {
+      "index": 4,
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "high",
+        "resolution": "2k",
+        "variant": "flare",
+        "folder_id": "b6d33678-4471-43a8-bd76-4d910b162d50",
+        "use_unlim": false,
+        "aspect_ratio": "3:2",
+        "background": "transparent",
+        "medias": [
+          {
+            "role": "image",
+            "value": "9df5e202-e208-4971-8d79-b4944f2223a6"
+          }
+        ],
+        "prompt": "Six FULL LENGTH characters, FEET VISIBLE. Character sprite sheet EXACT3columns2rows, each cell contains one complete standing cat soldier from top of helmet through short legs down to entire black BOOTS, NEVER waist-up portrait. Whole character fits central65%ofcell, TRANSPARENT empty margins on ALL FOUR sides. No cropped bodies. Cute compact military cats about2.5heads tall, round ginger cheeks white muzzle whiskers, white helmet with pink cat ears and dark charcoal goggles, olive uniform big soft camouflage patches, orange armband, white hexagon chest. Soft painted game illustrations with smooth rounded shading, no polygon facets, no anime. TRANSPARENT BACKGROUND no scene no floor no shadow no text. Row1 slim recruit holding charcoal rifle; stocky muscular gunner carrying belt machinegun; cheerful small driver carrying wrench in one hand and radio in other. Row2 extra broad heavy carrying riot shield and short drum grenade launcher; tall narrow hooded sniper with scoped rifle diagonally and two boots visible; small engineer with hovering toy drone next to body. Short sturdy legs and oversized boots clearly visible on ALL SIX. Lots of transparent empty space around each soldier, NO closeups. Follow the PREVIOUS reference visual language: chunky cozy military miniatures, restrained shapes, subtle soft volumetric painted shading, NO thick cartoon outlines, NO flat sticker look, NO anime. Apply reviewer correction: smooth forms WITHOUT polygon facets, minimal details, warm muted color.  Reference shows appearance ONLY. MUST zoom out to FULLBODY, six entire standing figures with boots."
+      }
+    },
+    {
+      "index": 10,
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "high",
+        "resolution": "2k",
+        "variant": "flare",
+        "folder_id": "b6d33678-4471-43a8-bd76-4d910b162d50",
+        "use_unlim": false,
+        "aspect_ratio": "1:1",
+        "background": "transparent",
+        "medias": [
+          {
+            "role": "image",
+            "value": "def38979-3be0-40bc-b08e-9ce44f70b9bf"
+          }
+        ],
+        "prompt": "Production icon sheet for cozy cat military roguelite. Soft hand-painted game illustration, large rounded clean forms, smooth shading with NO polygon facets, warm muted olive cream teal amber, tiny soft rim light, very little detail. Each icon has a UNIQUE silhouette and distinct semantic action. NO text, letters, numbers, frames or badges. EXACT 3 columns x3 rows equal cells square sheet, central 65% of each cell, wide blank gaps. Truly transparent background, no cast shadows, no glow outside silhouettes. Read left to right top to bottom: orange cat mitten fist with single broad impact wedge; curved ammo belt spitting three cartridges; stout brass bullet stopping a incoming small red bullet at a blunt shock front; gun barrel with oversized orange muzzle burst; double-feed magazine with cycling lever; weapon barrel seated in circular mechanical stabilizer cradle; amber cat eye seen through crosshair ring; split mushrooming bullet with fragments; long telescope with two distant target marks. Follow the PREVIOUS reference visual language: chunky cozy military miniatures, restrained shapes, subtle soft volumetric painted shading, NO thick cartoon outlines, NO flat sticker look, NO anime. Apply reviewer correction: smooth forms WITHOUT polygon facets, minimal details, warm muted color. "
+      }
+    },
+    {
+      "index": 11,
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "high",
+        "resolution": "2k",
+        "variant": "flare",
+        "folder_id": "b6d33678-4471-43a8-bd76-4d910b162d50",
+        "use_unlim": false,
+        "aspect_ratio": "1:1",
+        "background": "transparent",
+        "medias": [
+          {
+            "role": "image",
+            "value": "def38979-3be0-40bc-b08e-9ce44f70b9bf"
+          }
+        ],
+        "prompt": "Production icon sheet for cozy cat military roguelite. Soft hand-painted game illustration, large rounded clean forms, smooth shading with NO polygon facets, warm muted olive cream teal amber, tiny soft rim light, very little detail. Each icon has a UNIQUE silhouette and distinct semantic action. NO text, letters, numbers, frames or badges. EXACT 3 columns x3 rows equal cells square sheet, central 65% of each cell, wide blank gaps. Truly transparent background, no cast shadows, no glow outside silhouettes. Read left to right top to bottom: one cartridge wrapped in small orange flame; three linked burning barrels in cascading arc; ringing bronze ear bell pierced by bullet spark; round concussive grenade with two curved shockwave bands; blue electric cartridge striking small tank gear; long pointed bullet passing through two armor plates; hourglass with a single poised long rifle bullet; sniper scope crowned with raised cat paw in confident gesture; cat helmet peeking from open tank hatch with two crew seats. Follow the PREVIOUS reference visual language: chunky cozy military miniatures, restrained shapes, subtle soft volumetric painted shading, NO thick cartoon outlines, NO flat sticker look, NO anime. Apply reviewer correction: smooth forms WITHOUT polygon facets, minimal details, warm muted color. "
+      }
+    },
+    {
+      "index": 12,
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "high",
+        "resolution": "2k",
+        "variant": "flare",
+        "folder_id": "b6d33678-4471-43a8-bd76-4d910b162d50",
+        "use_unlim": false,
+        "aspect_ratio": "1:1",
+        "background": "transparent",
+        "medias": [
+          {
+            "role": "image",
+            "value": "def38979-3be0-40bc-b08e-9ce44f70b9bf"
+          }
+        ],
+        "prompt": "Production icon sheet for cozy cat military roguelite. Soft hand-painted game illustration, large rounded clean forms, smooth shading with NO polygon facets, warm muted olive cream teal amber, tiny soft rim light, very little detail. Each icon has a UNIQUE silhouette and distinct semantic action. NO text, letters, numbers, frames or badges. EXACT 3 columns x3 rows equal cells square sheet, central 65% of each cell, wide blank gaps. Truly transparent RGBA background, no cast shadows, no glow outside silhouettes. Read left to right top to bottom: stout warm coral heart inside protective olive ribcage; teal medicine vial and folded cream gauze; olive bulletproof vest stopping small brass bullet; wide padded sapper suit hugging a round blast shell; angled slat armor panel deflecting LARGE tank shell; curled cat rolling sideways with single curved arrow; miniature four-corner fortress around a shield; cracked half heart supporting determined raised fist; wrench repairing tank tread with tiny fallen shell casing. Mandatory: actual alpha transparency, no white backdrop, no checkerboard. Follow the PREVIOUS reference visual language: chunky cozy military miniatures, restrained shapes, subtle soft volumetric painted shading, NO thick cartoon outlines, NO flat sticker look, NO anime. Apply reviewer correction: smooth forms WITHOUT polygon facets, minimal details, warm muted color. "
+      }
+    },
+    {
+      "index": 13,
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "high",
+        "resolution": "2k",
+        "variant": "flare",
+        "folder_id": "b6d33678-4471-43a8-bd76-4d910b162d50",
+        "use_unlim": false,
+        "aspect_ratio": "1:1",
+        "background": "transparent",
+        "medias": [
+          {
+            "role": "image",
+            "value": "def38979-3be0-40bc-b08e-9ce44f70b9bf"
+          }
+        ],
+        "prompt": "Production icon sheet for cozy cat military roguelite. Soft hand-painted game illustration, large rounded clean forms, smooth shading with NO polygon facets, warm muted olive cream teal amber, tiny soft rim light, very little detail. Each icon has a UNIQUE silhouette and distinct semantic action. NO text, letters, numbers, frames or badges. EXACT 3 columns x3 rows equal cells square sheet, central 65% of each cell, wide blank gaps. Truly transparent RGBA background, no cast shadows, no glow outside silhouettes. Read left to right top to bottom: two marching boots with forward tracks; olive camouflage poncho draped over crouched cat ears; translucent teal cat silhouette slipping between two faint footprints; boot leaping OUT of open vehicle door; small parachute holding protective transparent bubble around helmet; cat grappling hook gripping tank hatch; chunky battery powering small device antenna; round clock integrated into wrench and gear; lucky spent brass casing sprouting tiny four-leaf clover. Mandatory: actual alpha transparency, no white backdrop, no checkerboard. Follow the PREVIOUS reference visual language: chunky cozy military miniatures, restrained shapes, subtle soft volumetric painted shading, NO thick cartoon outlines, NO flat sticker look, NO anime. Apply reviewer correction: smooth forms WITHOUT polygon facets, minimal details, warm muted color. "
+      }
+    },
+    {
+      "index": 14,
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "high",
+        "resolution": "2k",
+        "variant": "flare",
+        "folder_id": "b6d33678-4471-43a8-bd76-4d910b162d50",
+        "use_unlim": false,
+        "aspect_ratio": "1:1",
+        "background": "transparent",
+        "medias": [
+          {
+            "role": "image",
+            "value": "def38979-3be0-40bc-b08e-9ce44f70b9bf"
+          }
+        ],
+        "prompt": "Production icon sheet for cozy cat military roguelite. Soft hand-painted game illustration, large rounded clean forms, smooth shading with NO polygon facets, warm muted olive cream teal amber, tiny soft rim light, very little detail. Each icon has a UNIQUE silhouette and distinct semantic action. NO text, letters, numbers, frames or badges. EXACT 3 columns x3 rows equal cells square sheet, central 65% of each cell, wide blank gaps. Truly transparent RGBA background, no cast shadows, no glow outside silhouettes. Read left to right top to bottom: bulging supply sack spilling gold ingots and round token; small locked safe containing rolled blueprints; small bomber silhouette and falling three bombs; friendly compact twin rotor box drone; three crossed steel anti-tank beams; hooded cat face fading at one side; two cat helmets touching shoulders; olive mint canister exhaling three pale green soft puffs; olive egg grenade with orange band. Mandatory: actual alpha transparency, no white backdrop, no checkerboard. Follow the PREVIOUS reference visual language: chunky cozy military miniatures, restrained shapes, subtle soft volumetric painted shading, NO thick cartoon outlines, NO flat sticker look, NO anime. Apply reviewer correction: smooth forms WITHOUT polygon facets, minimal details, warm muted color. "
+      }
+    },
+    {
+      "index": 15,
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "high",
+        "resolution": "2k",
+        "variant": "flare",
+        "folder_id": "b6d33678-4471-43a8-bd76-4d910b162d50",
+        "use_unlim": false,
+        "aspect_ratio": "1:1",
+        "background": "transparent",
+        "medias": [
+          {
+            "role": "image",
+            "value": "def38979-3be0-40bc-b08e-9ce44f70b9bf"
+          }
+        ],
+        "prompt": "Production icon atlas EXACT3x3 equal cells, isolated objects centered65%cell, transparent background no shadows, no text. Soft hand-painted cozy military game icons, large rounded clean shapes smooth shading no polygon facets, warm muted olive cream teal amber. HQ upgrades each UNIQUE silhouette. Row1 small clinic tent with heart lamp and medkit; layered reinforced bunker armor plates; small HQ building wrapped in circular wrench arrow. Row2 vehicle repair supply crate with track wheel; roof mounted interceptor catching red incoming shell; squat tesla coil hitting three small targets. Row3 portable repair pulse emitter with three concentric mint rings and wrench center; small bunker under translucent teal protective dome; EMP shock generator with broad blue lightning ring and disabled gear. Clear readable32px silhouettes, little detail, no stars. Mandatory: actual alpha transparency, no white backdrop, no checkerboard. Follow the PREVIOUS reference visual language: chunky cozy military miniatures, restrained shapes, subtle soft volumetric painted shading, NO thick cartoon outlines, NO flat sticker look, NO anime. Apply reviewer correction: smooth forms WITHOUT polygon facets, minimal details, warm muted color. "
+      }
+    },
+    {
+      "index": 16,
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "high",
+        "resolution": "2k",
+        "variant": "flare",
+        "folder_id": "b6d33678-4471-43a8-bd76-4d910b162d50",
+        "use_unlim": false,
+        "aspect_ratio": "1:1",
+        "background": "transparent",
+        "medias": [
+          {
+            "role": "image",
+            "value": "def38979-3be0-40bc-b08e-9ce44f70b9bf"
+          }
+        ],
+        "prompt": "Production game icon sheet EXACT2columns2rows equal cells4icons centered65%cell. Transparent bg no cast shadows no text. Soft hand-painted cozy cat military, large rounded clean shapes smooth shading NO polygon facets, warm muted olive cream teal amber, little detail. Four DIFFERENT active abilities: top left personal defensive shield a thick tall olive riot shield with cat paw emblem and teal edge; top right laser turret with small tripod firing long bright red focused beam diagonally; bottom left round olive pressure mine with copper trigger plate and short detonator wire; bottom right active vehicle field repair ability: open toolbox in front of tank wheel with large teal wrench and a bright repair spark. Clear bold silhouettes with gaps. Mandatory: actual alpha transparency, no white backdrop, no checkerboard. Follow the PREVIOUS reference visual language: chunky cozy military miniatures, restrained shapes, subtle soft volumetric painted shading, NO thick cartoon outlines, NO flat sticker look, NO anime. Apply reviewer correction: smooth forms WITHOUT polygon facets, minimal details, warm muted color. "
+      }
+    },
+    {
+      "index": 17,
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "high",
+        "resolution": "2k",
+        "variant": "flare",
+        "folder_id": "b6d33678-4471-43a8-bd76-4d910b162d50",
+        "use_unlim": false,
+        "aspect_ratio": "1:1",
+        "background": "transparent",
+        "medias": [
+          {
+            "role": "image",
+            "value": "def38979-3be0-40bc-b08e-9ce44f70b9bf"
+          }
+        ],
+        "prompt": "Production9unique upgrade icons EXACT3x3equalcell grid, isolated on transparent background no shadows no text. Soft handpainted cozy military game, smooth large rounded shapes no polygonfacets, warm muted olive cream charcoal orange tinyteal. Each centered65%cell with white gaps. Rows identify vehicle, columns armor/gun/loading. Row1 BUGGY: curved light armor door with round roadwheel; compact mounted belt machinegun with orange rollcage bar; small ammo belt reel with handcrank and tinyroadwheel. Row2 APC: broad layered sloped armored hatch with three bolts; short stout autocannon turret; double ammunition drum feed mechanism on broad box. Row3 TANK: heavy overlapping track skirt plates with tracksegment; long thick tank barrel on angular mantlet; large carousel autoloader with three chunky shells in circular rack. Do NOT draw same vehicle3times. Each upgrade distinct object silhouette, equipment of a different size/proportion by vehicle. No lettering stars or crosses. Mandatory: actual alpha transparency, no white backdrop, no checkerboard. Follow the PREVIOUS reference visual language: chunky cozy military miniatures, restrained shapes, subtle soft volumetric painted shading, NO thick cartoon outlines, NO flat sticker look, NO anime. Apply reviewer correction: smooth forms WITHOUT polygon facets, minimal details, warm muted color. "
+      }
+    },
+    {
+      "index": 18,
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "high",
+        "resolution": "2k",
+        "variant": "flare",
+        "folder_id": "b6d33678-4471-43a8-bd76-4d910b162d50",
+        "use_unlim": false,
+        "aspect_ratio": "1:1",
+        "background": "transparent",
+        "medias": [
+          {
+            "role": "image",
+            "value": "def38979-3be0-40bc-b08e-9ce44f70b9bf"
+          }
+        ],
+        "prompt": "Production cozy military handpainted game icon atlas. Large smooth rounded clean forms no polygonfacets, warm olive cream teal amber, very little detail. transparent background for cutout, no shadows, no text or letters. Each object centered65%cell, wide empty gutters. EXACT3columns3rows9different icons. Row1 precision target with SINGLE cat claw dart dead center; angular copper bullethead with large fourpoint impactburst; two cat paws dodging around a passing shell. Row2 horseshoe with lucky military token; single curved armor plate with three tiny bullets stopped; reinforced roadwheel deflecting tank shell. Row3 blast helmet with broad padded collar; small igniter nozzle and simple flame; tidy stack of alloy bars with cat paw glove collecting a token. Each different silhouette. Mandatory: actual alpha transparency, no white backdrop, no checkerboard. Follow the PREVIOUS reference visual language: chunky cozy military miniatures, restrained shapes, subtle soft volumetric painted shading, NO thick cartoon outlines, NO flat sticker look, NO anime. Apply reviewer correction: smooth forms WITHOUT polygon facets, minimal details, warm muted color. "
+      }
+    },
+    {
+      "index": 19,
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "high",
+        "resolution": "2k",
+        "variant": "flare",
+        "folder_id": "b6d33678-4471-43a8-bd76-4d910b162d50",
+        "use_unlim": false,
+        "aspect_ratio": "3:2",
+        "background": "transparent",
+        "medias": [
+          {
+            "role": "image",
+            "value": "def38979-3be0-40bc-b08e-9ce44f70b9bf"
+          }
+        ],
+        "prompt": "Production cozy military handpainted game icon atlas. Large smooth rounded clean forms no polygonfacets, warm olive cream teal amber, very little detail. transparent background for cutout, no shadows, no text or letters. Each object centered65%cell, wide empty gutters. EXACT3columns2rows6different icons. Row1 square backpack with padlock holding rolled blueprints; dazed olive soldier helmet with two orbiting small bells; blue induction coil around tank axle. Row2 long spearpoint bullet passing through three small target boards; folded camouflage net with broad soft patches draped over cat ears; small repair welding torch with HQ roof and tiny bolt. All fully contained in own cell, no labels. Mandatory: actual alpha transparency, no white backdrop, no checkerboard. Follow the PREVIOUS reference visual language: chunky cozy military miniatures, restrained shapes, subtle soft volumetric painted shading, NO thick cartoon outlines, NO flat sticker look, NO anime. Apply reviewer correction: smooth forms WITHOUT polygon facets, minimal details, warm muted color. "
+      }
+    },
+    {
+      "index": 20,
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "high",
+        "resolution": "2k",
+        "variant": "flare",
+        "folder_id": "b6d33678-4471-43a8-bd76-4d910b162d50",
+        "use_unlim": false,
+        "aspect_ratio": "3:2",
+        "background": "opaque",
+        "medias": [
+          {
+            "role": "image",
+            "value": "489def8f-6650-4445-bd59-d2dcef5eb14c"
+          }
+        ],
+        "prompt": "Precise correction of this SIX CAT PORTRAIT 3x2 atlas. Keep all six cat identities, closed dark visors, white helmets with pink cat ears, chest white hexagons, orange armbands, warm softly painted military style and exact3x2 layout. Correct equipment ONLY: TOP MIDDLE broad gunner must hold a BELT FED MACHINE GUN with a LONG NARROW barrel and small bullets in belt, NOT a large cannon or grenade launcher. Remove the three fat shells on gunner chest. BOTTOM LEFT heavy must hold a SHORT DRUM GRENADE LAUNCHER with one thick barrel and round revolving drum plus the SAME riot shield, NOT a shotgun. Other four characters unchanged. Simplify camouflage to just3-4 BIG SOFT patches per sleeve, without tessellated small pieces. Smooth shading no polygon facets. Backgrounds simplify to2-3 blurry planes, little detail. No text. Do not move cells."
+      }
+    },
+    {
+      "index": 21,
+      "params": {
+        "model": "gpt_image_2_5",
+        "quality": "high",
+        "resolution": "2k",
+        "variant": "flare",
+        "folder_id": "b6d33678-4471-43a8-bd76-4d910b162d50",
+        "use_unlim": false,
+        "aspect_ratio": "3:2",
+        "background": "transparent",
+        "medias": [
+          {
+            "role": "image",
+            "value": "95d71fed-a805-402e-bd7f-cc83746366ea"
+          }
+        ],
+        "prompt": "Precise correction of this SIX FULL BODY CAT sprite3x2atlas. All six full bodies and boots fully visible in samecells. Keep all identities and closed dark visors, white cat helmets pink ears, ginger cheeks, orange armband, white chesthexagon. TOP MIDDLE: replace grenade launcher with BELT FED MACHINE GUN with LONG NARROW barrel and small bullets, remove three fat chestshells. BOTTOM LEFT: replace shotgun with SHORT REVOLVING DRUM GRENADE LAUNCHER, thick single barrel and round drum; retain riotshield. Other4figures unchanged. Smooth large rounded forms with NO polygonfacets, minimal big soft camouflagepatches, warm painterly shading. TRUE TRANSPARENT RGBA background with ZERO colored haze, bloom, aura, groundshadow, or anything beyond solid object silhouettes. Clean isolated cutouts separatedby wide transparentgaps, not a blackbackground. No text."
+      }
+    }
+  ],
+  "jobs": [
+    {
+      "index": 0,
+      "job_id": "489def8f-6650-4445-bd59-d2dcef5eb14c",
+      "status": "pending",
+      "adjustments": {
+        "medias[0].role": {
+          "requested": "image",
+          "used": "image_references",
+          "reason": "GPT Image 2.5 backend expects schema-key media roles"
+        }
+      }
+    },
+    {
+      "index": 2,
+      "job_id": "9dcf3859-fb2a-49ee-93b9-0b7696313000",
+      "status": "pending",
+      "adjustments": {
+        "medias[0].role": {
+          "requested": "image",
+          "used": "image_references",
+          "reason": "GPT Image 2.5 backend expects schema-key media roles"
+        },
+        "medias[1].role": {
+          "requested": "image",
+          "used": "image_references",
+          "reason": "GPT Image 2.5 backend expects schema-key media roles"
+        }
+      }
+    },
+    {
+      "index": 3,
+      "job_id": "238f41ac-7f8b-47be-a8ff-dadd9fe5af73",
+      "status": "pending",
+      "adjustments": {
+        "medias[0].role": {
+          "requested": "image",
+          "used": "image_references",
+          "reason": "GPT Image 2.5 backend expects schema-key media roles"
+        }
+      }
+    },
+    {
+      "index": 4,
+      "job_id": "95d71fed-a805-402e-bd7f-cc83746366ea",
+      "status": "pending",
+      "adjustments": {
+        "medias[0].role": {
+          "requested": "image",
+          "used": "image_references",
+          "reason": "GPT Image 2.5 backend expects schema-key media roles"
+        }
+      }
+    },
+    {
+      "index": 10,
+      "job_id": "e3ded456-8e77-423d-994e-cd9d27cc3801",
+      "status": "pending",
+      "adjustments": {
+        "medias[0].role": {
+          "requested": "image",
+          "used": "image_references",
+          "reason": "GPT Image 2.5 backend expects schema-key media roles"
+        }
+      }
+    },
+    {
+      "index": 11,
+      "job_id": "c15f4078-6667-4d58-bb4e-768c0195d5f5",
+      "status": "pending",
+      "adjustments": {
+        "medias[0].role": {
+          "requested": "image",
+          "used": "image_references",
+          "reason": "GPT Image 2.5 backend expects schema-key media roles"
+        }
+      }
+    },
+    {
+      "index": 12,
+      "job_id": "476e35d6-0d7c-4a9f-9b27-16b156798a7f",
+      "status": "pending",
+      "adjustments": {
+        "medias[0].role": {
+          "requested": "image",
+          "used": "image_references",
+          "reason": "GPT Image 2.5 backend expects schema-key media roles"
+        }
+      }
+    },
+    {
+      "index": 13,
+      "job_id": "3ec14b2c-cc81-4e45-b089-62cf843a6d80",
+      "status": "pending",
+      "adjustments": {
+        "medias[0].role": {
+          "requested": "image",
+          "used": "image_references",
+          "reason": "GPT Image 2.5 backend expects schema-key media roles"
+        }
+      }
+    },
+    {
+      "index": 14,
+      "job_id": "7a195137-2eb1-4105-ae8c-fd5cf6b1bbca",
+      "status": "pending",
+      "adjustments": {
+        "medias[0].role": {
+          "requested": "image",
+          "used": "image_references",
+          "reason": "GPT Image 2.5 backend expects schema-key media roles"
+        }
+      }
+    },
+    {
+      "index": 15,
+      "job_id": "5c535620-5962-4489-bbc9-80aaae60dd20",
+      "status": "pending",
+      "adjustments": {
+        "medias[0].role": {
+          "requested": "image",
+          "used": "image_references",
+          "reason": "GPT Image 2.5 backend expects schema-key media roles"
+        }
+      }
+    },
+    {
+      "index": 16,
+      "job_id": "46f8cf6e-688f-4d51-b760-4e3f6db06225",
+      "status": "pending",
+      "adjustments": {
+        "medias[0].role": {
+          "requested": "image",
+          "used": "image_references",
+          "reason": "GPT Image 2.5 backend expects schema-key media roles"
+        }
+      }
+    },
+    {
+      "index": 17,
+      "job_id": "f64f0735-c83c-4989-801e-f4940fecb6d3",
+      "status": "pending",
+      "adjustments": {
+        "medias[0].role": {
+          "requested": "image",
+          "used": "image_references",
+          "reason": "GPT Image 2.5 backend expects schema-key media roles"
+        }
+      }
+    },
+    {
+      "index": 18,
+      "job_id": "afedd6be-6f8e-4af5-8480-63e9178d6bc3",
+      "status": "pending",
+      "adjustments": {
+        "medias[0].role": {
+          "requested": "image",
+          "used": "image_references",
+          "reason": "GPT Image 2.5 backend expects schema-key media roles"
+        }
+      }
+    },
+    {
+      "index": 19,
+      "job_id": "62655561-b44e-4c40-8bed-4eb03b6e1aaf",
+      "status": "pending",
+      "adjustments": {
+        "medias[0].role": {
+          "requested": "image",
+          "used": "image_references",
+          "reason": "GPT Image 2.5 backend expects schema-key media roles"
+        }
+      }
+    },
+    {
+      "index": 20,
+      "job_id": "15bb70d5-2c70-493d-a7b7-02ce5366546e",
+      "status": "pending",
+      "adjustments": {
+        "medias[0].role": {
+          "requested": "image",
+          "used": "image_references",
+          "reason": "GPT Image 2.5 backend expects schema-key media roles"
+        }
+      }
+    },
+    {
+      "index": 21,
+      "job_id": "1e8ff7e9-0353-4cc4-ae24-a6e6d1b17f60",
+      "status": "pending",
+      "adjustments": {
+        "medias[0].role": {
+          "requested": "image",
+          "used": "image_references",
+          "reason": "GPT Image 2.5 backend expects schema-key media roles"
+        }
+      }
+    }
+  ],
+  "results": [
+    {
+      "index": 0,
+      "job_id": "489def8f-6650-4445-bd59-d2dcef5eb14c",
+      "status": "completed",
+      "type": "image",
+      "model": "gpt_image_2_5",
+      "result_url": "https://d8j0ntlcm91z4.cloudfront.net/user_34ir9q1tf8scvTnObpWkiXR9aar/hf_20260930_233723_489def8f-6650-4445-bd59-d2dcef5eb14c.png"
+    },
+    {
+      "index": 2,
+      "job_id": "9dcf3859-fb2a-49ee-93b9-0b7696313000",
+      "status": "completed",
+      "type": "image",
+      "model": "gpt_image_2_5",
+      "result_url": "https://d8j0ntlcm91z4.cloudfront.net/user_34ir9q1tf8scvTnObpWkiXR9aar/hf_20260930_233723_9dcf3859-fb2a-49ee-93b9-0b7696313000.png"
+    },
+    {
+      "index": 3,
+      "job_id": "238f41ac-7f8b-47be-a8ff-dadd9fe5af73",
+      "status": "completed",
+      "type": "image",
+      "model": "gpt_image_2_5",
+      "result_url": "https://d8j0ntlcm91z4.cloudfront.net/user_34ir9q1tf8scvTnObpWkiXR9aar/hf_20260930_233723_238f41ac-7f8b-47be-a8ff-dadd9fe5af73.png"
+    },
+    {
+      "index": 4,
+      "job_id": "95d71fed-a805-402e-bd7f-cc83746366ea",
+      "status": "completed",
+      "type": "image",
+      "model": "gpt_image_2_5",
+      "result_url": "https://d8j0ntlcm91z4.cloudfront.net/user_34ir9q1tf8scvTnObpWkiXR9aar/hf_20260930_233723_95d71fed-a805-402e-bd7f-cc83746366ea.png"
+    },
+    {
+      "index": 10,
+      "job_id": "e3ded456-8e77-423d-994e-cd9d27cc3801",
+      "status": "completed",
+      "type": "image",
+      "model": "gpt_image_2_5",
+      "result_url": "https://d8j0ntlcm91z4.cloudfront.net/user_34ir9q1tf8scvTnObpWkiXR9aar/hf_20260930_233723_e3ded456-8e77-423d-994e-cd9d27cc3801.png"
+    },
+    {
+      "index": 11,
+      "job_id": "c15f4078-6667-4d58-bb4e-768c0195d5f5",
+      "status": "completed",
+      "type": "image",
+      "model": "gpt_image_2_5",
+      "result_url": "https://d8j0ntlcm91z4.cloudfront.net/user_34ir9q1tf8scvTnObpWkiXR9aar/hf_20260930_233723_c15f4078-6667-4d58-bb4e-768c0195d5f5.png"
+    },
+    {
+      "index": 12,
+      "job_id": "476e35d6-0d7c-4a9f-9b27-16b156798a7f",
+      "status": "completed",
+      "type": "image",
+      "model": "gpt_image_2_5",
+      "result_url": "https://d8j0ntlcm91z4.cloudfront.net/user_34ir9q1tf8scvTnObpWkiXR9aar/hf_20260930_233822_476e35d6-0d7c-4a9f-9b27-16b156798a7f.png"
+    },
+    {
+      "index": 13,
+      "job_id": "3ec14b2c-cc81-4e45-b089-62cf843a6d80",
+      "status": "completed",
+      "type": "image",
+      "model": "gpt_image_2_5",
+      "result_url": "https://d8j0ntlcm91z4.cloudfront.net/user_34ir9q1tf8scvTnObpWkiXR9aar/hf_20260930_233822_3ec14b2c-cc81-4e45-b089-62cf843a6d80.png"
+    },
+    {
+      "index": 14,
+      "job_id": "7a195137-2eb1-4105-ae8c-fd5cf6b1bbca",
+      "status": "completed",
+      "type": "image",
+      "model": "gpt_image_2_5",
+      "result_url": "https://d8j0ntlcm91z4.cloudfront.net/user_34ir9q1tf8scvTnObpWkiXR9aar/hf_20260930_233822_7a195137-2eb1-4105-ae8c-fd5cf6b1bbca.png"
+    },
+    {
+      "index": 15,
+      "job_id": "5c535620-5962-4489-bbc9-80aaae60dd20",
+      "status": "completed",
+      "type": "image",
+      "model": "gpt_image_2_5",
+      "result_url": "https://d8j0ntlcm91z4.cloudfront.net/user_34ir9q1tf8scvTnObpWkiXR9aar/hf_20260930_233823_5c535620-5962-4489-bbc9-80aaae60dd20.png"
+    },
+    {
+      "index": 16,
+      "job_id": "46f8cf6e-688f-4d51-b760-4e3f6db06225",
+      "status": "completed",
+      "type": "image",
+      "model": "gpt_image_2_5",
+      "result_url": "https://d8j0ntlcm91z4.cloudfront.net/user_34ir9q1tf8scvTnObpWkiXR9aar/hf_20260930_233822_46f8cf6e-688f-4d51-b760-4e3f6db06225.png"
+    },
+    {
+      "index": 17,
+      "job_id": "f64f0735-c83c-4989-801e-f4940fecb6d3",
+      "status": "completed",
+      "type": "image",
+      "model": "gpt_image_2_5",
+      "result_url": "https://d8j0ntlcm91z4.cloudfront.net/user_34ir9q1tf8scvTnObpWkiXR9aar/hf_20260930_233822_f64f0735-c83c-4989-801e-f4940fecb6d3.png"
+    },
+    {
+      "index": 18,
+      "job_id": "afedd6be-6f8e-4af5-8480-63e9178d6bc3",
+      "status": "completed",
+      "type": "image",
+      "model": "gpt_image_2_5",
+      "result_url": "https://d8j0ntlcm91z4.cloudfront.net/user_34ir9q1tf8scvTnObpWkiXR9aar/hf_20260930_233831_afedd6be-6f8e-4af5-8480-63e9178d6bc3.png"
+    },
+    {
+      "index": 19,
+      "job_id": "62655561-b44e-4c40-8bed-4eb03b6e1aaf",
+      "status": "completed",
+      "type": "image",
+      "model": "gpt_image_2_5",
+      "result_url": "https://d8j0ntlcm91z4.cloudfront.net/user_34ir9q1tf8scvTnObpWkiXR9aar/hf_20260930_233832_62655561-b44e-4c40-8bed-4eb03b6e1aaf.png"
+    },
+    {
+      "index": 20,
+      "job_id": "15bb70d5-2c70-493d-a7b7-02ce5366546e",
+      "status": "completed",
+      "type": "image",
+      "model": "gpt_image_2_5",
+      "result_url": "https://d8j0ntlcm91z4.cloudfront.net/user_34ir9q1tf8scvTnObpWkiXR9aar/hf_20260930_234513_15bb70d5-2c70-493d-a7b7-02ce5366546e.png"
+    },
+    {
+      "index": 21,
+      "job_id": "1e8ff7e9-0353-4cc4-ae24-a6e6d1b17f60",
+      "status": "completed",
+      "type": "image",
+      "model": "gpt_image_2_5",
+      "result_url": "https://d8j0ntlcm91z4.cloudfront.net/user_34ir9q1tf8scvTnObpWkiXR9aar/hf_20260930_234513_1e8ff7e9-0353-4cc4-ae24-a6e6d1b17f60.png"
+    }
+  ],
+  "repair": {
+    "request": {
+      "model": "gpt_image_2_5",
+      "quality": "high",
+      "resolution": "2k",
+      "variant": "flare",
+      "folder_id": "b6d33678-4471-43a8-bd76-4d910b162d50",
+      "use_unlim": false,
+      "aspect_ratio": "1:1",
+      "background": "transparent",
+      "medias": [
+        {
+          "role": "image",
+          "value": "def38979-3be0-40bc-b08e-9ce44f70b9bf"
+        }
+      ],
+      "prompt": "ONE isolated game icon: open olive toolbox containing a large teal wrench in front of one complete small tank roadwheel with a short track loop; small gold repair spark. All objects fully visible, entire wheel and toolbox INSIDE middle65%ofcanvas with wide empty margin on ALL4SIDES. No text. Chunky cozy military miniatures, restrained cream olive charcoal teal warm palette, large smooth rounded forms and soft volumetric painterly shading, minimal details, no polygonfacets, no flat cartoon outlines. Transparent RGBA background no backdrop no halo no floor no haze. Reference only style."
+    },
+    "result": {
+      "jobs": [
+        {
+          "index": 22,
+          "job_id": "f6c594fa-ee28-4aeb-b495-7388f5349a77",
+          "status": "completed",
+          "type": "image",
+          "model": "gpt_image_2_5",
+          "result_url": "https://d8j0ntlcm91z4.cloudfront.net/user_34ir9q1tf8scvTnObpWkiXR9aar/hf_20260930_235131_f6c594fa-ee28-4aeb-b495-7388f5349a77.png"
+        }
+      ],
+      "summary": {
+        "total": 1,
+        "completed": 1,
+        "failed": 0,
+        "active": 0,
+        "errors": 0
+      },
+      "all_terminal": true
+    }
+  },
+  "accepted": {
+    "portraits": 20,
+    "miniatures": 21,
+    "enemies": 2,
+    "workshops": 3,
+    "icons": "10-19; abilities/field_repair replaced by22"
+  },
+  "processing": "Native alpha remapped to remove low-opacity halos; whole connected silhouettes assigned to grid cells; transparent margins; final original atlas dimensions."
+}

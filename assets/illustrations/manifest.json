@@ -1,0 +1,2088 @@
+{
+  "schema_version": 1,
+  "setting": "illustration_set",
+  "recommended_default": "gpt_image_2_5",
+  "labels": {
+    "gpt_image_2_5": "GPT",
+    "nano_banana": "Nano Banana"
+  },
+  "runtime_switch_implemented": false,
+  "entries": [
+    {
+      "key": "upgrades/damage",
+      "original": "res://assets/icons/upgrades/damage.png",
+      "relative": "icons/upgrades/damage.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/damage.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "06799378cdfea0f939a9f89160d4d9aa87747e92466c935049f670373df71eed"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/upgrades/damage.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "40fd2e4286be92d8d72e547113537564187fdfe7ec1e84d3988c71ead3076855"
+        }
+      }
+    },
+    {
+      "key": "upgrades/fire",
+      "original": "res://assets/icons/upgrades/fire.png",
+      "relative": "icons/upgrades/fire.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/fire.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "ba0d28ecdaa70a4df5b542af4c26fbc76d53263de602eb6eee494a3a1567d539"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/upgrades/fire.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "40d325a09fd5439400191630dd1f4e5136c21a30a43992218229582a212aa438"
+        }
+      }
+    },
+    {
+      "key": "upgrades/intercept",
+      "original": "res://assets/icons/upgrades/intercept.png",
+      "relative": "icons/upgrades/intercept.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/intercept.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "3a6c26a5ea0374cb5cf2ec1b526d9aabae92e8cca9648b54dfa41ed6381fd9fd"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/upgrades/intercept.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "08a1f9d666cc60bfa22e6bdbfd929c0b015eaee006b9aadfbae099b48169a5ee"
+        }
+      }
+    },
+    {
+      "key": "upgrades/weapon_damage",
+      "original": "res://assets/icons/upgrades/weapon_damage.png",
+      "relative": "icons/upgrades/weapon_damage.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/weapon_damage.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "377436f65dc1c1a9e0e6b4f796d5cce8cc2d246a6ded6d1ed782581d74b89dc5"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/upgrades/weapon_damage.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "b0580006fa91592d32ad0d7b5b957aa058cf7a75075e021411f4c0d1df34a6f2"
+        }
+      }
+    },
+    {
+      "key": "upgrades/weapon_fire",
+      "original": "res://assets/icons/upgrades/weapon_fire.png",
+      "relative": "icons/upgrades/weapon_fire.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/weapon_fire.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "3fba163574d24228aba3c42b1cbd9326d3f135d87091d082dd42bef39de28d2a"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/upgrades/weapon_fire.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "03c0a7834e6fa2c6dc4a48cb74872b8821a5c8c0334dcf42f0b2158a38fcd709"
+        }
+      }
+    },
+    {
+      "key": "upgrades/weapon_intercept",
+      "original": "res://assets/icons/upgrades/weapon_intercept.png",
+      "relative": "icons/upgrades/weapon_intercept.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/weapon_intercept.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "9ebfef1dc3682c66f9028da86b00f04f1b51b2559426d4e08e7a521fa102f04f"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/upgrades/weapon_intercept.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "84ca8365fe29c3050514a008f39d86858bddbb74d38315b99300c0e032fc6a15"
+        }
+      }
+    },
+    {
+      "key": "upgrades/crit_chance",
+      "original": "res://assets/icons/upgrades/crit_chance.png",
+      "relative": "icons/upgrades/crit_chance.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/crit_chance.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "8f674b8e5c460bb6b76add4e6fb269726b8e4cde7f287719191520ad799d0cb6"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/upgrades/crit_chance.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "11853f9a4029ae356229a953ef0b20a16e7eb40b4e3cbb53620c3fa93f251922"
+        }
+      }
+    },
+    {
+      "key": "upgrades/crit_damage",
+      "original": "res://assets/icons/upgrades/crit_damage.png",
+      "relative": "icons/upgrades/crit_damage.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/crit_damage.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "353127dc932e2d6843a8f95687cf2a902b759154426c8a8cfd8c59c1ed3ba1fe"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/upgrades/crit_damage.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "6dfac5e76b3140cf972bdc7f63b8a9436528ac1b16e77e769061e9a1b3f102df"
+        }
+      }
+    },
+    {
+      "key": "upgrades/range",
+      "original": "res://assets/icons/upgrades/range.png",
+      "relative": "icons/upgrades/range.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/range.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "9d086771879c7db90700cda0f447cce9b2d733f645366aaadf12fcf2516c8368"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/upgrades/range.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "a4da537845145e0bb8f352fad24d561725000637d6d85a22b739b01a5af6f9d1"
+        }
+      }
+    },
+    {
+      "key": "upgrades/burn",
+      "original": "res://assets/icons/upgrades/burn.png",
+      "relative": "icons/upgrades/burn.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/burn.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "f42f4cbb97023f094bdea20b68e9293ba62751be6f7cce55a76554ca034e9849"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/upgrades/burn.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "601481056d302c3bbd261617bb343654a85cd8527fe3356458815454155d044c"
+        }
+      }
+    },
+    {
+      "key": "upgrades/chain_fire",
+      "original": "res://assets/icons/upgrades/chain_fire.png",
+      "relative": "icons/upgrades/chain_fire.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/chain_fire.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "a20855e5d1c90c0af6ed819fc9f81007d327e8ad00e17343131fe3319f9ddac1"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/upgrades/chain_fire.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "df547e87cc03afb90e1b79e4c9721f07959b8907dd2ef805044f4041c4c80001"
+        }
+      }
+    },
+    {
+      "key": "upgrades/crit_stun",
+      "original": "res://assets/icons/upgrades/crit_stun.png",
+      "relative": "icons/upgrades/crit_stun.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/crit_stun.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "74cdc651fad01943d9ba85a678a4e9bf3a084a4ea9007094219c4653a2f61907"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/upgrades/crit_stun.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "7a35019a3facad1fcf8b35675817ac9399ba2aa345526a16ea1533327329efad"
+        }
+      }
+    },
+    {
+      "key": "upgrades/stun",
+      "original": "res://assets/icons/upgrades/stun.png",
+      "relative": "icons/upgrades/stun.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/stun.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "4583c5716961f13428eeac8e79bc68602f452ecfabd935e4d4b9bbee14f955b7"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/upgrades/stun.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "bbd645d586c2865eeddf45cb42ba2e6f97c18915b23a6622cd8ab60947b1e2fa"
+        }
+      }
+    },
+    {
+      "key": "upgrades/shock",
+      "original": "res://assets/icons/upgrades/shock.png",
+      "relative": "icons/upgrades/shock.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/shock.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "efe9e2a3e7947ad5f51020f6a523427648afd57411d40f4d7c16888b48c38934"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/upgrades/shock.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "ad01d17706601b7b2c1e4df0550c51c07758f36160f1e66a55ae8f62122539fd"
+        }
+      }
+    },
+    {
+      "key": "upgrades/pierce",
+      "original": "res://assets/icons/upgrades/pierce.png",
+      "relative": "icons/upgrades/pierce.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/pierce.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "db06321e517eec5b3e6764c0dd3f250153660fd190deb1049071be83ba5d23b7"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/upgrades/pierce.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "99d8243d7565dfda8af3cc33d32fac650e5ceeddf5417e2ecb1b6b8d8c2a37f0"
+        }
+      }
+    },
+    {
+      "key": "upgrades/opening_shot",
+      "original": "res://assets/icons/upgrades/opening_shot.png",
+      "relative": "icons/upgrades/opening_shot.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/opening_shot.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "7091e6582ebc73e3208f67025b8f17c196a556f21f9217bd9a29467e39e271a1"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/upgrades/opening_shot.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "04b86dfac8b0cbcc7ca8284962d60c7c54b9e8a7e2adfd62a238ac8a145f82a6"
+        }
+      }
+    },
+    {
+      "key": "upgrades/ace",
+      "original": "res://assets/icons/upgrades/ace.png",
+      "relative": "icons/upgrades/ace.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/ace.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "707fbedce7b2fd5174439942e354ac4026dedf34e20b5130c87e1eecda30916d"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/upgrades/ace.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "2fc00d16ed2219c2fa75d9c645090073470f7de86e2c2d1a274b9b543c1df8da"
+        }
+      }
+    },
+    {
+      "key": "upgrades/crew",
+      "original": "res://assets/icons/upgrades/crew.png",
+      "relative": "icons/upgrades/crew.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/crew.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "0024ac6fa356808098a7a3c9edcdbc48b68e2d893e4b6d7a3b2d46c87d21c8f0"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/upgrades/crew.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "d5d632bdd7575b5acee81cbb0dac8a6e02415e93c906431ddd1b7bd85816d099"
+        }
+      }
+    },
+    {
+      "key": "upgrades/health",
+      "original": "res://assets/icons/upgrades/health.png",
+      "relative": "icons/upgrades/health.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/health.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "1ac4f8c19dc980a74938b7ed4c26895dfd20a95d4417adfaf9664de893b4df56"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/upgrades/health.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "b2a5e5c89a744f2b356d303570da0b23d590857e6f0ee260b8d6c5ac225bf33d"
+        }
+      }
+    },
+    {
+      "key": "upgrades/healing",
+      "original": "res://assets/icons/upgrades/healing.png",
+      "relative": "icons/upgrades/healing.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/healing.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "32bbd95faa5bdb1a677e0593402797cce53411059714ceae5e4e6f2669a06e5e"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/upgrades/healing.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "32af5b143d31b889a47dafece0d28e9bdf5afe37b1d7adfa568498936b023344"
+        }
+      }
+    },
+    {
+      "key": "upgrades/guard_bullet",
+      "original": "res://assets/icons/upgrades/guard_bullet.png",
+      "relative": "icons/upgrades/guard_bullet.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/guard_bullet.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "53c7708841ed7787c54f92e5c2ac908633b93d63a9ea6bfe1a8b2c0d52707d64"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/upgrades/guard_bullet.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "76adabbd1e1bb8a76e8282692c79f7f4a44ea76d968f3d6217a793c96b10dbce"
+        }
+      }
+    },
+    {
+      "key": "upgrades/guard_blast",
+      "original": "res://assets/icons/upgrades/guard_blast.png",
+      "relative": "icons/upgrades/guard_blast.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/guard_blast.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "d73b654e0bffea55f84f76207e450f3be5ce54c18623fbb945fa6aa2a1ae9648"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/upgrades/guard_blast.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "ee8f738df75dfa903d6b9eab90d7bc11c49d49d3ae334df73213889e817657b8"
+        }
+      }
+    },
+    {
+      "key": "upgrades/guard_vehicle",
+      "original": "res://assets/icons/upgrades/guard_vehicle.png",
+      "relative": "icons/upgrades/guard_vehicle.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/guard_vehicle.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "4932d94e8f56bf3f85ebf8dde7e0e6b0e454dca0eeb1bed85381ae1bc3ff6125"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/upgrades/guard_vehicle.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "5a5d459060b03b585634b8458b4d5622bfb0c6023930b4706f767d4ca64483c0"
+        }
+      }
+    },
+    {
+      "key": "upgrades/dodge",
+      "original": "res://assets/icons/upgrades/dodge.png",
+      "relative": "icons/upgrades/dodge.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/dodge.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "10eae773d7bc867b5495d67081815386365ab11e0208d345f93f4e596b891102"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/upgrades/dodge.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "848e2c7f18a15c89f7a0028d783d91733032b346993816d9c42016bfb313466b"
+        }
+      }
+    },
+    {
+      "key": "upgrades/fortress",
+      "original": "res://assets/icons/upgrades/fortress.png",
+      "relative": "icons/upgrades/fortress.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/fortress.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "ba8a230b395d775a060d1e99e3c06346621e298eab2a6259c292793bc49e040e"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/upgrades/fortress.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "b080f9578a13dcbf402cc4e6387577c277f3f1405e3bff5e78684e65815d32b6"
+        }
+      }
+    },
+    {
+      "key": "upgrades/last_stand",
+      "original": "res://assets/icons/upgrades/last_stand.png",
+      "relative": "icons/upgrades/last_stand.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/last_stand.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "641c08f77bb33b433f42ea17d2b8ee37d44ae4ad5a1d818cae9e570a1233b965"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/upgrades/last_stand.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "c8646c44a22d6d9884d2f910a3104863651adf3b454fdc924cd6ff9e31cb11e2"
+        }
+      }
+    },
+    {
+      "key": "upgrades/field_repair",
+      "original": "res://assets/icons/upgrades/field_repair.png",
+      "relative": "icons/upgrades/field_repair.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/field_repair.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "f2719f68b5742db308372a6a90bcd2b66a10d90a04cf8b1b749d0863b99f59dc"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/upgrades/field_repair.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "1b11cae80ea31b2f8aeb6194d624bf3f4e03ebe72cee5d0e83b4d165236bb25e"
+        }
+      }
+    },
+    {
+      "key": "upgrades/speed",
+      "original": "res://assets/icons/upgrades/speed.png",
+      "relative": "icons/upgrades/speed.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/speed.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "0da3379902249933e150636622a2f3c2a46ddcc38191f430e7cac47346a2fb59"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/upgrades/speed.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "d1524f77846feb36d31a4282853f5aa0ea886f2742535b160b76d1ef36e26504"
+        }
+      }
+    },
+    {
+      "key": "upgrades/stealth",
+      "original": "res://assets/icons/upgrades/stealth.png",
+      "relative": "icons/upgrades/stealth.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/stealth.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "5ef044cf7f125e3cb5ace2380aa612ce4bd94b1e0d9f33b5b12b88d66e2f4280"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/upgrades/stealth.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "0249f91cbc32b85dfe8332e8cb974bc0aca8233abdd5f030fd77786210d99876"
+        }
+      }
+    },
+    {
+      "key": "upgrades/ghost",
+      "original": "res://assets/icons/upgrades/ghost.png",
+      "relative": "icons/upgrades/ghost.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/ghost.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "13b174026b6cf13416c44c54d3117d1757950bc7cd086182af40c7c321fd3a52"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/upgrades/ghost.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "220fa40fba88024d85dfcb1653cb5e88ff0ebf9f5eff3caf92188a844b451fbc"
+        }
+      }
+    },
+    {
+      "key": "upgrades/exit_dash",
+      "original": "res://assets/icons/upgrades/exit_dash.png",
+      "relative": "icons/upgrades/exit_dash.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/exit_dash.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "8d3be6965ceee23412d19f9d838a7648b583b4bddb5f7e208eb15713bc4ddda3"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/upgrades/exit_dash.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "485eccb10270b51a723dd242fbb9ab8324379ec93ed4edf1fde7338fba685bba"
+        }
+      }
+    },
+    {
+      "key": "upgrades/landing",
+      "original": "res://assets/icons/upgrades/landing.png",
+      "relative": "icons/upgrades/landing.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/landing.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "32a6adec0f14fb78cb65ad484878dcf0856fe934bf08bfcda14b983c94300777"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/upgrades/landing.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "36a137bb720cc2dbbd5184f77a6c91edeaa1f3c1f2a81e6403488e09ed00367a"
+        }
+      }
+    },
+    {
+      "key": "upgrades/boarding",
+      "original": "res://assets/icons/upgrades/boarding.png",
+      "relative": "icons/upgrades/boarding.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/boarding.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "25e0e870bc2e70163f21bbd6d8a55356f8b8f12e663d9645c4b1bde419a60253"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/upgrades/boarding.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "530cf7cbda9370b5468f83742ad48a3dd532d47aa3f676becb5abc6acd7056f9"
+        }
+      }
+    },
+    {
+      "key": "upgrades/device_power",
+      "original": "res://assets/icons/upgrades/device_power.png",
+      "relative": "icons/upgrades/device_power.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/device_power.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "2886d69670b7b4d2c3986645e419a6e6347df142abb04931fdde6e230ed41fad"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/upgrades/device_power.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "d4a2c768600179ca10b29ffe5d6133d5d5f4808e76f5713d3c4d139b3459e48b"
+        }
+      }
+    },
+    {
+      "key": "upgrades/device_cooldown",
+      "original": "res://assets/icons/upgrades/device_cooldown.png",
+      "relative": "icons/upgrades/device_cooldown.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/device_cooldown.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "b966bb1ae856556dfd45d3b5d79867b60762f7114ecdd112c065784cb5e21080"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/upgrades/device_cooldown.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "ca7c96e72ddbe5a47ce84c0531b0645397cd5695fc1299235a5686b185589c69"
+        }
+      }
+    },
+    {
+      "key": "upgrades/luck",
+      "original": "res://assets/icons/upgrades/luck.png",
+      "relative": "icons/upgrades/luck.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/luck.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "7f734a84479227f216c85f81220a08c81ca97db44a674c3b9d090cb64b2f4377"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/upgrades/luck.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "ec204ce85421e78a8ddfc91bbcea52dda1bd44db9ed312d1c497ba3c244fe82c"
+        }
+      }
+    },
+    {
+      "key": "upgrades/marauder",
+      "original": "res://assets/icons/upgrades/marauder.png",
+      "relative": "icons/upgrades/marauder.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/marauder.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "9945e4fea06c25a7d0c4beb25f67c5cf7489776a09b0145ec7977ef4fb9145cc"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/upgrades/marauder.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "dc54b17785238e57c995ef4f1edefa917503c2755117db24d664a0e84536d36e"
+        }
+      }
+    },
+    {
+      "key": "upgrades/safe",
+      "original": "res://assets/icons/upgrades/safe.png",
+      "relative": "icons/upgrades/safe.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/safe.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "1acd0645a6c0dfd94f753b3e4bbe012def0576e2a64a8c729d6ad28d4757507b"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/upgrades/safe.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "d412c9598f596ae9fe08c01277df49636c2f734790eb8cbe39edce0a1dba9175"
+        }
+      }
+    },
+    {
+      "key": "abilities/airstrike",
+      "original": "res://assets/icons/abilities/airstrike.png",
+      "relative": "icons/abilities/airstrike.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/abilities/airstrike.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "9edf40ae6919ccaa4ed44156aa0093587bb599cbece4f2090be45fc33d0c3e3f"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/abilities/airstrike.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "75c4cb8b93f198eba50e0bb5dc4055c6261a7bb31264ebb6f1effe8a734152e0"
+        }
+      }
+    },
+    {
+      "key": "abilities/ally_drone",
+      "original": "res://assets/icons/abilities/ally_drone.png",
+      "relative": "icons/abilities/ally_drone.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/abilities/ally_drone.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "a74e93e5d79aeaf3e7709b4c7e1f1de99b44b1b896071e4d21b1d4b8ebd6898b"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/abilities/ally_drone.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "51032f9b4ee53c5bc88b3745bf42d2e750153f9a5513a44ebc29afe95fb5e712"
+        }
+      }
+    },
+    {
+      "key": "abilities/barrier",
+      "original": "res://assets/icons/abilities/barrier.png",
+      "relative": "icons/abilities/barrier.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/abilities/barrier.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "84b0c9c8320c61fa81ccbdc39d9d9d4f57e1d2068091846a9b13b2f2d22c1d02"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/abilities/barrier.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "420429d0756d3cf2293f8e69f3e522cda2fb2b0555105fc0c3bed14dbac60953"
+        }
+      }
+    },
+    {
+      "key": "abilities/cloak",
+      "original": "res://assets/icons/abilities/cloak.png",
+      "relative": "icons/abilities/cloak.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/abilities/cloak.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "1b67c98aaf72ac5d3a0a3418d453b1570f40dd1d5cc6e4952b8cba21f58f12d9"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/abilities/cloak.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "6ad0543de6236c60dd31871fe783256240b7f7d93c3a4f637df2098d4c5ff248"
+        }
+      }
+    },
+    {
+      "key": "abilities/comrade",
+      "original": "res://assets/icons/abilities/comrade.png",
+      "relative": "icons/abilities/comrade.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/abilities/comrade.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "19b535442442e46a935e8ee5c65e9ca79f4d4b76a98a43769e56563e62ec2119"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/abilities/comrade.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "46dd8ebbeff717bdaad0db797ef62937a514f205aff01ef229fae0a95f10ff73"
+        }
+      }
+    },
+    {
+      "key": "abilities/gas",
+      "original": "res://assets/icons/abilities/gas.png",
+      "relative": "icons/abilities/gas.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/abilities/gas.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "b1e33fc217c8b20178ab90500f28aed683d5dab99c339868e53dcfdf19be6925"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/abilities/gas.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "0fdf3074c05dacaba0b1663a6f5c1e89c41a8e2f3896272413a95ab49125048c"
+        }
+      }
+    },
+    {
+      "key": "abilities/grenade",
+      "original": "res://assets/icons/abilities/grenade.png",
+      "relative": "icons/abilities/grenade.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/abilities/grenade.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "a6148bfa0e179f1998c3976598dd797e8253276dc101152333c396688b38e3af"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/abilities/grenade.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "f66884e57d2f913642cab3e6ce9467f11f15d32a813ae3318ee092f209e2348e"
+        }
+      }
+    },
+    {
+      "key": "headquarters/hq_medbay",
+      "original": "res://assets/icons/headquarters/hq_medbay.png",
+      "relative": "icons/headquarters/hq_medbay.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/headquarters/hq_medbay.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "5e31b4708b8ef867fa721b053c324f69426d3a168acc9feb8fc4930aeeecef18"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/headquarters/hq_medbay.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "ce712c03fd54b5438fc8e28f03b39687a8d66f82d204e9d2df9a88b2ba29c601"
+        }
+      }
+    },
+    {
+      "key": "headquarters/hq_plating",
+      "original": "res://assets/icons/headquarters/hq_plating.png",
+      "relative": "icons/headquarters/hq_plating.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/headquarters/hq_plating.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "90bcff83ad89b3e610f1d8317a387809306602963dfea4932328687107da0bb9"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/headquarters/hq_plating.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "b17951824abb918b523f879d202e79c521c8599ea8c4bb8c20b2973301c375c4"
+        }
+      }
+    },
+    {
+      "key": "headquarters/hq_regen",
+      "original": "res://assets/icons/headquarters/hq_regen.png",
+      "relative": "icons/headquarters/hq_regen.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/headquarters/hq_regen.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "a958b5b6a8a00be58f6f6b231bc21b87e7b086bb2eba332d03c95fcca6d0f5cf"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/headquarters/hq_regen.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "440365908faff9efa1716926584b8e6c256da402a5105d5bfa11bc14aeda4ccc"
+        }
+      }
+    },
+    {
+      "key": "headquarters/hq_supply",
+      "original": "res://assets/icons/headquarters/hq_supply.png",
+      "relative": "icons/headquarters/hq_supply.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/headquarters/hq_supply.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "790b9de3b5c08d0f5a271545b28720fc1c4d284fb0629b6caafaf5a357be157e"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/headquarters/hq_supply.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "ea5471798d25288ba9d128910cacaf6f260ce46a43099d47370df77d76b9837e"
+        }
+      }
+    },
+    {
+      "key": "headquarters/hq_interceptor",
+      "original": "res://assets/icons/headquarters/hq_interceptor.png",
+      "relative": "icons/headquarters/hq_interceptor.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/headquarters/hq_interceptor.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "eb6d2d120da106f3928b6fd13c3a110e287375ce15a5619d4c1195484dd9a1ca"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/headquarters/hq_interceptor.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "fcd76b130c803a7870436bff4e8c2fc062fd87370e68243494b5d02ba9264120"
+        }
+      }
+    },
+    {
+      "key": "headquarters/hq_tesla",
+      "original": "res://assets/icons/headquarters/hq_tesla.png",
+      "relative": "icons/headquarters/hq_tesla.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/headquarters/hq_tesla.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "daeafe174519ff618cc3c7f3cba2ba3711230418dff584138acc3b2f8eecb877"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/headquarters/hq_tesla.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "2a65f4f81227e62271c58a9670bc3834ac1aa984cf939531c881f76e316bc9d6"
+        }
+      }
+    },
+    {
+      "key": "headquarters/hq_patch",
+      "original": "res://assets/icons/headquarters/hq_patch.png",
+      "relative": "icons/headquarters/hq_patch.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/headquarters/hq_patch.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "477f3f57a76e311f367667796caa7521289eda8b106dad2e3cd75335513806c0"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/headquarters/hq_patch.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "b79633f4323ee534ae452e3d7ea96491f89ca2a255ef316f6797ba70f8d36872"
+        }
+      }
+    },
+    {
+      "key": "headquarters/hq_field",
+      "original": "res://assets/icons/headquarters/hq_field.png",
+      "relative": "icons/headquarters/hq_field.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/headquarters/hq_field.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "8c0f545438d56983d81e0ac19ead6c2faa59181f3cd919b6bfb19bbae581e457"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/headquarters/hq_field.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "c71851f9291643e28dd22593e7394d69cc7247257b5ea4cf5078f0f3f282b3fc"
+        }
+      }
+    },
+    {
+      "key": "headquarters/hq_emp",
+      "original": "res://assets/icons/headquarters/hq_emp.png",
+      "relative": "icons/headquarters/hq_emp.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/headquarters/hq_emp.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "6030231c5b90932c9f386b28f0656be772d3dd2bfa188a46e6b576e9509a933c"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/headquarters/hq_emp.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "6aa51c56e4bb970bcc1448151bb29277385324e40b001486080c47a6dc4f731b"
+        }
+      }
+    },
+    {
+      "key": "abilities/shield",
+      "original": "res://assets/icons/abilities/shield.png",
+      "relative": "icons/abilities/shield.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/abilities/shield.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "747f4eafbc1196c36146b2940b09f9411299e3d4f94f74a85df283b0c6c2a6e0"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/abilities/shield.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "ff8e597560d2585137f07fcf0e012670069ea9ffbd1726b337a58104a0346265"
+        }
+      }
+    },
+    {
+      "key": "abilities/laser",
+      "original": "res://assets/icons/abilities/laser.png",
+      "relative": "icons/abilities/laser.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/abilities/laser.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "2b47be0f999690bb3309eb2d30a5e5db68c1e8375b8c9896c645f2a656cd70f1"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/abilities/laser.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "740b465096fcd7bebfd9cf04c3f51fb45a721ef4762efe4a5dbbc369d3c43982"
+        }
+      }
+    },
+    {
+      "key": "abilities/mine",
+      "original": "res://assets/icons/abilities/mine.png",
+      "relative": "icons/abilities/mine.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/abilities/mine.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "dd956841c50749b717744683a654603e5e5bb6f6f67222c3e1295fdf67097269"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/abilities/mine.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "cd103cb07ceda028462fc0921514fad4570cd18d35df2fc0c500a7f3b4eabaa0"
+        }
+      }
+    },
+    {
+      "key": "abilities/field_repair",
+      "original": "res://assets/icons/abilities/field_repair.png",
+      "relative": "icons/abilities/field_repair.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/abilities/field_repair.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "baddd9b52ee446393795a34226e60344fd9d3e476222252c1adbbca6eb14012f"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/abilities/field_repair.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "977694199c823ce30c67d77b60ca958fc5ae17c01bfa88d9bcdf9ae4f19a6dba"
+        }
+      }
+    },
+    {
+      "key": "garage/buggy_armor",
+      "original": "res://assets/icons/garage/buggy_armor.png",
+      "relative": "icons/garage/buggy_armor.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/garage/buggy_armor.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "7b3d1033a49293091de0e6a22925fd9e60a581d37630bfde1d18010c5f06be03"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/garage/buggy_armor.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "51ba9f84954fa9f0423c694a594aca113d4577ed94f1dbab142a5875a5d5dce4"
+        }
+      }
+    },
+    {
+      "key": "garage/buggy_gun",
+      "original": "res://assets/icons/garage/buggy_gun.png",
+      "relative": "icons/garage/buggy_gun.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/garage/buggy_gun.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "0e5331538b1d2e0c24ea637401d724b503313a268db3f38984a4f85f5d32d52c"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/garage/buggy_gun.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "914a1860af4d4363b272ca61d4f31465ceef3e5f493440ca4901a1745abb87af"
+        }
+      }
+    },
+    {
+      "key": "garage/buggy_loader",
+      "original": "res://assets/icons/garage/buggy_loader.png",
+      "relative": "icons/garage/buggy_loader.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/garage/buggy_loader.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "fc2aa9b359d6605b5220e9eb6e52296efb91ba328581973ecca9553796733111"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/garage/buggy_loader.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "b105f2da4a219ccfbc1da023e09f0780a82a1bf2a03cc749662be40210762445"
+        }
+      }
+    },
+    {
+      "key": "garage/apc_armor",
+      "original": "res://assets/icons/garage/apc_armor.png",
+      "relative": "icons/garage/apc_armor.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/garage/apc_armor.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "c3bf2fe4538eb4d3073c57e568333db95741eb0383e3f690eb0af973596d5891"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/garage/apc_armor.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "bca35634b4aac6f5733181d68c73fa264a60aacc7bc8df05722e882338106efb"
+        }
+      }
+    },
+    {
+      "key": "garage/apc_gun",
+      "original": "res://assets/icons/garage/apc_gun.png",
+      "relative": "icons/garage/apc_gun.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/garage/apc_gun.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "e1c0bbe6eed007544bfafdb4f1f60e0290371b98bfa80dba9dcefd891c2e61dd"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/garage/apc_gun.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "8c1ba1ebf45af7303802a52e170c356c49449d2b9facdd4ff71631f3a11cfe6c"
+        }
+      }
+    },
+    {
+      "key": "garage/apc_loader",
+      "original": "res://assets/icons/garage/apc_loader.png",
+      "relative": "icons/garage/apc_loader.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/garage/apc_loader.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "eb03a2a6fd9f736b4fbc05a4bb4af229a5d9157058f9bbf0a3063d5f5ccdc605"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/garage/apc_loader.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "cb2ea6e98a1ddfc52e1497958fefac65a1b32a9a0fb4e725b7e0dae89730dfb6"
+        }
+      }
+    },
+    {
+      "key": "garage/tank_armor",
+      "original": "res://assets/icons/garage/tank_armor.png",
+      "relative": "icons/garage/tank_armor.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/garage/tank_armor.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "757f343f95d3fe9ccd5c5ffeb74af977737e145488371e47b6527250a2794556"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/garage/tank_armor.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "d8709832df65c593d4b6004771c827b48a748e544125afb706d2b8b16e55e1a1"
+        }
+      }
+    },
+    {
+      "key": "garage/tank_gun",
+      "original": "res://assets/icons/garage/tank_gun.png",
+      "relative": "icons/garage/tank_gun.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/garage/tank_gun.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "9ae5780abb0c600fec50ed8fc75ef6238009fd9e2d60a976f5aaabfad358321f"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/garage/tank_gun.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "9b01c49218c40ad317e67470441e0bffdb115f093d09d96bbb5fb15523a1320b"
+        }
+      }
+    },
+    {
+      "key": "garage/tank_loader",
+      "original": "res://assets/icons/garage/tank_loader.png",
+      "relative": "icons/garage/tank_loader.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/garage/tank_loader.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "1f8b1d00066584744dd8961284b3c36fad06720f51591c619e40ae0ecd0aca51"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/garage/tank_loader.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "43c7368f2e3bf4dd4fb0d43604e880ab4ae64c2a05cb91adf3692ebc0563ebb1"
+        }
+      }
+    },
+    {
+      "key": "stats/crit_chance",
+      "original": "res://assets/icons/stats/crit_chance.png",
+      "relative": "icons/stats/crit_chance.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/stats/crit_chance.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "dc72a383d3a42ca6cda8e95ba226db7d152257491f9845bcdfb452ead32e984e"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/stats/crit_chance.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "0f312be1ca43a1302ad36247589aece0eb23d064bbbe99889bf52d28782af93e"
+        }
+      }
+    },
+    {
+      "key": "stats/crit_damage",
+      "original": "res://assets/icons/stats/crit_damage.png",
+      "relative": "icons/stats/crit_damage.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/stats/crit_damage.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "0cdcadd989fe6ceaad08f935dcf798497af50695201a21417117ff4abbdb5c64"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/stats/crit_damage.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "daaa9aabf6b9427524fcff2f7a2d37bfce042ac3e5ee8c235d77fabd1d63dc61"
+        }
+      }
+    },
+    {
+      "key": "stats/dodge",
+      "original": "res://assets/icons/stats/dodge.png",
+      "relative": "icons/stats/dodge.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/stats/dodge.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "7b1db1ee035bff2dd537e9c94177512a7f39eb8062eb2b6f306c91c1826c23fb"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/stats/dodge.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "bfc4b601c195aa3386c911303849e53e96dfaa2dba8d1c43bac4451a208d50f4"
+        }
+      }
+    },
+    {
+      "key": "stats/luck",
+      "original": "res://assets/icons/stats/luck.png",
+      "relative": "icons/stats/luck.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/stats/luck.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "9c473bd482ad1ae2939d7c0d79a928b3ba3149bb93b9496943458e386a53e50d"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/stats/luck.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "85a79980d6546cc31886f031136d2c5cf9d83bfe6258dde309fa0988854783e6"
+        }
+      }
+    },
+    {
+      "key": "stats/guard_bullet",
+      "original": "res://assets/icons/stats/guard_bullet.png",
+      "relative": "icons/stats/guard_bullet.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/stats/guard_bullet.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "03367d08f857cb9ede77bcf76559bb5a2878abe0bf7b43793e2d2b060b11611f"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/stats/guard_bullet.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "ac93c9a26e25d09bb6cd503760006816361ba0992837cbdc6a61db8a3db7665f"
+        }
+      }
+    },
+    {
+      "key": "stats/guard_vehicle",
+      "original": "res://assets/icons/stats/guard_vehicle.png",
+      "relative": "icons/stats/guard_vehicle.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/stats/guard_vehicle.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "5fc37ed0ef5625852a706e4aed4cfe5761a730c9271a0cc0c50f88f1efdf1abf"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/stats/guard_vehicle.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "03655d753be571e8142d846a5e69c71a12869c4d88f6d02caf87a2b81fba6df7"
+        }
+      }
+    },
+    {
+      "key": "stats/guard_blast",
+      "original": "res://assets/icons/stats/guard_blast.png",
+      "relative": "icons/stats/guard_blast.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/stats/guard_blast.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "b7985960e249e975f16fb042d431a1c8a93d786033dccf938c7ef7b374d58224"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/stats/guard_blast.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "d48db5e91a9dbaaf2269717782b1dcbee43e1749042f64d36b0df6805315a6f8"
+        }
+      }
+    },
+    {
+      "key": "stats/burn_chance",
+      "original": "res://assets/icons/stats/burn_chance.png",
+      "relative": "icons/stats/burn_chance.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/stats/burn_chance.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "d401d3193f068fbea16c1bc8eac610ac0d50eb3df1e1957765b17834548999f8"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/stats/burn_chance.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "c2324763d7bd2a6d117436a229993c1232f7df532087600de9b2cd6af2459835"
+        }
+      }
+    },
+    {
+      "key": "stats/marauder",
+      "original": "res://assets/icons/stats/marauder.png",
+      "relative": "icons/stats/marauder.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/stats/marauder.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "14ba422c10d2cc06fc8659235a5e381485453d44b2889bd34058e8843a3a0a6c"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/stats/marauder.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "b23a792a178bd92a0f9b46b6e35c2d2a9defb49fcaff0b1378c7c4f97b120eb5"
+        }
+      }
+    },
+    {
+      "key": "stats/safe_slots",
+      "original": "res://assets/icons/stats/safe_slots.png",
+      "relative": "icons/stats/safe_slots.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/stats/safe_slots.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "ca4413bfb19ff02db7943c8507c0034734a3e1145959393b58cf904e8c4450a2"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/stats/safe_slots.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "e37d48142cc2d217c26bde0c7db56299e6e853a6e076d3a1963fa9915b344d28"
+        }
+      }
+    },
+    {
+      "key": "stats/stun_chance",
+      "original": "res://assets/icons/stats/stun_chance.png",
+      "relative": "icons/stats/stun_chance.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/stats/stun_chance.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "ab87f7612aefa984b020e3b59df7a042dec43a049570e73ad5bdb019a70ac815"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/stats/stun_chance.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "c41f18306c1dc0760bb538f1144831c1c1108bbf7a78b7ec17646b9fa99cf5ef"
+        }
+      }
+    },
+    {
+      "key": "stats/shock_bonus",
+      "original": "res://assets/icons/stats/shock_bonus.png",
+      "relative": "icons/stats/shock_bonus.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/stats/shock_bonus.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "2b98a08a5e02c71206809d172bc5b65c0d46288c295151da3845d5fc3cc122a5"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/stats/shock_bonus.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "024283f63dda6890f291da2f37a99f355f65982d4df0ef2de8792a63e2309f91"
+        }
+      }
+    },
+    {
+      "key": "stats/pierce",
+      "original": "res://assets/icons/stats/pierce.png",
+      "relative": "icons/stats/pierce.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/stats/pierce.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "f723903ccdc1c4127455273cb43d72e78315efd19fe663e2b7b52515d4cf033b"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/stats/pierce.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "f1cf429b6ee01ee4e893cd6d0ba64682b5556b3636951be9b0e6ce43891eab07"
+        }
+      }
+    },
+    {
+      "key": "stats/stealth",
+      "original": "res://assets/icons/stats/stealth.png",
+      "relative": "icons/stats/stealth.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/stats/stealth.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "2c697c03b0c2be4e9e7b0e08f4cabeb59ffd5ab872164831f51e614933352e85"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/stats/stealth.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "3bc5ea72a9c2dbb83fe8f22e224b16e272c7a783baa2820f6556148b0322c283"
+        }
+      }
+    },
+    {
+      "key": "stats/field_repair",
+      "original": "res://assets/icons/stats/field_repair.png",
+      "relative": "icons/stats/field_repair.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/stats/field_repair.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "6b50b889bbca39b6dd450a1791ea68f9e513a22f543278042779d76f3d7621e4"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/icons/stats/field_repair.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "d9f1715bc440a88b140657740b08713ba5a7f2cb301e3d4ac6bcb5cdd45e61af"
+        }
+      }
+    },
+    {
+      "key": "portraits/v16/portraits.png",
+      "original": "res://assets/portraits/v16/portraits.png",
+      "relative": "portraits/v16/portraits.png",
+      "grid": [
+        3,
+        2
+      ],
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/portraits/v16/portraits.png",
+          "size": [
+            1536,
+            1024
+          ],
+          "sha256": "baac0817e0cd7f164b03cfce1d97b22dc95ed07ed7236f4775c4e24ff841481b"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/portraits/v16/portraits.png",
+          "size": [
+            1536,
+            1024
+          ],
+          "sha256": "aca040309d9c09498a44451c6d1a7849cfca0710cd831f026648169cd4581603"
+        }
+      }
+    },
+    {
+      "key": "portraits/v16/miniatures.png",
+      "original": "res://assets/portraits/v16/miniatures.png",
+      "relative": "portraits/v16/miniatures.png",
+      "grid": [
+        3,
+        2
+      ],
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/portraits/v16/miniatures.png",
+          "size": [
+            1536,
+            1024
+          ],
+          "sha256": "fe1901955acf39091df4a3dd76813e9522d79dd57005b7812528867e65090568"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/portraits/v16/miniatures.png",
+          "size": [
+            1536,
+            1024
+          ],
+          "sha256": "6dc89e25797e4122ce2691977d83e2bf56e449290360e69028774ae24c5c1f8f"
+        }
+      }
+    },
+    {
+      "key": "ui/enemies/enemy_atlas_v1.png",
+      "original": "res://assets/ui/enemies/enemy_atlas_v1.png",
+      "relative": "ui/enemies/enemy_atlas_v1.png",
+      "grid": [
+        4,
+        4
+      ],
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/ui/enemies/enemy_atlas_v1.png",
+          "size": [
+            1254,
+            1254
+          ],
+          "sha256": "e225d4fa9535835da808e34f380a00024676aa546c4b5cc6e0e2e1114aaff2f1"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/ui/enemies/enemy_atlas_v1.png",
+          "size": [
+            1254,
+            1254
+          ],
+          "sha256": "7c701eeaf0b6d237203368341658b1e93d1ff9adc67df919b7ff882e07f381f4"
+        }
+      }
+    },
+    {
+      "key": "ui/workshops/atlas.png",
+      "original": "res://assets/ui/workshops/atlas.png",
+      "relative": "ui/workshops/atlas.png",
+      "grid": [
+        3,
+        2
+      ],
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/ui/workshops/atlas.png",
+          "size": [
+            1536,
+            1024
+          ],
+          "sha256": "051d483388f9ff538b389e9297fd5bcdd75a8c2a3f3549820727b9fa77cc6899"
+        },
+        "nano_banana": {
+          "path": "res://assets/illustrations/nano_banana/ui/workshops/atlas.png",
+          "size": [
+            1536,
+            1024
+          ],
+          "sha256": "651c39660b32d94b39d674c95125683b158f39386c4278f617ee54b2a88b970d"
+        }
+      }
+    }
+  ]
+}

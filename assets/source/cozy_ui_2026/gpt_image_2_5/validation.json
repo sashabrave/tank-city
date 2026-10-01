@@ -1,0 +1,30 @@
+{
+  "paired_files": 86,
+  "icons_each": 82,
+  "unique_icon_hashes_each": 82,
+  "pair_dimensions_equal": true,
+  "native_alpha_cleaned": true,
+  "new_generation_model": "gpt_image_2_5",
+  "provider": "Higgsfield",
+  "code_modified": false,
+  "setting_implemented": false,
+  "windowed_godot": {
+    "viewer": "standalone temporary project, no game autoloads or save access",
+    "icons": 82,
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "atlases": [
+      "portraits",
+      "miniatures",
+      "enemies"
+    ],
+    "enemy_sizes": [
+      32,
+      48,
+      64
+    ],
+    "switch_tested": false
+  }
+}
