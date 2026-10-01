@@ -221,7 +221,13 @@ func save_progress()->bool:
 	save_error="" if result.ok else result.error
 	# Our own snapshot failing validation is a code bug: make it loud instead of silently keeping an old file.
 	if not result.ok:push_error("Profile save failed: "+str(result.error))
+	else:save_indicator().pulse()
 	return result.ok
+var save_icon:CanvasLayer
+func save_indicator()->CanvasLayer:
+	# Saves often happen while a scene is still building its children: attach on the next idle frame.
+	if not is_instance_valid(save_icon):save_icon=preload("res://scripts/ui/save_indicator.gd").new();save_icon.name="SaveIndicator";add_child.call_deferred(save_icon)
+	return save_icon
 
 func load_progress()->bool:
 	var result=ProfileStore.load_file(save_path,ProfileSchema.validate)

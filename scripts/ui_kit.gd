@@ -200,7 +200,7 @@ static func icon_lookup(id:String)->Texture2D:
 			var art=Illustrations.texture("res://assets/icons/"+id+".png")
 			if art:return art
 		id=id.get_slice("/",1)
-	if id in ["debug","lock","repeat","inventory","fighter","quests","notifications","music","settings","guide","base","about"]:return interface_icon(id)
+	if id in ["debug","lock","repeat","refresh","inventory","fighter","quests","notifications","music","settings","guide","base","about"]:return interface_icon(id)
 	var sections=["inventory","fighter","quests","notifications","music","settings","guide","base","workshop"]
 	if id in sections:
 		var atlas=AtlasTexture.new();atlas.atlas=load("res://assets/icons/field_v1/sections.png")

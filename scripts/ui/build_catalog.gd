@@ -27,8 +27,9 @@ static func discoveries(id:String)->Array:
 		"headquarters":return Game.hq_unlocks
 		"garage":return Game.garage.unlocks
 	return []
-static func has_news(id:String)->bool:
-	return fresh(id) or (id in Game.built_workshops and discoveries(id).any(func(item):return "bench:"+id+":"+str(item) not in Game.progression.seen))
+## Build news is only about the building itself. Finds inside a built station light that station's
+## bench dot (station_notices); the old per-item «bench:» keys are no longer marked by station screens.
+static func has_news(id:String)->bool:return fresh(id)
 static func item_dot(card:Control,id:String,item:String,pos:Vector2):
 	var key="bench:"+id+":"+item
 	if key in Game.progression.seen:return
