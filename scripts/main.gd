@@ -37,6 +37,8 @@ func _return_hub():
 	# A kept checkpoint (left from the map before the first room) must not freeze hub purchases.
 	Game.run_save_baseline={}
 	if Game.run_checkpoint.is_empty():Game.progression.end_run()
+	# Autosave on every hub arrival: rewards, recipes and quest progress land on disk here.
+	Game.save_progress()
 	clear_current()
 	if is_instance_valid(run_arena):run_arena.queue_free()
 	run_arena=null

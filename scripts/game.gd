@@ -219,6 +219,8 @@ func save_progress()->bool:
 	data.run_checkpoint=run_checkpoint
 	var result=ProfileStore.write_file(save_path,data,ProfileSchema.validate)
 	save_error="" if result.ok else result.error
+	# Our own snapshot failing validation is a code bug: make it loud instead of silently keeping an old file.
+	if not result.ok:push_error("Profile save failed: "+str(result.error))
 	return result.ok
 
 func load_progress()->bool:
@@ -647,4 +649,5 @@ func quit_game():
 	save_progress();Settings.save()
 	get_tree().quit()
 func _notification(what):
-	if what==NOTIFICATION_WM_CLOSE_REQUEST:save_progress();Settings.save()
+	# Cmd+Q, closing the window, hiding the app or a phone call: flush before the OS may kill the process.
+	if what in [NOTIFICATION_WM_CLOSE_REQUEST,NOTIFICATION_APPLICATION_PAUSED,NOTIFICATION_APPLICATION_FOCUS_OUT,NOTIFICATION_WM_GO_BACK_REQUEST]:save_progress();Settings.save()

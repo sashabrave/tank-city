@@ -1,6 +1,24 @@
 {
 	"entries": [
 		{
+			"date": "2026-10-01",
+			"version": "0.4.3",
+			"ru": {
+				"title": "Надёжные сохранения",
+				"items": [
+					"Исправлена главная причина «сброса» прогресса: после посещения станций хаба игра ошибочно считала профиль повреждённым и переставала его записывать. Красная надпись «Повреждён профиль: viewed_updates» больше не появится.",
+					"Автосохранение при каждом возвращении в хаб, а также при сворачивании окна, потере фокуса и выходе через Cmd+Q."
+				]
+			},
+			"en": {
+				"title": "Reliable saves",
+				"items": [
+					"Fixed the main cause of progress «resetting»: after visiting hub stations the game wrongly treated the profile as damaged and stopped writing it. The red «Damaged profile: viewed_updates» note is gone.",
+					"Autosave on every return to the hub, and when the window is minimised, loses focus or the game is closed with Cmd+Q."
+				]
+			}
+		},
+		{
 			"date": "2026-09-30",
 			"version": "0.4.2",
 			"ru": {
