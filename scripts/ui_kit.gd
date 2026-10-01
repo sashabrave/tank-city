@@ -171,7 +171,9 @@ static func tab_row(parent:Control,pos:Vector2,width:float,tabs:Array,active:Str
 const ART_GROUPS=["upgrades","stats","abilities","headquarters","garage"]
 static func icon_texture(id:String)->Texture2D:
 	if "/" in id:
-		if id.get_slice("/",0) in ART_GROUPS and ResourceLoader.exists("res://assets/icons/"+id+".png"):return load("res://assets/icons/"+id+".png")
+		if id.get_slice("/",0) in ART_GROUPS:
+			var art=Illustrations.texture("res://assets/icons/"+id+".png")
+			if art:return art
 		id=id.get_slice("/",1)
 	if id in ["debug","lock","repeat","inventory","fighter","quests","notifications","music","settings","guide","base","about"]:return interface_icon(id)
 	var sections=["inventory","fighter","quests","notifications","music","settings","guide","base","workshop"]

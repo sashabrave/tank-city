@@ -6,7 +6,7 @@ const INFO={"yard":["Площадка","Место снаружи ангара �
 static func image(id:String)->Texture2D:
 	if id=="yard":return UiKit.icon_texture("base")
 	if id not in ATLAS or not ResourceLoader.exists("res://assets/ui/workshops/atlas.png"):return UiKit.icon_texture(id)
-	var atlas=AtlasTexture.new();atlas.atlas=load("res://assets/ui/workshops/atlas.png");var size=atlas.atlas.get_size()/Vector2(3,2);var index=ATLAS.find(id);atlas.region=Rect2(Vector2(index%3,index/3)*size,size);return atlas
+	var atlas=AtlasTexture.new();atlas.atlas=Illustrations.texture("res://assets/ui/workshops/atlas.png");var size=atlas.atlas.get_size()/Vector2(3,2);var index=ATLAS.find(id);atlas.region=Rect2(Vector2(index%3,index/3)*size,size);return atlas
 static func preview(parent:Node,id:String,pos:Vector2,size:Vector2):
 	var texture=TextureRect.new();parent.add_child(texture);texture.texture=image(id);texture.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;texture.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;texture.position=pos;texture.size=size;texture.mouse_filter=Control.MOUSE_FILTER_IGNORE;return texture
 static func fresh(id:String)->bool:return id in Game.research_unlocks and "build:"+id not in Game.progression.seen

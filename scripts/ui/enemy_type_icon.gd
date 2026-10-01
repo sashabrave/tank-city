@@ -1,5 +1,6 @@
 extends Control
-const ATLAS=preload("res://assets/ui/enemies/enemy_atlas_v1.png")
+## The wave atlas comes from the chosen illustration set; drawn on demand, so a switch shows at once.
+static func atlas()->Texture2D:return Illustrations.texture("res://assets/ui/enemies/enemy_atlas_v1.png")
 const IDS=["pistol","shotgun","smg","rifle","shield","grenade_launcher","sniper","rpg","buggy","mortar","apc","tank","boss","flyer","drone","commander"]
 const NAMES=["Стрелок · пистолет","Стрелок · дробовик","Стрелок · ПП","Стрелок · автомат","Щитовик","Гранатомётчик","Снайпер","Рпгшник","Багги","Турель с гранатами","Бтр","Танк","Командир","Летающий дрон","Дрон-хлопушка","Командир"]
 var kind="soldier"
@@ -12,9 +13,9 @@ func _ready():
 	mouse_filter=Control.MOUSE_FILTER_PASS;tooltip_text=title(kind,weapon)
 func _draw():draw_icon(self,kind,size*.5,Color.WHITE,weapon,"",40)
 static func draw_icon(canvas:CanvasItem,type:String,p:Vector2,c:Color=Color.WHITE,loadout:String="",state:String="",extent:float=30):
-	var index=index_for(type,loadout);var cell=Vector2(ATLAS.get_width()/4.0,ATLAS.get_height()/4.0)
+	var index=index_for(type,loadout);var sheet=atlas();var cell=Vector2(sheet.get_width()/4.0,sheet.get_height()/4.0)
 	var tint=Color(.63,.67,.60,.40) if state=="dead" else Color.WHITE
-	canvas.draw_texture_rect_region(ATLAS,Rect2(p-Vector2.ONE*extent*.5,Vector2.ONE*extent),Rect2(Vector2(index%4,int(index/4))*cell,cell),tint)
+	canvas.draw_texture_rect_region(sheet,Rect2(p-Vector2.ONE*extent*.5,Vector2.ONE*extent),Rect2(Vector2(index%4,int(index/4))*cell,cell),tint)
 	if state.is_empty():return
 	var badge=p+Vector2(extent*.35,extent*.35)
 	canvas.draw_circle(badge,5.5,Color("263129"))
