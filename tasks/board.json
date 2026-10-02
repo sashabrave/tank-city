@@ -202,7 +202,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-017.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "при получении урона у моделег мигает красным и свет фонарика тоже, так не должно быть, только модель мигает",
 			"type": "bug",
 			"version": "0.7.1-pre"

@@ -2,6 +2,22 @@
 	"entries": [
 		{
 			"date": "2026-10-02",
+			"version": "0.7.2",
+			"ru": {
+				"title": "Ночная полировка",
+				"items": [
+					"При уроне краснеет только боец или машина, свет фонаря и фар остаётся прежним."
+				]
+			},
+			"en": {
+				"title": "Night polish",
+				"items": [
+					"On a hit only the soldier or vehicle turns red; flashlights and headlights keep their colour."
+				]
+			}
+		},
+		{
+			"date": "2026-10-02",
 			"version": "0.7.1",
 			"ru": {
 				"title": "Мелочи, которые мешали",
