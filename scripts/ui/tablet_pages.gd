@@ -198,7 +198,7 @@ func radio():
 		var row=HBoxContainer.new();box.add_child(row);row.add_theme_constant_override("separation",4)
 		var title=c.catalog.get(id,{}).get("title",c.NAMES.get(id,entry[1] if fanfare else id.replace("_"," ")))
 		if fanfare:title=("♪ "+entry[1]) if id not in c.OLD_FANFARES else id.replace("_"," ")
-		var playing=c.current_track==id or (fanfare and c.stinger.playing and c.stinger.stream!=null and c.stinger.stream.resource_path.ends_with(id+".wav"))
+		var playing=c.current_track==id or (fanfare and c.stinger.playing and c.stinger.stream!=null and c.stinger.stream.resource_path.ends_with(id+".ogg"))
 		var track=Button.new();row.add_child(track);Texts.set_text(track,title);track.custom_minimum_size=Vector2(0,36);track.size_flags_horizontal=Control.SIZE_EXPAND_FILL;track.clip_text=true;track.alignment=HORIZONTAL_ALIGNMENT_LEFT;track.add_theme_font_size_override("font_size",14);track.add_theme_stylebox_override("normal",UiKit.style(Color("584a2c") if playing else Color("303a31"),5))
 		track.tooltip_text=title
 		if fanfare:track.pressed.connect(func():c.preview_fanfare(id);view.refresh())
@@ -248,7 +248,14 @@ func settings():
 		setting_choice(body,["graphics_preset","Пресет графики",["Экономно","Стандарт","Кино"],["eco","standard","cinema"],"Экономно — для слабых устройств; Кино — весь свет, тени и эффекты."],0)
 		y+=104
 	elif view.settings_tab=="Экран":
-		for entry in [["fullscreen","Режим экрана",["Окно","Полный экран"],[false,true],"Полный экран занимает весь дисплей."],["vsync","Вертикальная синхронизация",["Выключена","Включена"],[false,true],"Убирает разрывы изображения; может ограничивать FPS."],["render_scale","Разрешение 3D",["Авто","100%","75%","50%"],["auto","100","75","50"],"Мир рисуется в меньшем разрешении и чётко масштабируется, интерфейс остаётся резким. Авто снижает разрешение на больших и Retina-экранах."],["quality","Сглаживание MSAA",["Выключено","2×","4×"],[0,1,2],"Сглаживает края моделей. 4× сильнее нагружает графику."],["fps","Лимит кадров",["30 FPS","60 FPS","120 FPS","Без ограничения"],[30,60,120,0],"Верхняя граница; реальная частота зависит от устройства и VSync."]]:
+		setting_choice(body,["fullscreen","Режим экрана",["Окно","Полный экран"],[false,true],"Полный экран занимает весь дисплей."],y);y+=88
+		var sizes=Settings.resolutions()
+		var labels=["Как сейчас"]+sizes.map(func(r):return r.replace("x"," × "))
+		setting_choice(body,["resolution","Разрешение окна",labels,["auto"]+sizes,"Размер окна в режиме «Окно». В полном экране игра занимает весь дисплей."],y);y+=88
+		var retina=CheckButton.new();body.add_child(retina);retina.position=Vector2(0,y);retina.size=Vector2(700,40);Texts.set_text(retina,"Retina · полная чёткость")
+		retina.button_pressed=bool(Settings.shown("retina"));retina.toggled.connect(func(on):Settings.change("retina",on);view.refresh.call_deferred())
+		UiKit.label(body,"Без галочки мир рисуется в стандартном разрешении — в два раза меньше по каждой стороне на Retina-экране. Быстрее, но мягче.",Vector2(0,y+42),Vector2(700,44),14,UiKit.MUTED).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;y+=96
+		for entry in [["vsync","Вертикальная синхронизация",["Выключена","Включена"],[false,true],"Убирает разрывы изображения; может ограничивать FPS."],["render_scale","Разрешение 3D",["Авто","100%","75%","50%"],["auto","100","75","50"],"Мир рисуется в меньшем разрешении и чётко масштабируется, интерфейс остаётся резким. Авто снижает разрешение на больших и Retina-экранах."],["quality","Сглаживание MSAA",["Выключено","2×","4×"],[0,1,2],"Сглаживает края моделей. 4× сильнее нагружает графику."],["fps","Лимит кадров",["30 FPS","60 FPS","120 FPS","Без ограничения"],[30,60,120,0],"Верхняя граница; реальная частота зависит от устройства и VSync."]]:
 			setting_choice(body,entry,y);y+=88
 	elif view.settings_tab=="Звук":
 		for entry in [["master","Общая громкость","Меняет громкость всей игры."],["music","Музыка","Музыкальные композиции и радио."],["effects","Звуки игры","Выстрелы, взрывы и звуковые сигналы."]]:
@@ -278,19 +285,24 @@ func settings():
 				y+=46
 		UiKit.label(body,"Esc — открыть / закрыть планшет (постоянная клавиша).",Vector2(0,y),Vector2(700,36),14,UiKit.MUTED);y+=40
 	body.custom_minimum_size.y=maxf(350,y)
-	UiKit.label(content,"Изменения применяются сразу и сохраняются автоматически.",Vector2(22,498),Vector2(731,28),14,UiKit.MUTED)
-	UiKit.button(content,"Сбросить вкладку",Vector2(22,535),Vector2(240,36),func():
+	var waiting=not Settings.pending.is_empty()
+	UiKit.label(content,"Есть неприменённые настройки экрана." if waiting else "Экран — кнопками «Применить» и «Сохранить»; остальное меняется сразу.",Vector2(22,498),Vector2(731,28),14,UiKit.ORANGE if waiting else UiKit.MUTED)
+	var apply_button=UiKit.button(content,"Применить",Vector2(453,535),Vector2(150,36),func():Settings.apply_pending();view.refresh())
+	apply_button.disabled=not waiting;apply_button.add_theme_font_size_override("font_size",15)
+	UiKit.button(content,"Сохранить",Vector2(613,535),Vector2(150,36),func():Settings.save_all();view.refresh(),true).add_theme_font_size_override("font_size",15)
+	UiKit.button(content,"Сбросить вкладку",Vector2(22,535),Vector2(220,36),func():
 		if view.settings_tab=="Управление":Settings.keys=Settings.DEFAULT_KEYS.duplicate()
 		else:
-			var group={"Графика":["graphics_preset","atmosphere","tilt_shift","ui_theme","shaders","shader_style","sun_day","sun_night","weather","soft_shadows","ambient_occlusion","glow","haze","rim_light","shiny_metal","depth_light","cinematic_light","world_lighting","light_budget"],"Экран":["fullscreen","vsync","render_scale","quality","fps"],"Звук":["master","music","effects"],"Интерфейс":["input_scheme","biome_info","language","ui_motion","show_fps","ui_glass","ui_accent"]}[view.settings_tab]
-			for key in group:Settings.values[key]=Settings.DEFAULT_VALUES[key]
+			var group={"Графика":["graphics_preset","atmosphere","tilt_shift","ui_theme","shaders","shader_style","sun_day","sun_night","weather","soft_shadows","ambient_occlusion","glow","haze","rim_light","shiny_metal","depth_light","cinematic_light","world_lighting","light_budget"],"Экран":["fullscreen","resolution","retina","vsync","render_scale","quality","fps"],"Звук":["master","music","effects"],"Интерфейс":["input_scheme","biome_info","language","ui_motion","show_fps","ui_glass","ui_accent"]}[view.settings_tab]
+			for key in group:Settings.values[key]=Settings.DEFAULT_VALUES[key];Settings.pending.erase(key)
 		Settings.apply();Settings.save();view.waiting_key="";view.refresh()).add_theme_font_size_override("font_size",15)
 func setting_choice(body,entry,y):
 	UiKit.label(body,entry[1],Vector2(0,y),Vector2(380,34),18)
 	var option=OptionButton.new();body.add_child(option);option.position=Vector2(395,y);option.size=Vector2(305,36);option.add_theme_font_size_override("font_size",17)
 	for label in entry[2]:option.add_item(label)
-	option.select(entry[3].find(Settings.values[entry[0]]));option.item_selected.connect(func(index):
+	option.select(entry[3].find(Settings.shown(entry[0])));option.item_selected.connect(func(index):
 		Settings.change(entry[0],entry[3][index])
+		if entry[0] in Settings.DISPLAY_KEYS:view.refresh.call_deferred()
 		# A preset flips many switches: redraw the page so they show it.
 		if entry[0]=="graphics_preset":view.refresh.call_deferred())
 	var hint=UiKit.label(body,entry[4],Vector2(0,y+42),Vector2(700,44),14,UiKit.MUTED);hint.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART

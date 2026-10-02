@@ -121,12 +121,12 @@ func change(next:String,refresh:bool=false):
 	play_track(track)
 	if changed and next=="hub":celebrate("hub_map_greeting",1)
 	elif new_fight:celebrate("battle_greeting",1)
-## Tracks are large WAV files: they load on a background thread and start once ready, so a context
+## Tracks are OGG files: they load on a background thread and start once ready, so a context
 ## change never blocks the frame. The loaded resource is shared; looping is always disabled on it.
 var pending_track=""
 ## Set by radio skips: a quick switch (short fade out, no pause) instead of the context fade through silence.
 var quick_switch=false
-static func track_path(track:String)->String:return "res://assets/audio/music/"+track+".wav"
+static func track_path(track:String)->String:return "res://assets/audio/music/"+track+".ogg"
 func play_track(track:String):
 	current_track=track;last_tracks[context]=track
 	var path=track_path(track)
@@ -153,7 +153,8 @@ func start_track(track:String,stream:AudioStream):
 	if is_instance_valid(fade):fade.kill()
 	var old=backgrounds[active];active=1-active;var player=backgrounds[active]
 	player.stop();player.stream=stream
-	if player.stream is AudioStreamWAV:
+	if player.stream is AudioStreamOggVorbis:player.stream.loop=false
+	elif player.stream is AudioStreamWAV:
 		player.stream.loop_mode=AudioStreamWAV.LOOP_DISABLED;player.stream.loop_begin=0;player.stream.loop_end=roundi(player.stream.get_length()*player.stream.mix_rate)
 	player.volume_db=-60
 	# Fade through silence: the old track eases out, a short breath, then the new one eases in.
@@ -209,13 +210,13 @@ func track_group(theme:String,id:String)->String:
 	return ""
 func preview_fanfare(id:String):
 	if not Game.sound_enabled:return
-	stinger.stop();stinger_priority=1;stinger.stream=load("res://assets/audio/music/"+id+".wav");stinger.play()
+	stinger.stop();stinger_priority=1;stinger.stream=load("res://assets/audio/music/"+id+".ogg");stinger.play()
 func celebrate(id:String,priority:int):
 	if not Game.sound_enabled:return
 	if stinger.playing and priority<stinger_priority:return
 	id=fanfare_for(id)
 	if id=="":return
-	stinger.stop();stinger_priority=priority;stinger.stream=load("res://assets/audio/music/"+id+".wav");stinger.play()
+	stinger.stop();stinger_priority=priority;stinger.stream=load("res://assets/audio/music/"+id+".ogg");stinger.play()
 func _process(delta):
 	poll_pending()
 	if not Game.sound_enabled:
@@ -247,10 +248,10 @@ func track_finished():
 
 func refresh_library():
 	for filename in DirAccess.get_files_at("res://assets/audio/music"):
-		# Exported packs list imported audio as *.wav.import.
+		# Exported packs list imported audio as *.ogg.import (music is OGG Vorbis since 0.7.2, T-070).
 		filename=filename.trim_suffix(".import")
-		if not filename.ends_with(".wav"):continue
-		var id=filename.trim_suffix(".wav")
+		if not filename.ends_with(".ogg"):continue
+		var id=filename.trim_suffix(".ogg")
 		if "greeting" in id or "victory" in id or "defeat" in id or id.begins_with("folk_") or id.begins_with("night_") or id.begins_with("disco_") or id.begins_with("anthem_"):continue
 		var known=false
 		for theme in themes:

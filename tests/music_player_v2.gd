@@ -21,7 +21,7 @@ func run():
 	Game.music_context("hub")
 	var c=Game.music_controller
 	for context in c.TRACKS:
-		for track in c.TRACKS[context]:check(ResourceLoader.exists("res://assets/audio/music/"+track+".wav"),"track exists "+track)
+		for track in c.TRACKS[context]:check(ResourceLoader.exists("res://assets/audio/music/"+track+".ogg"),"track exists "+track)
 	check(c.TRACKS.archive.has("battle_signal") and not c.TRACKS.battle.has("battle_signal"),"old tracks live in the archive")
 	c.shuffle=false  # arrows walk the list in order
 	for context in c.PLAYLISTS:
@@ -35,7 +35,7 @@ func run():
 	# Themes: hub/map theme is held for the session, battle theme rolls per fight.
 	check(c.themes.size()==12,"twelve music themes")
 	for theme in c.themes:
-		for key in ["battle","hub","map","miniboss","boss"]:check(ResourceLoader.exists("res://assets/audio/music/"+c.themes[theme][key]+".wav"),"theme track "+theme+" "+key)
+		for key in ["battle","hub","map","miniboss","boss"]:check(ResourceLoader.exists("res://assets/audio/music/"+c.themes[theme][key]+".ogg"),"theme track "+theme+" "+key)
 		for kind in c.FANFARES:check(c.themes[theme][kind].size()==3,"three fanfares "+theme+" "+kind)
 	var held=c.hub_theme
 	var seen={}

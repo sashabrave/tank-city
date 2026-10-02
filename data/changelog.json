@@ -68,7 +68,10 @@
 					"Плашка поля: звезда меньше, шкалы полей и волн по ширине плашки, точка командира в конце волн, пройденное закрашено полупрозрачно; задачи разбиты строками со счётчиками справа",
 					"Приветствие в хабе сразу выделяет «Продолжить»; убраны светлые полосы по краям экрана от размытия; песок и трава на поле больше не выглядят как тёмные или светлые клетки",
 					"Вернули свет ламп, прожекторов и фар ночью (текстура пятна гасила свет и роняла FPS); тени ночью размыты как днём; новая ночная палитра — серебристая луна и синие тени",
-					"Под героем мягкая тень; фонарь на груди больше не отбрасывает тень оружия на бегу; иконка «Противотанковый ёж» — настоящий ёж"
+					"Под героем мягкая тень; фонарь на груди больше не отбрасывает тень оружия на бегу; иконка «Противотанковый ёж» — настоящий ёж",
+					"Настройки экрана: кнопки «Применить» и «Сохранить», список разрешений окна, галочка Retina; смена других настроек больше не сбрасывает полный экран и размер окна",
+					"Клетки пола у стен больше не темнеют целиком — тень только у края; рядом с FPS виден счётчик фризов",
+					"Музыка сжата в OGG: игра стала заметно легче"
 				]
 			},
 			"en": {
@@ -136,7 +139,10 @@
 					"Field panel: smaller star, field and wave pips fit the panel, a commander dot after the waves, finished steps translucent; tasks split into rows with counters on the right",
 					"The hub greeting focuses «Continue» right away; removed light bands at screen edges from the blur; sand and grass patches no longer look like dark or light cells",
 					"Lamp, searchlight and headlight light is back at night (the beam texture switched light off and cost FPS); night shadows blur like the day ones; new night palette — silver moon and blue shadows",
-					"A soft shadow under the hero; the chest lamp no longer casts the weapon's shadow while running; the anti-tank hedgehog icon now shows a real hedgehog"
+					"A soft shadow under the hero; the chest lamp no longer casts the weapon's shadow while running; the anti-tank hedgehog icon now shows a real hedgehog",
+					"Screen settings: Apply and Save buttons, a window size list, a Retina checkbox; changing other options no longer resets fullscreen or the window size",
+					"Floor cells next to walls no longer darken entirely — only the edge gets shadow; a hitch counter next to FPS",
+					"Music compressed to OGG: the game is much smaller"
 				]
 			}
 		},

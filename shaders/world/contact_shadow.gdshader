@@ -1,6 +1,6 @@
 shader_type spatial;
 // Soft round shadow under a figure: multiplies the floor towards a cool shade, fading to nothing at the rim.
-render_mode unshaded, blend_mul, depth_draw_never, cull_disabled, shadows_disabled;
+render_mode unshaded, blend_mul, depth_draw_never, cull_disabled, shadows_disabled, fog_disabled;
 uniform float strength = 0.5;
 uniform vec3 shade : source_color = vec3(0.58, 0.6, 0.7);
 void fragment(){

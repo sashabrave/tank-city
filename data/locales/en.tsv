@@ -2646,3 +2646,12 @@ F8 — новая задача из любого места игры · Esc — 
 Решить	Decide
 Проверить в игре	Check in game
 Пусто	Empty
+фризы	hitches
+Разрешение окна	Window size
+Как сейчас	As now
+Размер окна в режиме «Окно». В полном экране игра занимает весь дисплей.	Window size in windowed mode. In fullscreen the game fills the whole display.
+Retina · полная чёткость	Retina · full sharpness
+Без галочки мир рисуется в стандартном разрешении — в два раза меньше по каждой стороне на Retina-экране. Быстрее, но мягче.	Unchecked, the world renders at standard resolution — half per side on a Retina screen. Faster but softer.
+Есть неприменённые настройки экрана.	There are unapplied screen settings.
+Экран — кнопками «Применить» и «Сохранить»; остальное меняется сразу.	Screen options take effect with Apply and Save; everything else changes at once.
+Применить	Apply

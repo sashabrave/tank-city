@@ -881,7 +881,7 @@
 			"note": "266 WAV в assets/audio/music; нужен ffmpeg/oggenc. Уменьшит пакет и проверку Gatekeeper.",
 			"type": "polish",
 			"priority": 2,
-			"status": "backlog",
+			"status": "review",
 			"version": "0.8",
 			"created": "2026-10-02",
 			"source": "chat",

@@ -6,7 +6,7 @@ shader_type spatial;
 // so strips along a wall join cell to cell and wrap round inner and outer corners (voxel-style AO).
 // Box mode (hub): one quad per standing object; INSTANCE_CUSTOM.rg = footprint half size, .ba = quad half size;
 // the shade falls off from a rounded rectangle around the footprint.
-render_mode unshaded, blend_mul, depth_draw_never, cull_disabled, shadows_disabled;
+render_mode unshaded, blend_mul, depth_draw_never, cull_disabled, shadows_disabled, fog_disabled;
 uniform bool boxes = false;
 uniform float strength = 0.38;
 uniform float depth = 0.34;

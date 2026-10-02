@@ -2,7 +2,7 @@ extends Node
 signal changed
 const PATH="user://settings.cfg"
 const DEFAULT_KEYS={"north":KEY_W,"south":KEY_S,"west":KEY_A,"east":KEY_D,"fire":KEY_SPACE,"interact":KEY_E,"hide_trench":KEY_C,"ability":KEY_F,"skill_1":KEY_1,"skill_2":KEY_NONE,"hq_ability":KEY_2,"class_ability":KEY_Q}
-const DEFAULT_VALUES={"fullscreen":false,"vsync":true,"quality":1,"fps":60,"master":1.0,"music":0.8,"effects":0.8,"music_mood":"auto","screen_controls":true,"biome_info":true,"language":"ru","ui_theme":"dark","shaders":true,"world_lighting":"day","light_budget":10,"atmosphere":true,"tilt_shift":true,"shader_style":"pastel","soft_shadows":true,"ambient_occlusion":true,"glow":true,"haze":true,"rim_light":true,"shiny_metal":true,"depth_light":true,"cinematic_light":true,"graphics_preset":"standard","sun_day":"random","sun_night":"random","weather":"random","ui_motion":true,"show_fps":true,"ui_glass":true,"ui_accent":"apricot","illustration_set":"gpt_image_2_5","input_scheme":"auto","render_scale":"auto"}
+const DEFAULT_VALUES={"fullscreen":false,"vsync":true,"quality":1,"fps":60,"master":1.0,"music":0.8,"effects":0.8,"music_mood":"auto","screen_controls":true,"biome_info":true,"language":"ru","ui_theme":"dark","shaders":true,"world_lighting":"day","light_budget":10,"atmosphere":true,"tilt_shift":true,"shader_style":"pastel","soft_shadows":true,"ambient_occlusion":true,"glow":true,"haze":true,"rim_light":true,"shiny_metal":true,"depth_light":true,"cinematic_light":true,"graphics_preset":"standard","sun_day":"random","sun_night":"random","weather":"random","ui_motion":true,"show_fps":true,"ui_glass":true,"ui_accent":"apricot","illustration_set":"gpt_image_2_5","input_scheme":"auto","render_scale":"auto","resolution":"auto","retina":true}
 const SHADER_STYLES=["pastel","cozy","golden","overcast"]
 const SHADER_OPTIONS=["soft_shadows","ambient_occlusion","glow","haze","rim_light","shiny_metal","depth_light","cinematic_light"]
 var values=DEFAULT_VALUES.duplicate()
@@ -13,6 +13,11 @@ var waiting=""
 var was_paused=false
 var tab=0
 var persistence_enabled=true
+## Screen settings wait for «Применить» / «Сохранить» (standard video options): chosen values sit in pending.
+const DISPLAY_KEYS=["fullscreen","resolution","retina","vsync","render_scale","quality","fps"]
+var pending:={}
+## What the window was last set to, so other settings never touch fullscreen or the window size.
+var applied_display:={}
 func _ready():
 	process_mode=Node.PROCESS_MODE_ALWAYS
 	var config=ConfigFile.new()
@@ -30,7 +35,7 @@ func _ready():
 	apply()
 func apply():
 	if values.get("ui_theme","dark") not in ["dark","light"]:values.ui_theme="dark"
-	if int(values.light_budget) not in [6,10,14]:values.light_budget=10
+	if int(values.light_budget) not in [6,10,12,14]:values.light_budget=10
 	if values.language not in ["ru","en"]:values.language="ru"
 	if values.world_lighting not in ["day","night"]:values.world_lighting="day"
 	if values.get("shader_style","") not in SHADER_STYLES:values.shader_style="pastel"
@@ -44,9 +49,9 @@ func apply():
 	if str(values.get("input_scheme","")) not in ["auto","keyboard","gamepad","touch"]:values.input_scheme="auto"
 	if str(values.get("render_scale","")) not in RENDER_SCALES:values.render_scale="auto"
 	if str(values.get("ui_accent","")) not in ["apricot","coral","mint","lemon","sky","lavender"]:values.ui_accent="apricot"
-	if DisplayServer.get_name()!="headless":
-		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN if values.fullscreen else DisplayServer.WINDOW_MODE_WINDOWED)
-		DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_ENABLED if values.vsync else DisplayServer.VSYNC_DISABLED)
+	if str(values.get("resolution","auto"))!="auto" and str(values.resolution) not in resolutions():values.resolution="auto"
+	values.retina=bool(values.get("retina",true))
+	if DisplayServer.get_name()!="headless":apply_display()
 	Engine.max_fps=int(values.fps)
 	get_viewport().msaa_3d=[Viewport.MSAA_DISABLED,Viewport.MSAA_2X,Viewport.MSAA_4X][values.quality]
 	apply_render_scale()
@@ -77,14 +82,51 @@ const RENDER_SCALES=["auto","100","75","50"]
 const AUTO_3D_PIXELS=2400000.0
 func render_scale()->float:
 	var mode=str(values.get("render_scale","auto"))
-	if mode!="auto":return float(mode)/100.0
+	# Retina off: the 3D world renders at standard density — half the pixels per side on a 2× display.
+	var density=1.0 if bool(values.get("retina",true)) or DisplayServer.get_name()=="headless" else 1.0/maxf(1.0,DisplayServer.screen_get_scale())
+	if mode!="auto":return float(mode)/100.0*density
 	var size=Vector2(DisplayServer.window_get_size()) if DisplayServer.get_name()!="headless" else Vector2(1280,720)
-	return clampf(sqrt(AUTO_3D_PIXELS/maxf(1.0,size.x*size.y)),.5,1.0)
+	return clampf(sqrt(AUTO_3D_PIXELS/maxf(1.0,size.x*size.y)),.5,1.0)*density
 func apply_render_scale():
 	var viewport=get_viewport();var scale=render_scale()
 	viewport.scaling_3d_mode=Viewport.SCALING_3D_MODE_FSR if scale<.99 else Viewport.SCALING_3D_MODE_BILINEAR
 	viewport.scaling_3d_scale=scale if scale<.99 else 1.0
 	viewport.fsr_sharpness=.6  # 0 is the sharpest; .35 rang around thin rain streaks
+## Window mode, size and VSync change only when their own values change (or the window mode drifted from the
+## value, e.g. after the system shortcut), so switching any other option keeps fullscreen and the resolution.
+func apply_display():
+	var full=bool(values.fullscreen);var mode=DisplayServer.window_get_mode()
+	var is_full=mode in [DisplayServer.WINDOW_MODE_FULLSCREEN,DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN]
+	if applied_display.get("fullscreen")!=full:
+		if full!=is_full:DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN if full else DisplayServer.WINDOW_MODE_WINDOWED)
+		applied_display.fullscreen=full;applied_display.erase("resolution")
+	var res=str(values.get("resolution","auto"))
+	if not full and applied_display.get("resolution")!=res:
+		applied_display.resolution=res
+		if res!="auto":
+			var parts=res.split("x");var size=Vector2i(int(parts[0]),int(parts[1]))
+			DisplayServer.window_set_size(size)
+			var screen=DisplayServer.screen_get_usable_rect(DisplayServer.window_get_current_screen())
+			DisplayServer.window_set_position(screen.position+(screen.size-size)/2)
+	if applied_display.get("vsync")!=bool(values.vsync):
+		applied_display.vsync=bool(values.vsync)
+		DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_ENABLED if values.vsync else DisplayServer.VSYNC_DISABLED)
+## Window sizes that fit this display, largest first, as "W x H" keys ("1920x1080").
+func resolutions()->Array:
+	if DisplayServer.get_name()=="headless":return ["1920x1080","1600x900","1280x720"]
+	var screen=DisplayServer.screen_get_size(DisplayServer.window_get_current_screen())
+	var result=[]
+	for size in [screen,Vector2i(3840,2160),Vector2i(3456,2234),Vector2i(3024,1964),Vector2i(2880,1800),Vector2i(2560,1600),Vector2i(2560,1440),Vector2i(1920,1200),Vector2i(1920,1080),Vector2i(1680,1050),Vector2i(1600,900),Vector2i(1440,900),Vector2i(1280,800),Vector2i(1280,720)]:
+		var key="%dx%d" % [size.x,size.y]
+		if size.x<=screen.x and size.y<=screen.y and key not in result:result.append(key)
+	return result
+## Value as the settings page should show it: a chosen-but-not-applied screen option wins.
+func shown(key:String):return pending.get(key,values.get(key))
+func apply_pending():
+	for key in pending:values[key]=pending[key]
+	pending.clear();apply()
+func save_all():
+	apply_pending();save()
 func save():
 	if not persistence_enabled:return
 	var config=ConfigFile.new()
@@ -100,6 +142,10 @@ const GRAPHICS_PRESETS={
 func change(key,value):
 	var before=Illustrations.current()
 	if key=="graphics_preset" and GRAPHICS_PRESETS.has(value):values.merge(GRAPHICS_PRESETS[value],true)
+	if key in DISPLAY_KEYS:
+		if values.get(key)==value:pending.erase(key)
+		else:pending[key]=value
+		changed.emit();return
 	values[key]=value;apply();save()
 	# Illustration set: swap pictures already on screen, rebuild cached handbook images, redraw wave icons.
 	if key=="illustration_set" and before!=Illustrations.current():
