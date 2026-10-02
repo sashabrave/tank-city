@@ -10,7 +10,8 @@ func run():
 			var data=arena.reward.upgrade_card({"id":"intercept" if i==0 else "weapon_intercept","tier":1})
 			preload("res://scripts/ui/choice_card.gd").create(layer,Vector2(390+i*310,250),Vector2(280,320),data,func():pass)
 		await get_tree().create_timer(1.2).timeout;await RenderingServer.frame_post_draw
-		get_viewport().get_texture().get_image().save_png("/tmp/tablet-card.png");get_tree().quit();return
+		if DisplayServer.get_name()!="headless":get_viewport().get_texture().get_image().save_png("/tmp/tablet-card.png")
+		get_tree().quit();return
 	var view=load("res://scripts/ui/field_tablet.gd").new();view.tab="guide" if mode in ["editor","tree","tree_compact"] else mode;add_child(view)
 	if mode in ["tree","tree_compact"]:
 		view.dev_edit=true;view.nav_collapsed=mode=="tree_compact";view.guide_expanded={"Бой":true,"Основы":true};view.guide_category="Бой";view.guide_section="Характеристики";view.refresh()
@@ -19,6 +20,5 @@ func run():
 		var entry=Texts.document.articles.filter(func(e):return e.term=="pressure")[0]
 		preload("res://scripts/ui/encyclopedia_editor.gd").open(view,entry.id)
 	await get_tree().create_timer(.6).timeout
-	RenderingServer.force_draw()
-	get_viewport().get_texture().get_image().save_png("/tmp/tablet-"+mode+".png")
+	if DisplayServer.get_name()!="headless":RenderingServer.force_draw();get_viewport().get_texture().get_image().save_png("/tmp/tablet-"+mode+".png")
 	print("PASS visual "+mode);get_tree().quit()

@@ -2,6 +2,7 @@ extends Node
 func _ready():call_deferred("run")
 func run():
 	Game.save_enabled=false;Game.sound_enabled=false;Settings.persistence_enabled=false;Settings.values.fullscreen=false;Settings.apply()
+	var memory=preload("res://scripts/ui/tablet_memory.gd");memory.loaded=true;memory.state={}
 	var view=load("res://scripts/ui/field_tablet.gd").new();view.tab="inventory";add_child(view)
 	await get_tree().process_frame
 	var button=view.nav_buttons[0];var icon=button.get_node("FixedIcon");var origin=icon.global_position;var dimensions=icon.size;var content_id=view.content.get_instance_id()
@@ -25,12 +26,9 @@ func run():
 	for collapsed in [true,false]:
 		if view.nav_collapsed!=collapsed:view.toggle_navigation()
 		await get_tree().create_timer(.25).timeout
-		var width=-1.0
-		for child in view.content.get_children():
-			if child is Button and child.text in ["Все","Генштаб","Институт","Оперштаб","Выполненные"]:
-				if width<0:width=child.size.x
-				assert(is_equal_approx(width,child.size.x))
-		if DisplayServer.get_name()!="headless":RenderingServer.force_draw();get_viewport().get_texture().get_image().save_png("/tmp/quest-filter-"+str(collapsed)+".png")
+		var feed=view.content.find_child("QuestFeed",true,false);assert(feed!=null)
+		var scroll=feed.get_parent();assert(scroll.position.x+scroll.size.x<=view.content.size.x+.5 and scroll.size.x>view.content.size.x*.9)
+		if DisplayServer.get_name()!="headless":RenderingServer.force_draw();get_viewport().get_texture().get_image().save_png("/tmp/quest-feed-"+str(collapsed)+".png")
 	Game.notifications.post("Задание выполнено\nПроверка неподвижности текста", "Командование", "important")
 	view.tab="notifications";view.refresh();await get_tree().process_frame;await get_tree().process_frame
 	var cards=view.content.find_children("*","Button",true,false).filter(func(b):return b.get_script()==load("res://scripts/ui/message_card.gd"))

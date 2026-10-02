@@ -27,9 +27,9 @@ func run_test():
 			if tablet==null:continue
 			if method=="escape":press_escape()
 			else:
-				var label="Продолжить [Esc]" if method=="continue" else "×"
+				var label="Продолжить [Esc]" if method=="continue" else "Закрыть планшет"
 				for button in tablet.get_child(0).find_children("*","Button",true,false):
-					if button.text==label:button.pressed.emit();break
+					if button.tooltip_text==label:button.pressed.emit();break
 			await get_tree().physics_frame
 			await get_tree().process_frame
 			release_escape()

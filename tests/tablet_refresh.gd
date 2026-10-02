@@ -3,18 +3,18 @@ func _ready():call_deferred("run")
 func run():
 	Game.save_enabled=false;Game.sound_enabled=false;Settings.persistence_enabled=false;Settings.values.fullscreen=false;Settings.apply()
 	var c=load("res://scripts/music_controller.gd").new();c.preferences_path="/tmp/tank-radio-test.json";Game.music_controller=c;add_child(c);c.ratings={}
-	assert("hub_evening_dial" in c.TRACKS.hub)
-	c.rate("hub_evening_dial",-1);assert("hub_evening_dial" not in c.eligible("hub"))
-	c.change("hub",true);assert(c.current_track!="hub_evening_dial" and c.repeat_mode==1)
-	c.rate("hub_evening_dial",1);assert("hub_evening_dial" in c.eligible("hub"))
+	var track:String=c.TRACKS.hub[0];assert(c.TRACKS.hub.size()>1)
+	c.rate(track,-1);assert(track not in c.eligible("hub"))
+	c.change("hub",true);assert(c.current_track!=track and c.repeat_mode==1)
+	c.rate(track,1);assert(track in c.eligible("hub"))
 	var view=load("res://scripts/ui/field_tablet.gd").new();view.tab="inventory";add_child(view)
 	for tab in ["inventory","fighter","notifications","music"]:
 		view.tab=tab;view.refresh();await get_tree().process_frame
 		if DisplayServer.get_name()!="headless":
 			await get_tree().create_timer(.2).timeout;RenderingServer.force_draw();get_viewport().get_texture().get_image().save_png("/tmp/refresh-"+tab+".png")
 	view.music_folder="favorites";view.refresh();assert(view.music_folder=="favorites")
-	c.change("battle",true);assert(view.music_folder=="favorites" and c.current_track in c.TRACKS.battle)
-	Game.sound_enabled=true;c.play_track("hub_evening_dial");await get_tree().create_timer(.1).timeout;c.seek(5)
+	c.change("battle",true);assert(view.music_folder=="favorites" and (c.current_track in c.TRACKS.battle or c.current_track==c.theme_track("battle")))
+	Game.sound_enabled=true;c.play_track(track);await get_tree().create_timer(.1).timeout;c.seek(5)
 	assert(absf(c.position_seconds()-5)<.3)
 	var audio=Game.audio();assert(audio.banks.has("ui_hover") and audio.banks.has("ui_denied"));Game.sound_enabled=false
 	var main=load("res://scenes/main.tscn").instantiate();add_child(main);await get_tree().process_frame
