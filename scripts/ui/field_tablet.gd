@@ -503,13 +503,17 @@ func signature(key:String)->String:
 		if key=="inventory":value+=str([arena.weapon,arena.pending_recipes,arena.abilities.slots,arena.headquarters.loadout()])
 		if key=="fighter":value+=str(arena.run.upgrade_history)
 	return value
+## Equipment and fighter news only make sense inside a run (a new card, a picked-up blueprint): in the hub the
+## player changes them himself. A run keeps its own "viewed" mark, so returning to the hub never lights them (T-033).
+func viewed_key(key:String)->String:return key+"@run" if key in ["inventory","fighter"] and is_instance_valid(arena) else key
 func section_new(key:String)->bool:
 	if key=="notifications":return Game.notifications.unread()>0
+	if key in ["inventory","fighter"] and not is_instance_valid(arena):return false
 	var value=signature(key)
-	return value!="" and str(Game.progression.viewed_updates.get(key,""))!=value
+	return value!="" and str(Game.progression.viewed_updates.get(viewed_key(key),""))!=value
 func mark_section(key:String):
 	Game.progression.view_section(key)
-	Game.progression.viewed_updates[key]=signature(key);Game.save_progress()
+	Game.progression.viewed_updates[viewed_key(key)]=signature(key);Game.save_progress()
 
 func expand_layout(parent:Node,factor:float):
 	for child in parent.get_children():
