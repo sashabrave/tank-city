@@ -143,7 +143,7 @@ func apply():
 			environment.ambient_light_color=Color(style.fill)
 		environment.ambient_light_energy=(.34*float(time.get("ambient",1.0))) if night else float(style.ambient)
 	else:sun.rotation_degrees=Vector3(-55,-32,0)
-	depth_light(cozy and bool(Settings.values.get("depth_light",true)) and not night)
+	depth_light(cozy and bool(Settings.values.get("depth_light",true)),night)
 	cinematic_light(cozy and bool(Settings.values.get("cinematic_light",true)),night,Vector3(style.sun_angle) if cozy else Vector3(-55,-32,0))
 	refresh_materials()
 	update_lamps()
@@ -166,11 +166,17 @@ func cinematic_light(on:bool,night:bool,sun_angle:Vector3):
 ## «Глубина света» (T-062), cheap: grid AO on the floor (systems/floor_ao.gd), a slightly warmer sun and
 ## a hint of cool fill (warm light / cool shadow), a touch more contrast. AgX was tried and greyed the sand
 ## palette, so the style's filmic tonemap stays.
-func depth_light(on:bool):
+func depth_light(on:bool,night:=false):
 	if not on:return
+	if night:
+		# Night depth: moonlit contrast — crisper shadows, a slightly bluer fill, lamps stand out against it.
+		environment.adjustment_contrast*=1.1
+		environment.ambient_light_color=environment.ambient_light_color.lerp(Color("6f86c4"),.2)
+		sun.shadow_opacity=minf(1.0,sun.shadow_opacity*1.1)
+		return
 	environment.adjustment_contrast*=1.08;environment.adjustment_saturation*=1.05
 	sun.light_color=sun.light_color.lerp(Color("ffd6a8"),.15);sun.light_energy*=1.06
-	environment.ambient_light_color=environment.ambient_light_color.lerp(Color("9db0d8"),.08)
+	environment.ambient_light_color=environment.ambient_light_color.lerp(Color("9db0d8"),.12)
 	# Softer sun shadows: the surface colour shows through instead of near-black patches.
 	sun.shadow_opacity*=.82
 func _process(delta):
@@ -207,10 +213,13 @@ func update_lamps():
 		light.shadow_enabled=light.visible and (light.get_meta("occluded_beam",false) or (cozy and i<3))
 		light.light_volumetric_fog_energy=1.5 if cozy else 0.0
 		light.shadow_blur=1.5 if cozy and Settings.values.get("soft_shadows",true) else 1.0
-		if light is SpotLight3D and not light.get_meta("occluded_beam",false):
+		if light is SpotLight3D:
 			if not light.has_node("SoftCone"):add_cone(light)
-			var cone=light.get_node("SoftCone");cone.visible=light.visible
-			cone.material_override.set_shader_parameter("density",.012 if night else .0035)
+			# A faint beam is always visible; night and fog make it denser (T-058).
+			var foggy=preload("res://scripts/systems/weather.gd").pick(get_parent()) in ["fog","rain","sandstorm"]
+			# Long-range mast lights get no visible cone: from above it would veil the whole field.
+			var cone=light.get_node("SoftCone");cone.visible=light.visible and cozy and light.spot_range<=5.0
+			cone.material_override.set_shader_parameter("density",(.02 if night else .006)*(1.6 if foggy else 1.0))
 	var pickups=get_tree().get_nodes_in_group("pickup_lights").filter(func(n):return get_parent().is_ancestor_of(n))
 	if camera:pickups.sort_custom(func(a,b):return a.global_position.distance_squared_to(camera.global_position)<b.global_position.distance_squared_to(camera.global_position))
 	for i in range(pickups.size()):
@@ -221,8 +230,25 @@ static func lamp(parent:Node3D,position:Vector3):
 	light.light_color=Color("ffcc83");light.light_energy=1.6;light.omni_range=7;light.omni_attenuation=1.3;light.shadow_enabled=false
 	light.add_to_group("night_lamps");light.visible=Settings.values.get("world_lighting","day")=="night"
 
+## Lamp cookie (T-058): a real torch pattern on the ground — hot centre, a brighter reflector ring and a soft,
+## slightly uneven rim — instead of a flat disc. One procedural texture shared by every spotlight.
+static var cookie:ImageTexture
+static func lamp_cookie()->ImageTexture:
+	if cookie:return cookie
+	var size=128;var image=Image.create(size,size,false,Image.FORMAT_L8)
+	var rng=RandomNumberGenerator.new();rng.seed=4411
+	var wobble=[];for i in range(16):wobble.append(rng.randf_range(-.03,.03))
+	for y in range(size):
+		for x in range(size):
+			var p=Vector2(x,y)/float(size-1)*2.0-Vector2.ONE;var r=p.length()
+			var a=fposmod(atan2(p.y,p.x)/TAU,1.0)*16.0;var k=int(a)%16;var w=lerpf(wobble[k],wobble[(k+1)%16],a-floor(a))
+			var edge=1.0-smoothstep(.78+w,.98+w,r)
+			var value=edge*(.62+.38*(1.0-smoothstep(0.0,.35,r))+.18*exp(-pow((r-.62)/.06,2.0)))
+			image.set_pixel(x,y,Color(value,value,value))
+	image.generate_mipmaps();cookie=ImageTexture.create_from_image(image);return cookie
 static func beam(parent:Node3D,pos:Vector3,always=false,priority=1)->SpotLight3D:
 	var light=SpotLight3D.new();light.name="Headlight";parent.add_child(light);light.position=pos;light.rotation.x=deg_to_rad(-16)
+	light.light_projector=lamp_cookie()
 	light.light_color=Color("ffe1ad");light.light_energy=2.1;light.spot_range=3.8;light.spot_angle=31;light.spot_attenuation=1.0;light.shadow_enabled=false
 	light.set_meta("day_energy",.65 if always else 0.0);light.set_meta("night_energy",2.1);light.set_meta("priority",priority)
 	light.add_to_group("night_lamps");light.visible=always or Settings.values.world_lighting=="night";return light

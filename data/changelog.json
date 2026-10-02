@@ -25,7 +25,9 @@
 					"Флаг выхода появляется только после того, как открыт сундук командира — награда больше не остаётся забытой.",
 					"Киношный свет: контровой свет в дополнительном цвете обрисовывает модели, у каждой комнаты своё настроение; работает в бою, хабе и на карте.",
 					"Настройки графики разделены на «Графику» и «Экран», сверху — пресет «Экономно / Стандарт / Кино».",
-					"Свет: меньше случайных фонарей на поле, а металл и вода отражают настоящую сцену вокруг."
+					"Свет: меньше случайных фонарей на поле, а металл и вода отражают настоящую сцену вокруг.",
+					"Фонари и фары: рисунок пятна как у настоящего фонаря, слабый видимый луч (в тумане и ночью заметнее), фары машин тоже с лучом.",
+					"Тени холоднее, но с оттенком поверхности; ночью свет и тени контрастнее."
 				]
 			},
 			"en": {
@@ -50,7 +52,9 @@
 					"The exit flag appears only after the commander's chest is opened, so the reward is never left behind.",
 					"Cinematic light: a complementary back light outlines models, each room gets its own mood; works in battle, the hub and the map.",
 					"Graphics settings are split into «Graphics» and «Screen», with an «Economy / Standard / Cinema» preset on top.",
-					"Lighting: fewer random lamps on the field, and metal and water reflect the real scene around them."
+					"Lighting: fewer random lamps on the field, and metal and water reflect the real scene around them.",
+					"Lamps and headlights: a real torch pattern on the ground, a faint visible beam (stronger at night and in fog), vehicle headlights get beams too.",
+					"Shadows are cooler but keep the surface hue; at night light and shadows have more contrast."
 				]
 			}
 		},
