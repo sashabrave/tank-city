@@ -24,8 +24,12 @@ func build(top_z:float):
 		Visuals.box(self,Vector3(-1.75,.5,z),Vector3(.25,1.0,.25),stripe_b)
 		for i in range(6):Visuals.box(self,Vector3(-1.35+i*.48,.85,z),Vector3(.46,.14,.12),stripe_a if i%2==0 else stripe_b)
 	# Beyond the pass: burnt ground, ruins, fires and black smoke.
-	Visuals.box(self,Vector3(0,-.01,-14),Vector3(30,.02,18),Color("1f1d1b"))
+	# Burnt ground as overlapping irregular patches with a soft, ragged edge instead of one rectangle.
 	var rng=RandomNumberGenerator.new();rng.seed=7781
+	for i in range(26):
+		var patch=MeshInstance3D.new();var disc=CylinderMesh.new();var r=rng.randf_range(2.2,4.4);disc.top_radius=r;disc.bottom_radius=r;disc.height=.02;disc.radial_segments=9
+		patch.mesh=disc;patch.position=Vector3(rng.randf_range(-13,13),-.01+i*.0004,rng.randf_range(-22,-5));patch.rotation.y=rng.randf()*TAU
+		patch.scale=Vector3(1.0,1.0,rng.randf_range(.6,1.0));patch.material_override=Visuals.material(Color("1f1d1b").lerp(Color("3a332c"),rng.randf()*.4));add_child(patch)
 	for i in range(9):
 		var p=Vector3(rng.randf_range(-12,12),0,rng.randf_range(-22,-7))
 		var ruin=Visuals.box(self,p+Vector3(0,rng.randf_range(.6,1.6),0),Vector3(rng.randf_range(1,2.5),rng.randf_range(1.2,3.2),rng.randf_range(1,2.2)),dark);ruin.rotation.y=rng.randf()*TAU
