@@ -48,6 +48,7 @@ static func build(seed_value:int,room:int,wave:int,difficulty:int=0,node_id:Stri
 static func wave_size(room:int,wave:int,difficulty:int=0)->int:
 	var t=Balance.CONFIG.campaign
 	var size=t.wave_base_size+floori(room*t.wave_size_per_field)+wave*t.wave_size_per_wave+mini(t.endless_size_cap,Campaign.cycle*t.endless_size_per_sector)+clampi(difficulty,0,2)*t.wave_size_per_star
+	size+=1 if Campaign.challenge_level()>=3 else 0  # challenge III: one more enemy per wave
 	return maxi(t.vehicle_wave_minimum,size) if content_tier(room)==2 else size
 static func generate(seed_value:int,room:int,wave:int,_baseline:Array=[])->Array:return build(seed_value,room,wave).map(func(entry):return entry.kind)
 

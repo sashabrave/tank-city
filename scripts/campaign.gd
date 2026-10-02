@@ -11,8 +11,20 @@ static var SIZES:Array=[11,13,15,15,17,17,19]
 static var BOSSES:Array=[6]
 static var SERVICES:Array=[2,4,6]
 const WORLDS={1:{"name":"Тихий двор","offset":0,"sizes":[11,13,15,15,17,17,19],},2:{"name":"Мисочная гряда","offset":7,"sizes":[22,23,24,25,26,27,30],},3:{"name":"Цитадель","offset":16,"sizes":[25,26,27,28,29,30,35],}}
+## Challenge ladder of the current run: 0 normal, 1–3 = I–III (campaign only). Set after configure().
+static var challenge=0
+const CHALLENGE_REWARD=[1.0,1.25,1.5,2.0]
+## Professionalism added per ladder step (see Professionalism.skill); no upper bound, so later steps or
+## a late-game ladder can keep raising it (the derived behaviours are clamped by Professionalism.LIMITS).
+const CHALLENGE_SKILL=.2
+static func challenge_level()->int:return 0 if endless else challenge
+## Highest ladder step a world offers: none until the world is cleared, then one past the best cleared step.
+static func challenge_open(id:int)->int:
+	if id not in Game.progression.cleared_worlds:return 0
+	return mini(3,int(Game.progression.counters.get("challenge_w%d" % id,0))+1)
+static func reward_multiplier()->float:return CHALLENGE_REWARD[clampi(challenge_level(),0,3)]
 static func configure(id:int,infinite:bool=false,is_daily:bool=false):
-	world=clampi(id,1,3);endless=infinite or is_daily;cycle=0;daily=is_daily;daily_key=DailyRun.today_key() if is_daily else ""
+	world=clampi(id,1,3);endless=infinite or is_daily;cycle=0;daily=is_daily;daily_key=DailyRun.today_key() if is_daily else "";challenge=0
 	var hp=CombatStats.initial_health()
 	var weapon=Game.LOOT.WEAPONS[Game.selected_weapon]
 	var stats=CombatStats.weapon()

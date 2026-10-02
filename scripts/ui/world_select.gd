@@ -6,10 +6,13 @@ extends Control
 signal selected(world:int,infinite:bool)
 signal daily_selected
 signal cancelled
-const CARD=Vector2(236,392)
+const CARD=Vector2(236,446)
 const IDS=["world_1","world_2","world_3","endless"]
 const TINTS=[Color("6d8a5a"),Color("8a7a55"),Color("6b6f82"),Color("8a5a4e")]
 var cards:Array=[]
+## Challenge ladder chosen per world (0 = normal); defaults to the highest open step.
+var ladder:={}
+const LADDER_TEXT=["Обычный режим","I · враги опытнее · сплав +25%","II · без передышки, штаб слабее · +50%","III · элитные командиры, +1 враг · +100%"]
 var current=0
 
 func _ready():
@@ -62,6 +65,7 @@ func card(panel:Control,i:int,pos:Vector2)->Button:
 			var pip=ColorRect.new();pips.add_child(pip);pip.position=Vector2(k*26,0);pip.size=Vector2(20,6);pip.color=UiKit.ORANGE if k<depth else Color(1,1,1,.14)
 		if i+1 in Game.progression.cleared_worlds:
 			var medal=UiKit.icon(button,"legendary",Vector2(CARD.x-56,270),Vector2(40,40));medal.tooltip_text=Texts.render("Мир пройден")
+		ladder_row(button,i+1)
 	else:
 		var best=int(Game.progression.counters.get("endless_cycle",0))
 		UiKit.label(button,"Лучший сектор: %d" % best if best>0 else "Сектор за сектором",Vector2(16,310),Vector2(CARD.x-32,24),15,UiKit.MUTED)
@@ -97,3 +101,30 @@ func unlock_worlds():
 	for child in get_children():
 		remove_child(child);child.queue_free()
 	_ready()
+
+func challenge_for(world:int)->int:return int(ladder.get(world,0))
+## Three round steps I II III under the progress pips, and one line on what the chosen step adds.
+func ladder_row(card:Button,world:int):
+	var open=Campaign.challenge_open(world);var best=int(Game.progression.counters.get("challenge_w%d" % world,0))
+	if not ladder.has(world):ladder[world]=open
+	var row=Control.new();row.name="Ladder";card.add_child(row);row.position=Vector2(16,338);row.size=Vector2(CARD.x-32,40);row.mouse_filter=Control.MOUSE_FILTER_PASS
+	var note=UiKit.label(card,LADDER_TEXT[challenge_for(world)],Vector2(16,382),Vector2(CARD.x-32,40),13,UiKit.MUTED);note.name="LadderNote";note.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	for step in range(1,4):
+		var dot=Button.new();dot.name="Step%d" % step;row.add_child(dot);dot.position=Vector2((step-1)*48,0);dot.size=Vector2(38,38);dot.focus_mode=Control.FOCUS_NONE
+		dot.text=["I","II","III"][step-1];dot.add_theme_font_size_override("font_size",14)
+		var locked=step>open;var cleared=step<=best;var chosen=step==challenge_for(world)
+		var fill=Color(UiKit.ORANGE,.85) if cleared else Color(1,1,1,.04)
+		var style=UiKit.style(fill,19,UiKit.ORANGE if chosen else Color(1,1,1,.18) if locked else Color(UiKit.ORANGE,.55))
+		style.set_border_width_all(3 if chosen else 1)
+		for key in ["normal","hover","pressed","disabled","focus"]:dot.add_theme_stylebox_override(key,style)
+		dot.add_theme_color_override("font_color",Color("1f2822") if cleared else UiKit.INK);dot.add_theme_color_override("font_disabled_color",Color(1,1,1,.25))
+		dot.disabled=locked
+		dot.tooltip_text=Texts.render(LADDER_TEXT[step] if not locked else "Откроется после ступени %s" % ["мира","I","II"][step-1])
+		dot.pressed.connect(func():
+			ladder[world]=0 if challenge_for(world)==step else step
+			Game.sound("ui_confirm",self);refresh_ladder(card,world))
+func refresh_ladder(card:Button,world:int):
+	for name in ["Ladder","LadderNote"]:
+		var node=card.get_node_or_null(name)
+		if node:card.remove_child(node);node.queue_free()
+	ladder_row(card,world)

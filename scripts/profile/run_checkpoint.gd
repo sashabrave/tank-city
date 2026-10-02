@@ -8,7 +8,7 @@ static func keys()->Array:
 		if field not in result:result.append(field)
 	return result
 static func capture(arena,index:int,mode:String,choices:Dictionary)->Dictionary:
-	var data={"version":VERSION,"world":Campaign.world,"endless":Campaign.endless,"cycle":Campaign.cycle,"strength":Campaign.endless_strength,"index":index,"mode":mode,"seed":Game.visual_run_seed,"choices":choices.duplicate(true),"run":{},"abilities":{},"hq":{},"hero":{},"class":Game.selected_class,"start_documents":Game.cores,"daily":Campaign.daily,"daily_key":Campaign.daily_key}
+	var data={"version":VERSION,"world":Campaign.world,"endless":Campaign.endless,"cycle":Campaign.cycle,"strength":Campaign.endless_strength,"index":index,"mode":mode,"seed":Game.visual_run_seed,"choices":choices.duplicate(true),"run":{},"abilities":{},"hq":{},"hero":{},"class":Game.selected_class,"start_documents":Game.cores,"daily":Campaign.daily,"daily_key":Campaign.daily_key,"challenge":Campaign.challenge}
 	if not is_instance_valid(arena):return data
 	for key in keys():data.run[key]=arena.run.get(key)
 	data.run=data.run.duplicate(true)

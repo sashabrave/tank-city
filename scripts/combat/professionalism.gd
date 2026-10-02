@@ -22,7 +22,7 @@ static func skill(index:int)->float:
 	if Campaign.endless:return minf(1.4,1.1+Campaign.cycle*.06+index*.01)
 	var curve:Array=WORLD_CURVE.get(Campaign.world,WORLD_CURVE[1])
 	var last=maxi(1,Campaign.BOSSES[0]-1)
-	return lerpf(curve[0],curve[1],clampf(float(index)/last,0,1))
+	return lerpf(curve[0],curve[1],clampf(float(index)/last,0,1))+Campaign.challenge_level()*Campaign.CHALLENGE_SKILL
 
 static func value(key:String,index:int)->float:
 	var points:Array=PROFILE[key];var s=skill(index)

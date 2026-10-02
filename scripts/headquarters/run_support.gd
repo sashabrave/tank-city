@@ -13,6 +13,7 @@ var basic_hp=5.0
 func _init(context):
 	arena=context;modules=Game.hq_modules.filter(func(id):return HQCatalog.available(id)).duplicate();active=Game.hq_active if HQCatalog.available(Game.hq_active) else "";levels=Game.hq_levels.duplicate()
 	basic_hp=Balance.CONFIG.combat.base_health+int(Game.health_level/5.0)+Game.base_level
+	if Campaign.challenge_level()>=2:basic_hp=maxf(1,roundf(basic_hp*.75))  # challenge II: weaker HQ
 func level(id:String)->float:return float(levels.get(id,0))
 func max_hp()->float:return basic_hp+(3+level("hq_plating")*2 if "hq_plating" in modules else 0)
 func room_started():

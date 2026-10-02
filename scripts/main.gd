@@ -50,7 +50,7 @@ func select_world():
 	var picker=load("res://scripts/ui/world_select.gd").new();current.root.add_child(picker)
 	current.build_menu=picker;current.phase="workshop";current.exit_queued=false
 	picker.cancelled.connect(current.close_station)
-	picker.selected.connect(func(id,infinite):Campaign.configure(id,infinite);picker.queue_free();start_run())
+	picker.selected.connect(func(id,infinite):Campaign.configure(id,infinite);Campaign.challenge=0 if infinite else picker.challenge_for(id);picker.queue_free();start_run())
 	picker.daily_selected.connect(func():Campaign.configure(1,true,true);picker.queue_free();start_run())
 
 func start_run():
@@ -166,7 +166,7 @@ func request_run():
 func resume_run(restart:bool=false):
 	var data=Game.run_checkpoint.duplicate(true)
 	if data.is_empty():return
-	Campaign.configure(int(data.world),data.endless,data.get("daily",false));Campaign.cycle=int(data.cycle);Campaign.endless_strength=data.strength
+	Campaign.configure(int(data.world),data.endless,data.get("daily",false));Campaign.cycle=int(data.cycle);Campaign.endless_strength=data.strength;Campaign.challenge=clampi(int(data.get("challenge",0)),0,3)
 	# A daily run started yesterday still counts for yesterday.
 	if Campaign.daily:Campaign.daily_key=str(data.get("daily_key",Campaign.daily_key))
 	Game.selected_class=data.class;Game.visual_run_seed=int(data.seed)

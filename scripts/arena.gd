@@ -317,7 +317,7 @@ func begin_room(index: int):
 	room.mode=route_node.get("type","battle") if route_node.get("type","battle") in RoutePlan.CHALLENGES else "battle"
 	if sandbox:room.mode=sandbox_mode;room.difficulty=sandbox_difficulty;room.commander_elite=sandbox_difficulty>0
 	challenges.reset()
-	room.commander_elite=room.difficulty>0
+	room.commander_elite=room.difficulty>0 or Campaign.challenge_level()>=3
 	room.commander=null;room.commander_help_timer=0;room.commander_help_waves=0;room.commander_help_pool.clear()
 	room_index=index;grid_size=ROOM_SIZES[index];boss_room=index in Campaign.BOSSES;boss_defeated=false
 	if sandbox and sandbox_size>0 and not boss_room:grid_size=sandbox_size

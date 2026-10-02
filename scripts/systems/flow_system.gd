@@ -72,12 +72,13 @@ func finish_wave():
 	if arena.room.next_is_room:
 		arena.room.room_cleared=true
 		# A breather after every cleared field: the soldier patches up 1 HP (never above the maximum).
-		var patched=minf(ROOM_HEAL,arena.run.soldier_max_hp-arena.run.soldier_hp)
+		# Challenge II and above: no breather between fields.
+		var patched=0.0 if Campaign.challenge_level()>=2 else minf(ROOM_HEAL,arena.run.soldier_max_hp-arena.run.soldier_hp)
 		if patched>0:
 			arena.run.soldier_hp+=patched
 			if is_instance_valid(arena.room.player) and arena.room.player.kind=="soldier":arena.room.player.hp=arena.run.soldier_hp;arena.room.player.refresh_health()
 			arena.toast("Передышка · +%s здоровья" % UiKit.number(patched))
-		var reward=Balance.CONFIG.economy.clear_reward+Campaign.progress_index(arena.room.room_index)*Balance.CONFIG.economy.clear_reward_per_room
+		var reward=roundi((Balance.CONFIG.economy.clear_reward+Campaign.progress_index(arena.room.room_index)*Balance.CONFIG.economy.clear_reward_per_room)*Campaign.reward_multiplier())
 		Game.earn(reward);arena.run.earned+=reward
 		place_flag("Награда · +%d ◈" % reward)
 		arena.toast("Маршрут открыт")
