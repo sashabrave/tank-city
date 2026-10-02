@@ -76,7 +76,7 @@ func refresh():
 	var p=Game.progression
 	if tab in ["active","tracked","completed","orders"]:
 		quest_filter={"completed":"completed","orders":"operations"}.get(tab,"all");tab="quests"
-	var tabs=[["inventory","Снаряжение"],["fighter","Боец"],["quests","Задачи"],["notifications","Лента"],["music","Радио"],["settings","Настройки"],["guide","Энциклопедия"],["about","Об игре"],["tech","Тех. информация"]]
+	var tabs=[["inventory","Снаряжение"],["fighter","Боец"],["quests","Задачи"],["notifications","Связь"],["music","Радио"],["settings","Настройки"],["guide","Энциклопедия"],["about","Об игре"],["tech","Тех. информация"]]
 	# Command centre: quests first, then a compact summary; loadout, radio and settings stay in the field tablet.
 	if manage:tabs=[tabs[2],["base","Сводка"],tabs[3],["guide","Энциклопедия"],["tech","Тех. информация"]]
 	for i in range(tabs.size()):
@@ -335,14 +335,31 @@ func order_icon(event:String)->Control:
 
 func orders_page():
 	quest_filter="operations";quest_page()
+## «Связь» (T-034, T-048): history of video calls first — any call can be replayed — then messages without
+## the quest echoes (quests live in «Задачи»), then the technical log. Only real news lights the tab.
+static func quest_echo(entry:Dictionary)->bool:
+	var text=str(entry.get("text","")).to_lower()
+	return text.begins_with("новое задание") or text.begins_with("новый приказ") or text.begins_with("поступила телеграмма") or "задание выполнено" in text
 func messages_page():
-	UiKit.label(content,"Лента",Vector2(UiKit.PAGE_PADDING,20),Vector2(720,28),UiKit.PAGE_TITLE_SIZE)
-	for button in UiKit.tab_row(content,Vector2(22,68),content.size.x-44,[["important","Важные"],["technical","Технические"]],message_tab,func(key):message_tab=key;refresh()):button.add_theme_font_size_override("font_size",16)
-	UiKit.label(content,"Задания, развитие и открытия" if message_tab=="important" else "Боевые реплики · без всплывающих уведомлений",Vector2(22,106+UiKit.TAB_CONTENT_GAP),Vector2(720,26),14,UiKit.MUTED)
+	UiKit.label(content,"Связь",Vector2(UiKit.PAGE_PADDING,20),Vector2(720,28),UiKit.PAGE_TITLE_SIZE)
+	if message_tab not in ["calls","important","technical"]:message_tab="calls"
+	for button in UiKit.tab_row(content,Vector2(22,68),content.size.x-44,[["calls","История"],["important","Сообщения"],["technical","Технические"]],message_tab,func(key):message_tab=key;refresh()):button.add_theme_font_size_override("font_size",16)
+	var hint={"calls":"Звонки майора — их можно пересмотреть","important":"Развитие, открытия и важные события","technical":"Боевые реплики · без всплывающих уведомлений"}[message_tab]
+	UiKit.label(content,hint,Vector2(22,106+UiKit.TAB_CONTENT_GAP),Vector2(720,26),14,UiKit.MUTED)
 	var box=scroller(Vector2(22,164),Vector2(content.size.x-44,335))
+	if message_tab=="calls":
+		var Call=preload("res://scripts/ui/video_call.gd")
+		for id in Call.ORDER:
+			if "call_"+id not in Game.progression.seen:continue
+			var first=str(Call.CALLS[id][0][1])
+			var b=list_button(box,first if first.length()<70 else first.substr(0,68)+"…",func():
+				var view=Call.new();view.id=id;view.replay=true;get_tree().root.add_child(view),56)
+			b.icon=UiKit.interface_icon("call");b.expand_icon=true;b.add_theme_constant_override("icon_max_width",20)
+		if box.get_child_count()==0:UiKit.label(box,"Звонков ещё не было",Vector2.ZERO,Vector2(500,40),16,UiKit.MUTED)
+		UiKit.reveal_list(box);return
 	for i in range(Game.notification_history.size()-1,-1,-1):
 		var entry=Game.notification_history[i]
-		if Game.notifications.category(entry)!=message_tab:continue
+		if Game.notifications.category(entry)!=message_tab or quest_echo(entry):continue
 		var card=preload("res://scripts/ui/message_card.gd").new();card.entry=entry;box.add_child(card);card.read_requested.connect(func():entry.read=true;Game.save_progress();refresh())
 	if box.get_child_count()==0:UiKit.label(box,"Пока нет сообщений",Vector2.ZERO,Vector2(500,40),16,UiKit.MUTED)
 	UiKit.reveal_list(box)

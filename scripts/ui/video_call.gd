@@ -54,6 +54,10 @@ const CALLS={
 	],
 }
 var id="intro"
+## Story order of the calls (also the order of the «Связь → История» list).
+const ORDER=["intro","first_death","first_haul","tasks","merchant","challenge","headquarters","garage","legend","general","general_down","ladder"]
+## Replayed from «Связь»: no ring, no notification, no "seen" bookkeeping.
+var replay=false
 var step=0
 var panel:Panel
 var portrait:TextureRect
@@ -71,8 +75,7 @@ static func due(hub)->String:
 	var p=Game.progression
 	var c=func(key:String)->int:return int(p.counters.get(key,0))
 	# Story order: the first unseen call whose moment has come rings next, one per hub visit.
-	var order=["intro","first_death","first_haul","tasks","merchant","challenge","headquarters","garage","legend","general","general_down","ladder"]
-	for call in order:
+	for call in ORDER:
 		if "call_"+call in p.seen:continue
 		var ready=false
 		match call:
@@ -113,7 +116,7 @@ func _ready():
 	next_button=UiKit.button(panel,"Дальше",Vector2.ZERO,Vector2.ZERO,advance,true);next_button.focus_mode=Control.FOCUS_ALL
 	resized.connect(layout);layout();show_step()
 	Game.sound("telegram_accept",self)
-	Game.notifications.post("Видеосвязь: "+MAJOR)
+	if not replay:Game.notifications.post("Видеосвязь: "+MAJOR)
 	# No button is focused on open: a stray Space/Enter/E from the game must not skip the first line (T-048).
 
 func layout():

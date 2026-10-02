@@ -423,7 +423,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-034.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "лента уведомлений сама по себе бесит в таком виде",
 			"type": "polish",
 			"version": "0.7.1-pre"
@@ -845,7 +845,7 @@
 			"note": "Из T-048: пропущенный звонок можно перечитать.",
 			"type": "idea",
 			"priority": 2,
-			"status": "backlog",
+			"status": "review",
 			"version": "0.8",
 			"created": "2026-10-02",
 			"source": "chat",
