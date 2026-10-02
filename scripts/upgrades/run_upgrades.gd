@@ -3,7 +3,7 @@ extends RefCounted
 ## Applies UpgradeDef cards to a run and derives card text and previews from the same modifiers.
 const PREVIEW_LABELS={"hp":["HP",""],"speed":["Скорость",""],"rate":["Темп"," /с"],"damage":["Урон",""],"intercept":["Перехват","%"],"range":["Дальность","%"],"healing":["Лечение","%"],"device_power":["Мощность","%"],"device_cooldown":["Кулдаун","%"],
 	"crit_chance":["Крит","%"],"crit_damage":["Крит-урон","%"],"dodge":["Уклонение","%"],"guard_bullet":["Защита от пуль","%"],"guard_blast":["Защита от взрывов","%"],"guard_vehicle":["Защита от техники","%"],
-	"pierce":["Пробитие",""],"burn":["Поджог","%"],"shock":["По технике","%"],"stun":["Оглушение","%"],"stealth":["Маскировка","%"],"marauder":["Добыча","%"],"field_repair":["Ремонт за убийство",""],"luck":["Удача",""],"safe_slots":["Сейф рюкзака",""]}
+	"pierce":["Пробитие",""],"burn":["Поджог","%"],"burn_power":["Урон горения","%"],"burn_time":["Горение"," с"],"stun_time":["Оглушение"," с"],"shock":["По технике","%"],"stun":["Оглушение","%"],"stealth":["Маскировка","%"],"marauder":["Добыча","%"],"field_repair":["Ремонт за убийство",""],"luck":["Удача",""],"safe_slots":["Сейф рюкзака",""]}
 const FAMILIES={"fire":"Огневая мощь","survival":"Живучесть","ammo":"Спецпатроны","recon":"Разведка","logistics":"Тыл"}
 const TIER_NAMES=["Обычное","Редкое","Эпическое","Легендарное"]
 ## Chance of rare / epic / legendary per stage band (progress index 0-1, 2-3, 4-5, 6+). Rarer cards appear
@@ -18,6 +18,9 @@ static func eligible(arena,def:UpgradeDef,tier:int=3)->bool:
 	if def.max_stacks>0 and stacks(arena,def.id)>=def.max_stacks:return false
 	if (def.effect!=null or def.flag) and def.id in arena.run.behavior_cards:return false
 	if "abilities" in def.requires and arena.abilities.slots.is_empty():return false
+	# Enhancements of an effect appear only after its base card: requires "card:burn".
+	for need in def.requires:
+		if need.begins_with("card:") and stacks(arena,need.trim_prefix("card:"))==0:return false
 	# A capped stat that would not move is not offered (speed and interception limits).
 	if def.preview!="" and is_instance_valid(arena.player):
 		var change=measure_change(arena,def,Balance.tier_power(0))
@@ -147,6 +150,9 @@ static func measure(arena,kind:String)->float:
 		"guard_vehicle":return minf(CombatMods.CAPS.guard,arena.run.guard_vehicle)*100
 		"pierce":return float(arena.run.pierce)
 		"burn":return minf(CombatMods.CAPS.burn_chance,arena.run.burn_chance)*100
+		"burn_power":return (1.0+arena.run.burn_power)*100
+		"burn_time":return CombatMods.burn_time(arena.run)
+		"stun_time":return CombatMods.stun_time(arena.run)
 		"shock":return arena.run.shock_bonus*100
 		"stun":return minf(CombatMods.CAPS.stun_chance,arena.run.stun_chance)*100
 		"stealth":return minf(CombatMods.CAPS.stealth,arena.run.stealth)*100

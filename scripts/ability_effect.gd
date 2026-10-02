@@ -10,8 +10,7 @@ var visual:Node3D
 func _ready():
 	visual=Node3D.new();add_child(visual)
 	if kind=="gas":
-		for i in range(5):
-			var puff=Visuals.box(visual,Vector3(sin(i*2.4),.25,cos(i*2.4))*(1+utility*.2),Vector3(1.6,.18,1.6),Color("9cba87"));puff.rotation.y=i
+		visual.add_child(preload("res://scripts/gas_cloud.gd").new(1.5+utility*.35,int(position.x*31+position.z*17)))
 	elif kind=="mine":
 		Visuals.box(visual,Vector3(0,.08,0),Vector3(.55,.16,.55),Color("8d9855"));Visuals.ring(visual,Color("f1cb63"),.35)
 	else:
@@ -28,10 +27,15 @@ func _physics_process(delta):
 	elif kind=="airstrike":Game.sound_loop("helicopter_rotor",self)
 	elif age>=2 and age-delta<2:Game.sound("mine_arm",self)
 	if kind=="gas":
-		visual.rotation.y+=delta*.05
+		# Sleeping infantry: held like a stun, shown with «Z z z» instead of stars.
 		for enemy in arena.actors:
-			if is_instance_valid(enemy) and not enemy.player_owned and not enemy.allied and enemy.kind in ["soldier","grenadier","sniper","shield"] and arena.flat_distance(position,enemy.position)<1.5+utility*.35:enemy.stun_time=maxf(enemy.stun_time,.2)
-		if age>=power:queue_free()
+			if is_instance_valid(enemy) and not enemy.player_owned and not enemy.allied and enemy.kind in ["soldier","grenadier","sniper","shield"] and arena.flat_distance(position,enemy.position)<1.5+utility*.35:
+				enemy.stun_time=maxf(enemy.stun_time,.2);enemy.sleep_time=maxf(enemy.sleep_time,.2)
+		if age>=power:
+			# The cloud thins out on its own; the effect ends now.
+			var cloud=visual.get_node_or_null("GasCloud")
+			if cloud:visual.remove_child(cloud);arena.add_child(cloud);cloud.position=position;cloud.fade_out()
+			queue_free()
 	elif kind=="mine":
 		if age<2:return
 		for actor in arena.actors:

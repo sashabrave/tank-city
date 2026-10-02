@@ -25,6 +25,8 @@ var parachute_left=0.0
 var parachute:Node3D
 var force_field:MeshInstance3D
 var stun_time=0.0
+## Gas sleep (catnip cloud): works like a stun, reads as «Z z z» instead of stars.
+var sleep_time=0.0
 var shield_phase="ready"
 var shield_time=.7
 var shield_visual: Node3D
@@ -189,6 +191,7 @@ func _physics_process(delta):
 	if arena.phase!="combat" and not (player_owned and arena.phase=="countdown"):return
 	if is_instance_valid(force_field):force_field.visible=arena.boss.shield_active()
 	stun_time=maxf(0,stun_time-delta)
+	sleep_time=maxf(0,sleep_time-delta)
 	if not player_owned and not allied:CombatMods.tick_burn(self,delta)
 	if dead:return
 	if not player_owned and not allied and (stun_time>0 or arena.freeze_time>0):return

@@ -4,19 +4,19 @@
 
 [resource]
 script = ExtResource("1")
-id = "shock_bonus"
-title = "ЭМИ по технике"
+id = "shock_power"
+title = "Разряд"
 icon = "device_power"
 family = "ammo"
-order = 4
-run_field = "shock_bonus"
+order = 1
+run_field = "shock_power"
 format = "percent"
 cap = 0.0
-description = "Бонус урона по технике и дронам. Даёт карта «ЭМИ-патроны» в бою."
-step = 0.0
+description = "Урон ЭМИ по технике. Действует, когда в бою взяты «ЭМИ-патроны»."
+step = 0.05
 max_level = 5
-cost_base = 70
-cost_step = 0
-requires = ""
+cost_base = 60
+cost_step = 30
+requires = "burn_power"
 requires_level = 2
 meta_field = ""

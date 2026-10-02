@@ -38,7 +38,7 @@ func _ready():
 		grenade_marker=GrenadeVisual.marker(hub,target,Balance.CONFIG.combat.grenade_radius,true);grenade_marker.hide()
 	elif kind=="mine":visual=Visuals.box(self,Vector3.UP*.1,Vector3(.4,.14,.4),Color("677854"));duration=20
 	elif kind=="airstrike":duration=3
-	elif kind=="gas":visual=bubble(Color(.6,.73,.32,.2),1.5);duration=power
+	elif kind=="gas":visual=preload("res://scripts/gas_cloud.gd").new(1.5,int(start.x*31+start.z*17));add_child(visual);duration=power
 	elif kind=="shield":visual=bubble(Color(.45,.85,.7,.25),.6);duration=4
 	elif kind=="cloak":duration=power;fade_hero(.7)
 	Game.sound({"barrier":"barrier_deploy","grenade":"grenade_throw","laser":"laser_fire","shield":"shield_restore","cloak":"cloak","mine":"mine_arm"}.get(kind,"ability_generic"),hub)

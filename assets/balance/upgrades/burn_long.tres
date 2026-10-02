@@ -4,15 +4,15 @@
 
 [resource]
 script = ExtResource("1")
-id = "chain_fire"
-title = "Цепная реакция"
-category = "Тактика"
+id = "burn_long"
+title = "Долгое пламя"
+category = "Оружие"
 family = "ammo"
-icon = "legendary"
+icon = "damage"
 tags = PackedStringArray("ammo")
-weight = 7
-max_stacks = 1
-min_tier = 1
+weight = 8
+max_stacks = 2
 requires = PackedStringArray("card:burn")
-detail = "Горящие враги поджигают соседей, а погибая, вспыхивают."
-flag = true
+modifiers = Array[Dictionary]([{"stat": "burn_duration", "op": "add", "value": 1.5}])
+preview = "burn_time"
+detail = "Враги горят дольше."

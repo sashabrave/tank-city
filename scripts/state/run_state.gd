@@ -44,6 +44,12 @@ var pierce=0
 var burn_chance=0.0
 var shock_bonus=0.0
 var stun_chance=0.0
+## Effect strength (station «Жар/Разряд/Оглушение» and enhancement cards). They only matter once the
+## base card of the effect gave a chance: hub upgrades never switch an effect on by themselves.
+var burn_power=0.0
+var burn_duration=0.0
+var stun_duration=0.0
+var shock_power=0.0
 var stealth=0.0
 var marauder=0.0
 ## HQ / vehicle HP restored per kill.

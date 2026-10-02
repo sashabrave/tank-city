@@ -1,6 +1,8 @@
 extends RefCounted
-const VERSION=12
+const VERSION=13
 const ARRAYS=["skins","duplicate_recipes","notifications","class_first_slots","purchased_gadgets","purchased_hq","class_second_slots","research","built","abilities","branch_unlocks","weapon_unlocks","bonus_unlocks"]
+## Former station nodes «Поджог», «ЭМИ по технике», «Контузия»: [cost_base, cost_step] at the time of removal.
+const REFUNDED_EFFECTS={"burn_chance":[70,35],"shock_bonus":[70,35],"stun_chance":[80,40]}
 const MAPS=["garage","headquarters","progression","v09","bonus_levels","stat_levels"]
 static func validate(data:Dictionary)->Dictionary:
 	var version=data.get("version",0)
@@ -97,6 +99,18 @@ static func migrate(source:Dictionary)->Dictionary:
 	# missing fields until application, rather than inventing historical data.
 	while int(data.version)<VERSION:
 		match int(data.version):
+			12:
+				# Effects now come from run cards only: station levels that switched them on are refunded once.
+				var levels=data.get("stat_levels",{})
+				if levels is Dictionary:
+					var refund=0
+					for old in REFUNDED_EFFECTS:
+						var level=clampi(int(levels.get(old,0)),0,5);var cost=REFUNDED_EFFECTS[old]
+						for i in range(level):refund+=cost[0]+cost[1]*i
+						levels.erase(old)
+					data.credits=int(data.get("credits",0))+refund
+					if refund>0 and data.get("notifications",[]) is Array:
+						data.notifications.append({"text":"Эффекты пуль теперь берутся картами в бою. За прежнюю выучку возвращено %d сплава." % refund,"sender":"Штаб","time":Time.get_unix_time_from_system(),"read":false,"category":"important"})
 			11:data.run_checkpoint={}
 			7:
 				data.research=["character","weapons","bonuses","garage","range"]

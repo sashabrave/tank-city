@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="UpgradeDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrades/upgrade_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "stun_often"
+title = "Частая контузия"
+category = "Оружие"
+family = "ammo"
+icon = "device_cooldown"
+tags = PackedStringArray("ammo")
+weight = 8
+max_stacks = 2
+requires = PackedStringArray("card:stun")
+modifiers = Array[Dictionary]([{"stat": "stun_chance", "op": "add", "value": 0.06}])
+preview = "stun"
+detail = "Оглушение срабатывает чаще."

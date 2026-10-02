@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="StatDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/stats/stat_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "stun_power"
+title = "Оглушение"
+icon = "device_cooldown"
+family = "ammo"
+order = 2
+run_field = "stun_duration"
+format = "number"
+cap = 0.0
+description = "Длительность оглушения, секунды. Действует, когда в бою взята «Контузия»."
+step = 0.05
+max_level = 5
+cost_base = 70
+cost_step = 35
+requires = "shock_power"
+requires_level = 2
+meta_field = ""

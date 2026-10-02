@@ -31,20 +31,32 @@ static func outgoing(arena,bullet,target)->float:
 	if "last_stand" in run.behavior_cards:
 		var ratio=(shooter.hp/maxf(1.0,shooter.max_hp)) if in_vehicle else (run.soldier_hp/maxf(1.0,float(run.soldier_max_hp)))
 		if ratio<=.25:amount*=1.3
-	if is_machine(target.kind):amount*=1.0+minf(CAPS.shock_bonus,run.shock_bonus)
+	if is_machine(target.kind) and run.shock_bonus>0:amount*=1.0+minf(CAPS.shock_bonus,run.shock_bonus+run.shock_power)
 	if run.stealth>0 and target.hp>=target.max_hp:amount*=1.0+minf(CAPS.stealth,run.stealth)*2.0
 	var rng=run.combat_rng
 	var crit=rng.randf()<crit_chance(arena)
 	if crit:
 		amount*=run.crit_damage+crit_overflow(arena)
 		arena.burst(target.position+Vector3.UP*.5,Color("ffd166"),.35)
-		if "crit_stun" in run.behavior_cards:stun(target,STUN_TIME)
-	if run.burn_chance>0 and rng.randf()<minf(CAPS.burn_chance,run.burn_chance):ignite(target,bullet.damage)
-	if run.stun_chance>0 and rng.randf()<minf(CAPS.stun_chance,run.stun_chance):stun(target,STUN_TIME)
-	if run.shock_bonus>0 and is_machine(target.kind):arena.burst(target.position+Vector3.UP*.4,Color("86daec"),.25)
+		if "crit_stun" in run.behavior_cards:stun(target,stun_time(run))
+	if run.burn_chance>0 and rng.randf()<minf(CAPS.burn_chance,run.burn_chance):ignite(target,bullet.damage,run)
+	if run.stun_chance>0 and rng.randf()<minf(CAPS.stun_chance,run.stun_chance):stun(target,stun_time(run))
+	if run.shock_bonus>0 and is_machine(target.kind):
+		arena.burst(target.position+Vector3.UP*.4,Color("86daec"),.25)
+		if "shock_short" in run.behavior_cards and rng.randf()<.25:stun(target,.6)
+		if "shock_arc" in run.behavior_cards:arc(arena,target,amount*.4)
 	return amount
-static func ignite(target,base_damage:float):
-	target.burn_time=BURN_TIME;target.burn_dps=maxf(target.burn_dps,base_damage*.35)
+static func stun_time(run)->float:return STUN_TIME+(run.stun_duration if run!=null else 0.0)
+static func burn_time(run)->float:return BURN_TIME+(run.burn_duration if run!=null else 0.0)
+## Burn damage per second from the hit that lit it; «Жар» (station and cards) raises it.
+static func ignite(target,base_damage:float,run=null):
+	var power=1.0+(run.burn_power if run!=null else 0.0)
+	target.burn_time=maxf(target.burn_time,burn_time(run));target.burn_dps=maxf(target.burn_dps,base_damage*.35*power)
+## «Разряд»: an EMP hit on a machine jolts other machines nearby.
+static func arc(arena,source,damage:float):
+	for other in arena.room.actors.duplicate():
+		if is_instance_valid(other) and other!=source and not other.dead and not other.player_owned and not other.allied and is_machine(other.kind) and arena.flat_distance(other.position,source.position)<1.5:
+			other.take_damage(damage,Vector3.ZERO,"");arena.burst(other.position+Vector3.UP*.4,Color("86daec"),.2)
 static func stun(target,seconds:float):
 	target.stun_time=maxf(target.stun_time,seconds*(.3 if target.kind=="boss" else 1.0))
 ## Incoming damage to the player: dodge first, then protection by source ("bullet", "vehicle", "blast").
@@ -74,8 +86,8 @@ static func on_kill(arena,actor):
 		for other in arena.room.actors.duplicate():
 			if is_instance_valid(other) and other!=actor and not other.dead and not other.player_owned and not other.allied and arena.flat_distance(other.position,actor.position)<1.6:
 				other.take_damage(actor.burn_dps*2.0,Vector3.ZERO,"")
-				ignite(other,actor.burn_dps/.35)
-## Burning: ticks twice a second and may spread to a neighbour.
+				ignite(other,actor.burn_dps/.35,run)
+## Burning: ticks twice a second; with «Цепная реакция» it may spread to a neighbour.
 static func tick_burn(actor,delta:float):
 	if actor.burn_time<=0:return
 	actor.burn_time-=delta;actor.burn_tick-=delta
@@ -85,7 +97,8 @@ static func tick_burn(actor,delta:float):
 	arena.burst(actor.position+Vector3.UP*.5,Color("ff8a3d"),.22)
 	actor.take_damage(actor.burn_dps*.5,Vector3.ZERO,"")
 	if actor.dead or arena.run==null:return
-	if arena.run.combat_rng.randf()<.2:
+	if "chain_fire" in arena.run.behavior_cards and arena.run.combat_rng.randf()<.2:
 		for other in arena.room.actors:
 			if is_instance_valid(other) and other!=actor and not other.dead and not other.player_owned and not other.allied and other.burn_time<=0 and arena.flat_distance(other.position,actor.position)<1.3:
-				ignite(other,actor.burn_dps/.35);break
+				# The spreading fire keeps its strength; dps already holds «Жар».
+				other.burn_time=maxf(other.burn_time,burn_time(arena.run));other.burn_dps=maxf(other.burn_dps,actor.burn_dps);break

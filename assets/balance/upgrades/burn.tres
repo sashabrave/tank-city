@@ -5,12 +5,13 @@
 [resource]
 script = ExtResource("1")
 id = "burn"
-title = "Зажигательные"
+title = "Зажигательные патроны"
 category = "Оружие"
 family = "ammo"
 icon = "damage"
 tags = PackedStringArray("ammo")
 weight = 9
-modifiers = Array[Dictionary]([{"stat": "burn_chance", "op": "add", "value": 0.15}])
+max_stacks = 1
+modifiers = Array[Dictionary]([{"stat": "burn_chance", "op": "add", "value": 0.2}])
 preview = "burn"
-detail = "Урон 3 с, огонь перекидывается на соседей, бочки взрываются с одного попадания."
+detail = "Шанс поджечь врага: урон 3 с. Бочки взрываются с одного попадания. Открывает усиления огня."

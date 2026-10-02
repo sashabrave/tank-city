@@ -2358,3 +2358,31 @@ E — в хаб	E — to the hub
 В бесконечном режиме после семи комнат начинается новый сектор, и враги крепче.	In endless mode a new sector starts after seven rooms, and enemies get tougher.
 Ну всё, хватит болтать. Пора в бой.	Right, enough talk. Time to fight.
 Ещё	More
+Эффекты пуль теперь берутся картами в бою. За прежнюю выучку возвращено %d сплава.	Bullet effects now come from cards in battle. %d alloy refunded for the old training.
+Зажигательные патроны	Incendiary rounds
+Шанс поджечь врага: урон 3 с. Бочки взрываются с одного попадания. Открывает усиления огня.	Chance to set an enemy on fire: damage for 3 s. Barrels blow up from one hit. Unlocks fire enhancements.
+Жар	Heat
+Горение жжёт сильнее.	Burning hurts more.
+Долгое пламя	Long flame
+Враги горят дольше.	Enemies burn longer.
+Горящие враги поджигают соседей, а погибая, вспыхивают.	Burning enemies set their neighbours alight and flare up when they die.
+Шанс оглушить врага на 0,8 с: он не двигается и не стреляет. Босс втрое короче. Открывает усиления контузии.	Chance to stun an enemy for 0.8 s: it can't move or shoot. Bosses three times shorter. Unlocks concussion enhancements.
+Глубокая контузия	Deep concussion
+Оглушение длится дольше.	Stuns last longer.
+Частая контузия	Frequent concussion
+Оглушение срабатывает чаще.	Stuns trigger more often.
+Бонус урона по технике и дронам. Открывает усиления ЭМИ.	Bonus damage to vehicles and drones. Unlocks EMP enhancements.
+Перегрузка	Overload
+Ещё больше урона по технике и дронам.	Even more damage to vehicles and drones.
+Замыкание	Short circuit
+Попадание по технике с шансом 25% глушит её на 0,6 с.	A hit on a vehicle has a 25% chance to disable it for 0.6 s.
+Разряд	Arc
+Попадание по технике бьёт током соседние машины: 40% урона.	A hit on a vehicle shocks nearby machines for 40% damage.
+Урон горения. Действует, когда в бою взяты «Зажигательные патроны».	Burn damage. Works once «Incendiary rounds» are taken in battle.
+Урон ЭМИ по технике. Действует, когда в бою взяты «ЭМИ-патроны».	EMP damage to vehicles. Works once «EMP rounds» are taken in battle.
+Длительность оглушения, секунды. Действует, когда в бою взята «Контузия».	Stun duration in seconds. Works once «Concussion» is taken in battle.
+Шанс поджечь врага. Даёт карта «Зажигательные патроны» в бою.	Chance to ignite an enemy. Given by the «Incendiary rounds» card in battle.
+Бонус урона по технике и дронам. Даёт карта «ЭМИ-патроны» в бою.	Bonus damage to vehicles and drones. Given by the «EMP rounds» card in battle.
+Шанс оглушить врага. Даёт карта «Контузия» в бою.	Chance to stun an enemy. Given by the «Concussion» card in battle.
+Урон горения	Burn damage
+Горение	Burning

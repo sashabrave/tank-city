@@ -8,7 +8,7 @@ const INFO={
 	"recruit":{"role":"Универсал · крит","family":"fire","modifiers":[{"stat":"crit_chance","op":"add","value":.05}],"unlock":{}},
 	"heavy":{"role":"Штурм · живучесть","family":"survival","modifiers":[{"stat":"soldier_max_hp","op":"add_round","value":1.0},{"stat":"soldier_hp","op":"add_round","value":1.0},{"stat":"guard_bullet","op":"add","value":.10}],
 		"unlock":{"event":"armor","goal":25,"text":"Уничтожь 25 единиц техники"}},
-	"gunner":{"role":"Подрыв · спецпатроны","family":"ammo","modifiers":[{"stat":"burn_chance","op":"add","value":.10},{"stat":"guard_blast","op":"add","value":.15}],
+	"gunner":{"role":"Подрыв · спецпатроны","family":"ammo","modifiers":[{"stat":"burn_power","op":"add","value":.25},{"stat":"guard_blast","op":"add","value":.15}],
 		"unlock":{"event":"barrel_kills","goal":10,"text":"Подорви бочками 10 врагов"}},
 	"marksman":{"role":"Разведка · засада","family":"recon","modifiers":[{"stat":"stealth","op":"add","value":.12},{"stat":"crit_damage","op":"add","value":.25}],
 		"unlock":{"event":"challenge_any","goal":3,"text":"Пройди 3 испытания"}},

@@ -4,14 +4,15 @@
 
 [resource]
 script = ExtResource("1")
-id = "shock"
-title = "ЭМИ-патроны"
+id = "shock_overload"
+title = "Перегрузка"
 category = "Оружие"
 family = "ammo"
 icon = "device_power"
 tags = PackedStringArray("ammo")
-weight = 9
-max_stacks = 1
+weight = 8
+max_stacks = 2
+requires = PackedStringArray("card:shock")
 modifiers = Array[Dictionary]([{"stat": "shock_bonus", "op": "add", "value": 0.3}])
 preview = "shock"
-detail = "Бонус урона по технике и дронам. Открывает усиления ЭМИ."
+detail = "Ещё больше урона по технике и дронам."

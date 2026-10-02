@@ -4,15 +4,14 @@
 
 [resource]
 script = ExtResource("1")
-id = "chain_fire"
-title = "Цепная реакция"
+id = "shock_short"
+title = "Замыкание"
 category = "Тактика"
 family = "ammo"
-icon = "legendary"
+icon = "device_power"
 tags = PackedStringArray("ammo")
 weight = 7
 max_stacks = 1
-min_tier = 1
-requires = PackedStringArray("card:burn")
-detail = "Горящие враги поджигают соседей, а погибая, вспыхивают."
+requires = PackedStringArray("card:shock")
+detail = "Попадание по технике с шансом 25% глушит её на 0,6 с."
 flag = true
