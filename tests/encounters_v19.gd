@@ -8,11 +8,17 @@ func run():
 		Campaign.configure(world)
 		for seed_value in range(1,101):
 			var plan=RoutePlan.build(seed_value)
-			assert(plan.size()==7 and plan==RoutePlan.build(seed_value))
+			assert(plan.size()==Campaign.SIZES.size() and plan==RoutePlan.build(seed_value))  # world 3 has two boss stages
 			for stage in range(6):
-				assert(plan[stage].map(func(n):return n.difficulty).has(0) and plan[stage].map(func(n):return n.difficulty).has(1) and plan[stage].map(func(n):return n.difficulty).has(2))
+				# World 1 ramps up (RoutePlan.WORLD1_LEVELS; service stops are simple); later worlds offer 0, ★ and ★★.
+				var levels=RoutePlan.WORLD1_LEVELS[stage].duplicate() if RoutePlan.gradual() else [0,1,2]
 				for node in plan[stage]:
-					assert(node.next.size()==(1 if stage==5 else 3))
+					if RoutePlan.node_branch(node)!="":assert(node.difficulty==0);continue
+					assert(levels.has(node.difficulty));levels.erase(node.difficulty)
+				# Three continuing roads plus one fork between regular stages, a single road into the boss.
+				assert(plan[stage].reduce(func(sum,n):return sum+n.next.size(),0)==(3 if stage==5 else 4))
+				for node in plan[stage]:
+					assert(node.next.size()==1 if stage==5 else node.next.size() in [1,2])
 					var waves=preview.waves(seed_value,stage,node.difficulty,node.id)
 					for wave in range(3):
 						assert(waves[wave]==WaveDirector.build(seed_value,stage,wave,node.difficulty,node.id))
@@ -28,7 +34,9 @@ func run():
 				var rarity=Game.TIERS.tier(recipe.id)
 				assert(level!=0 and ((level==1 and rarity<=1) or (level==2 and rarity>=2)))
 				assert(recipe.category!="ability" or recipe.id in ["barrier","mine","laser","airstrike"])
-				if recipe.category=="weapon":assert(Campaign.weapon_world(recipe.id)<=world)
+				# World 1 holds the content of every world, gated by stage tiers; later worlds by their own number.
+				if recipe.category=="weapon":assert(Campaign.weapon_world(recipe.id)<=Campaign.recipe_world())
+				if Campaign.unified_content():assert(rarity<=Game.TIERS.unlocked(Campaign.progress_index(3)))
 				assert(not EncounterRules.recipe_pool(level,[recipe],Campaign.progress_index(3)).has(recipe))
 		print("RECIPE POOLS world ",world,": ",pool_counts)
 	Campaign.configure(1)
@@ -42,10 +50,11 @@ func run():
 			var offers=arena.reward.chest_offers()
 			assert(offers.size()==3)
 			for offer in offers:
-				if offer.category=="upgrade":assert(offer.tier==node.difficulty)
+				# Each card rolls its own rarity (RunUpgrades.roll_tier); chest cards never fall below the room difficulty.
+				if offer.category=="upgrade":assert(offer.tier>=node.difficulty and offer.tier<=3)
 				elif offer.category!="alloy":assert(node.difficulty>0)
 		arena.reward.prepare_upgrade_offers()
-		assert(arena.room.upgrade_offers.all(func(o):return o.tier==node.difficulty))
+		assert(not arena.room.upgrade_offers.is_empty() and arena.room.upgrade_offers.all(func(o):return o.tier>=0 and o.tier<=3))
 	# Same three-wave rhythm, with no side entry near the headquarters.
 	for size in [13,22,30]:
 		var previous=WaveDirector.spawn_cells(size,0)

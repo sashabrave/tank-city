@@ -1,6 +1,6 @@
 extends Node
 func _ready():
-	Game.save_enabled=false
+	Game.save_enabled=false;Settings.persistence_enabled=false
 	var old=load("res://tests/fixtures/wave_director_before_editor.gd")
 	var report=[]
 	for room in range(6):
@@ -13,6 +13,6 @@ func _ready():
 					after+=WaveDirector.rank_cost(entry.kind,entry.rank);count_new+=1
 					if entry.kind in WaveDirector.PEOPLE:people+=1
 					else:machines+=1
-		var surprise=Balance.CONFIG.campaign.drone_surprise_chance*2*3000
-		report.append({"room":room+1,"old_count":count_old/3000.0,"new_count":count_new/3000.0,"old_budget":before/3000,"new_budget":after/3000,"with_surprises_ratio":(after+surprise)/before,"machine_share":machines/float(people+machines)})
+		# Drones left the waves (SurpriseSystem cooldown), so the old budget includes them and the new one does not.
+		report.append({"room":room+1,"old_count":count_old/3000.0,"new_count":count_new/3000.0,"old_budget":before/3000,"new_budget":after/3000,"budget_ratio":after/before,"machine_share":machines/float(people+machines)})
 	print(JSON.stringify(report,"\t"));get_tree().quit()

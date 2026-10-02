@@ -4,31 +4,37 @@ var checks=0
 var arena
 func check(ok,message):
 	checks+=1
+	print("PASS " if ok else "FAIL ",message)
 	if not ok:failures+=1;push_error("FAIL: "+message)
 func _ready():call_deferred("run")
 func empty_arena():
 	if is_instance_valid(arena):arena.free()
 	arena=load("res://scenes/arena.tscn").instantiate();add_child(arena);arena.auto_pause_enabled=false;arena.set_physics_process(false);arena.phase="combat";arena.spawn_queue.clear()
 	for wall in arena.walls.values():wall.node.free()
-	arena.walls.clear();arena.trenches.clear()
+	# Random floor patches (water, forest) and generators must not block the ability cells.
+	arena.walls.clear();arena.trenches.clear();arena.terrain.patches.clear();arena.generators.clear();arena.navigation.reset()
 func run():
-	Game.save_enabled=false;Game.sound_enabled=false;Game.health_level=0;Game.damage_level=0;Game.base_level=0;Game.mobility_level=0
-	var valid=true;var species={};var veterans=0;var samples=0;var enemies=0;var drone_waves=0
-	for room in range(6):
-		for wave in range(3):
-			for seed_value in range(100):
-				var entries=WaveDirector.build(seed_value,room,wave);var budget=0;var drones=0;var artillery=0
-				valid=valid and entries==WaveDirector.build(seed_value,room,wave) and entries.size()<=8 and entries.size()>0
-				for entry in entries:
-					budget+=WaveDirector.rank_cost(entry.kind,entry.rank);species[entry.kind]=true
-					if entry.rank==2:veterans+=1
-					if entry.kind in ["drone","flyer"]:drones+=1
-					if entry.kind in ["sniper","mortar"]:artillery+=1
-				valid=valid and entries.size()==WaveDirector.wave_size(room,wave) and drones<=2 and artillery<=2
-				samples+=1;enemies+=entries.size()
-				if drones>0:drone_waves+=1
-	check(valid and species.size()==10 and veterans>0,"1800 seeded waves: threat budgets, diversity, caps and veterans")
-	print("WAVES samples=%d mean_count=%.2f drone_waves=%.1f%% veterans=%d" % [samples,float(enemies)/samples,100.0*drone_waves/samples,veterans])
+	Game.save_enabled=false;Settings.persistence_enabled=false;Game.sound_enabled=false;Game.health_level=0;Game.damage_level=0;Game.base_level=0;Game.mobility_level=0
+	# 0.7 waves are seeded squads (SquadCatalog): exact size, kind caps, tanks only from field 5, drones never in
+	# waves (they come from the background cooldown), ranks follow the world.
+	var valid=true;var species={};var ranks={};var samples=0;var enemies=0;var squads={}
+	for world in range(1,4):
+		Campaign.configure(world)
+		for room in range(6):
+			for wave in range(3):
+				for seed_value in range(100):
+					var entries=WaveDirector.build(seed_value,room,wave);var counts={}
+					valid=valid and entries==WaveDirector.build(seed_value,room,wave) and entries.size()==WaveDirector.wave_size(room,wave)
+					for entry in entries:
+						var type="rpg" if entry.weapon=="rpg" else entry.kind
+						counts[type]=int(counts.get(type,0))+1;species[entry.kind]=true;ranks[entry.rank]=true;squads[entry.squad]=true
+						valid=valid and entry.rank==world and entry.kind in WaveDirector.PEOPLE+WaveDirector.MACHINES
+					for type in counts:valid=valid and counts[type]<=int(SquadCatalog.CAPS.get(type,99))
+					valid=valid and counts.has("tank")==WaveDirector.tanks_in_wave(room,wave)
+					samples+=1;enemies+=entries.size()
+	Campaign.configure(1)
+	check(valid and species.size()==8 and ranks.size()==3 and squads.size()==SquadCatalog.SQUADS.size(),"5400 seeded squad waves: sizes, caps, tank pacing, all kinds, squads and world ranks")
+	print("WAVES samples=%d mean_count=%.2f squads=%d" % [samples,float(enemies)/samples,squads.size()])
 	var maps=true
 	for seed_value in range(100):maps=maps and BattleMapGenerator.validate(BattleMapGenerator.generate(seed_value,5).rows)
 	check(maps,"sixth room maps stay connected")
@@ -48,7 +54,8 @@ func run():
 	check(arena.abilities.cast() and arena.walls[Vector2i(5,4)].hp==12,"barrier has four bricks of health")
 	check(not arena.abilities.cast(),"ability cooldown rejects repeats")
 	arena.abilities.upgrade("utility",0);arena.abilities.cooldown=0;arena.player.cell=Vector2i(7,5);arena.player.position=arena.world_pos(arena.player.cell)
-	check(arena.abilities.cast() and arena.walls.has(Vector2i(7,3)) and arena.walls.has(Vector2i(7,4)),"upgraded barrier places two blocks")
+	# Barrier efficiency raises the limit of standing blocks: the first one is no longer recycled.
+	check(arena.abilities.cast() and arena.walls.has(Vector2i(5,4)) and arena.walls.has(Vector2i(7,4)),"upgraded barrier keeps two blocks")
 	var drone=arena.spawn_actor("drone",Vector2i(0,0),false);arena.add_barrier(Vector2i(0,1),12);arena.drone_step(drone)
 	check(drone.dead and arena.walls[Vector2i(0,1)].hp==9,"kamikaze detonates on barrier")
 	empty_arena();arena.abilities.selected="laser";arena.player.cell=Vector2i(5,8);arena.player.position=arena.world_pos(arena.player.cell);arena.player.facing=Vector2i.UP
@@ -57,30 +64,45 @@ func run():
 	arena.abilities.cast();check(first.dead and not second.dead,"laser passes one concrete and stops at second")
 	arena.abilities.upgrade("utility",0);arena.abilities.cooldown=0;arena.abilities.cast();check(second.dead,"laser upgrade extends concrete penetration")
 	empty_arena();arena.abilities.selected="grenade"
-	var near=arena.spawn_actor("soldier",Vector2i(5,6),false);var far=arena.spawn_actor("soldier",Vector2i(0,0),false)
-	check(arena.abilities.cast() and arena.grenades.back().target==far.position and arena.grenades.back().blast_radius==2.5,"grenade selects farthest enemy with 2.5 radius")
+	# The grenade is thrown 5 cells ahead of the hero and bounces; radius from combat.tres.
+	var p=arena.player;var ahead=p.position+Vector3(p.facing.x,0,p.facing.y)*5
+	check(arena.abilities.cast() and arena.grenades.back().target==ahead and is_equal_approx(arena.grenades.back().blast_radius,Balance.CONFIG.combat.grenade_radius),"grenade lands five cells ahead with the tuned radius")
 	var hp=arena.player.hp;arena.grenade_explosion(arena.player.position,4,true,2.5);check(arena.player.hp==hp,"ability grenade never damages player")
+	# The mechanic upgrades the player's vehicle: here the APC waiting for the next room.
+	arena.pending_vehicle="apc"
 	var service=load("res://scripts/service_room.gd").new();service.arena=arena;service.branch="vehicle";service.index=4;add_child(service)
 	service.claim(1);var added=arena.vehicle_mods.apc.hp;service.claim(1)
 	check(added>0 and arena.vehicle_mods.apc.hp==added and arena.pending_vehicle=="apc","mechanic reward and vehicle issued once")
-	arena.begin_room(4);check(arena.player.kind=="apc" and arena.player.max_hp==5+added,"upgraded vehicle carries into next room")
+	arena.begin_room(4);check(arena.player.kind=="apc" and is_equal_approx(arena.player.max_hp,GarageCatalog.stats("apc").hp+added),"upgraded vehicle carries into next room")
+	# The instructor improves an equipped ability; without one there are no cards.
+	arena.abilities.slots=["laser"];arena.abilities.select("laser")
 	var general=load("res://scripts/service_room.gd").new();general.arena=arena;general.branch="ability";general.index=6;add_child(general)
 	general.avatar.position=Vector3(0,0,0);general.interact();check(is_instance_valid(general.modal) and general.offers.size()==3,"salute opens three ability cards")
 	general.claim(0);check(arena.abilities.level.power>0,"general improves selected run ability")
-	arena.begin_room(5);check(not arena.boss_room and arena.grid_size==20,"sixth regular room")
-	arena.begin_room(6);check(arena.boss_room and arena.grid_size==21 and arena.spawn_queue==["boss"],"seventh stage is final boss")
-	var route=load("res://scripts/route_map.gd").new();route.available=2;route.needs_service=true;route.ability_available=true;add_child(route)
-	var before=route.scroll;Input.action_press("north");route._process(.5);Input.action_release("north");check(route.scroll>before,"map W scroll")
+	arena.begin_room(5);check(not arena.boss_room and arena.grid_size==(Campaign.SIZES.max() if arena.room.mode=="maze" else Campaign.SIZES[5]),"sixth regular room (a maze challenge uses the largest field)")
+	arena.begin_room(6);check(arena.boss_room and arena.grid_size==Campaign.SIZES[6] and arena.spawn_queue.size()==BossCatalog.encounter(arena.run_seed,6).count and arena.spawn_queue.all(func(k):return k=="boss"),"seventh stage is final boss (one or two by variant)")
+	# WASD now drives the map rover (command_rover) and world 1 services are route nodes, so only the drag stays here.
+	var route=load("res://scripts/route_map.gd").new();route.available=2;add_child(route);var before=route.scroll
 	var press=InputEventMouseButton.new();press.button_index=MOUSE_BUTTON_LEFT;press.pressed=true;route._unhandled_input(press)
 	var motion=InputEventMouseMotion.new();motion.relative=Vector2(0,80);before=route.scroll;route._unhandled_input(motion)
-	check(route.scroll>before and route.fork_positions.size()==2,"map mouse drag and two fork miniatures")
+	check(route.scroll>before,"map mouse drag scrolls")
 	var main=load("res://scripts/main.gd").new();add_child(main);main.start_run();main.enter_room(0)
 	main.show_map(2);check(main.current.needs_service,"fork required after room two")
 	main.enter_room(2);check(main.current.get_script().resource_path.ends_with("route_map.gd"),"cannot bypass fork")
 	main.show_service("vehicle",2);main.current.claim(0);main.current.completed.emit(2)
 	check(main.run_arena.visited_services.get(2)=="vehicle" and not main.current.needs_service,"chosen branch resolves exactly once")
-	main.enter_room(2);check(main.current.room_index==2 and main.current.player.kind=="buggy","map returns to combat with mechanic vehicle")
-	Game.ability_unlocks=[];Game.selected_ability="";Game.credits=200
-	check(Game.unlock_or_equip_ability("grenade") and Game.credits==40,"ability unlock spends price")
-	Game.unlock_or_equip_ability("grenade");check(Game.credits==40,"re-equipping is free")
+	# Stage 2 may also hold a route service or challenge node: enter an ordinary battle lane explicitly.
+	var plan=RoutePlan.build(main.run_arena.run_seed)
+	var lanes=[]
+	for node in plan[1]:
+		if not lanes.is_empty():break
+		main.route_choices[1]=node.id
+		lanes=RoutePlan.reachable(plan,2,main.route_choices,"vehicle").filter(func(id):return RoutePlan.node_branch(RoutePlan.chosen(plan,2,{2:id}))=="")
+	main.enter_room(2,lanes[0] if not lanes.is_empty() else "")
+	check("room_index" in main.current and main.current.room_index==2 and main.current.player.kind=="buggy","map returns to combat with mechanic vehicle")
+	# Gadgets: the weapons workshop sells barrier/mine/laser/airstrike once an ability is unlocked.
+	Game.built_workshops.append("weapons");Game.ability_unlocks=["laser"];Game.purchased_gadgets.clear();Game.selected_ability="";Game.credits=Game.gadget_cost("laser")+40
+	check(not Game.unlock_or_equip_ability("grenade"),"grenade is not a gadget")
+	check(Game.unlock_or_equip_ability("laser") and Game.credits==40 and Game.selected_ability=="laser","gadget purchase spends price")
+	Game.unlock_or_equip_ability("laser");check(Game.credits==40,"re-equipping is free")
 	print("V06: %d checks, %d failures" % [checks,failures]);get_tree().quit(1 if failures else 0)

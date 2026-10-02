@@ -35,16 +35,21 @@ func run():
 	Campaign.configure(1)
 	var arena=load("res://scenes/arena.tscn").instantiate();add_child(arena);arena.auto_pause_enabled=false;arena.set_physics_process(false);arena.phase="upgrade"
 	var reward=arena.reward
-	assert(reward.START_EFFECTS.size()+BehaviorCards.DATA.size()==12)
-	for id in reward.START_EFFECTS:
-		var card=reward.upgrade_card({"id":id,"tier":0});assert(not card.title.is_empty())
+	# Run cards come from the UpgradeRegistry (assets/balance/upgrades); every card renders a titled card.
+	assert(UpgradeRegistry.all().size()>=15)
+	for def in UpgradeRegistry.all():
+		var card=reward.upgrade_card({"id":def.id,"tier":0});assert(not card.title.is_empty(),"Card has a title: "+def.id)
 	arena.run.range_multiplier=1.12;assert(arena.run.range_multiplier>1)
 	var gallery=load("res://scripts/ui/class_gallery.gd").new();add_child(gallery)
 	await get_tree().process_frame
 	gallery.queue_free();arena.queue_free()
-	var old_path=Game.save_path;Game.save_path="/tmp/tank_city_v16_test_save.json";Game.save_enabled=true
+	# Fresh temporary folder: the profile, its backup and temp files never touch real saves or older runs.
+	var dir=OS.get_temp_dir().path_join("warcats_v16_%d" % Time.get_ticks_usec());DirAccess.make_dir_recursive_absolute(dir)
+	var old_path=Game.save_path;Game.save_path=dir.path_join("profile.json");Game.save_enabled=true
 	Game.health_level=45;Game.save_progress();Game.health_level=0;Game.class_first_slots=[];Game.load_progress()
 	assert(Game.health_level==45 and Game.selected_class in Game.class_first_slots,"Save preserves uncapped levels and purchases")
 	Game.save_enabled=false;Game.save_path=old_path
-	print("PASS v16 loadout, 12 cards, class gallery, quest acceptance and isolated save roundtrip")
+	for file in DirAccess.get_files_at(dir):DirAccess.remove_absolute(dir.path_join(file))
+	DirAccess.remove_absolute(dir)
+	print("PASS v16 loadout, registry cards, class gallery, quest acceptance and isolated save roundtrip")
 	get_tree().quit()
