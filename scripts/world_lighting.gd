@@ -103,6 +103,12 @@ func apply():
 		sky_material.ground_horizon_color=Color(style.ground) if bright else Color("a1a394")
 		sky_material.ground_bottom_color=Color(style.ground).darkened(.25) if bright else Color("44483d")
 		sky_material.energy_multiplier=(.45 if night else 1.0)
+		# Metal needs contrast to read as metal: a deeper zenith and a bright warm horizon give its edges a
+		# light-to-dark sweep instead of one flat grey (only the reflection sky; the background colour stays).
+		if bright and not night:
+			sky_material.sky_top_color=Color(style.sky_top).darkened(.28)
+			sky_material.sky_horizon_color=Color(style.sky_horizon).lightened(.12)
+			sky_material.sky_curve=.06
 	var soft=option.call("soft_shadows")
 	# Softness is a filter blur, not an angular sun size: PCSS (angular distance) samples the penumbra
 	# with noise that reads as grain on small geometry like brick courses.

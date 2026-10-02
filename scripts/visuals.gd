@@ -286,10 +286,11 @@ static func cozy_material(mat:StandardMaterial3D):
 	if Settings.values.get("rim_light",true) and mat.shading_mode!=BaseMaterial3D.SHADING_MODE_UNSHADED:
 		mat.rim_enabled=true;mat.rim=.4;mat.rim_tint=.55
 	if "steel" in title or "metal" in title:
-		mat.metallic=.92 if shiny else .9;mat.roughness=.3 if shiny else .48;mat.roughness_texture=metal_roughness();mat.roughness_texture_channel=BaseMaterial3D.TEXTURE_CHANNEL_RED
+		# T-005: smoother steel catches sun glints and the contrasting reflection sky.
+		mat.metallic=.96 if shiny else .9;mat.roughness=.18 if shiny else .48;mat.roughness_texture=metal_roughness();mat.roughness_texture_channel=BaseMaterial3D.TEXTURE_CHANNEL_RED
 	elif shiny and ("graphite" in title or "frames" in title):
 		# Weapon bodies and frames: blued gunmetal instead of flat plastic.
-		mat.metallic=.7;mat.roughness=.4
+		mat.metallic=.88;mat.roughness=.24
 	elif "rubber" in title or "dark" in title or "graphite" in title:
 		mat.roughness=.85
 	elif title.begins_with("env7_"):pass
