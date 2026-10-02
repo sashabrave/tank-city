@@ -26,6 +26,10 @@ func build():
 		if not child is ColorRect:child.queue_free()
 	if mode=="add":build_form()
 	else:build_board()
+## The area really visible on screen (the window may be narrower than the base resolution).
+func screen_size()->Vector2:
+	var visible=get_viewport().get_visible_rect().size
+	return Vector2(minf(visible.x,root.size.x if root.size.x>0 else visible.x),minf(visible.y,root.size.y if root.size.y>0 else visible.y))
 func close():
 	get_tree().paused=was_paused;Game.reset_input();queue_free()
 func _input(event):
@@ -35,7 +39,7 @@ func _input(event):
 		else:close()
 
 func build_form():
-	var size=Vector2(640,470);var panel=UiKit.glass(root,((root.get_viewport_rect().size-size)*.5).round(),size)
+	var size=Vector2(640,470);var panel=UiKit.glass(root,((screen_size()-size)*.5).round(),size)
 	UiKit.label(panel,"Новая задача",Vector2(24,16),Vector2(400,36),24)
 	UiKit.label(panel,"Попадёт в бэклог. Скриншот и версия прикладываются сами.",Vector2(24,52),Vector2(590,22),14,UiKit.MUTED)
 	title_edit=LineEdit.new();panel.add_child(title_edit);title_edit.position=Vector2(24,86);title_edit.size=Vector2(592,44);title_edit.placeholder_text=Texts.localized("Коротко: что не так или что хочется");title_edit.name="TaskTitle"
@@ -68,7 +72,7 @@ func save():
 	else:close()
 
 func build_board():
-	var screen=root.get_viewport_rect().size
+	var screen=screen_size()
 	var size=Vector2(minf(screen.x-40,COLUMN_W*4+24*5),screen.y-60);var panel=UiKit.glass(root,((screen-size)*.5).round(),size)
 	UiKit.label(panel,"Задачи",Vector2(24,14),Vector2(300,36),24)
 	UiKit.label(panel,"F8 — новая задача из любого места игры · Esc — закрыть",Vector2(24,50),Vector2(600,20),13,UiKit.MUTED)
@@ -87,7 +91,8 @@ func card(box:VBoxContainer,task:Dictionary,width:float,column:int):
 	var c=Panel.new();box.add_child(c);c.custom_minimum_size=Vector2(width,104);c.name="Task_"+str(task.id)
 	var style=StyleBoxFlat.new();style.bg_color=tint;style.set_corner_radius_all(8);style.border_color=UiKit.ORANGE if int(task.get("priority",2))==1 else Color(1,1,1,.08);style.set_border_width_all(2);c.add_theme_stylebox_override("panel",style)
 	c.tooltip_text=str(task.get("note",""))+("\n"+str(task.shot) if str(task.get("shot",""))!="" else "")
-	var title=UiKit.label(c,str(task.title),Vector2(10,6),Vector2(width-20,48),15);title.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;title.clip_text=true
+	# The author's own words: shown exactly as typed (no auto case or translation).
+	var title=UiKit.label(c,"",Vector2(10,6),Vector2(width-20,48),15);title.set_meta("text_editor",true);title.text=str(task.title);title.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;title.clip_text=true
 	UiKit.label(c,"%s · %s · %s%s" % [task.id,TaskBoard.TYPE_NAMES.get(task.get("type",""),""),TaskBoard.PRIORITY_NAMES.get(int(task.get("priority",2)),""),(" · "+str(task.version)) if str(task.get("version",""))!="" else ""],Vector2(10,56),Vector2(width-100,20),12,Color(1,1,1,.62))
 	var statuses=TaskBoard.STATUSES
 	if column>0:UiKit.button(c,"◀",Vector2(width-90,60),Vector2(38,34),func():TaskBoard.move(task.id,statuses[column-1]);build()).add_theme_font_size_override("font_size",14)
