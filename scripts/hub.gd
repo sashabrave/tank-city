@@ -78,6 +78,7 @@ func room_palette()->Dictionary:return preload("res://scripts/biome_catalog.gd")
 var command_screen:ShaderMaterial
 var command_beams:Node3D
 var roadmap_alert:Label3D
+var barracks_dot:Label3D
 var hq_bench_pos=Vector3(-2,0,3)
 var weapon_bench_pos=Vector3(0,0,3)
 
@@ -104,6 +105,8 @@ func _ready():
 	Visuals.model("hq_supplies",self,Vector3(5.15,0,-5.7))
 	printer_model=Visuals.model("printer",self,printer_pos)
 	Visuals.label3d(self,"Казарма",printer_pos+Vector3(0,1.95,0),Color("dcf6ec"),24)
+	# T-093: a green dot blinks over the Barracks while something there can be bought or upgraded.
+	barracks_dot=Visuals.label3d(self,"●",printer_pos+Vector3(0,2.35,0),UiKit.NOTICE.ready,48);barracks_dot.outline_size=0;barracks_dot.no_depth_test=true;barracks_dot.name="BarracksDot"
 	Visuals.model("crate",self,Vector3(-2,0,-2))
 	Visuals.model("supply_stack",self,Vector3(-1,0,-2.4))
 	displayed_vehicle=Game.garage.starting_vehicle()
@@ -243,6 +246,8 @@ func _physics_process(delta):
 	hint_clock+=delta;hint_refresh-=delta
 	if hint_refresh<=0:
 		for id in bench_dots:bench_dots[id].visible=bench_available(id)
+		if is_instance_valid(barracks_dot):
+			barracks_dot.visible=not preload("res://scripts/ui/station_notices.gd").actionable("fighter").is_empty()
 		var build:Button=root.get_node("BuildButton")
 		var badge=build.get_node_or_null("Badge")
 		if badge==null:badge=UiKit.badge(build,"news")
@@ -261,6 +266,7 @@ func _physics_process(delta):
 		command_alert.scale=Vector3(2.0-squash,squash,1.0)
 		var pulse=.5+.5*sin(hint_clock*TAU/1.2)
 		command_alert.get_node("Halo").modulate.a=.2+.3*pulse;command_alert.get_node("Glow").light_energy=.9+1.1*pulse
+	if is_instance_valid(barracks_dot) and barracks_dot.visible:barracks_dot.modulate.a=.45+.55*(.5+.5*sin(hint_clock*5.0))
 	if is_instance_valid(roadmap_alert) and roadmap_alert.visible:roadmap_alert.position.y=2.05+absf(sin(hint_clock*3.0))*.12
 	for arrow in build_arrows.values():
 		if is_instance_valid(arrow):arrow.position.y=1.9+(1-cos(hint_clock*TAU/4.8))*.18

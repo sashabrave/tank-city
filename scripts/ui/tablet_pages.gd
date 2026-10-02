@@ -214,8 +214,9 @@ func settings():
 	UiKit.label(content,"Настройки",Vector2(UiKit.PAGE_PADDING,20),Vector2(727,28),UiKit.PAGE_TITLE_SIZE)
 	var tabs=["Графика","Экран","Звук","Управление","Интерфейс"]
 	if view.settings_tab=="Видео":view.settings_tab="Графика"
-	# Same full-width tab row as the quest filters: equal sizes, the active tab only changes colour.
-	for button in UiKit.tab_row(content,Vector2(UiKit.PAGE_PADDING,UiKit.PAGE_CONTENT_TOP),content.size.x-UiKit.PAGE_PADDING*2,tabs.map(func(t):return [t,t]),view.settings_tab,func(key):view.settings_tab=key;view.waiting_key="";view.refresh()):
+	# Same full-width tab row as the quest filters: equal sizes, the active tab only changes colour. Built at the
+	# base 775 px page width: a collapsed menu stretches the page afterwards (T-103 — tabs ran off the panel).
+	for button in UiKit.tab_row(content,Vector2(UiKit.PAGE_PADDING,UiKit.PAGE_CONTENT_TOP),775.0-UiKit.PAGE_PADDING*2,tabs.map(func(t):return [t,t]),view.settings_tab,func(key):view.settings_tab=key;view.waiting_key="";view.refresh()):
 		button.add_theme_font_size_override("font_size",16)
 	var box=view.scroller(Vector2(UiKit.PAGE_PADDING,UiKit.PAGE_CONTENT_TOP+40+UiKit.TAB_CONTENT_GAP),Vector2(727,366))
 	var body=Control.new();box.add_child(body);body.custom_minimum_size=Vector2(705,350)

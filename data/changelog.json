@@ -87,7 +87,8 @@
 					"Новые иконки улучшений, характеристик, способностей, штаба, гаража, бонусов и верстаков: у каждой группы своя узнаваемая основа, у каждого смысла — один простой символ. Иконки мягко пружинят при появлении, наведении и выборе, а слои расходятся с лёгким объёмом.",
 					"Днём на светлых полах картинка глубже: меньше пересвета, мягче жёлтый золотой час, спокойнее песок",
 					"Иконки: сплав снова золотые слитки, жетоны — яркие серебряные монеты с лапой (на поле, в счётчике и в полёте); способности без плашек и рамок — только сама иконка",
-					"Уровень класса прибавляет +0,5 здоровья (было почти незаметно); в карточке класса текст больше не наезжает на кнопки"
+					"Уровень класса прибавляет +0,5 здоровья (было почти незаметно); в карточке класса текст больше не наезжает на кнопки",
+					"Иконка способности по центру кнопки; вкладки настроек помещаются и при свёрнутом меню планшета; задание «Первый трофей» засчитывает сплав, донесённый до штаба даже после выбывания; над Казармой мигает зелёная точка, когда есть что улучшить; у игры своя иконка — кот на танке"
 				]
 			},
 			"en": {
@@ -174,7 +175,8 @@
 					"New icons for upgrades, stats, abilities, HQ, garage, bonuses and workbenches: every group has its own recognisable base, every meaning one simple symbol. Icons bounce softly when they appear, on hover and on selection, with layers shifting in light depth.",
 					"Daylight on light floors looks deeper: less washout, a softer yellow at golden hour, calmer sand",
 					"Icons: alloy is gold bars again, tokens are bright silver paw coins (on the field, in the counter and in flight); abilities without plates or rims — just the icon",
-					"Class level adds +0.5 health (it was barely noticeable); the class card text no longer overlaps the buttons"
+					"Class level adds +0.5 health (it was barely noticeable); the class card text no longer overlaps the buttons",
+					"The ability icon is centred in its button; settings tabs fit with the tablet menu collapsed; «First trophy» counts alloy that reached the HQ even after a defeat; a green dot blinks over the Barracks when there is something to upgrade; the game has its own app icon — a cat on a tank"
 				]
 			}
 		},

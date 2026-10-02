@@ -3,7 +3,7 @@ extends RefCounted
 ## "requires" counter reaches "threshold". Rewards: alloy and documents ("docs"); "xp" is kept for old saves.
 ## Senders shown in the tablet feed: Штаб усов (story), Институт (hub), Оперштаб (briefings and orders).
 const STORY=[
-{"id":"first_alloy","text":"Первый трофей","event":"extracted","goal":30,"alloy":30,"docs":0,"xp":25,"hint":"Подбери 30 сплава и вернись в хаб. Добровольный выход сохраняет добычу."},
+{"id":"first_alloy","text":"Первый трофей","event":"extracted","goal":30,"alloy":30,"docs":0,"xp":25,"hint":"Принеси в хаб 30 сплава. Считается всё, что дошло до штаба, — даже после выбывания."},
 {"id":"bench","text":"Плацдарм","event":"world_depth_1","goal":1,"alloy":40,"docs":0,"xp":35,"hint":"Зачисти первое поле Пограничья: три волны и командира."},
 {"id":"health","text":"Подготовка бойца","event":"health_level","goal":1,"alloy":45,"docs":0,"xp":40,"hint":"В принтере открой «Общие улучшения» и купи здоровье."},
 {"id":"rooms3","text":"Разведка двора","event":"world_depth_1","goal":3,"alloy":70,"docs":0,"xp":65,"hint":"Доберись до третьего поля и зачисти его. Сложные точки ★★ дальше по пути."},

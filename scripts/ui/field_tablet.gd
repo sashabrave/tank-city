@@ -369,7 +369,7 @@ func inventory_page():preload("res://scripts/ui/tablet_pages.gd").new(self).inve
 
 func about_page():
 	UiKit.label(content,"Об игре",Vector2(UiKit.PAGE_PADDING,20),Vector2(720,28),UiKit.PAGE_TITLE_SIZE)
-	for button in UiKit.tab_row(content,Vector2(22,68),content.size.x-44,[["info","Об игре"],["changelog","Изменения"]],about_tab,func(key):about_tab=key;refresh()):
+	for button in UiKit.tab_row(content,Vector2(22,68),775.0-44,[["info","Об игре"],["changelog","Изменения"]],about_tab,func(key):about_tab=key;refresh()):
 		button.add_theme_font_size_override("font_size",16);button.name="AboutTab_"+button.name.trim_prefix("Tab_")
 	if about_tab=="changelog":changelog_page();return
 	UiKit.label(content,"War Cats",Vector2(22,130),Vector2(720,54),36)

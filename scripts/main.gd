@@ -30,7 +30,9 @@ func _return_hub():
 	Game.music_context("hub")
 	if is_instance_valid(run_arena):
 		run_arena.resolve_recipes_on_return()
-		if not run_arena.run.lost_run:Game.progression.event("extracted",run_arena.run.earned)
+		# Alloy that reached the HQ counts even after a defeat: what was collected minus what was taken (T-095).
+		var delivered=int(run_arena.run.earned)-(int(run_arena.run.lost_alloy) if run_arena.run.lost_run else 0)
+		if delivered>0:Game.progression.event("extracted",delivered)
 	if is_instance_valid(run_arena) and Campaign.daily:
 		DailyRun.record(Campaign.daily_key,Campaign.cycle,run_arena.room_index,run_arena.run.kills,run_arena.run.elapsed)
 	if is_instance_valid(run_arena):Game.clear_run_checkpoint()

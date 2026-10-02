@@ -26,7 +26,11 @@ static func layers(id:String)->Array:
 	for kind in ["aura","face"]:
 		if group.has(kind):out.append({"kind":kind,"texture":texture("kit/"+str(group[kind]).replace("{variant}",variant)),"rect":full})
 	var place:Array=group.get("symbol",[.5,.5,.6])
-	out.append({"kind":"symbol","texture":texture("symbols/"+str(entry.symbol)),"rect":Rect2(place[0]-place[2]*.5,place[1]-place[2]*.5,place[2],place[2])})
+	var symbol=texture("symbols/"+str(entry.symbol))
+	# A bare symbol (no plate, e.g. abilities) is cropped to its visible pixels, so uneven transparent margins
+	# in the source do not push it off centre (T-102).
+	if not group.has("face") and symbol:symbol=UiKit.trimmed(symbol)
+	out.append({"kind":"symbol","texture":symbol,"rect":Rect2(place[0]-place[2]*.5,place[1]-place[2]*.5,place[2],place[2])})
 	if group.has("rim"):out.append({"kind":"rim","texture":texture("kit/"+str(group.rim).replace("{variant}",variant)),"rect":full})
 	if entry.has("badge"):
 		var badge:Array=table().badge
