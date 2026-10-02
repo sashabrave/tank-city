@@ -47,14 +47,15 @@ func _ready():
 	elif currency=="tokens":
 		# Token (T-025): a bright paw coin that pops high, falls slowly with a tumble, glows and sparkles.
 		var coin=MeshInstance3D.new();var disc=CylinderMesh.new();disc.top_radius=.17;disc.bottom_radius=.17;disc.height=.045;disc.radial_segments=20;coin.mesh=disc
-		var brass=Visuals.material(Color("ffb02e"));brass.metallic=.9;brass.roughness=.22;brass.emission_enabled=true;brass.emission=Color("ff9a1a");brass.emission_energy_multiplier=.55
+		# Bright silver paw coin, matching the token icon (T-100); alloy stays gold.
+		var brass=Visuals.material(Color("e4ebf2"));brass.metallic=.95;brass.roughness=.18;brass.emission_enabled=true;brass.emission=Color("c9d6e6");brass.emission_energy_multiplier=.35
 		coin.material_override=brass;coin.rotation.x=PI*.5;visual.add_child(coin)
-		var paw=Visuals.box(visual,Vector3(0,0,.026),Vector3(.11,.1,.008),Color("6a3d12"));paw.rotation.x=0
-		for x in [-.05,0.0,.05]:Visuals.box(visual,Vector3(x,.075,.026),Vector3(.035,.035,.008),Color("6a3d12"))
-		var glow=OmniLight3D.new();glow.light_color=Color("ffb347");glow.light_energy=.9;glow.omni_range=1.2;glow.shadow_enabled=false;visual.add_child(glow);glow.add_to_group("pickup_lights")
+		var paw=Visuals.box(visual,Vector3(0,0,.026),Vector3(.11,.1,.008),Color("7d8a99"));paw.rotation.x=0
+		for x in [-.05,0.0,.05]:Visuals.box(visual,Vector3(x,.075,.026),Vector3(.035,.035,.008),Color("7d8a99"))
+		var glow=OmniLight3D.new();glow.light_color=Color("dfe8ff");glow.light_energy=.9;glow.omni_range=1.2;glow.shadow_enabled=false;visual.add_child(glow);glow.add_to_group("pickup_lights")
 		var sparkle=CPUParticles3D.new();visual.add_child(sparkle);sparkle.amount=6;sparkle.lifetime=.7;sparkle.emission_shape=CPUParticles3D.EMISSION_SHAPE_SPHERE;sparkle.emission_sphere_radius=.18
 		sparkle.gravity=Vector3(0,.4,0);sparkle.initial_velocity_min=.1;sparkle.initial_velocity_max=.3;var dot=BoxMesh.new();dot.size=Vector3.ONE*.03;sparkle.mesh=dot
-		var spark_mat=StandardMaterial3D.new();spark_mat.shading_mode=BaseMaterial3D.SHADING_MODE_UNSHADED;spark_mat.albedo_color=Color("fff2b0");dot.material=spark_mat
+		var spark_mat=StandardMaterial3D.new();spark_mat.shading_mode=BaseMaterial3D.SHADING_MODE_UNSHADED;spark_mat.albedo_color=Color("f2f7ff");dot.material=spark_mat
 		floor_height=.2;velocity.y*=1.35
 	else:
 		Visuals.box(visual,Vector3.ZERO,Vector3(.24,.025,.31),Color("f0ead4"))

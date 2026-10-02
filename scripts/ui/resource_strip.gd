@@ -27,7 +27,7 @@ func _ready():
 	document_icon=UiKit.icon(panel,"documents",Vector2(114,4),Vector2(30,30))
 	pickup_targets["documents"]=pickup_targets["alloy"]
 	documents=UiKit.label(panel,"",Vector2(147,3),Vector2(60,32),17)
-	token_icon=UiKit.icon(panel,"token",Vector2(0,5),Vector2(28,28));token_icon.modulate=UiKit.INK;token_icon.name="TokenIcon"
+	token_icon=UiKit.icon(panel,"token",Vector2(0,5),Vector2(28,28));token_icon.name="TokenIcon"
 	pickup_targets["tokens"]=token_icon
 	# Hover (mouse) or tap (touch) explains each currency.
 	for pair in [[pickup_targets["alloy"],"Сплав — покупки и прокачка. При выбывании теряется часть добытого за вылазку."],[token_icon,"Жетоны — валюта торговца. Сгорают после вылазки."]]:
@@ -99,7 +99,6 @@ func fly_pickup(kind:String,from:Vector2):
 	if pickup_flights.size()>=32:pickup_flights.pop_front().queue_free()
 	# The flying icon is the same picture as its counter (tokens used the generic «tokens» art, T-089).
 	var icon=UiKit.icon(self,"token" if key=="tokens" else key,from-Vector2(15,15),Vector2(30,30))
-	if key=="tokens":icon.modulate=UiKit.INK
 	icon.mouse_filter=Control.MOUSE_FILTER_IGNORE;pickup_flights.append(icon)
 	var destination:Control=pickup_targets[key]
 	var tween=create_tween().set_pause_mode(Tween.TWEEN_PAUSE_BOUND)

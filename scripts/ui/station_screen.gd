@@ -169,18 +169,24 @@ func render_detail():
 	var heading=UiKit.label(content,str(info.get("title","")),Vector2(100,18),Vector2(206,64),21);heading.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	var current=provider.items(tab).filter(func(i):return str(i.id)==selected)
 	if not current.is_empty():status_chip(content,status(current[0]),Vector2(16,96))
-	var y=126.0
-	if str(info.get("text",""))!="":
-		var text=UiKit.label(content,str(info.text),Vector2(16,y),Vector2(288,96),15,UiKit.MUTED);text.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;y+=104
-	for row in info.get("rows",[]):
-		UiKit.label(content,str(row[0]),Vector2(16,y),Vector2(150,24),15)
-		var value="%s → %s" % [str(row[1]),str(row[2])] if str(row[1])!=str(row[2]) else str(row[1])
-		var cell=UiKit.label(content,value,Vector2(160,y),Vector2(144,24),15,UiKit.ORANGE if str(row[1])!=str(row[2]) else UiKit.INK);cell.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
-		y+=28
-	for line in info.get("lines",[]):
-		var l=UiKit.label(content,str(line),Vector2(16,y),Vector2(288,24),14,UiKit.MUTED);l.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;y+=26
 	var actions:Array=info.get("actions",[])
 	var bottom=detail_box.size.y-16-(34 if notice!="" else 0)
+	# Text, rows and lines scroll in the space above the buttons: long cards overlapped them (T-098 shot).
+	var area_top=126.0;var area_bottom=bottom-actions.size()*52-6
+	var scroll=ScrollContainer.new();scroll.name="DetailScroll";content.add_child(scroll);scroll.position=Vector2(0,area_top);scroll.size=Vector2(content.size.x,maxf(40,area_bottom-area_top))
+	scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
+	var body=Control.new();scroll.add_child(body);body.custom_minimum_size=Vector2(content.size.x-12,0)
+	var y=0.0
+	if str(info.get("text",""))!="":
+		var text=UiKit.label(body,str(info.text),Vector2(16,y),Vector2(288,96),15,UiKit.MUTED);text.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;y+=104
+	for row in info.get("rows",[]):
+		UiKit.label(body,str(row[0]),Vector2(16,y),Vector2(150,24),15)
+		var value="%s → %s" % [str(row[1]),str(row[2])] if str(row[1])!=str(row[2]) else str(row[1])
+		var cell=UiKit.label(body,value,Vector2(160,y),Vector2(144,24),15,UiKit.ORANGE if str(row[1])!=str(row[2]) else UiKit.INK);cell.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
+		y+=28
+	for line in info.get("lines",[]):
+		var l=UiKit.label(body,str(line),Vector2(16,y),Vector2(288,24),14,UiKit.MUTED);l.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;y+=26
+	body.custom_minimum_size.y=y
 	for i in range(actions.size()-1,-1,-1):
 		var action=actions[i];bottom-=48
 		var b=UiKit.button(content,str(action.text),Vector2(16,bottom),Vector2(288,44),func():perform(str(action.id)),action.get("primary",false) and action.get("enabled",true))

@@ -5,7 +5,9 @@ static func class_weapon_multiplier(id:String)->float:
 	if Game.selected_class=="heavy" and id=="shotgun":return 1.1+Game.class_specialization()*.01
 	if Game.selected_class=="marksman" and id=="sniper":return 1.15+Game.class_specialization()*.01
 	return 1.0
-static func initial_health()->float:return (Balance.CONFIG.combat.hero_health+Game.health_upgrade_bonus()+Game.class_health_bonus())*(1+Game.class_level()*.002)
+## Class level adds flat health (T-098): +0.2% per level was invisible (7 → 7.01).
+const CLASS_HP_PER_LEVEL=.5
+static func initial_health()->float:return Balance.CONFIG.combat.hero_health+Game.health_upgrade_bonus()+Game.class_health_bonus()+Game.class_level()*CLASS_HP_PER_LEVEL
 static func initial_speed_multiplier()->float:return Game.mobility_multiplier()*(.95 if Game.selected_class=="heavy" else 1.0)*(1+Game.class_level()*.001)
 static func soldier_speed(run=null,extra:float=0.0)->float:
 	var multiplier=initial_speed_multiplier() if run==null else run.speed_multiplier
@@ -39,7 +41,7 @@ static func shell_preview(id:String)->Dictionary:
 	var weapon_id=Game.selected_weapon
 	var factor=1.1+spec*.01 if id=="heavy" and weapon_id=="shotgun" else 1.15+spec*.01 if id=="marksman" and weapon_id=="sniper" else 1.0
 	return {
-		"health":(Balance.CONFIG.combat.hero_health+Game.health_upgrade_bonus())*(1+level*.002)+extra_hp,
+		"health":Balance.CONFIG.combat.hero_health+Game.health_upgrade_bonus()+level*CLASS_HP_PER_LEVEL+extra_hp,
 		"speed":minf(Balance.speed_cap(),Balance.CONFIG.combat.hero_speed*Game.mobility_multiplier()*(.95 if id=="heavy" else 1.0)*(1+level*.001)),
 		"damage":weapon().damage/((1+Game.class_level()*.002)*class_weapon_multiplier(weapon_id))*(1+level*.002)*factor,
 		"pressure":clampf(Game.LOOT.WEAPONS[weapon_id].intercept*Balance.CONFIG.combat.interception_base_scale+Game.shell_pressure_bonus(),Balance.CONFIG.combat.interception_floor,Balance.CONFIG.combat.interception_cap)*100

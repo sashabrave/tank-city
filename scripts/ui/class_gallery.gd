@@ -102,7 +102,7 @@ func build_shell()->float:
 		offset+=height+12
 	var price=Game.class_upgrade_cost(viewed,false)
 	label(body,"Развитие этого класса",Vector2(origin.x,offset+7),Vector2(width,28),18)
-	label(body,"HP и урон +0,2% · скорость +0,1% за уровень",Vector2(origin.x,offset+40),Vector2(width,38),14,true)
+	label(body,"+0,5 HP, урон +0,2%, скорость +0,1% за уровень",Vector2(origin.x,offset+40),Vector2(width,38),14,true)
 	var upgrade_button=action(body,"Максимальный уровень" if level>=10 else "Улучшить · %d ◈" % price,Vector2(origin.x,offset+84),Vector2(width,42),upgrade,"UpgradeShell",owned and level<10 and Game.credits>=price)
 	if level<5:upgrade_button.tooltip_text=Texts.render("Вторая способность доступна с уровня класса 5")
 	offset+=140

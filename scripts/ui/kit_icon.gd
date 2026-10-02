@@ -25,6 +25,8 @@ var clock:=-1.0
 var leave_clock:=-1.0
 var punch:=-1.0
 var hidden_since:=-1.0
+## Groups marked "still" in data/icon_kit.json (abilities) keep the bounce but never tilt into parallax.
+var still:=false
 
 static func attach(rect:TextureRect,id:String)->KitIcon:
 	var icon:KitIcon=rect.get_meta("kit_icon") if rect.has_meta("kit_icon") else null
@@ -53,6 +55,7 @@ func show_icon(id:String):
 	key=id
 	for part in parts:part.node.queue_free()
 	parts.clear()
+	still=bool(IconKit.table().groups.get(str(IconKit.table().icons.get(id,{}).get("group","")),{}).get("still",false))
 	var layers=IconKit.layers(id)
 	if layers.is_empty():layers=[{"kind":"flat","texture":host.texture,"rect":Rect2(0,0,1,1)}]
 	for layer in layers:
@@ -152,6 +155,7 @@ func _process(delta):
 	if hovered and is_instance_valid(hover_target) and hover_target.size.x>0:
 		aim=((hover_target.get_local_mouse_position()/hover_target.size)-Vector2.ONE*.5)*2.0
 		aim=aim.clamp(-Vector2.ONE,Vector2.ONE)
+	if still:aim=Vector2.ZERO
 	tilt=tilt.lerp(aim,minf(1.0,delta*10.0))
 	apply()
 	if clock<0.0 and punch<0.0 and not hovered and hover<=0.0 and tilt.length()<.002 and leave_clock<0.0:

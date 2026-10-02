@@ -1,5 +1,5 @@
 {
-	"next_id": 98,
+	"next_id": 102,
 	"tasks": [
 		{
 			"id": "T-001",
@@ -1231,6 +1231,58 @@
 			"created": "2026-10-02",
 			"source": "chat",
 			"shot": ""
+		},
+		{
+			"created": "2026-10-02",
+			"id": "T-098",
+			"note": "",
+			"priority": 2.0,
+			"scene": "hub",
+			"shot": "res://tasks/shots/T-098.png",
+			"source": "game",
+			"status": "review",
+			"title": "прокачал уровено и здоровье поднялост на 0.1 - что за слезы, давай по больше по 0.5 качать хотя бы",
+			"type": "bug",
+			"version": "0.7.2-pre"
+		},
+		{
+			"created": "2026-10-02",
+			"id": "T-099",
+			"note": "",
+			"priority": 2.0,
+			"scene": "arena",
+			"shot": "res://tasks/shots/T-099.png",
+			"source": "game",
+			"status": "review",
+			"title": "опять плашки на иконках способностей, убери пусть там будет просто сама иконка по себе без рамок и фонов и параллаксов",
+			"type": "bug",
+			"version": "0.7.2-pre"
+		},
+		{
+			"created": "2026-10-02",
+			"id": "T-100",
+			"note": "",
+			"priority": 1.0,
+			"scene": "arena",
+			"shot": "res://tasks/shots/T-100.png",
+			"source": "game",
+			"status": "review",
+			"title": "ты изменил слитков иконку теперь визуальне стыкуется с подбираемым ресурсом. Верни обратно слитки золотые на сплав, а жетоны лапы сделай светлыми яркми серебрянными, проследи чтобы все иконки засинхронились",
+			"type": "bug",
+			"version": "0.7.2-pre"
+		},
+		{
+			"created": "2026-10-02",
+			"id": "T-101",
+			"note": "",
+			"priority": 1,
+			"scene": "arena",
+			"shot": "res://tasks/shots/T-101.png",
+			"source": "game",
+			"status": "review",
+			"title": "в ионках способностей не нужны рамки-обводи и прочее, только сама иконка главная (граната тут)",
+			"type": "bug",
+			"version": "0.7.2-pre"
 		}
 	]
 }

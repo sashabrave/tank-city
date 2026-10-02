@@ -85,7 +85,9 @@
 					"Жетоны: при поражении они высыпаются из счётчика, а плашка плавно сворачивается; при появлении счётчик жетонов плавно раздвигает плашку",
 					"Точки обновлений без обводки; стенд «Развитие заставы» на клетку ближе и не прячется под фермой, над ним прыгает «!», когда достигнута новая цель",
 					"Новые иконки улучшений, характеристик, способностей, штаба, гаража, бонусов и верстаков: у каждой группы своя узнаваемая основа, у каждого смысла — один простой символ. Иконки мягко пружинят при появлении, наведении и выборе, а слои расходятся с лёгким объёмом.",
-					"Днём на светлых полах картинка глубже: меньше пересвета, мягче жёлтый золотой час, спокойнее песок"
+					"Днём на светлых полах картинка глубже: меньше пересвета, мягче жёлтый золотой час, спокойнее песок",
+					"Иконки: сплав снова золотые слитки, жетоны — яркие серебряные монеты с лапой (на поле, в счётчике и в полёте); способности без плашек и рамок — только сама иконка",
+					"Уровень класса прибавляет +0,5 здоровья (было почти незаметно); в карточке класса текст больше не наезжает на кнопки"
 				]
 			},
 			"en": {
@@ -170,7 +172,9 @@
 					"Tokens: on defeat they spill out of the counter and the strip folds smoothly; when tokens appear, their counter widens the strip smoothly",
 					"Update dots without an outline; the «Outpost progress» board moved a cell forward out from under the truss, with a hopping «!» when a new goal is reached",
 					"New icons for upgrades, stats, abilities, HQ, garage, bonuses and workbenches: every group has its own recognisable base, every meaning one simple symbol. Icons bounce softly when they appear, on hover and on selection, with layers shifting in light depth.",
-					"Daylight on light floors looks deeper: less washout, a softer yellow at golden hour, calmer sand"
+					"Daylight on light floors looks deeper: less washout, a softer yellow at golden hour, calmer sand",
+					"Icons: alloy is gold bars again, tokens are bright silver paw coins (on the field, in the counter and in flight); abilities without plates or rims — just the icon",
+					"Class level adds +0.5 health (it was barely noticeable); the class card text no longer overlaps the buttons"
 				]
 			}
 		},

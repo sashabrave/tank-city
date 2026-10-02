@@ -157,7 +157,7 @@ static func drop_tokens(hud,count:int):
 	var origin=icon.get_global_rect().position if is_instance_valid(icon) and icon.visible else Vector2(screen.x*.5+40,10)
 	ResourceStrip.tokens_lost=true
 	for i in range(clampi(count+2,3,10)):
-		var coin=TextureRect.new();layer.add_child(coin);coin.texture=UiKit.icon_texture("token");coin.modulate=UiKit.INK;coin.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;coin.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		var coin=TextureRect.new();layer.add_child(coin);coin.texture=UiKit.icon_texture("token");coin.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;coin.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		coin.size=Vector2(24,24);coin.pivot_offset=coin.size*.5;coin.position=origin+Vector2(i*5%20,4);coin.z_index=119;coin.mouse_filter=Control.MOUSE_FILTER_IGNORE
 		var fall=coin.create_tween().set_parallel(true)
 		fall.tween_property(coin,"position",coin.position+Vector2((float(i%5)-2.0)*38.0,screen.y+60),1.0+i*.05).set_delay(i*.06).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)

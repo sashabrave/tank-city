@@ -123,7 +123,7 @@ func open_shop():
 	var size=get_viewport().get_visible_rect().size;var width=minf(900,size.x-40);var height=minf(620,size.y-40)
 	var panel=UiKit.glass(modal,(size-Vector2(width,height))*.5,Vector2(width,height))
 	UiKit.accent(UiKit.label(panel,"Торговец",Vector2(25,18),Vector2(width-260,40),28))
-	var wallet=UiKit.icon(panel,"token",Vector2(width-265,24),Vector2(28,28));wallet.modulate=UiKit.INK
+	var wallet=UiKit.icon(panel,"token",Vector2(width-265,24),Vector2(28,28))
 	var count=UiKit.label(panel,"Жетоны: %d" % arena.run.tokens,Vector2(width-230,20),Vector2(160,36),20);count.name="Wallet"
 	var close=UiKit.button(panel,"",Vector2(width-62,18),Vector2(44,40),close_shop);close.icon=UiKit.interface_icon("close");close.expand_icon=true;close.add_theme_constant_override("icon_max_width",18)
 	if status_text!="":UiKit.label(panel,status_text,Vector2(25,62),Vector2(width-50,30),17,UiKit.MUTED).name="Status"

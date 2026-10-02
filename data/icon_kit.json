@@ -26,14 +26,12 @@
 			]
 		},
 		"ability": {
-			"face": "ability_face",
-			"rim": "ability_rim",
-			"aura": "aura_ring",
 			"symbol": [
 				0.5,
 				0.5,
-				0.6
-			]
+				0.96
+			],
+			"still": true
 		},
 		"pickup": {
 			"face": "pickup_face_{variant}",
