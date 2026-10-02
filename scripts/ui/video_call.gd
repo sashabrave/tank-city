@@ -143,8 +143,10 @@ func show_step():
 	var who:String=lines[step][0]
 	Texts.set_text(caller,who)
 	caller.add_theme_color_override("font_color",UiKit.ORANGE if who==MAJOR else UiKit.INK)
-	portrait.texture=preload("res://scripts/ui/class_gallery.gd").texture("heavy" if who==MAJOR else Game.selected_class)
-	portrait.modulate=Color("c9e0d2") if who==MAJOR else Color.WHITE
+	# The major has his own portrait when drawn (assets/portraits/major.png); the heavy class stands in otherwise.
+	var drawn=who==MAJOR and ResourceLoader.exists("res://assets/portraits/major.png")
+	portrait.texture=load("res://assets/portraits/major.png") if drawn else preload("res://scripts/ui/class_gallery.gd").texture("heavy" if who==MAJOR else Game.selected_class)
+	portrait.modulate=Color("c9e0d2") if who==MAJOR and not drawn else Color.WHITE
 	Texts.set_text(line_label,lines[step][1])
 	Texts.set_text(next_button,"Конец связи" if step==lines.size()-1 else "Дальше")
 	line_label.visible_ratio=0.0

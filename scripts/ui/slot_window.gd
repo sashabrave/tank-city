@@ -61,6 +61,12 @@ func fill(reel:Dictionary,target:String):
 	reel.distance=(count-1)*CELL.y
 func symbol(parent:Control,id:String)->Control:
 	var box=Control.new();parent.add_child(box);box.size=CELL;box.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	# Drawn reel art (assets/ui/slot/<symbol>.png) when present; built-in symbols otherwise.
+	var art="res://assets/ui/slot/%s.png" % id
+	if ResourceLoader.exists(art):
+		var picture=TextureRect.new();box.add_child(picture);picture.texture=load(art);picture.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;picture.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		picture.position=CELL*.08;picture.size=CELL*.84;picture.mouse_filter=Control.MOUSE_FILTER_IGNORE
+		return box
 	if id.begins_with("star"):
 		var tier=int(id.right(1))-1
 		var stars=UiKit.label(box,"★".repeat(tier+1),Vector2.ZERO,CELL,[78,56,42][tier],Color(LootCatalog.RARITY_COLORS[tier]).darkened(.15))

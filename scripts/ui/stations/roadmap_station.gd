@@ -53,7 +53,11 @@ func items(tab:String)->Array:
 	for step in steps(tab):
 		var status="done" if step[2] else ("goal" if not next_found else "later")
 		if status=="goal":next_found=true
-		result.append({"id":step[0],"title":step[1],"icon":icon,"caption":{"done":"Готово","goal":"Следующая цель","later":"Позже"}[status],"status":status})
+		var item={"id":step[0],"title":step[1],"icon":icon,"caption":{"done":"Готово","goal":"Следующая цель","later":"Позже"}[status],"status":status}
+		# Drawn step art (assets/ui/roadmap/<step id>.png) when present.
+		var art="res://assets/ui/roadmap/%s.png" % step[0]
+		if ResourceLoader.exists(art):item["texture"]=load(art)
+		result.append(item)
 	return result
 func detail(tab:String,id:String)->Dictionary:
 	for item in items(tab):
