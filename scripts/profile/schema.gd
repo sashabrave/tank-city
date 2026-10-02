@@ -35,7 +35,8 @@ static func validate(data:Dictionary)->Dictionary:
 		var value=data.get(section,{})
 		for key in specs[section].arrays:
 			for item in value.get(key,[]):
-				if key in ["recent_sorties","telegram_options"]:
+				# Order records (sorties, offers, finished orders) are dictionaries; the rest are ids.
+				if key in ["recent_sorties","telegram_options","completed_orders"]:
 					if not item is Dictionary:return bad(key)
 				elif key=="worlds":
 					if not numeric(item):return bad(key)
