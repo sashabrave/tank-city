@@ -3,7 +3,7 @@ extends Node3D
 func _ready():call_deferred("run")
 func run():
 	Game.save_enabled=false;Game.sound_enabled=false;Settings.persistence_enabled=false;Campaign.configure(1)
-	Settings.values.world_lighting="night";Settings.values.sun_night="moon";Settings.values.weather="fog"
+	Settings.values.world_lighting="night";Settings.values.sun_night="moon";Settings.values.weather="clear"
 	get_window().size=Vector2i(1600,900)
 	var arena=load("res://scenes/arena.tscn").instantiate();arena.run_seed=21;add_child(arena);arena.auto_pause_enabled=false
 	await get_tree().create_timer(1.6).timeout;arena.set_physics_process(false)
