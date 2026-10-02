@@ -1085,7 +1085,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-086.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "на этом экране нужно показывать причину смерти (героя базы)",
 			"type": "polish",
 			"version": "0.7.2-pre"

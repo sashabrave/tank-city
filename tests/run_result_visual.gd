@@ -19,11 +19,12 @@ func run():
 		await settle(20);arena.set_physics_process(false)
 		arena.run.earned=184;arena.run.kills=23;arena.run.elapsed=402
 		arena.run.kills_by={"rifle":8,"smg":5,"shield":4,"grenade_launcher":3,"buggy":2,"commander":1}
-		if not won:arena.run.lost_alloy=55
+		if not won:arena.run.lost_alloy=55;arena.base_hp=0;arena.set_meta("base_hit_by","tank");Game.backpack_slots=2
 		arena.room.room_index=3
 		arena.hud.show_result(won,"Поле 4 · Тихий двор" if won else "Штаб уничтожен")
 		var panel=arena.hud.modal.find_child("RunResult",true,false)
 		check(panel!=null,"result screen opens (%s)" % ("won" if won else "lost"))
+		if not won:check(panel.find_child("DeathCause",true,false)!=null and "танк" in panel.find_child("DeathCause",true,false).text,"defeat names the killer (T-086)")
 		await get_tree().create_timer(1.1 if won else .95).timeout;await shot(("won" if won else "lost")+"-mid")
 		await get_tree().create_timer(2.2).timeout;await shot("won" if won else "lost")
 		check(panel.find_child("Kill_rifle",true,false)!=null and panel.find_child("Kill_rifle",true,false).modulate.a>.9,"kill staircase revealed")

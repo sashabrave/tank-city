@@ -97,16 +97,22 @@ func bullet_hit(bullet) -> bool:
 			actor.resource_blast=Vector3.ZERO
 			var amount=actor.max_hp if bullet.star_power else bullet.damage
 			if not bullet.star_power and CombatMods.player_bullet(bullet):amount=CombatMods.outgoing(arena,bullet,actor)
+			arena.set_meta("attacker",attacker_of(bullet))
 			actor.take_damage(amount,Vector3.ZERO,bullet.vehicle_credit,CombatMods.bullet_source(bullet) if actor.player_owned else "")
+			arena.set_meta("attacker","")
 			if CombatMods.player_bullet(bullet) and not actor.player_owned:arena.effects.emit("enemy_hit",{"target":actor,"bullet":bullet,"damage":amount})
 			var feel=arena.get_node_or_null("CombatFeel")
 			if feel and not actor.player_owned:feel.impact(actor,actor.position)
 			if not pierce_on(bullet):return true
 	if not arena.room.boss_room and not bullet.friendly and cell==arena.room.base_cell:
-		damage_base(bullet.damage)
+		arena.set_meta("attacker",attacker_of(bullet));damage_base(bullet.damage);arena.set_meta("attacker","")
 		return true
 	return false
 
+## The enemy kind behind a bullet, for the defeat screen (T-086).
+func attacker_of(bullet)->String:
+	var owner=bullet.get("owner_actor")
+	return str(owner.kind) if is_instance_valid(owner) and not owner.player_owned else ""
 func damage_base(amount: float):
 	if arena.room.boss_room or arena.phase != "combat" or arena.headquarters.shield_time>0: return
 	if is_instance_valid(arena.base_model):
@@ -115,6 +121,7 @@ func damage_base(amount: float):
 	arena.headquarters.hit_delay=6.0
 	arena.floating_number(arena.world_pos(arena.room.base_cell),-minf(arena.room.base_hp,amount))
 	arena.room.base_hp=maxf(0,arena.room.base_hp-amount)
+	if amount>0:arena.set_meta("base_hit_by",str(arena.get_meta("attacker","")) if str(arena.get_meta("attacker",""))!="" else "blast")
 	if is_instance_valid(arena.room.base_bar):arena.room.base_bar.set_health(arena.room.base_hp,arena.room.base_max_hp)
 	arena.burst(arena.world_pos(arena.room.base_cell)+Vector3.UP*.5,Color("e97437"),.8)
 	Game.sound("base_hit",arena)

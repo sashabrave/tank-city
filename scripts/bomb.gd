@@ -51,5 +51,5 @@ func _physics_process(delta):
 func detonate():
 	if spent:return
 	spent=true;arena.bombs.erase(self)
-	arena.explosion(position,damage)
+	arena.set_meta("attacker","drone");arena.explosion(position,damage);arena.set_meta("attacker","")
 	queue_free()

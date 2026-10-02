@@ -409,6 +409,9 @@ func take_damage(amount: float,blast:Vector3=Vector3.ZERO,vehicle_credit:String=
 	arena.floating_number(position,-minf(hp,amount))
 	if amount>0:preload("res://scripts/status_fx.gd").of(self).hit()
 	hp = maxf(0,hp-amount)
+	if player_owned and amount>0:
+		var by=str(arena.get_meta("attacker",""))
+		arena.set_meta("hero_hit_by",by if by!="" else {"blast":"blast","melee":"zombie"}.get(source,"blast" if blast.length()>.01 else ""))
 	if player_owned:
 		invulnerable = .65
 		if kind == "soldier": arena.soldier_hp = maxf(0,hp)

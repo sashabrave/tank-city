@@ -6,8 +6,18 @@ extends RefCounted
 const ICON=preload("res://scripts/ui/enemy_type_icon.gd")
 const STEP=.2
 
+const KILLERS={"soldier":"стрелок","shield":"щитовик","grenadier":"гранатомётчик","sniper":"снайпер","rpg_soldier":"рпгшник","buggy":"багги","apc":"БТР","tank":"танк","boss":"генерал","drone":"дрон-минёр","flyer":"летающий дрон","mortar":"миномёт","zombie":"зомби","blast":"взрыв"}
 static func show(hud,arena,won:bool,reason:String):
 	var panel:Panel=hud.modal_base("Задание выполнено" if won else "Связь потеряна",reason,"",650)
+	if not won:
+		# T-086: who finished the base or the soldier.
+		var base_lost=arena.base_hp<=0
+		var by=str(arena.get_meta("base_hit_by" if base_lost else "hero_hit_by",""))
+		if by!="":
+			var who=Texts.render(KILLERS.get(by,by))
+			if who!=who.to_upper():who=who.left(1).to_lower()+who.substr(1)  # a name mid-sentence; «БТР» stays
+			var cause=UiKit.label(panel,(Texts.render("Базу добил") if base_lost else Texts.render("Бойца сразил"))+": "+who,Vector2(30,108),Vector2(panel.size.x-60,26),17,Color("ff9b84"))
+			cause.name="DeathCause"
 	panel.name="RunResult"
 	# Twice the old gap between the two middle columns (T-051).
 	var width=panel.size.x;var left=Vector2(30,150);var right=Vector2(width*.5+45,150);var column=width*.5-75
@@ -53,23 +63,27 @@ static func show(hud,arena,won:bool,reason:String):
 	var gone=arena.get_meta("lost_recipes",[])
 	# The backpack is always shown (T-051): kept blueprints bright, empty slots dim; lost ones fall off the bottom.
 	UiKit.label(panel,"Рюкзак · %d / %d" % [saved.size(),Game.backpack_slots],Vector2(left.x,y+6),Vector2(column,24),15,UiKit.MUTED)
-	for slot in range(saved.size(),mini(Game.backpack_slots,int(column/80))):
-		var empty=UiKit.panel(panel,Vector2(left.x+slot*80,y+34),Vector2(72,72),Color("262b27"));empty.modulate.a=.45
+	# The whole backpack (T-086): all MAX_SLOTS cells, the ones not bought yet shown locked.
+	var side=minf(72.0,floorf((column-8.0*(MAX_SLOTS-1))/MAX_SLOTS));var pitch=side+8.0
+	for slot in range(saved.size(),MAX_SLOTS):
+		var empty=UiKit.panel(panel,Vector2(left.x+slot*pitch,y+34),Vector2(side,side),Color("262b27"));empty.modulate.a=.45
+		if slot>=Game.backpack_slots:
+			lock_mark(empty,side);empty.tooltip_text=Texts.render("Ячейка закрыта — расширяется в хабе")
 	var x=left.x
 	for entry in saved.map(func(r):return [r,true])+gone.map(func(r):return [r,false]):
-		if x+78>left.x+column:break
-		var cell=UiKit.panel(panel,Vector2(x,y+34),Vector2(72,72),Color("2f3b33") if entry[1] else Color("262b27"));cell.modulate.a=0
+		if x+side>left.x+column+1:break
+		var cell=UiKit.panel(panel,Vector2(x,y+34),Vector2(side,side),Color("2f3b33") if entry[1] else Color("262b27"));cell.modulate.a=0
 		cell.tooltip_text=Texts.render(Game.recipe_name(entry[0])+("" if entry[1] else " · потерян"))
-		var art=UiKit.icon(cell,str(entry[0].get("id","")),Vector2(10,8),Vector2(52,52));UiKit.locked_preview(art,not entry[1])
+		var art=UiKit.icon(cell,str(entry[0].get("id","")),Vector2(side*.14,side*.11),Vector2(side*.72,side*.72));UiKit.locked_preview(art,not entry[1])
 		if not entry[1]:
-			UiKit.label(cell,"✕",Vector2(52,0),Vector2(20,20),14,Color("ff6b57"))
+			UiKit.label(cell,"✕",Vector2(side-20,0),Vector2(20,20),14,Color("ff6b57"))
 			# A lost blueprint chars and drops off the bottom of the screen.
 			var burn=cell.create_tween();burn.tween_interval(at.call(0.0)+.6)
 			burn.tween_property(cell,"modulate",Color(1,.45,.25,1),.25)
 			burn.parallel().tween_property(cell,"rotation",.35,.6)
 			burn.tween_property(cell,"position:y",panel.size.y+120,.7).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 		reveal(cell,at.call(.12),"ui_confirm" if entry[1] else "debris",hud)
-		x+=80
+		x+=pitch
 	# — Summary —
 	clock[0]=.15
 	UiKit.label(panel,"Сводка",right,Vector2(column,26),UiKit.SECTION_SIZE,UiKit.MUTED)
@@ -101,6 +115,16 @@ static func show(hud,arena,won:bool,reason:String):
 	UiKit.button(panel,"В хаб",Vector2(width-310,panel.size.y-76),Vector2(280,52),func():arena.leave(),true)
 
 ## One "title …… value" line that fades in at `delay`.
+const MAX_SLOTS=6
+## A small padlock drawn from two panels: the shackle ring and the body.
+static func lock_mark(cell:Control,side:float):
+	var u=side/72.0
+	var shackle=Panel.new();cell.add_child(shackle);shackle.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	var ring=UiKit.style(Color.TRANSPARENT,int(9*u),Color("9aa39a"));ring.set_border_width_all(maxi(2,int(3*u)));shackle.add_theme_stylebox_override("panel",ring)
+	shackle.position=Vector2(side*.5-11*u,side*.5-17*u);shackle.size=Vector2(22*u,22*u)
+	var body=Panel.new();cell.add_child(body);body.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	body.add_theme_stylebox_override("panel",UiKit.style(Color("9aa39a"),int(4*u),Color("9aa39a")))
+	body.position=Vector2(side*.5-15*u,side*.5-5*u);body.size=Vector2(30*u,22*u)
 static func ledger(panel:Control,pos:Vector2,width:float,title:String,value:String,color:Color,delay:float)->Label:
 	var row=Control.new();panel.add_child(row);row.position=pos;row.size=Vector2(width,30);row.modulate.a=0
 	UiKit.label(row,title,Vector2(0,4),Vector2(width*.6,24),16,UiKit.MUTED)

@@ -80,7 +80,8 @@
 					"Исправлено: под героем мигала клетка вместе со статусами; летящий в счётчик жетон показывал не ту иконку",
 					"Комнаты улучшения и торговец: то же плавное управление, что в хабе; выход только из зоны выхода по E; технику явно покупают по E с ценой («Техника доставлена»); лампы больше не закрывают машину; экранный джойстик только на сенсоре",
 					"Исправлено: после взрыва машины по полю тянулся чёрный клин — конус её фар",
-					"Песок: на клетке три диагональные дюны (маленькая, большая из угла в угол и ещё одна большая); бочки и полублоки больше не обводятся тенью, плитки под ними не кажутся приподнятыми"
+					"Песок: на клетке три диагональные дюны (маленькая, большая из угла в угол и ещё одна большая); бочки и полублоки больше не обводятся тенью, плитки под ними не кажутся приподнятыми",
+					"Экран поражения: видно, кто добил базу или бойца; рюкзак показан целиком — закрытые ячейки с замком"
 				]
 			},
 			"en": {
@@ -160,7 +161,8 @@
 					"Fixed: the cell under the hero flashed along with status effects; the token flying to the counter showed the wrong icon",
 					"Upgrade rooms and the merchant: the same smooth controls as the hub; leave only from the exit zone with E; buy the vehicle explicitly with E and a price («Vehicle delivered»); lamps no longer hide the car; the on-screen stick only on touch",
 					"Fixed: a black wedge across the field after a vehicle blew up — its headlight cone",
-					"Sand: three diagonal dunes per cell (small, a big corner-to-corner one and another big one); barrels and half blocks no longer get a shadow ring, so their tiles do not look raised"
+					"Sand: three diagonal dunes per cell (small, a big corner-to-corner one and another big one); barrels and half blocks no longer get a shadow ring, so their tiles do not look raised",
+					"Defeat screen: shows who finished the base or the soldier; the whole backpack is shown — locked slots with a padlock"
 				]
 			}
 		},
