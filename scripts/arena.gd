@@ -530,6 +530,12 @@ func _physics_process(delta):
 		if countdown <= 0:
 			phase = "combat"
 			if room.commander_countdown:room.commander_countdown=false;spawn_room_boss()
+		# The pause between waves is not a freeze (T-020, T-053): time runs, so bonuses keep falling, and the
+		# soldier can shoot and use abilities while the next wave gets ready.
+		elapsed+=delta
+		abilities.tick(delta)
+		for slot in range(abilities.slots.size()):
+			if Input.is_action_just_pressed(Game.ability_action(slot)):abilities.cast_slot(slot)
 		collect_nearby_pickups(delta)
 		return
 	if phase != "combat": return

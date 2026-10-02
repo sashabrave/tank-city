@@ -297,7 +297,7 @@ func _physics_process(delta):
 			if aim!=Vector2i.ZERO:set_facing(aim)
 			if Input.is_action_just_pressed("hide_trench"):hidden_in_trench=not hidden_in_trench
 			model.position.y=-.85 if hidden_in_trench else -.42
-			if Game.wants_fire() and not hidden_in_trench and arena.phase=="combat":shoot()
+			if Game.wants_fire() and not hidden_in_trench and arena.phase in ["combat","countdown"]:shoot()
 			if Game.wants_interact():arena.interact()
 			return
 		var dir = Game.direction()
@@ -305,7 +305,7 @@ func _physics_process(delta):
 			set_facing(dir)
 			# Finish only the current quarter-step; turning never stalls locomotion.
 			if not moving:try_move(dir)
-		if Game.wants_fire() and arena.phase=="combat": shoot()
+		if Game.wants_fire() and arena.phase in ["combat","countdown"]: shoot()
 		if Game.wants_interact(): arena.interact()
 	else:
 		var lined_up=arena.enemy_aim(self)

@@ -47,7 +47,9 @@ func run():
 	var strip=reels.reels[0].strip.position.y
 	await get_tree().create_timer(.25).timeout
 	check(reels.reels[0].strip.position.y>strip,"reels spin")
-	await get_tree().create_timer(1.3).timeout
+	for i in range(30):
+		if not is_instance_valid(reels):break
+		await get_tree().create_timer(.1).timeout
 	check(not is_instance_valid(reels) and shop.modal==null,"window closes by itself after the verdict")
 	shop.interact();await settle();shop.modal.finish();await settle()
 	check(arena.run.tokens-before in [-4,0,4],"each pull costs 2 or pays back double")

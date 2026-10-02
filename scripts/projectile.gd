@@ -47,7 +47,7 @@ func build_visual():
 	if not friendly and visual.get_child_count()>1:blink_halo=visual.get_child(1)
 	if kind in ["sniper","orb","rocket"]:EffectLighting.projectile_light(self,color)
 func _physics_process(delta):
-	if spent or not is_instance_valid(arena) or arena.phase != "combat": return
+	if spent or not is_instance_valid(arena) or arena.phase not in ["combat","countdown"]: return
 	if rocket_radius>0:Game.sound_loop("rocket_flight",self)
 	if is_instance_valid(blink_halo):blink_halo.visible=fposmod(Time.get_ticks_msec()*.011+position.x,1.0)<.6
 	lifetime -= delta

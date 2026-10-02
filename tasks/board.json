@@ -241,7 +241,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-020.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "между волнами если падает бонус то он зависает, пока идет отсчет времени",
 			"type": "bug",
 			"version": "0.7.1-pre"
@@ -670,7 +670,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-053.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "пока идет отсчет времени между волнами, то тоже можно использовать способности и стрелять (как и бегать)",
 			"type": "bug",
 			"version": "0.7.1-pre"
