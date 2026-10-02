@@ -1,5 +1,5 @@
 extends RefCounted
-const NAMES={"field_repair":"Полевой ремонт","comrade":"Товарищ","barrier":"Противотанковый ёж","grenade":"Граната","laser":"Лазер","gas":"Газ","ally_drone":"Дрон","mine":"Мина","airstrike":"Авиаудар","cloak":"Маскировка","shield":"Щит"}
+const NAMES={"field_repair":"Полевой ремонт","comrade":"Товарищ","barrier":"Противотанковый ёж","grenade":"Граната","laser":"Лазер","gas":"Газ","ally_drone":"Дрон","mine":"Мина","dynamite":"Динамит","airstrike":"Авиаудар","cloak":"Маскировка","shield":"Щит"}
 var slots:Array=[]
 var states:Dictionary={}
 var cooldown_totals:Dictionary={}
@@ -55,7 +55,7 @@ func description(id: String,tier: int) -> String:
 	var n=Balance.tier_power(tier)
 	if id=="cooldown":return "Кулдаун %.1f → %.1f с" % [interval(),maxf(5,interval()*pow(Balance.CONFIG.combat.ability_cooldown_multiplier,n))]
 	if id=="power":return "Сила / HP / длительность %.1f → %.1f" % [power(),power()+AbilityCatalog.DATA[selected].power*Balance.CONFIG.combat.ability_power_step*n]
-	return {"barrier":"Лимит блоков %d → %d" % [barrier_count(),mini(4,barrier_count()+int(n))],"grenade":"Радиус +0,25 клетки; запал короче","laser":"Пробивает ещё один бетон (до 4)","gas":"Больше площадь облака","ally_drone":"Лимит помощников +1 (до 3)","mine":"Дальность креста и лимит мин +1","airstrike":"Больше залпов; уровень 3 — ракеты","cloak":"Дольше невидимость; уровень 3 — пули насквозь","comrade":"Быстрее высадка и движение товарища","shield":"Неуязвимость +0,5 с (до 8 с)"}.get(selected,"")
+	return {"barrier":"Лимит блоков %d → %d" % [barrier_count(),mini(4,barrier_count()+int(n))],"grenade":"Радиус +0,25 клетки; запал короче","laser":"Пробивает ещё один бетон (до 4)","gas":"Больше площадь облака","ally_drone":"Лимит помощников +1 (до 3)","mine":"Дальность креста и лимит мин +1","dynamite":"Дальность взрыва +1 клетка (до 6)","airstrike":"Больше залпов; уровень 3 — ракеты","cloak":"Дольше невидимость; уровень 3 — пули насквозь","comrade":"Быстрее высадка и движение товарища","shield":"Неуязвимость +0,5 с (до 8 с)"}.get(selected,"")
 func cast() -> bool:
 	return actions.execute(self)
 

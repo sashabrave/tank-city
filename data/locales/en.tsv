@@ -2406,3 +2406,7 @@ E — в хаб	E — to the hub
 Сектор за сектором	Sector after sector
 Мир пройден	World cleared
 [E] в бой   ←/→ выбор	[E] deploy   ←/→ choose
+Динамит	Dynamite
+Шашка под ногами, через 1,5 с взрыв крестом: ломает кирпич и бочки по линиям до бетона и бьёт врагов на них	A charge at your feet; after 1.5 s it blasts in a cross: breaks brick and barrels along the lines up to concrete and hits enemies on them
+Дальность взрыва +1 клетка (до 6)	Blast range +1 tile (up to 6)
+Жар +25% · защита от взрывов +15% · динамит	Heat +25% · blast protection +15% · dynamite

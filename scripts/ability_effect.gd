@@ -13,6 +13,11 @@ func _ready():
 		visual.add_child(preload("res://scripts/gas_cloud.gd").new(1.5+utility*.35,int(position.x*31+position.z*17)))
 	elif kind=="mine":
 		Visuals.box(visual,Vector3(0,.08,0),Vector3(.55,.16,.55),Color("8d9855"));Visuals.ring(visual,Color("f1cb63"),.35)
+	elif kind=="dynamite":
+		# Three red sticks taped together with a sparking fuse.
+		for i in range(3):Visuals.box(visual,Vector3((i-1)*.11,.09,0),Vector3(.1,.18,.42),Color("c8402f"))
+		Visuals.box(visual,Vector3(0,.09,0),Vector3(.36,.19,.06),Color("2a2a28"))
+		var spark=Visuals.box(visual,Vector3(0,.32,-.18),Vector3(.07,.07,.07),Color("ffd36a"));spark.name="Spark";spark.material_override=Visuals.material(Color("ffd36a"),true)
 	else:
 		Visuals.box(visual,Vector3.ZERO,Vector3(.8,.65,1.6),Color("6f8a75"))
 		Visuals.box(visual,Vector3(0,.2,-.65),Vector3(.65,.45,.45),Color("9cbfc1"))
@@ -25,7 +30,7 @@ func _physics_process(delta):
 	age+=delta
 	if kind=="gas":Game.sound_loop("gas_loop",self)
 	elif kind=="airstrike":Game.sound_loop("helicopter_rotor",self)
-	elif age>=2 and age-delta<2:Game.sound("mine_arm",self)
+	elif kind!="dynamite" and age>=2 and age-delta<2:Game.sound("mine_arm",self)
 	if kind=="gas":
 		# Sleeping infantry: held like a stun, shown with «Z z z» instead of stars.
 		for enemy in arena.actors:
@@ -36,6 +41,10 @@ func _physics_process(delta):
 			var cloud=visual.get_node_or_null("GasCloud")
 			if cloud:visual.remove_child(cloud);arena.add_child(cloud);cloud.position=position;cloud.fade_out()
 			queue_free()
+	elif kind=="dynamite":
+		var spark=visual.get_node_or_null("Spark")
+		if spark:spark.scale=Vector3.ONE*(1.0+.6*absf(sin(age*24.0)));spark.position.y=.32-.18*minf(1.0,age/FUSE)
+		if age>=FUSE:blast();return
 	elif kind=="mine":
 		if age<2:return
 		for actor in arena.actors:
@@ -54,6 +63,24 @@ func _physics_process(delta):
 				if utility>=3 and fired%4==0:arena.grenade_explosion(target.position,power*2,true,2)
 				else:target.take_damage(power)
 		if age>6+utility:queue_free()
+const FUSE=1.5
+## Dynamite: a cross along both axes. Every destructible block on a line takes the full blast (bricks and
+## barrels break through), the line stops at indestructible concrete or the field edge. Enemies on the
+## lines are hit; the soldier is not. Range 2 + utility (max 6).
+func blast():
+	var origin=arena.grid_pos(position);var cells=[origin];var reach=mini(6,2+int(utility))
+	for dir in arena.DIRS:
+		for i in range(1,reach+1):
+			var cell=origin+dir*i
+			if not arena.inside(cell):break
+			if arena.walls.has(cell) and float(arena.walls[cell].get("hp",0))<0:break
+			cells.append(cell)
+			if arena.walls.has(cell):arena.damage_wall(cell,power*3.0)
+	for cell in cells:
+		arena.burst(arena.world_pos(cell),Color("ffb04a"),.5)
+		for actor in arena.actors.duplicate():
+			if is_instance_valid(actor) and not actor.dead and not actor.player_owned and not actor.allied and arena.grid_pos(actor.position)==cell:actor.take_damage(power)
+	Game.sound("explosion_heavy",arena);queue_free()
 func detonate():
 	var origin=arena.grid_pos(position);var cells=[origin]
 	for dir in arena.DIRS:

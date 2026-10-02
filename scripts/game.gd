@@ -38,7 +38,7 @@ var rescue_level=0
 var shield_capacity_level=0
 ## Class names and short stats; roles, start modifiers and unlock goals live in ClassCatalog. "driver" is the
 ## legacy Механик, merged into Инженер (profiles move over on load).
-const CLASSES={"recruit":{"name":"Стрелок","price":0,"desc":"Крит +5% · граната"},"heavy":{"name":"Штурмовик","price":0,"desc":"HP +1 · защита от пуль +10% · дробовик +10% · скорость −5%"},"gunner":{"name":"Подрывник","price":0,"desc":"Поджог +10% · защита от взрывов +15% · газ"},"marksman":{"name":"Разведчик","price":0,"desc":"Маскировка +12% · крит-урон +25% · снайперка +15%"},"engineer":{"name":"Инженер","price":0,"desc":"Ремонт за побеждённого +0,3 · запасливость +10% · техника +15% · дрон"},"driver":{"name":"Механик","price":0,"desc":"Объединён с инженером"}}
+const CLASSES={"recruit":{"name":"Стрелок","price":0,"desc":"Крит +5% · граната"},"heavy":{"name":"Штурмовик","price":0,"desc":"HP +1 · защита от пуль +10% · дробовик +10% · скорость −5%"},"gunner":{"name":"Подрывник","price":0,"desc":"Жар +25% · защита от взрывов +15% · динамит"},"marksman":{"name":"Разведчик","price":0,"desc":"Маскировка +12% · крит-урон +25% · снайперка +15%"},"engineer":{"name":"Инженер","price":0,"desc":"Ремонт за побеждённого +0,3 · запасливость +10% · техника +15% · дрон"},"driver":{"name":"Механик","price":0,"desc":"Объединён с инженером"}}
 var credits = 0
 var health_level = 0
 var damage_level = 0
@@ -474,7 +474,7 @@ func special_cost(id:String)->int:
 		"rescue":return 144+rescue_level*120 if rescue_level<10 and "rescue" in research_unlocks else -1
 		"shield":return -1
 	return -1
-const CLASS_SKILLS={"recruit":"grenade","gunner":"gas","driver":"field_repair","marksman":"cloak","engineer":"ally_drone","heavy":"shield"}
+const CLASS_SKILLS={"recruit":"grenade","gunner":"dynamite","driver":"field_repair","marksman":"cloak","engineer":"ally_drone","heavy":"shield"}
 func class_skill()->String:return CLASS_SKILLS.get(selected_class,"")
 ## Every shell is available from world 1; the price (alloy or documents) is the only gate.
 func class_world(_id:String)->int:return 1
@@ -568,7 +568,7 @@ func upgrade_weapon(id:String)->bool:
 	if "weapons" not in built_workshops or id not in weapon_unlocks or weapon_level(id)>=Balance.CONFIG.economy.weapon_level_cap or credits<weapon_upgrade_cost(id):return false
 	credits-=weapon_upgrade_cost(id);progression.weapon_levels[id]=weapon_level(id)+1;save_progress();return true
 
-const CLASS_SECOND={"recruit":"comrade","gunner":"grenade","driver":"ally_drone","marksman":"grenade","engineer":"field_repair","heavy":"comrade"}
+const CLASS_SECOND={"recruit":"comrade","gunner":"gas","driver":"ally_drone","marksman":"grenade","engineer":"field_repair","heavy":"comrade"}
 func class_loadout()->Array:
 	var result=[class_skill()] if selected_class in class_first_slots else []
 	if selected_class in class_second_slots:result.append(CLASS_SECOND[selected_class])

@@ -55,10 +55,10 @@ func execute(ability)->bool:
 		if drones.size()>=mini(3,1+int(ability.level.utility)):arena.toast("Лимит помощников");return false
 		var drone=arena.spawn_actor("flyer",arena.find_free_near(p.cell),false,true)
 		drone.max_hp=ability.power();drone.hp=drone.max_hp;drone.damage=1+ability.level.power*.2;drone.refresh_health()
-	elif ability.selected in ["gas","mine","airstrike"]:
+	elif ability.selected in ["gas","mine","airstrike","dynamite"]:
 		if ability.selected=="mine":
 			ability.mines=ability.mines.filter(func(m):return is_instance_valid(m) and not m.is_queued_for_deletion())
 			if ability.mines.size()>=mini(5,1+int(ability.level.utility)):arena.toast("Лимит мин");return false
 		var effect=load("res://scripts/ability_effect.gd").new();effect.arena=arena;effect.kind=ability.selected;effect.power=ability.power();effect.utility=ability.level.utility;effect.position=p.position;arena.add_child(effect)
 		if ability.selected=="mine":ability.mines.append(effect)
-	ability.cooldown=ability.interval()+(ability.shield_time if ability.selected=="shield" else 0.0);ability.cooldown_totals[ability.selected]=ability.cooldown;Game.sound({"barrier":"barrier_deploy","grenade":"grenade_throw","laser":"laser_fire","shield":"shield_restore","cloak":"cloak","mine":"mine_arm","comrade":"delivery_land"}.get(ability.selected,"ability_generic"),p);return true
+	ability.cooldown=ability.interval()+(ability.shield_time if ability.selected=="shield" else 0.0);ability.cooldown_totals[ability.selected]=ability.cooldown;Game.sound({"barrier":"barrier_deploy","grenade":"grenade_throw","laser":"laser_fire","shield":"shield_restore","cloak":"cloak","mine":"mine_arm","dynamite":"mine_arm","comrade":"delivery_land"}.get(ability.selected,"ability_generic"),p);return true

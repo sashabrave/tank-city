@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="GameBalance" load_steps=33 format=3]
+[gd_resource type="Resource" script_class="GameBalance" load_steps=34 format=3]
 [ext_resource type="Script" path="res://scripts/balance/game_balance.gd" id="script"]
 [ext_resource type="Resource" path="res://assets/balance/weapons/pistol.tres" id="weapons0"]
 [ext_resource type="Resource" path="res://assets/balance/weapons/smg.tres" id="weapons1"]
@@ -13,6 +13,7 @@
 [ext_resource type="Resource" path="res://assets/balance/abilities/gas.tres" id="abilities4"]
 [ext_resource type="Resource" path="res://assets/balance/abilities/ally_drone.tres" id="abilities5"]
 [ext_resource type="Resource" path="res://assets/balance/abilities/mine.tres" id="abilities6"]
+[ext_resource type="Resource" path="res://assets/balance/abilities/dynamite.tres" id="abilities_dynamite"]
 [ext_resource type="Resource" path="res://assets/balance/abilities/airstrike.tres" id="abilities7"]
 [ext_resource type="Resource" path="res://assets/balance/abilities/cloak.tres" id="abilities8"]
 [ext_resource type="Resource" path="res://assets/balance/enemies/soldier.tres" id="enemies0"]
@@ -34,7 +35,7 @@
 resource_name="Tank City — баланс"
 script=ExtResource("script")
 weapons = [ExtResource("weapons0"), ExtResource("weapons1"), ExtResource("weapons2"), ExtResource("weapons3"), ExtResource("weapons4"), ExtResource("weapons5")]
-abilities = [ExtResource("abilities0"), ExtResource("abilities1"), ExtResource("abilities2"), ExtResource("abilities3"), ExtResource("abilities4"), ExtResource("abilities5"), ExtResource("abilities6"), ExtResource("abilities7"), ExtResource("abilities8"), ExtResource("abilities9")]
+abilities = [ExtResource("abilities0"), ExtResource("abilities1"), ExtResource("abilities2"), ExtResource("abilities3"), ExtResource("abilities4"), ExtResource("abilities5"), ExtResource("abilities6"), ExtResource("abilities7"), ExtResource("abilities8"), ExtResource("abilities9"), ExtResource("abilities_dynamite")]
 enemies = [ExtResource("enemies0"), ExtResource("enemies1"), ExtResource("enemies2"), ExtResource("enemies3"), ExtResource("enemies4"), ExtResource("enemies5"), ExtResource("enemies6"), ExtResource("enemies7"), ExtResource("enemies8"), ExtResource("enemies9"), ExtResource("enemies10")]
 combat = ExtResource("combat")
 economy = ExtResource("economy")
