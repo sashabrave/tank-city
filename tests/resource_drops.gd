@@ -19,10 +19,10 @@ func run():
 	if DisplayServer.get_name()!="headless":RenderingServer.force_draw();get_viewport().get_texture().get_image().save_png("res://art_demo/resource_drops/drops.png")
 	var expected=0
 	for token in arena.room.resource_drops:
-		if token.currency=="alloy":expected+=token.amount
+		expected+=token.amount if token.currency=="alloy" else token.amount*Game.DOC_ALLOY if token.currency=="documents" else 0
 	var earned=arena.run.earned
 	arena.reward.collect_resources()
-	assert(Game.credits==before+expected and Game.cores==2 and arena.run.earned==earned+expected)
+	assert(Game.credits==before+expected and Game.cores==0 and arena.run.earned==earned+expected)
 	arena.reward.collect_resources();assert(Game.credits==before+expected)
 	DROP.spawn(arena,arena.player.position,7)
 	await get_tree().create_timer(.8).timeout

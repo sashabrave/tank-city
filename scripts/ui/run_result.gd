@@ -11,7 +11,6 @@ static func show(hud,arena,won:bool,reason:String):
 	panel.name="RunResult"
 	var width=panel.size.x;var left=Vector2(30,150);var right=Vector2(width*.5+15,150);var column=width*.5-45
 	var earned=int(arena.earned);var lost=int(arena.run.lost_alloy);var kept=maxi(0,earned-lost)
-	var docs=maxi(0,Game.cores-int(arena.get_meta("start_documents",Game.cores)))
 	var clock=[.15]
 	var at=func(step:float=STEP)->float:clock[0]+=step;return clock[0]
 	# — Loot —
@@ -48,8 +47,6 @@ static func show(hud,arena,won:bool,reason:String):
 	count_up(total,kept,"%d",total_at,.7)
 	pop(panel,total,total_at+.7)
 	y+=64
-	if docs>0:
-		ledger(panel,Vector2(left.x,y),column,"Документы","+%d" % docs,UiKit.INK,at.call());y+=34
 	# Blueprints: saved bright, lost greyed with a red mark.
 	var saved=arena.pending_recipes if won else arena.get_meta("saved_recipes",[])
 	var gone=arena.get_meta("lost_recipes",[])

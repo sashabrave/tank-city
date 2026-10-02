@@ -76,7 +76,7 @@ func claim(quest:Dictionary)->bool:
 	if quest.is_empty() or quest.id not in accepted or quest.id in claimed or int(counters.get(quest.event,0))<quest.goal:return false
 	var was_tracked=quest.id in tracked;tracked.erase(quest.id)
 	claimed.append(quest.id)
-	xp+=int(quest.get("xp",0));Game.earn(quest.alloy);Game.cores+=int(quest.get("docs",0));Game.save_progress();return true
+	xp+=int(quest.get("xp",0));Game.earn(int(quest.alloy)+int(quest.get("docs",0))*Game.DOC_ALLOY);Game.save_progress();return true
 func choose_telegram(index:int):
 	if not telegram.is_empty() or order_wait>0 or index<0 or index>=telegram_options.size():return
 	telegram=telegram_options[index].duplicate(true);telegram.progress=0;telegram.active=false

@@ -24,6 +24,8 @@ signal profile_changed
 var class_levels:Dictionary={}
 var specializations:Dictionary={}
 var cores=0
+## 0.7 merged documents into alloy: one old document is worth this much alloy.
+const DOC_ALLOY=40
 var selected_class="recruit"
 var class_unlocks:Array=["recruit"]
 var ability_slots=1
@@ -278,7 +280,8 @@ func apply_profile(data:Dictionary):
 		class_levels=extra.get("class_levels",{});specializations=extra.get("specializations",{})
 		class_second_slots=data.get("class_second_slots",[]);gadget=str(data.get("gadget","barrier"))
 		if gadget not in ["barrier","mine","laser","airstrike"]:gadget=""
-		cores=maxi(0,int(extra.get("cores",0)));selected_class=extra.get("class","recruit");class_unlocks=extra.get("classes",["recruit"])
+		cores=maxi(0,int(extra.get("cores",0)))
+		selected_class=extra.get("class","recruit");class_unlocks=extra.get("classes",["recruit"])
 		if "driver" in class_unlocks and "engineer" not in class_unlocks:class_unlocks.append("engineer")
 		if selected_class=="driver":selected_class="engineer"
 		if selected_class not in CLASSES:selected_class="recruit"
@@ -291,6 +294,8 @@ func apply_profile(data:Dictionary):
 		if equipped_abilities.is_empty():equipped_abilities=["barrier"]
 		equipped_abilities.resize(mini(ability_slots,equipped_abilities.size()))
 		credits = maxi(0, int(data.get("credits",0)))
+		if cores>0:
+			credits+=cores*DOC_ALLOY;notification_history.append({"text":"Документы больше не нужны: накопленные переплавлены в %d ◈." % (cores*DOC_ALLOY),"sender":"Оперштаб","time":Time.get_unix_time_from_system(),"read":false,"category":"important"});cores=0
 		health_level = maxi(0,int(data.get("health",0)))
 		damage_level = maxi(0,int(data.get("damage",0)))
 		luck_level=clampi(int(data.get("luck",0)),0,MAX_LEVEL)
@@ -499,12 +504,12 @@ func class_level()->int:return clampi(int(class_levels.get(selected_class,0)),0,
 func class_specialization()->int:return clampi(int(specializations.get(selected_class,0)),0,3)
 func class_upgrade_cost(id:String,special:bool)->int:
 	var upgrade_level=int((specializations if special else class_levels).get(id,0))
-	return -1 if upgrade_level>=(3 if special else 10) else ceili((2+upgrade_level if special else 1+int(upgrade_level/3.0))*1.2)
+	return -1 if upgrade_level>=(3 if special else 10) else ceili((2+upgrade_level if special else 1+int(upgrade_level/3.0))*1.2)*DOC_ALLOY
 func upgrade_class(id:String,special:bool)->bool:
 	if id not in class_unlocks:return false
 	var price=class_upgrade_cost(id,special)
-	if price<0 or cores<price:return false
-	cores-=price
+	if price<0 or credits<price:return false
+	credits-=price
 	var levels=specializations if special else class_levels;levels[id]=int(levels.get(id,0))+1
 	save_progress();return true
 

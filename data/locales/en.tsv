@@ -1591,7 +1591,7 @@ F2 — админ	F2 — admin
 Взорви бочками %d врагов	Blow up %d enemies with barrels
 Собери %d жетонов	Collect %d tokens
 Особое задание	Special task
-На карте есть особые точки: тайник, удержание, выживание, напёрстки, переключатели. Пройди любую.	The map has special points: cache, hold, survival, thimbles, switches. Complete any of them.
+На карте есть особые точки: тайник, удержание, выживание. Пройди любую.	The map has special points: cache, hold, survival. Complete any of them.
 Сделка на марше	Deal on the march
 Собери жетоны с врагов и купи что-нибудь у торговца в сервисном ряду.	Collect tokens from enemies and buy something from the merchant in a service row.
 Зачисти первое поле Пограничья: три волны и командира.	Clear the first Borderland field: three waves and the commander.
@@ -2445,3 +2445,5 @@ III · элитные командиры, +1 враг · +100%	III · elite comm
 Залп	Volley
 Техника стреляет тремя снарядами веером: боковые по 50% урона.	The vehicle fires three shells in a fan: side shells deal 50% damage.
 Ярость · +%d%%	Fury · +%d%%
+Документы больше не нужны: накопленные переплавлены в %d ◈.	Documents are no longer needed: your stock was melted into %d ◈.
+Переплавленные документы	Melted documents

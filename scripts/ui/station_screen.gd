@@ -95,8 +95,7 @@ func build():
 	panel=UiKit.glass(self,Vector2.ZERO,Vector2(1120,650),Color("242d27"));panel.name="StationPanel";fit()
 	UiKit.label(panel,provider.title(),Vector2(28,16),Vector2(600,40),28)
 	UiKit.label(panel,provider.subtitle(),Vector2(28,54),Vector2(700,24),15,UiKit.MUTED)
-	var alloy=UiKit.label(panel,"%d ◈" % Game.credits,Vector2(760,22),Vector2(150,30),18);alloy.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT;alloy.name="Alloy"
-	var docs=UiKit.label(panel,"%d док." % Game.cores,Vector2(920,22),Vector2(110,30),18);docs.name="Documents"
+	var alloy=UiKit.label(panel,"%d ◈" % Game.credits,Vector2(880,22),Vector2(150,30),18);alloy.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT;alloy.name="Alloy"
 	var close=UiKit.button(panel,"",Vector2(1046,16),Vector2(52,44),func():closed.emit());close.icon=UiKit.interface_icon("close");close.expand_icon=true;close.add_theme_constant_override("icon_max_width",20);close.name="Close"
 	var tabs=provider.tabs()
 	for i in range(tabs.size()):

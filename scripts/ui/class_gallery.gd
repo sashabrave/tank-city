@@ -75,7 +75,7 @@ func shell_purchase_text(id:String)->String:
 	if id==Game.selected_class:return "Надета"
 	if id in Game.class_unlocks:return "Надеть"
 	if not Campaign.unlocked(Game.class_world(id)):return "Откроется в мире %d" % Game.class_world(id)
-	return ("Купить и надеть · %d ◈" if id in ["gunner","driver"] else "Купить и надеть · %d док.") % Game.class_price(id)
+	return "Купить и надеть · %d ◈" % Game.class_price(id)
 func build_shell()->float:
 	var owned=viewed in Game.class_unlocks;var level=int(Game.class_levels.get(viewed,0));var wide=content_width>=800
 	var left=280.0 if wide else content_width
@@ -103,7 +103,7 @@ func build_shell()->float:
 	var price=Game.class_upgrade_cost(viewed,false)
 	label(body,"Развитие этого класса",Vector2(origin.x,offset+7),Vector2(width,28),18)
 	label(body,"HP и урон +0,2% · скорость +0,1% за уровень",Vector2(origin.x,offset+40),Vector2(width,38),14,true)
-	var upgrade_button=action(body,"Максимальный уровень" if level>=10 else "Улучшить · %d док." % price,Vector2(origin.x,offset+84),Vector2(width,42),upgrade,"UpgradeShell",owned and level<10 and Game.cores>=price)
+	var upgrade_button=action(body,"Максимальный уровень" if level>=10 else "Улучшить · %d ◈" % price,Vector2(origin.x,offset+84),Vector2(width,42),upgrade,"UpgradeShell",owned and level<10 and Game.credits>=price)
 	if level<5:upgrade_button.tooltip_text=Texts.render("Вторая способность доступна с уровня класса 5")
 	offset+=140
 	action(body,"Скрыть характеристики" if stats_open else "Итоговые характеристики ▾",Vector2(origin.x,offset),Vector2(width,40),func():stats_open=not stats_open;refresh(),"ToggleStats")
@@ -142,7 +142,7 @@ func build_catalog()->float:
 		var id=IDS[i];var card=UiKit.panel(body,Vector2((i%columns)*(width+16),154+floori(float(i)/columns)*212),Vector2(width,196),Color("30382f"))
 		picture(card,id,Vector2(10,10),Vector2(78,110),true)
 		label(card,Game.CLASSES[id].name,Vector2(100,12),Vector2(width-114,30),22)
-		label(card,"Надета" if id==Game.selected_class else "Открыта" if id in Game.class_unlocks else ("%d ◈" if id in ["gunner","driver"] else "%d док.") % Game.class_price(id),Vector2(100,47),Vector2(width-114,24),14,true)
+		label(card,"Надета" if id==Game.selected_class else "Открыта" if id in Game.class_unlocks else "%d ◈" % Game.class_price(id),Vector2(100,47),Vector2(width-114,24),14,true)
 		label(card,Game.CLASSES[id].desc,Vector2(100,78),Vector2(width-114,63),14,true)
 		action(card,"Класс и способности",Vector2(12,148),Vector2(width-24,36),func():detail(id),"Shell_"+id)
 	return 154+ceili(float(IDS.size())/columns)*212

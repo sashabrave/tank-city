@@ -74,7 +74,7 @@ func collect():
 	collected=true;arena.room.resource_drops.erase(self)
 	if currency=="alloy":arena.run.earned+=amount;Game.earn(amount)
 	elif currency=="tokens":arena.run.tokens+=amount;Game.progression.event("tokens",amount)
-	else:Game.cores+=amount;Game.save_progress()
+	else:arena.run.earned+=amount*Game.DOC_ALLOY;Game.earn(amount*Game.DOC_ALLOY)
 	Game.sound("collect_alloy" if currency in ["alloy","tokens"] else "collect_document",Game)
 	var camera=get_viewport().get_camera_3d()
 	if camera and not camera.is_position_behind(global_position):ResourceStrip.fly_pickup(currency,camera.unproject_position(global_position))

@@ -189,7 +189,7 @@ func choose_recipe_card(index: int):
 	var offer=arena.room.draft_pickup.offers[index]
 	if offer.category=="alloy":Game.earn(offer.amount);arena.run.earned+=offer.amount
 	elif offer.category=="secret":apply_secret(offer)
-	elif offer.category=="documents":Game.cores+=int(offer.amount);Game.save_progress()
+	elif offer.category=="documents":Game.earn(int(offer.amount)*Game.DOC_ALLOY);arena.run.earned+=int(offer.amount)*Game.DOC_ALLOY
 	elif offer.category=="upgrade":apply_trophy_upgrade(offer.id,offer.tier)
 	elif arena.run.pending_recipes.size()>=Game.backpack_slots:
 		arena.room.recipe_offer=arena.room.draft_pickup;arena.room.recipe_offer.recipe=offer;arena.hud.show_pause();return
@@ -308,7 +308,7 @@ func award_kill(actor):
 	Game.progression.event("drones" if UnitKinds.is_flying(actor.kind) else "armor" if UnitKinds.is_vehicle(actor.kind) else "infantry")
 	if actor.kind=="boss":
 		if not arena.room.actors.any(func(a):return is_instance_valid(a) and not a.dead and a.kind=="boss") and arena.room.spawn_queue.is_empty():
-			preload("res://scripts/resource_drop.gd").spawn(arena,actor.position,Campaign.world if not Campaign.endless else 1,"documents",actor.resource_blast)
+			preload("res://scripts/resource_drop.gd").spawn(arena,actor.position,(Campaign.world if not Campaign.endless else 1)*Game.DOC_ALLOY,"alloy",actor.resource_blast)
 		Game.progression.event("boss_"+str(Campaign.progress_index(arena.room_index)))
 		if (Campaign.is_final(arena.room_index) or (Campaign.unified_content() and arena.room_index in Campaign.BOSSES)) and Game.selected_class not in Game.progression.boss_classes:
 			Game.progression.boss_classes.append(Game.selected_class);Game.progression.event("boss_classes",Game.progression.boss_classes.size(),true)

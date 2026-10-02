@@ -198,7 +198,7 @@ func reward_offers(difficulty:int)->Array:
 	var result=[]
 	for offer in cards:result.append({"category":"upgrade","id":offer.id,"tier":maxi(tier,int(offer.tier))})
 	var extra={"category":"alloy","id":"alloy","amount":EncounterRules.chest_alloy(arena.room.room_index,difficulty),"tier":0}
-	if difficulty>=2:extra={"category":"documents","id":"documents","amount":1,"tier":2}
+	if difficulty>=2:extra={"category":"alloy","id":"alloy","amount":extra.amount+Game.DOC_ALLOY,"tier":2}
 	if difficulty>=1:
 		var recipe=EncounterRules.recipe(difficulty,rng,arena.run.pending_recipes,Campaign.progress_index(arena.room.room_index))
 		if not recipe.is_empty() and (difficulty==1 or rng.randf()<.5):extra=recipe

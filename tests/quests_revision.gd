@@ -19,7 +19,7 @@ func run():
 	var p=Game.progression
 	var quest=Q.STORY.filter(func(q):return q.id=="general1")[0]
 	p.accepted.append(quest.id);p.event(quest.event,1,true);var cores=Game.cores;var credits=Game.credits
-	check(p.claim(quest) and Game.cores==cores+quest.docs and Game.credits==credits+quest.alloy,"claim pays alloy and documents")
+	check(p.claim(quest) and Game.credits==credits+quest.alloy+quest.docs*Game.DOC_ALLOY,"claim pays alloy with documents melted in")
 	var before=int(p.counters.get("challenge_any",0))
 	Campaign.configure(1)
 	var arena=load("res://scenes/arena.tscn").instantiate();arena.sandbox=true;arena.sandbox_mode="hold";arena.sandbox_difficulty=2;add_child(arena);arena.set_physics_process(false);await settle()

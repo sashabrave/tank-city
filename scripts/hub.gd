@@ -159,7 +159,7 @@ func build_ui():
 func build_dev_menu():
 	var toggle=UiKit.button(root,"Инструменты",Vector2(30,171),Vector2(300,50),func():toggle_dev_menu());toggle.name="ToolsButton"
 	toggle.icon=UiKit.interface_icon("debug");toggle.expand_icon=true;toggle.add_theme_constant_override("icon_max_width",20);toggle.add_theme_font_size_override("font_size",18)
-	var rows=[["DebugAlloyButton","+1000 сплава","DocsButton","+10 док."],["RecipeShopButton","Магазин чертежей"],["SandboxButton","Песочница"],["DevMapButton","Дев-режим карты: выкл"]]
+	var rows=[["DebugAlloyButton","+1000 сплава"],["RecipeShopButton","Магазин чертежей"],["SandboxButton","Песочница"],["DevMapButton","Дев-режим карты: выкл"]]
 	const PAD=12.0;const ROW=46.0;const GAP=8.0
 	var menu=UiKit.glass(root,Vector2(30,229),Vector2(300,PAD*2+rows.size()*ROW+(rows.size()-1)*GAP));menu.name="DevMenu";menu.hide();menu.z_index=20
 	var y=PAD
@@ -182,7 +182,6 @@ func build_dev_menu():
 	build.icon=UiKit.interface_icon("build");build.expand_icon=true;build.add_theme_constant_override("icon_max_width",34);build.icon_alignment=HORIZONTAL_ALIGNMENT_CENTER
 	build.pressed.connect(show_build_menu)
 	menu.get_node("DebugAlloyButton").pressed.connect(func():Game.earn(1000);refresh())
-	menu.get_node("DocsButton").pressed.connect(func():Game.cores+=10;Game.save_progress();refresh())
 	menu.get_node("RecipeShopButton").pressed.connect(func():toggle_dev_menu(false);show_recipe_shop())
 	menu.get_node("SandboxButton").pressed.connect(func():toggle_dev_menu(false);sandbox_requested.emit())
 	var dev_map:Button=menu.get_node("DevMapButton");Texts.set_text(dev_map,"Дев-режим карты: "+("вкл" if Game.dev_map else "выкл"))

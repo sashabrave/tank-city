@@ -172,29 +172,28 @@ func quest_page():
 	var p=Game.progression
 	if manage:p.prepare_telegrams()
 	UiKit.label(content,"Задачи",Vector2(UiKit.PAGE_PADDING,20),Vector2(700,28),UiKit.PAGE_TITLE_SIZE)
-	var filters=[["all","Все"],["general","Штаб усов"],["institute","Институт"],["operations","Оперштаб"],["completed","Готово"]]
-	# Horizontal tabs across the whole block; the feed takes the full width below them.
+	# One feed, no sender tabs: what needs you is on top, taken work sinks, finished orders go to the bottom.
 	var full=content.size.x-UiKit.PAGE_PADDING*2
 	quest_bubble_width=full-56-14
-	UiKit.tab_row(content,Vector2(UiKit.PAGE_PADDING,UiKit.PAGE_CONTENT_TOP),full,filters,quest_filter,func(key):quest_filter=key;refresh())
-	var quests=p.quests("completed" if quest_filter=="completed" else "available" if manage else "active")
-	# Feed filters follow the sender: story — Штаб усов, hub chain — Институт, briefings and orders — Оперштаб.
-	var sender_filter={"general":"story","institute":"institute","operations":"operations"}.get(quest_filter,"")
-	if sender_filter!="":quests=quests.filter(func(q):return Q.sender(q)==sender_filter)
-	var feed_top=UiKit.PAGE_CONTENT_TOP+40+UiKit.TAB_CONTENT_GAP
+	quest_filter="all"
+	var quests=p.quests("available" if manage else "active")
+	var finished=p.quests("completed").slice(-8)
+	var feed_top=UiKit.PAGE_CONTENT_TOP
 	var box=scroller(Vector2(UiKit.PAGE_PADDING,feed_top),Vector2(full,content.size.y-feed_top-16));box.name="QuestFeed";box.add_theme_constant_override("separation",12)
-	var incoming=quest_filter in ["all","operations"] and p.telegram.is_empty() and not p.telegram_options.is_empty() and p.order_wait==0
+	var incoming=p.telegram.is_empty() and not p.telegram_options.is_empty() and p.order_wait==0
 	if incoming:telegram_offer_card(box)
-	if quests.is_empty() and not incoming:list_button(box,"Новая телеграмма после следующей вылазки" if quest_filter=="operations" and p.order_wait>0 else "Нет заданий",func():pass,60)
-	var done=quest_filter=="completed"
-	# Messenger order: new messages on top, then ready to hand in, then the rest.
+	if quests.is_empty() and finished.is_empty() and not incoming:list_button(box,"Нет заданий",func():pass)
+	# Rank: ready to hand in 4, new 3, offer not taken yet 2, in progress 1; finished entries follow at the bottom.
 	var ranked=quests.map(func(q):
-		var order=str(q.id).begins_with("order_");var count=int(q.goal) if done else p.count(q)
+		var order=str(q.id).begins_with("order_");var count=p.count(q);var taken=q.id in p.accepted or order
 		var news=p.operations_news() if order else ("quest:"+q.id not in p.seen or (count>=q.goal and "ready:"+q.id not in p.seen))
-		return {"q":q,"count":count,"news":news and not done,"ready":count>=q.goal and not done})
-	ranked.sort_custom(func(a,b):return int(a.news)*2+int(a.ready)>int(b.news)*2+int(b.ready))
+		var ready=count>=q.goal
+		return {"q":q,"count":count,"news":news,"ready":ready,"done":false,"rank":4 if ready else 3 if news else 2 if not taken else 1})
+	ranked.sort_custom(func(a,b):return a.rank>b.rank)
+	for q in finished:ranked.append({"q":q,"count":int(q.goal),"news":false,"ready":false,"done":true,"rank":0})
 	for i in range(ranked.size()):
-		var card=quest_message(ranked[i].q,ranked[i].count,ranked[i].news,ranked[i].ready,done);box.add_child(card)
+		var card=quest_message(ranked[i].q,ranked[i].count,ranked[i].news,ranked[i].ready,ranked[i].done);box.add_child(card)
+		if ranked[i].done:card.modulate.a=.55
 		if ranked[i].news:UiKit.arrive(card,i)
 		else:UiKit.reveal(card,i)
 	p.view_quest_updates(quest_filter)
@@ -221,7 +220,7 @@ func quest_message(q:Dictionary,count:int,news:bool,ready:bool,done:bool)->Contr
 	var track=ColorRect.new();bubble.add_child(track);track.position=Vector2(14,118);track.size=Vector2(bw-28,8);track.color=Color(0,0,0,.14)
 	var fill=ColorRect.new();track.add_child(fill);fill.size=Vector2((bw-28)*clampf(float(count)/maxf(1,q.goal),0,1),8);fill.color=Color(sender.color);fill.name="Progress"
 	UiKit.label(bubble,"%s: %d / %d" % [Q.counter_name(q.event),count,q.goal],Vector2(14,130),Vector2(bw-28,24),15)
-	var reward="%d ◈" % q.alloy+(" · %d док." % int(q.get("docs",0)) if int(q.get("docs",0))>0 else "")
+	var reward="%d ◈" % (int(q.alloy)+int(q.get("docs",0))*Game.DOC_ALLOY)
 	if order:reward+=" · осталось вылазок: %d" % q.get("runs_left",0)
 	UiKit.label(bubble,reward,Vector2(14,158),Vector2(bw-28,24),15,UiKit.MUTED)
 	if not done and taken:

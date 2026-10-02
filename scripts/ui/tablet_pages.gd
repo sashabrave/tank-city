@@ -72,7 +72,6 @@ func inventory():
 		UiKit.label(b,str(i+1),Vector2(8,76),Vector2(88,24),13,UiKit.MUTED)
 	UiKit.label(body,"Ресурсы / не занимают ячейки",Vector2(0,626+shift),Vector2(690,28),18)
 	cell(body,Vector2(0,666+shift),"","Сплав","Всего: %d. В этой вылазке: %d." % [Game.credits,arena.earned if is_instance_valid(arena) else 0]);UiKit.label(body,"%d ◈" % Game.credits,Vector2(5,700+shift),Vector2(90,30),18)
-	cell(body,Vector2(110,666+shift),"","Документы","Секретные документы: %d. Постоянная валюта исследований." % Game.cores);UiKit.label(body,"%d док." % Game.cores,Vector2(115,700+shift),Vector2(90,30),18)
 	body.custom_minimum_size.y=maxf(775,775+shift)
 	if is_instance_valid(arena) and not arena.recipe_offer.is_empty():
 		var take=UiKit.button(body,"Подобрать: "+Game.recipe_name(arena.recipe_offer.recipe),Vector2(0,778+shift),Vector2(680,45),func():arena.take_offered_recipe();view.closed.emit());take.disabled=recipes.size()>=Game.backpack_slots;body.custom_minimum_size.y=835+maxf(0,shift)

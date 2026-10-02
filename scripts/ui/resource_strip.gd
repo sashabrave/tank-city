@@ -20,12 +20,12 @@ func _ready():
 	label=UiKit.label(panel,"",Vector2(41,3),Vector2(70,32),17)
 	pickup_targets["alloy"]=UiKit.icon(panel,"alloy",Vector2(10,4),Vector2(30,30))
 	document_icon=UiKit.icon(panel,"documents",Vector2(114,4),Vector2(30,30))
-	pickup_targets["documents"]=document_icon
+	pickup_targets["documents"]=pickup_targets["alloy"]
 	documents=UiKit.label(panel,"",Vector2(147,3),Vector2(60,32),17)
 	token_icon=UiKit.icon(panel,"token",Vector2(0,5),Vector2(28,28));token_icon.modulate=UiKit.INK;token_icon.name="TokenIcon"
 	pickup_targets["tokens"]=token_icon
 	# Hover (mouse) or tap (touch) explains each currency.
-	for pair in [[pickup_targets["alloy"],"Сплав — покупки и прокачка. При выбывании теряется часть добытого за вылазку."],[document_icon,"Документы — открытия и исследования."],[token_icon,"Жетоны — валюта торговца. Сгорают после вылазки."]]:
+	for pair in [[pickup_targets["alloy"],"Сплав — покупки и прокачка. При выбывании теряется часть добытого за вылазку."],[token_icon,"Жетоны — валюта торговца. Сгорают после вылазки."]]:
 		pair[0].mouse_filter=Control.MOUSE_FILTER_PASS;pair[0].tooltip_text=Texts.localized(pair[1])
 	tokens=UiKit.label(panel,"",Vector2(0,3),Vector2(40,32),17);tokens.name="Tokens"
 func track_run(run):run_ref=weakref(run) if run!=null else null
@@ -47,10 +47,9 @@ func _process(_delta):
 	label.vertical_alignment=VERTICAL_ALIGNMENT_CENTER;documents.vertical_alignment=VERTICAL_ALIGNMENT_CENTER
 	var font=label.get_theme_font("font")
 	label.size.x=maxf(35,font.get_string_size(label.text,HORIZONTAL_ALIGNMENT_LEFT,-1,17).x+8)
-	document_icon.position.x=label.position.x+label.size.x+16
-	documents.position.x=document_icon.position.x+34
-	documents.size.x=maxf(30,font.get_string_size(documents.text,HORIZONTAL_ALIGNMENT_LEFT,-1,17).x+8)
-	panel.size.x=documents.position.x+documents.size.x+10
+	# Documents were merged into alloy in 0.7; the strip keeps alloy and run tokens only.
+	document_icon.visible=false;documents.visible=false
+	panel.size.x=label.position.x+label.size.x+10
 	var run_value=run_tokens()
 	token_icon.visible=run_value>=0;tokens.visible=run_value>=0
 	if run_value>=0:
