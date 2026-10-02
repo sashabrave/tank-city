@@ -644,7 +644,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-051.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "сделай на этом окне чуть больше простарнство между двумя колонками инфы в середине, раза в два",
 			"type": "polish",
 			"version": "0.7.1-pre"

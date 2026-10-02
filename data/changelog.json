@@ -43,7 +43,8 @@
 					"Командиры полей вдвое крепче, сильнее бьют и чаще стреляют.",
 					"В комнатах торговца и сервиса боец снова ходит с анимацией.",
 					"У всех карточек усилений появилось понятное описание, а в планшете у взятых карточек видно, что они делают.",
-					"Карточки «Мощность устройств» и «Перезарядка устройств» переименованы в «Сила способностей» и «Быстрые способности»."
+					"Карточки «Мощность устройств» и «Перезарядка устройств» переименованы в «Сила способностей» и «Быстрые способности».",
+					"Итог вылазки: колонки шире разнесены, рюкзак виден всегда, а потерянные чертежи обугливаются и падают за край экрана."
 				]
 			},
 			"en": {
@@ -86,7 +87,8 @@
 					"Field commanders are twice as tough, hit harder and fire more often.",
 					"In merchant and service rooms the soldier walks with animation again.",
 					"Every upgrade card now has a clear description, and the tablet shows what each taken card does.",
-					"The «Device power» and «Device cooldown» cards are now «Ability power» and «Quick abilities»."
+					"The «Device power» and «Device cooldown» cards are now «Ability power» and «Quick abilities».",
+					"Run summary: columns spaced wider, the backpack is always shown, and lost blueprints char and fall off the screen."
 				]
 			}
 		},

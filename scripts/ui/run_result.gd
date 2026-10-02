@@ -9,7 +9,8 @@ const STEP=.2
 static func show(hud,arena,won:bool,reason:String):
 	var panel:Panel=hud.modal_base("Задание выполнено" if won else "Связь потеряна",reason,"",650)
 	panel.name="RunResult"
-	var width=panel.size.x;var left=Vector2(30,150);var right=Vector2(width*.5+15,150);var column=width*.5-45
+	# Twice the old gap between the two middle columns (T-051).
+	var width=panel.size.x;var left=Vector2(30,150);var right=Vector2(width*.5+45,150);var column=width*.5-75
 	var earned=int(arena.earned);var lost=int(arena.run.lost_alloy);var kept=maxi(0,earned-lost)
 	var clock=[.15]
 	var at=func(step:float=STEP)->float:clock[0]+=step;return clock[0]
@@ -50,14 +51,23 @@ static func show(hud,arena,won:bool,reason:String):
 	# Blueprints: saved bright, lost greyed with a red mark.
 	var saved=arena.pending_recipes if won else arena.get_meta("saved_recipes",[])
 	var gone=arena.get_meta("lost_recipes",[])
-	UiKit.label(panel,"Чертежи" if not (saved.is_empty() and gone.is_empty()) else "Чертежей нет",Vector2(left.x,y+6),Vector2(column,24),15,UiKit.MUTED)
+	# The backpack is always shown (T-051): kept blueprints bright, empty slots dim; lost ones fall off the bottom.
+	UiKit.label(panel,"Рюкзак · %d / %d" % [saved.size(),Game.backpack_slots],Vector2(left.x,y+6),Vector2(column,24),15,UiKit.MUTED)
+	for slot in range(saved.size(),mini(Game.backpack_slots,int(column/80))):
+		var empty=UiKit.panel(panel,Vector2(left.x+slot*80,y+34),Vector2(72,72),Color("262b27"));empty.modulate.a=.45
 	var x=left.x
 	for entry in saved.map(func(r):return [r,true])+gone.map(func(r):return [r,false]):
 		if x+78>left.x+column:break
 		var cell=UiKit.panel(panel,Vector2(x,y+34),Vector2(72,72),Color("2f3b33") if entry[1] else Color("262b27"));cell.modulate.a=0
 		cell.tooltip_text=Texts.render(Game.recipe_name(entry[0])+("" if entry[1] else " · потерян"))
 		var art=UiKit.icon(cell,str(entry[0].get("id","")),Vector2(10,8),Vector2(52,52));UiKit.locked_preview(art,not entry[1])
-		if not entry[1]:UiKit.label(cell,"✕",Vector2(52,0),Vector2(20,20),14,Color("ff6b57"))
+		if not entry[1]:
+			UiKit.label(cell,"✕",Vector2(52,0),Vector2(20,20),14,Color("ff6b57"))
+			# A lost blueprint chars and drops off the bottom of the screen.
+			var burn=cell.create_tween();burn.tween_interval(at.call(0.0)+.6)
+			burn.tween_property(cell,"modulate",Color(1,.45,.25,1),.25)
+			burn.parallel().tween_property(cell,"rotation",.35,.6)
+			burn.tween_property(cell,"position:y",panel.size.y+120,.7).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 		reveal(cell,at.call(.12),"ui_confirm" if entry[1] else "debris",hud)
 		x+=80
 	# — Summary —
