@@ -1,4 +1,5 @@
 extends Node
+## test-timeout: 420 (plays a long simulated run)
 ## Stress test for deliberately broken builds: every class is pumped three ways (all cards at once,
 ## one card family, maxed meta) and fights endless waves at 4x speed. The game must stay finite and
 ## responsive: no NaN/INF, no negative or runaway intervals, bounded projectiles/actors, frame time sane.

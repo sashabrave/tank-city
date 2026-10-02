@@ -1,4 +1,5 @@
 extends Node
+## test-timeout: 420 (plays a long simulated run)
 var arena
 var ticks=0
 var finished=false
