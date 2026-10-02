@@ -455,6 +455,7 @@ func spawn_actor(kind: String, cell: Vector2i, owned: bool, allied=false,rank: i
 	var actor = load("res://scenes/"+kind+".tscn").instantiate()
 	actor.vehicle_origin=vehicle_origin;actor.vehicle_zone=vehicle_zone
 	actor.rank=rank;actor.surprise_spawn=surprise;actor.enemy_weapon=loadout
+	if not owned and not allied:actor.chevrons=Professionalism.tier(room_index)
 	actor.arena = self
 	actor.player_owned = owned
 	actor.allied = allied

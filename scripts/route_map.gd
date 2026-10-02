@@ -276,7 +276,11 @@ func road_path_to(node_pos:Vector3,target:Vector3)->Array:
 		var d=flat.call(chain[i]).distance_to(flat.call(here))
 		if d<best:best=d;nearest=i
 	var path=[here]
-	for i in range(nearest+1,chain.size()):path.append(Vector3(chain[i].x,y,chain[i].z))
+	# Roads end at the node, the stop point is in front of it: stop following the road before passing the stop,
+	# otherwise the last step points backwards and the HQ spins round on arrival.
+	for i in range(nearest+1,chain.size()):
+		if chain[i].z<target.z:break
+		path.append(Vector3(chain[i].x,y,chain[i].z))
 	path.append(target);return path
 func follow_path(path:Array,length:float,t:float):
 	var d=t*length

@@ -12,6 +12,9 @@ var rocket_charge=0.0
 var rocket_target=Vector3.ZERO
 var wave_slot=-1
 var rank=1
+## Chevrons next to the HP bar (1–3): how professional the enemy is in this part of the world
+## (Professionalism.tier). Display only; stat ranks stay in `rank`.
+var chevrons=0
 var strength_scale=1.0
 var flight_target=Vector3.ZERO
 var flight_state="choose"
@@ -172,7 +175,7 @@ func _ready():
 	health_label=load("res://scripts/health_bar_3d.gd").new();add_child(health_label)
 	health_label.position=Vector3(0,{"boss":1.3,"tank":.82,"apc":.81,"buggy":.81,"drone":.67,"soldier":1.14,"shield":1.14,"sniper":1.14,"grenadier":1.14}.get(kind,1.5),0)
 	if kind=="flyer":health_label.position.y=2.25
-	if not player_owned and not allied:health_label.rank=rank
+	if not player_owned and not allied:health_label.rank=maxi(chevrons,rank)
 	if kind=="drone":health_label.pixel_size=.006
 
 	if player_owned and kind=="soldier":apply_weapon()

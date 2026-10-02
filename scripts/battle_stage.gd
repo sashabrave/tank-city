@@ -7,6 +7,8 @@ const WALL=preload("res://scripts/section_wall.gd")
 const ARRIVE=.85
 const STEP_OUT=.3
 const BRICKS_AT=.5
+## Defence wall assembly pace: 1.2 = 20% slower than before.
+const BRICK_PACE=1.2
 
 ## Every staging tween is registered on the arena, so a new room (or a sandbox rebuild) stops the old
 ## ones before their captured nodes are freed.
@@ -19,7 +21,10 @@ static func stop(arena):
 		if t is Tween and t.is_valid():t.kill()
 	arena.set_meta("stage_tweens",[])
 
+## Side the HQ arrives from. It follows the final yaw chosen when the room was built (MobileHQ.orientation), so
+## the vehicle drives in already heading the way it will stand: facing +X it comes from -X and vice versa.
 static func side(arena)->float:
+	if is_instance_valid(arena.base_model) and absf(sin(arena.base_model.rotation.y))>.5:return -signf(sin(arena.base_model.rotation.y))
 	return -1.0 if posmod(hash([Game.visual_run_seed,arena.room_index,"hq_arc"]),2)==0 else 1.0
 
 static func bezier(a:Vector3,b:Vector3,c:Vector3,t:float)->Vector3:
@@ -40,7 +45,8 @@ static func intro(arena):
 	if not is_instance_valid(hq):return
 	var rest=hq.position;var yaw=hq.rotation.y;var s=side(arena)
 	if is_instance_valid(arena.presentation):arena.presentation.swoop_in(s)
-	var start=rest+Vector3(s*5.5,0,3.2);var bend=rest+Vector3(s*4.2,0,-.6)
+	# The curve ends level with the rest point, so its last tangent is the final heading: no turn on the spot.
+	var start=rest+Vector3(s*5.5,0,3.2);var bend=rest+Vector3(s*4.2,0,0)
 	for node in [arena.base_label,arena.base_bar]:
 		if is_instance_valid(node):node.visible=false
 	hq.position=start
@@ -49,7 +55,7 @@ static func intro(arena):
 		var p=bezier(start,bend,rest,t);var ahead=bezier(start,bend,rest,minf(1.0,t+.02))-p
 		hq.position=p
 		var heading=atan2(ahead.x,ahead.z) if ahead.length()>.001 else yaw
-		hq.rotation.y=lerp_angle(heading,yaw,smoothstep(.6,1.0,t))
+		hq.rotation.y=lerp_angle(heading,yaw,smoothstep(.9,1.0,t))
 	var tween=stage_tween(arena)
 	tween.tween_method(drive,0.0,1.0,ARRIVE).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	tween.tween_callback(func():
@@ -84,14 +90,14 @@ static func build_bricks(arena):
 		for i in range(16):
 			if wall.sections[i]<=0:continue
 			batch.set_instance_transform(i,Transform3D(Basis.IDENTITY.scaled(Vector3.ZERO),Vector3.ZERO))
-			var delay=BRICKS_AT+k*.045+((i%4)+int(i/4))*.018
+			var delay=BRICKS_AT+(k*.045+((i%4)+int(i/4))*.018)*BRICK_PACE
 			var grow=func(p:float):
 				if not is_instance_valid(arena) or not arena.walls.has(cells[k]) or arena.walls[cells[k]]!=wall or wall.sections[i]<=0:return
 				var t=WALL.section_transform(i,true)
 				t.basis=t.basis.scaled(Vector3(1,maxf(.05,p),1));t.origin.y+=(1.0-minf(p,1.0))*.45
 				batch.set_instance_transform(i,t)
 			var tween=stage_tween(arena);tween.tween_interval(delay)
-			tween.tween_method(grow,0.0,1.0,.16).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+			tween.tween_method(grow,0.0,1.0,.16*BRICK_PACE).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 ## Departure: the soldier walks into the HQ, the HQ drives off on an arc and knocks down the defence
 ## bricks it passes. `done` runs when it has left the field.
@@ -110,7 +116,8 @@ static func outro(arena,done:Callable):
 	for node in [arena.base_label,arena.base_bar]:
 		if is_instance_valid(node):node.visible=false
 	if is_instance_valid(arena.presentation):arena.presentation.swoop_out(s,hq)
-	var finish=rest+Vector3(-s*6.0,0,3.6);var bend=rest+Vector3(-s*.8,0,-2.2)
+	# Pull out straight ahead (the HQ faces -s), then curve away toward the camera side.
+	var finish=rest+Vector3(-s*6.0,0,3.6);var bend=rest+Vector3(-s*3.0,0,0)
 	var fort=fort_walls(arena);var knocked={}
 	var drive=func(t:float):
 		if not is_instance_valid(hq):return

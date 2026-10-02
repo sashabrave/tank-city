@@ -29,6 +29,11 @@ static func value(key:String,index:int)->float:
 	var result=lerpf(points[0],points[1],(s-.8)/.2) if s<=1.0 else lerpf(points[1],points[2],(s-1.0)/.2)
 	return clampf(result,LIMITS[key][0],LIMITS[key][1])
 
+## Chevrons by the HP bar: 1 below 0.94, 2 up to 1.08, 3 above. In world 1: fields 1–2, 3–4, 5–6 and the boss.
+static func tier(index:int)->int:
+	var s=skill(index)
+	return 1 if s<.94 else 2 if s<1.08 else 3
+
 ## Room of an arena (or 0 outside a run).
 static func of(arena,key:String)->float:
 	return value(key,maxi(0,int(arena.room_index)) if arena!=null else 0)

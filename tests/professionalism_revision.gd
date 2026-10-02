@@ -28,6 +28,8 @@ func run():
 	check(enemy.aim_hold>=enemy.aim_delay_time and not enemy.aim_glint.visible,"after the delay the glint goes and the shot is allowed")
 	enemy.track_aim(Vector2i.ZERO,.2)
 	check(enemy.aim_hold<enemy.aim_delay_time,"breaking the line resets the aim")
+	check(P.tier(0)==1 and P.tier(1)==1 and P.tier(2)==2 and P.tier(3)==2 and P.tier(4)==3 and P.tier(6)==3,"chevrons 1-1-2-2-3-3 through world 1")
+	check(enemy.health_label.rank==1,"room 0 enemy shows one chevron")
 	var ally=arena.spawn_actor("soldier",Vector2i(5,1),false,true);ally.set_physics_process(false)
 	check(ally.aim_delay_time==0.0 and ally.pause_scale==1.0,"allies have no aim delay")
 	print("PROFESSIONALISM: %d failures" % failures);get_tree().quit(1 if failures else 0)
