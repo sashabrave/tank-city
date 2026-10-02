@@ -12,7 +12,16 @@
 					"Камера карты маршрута держит машину в кадре и смотрит чуть вперёд по ходу.",
 					"Облака у краёв поля выплывают из-за экрана, а не появляются внезапно.",
 					"Знак «!» над экраном задач стал крупнее, светится и подпрыгивает.",
-					"Новый логотип из кирпичных букв и новые шрифты интерфейса."
+					"Новый логотип из кирпичных букв.",
+					"Новый шрифт интерфейса — Inter полужирный: ровный, чёткий и одинаковый на всех экранах.",
+					"Акцентный шрифт Rubik Dirt — только для главного: кнопка «В бой», заголовки станций и окон, итоги вылазки, объявления волн и номера миров.",
+					"Меньше лишних знаков: в подписях и на кнопках больше нет точки в конце, на кнопке «В бой» убрана стрелка.",
+					"Длинные подписи больше не обрезаются: строка сама чуть уменьшается, длинные названия в энциклопедии переносятся на вторую строку, телеграммы в углу хаба видны целиком.",
+					"Значки сплава стоят ровно по центру цифр, иконки во вкладках станций одного размера и с отступом от текста.",
+					"Кнопка паузы в бою показывает значок паузы вместо букв «Ii».",
+					"Карточки усилений стали чище: крупная иконка, по центру большое изменение, под ним параметр — старое значение зачёркнуто, рядом итоговое. Карточки в ряду выровнены по общим линиям.",
+					"Новый приказ оперштаба — три плитки в ряд: сложность, иконка цели, задача, срок и награда. Экран задач больше не вылезает за край, когда меню свёрнуто.",
+					"Тир на площадке снова работает: пули, выпущенные во дворе, долетают до манекена, а не исчезают у края ангара."
 				]
 			},
 			"en": {
@@ -24,37 +33,16 @@
 					"The route map camera keeps the car in view and looks slightly ahead.",
 					"Edge clouds drift in from off screen instead of popping up.",
 					"The «!» above the task screen is bigger, glows and bounces.",
-					"A new brick-letter logo and new interface fonts."
-				]
-			}
-		},
-		{
-			"date": "2026-10-02",
-			"version": "0.7.0",
-			"ru": {
-				"title": "Новая типографика",
-				"items": [
-					"Новый шрифт интерфейса — Inter полужирный: ровный, чёткий и одинаковый на всех экранах.",
-					"Акцентный шрифт Rubik Dirt — только для главного: кнопка «В бой», заголовки станций и окон, итоги вылазки, объявления волн и номера миров.",
-					"Меньше лишних знаков: в подписях и на кнопках больше нет точки в конце, на кнопке «В бой» убрана стрелка.",
-					"Длинные подписи больше не обрезаются: строка сама чуть уменьшается, длинные названия в энциклопедии переносятся на вторую строку, телеграммы в углу хаба видны целиком.",
-					"Значки сплава и документов стоят ровно по центру цифр, иконки во вкладках станций одного размера и с отступом от текста.",
-					"Кнопка паузы в бою показывает значок паузы вместо букв «Ii».",
-					"Карточки усилений стали чище: крупная иконка, по центру большое изменение, под ним параметр — старое значение зачёркнуто, рядом итоговое. Карточки в ряду выровнены по общим линиям.",
-					"Новый приказ оперштаба — три плитки в ряд: сложность, иконка цели, задача, срок и награда. Экран задач больше не вылезает за край, когда меню свёрнуто."
-				]
-			},
-			"en": {
-				"title": "New typography",
-				"items": [
+					"A new brick-letter logo.",
 					"New interface font: Inter SemiBold, clean and consistent on every screen.",
 					"Rubik Dirt accent font only for the key moments: the «To battle» button, station and window titles, sortie results, wave announcements and world numbers.",
 					"Less clutter: labels and buttons no longer end with a full stop, and the «To battle» button lost its arrow.",
 					"Long labels are no longer cut off: a line shrinks slightly to fit, long encyclopedia titles wrap to a second line, and hub telegrams show in full.",
-					"Alloy and document icons sit level with the numbers, and station tab icons share one size with a gap before the text.",
+					"Alloy icons sit level with the numbers, and station tab icons share one size with a gap before the text.",
 					"The pause button in battle shows a pause icon instead of the letters «Ii».",
 					"Upgrade cards are cleaner: a big icon, the change large in the centre, the parameter below with the old value struck through next to the resulting one. Cards in a row share common lines.",
-					"A new order from operations is three tiles in a row: difficulty, goal icon, task, deadline and reward. The task screen no longer spills past its edge when the menu is collapsed."
+					"A new order from operations is three tiles in a row: difficulty, goal icon, task, deadline and reward. The task screen no longer spills past its edge when the menu is collapsed.",
+					"The yard range works again: shots fired in the yard reach the dummy instead of vanishing at the hangar edge."
 				]
 			}
 		},

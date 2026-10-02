@@ -543,7 +543,8 @@ func bullet_hit(bullet) -> bool:
 		dummy.scale=Vector3(1.08,.94,1.08)
 		create_tween().tween_property(dummy,"scale",Vector3.ONE,.18)
 		return true
-	if pos.x< -3 or pos.x>8 or pos.z< -3 or pos.z>4:return true
+	# The built yard extends the hub east to the range pen: shots there must reach the dummy.
+	if pos.x< -3 or pos.x>(17.5 if "yard" in Game.built_workshops else 8.0) or pos.z< -3 or pos.z>4:return true
 	var p=Vector2i(roundi(pos.x),roundi(pos.z))
 	return p in [Vector2i(-2,-2),Vector2i(-1,-2),Vector2i(0,-1)] or p.y== -3
 
