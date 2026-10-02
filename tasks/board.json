@@ -1,5 +1,5 @@
 {
-	"next_id": 70,
+	"next_id": 71,
 	"tasks": [
 		{
 			"id": "T-001",
@@ -31,7 +31,7 @@
 			"note": "Окно висит ~19 с при первом запуске новой сборки. Заставка сразу, сжать пакет (музыка, текстуры).",
 			"type": "bug",
 			"priority": 2,
-			"status": "doing",
+			"status": "review",
 			"version": "0.7.2",
 			"created": "2026-10-02",
 			"source": "chat",
@@ -871,6 +871,18 @@
 			"priority": 3,
 			"status": "backlog",
 			"version": "0.7.2",
+			"created": "2026-10-02",
+			"source": "chat",
+			"shot": ""
+		},
+		{
+			"id": "T-070",
+			"title": "Сжать музыку в OGG (пакет 213 МБ)",
+			"note": "266 WAV в assets/audio/music; нужен ffmpeg/oggenc. Уменьшит пакет и проверку Gatekeeper.",
+			"type": "polish",
+			"priority": 2,
+			"status": "backlog",
+			"version": "0.8",
 			"created": "2026-10-02",
 			"source": "chat",
 			"shot": ""

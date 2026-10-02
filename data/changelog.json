@@ -30,7 +30,8 @@
 					"Тени холоднее, но с оттенком поверхности; ночью свет и тени контрастнее.",
 					"Сундук появляется с отскоком и лёгким наездом камеры, а при открытии подпрыгивает со вспышкой.",
 					"Карта маршрута: внизу неподвижный массивный гараж со сложной крышей, вверху за генералом — перевал с КПП, шлагбаумами и горящим миром за ним.",
-					"Враги больше не стоят над штабом, стреляя в бетонный полублок: они ищут открытую линию."
+					"Враги больше не стоят над штабом, стреляя в бетонный полублок: они ищут открытую линию.",
+					"Первый запуск новой сборки быстрее: шейдеры готовятся заранее (около 8 секунд вместо 19)."
 				]
 			},
 			"en": {
@@ -60,7 +61,8 @@
 					"Shadows are cooler but keep the surface hue; at night light and shadows have more contrast.",
 					"A chest drops in with a bounce and a slight camera push, and jumps with a flash when opened.",
 					"Route map: a static massive garage with a detailed roof at the bottom, and past the general a mountain pass with a checkpoint, barriers and a burning world beyond.",
-					"Enemies no longer stand above the HQ firing into a concrete half-block: they look for an open lane."
+					"Enemies no longer stand above the HQ firing into a concrete half-block: they look for an open lane.",
+					"The first launch of a new build is faster: shaders are prepared in advance (about 8 seconds instead of 19)."
 				]
 			}
 		},
