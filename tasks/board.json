@@ -1318,7 +1318,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-104.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "в статус баре с количтсвеом ресурсов стопка слитков как сейчас",
 			"type": "bug",
 			"version": "0.7.2-pre"
@@ -1331,7 +1331,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-105.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "не дописал задачу стопка слитков каксейчас",
 			"type": "polish",
 			"version": "0.7.2-pre"

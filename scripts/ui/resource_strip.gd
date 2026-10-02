@@ -98,7 +98,8 @@ func fly_pickup(kind:String,from:Vector2):
 	pickup_flights=pickup_flights.filter(is_instance_valid)
 	if pickup_flights.size()>=32:pickup_flights.pop_front().queue_free()
 	# The flying icon is the same picture as its counter (tokens used the generic «tokens» art, T-089).
-	var icon=UiKit.icon(self,"token" if key=="tokens" else key,from-Vector2(15,15),Vector2(30,30))
+	# One bar flies for alloy (T-105); the counter itself keeps the stack.
+	var icon=UiKit.icon(self,"token" if key=="tokens" else "alloy_single" if key=="alloy" else key,from-Vector2(15,15),Vector2(30,30))
 	icon.mouse_filter=Control.MOUSE_FILTER_IGNORE;pickup_flights.append(icon)
 	var destination:Control=pickup_targets[key]
 	var tween=create_tween().set_pause_mode(Tween.TWEEN_PAUSE_BOUND)

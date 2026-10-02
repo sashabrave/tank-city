@@ -169,7 +169,7 @@ static func drop_coins(hud,lost:int):
 	var minus=UiKit.label(layer,"−%d" % lost,origin+Vector2(-10,26),Vector2(120,30),22,Color("ff6b57"));minus.name="AlloyLoss";minus.z_index=120
 	var fade=minus.create_tween();fade.tween_property(minus,"position:y",minus.position.y+18,.9);fade.parallel().tween_property(minus,"modulate:a",0.0,.9).set_delay(.6);fade.tween_callback(minus.queue_free)
 	for i in range(clampi(lost/8+3,3,14)):
-		var coin=TextureRect.new();layer.add_child(coin);coin.texture=UiKit.icon_texture("alloy");coin.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;coin.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		var coin=TextureRect.new();layer.add_child(coin);coin.texture=UiKit.icon_texture("alloy_single");coin.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;coin.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		coin.size=Vector2(26,26);coin.pivot_offset=coin.size*.5;coin.position=origin+Vector2(i*7%40,0);coin.z_index=119;coin.mouse_filter=Control.MOUSE_FILTER_IGNORE
 		var drift=(float(i%5)-2.0)*45.0
 		var fall=coin.create_tween().set_parallel(true)

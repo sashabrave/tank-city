@@ -7,7 +7,13 @@ func run():
 		var sum=0
 		for part in DROP.split(amount):sum+=part.amount
 		assert(sum==amount)
-	assert(DROP.split(7).size()==2 and DROP.split(77).size()==4)
+	# Bars of 1, 5 and 10 in a random mix (T-105): only these sizes, and big sums stay a handful of pieces.
+	for i in range(20):
+		var parts=DROP.split(77)
+		var sizes_ok=parts.all(func(x):return int(x.denomination) in [1,5,10])
+		if not sizes_ok or parts.size()>14:print("SPLIT FAIL ",parts)
+		assert(sizes_ok and parts.size()<=14)
+	assert(DROP.split(200).size()<=26)
 	var arena=load("res://scenes/arena.tscn").instantiate();add_child(arena);arena.auto_pause_enabled=false;arena.phase="combat";arena.set_physics_process(false)
 	var enemy=arena.spawn_actor("tank",Vector2i(3,3),false);enemy.set_physics_process(false)
 	var before=Game.credits;enemy.take_damage(999,Vector3(1,0,0))

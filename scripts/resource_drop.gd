@@ -9,16 +9,21 @@ var age=0.0
 var floor_height=.03
 var collected=false
 var visual:Node3D
-static func split(value:int)->Array:
+## Alloy falls as gold bars of 1, 5 and 10 (T-105) in a random mix that adds up exactly; big sums lean on
+## big bars so a chest does not spill a hundred pieces. Visual RNG only — the amount never changes.
+const BARS=[10,5,1]
+static func split(value:int,rng:RandomNumberGenerator=null)->Array:
+	if rng==null:rng=RandomNumberGenerator.new();rng.randomize()
 	var result=[]
-	for unit in [50,20,5]:
-		while value>=unit:result.append({"amount":unit,"denomination":unit});value-=unit
-	if value>0:result.append({"amount":value,"denomination":5})
+	while value>0:
+		# Mostly the biggest bar that fits, sometimes one size down; small bars only for the remainder.
+		var unit=10 if value>=40 else (10 if rng.randf()<.6 else 5) if value>=10 else (5 if rng.randf()<.7 else 1) if value>=5 else 1
+		result.append({"amount":unit,"denomination":unit});value-=unit
 	return result
 static func spawn(context,pos:Vector3,value:int,kind:String="alloy",blast:Vector3=Vector3.ZERO):
 	pos=context.reward.safe_drop_position(pos)
-	var entries=split(value) if kind=="alloy" else [{"amount":value,"denomination":1}]
 	var rng=RandomNumberGenerator.new();rng.randomize()
+	var entries=split(value,rng) if kind=="alloy" else [{"amount":value,"denomination":1}]
 	for entry in entries:
 		var token=load("res://scripts/resource_drop.gd").new();token.arena=context;token.currency=kind;token.amount=entry.amount;token.denomination=entry.denomination
 		token.position=pos+Vector3.UP*.4
@@ -29,21 +34,18 @@ static func spawn(context,pos:Vector3,value:int,kind:String="alloy",blast:Vector
 func _ready():
 	visual=Node3D.new();add_child(visual)
 	if currency=="alloy":
-		var radius=.12 if denomination==5 else .18 if denomination==20 else .25
-		floor_height=radius*1.4+.025
-		var surface=SurfaceTool.new();surface.begin(Mesh.PRIMITIVE_TRIANGLES)
-		for side in range(4):
-			var a=Vector3(cos(side*PI*.5),0,sin(side*PI*.5))*radius
-			var b=Vector3(cos((side+1)*PI*.5),0,sin((side+1)*PI*.5))*radius
-			for point in [Vector3.UP*radius*1.4,b,a,Vector3.DOWN*radius*1.4,a,b]:surface.add_vertex(point)
-		surface.generate_normals()
-		var mesh=MeshInstance3D.new();mesh.mesh=surface.commit();var gold=Visuals.material(Color("ffc948"));gold.set_meta("cozy_original",Vector2(1.0,.16));gold.metallic_specular=.9;gold.cull_mode=BaseMaterial3D.CULL_DISABLED
-		# Faint warm self-light keeps gold bright even when the sky reflection is dim.
+		# A soft-bevelled gold bar (tools/art/build_ingot.py), sized by its value: 1 small, 5 medium, 10 large.
+		var size={1:.9,5:1.2,10:1.55}.get(denomination,1.2)
+		var bar=preload("res://assets/models/pickups/ingot.glb").instantiate();bar.scale=Vector3.ONE*size;visual.add_child(bar)
+		var gold=Visuals.material(Color("ffc948"));gold.set_meta("cozy_original",Vector2(1.0,.16));gold.metallic_specular=.9
 		gold.emission_enabled=true;gold.emission=Color("ffb42e");gold.emission_energy_multiplier=.18
-		Visuals.cozy_material(gold);mesh.material_override=gold;visual.add_child(mesh)
-		if denomination>=20:
-			# Large tokens drop a small glint on the floor; shares the nearest-four pickup light budget.
-			var glint=OmniLight3D.new();glint.light_color=Color("ffcf6a");glint.light_energy=.6;glint.omni_range=1.1;glint.omni_attenuation=1.6;glint.shadow_enabled=false;glint.light_volumetric_fog_energy=0;glint.position.y=-floor_height*.4;glint.add_to_group("pickup_lights");add_child(glint)
+		Visuals.cozy_material(gold)
+		for mesh in bar.find_children("*","MeshInstance3D",true,false):mesh.material_override=gold
+		visual.rotation.y=randf()*TAU
+		floor_height=.012
+		if denomination>=10:
+			# Large bars drop a small glint on the floor; shares the nearest-four pickup light budget.
+			var glint=OmniLight3D.new();glint.light_color=Color("ffcf6a");glint.light_energy=.6;glint.omni_range=1.1;glint.omni_attenuation=1.6;glint.shadow_enabled=false;glint.light_volumetric_fog_energy=0;glint.position.y=.1;glint.add_to_group("pickup_lights");add_child(glint)
 	elif currency=="tokens":
 		# Token (T-025): a bright paw coin that pops high, falls slowly with a tumble, glows and sparkles.
 		var coin=MeshInstance3D.new();var disc=CylinderMesh.new();disc.top_radius=.17;disc.bottom_radius=.17;disc.height=.045;disc.radial_segments=20;coin.mesh=disc

@@ -23,7 +23,7 @@ func run():
 		var model=Visuals.model(entry[0],arena,center+entry[1]);model.rotation.y=deg_to_rad(-25);models.append(model)
 	models[3].set_paint("enemy",1)
 	for i in range(3):
-		var drop=load("res://scripts/resource_drop.gd").new();drop.arena=arena;drop.denomination=[5,20,50][i];drop.position=center+Vector3(.9+i*.55,.4,.9);arena.add_child(drop);arena.room.resource_drops.append(drop)
+		var drop=load("res://scripts/resource_drop.gd").new();drop.arena=arena;drop.denomination=[1,5,10][i];drop.position=center+Vector3(.9+i*.55,.4,.9);arena.add_child(drop);arena.room.resource_drops.append(drop)
 	if arena.presentation:arena.presentation.set_process(false)
 	if arena.hud:arena.hud.visible=false
 	var camera=arena.camera;camera.size=7.5;camera.position=center+Vector3(0,19,14).rotated(Vector3.UP,deg_to_rad(10));camera.look_at(center)
