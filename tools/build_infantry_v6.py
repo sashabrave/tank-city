@@ -7,9 +7,6 @@ body, rig, clips and materials are the same, so kit_model.gd drives both.
 Build tools/build_weapons_v6.py first: weapons.json gives each rifle's support point.
 Authored facing +Y (becomes Godot -Z), 1 unit = 1 m, height ~1.05.
 Bone names match infantry_v5 plus tail/tail.001, so kit_model.gd keeps working.
---mesh v8 (cat soldier only): the hero mesh is hand-built by tools/build_hero_v8.py from the GPT Image 2.5
-sheets in art_requests/hero_cat_v8 (toy proportions, head +20%); rig, clips, weapon socket and lamp are the
-v6 code with the v8 proportions. Output goes to the usual soldier.glb.
 
 Budget for old Android: ~2k triangles and 3 surfaces (team-paint helmet, glossy
 goggle lens, one palette texture). Fur, camo and the chest lamp are palette
@@ -25,14 +22,11 @@ ARGS = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
 KIND = ARGS[ARGS.index("--kind") + 1] if "--kind" in ARGS else "soldier"
 SPECIES = ARGS[ARGS.index("--species") + 1] if "--species" in ARGS else "cat"
 DOG = SPECIES == "dog"
-MESH = ARGS[ARGS.index("--mesh") + 1] if "--mesh" in ARGS else "v6"
-V8 = MESH == "v8"
-assert MESH == "v6" or (V8 and KIND == "soldier" and not DOG), "--mesh v8 is the cat soldier only"
 PREFIX = "dog_" if DOG else ""
 OUT_DIR = os.path.join(ROOT, "assets/models/infantry_v6")
 OUT_GLB = os.path.join(OUT_DIR, f"{PREFIX}{KIND}.glb")
-OUT_BLEND = os.path.join(ROOT, f"assets/source/infantry_{MESH}_{KIND}.blend" if MESH != "v6" else f"assets/source/infantry_v6_{PREFIX}{KIND}.blend")
-PREVIEW = os.path.join(ROOT, f"tmp/infantry_{MESH}", PREFIX + KIND)
+OUT_BLEND = os.path.join(ROOT, f"assets/source/infantry_v6_{PREFIX}{KIND}.blend")
+PREVIEW = os.path.join(ROOT, "tmp/infantry_v6", PREFIX + KIND)
 HOLD = json.load(open(os.path.join(OUT_DIR, "weapons.json")))
 WEAPON = {"soldier": "rifle", "grenadier": "grenade_launcher", "shield": "shotgun", "sniper": "sniper", "rpg_soldier": "rpg"}[KIND]
 
@@ -68,18 +62,6 @@ GRIP = Vector((.13, .2, .42)) if ONE_HAND else Vector((.02, .16, .38))
 GUN_YAW, GUN_PITCH = (0, -4) if ONE_HAND else (42, -6)
 SUPPORT_LOCAL = Vector(HOLD[WEAPON]["support"])
 LAMP = Vector((-.105, .15, .545))
-if V8:
-    # Hand-built v8 cat (tools/build_hero_v8.py): toy proportions, short arms, rifle close across the chest.
-    SH_L = Vector((-.175, 0, .555))
-    _paw = Vector((-.3, .085, .375))
-    ELB_L = SH_L.lerp(_paw, .5) + Vector((-.02, -.015, .01))
-    WRI_L = SH_L.lerp(_paw, .82)
-    HAND_L = _paw + (_paw - WRI_L).normalized() * .03
-    HIP_L = Vector((-.085, 0, .31)); KNEE_L = Vector((-.088, .012, .18)); ANK_L = Vector((-.088, 0, .1)); TOE_L = Vector((-.088, .13, .04))
-    TAIL = [Vector((0, -.1, .33)), Vector((0, -.17, .29)), Vector((0, -.24, .26)), Vector((0, -.3, .255)), Vector((0, -.36, .31))]
-    LAMP = Vector((-.085, .15, .535))
-    GRIP = Vector((.05, .16, .43))
-    GUN_YAW = 58
 
 # ---------------------------------------------------------------- head
 def shell_normal(co, c=HELMET_C, sc=HELMET_SCALE):
@@ -336,31 +318,8 @@ def build_tail():
     K.tube("v6_tail", TAIL, [.046, .042, .038, .034, .028], "fur", ["tail", "tail.001"], sides=6,
            face_cell=lambda p: "fur_dark" if p.center.z > .33 else "fur")
 
-def import_v8():
-    """Palette faces straight from the parts file: UV1 = palette cell (plain v6 material), lens on its own surface."""
-    with bpy.data.libraries.load(os.path.join(ROOT, "assets/source/hero_v8_parts.blend")) as (src, dst):
-        dst.objects = [n for n in src.objects if n.startswith("hero_")]
-    lens = K.special["lens"].node_tree.nodes["Principled BSDF"]   # amber glass, as in the concept
-    lens.inputs["Base Color"].default_value = (.75, .2, .03, 1); lens.inputs["Metallic"].default_value = .1
-    lens.inputs["Roughness"].default_value = .22
-    for ob in dst.objects:
-        scene.collection.objects.link(ob)
-        me = ob.data; cells = list(ob["cells"])
-        me.materials.clear(); me.materials.append(K.pal); me.materials.append(K.special["lens"])
-        uv = me.uv_layers.new(name="UVMap")
-        for p in me.polygons:
-            c = cells[p.index]
-            if c == "lens": p.material_index = 1; c = "black"
-            u = K.cell_uv(c)
-            for li in p.loop_indices: uv.data[li].uv = u
-        K.parts.append((ob, "HINT"))
-    lamp()
-
-if V8:
-    import_v8()
-else:
-    build_head(); build_body(); build_tail()
-    for s in "LR": build_arm(s); build_leg(s)
+build_head(); build_body(); build_tail()
+for s in "LR": build_arm(s); build_leg(s)
 
 # ---------------------------------------------------------------- armature
 arm_data = bpy.data.armatures.new(f"{KIND}_Rig")
@@ -401,21 +360,7 @@ def seg_dist(p, a, b):
     return (p - (a + ab * t)).length
 
 bones = {b.name: (b.head_local.copy(), b.tail_local.copy()) for b in arm_data.bones}
-
-def hint_weights(ob):
-    """v8: every vertex lists its bones (build_hero_v8.py); blend them by distance like the v6 tubes."""
-    hints = json.loads(ob["bones"])
-    groups = {}
-    for v, names in zip(ob.data.vertices, hints):
-        names = names or ["spine"]
-        w = {n: 1 / (seg_dist(v.co, *bones[n]) ** 6 + 1e-9) for n in names}; tot = sum(w.values())
-        for n in names:
-            if n not in groups: groups[n] = ob.vertex_groups.new(name=n)
-            groups[n].add([v.index], w[n] / tot, 'REPLACE')
-
 for ob, target in K.parts:
-    if target == "HINT":
-        hint_weights(ob); continue
     names = [target] if isinstance(target, str) else target
     groups = {n: ob.vertex_groups.new(name=n) for n in names}
     for v in ob.data.vertices:
@@ -432,8 +377,6 @@ if "--budget" in ARGS:
         tally[ob.name.split(".")[0].rstrip("_LR")] += sum(len(p.vertices) - 2 for p in ob.data.polygons)
     for k, v in tally.most_common(): print(f"BUDGET {v:5d} {k}")
 
-if V8:
-    K.parts.sort(key=lambda e: not e[0].name.startswith("hero_"))
 body = K.join(f"{KIND}_body")
 body.parent = rig
 body.modifiers.new("Armature", 'ARMATURE').object = rig
@@ -497,9 +440,6 @@ def add_arm_ik():
     for s, tgt, aim, pole in (("R", ik_r, aim_r, pole_r), ("L", ik_l, aim_l, pole_l)):
         c = rig.pose.bones[f"forearm.{s}"].constraints.new('IK')
         c.target = tgt; c.chain_count = 2; c.pole_target = pole; c.pole_angle = D(-90)
-        if V8:   # short toy arms: let the IK chain stretch a little to reach the fore grip
-            c.use_stretch = True
-            for b in (f"upper_arm.{s}", f"forearm.{s}"): rig.pose.bones[b].ik_stretch = .25
         t = rig.pose.bones[f"hand.{s}"].constraints.new('DAMPED_TRACK')
         t.target = aim
 
@@ -717,25 +657,7 @@ def video(cam, name, action, frames, orbit):
     s.file_format = 'PNG'
     cam.animation_data_clear()
 
-if V8 and "--viewer" in ARGS:
-    os.makedirs(PREVIEW, exist_ok=True)
-    before = set(bpy.data.objects)
-    bpy.ops.import_scene.gltf(filepath=os.path.join(OUT_DIR, f"weapon_{WEAPON}.glb"))
-    gun = [o for o in set(bpy.data.objects) - before]
-    for ob in gun:
-        if ob.parent is None:
-            mw = ob.matrix_world.copy(); ob.parent = socket; ob.matrix_parent_inverse = Matrix.Identity(4); ob.matrix_basis = mw
-    rig.animation_data.action = None
-    for pb in rig.pose.bones: pb.rotation_euler = (0, 0, 0); pb.location = (0, 0, 0)
-    bpy.ops.object.select_all(action='DESELECT')
-    for ob in EXPORT + gun: ob.select_set(True)
-    bpy.ops.export_scene.gltf(filepath=os.path.join(PREVIEW, "soldier_viewer.glb"), use_selection=True, export_animations=True,
-                              export_animation_mode='ACTIONS', export_yup=True, export_apply=False)
-    for ob in gun: bpy.data.objects.remove(ob)
-    print("viewer", os.path.join(PREVIEW, "soldier_viewer.glb"))
-
 if "--render" in ARGS or "--video" in ARGS:
-    scene.render.engine = 'BLENDER_EEVEE'
     cam = preview_scene(scene)
     before = set(bpy.data.objects)
     bpy.ops.import_scene.gltf(filepath=os.path.join(OUT_DIR, f"weapon_{WEAPON}.glb"))
