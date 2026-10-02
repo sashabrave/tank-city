@@ -226,12 +226,12 @@ static func headlights(parent:Node3D,vehicle=false,always=false):
 		if lamp is Node3D:beam(lamp,Vector3.ZERO,false,4)
 		else:beam(rig,Vector3(.12,.65,-.24),false,4)
 
-static func floodlight(parent:Node3D,pos:Vector3,yaw:float):
+## Compact fixtures (tools/build_lights_v1.py): an armoured searchlight on a turntable for block tops, a caged
+## bulkhead lamp on a bracket for walls (`wall` true). The spotlight sits in the modelled lens.
+static func floodlight(parent:Node3D,pos:Vector3,yaw:float,wall:=false):
 	var rig=Node3D.new();rig.name="Floodlight";parent.add_child(rig);rig.position=pos;rig.rotation.y=yaw
-	Visuals.box(rig,Vector3(0,.12,0),Vector3(.07,.24,.07),Color("535e54"))
-	Visuals.box(rig,Vector3(0,.28,0),Vector3(.30,.18,.17),Color("687366"))
-	Visuals.box(rig,Vector3(0,.28,-.09),Vector3(.23,.11,.025),Color("ffe0a0")).material_override=Visuals.material(Color("ffe0a0"),true)
-	var light=beam(rig,Vector3(0,.28,-.12),true,1);light.rotation.x=deg_to_rad(-35);light.spot_range=4.5;light.spot_angle=42;light.set_meta("day_energy",.22)
+	Visuals.model("light_wall" if wall else "light_block",rig)
+	var light=beam(rig,Vector3(0,0,-.26) if wall else Vector3(0,.22,-.16),true,1);light.rotation.x=deg_to_rad(-55.0 if wall else -35.0);light.spot_range=4.5;light.spot_angle=42;light.set_meta("day_energy",.22)
 
 static func field(arena):
 	var rng=RandomNumberGenerator.new();rng.seed=arena.run_seed+arena.room_index*3907+711

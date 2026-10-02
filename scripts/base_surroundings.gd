@@ -1,18 +1,16 @@
 extends RefCounted
 ## Sparse visual-only scenery, outside the authored gameplay grid.
+## Light stands (tools/build_lights_v1.py): a tall lattice mast on the ground, a field tripod on block tops.
+## One spotlight per stand sits in the modelled lamp heads (Godot -Z is the lamp side).
+const STANDS={"light_mast":{"anchor":Vector3(0,2.62,-.2),"tilt":-50.0,"range":8.0,"angle":45.0},"light_tripod":{"anchor":Vector3(0,1.5,-.16),"tilt":-47.0,"range":6.0,"angle":43.0}}
 static func lamp(parent:Node3D,pos:Vector3):
 	var rig=Node3D.new();rig.name="MilitaryLightStand";parent.add_child(rig);rig.position=pos
 	rig.rotation.y=atan2(rig.global_position.x,rig.global_position.z)
-	Visuals.box(rig,Vector3(0,.75,0),Vector3(.065,1.5,.065),Color("515d51"))
-	for angle in [0.0,TAU/3,TAU*2/3]:
-		var leg=Visuals.box(rig,Vector3(sin(angle)*.14,.12,cos(angle)*.14),Vector3(.045,.30,.045),Color("535d50"));leg.rotation=Vector3(.55,angle,0)
-	Visuals.box(rig,Vector3(0,1.43,0),Vector3(1.0,.055,.06),Color("515d51"))
-	for x in [-.34,0,.34]:
-		var head=Visuals.box(rig,Vector3(x,1.5,0),Vector3(.28,.17,.20),Color("65715b"));head.rotation.x=-.3
-		Visuals.box(rig,Vector3(x,1.47,-.105),Vector3(.22,.105,.025),Color("ffe0a0")).material_override=EffectLighting.glow(Color("ffe0a0"))
-	# Three lamp heads share one broad spotlight instead of tripling real lights.
-	var light=preload("res://scripts/world_lighting.gd").beam(rig,Vector3(0,1.46,-.13),true,1)
-	light.rotation.x=deg_to_rad(-47);light.spot_range=6;light.spot_angle=43;light.set_meta("day_energy",.15);light.set_meta("night_energy",1.7)
+	var kind="light_tripod" if pos.y>=.5 else "light_mast"
+	Visuals.model(kind,rig)
+	var spec=STANDS[kind]
+	var light=preload("res://scripts/world_lighting.gd").beam(rig,spec.anchor,true,1)
+	light.rotation.x=deg_to_rad(spec.tilt);light.spot_range=spec.range;light.spot_angle=spec.angle;light.set_meta("day_energy",.15);light.set_meta("night_energy",1.7)
 static func tree(parent:Node3D,pos:Vector3,height:float):
 	Visuals.box(parent,pos+Vector3.UP*height*.23,Vector3(height*.08,height*.46,height*.08),Color("665641"))
 	for i in range(3):
@@ -27,7 +25,7 @@ static func hub(parent:Node3D,ground:=Color("7c8176")):
 		for z in [-7.0,-3.0,1.0,6.0]:
 			Visuals.box(decor,Vector3(x,-.70,z),Vector3(.10,.025,1.1),Color("ab9567"))
 	for x in [-4.0,0.0,6.8]:
-		preload("res://scripts/world_lighting.gd").floodlight(decor,Vector3(x,1.15,-2.85),PI)
+		preload("res://scripts/world_lighting.gd").floodlight(decor,Vector3(x,1.15,-2.85),PI,true)
 	for p in [Vector3(-4.7,0,3.8),Vector3(6.8,0,3.8)]:lamp(decor,p)
 	# Trees now come from the biome vegetation tiles (hub_outskirts.gd).
 ## Route map edges: the ground runs past both screen edges; a few big pyramidal mountains stand partly off-screen,
