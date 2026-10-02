@@ -2,7 +2,7 @@ class_name SentenceCase
 extends RefCounted
 static var capitals:RegEx
 static var initial:RegEx
-const KEEP=["ПП","РПГ","ОФ","ББ","БТР","HP","FPS","MSAA","UI","WASD","ESC","OK","ПК","ИИ","DPS","GL","CPU","GPU","HUD","ID","API","PNG","JSON","GLB","APC","SMG","RPG","HQ","AI","AP","HE","II","III","IV","VI","VII","VIII","IX","XII"]
+const KEEP=["ПП","РПГ","ЭМИ","EMP","ОФ","ББ","БТР","HP","FPS","MSAA","UI","WASD","ESC","OK","ПК","ИИ","DPS","GL","CPU","GPU","HUD","ID","API","PNG","JSON","GLB","APC","SMG","RPG","HQ","AI","AP","HE","II","III","IV","VI","VII","VIII","IX","XII"]
 static func normalize(value:String)->String:
 	if capitals==null:
 		capitals=RegEx.new();capitals.compile("[А-ЯЁA-Z]{2,}")

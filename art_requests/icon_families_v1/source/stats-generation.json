@@ -1,0 +1,40 @@
+{
+  "names": [
+    "crit_chance",
+    "crit_damage",
+    "dodge",
+    "luck",
+    "guard_bullet",
+    "guard_vehicle",
+    "guard_blast",
+    "burn_chance",
+    "marauder",
+    "safe_slots",
+    "stun_chance",
+    "shock_bonus",
+    "pierce",
+    "stealth",
+    "field_repair",
+    "burn_power",
+    "shock_power",
+    "stun_power"
+  ],
+  "params": {
+    "model": "gpt_image_2_5",
+    "folder_id": "b6d33678-4471-43a8-bd76-4d910b162d50",
+    "use_unlim": false,
+    "quality": "high",
+    "resolution": "2k",
+    "variant": "flare",
+    "aspect_ratio": "1:1",
+    "background": "transparent",
+    "prompt": "War Cats UI stat pictograms, transparent sprite sheet EXACTLY5 columns x4 rows,18 symbols then last2cells empty. Pure flat warm IVORY shapes, no backplates no shadows no texture no outlines no text no numbers. Bold minimal familiar game pictograms with generous negative spaces; readable16pixels. Each different, centered in its cell,20% margin, no overlap. Row-major order: 1 open crosshair circle with central dot (critical chance);2 bullet inside four-point impact burst (critical damage);3 boot with curved evasion arrow;4 four-leaf clover with clear separated leaves;5 shield with bullet silhouette CUT OUT as transparent hole;6 shield with tiny tank silhouette CUT OUT;7 shield with explosion-star CUT OUT;8 small flame inside broken circular chance ring;9 open pouch with three large coins;10 backpack with obvious big padlock;11 concussion spiral inside broken circular chance ring;12 horizontal electric coil with three clear loops;13 bullet piercing two separated vertical plates;14 eye with diagonal slash for stealth;15 wrench crossed with small medical plus for field repair;16 large flame above short bold upward arrow for fire power;17 large lightning bolt above short bold upward arrow for EMP power;18 large concussion spiral above short bold upward arrow for stun power. Avoid filled blobs: keep holes and separations broad, each icon built of2-4 large elementary forms. Consistent weight, no perspective. Ivory on fully transparent background."
+  },
+  "jobs": [
+    {
+      "index": 13,
+      "job_id": "a3f09b04-ef5c-4591-aebc-f54db1ce65fa",
+      "status": "pending"
+    }
+  ]
+}

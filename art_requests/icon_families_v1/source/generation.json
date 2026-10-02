@@ -1,0 +1,47 @@
+{
+  "params": {
+    "model": "gpt_image_2_5",
+    "folder_id": "b6d33678-4471-43a8-bd76-4d910b162d50",
+    "use_unlim": false,
+    "quality": "high",
+    "resolution": "2k",
+    "variant": "flare",
+    "aspect_ratio": "1:1",
+    "background": "transparent",
+    "medias": [
+      {
+        "role": "image",
+        "value": "e3ded456-8e77-423d-994e-cd9d27cc3801"
+      }
+    ],
+    "prompt": "Create a production game UI icon style key SPRITE SHEET, transparent RGBA, exactly FOUR columns and SIX rows of equal cells, 24 slots total. Slots 23 and 24 empty transparent. 22 isolated sprites, arranged as ELEVEN PAIRS. Each pair: LEFT a blank family backing with NO central object, RIGHT exact same backing carrying one simple representative object. Pair1 slots1-2, pair2 slots3-4, pair3 slots5-6 etc. No captions or writing anywhere. Very generous space between sprites, no overlap. Cozy soft painted 3D military miniature art like the provided GPT icon reference, smooth large rounded forms, top-left warm light, shadow lower right, no polygon facets, no photorealistic scratches, minimal tiny details. Each central symbol no more than 60% of backing width/height. Backings face almost front with slight consistent three-quarter bevel, unmistakable strong outer silhouettes at32pixels. NO rarity borders, NO rank chevrons, NO numbers. Each of11families MUST have different outline:\nPAIR1 FIREPOWER: brass broad pentagonal shield ending in single DOWNWARD point, brick-red enamel face, blank then thick neutral brass bullet punching a small plate.\nPAIR2 SURVIVAL: perfectly circular olive-green armored medallion, four big round rivets only, blank then ivory padded heart with small protective plate.\nPAIR3 SPECIAL AMMO: TALL NARROW vertical cartridge capsule with rounded top and metal base, clear dark glass window, orange warm accent, blank unlit then one bold orange flame glowing INSIDE glass. No flame outside silhouette.\nPAIR4 RECON: diamond/rhombus twilight-blue optical lens in metal rim, clearly pointed at all FOUR corners, blank then small neutral binoculars.\nPAIR5 LOGISTICS: WIDE horizontal sand-yellow crate tag with strongly concave NOTCHED corners, blank then neutral canvas supply pack.\nPAIR6 ACTIVE ABILITIES: turquoise OCTAGONAL pushbutton housing, eight straight edges, circular inner steel dial with only four broad ticks, blank then neutral chunky grenade. NOT a circular outer shape, reserved for survival.\nPAIR7 HEADQUARTERS: dark navy perfectly SQUARE folded-paper order board, small simple red wax seal in bottom right, blank then ivory headquarters bunker with antenna. No text or fake writing on paper.\nPAIR8 GARAGE: graphite COG WHEEL outline with eight BIG teeth and restrained yellow-black hazard sectors, blank then silver wrench and small tire.\nPAIR9 STATS: FLAT SMALL narrow horizontal riveted instrument nameplate with TWO conspicuous side mounting tabs, thin solid brick-red face and steel edge, blank then flat ivory single bullet glyph. Deliberately FLAT, two-dimensional, no volumetric object unlike others. Distinct outline from wide notched logistics tag.\nPAIR10 FIELD PICKUPS: coral-pink map PIN silhouette rounded bulb with sharp bottom tail, blank then simple ivory medical cross. Rounded marker must clearly differ from pentagonal firepower shield.\nPAIR11 WEAPONS: very WIDE low neutral gray open gun-case foam tray, rectangular with rounded corners and two small top hinge protrusions, blank then simple left-pointing rifle fitted within foam tray. No additional sprite in last two slots.\nThe paired blank and example backing must match exactly. Object backgrounds outside each backing TRANSPARENT, NO gradients, NO haze, NO ground planes, no floor shadows. Match reference shading/style only; introduce these new strong colored family backings. Blank designs are finished usable empty backplates, not missing images. 4 columns x6 rows, precisely22sprites."
+  },
+  "submission": {
+    "results": [
+      {
+        "id": "7b865f9f-9b6c-4d36-a172-047bbc9d5c73",
+        "type": "image",
+        "status": "pending",
+        "model": "gpt_image_2_5",
+        "params": {
+          "prompt": "Create a production game UI icon style key SPRITE SHEET, transparent RGBA, exactly FOUR columns and SIX rows of equal cells, 24 slots total. Slots 23 and 24 empty transparent. 22 isolated sprites, arranged as ELEVEN PAIRS. Each pair: LEFT a blank family backing with NO central object, RIGHT exact same backing carrying one simple representative object. Pair1 slots1-2, pair2 slots3-4, pair3 slots5-6 etc. No captions or writing anywhere. Very generous space between sprites, no overlap. Cozy soft painted 3D military miniature art like the provided GPT icon reference, smooth large rounded forms, top-left warm light, shadow lower right, no polygon facets, no photorealistic scratches, minimal tiny details. Each central symbol no more than 60% of backing width/height. Backings face almost front with slight consistent three-quarter bevel, unmistakable strong outer silhouettes at32pixels. NO rarity borders, NO rank chevrons, NO numbers. Each of11families MUST have different outline:\nPAIR1 FIREPOWER: brass broad pentagonal shield ending in single DOWNWARD point, brick-red enamel face, blank then thick neutral brass bullet punching a small plate.\nPAIR2 SURVIVAL: perfectly circular olive-green armored medallion, four big round rivets only, blank then ivory padded heart with small protective plate.\nPAIR3 SPECIAL AMMO: TALL NARROW vertical cartridge capsule with rounded top and metal base, clear dark glass window, orange warm accent, blank unlit then one bold orange flame glowing INSIDE glass. No flame outside silhouette.\nPAIR4 RECON: diamond/rhombus twilight-blue optical lens in metal rim, clearly pointed at all FOUR corners, blank then small neutral binoculars.\nPAIR5 LOGISTICS: WIDE horizontal sand-yellow crate tag with strongly concave NOTCHED corners, blank then neutral canvas supply pack.\nPAIR6 ACTIVE ABILITIES: turquoise OCTAGONAL pushbutton housing, eight straight edges, circular inner steel dial with only four broad ticks, blank then neutral chunky grenade. NOT a circular outer shape, reserved for survival.\nPAIR7 HEADQUARTERS: dark navy perfectly SQUARE folded-paper order board, small simple red wax seal in bottom right, blank then ivory headquarters bunker with antenna. No text or fake writing on paper.\nPAIR8 GARAGE: graphite COG WHEEL outline with eight BIG teeth and restrained yellow-black hazard sectors, blank then silver wrench and small tire.\nPAIR9 STATS: FLAT SMALL narrow horizontal riveted instrument nameplate with TWO conspicuous side mounting tabs, thin solid brick-red face and steel edge, blank then flat ivory single bullet glyph. Deliberately FLAT, two-dimensional, no volumetric object unlike others. Distinct outline from wide notched logistics tag.\nPAIR10 FIELD PICKUPS: coral-pink map PIN silhouette rounded bulb with sharp bottom tail, blank then simple ivory medical cross. Rounded marker must clearly differ from pentagonal firepower shield.\nPAIR11 WEAPONS: very WIDE low neutral gray open gun-case foam tray, rectangular with rounded corners and two small top hinge protrusions, blank then simple left-pointing rifle fitted within foam tray. No additional sprite in last two slots.\nThe paired blank and example backing must match exactly. Object backgrounds outside each backing TRANSPARENT, NO gradients, NO haze, NO ground planes, no floor shadows. Match reference shading/style only; introduce these new strong colored family backings. Blank designs are finished usable empty backplates, not missing images. 4 columns x6 rows, precisely22sprites.",
+          "aspect_ratio": "1:1",
+          "reference_images": [
+            "e3ded456-8e77-423d-994e-cd9d27cc3801"
+          ],
+          "quality": "high",
+          "resolution": "2k",
+          "variant": "flare",
+          "background": "transparent"
+        }
+      }
+    ],
+    "adjustments": {
+      "medias[0].role": {
+        "requested": "image",
+        "used": "image_references",
+        "reason": "GPT Image 2.5 backend expects schema-key media roles"
+      }
+    }
+  }
+}

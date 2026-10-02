@@ -34,7 +34,9 @@
 					"Карта маршрута: прокрутка двумя пальцами на тачпаде Mac.",
 					"Карта маршрута заполняет весь экран: большие пирамидальные горы уходят за края, между ними руины хрущёвок и кирпичных многоэтажек разной степени разрушения. Расстановка новая в каждом забеге.",
 					"Логово генерала на карте стало большим и грозным: танк босса на железном троне из сваренных листов с шипами, кольцо штыков и огонь в жаровнях.",
-					"Изредка над полем пролетает лист, пепел, песчинка или пух — по биому, не больше трёх за раз и по ветру текущей погоды. Отключается вместе с «Атмосферными частицами»."
+					"Изредка над полем пролетает лист, пепел, песчинка или пух — по биому, не больше трёх за раз и по ветру текущей погоды. Отключается вместе с «Атмосферными частицами».",
+					"Новые иконки (набор GPT): у каждой группы свой знак отличия — щит для огневой мощи, жетон-бронеплита для живучести, светящаяся капсула для спецпатронов, ромб-линза для разведки, трафаретная табличка для тыла, кнопка для способностей, бланк с печатью для штаба, шестерня для гаража, маркер-пин для бонусов поля и кейс для оружия. Усиления эффектов отмечены маленьким значком на капсуле.",
+					"«ЭМИ» больше не превращается в «Эми» в текстах карточек."
 				]
 			},
 			"en": {
@@ -68,7 +70,9 @@
 					"Route map: two-finger trackpad scrolling on Mac.",
 					"The route map fills the whole screen: big pyramid mountains run past the edges, with ruined panel blocks and brick high-rises between them in various states of damage. The layout changes every run.",
 					"The general's lair on the map is big and menacing: the boss tank on an iron throne of welded spiked plates, a ring of bayonets and burning braziers.",
-					"Now and then a leaf, ash flake, sand grain or fluff drifts over the field — by biome, no more than three at once and with the wind of the current weather. Turns off with «Atmosphere particles»."
+					"Now and then a leaf, ash flake, sand grain or fluff drifts over the field — by biome, no more than three at once and with the wind of the current weather. Turns off with «Atmosphere particles».",
+					"New icons (GPT set): every group has its own mark — a shield for firepower, an armour-plate token for survival, a glowing capsule for special ammo, a lens diamond for recon, a stencil plate for logistics, a button for abilities, a stamped form for the HQ, a gear for the garage, a map pin for field bonuses and a case for weapons. Effect enhancements carry a small badge on the capsule.",
+					"«EMP» no longer turns into «Emp» in card texts."
 				]
 			}
 		},

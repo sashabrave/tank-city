@@ -1,0 +1,102 @@
+{
+  "requests": [
+    {
+      "index": 10,
+      "params": {
+        "model": "gpt_image_2_5",
+        "folder_id": "b6d33678-4471-43a8-bd76-4d910b162d50",
+        "use_unlim": false,
+        "quality": "high",
+        "resolution": "2k",
+        "variant": "flare",
+        "background": "transparent",
+        "medias": [
+          {
+            "role": "image",
+            "value": "7b865f9f-9b6c-4d36-a172-047bbc9d5c73"
+          }
+        ],
+        "aspect_ratio": "4:3",
+        "prompt": "War Cats approved cozy painted 3D UI art as reference. Very simple chunky clear shapes readable32px, smooth soft top-left lighting, transparent RGBA outside objects, NO haze NO text NO numbers NO labels NO background NO floor. Widely separated sprites each completely within own equal grid cell with15% margins. Sprite sheet exactly4columns x3rows,12 symbols, NO backplates, NO medals, NO borders. These are standalone effect glyphs and small branch badges to be composited into approved capsules. Reading order: row1 large orange flame / yellow concussion spiral with three chunky radiating strokes / cyan electromagnetic lightning bolt / small ivory hourglass with sand. row2 two linked orange sparks / ivory double forward arrows / ivory four-point critical star / two parallel cyan lightning bolts. row3 cyan broken electric cable with separated ends / cyan curved electric arc joining two round nodes / orange blazing flame with small white-hot center / ivory simple power fist. Broad graphic symbols, neutral ivory materials except explicitly colored effects. Each differs unmistakably from all others. NO capsules or frame present, only12 independent glyphs."
+      }
+    },
+    {
+      "index": 11,
+      "params": {
+        "model": "gpt_image_2_5",
+        "folder_id": "b6d33678-4471-43a8-bd76-4d910b162d50",
+        "use_unlim": false,
+        "quality": "high",
+        "resolution": "2k",
+        "variant": "flare",
+        "background": "transparent",
+        "medias": [
+          {
+            "role": "image",
+            "value": "7b865f9f-9b6c-4d36-a172-047bbc9d5c73"
+          }
+        ],
+        "aspect_ratio": "1:1",
+        "prompt": "War Cats approved cozy painted 3D UI art as reference. Very simple chunky clear shapes readable32px, smooth soft top-left lighting, transparent RGBA outside objects, NO haze NO text NO numbers NO labels NO background NO floor. Widely separated sprites each completely within own equal grid cell with15% margins. Exactly2columns x2rows of FOUR separate UI rarity FRAME overlays. All same rounded-square shape, thin rim, completely EMPTY transparent square CENTER. Top left brushed steel common / top right steel with muted blue enamel rare / bottom left steel with muted purple enamel epic / bottom right muted gold legendary with small laurel sprig on lower corners. Outer shape square with softly rounded corners, rim thickness only4% of outer width, large transparent interior90% width. No filled panels, no backplates, no inner icons, no gems, no ranks. Do not draw checkerboards. Frames must be usable as transparent overlays without covering family silhouettes. Identical perspective front-facing and identical dimensions."
+      }
+    },
+    {
+      "index": 12,
+      "params": {
+        "model": "gpt_image_2_5",
+        "folder_id": "b6d33678-4471-43a8-bd76-4d910b162d50",
+        "use_unlim": false,
+        "quality": "high",
+        "resolution": "2k",
+        "variant": "flare",
+        "background": "transparent",
+        "medias": [
+          {
+            "role": "image",
+            "value": "7b865f9f-9b6c-4d36-a172-047bbc9d5c73"
+          }
+        ],
+        "aspect_ratio": "3:2",
+        "prompt": "War Cats approved cozy painted 3D UI art as reference. Very simple chunky clear shapes readable32px, smooth soft top-left lighting, transparent RGBA outside objects, NO haze NO text NO numbers NO labels NO background NO floor. Widely separated sprites each completely within own equal grid cell with15% margins. Exactly3columns x2rows, six separate assets in reading order. Top left: EMPTY flat neutral gray instrument nameplate with two side mounting tabs, wider than tall but width:height only1.6:1 (much TALLER than narrow reference stats plaque), simple smooth face no object. Top middle: EMPTY gun-case gray foam tray with two tiny top hinges, width:height1.6:1 (much TALLER than reference weapon case), empty dark neutral foam recess, no gun. Top right: ONE small ivory V-shaped downward rank chevron, standalone no backing. Bottom left: TWO small ivory V-shaped downward chevrons stacked vertically, no backing. Bottom middle: THREE small ivory V-shaped downward chevrons stacked vertically, no backing. Bottom right: EMPTY matte dark-bronze FIREPOWER shield shaped like reference red shield but much less shiny and less golden, brick red enamel center, empty no symbol. All finished reusable sprites, not a showcase. No text."
+      }
+    }
+  ],
+  "jobs": [
+    {
+      "index": 10,
+      "job_id": "37e174cf-2bc5-4489-a630-ceca8333721e",
+      "status": "pending",
+      "adjustments": {
+        "medias[0].role": {
+          "requested": "image",
+          "used": "image_references",
+          "reason": "GPT Image 2.5 backend expects schema-key media roles"
+        }
+      }
+    },
+    {
+      "index": 11,
+      "job_id": "09d495c9-5c53-434c-a3ab-e454caaf0eea",
+      "status": "pending",
+      "adjustments": {
+        "medias[0].role": {
+          "requested": "image",
+          "used": "image_references",
+          "reason": "GPT Image 2.5 backend expects schema-key media roles"
+        }
+      }
+    },
+    {
+      "index": 12,
+      "job_id": "b157cd96-e07b-49ca-9f84-356958b72a01",
+      "status": "pending",
+      "adjustments": {
+        "medias[0].role": {
+          "requested": "image",
+          "used": "image_references",
+          "reason": "GPT Image 2.5 backend expects schema-key media roles"
+        }
+      }
+    }
+  ]
+}

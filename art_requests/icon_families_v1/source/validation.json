@@ -1,0 +1,12 @@
+{
+  "icons": 109,
+  "overlays": 7,
+  "unique_icon_hashes": 109,
+  "size": [
+    512,
+    512
+  ],
+  "mode": "RGBA",
+  "transparent_corners": true,
+  "frame_centers_transparent": true
+}

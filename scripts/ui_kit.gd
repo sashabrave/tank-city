@@ -187,7 +187,7 @@ static func tab_row(parent:Control,pos:Vector2,width:float,tabs:Array,active:Str
 ## Unique artwork (cozy_ui_2026): explicit keys "upgrades/<id>", "stats/<id>", "abilities/<id>",
 ## "headquarters/<id>", "garage/<vehicle>_<branch>". Looked up before any alias folding; a missing file
 ## falls back to the old lookup by the bare id, so semantic ids never have to change for graphics.
-const ART_GROUPS=["upgrades","stats","abilities","headquarters","garage"]
+const ART_GROUPS=["upgrades","stats","abilities","headquarters","garage","pickups","weapons"]
 static var icon_cache:Dictionary={}
 ## Memoised: several call sites refresh icons every frame; disk lookups happen once per id and set.
 static func icon_texture(id:String)->Texture2D:
@@ -200,6 +200,10 @@ static func icon_lookup(id:String)->Texture2D:
 			var art=Illustrations.texture("res://assets/icons/"+id+".png")
 			if art:return art
 		id=id.get_slice("/",1)
+	# Weapons and field bonuses have family art in the illustration set (icon families v1); other sets fall back.
+	if id in Game.LOOT.WEAPONS or id in LootCatalog.BONUSES:
+		var family_art=Illustrations.texture("res://assets/icons/"+("weapons/" if id in Game.LOOT.WEAPONS else "pickups/")+id+".png")
+		if family_art:return family_art
 	if id in ["debug","lock","repeat","refresh","inventory","fighter","quests","notifications","music","settings","guide","base","about"]:return interface_icon(id)
 	var sections=["inventory","fighter","quests","notifications","music","settings","guide","base","workshop"]
 	if id in sections:

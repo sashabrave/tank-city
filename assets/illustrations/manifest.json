@@ -20,7 +20,7 @@
             512,
             512
           ],
-          "sha256": "06799378cdfea0f939a9f89160d4d9aa87747e92466c935049f670373df71eed"
+          "sha256": "3ef8e43224b6850c912e1d74e4c7f81884ecf85eeab64735e666a452137918c7"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/upgrades/damage.png",
@@ -44,7 +44,7 @@
             512,
             512
           ],
-          "sha256": "ba0d28ecdaa70a4df5b542af4c26fbc76d53263de602eb6eee494a3a1567d539"
+          "sha256": "01031861b32b65e780a3b3599bc310398e6efb11a3482f8cb69974e7adcb9d90"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/upgrades/fire.png",
@@ -68,7 +68,7 @@
             512,
             512
           ],
-          "sha256": "3a6c26a5ea0374cb5cf2ec1b526d9aabae92e8cca9648b54dfa41ed6381fd9fd"
+          "sha256": "65b427d075fef84682f2d6407121129347108f5c4bad3e7d4fced1c08c9ad7de"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/upgrades/intercept.png",
@@ -92,7 +92,7 @@
             512,
             512
           ],
-          "sha256": "377436f65dc1c1a9e0e6b4f796d5cce8cc2d246a6ded6d1ed782581d74b89dc5"
+          "sha256": "f1c36b54056f04e0b03907268a38d5899f4bd3547554272b0f6745497a899ace"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/upgrades/weapon_damage.png",
@@ -116,7 +116,7 @@
             512,
             512
           ],
-          "sha256": "3fba163574d24228aba3c42b1cbd9326d3f135d87091d082dd42bef39de28d2a"
+          "sha256": "38db91db0a0a312805146b1f79c86311926c67fa1c1e8348521318bf2449cfd2"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/upgrades/weapon_fire.png",
@@ -140,7 +140,7 @@
             512,
             512
           ],
-          "sha256": "9ebfef1dc3682c66f9028da86b00f04f1b51b2559426d4e08e7a521fa102f04f"
+          "sha256": "fd601e9abf7b54d48d550e8e46da77acec1fd73db906504be7317b5b52fe16d8"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/upgrades/weapon_intercept.png",
@@ -164,7 +164,7 @@
             512,
             512
           ],
-          "sha256": "8f674b8e5c460bb6b76add4e6fb269726b8e4cde7f287719191520ad799d0cb6"
+          "sha256": "1817430bb9ba5eb71cfa72904ab48af674d7ec03c68a37e0906cdea5684e261f"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/upgrades/crit_chance.png",
@@ -188,7 +188,7 @@
             512,
             512
           ],
-          "sha256": "353127dc932e2d6843a8f95687cf2a902b759154426c8a8cfd8c59c1ed3ba1fe"
+          "sha256": "744049666107cade43ad79a3061ab563c47febe807224a6fb10de309c00d73d1"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/upgrades/crit_damage.png",
@@ -212,7 +212,7 @@
             512,
             512
           ],
-          "sha256": "9d086771879c7db90700cda0f447cce9b2d733f645366aaadf12fcf2516c8368"
+          "sha256": "3d59297899e70cada9602896f510d42e2ae7bfaff30818903b9ca83c323dc87d"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/upgrades/range.png",
@@ -236,7 +236,7 @@
             512,
             512
           ],
-          "sha256": "f42f4cbb97023f094bdea20b68e9293ba62751be6f7cce55a76554ca034e9849"
+          "sha256": "e9e84ba9449f73487accdc9d79215378c7d56725c4825712922d8040e3659233"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/upgrades/burn.png",
@@ -260,7 +260,7 @@
             512,
             512
           ],
-          "sha256": "a20855e5d1c90c0af6ed819fc9f81007d327e8ad00e17343131fe3319f9ddac1"
+          "sha256": "965a4da252baa17fca57fcca3b371512670165e1e93bde304a2fb2df8811d819"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/upgrades/chain_fire.png",
@@ -284,7 +284,7 @@
             512,
             512
           ],
-          "sha256": "74cdc651fad01943d9ba85a678a4e9bf3a084a4ea9007094219c4653a2f61907"
+          "sha256": "c419f746f329b6df7fc66d8d8c1f3fb1bb962477537b57e6d70f20008bb0da46"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/upgrades/crit_stun.png",
@@ -308,7 +308,7 @@
             512,
             512
           ],
-          "sha256": "4583c5716961f13428eeac8e79bc68602f452ecfabd935e4d4b9bbee14f955b7"
+          "sha256": "44e25092c9e15b29b506b2e675ce50190e69d80b4e22a5ae781a17235fa4198d"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/upgrades/stun.png",
@@ -332,7 +332,7 @@
             512,
             512
           ],
-          "sha256": "efe9e2a3e7947ad5f51020f6a523427648afd57411d40f4d7c16888b48c38934"
+          "sha256": "af36d5a1a30c282ed1e8491269bcb868cd61c257fe4ff65b08200939202ba3e4"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/upgrades/shock.png",
@@ -356,7 +356,7 @@
             512,
             512
           ],
-          "sha256": "db06321e517eec5b3e6764c0dd3f250153660fd190deb1049071be83ba5d23b7"
+          "sha256": "4e2dd5c5463ed2445d3c5e2d7cb3032ebaf767959700c098bce13f1dc162d91d"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/upgrades/pierce.png",
@@ -380,7 +380,7 @@
             512,
             512
           ],
-          "sha256": "7091e6582ebc73e3208f67025b8f17c196a556f21f9217bd9a29467e39e271a1"
+          "sha256": "509052e09f25ccafc2c8825b72f02a5ffa535aa181c4741033683eb4290f2399"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/upgrades/opening_shot.png",
@@ -404,7 +404,7 @@
             512,
             512
           ],
-          "sha256": "707fbedce7b2fd5174439942e354ac4026dedf34e20b5130c87e1eecda30916d"
+          "sha256": "b564fe9d254e6d5e8337e2e68e3fc2ad7b84898c58bb2c40a929135165319bee"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/upgrades/ace.png",
@@ -428,7 +428,7 @@
             512,
             512
           ],
-          "sha256": "0024ac6fa356808098a7a3c9edcdbc48b68e2d893e4b6d7a3b2d46c87d21c8f0"
+          "sha256": "073bd5fb6eadaef32bd13b62db902e1600c9575645cfbeb0dc30a1b914de7c4a"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/upgrades/crew.png",
@@ -452,7 +452,7 @@
             512,
             512
           ],
-          "sha256": "1ac4f8c19dc980a74938b7ed4c26895dfd20a95d4417adfaf9664de893b4df56"
+          "sha256": "9c51add0d7478c4eb0528af4304577d2b6bf4efe76bd47e824816f0581237015"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/upgrades/health.png",
@@ -476,7 +476,7 @@
             512,
             512
           ],
-          "sha256": "32bbd95faa5bdb1a677e0593402797cce53411059714ceae5e4e6f2669a06e5e"
+          "sha256": "b9dfdad71d5bf9c45ccfaa72797cbef1f78983bde8e40d46fa68f53c605fe6b1"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/upgrades/healing.png",
@@ -500,7 +500,7 @@
             512,
             512
           ],
-          "sha256": "53c7708841ed7787c54f92e5c2ac908633b93d63a9ea6bfe1a8b2c0d52707d64"
+          "sha256": "f586463b89ba6a1fb069ee766f4111c8624d76d90699e32379f7746702e406d9"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/upgrades/guard_bullet.png",
@@ -524,7 +524,7 @@
             512,
             512
           ],
-          "sha256": "d73b654e0bffea55f84f76207e450f3be5ce54c18623fbb945fa6aa2a1ae9648"
+          "sha256": "e8bceda10b92b7606fae3351f393fbdef2a14a48280843a400f98563fffade02"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/upgrades/guard_blast.png",
@@ -548,7 +548,7 @@
             512,
             512
           ],
-          "sha256": "4932d94e8f56bf3f85ebf8dde7e0e6b0e454dca0eeb1bed85381ae1bc3ff6125"
+          "sha256": "97f3e06b6043350e25d75d2fd03266e88910966c35723134806e3b70998083ed"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/upgrades/guard_vehicle.png",
@@ -572,7 +572,7 @@
             512,
             512
           ],
-          "sha256": "10eae773d7bc867b5495d67081815386365ab11e0208d345f93f4e596b891102"
+          "sha256": "3bcb8ca5f540c33f92f07c9d1c7b3050db649509267b65fa0b44fbbdc7d7ea18"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/upgrades/dodge.png",
@@ -596,7 +596,7 @@
             512,
             512
           ],
-          "sha256": "ba8a230b395d775a060d1e99e3c06346621e298eab2a6259c292793bc49e040e"
+          "sha256": "5749f352aa074996e689fad11b8a4b12c5fb65338502b718a0f501176abc2a3f"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/upgrades/fortress.png",
@@ -620,7 +620,7 @@
             512,
             512
           ],
-          "sha256": "641c08f77bb33b433f42ea17d2b8ee37d44ae4ad5a1d818cae9e570a1233b965"
+          "sha256": "234d924572b3903bfd9c3e9f3f745ab8826655027d1984a5ba6bbcf4ae7d55e9"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/upgrades/last_stand.png",
@@ -644,7 +644,7 @@
             512,
             512
           ],
-          "sha256": "f2719f68b5742db308372a6a90bcd2b66a10d90a04cf8b1b749d0863b99f59dc"
+          "sha256": "5591856dde7edeb01ee351d712a83a8241c2d00a53bcd9df0cc3a464a9ec642f"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/upgrades/field_repair.png",
@@ -668,7 +668,7 @@
             512,
             512
           ],
-          "sha256": "0da3379902249933e150636622a2f3c2a46ddcc38191f430e7cac47346a2fb59"
+          "sha256": "b861f6af50c96707105fea6bb06f069ae8c3d56b2e5da0ed79d0b88ed24377db"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/upgrades/speed.png",
@@ -692,7 +692,7 @@
             512,
             512
           ],
-          "sha256": "5ef044cf7f125e3cb5ace2380aa612ce4bd94b1e0d9f33b5b12b88d66e2f4280"
+          "sha256": "70fec13dedfd24d67929fe214dddb39d867c9bf0a5b4c7f29102bb400e4f1e7a"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/upgrades/stealth.png",
@@ -716,7 +716,7 @@
             512,
             512
           ],
-          "sha256": "13b174026b6cf13416c44c54d3117d1757950bc7cd086182af40c7c321fd3a52"
+          "sha256": "41de5b19f6370c57b49f54789ff3a13e016c4b66dae656b9c467a45d2f365914"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/upgrades/ghost.png",
@@ -740,7 +740,7 @@
             512,
             512
           ],
-          "sha256": "8d3be6965ceee23412d19f9d838a7648b583b4bddb5f7e208eb15713bc4ddda3"
+          "sha256": "e698c2cc361833d9050937b144d261e41204a5749a768c42b28dbe0fde47301f"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/upgrades/exit_dash.png",
@@ -764,7 +764,7 @@
             512,
             512
           ],
-          "sha256": "32a6adec0f14fb78cb65ad484878dcf0856fe934bf08bfcda14b983c94300777"
+          "sha256": "623b07ec53b14b8fc41c1bbcdc92fc105ed21431161e41d676e966f9acffd8bf"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/upgrades/landing.png",
@@ -788,7 +788,7 @@
             512,
             512
           ],
-          "sha256": "25e0e870bc2e70163f21bbd6d8a55356f8b8f12e663d9645c4b1bde419a60253"
+          "sha256": "f832353d8729bee891bc8c2a28b002377d79943d2677778755e3a5e538119e2d"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/upgrades/boarding.png",
@@ -812,7 +812,7 @@
             512,
             512
           ],
-          "sha256": "2886d69670b7b4d2c3986645e419a6e6347df142abb04931fdde6e230ed41fad"
+          "sha256": "02993fa0f69c13da5dd4b44e9d744cd95a75d561c88d9ce19cae2250abf93e0f"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/upgrades/device_power.png",
@@ -836,7 +836,7 @@
             512,
             512
           ],
-          "sha256": "b966bb1ae856556dfd45d3b5d79867b60762f7114ecdd112c065784cb5e21080"
+          "sha256": "d07e49873fe1790bfe89564cbb83c1f9e7333118fcaaae7ce7ec00d8bce20a13"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/upgrades/device_cooldown.png",
@@ -860,7 +860,7 @@
             512,
             512
           ],
-          "sha256": "7f734a84479227f216c85f81220a08c81ca97db44a674c3b9d090cb64b2f4377"
+          "sha256": "dbc00eda36e0175c5bd8f827f43acc3d21a34f454c47cf6e4bb750136b9c2fdd"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/upgrades/luck.png",
@@ -884,7 +884,7 @@
             512,
             512
           ],
-          "sha256": "9945e4fea06c25a7d0c4beb25f67c5cf7489776a09b0145ec7977ef4fb9145cc"
+          "sha256": "287b51711d413bf9e81c5f7a03d988c2a02585508ec19d3468299989493ba27c"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/upgrades/marauder.png",
@@ -908,7 +908,7 @@
             512,
             512
           ],
-          "sha256": "1acd0645a6c0dfd94f753b3e4bbe012def0576e2a64a8c729d6ad28d4757507b"
+          "sha256": "a8fda731de6dee0c684c310abf9e12cdb0cc09c0699178952d34ad022f9e12e6"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/upgrades/safe.png",
@@ -932,7 +932,7 @@
             512,
             512
           ],
-          "sha256": "9edf40ae6919ccaa4ed44156aa0093587bb599cbece4f2090be45fc33d0c3e3f"
+          "sha256": "1a3802bceb1416f7d5dee7518d8b17d478dbdea0b641e94511e3781a2b1d73e1"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/abilities/airstrike.png",
@@ -956,7 +956,7 @@
             512,
             512
           ],
-          "sha256": "a74e93e5d79aeaf3e7709b4c7e1f1de99b44b1b896071e4d21b1d4b8ebd6898b"
+          "sha256": "95fb4abf6bd803ed4becad608ce3ddbd71e6d00826f77e77d01d6256b7b8f869"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/abilities/ally_drone.png",
@@ -980,7 +980,7 @@
             512,
             512
           ],
-          "sha256": "84b0c9c8320c61fa81ccbdc39d9d9d4f57e1d2068091846a9b13b2f2d22c1d02"
+          "sha256": "1cc1b4c0949073d6abca9c2f6d015b19dee1ed20a282bc43caf33884ae5b4846"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/abilities/barrier.png",
@@ -1004,7 +1004,7 @@
             512,
             512
           ],
-          "sha256": "1b67c98aaf72ac5d3a0a3418d453b1570f40dd1d5cc6e4952b8cba21f58f12d9"
+          "sha256": "a8a8405905ee9dbd720a1e4af18fab00e23df9de86d5fc357cabeddfeacf34cb"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/abilities/cloak.png",
@@ -1028,7 +1028,7 @@
             512,
             512
           ],
-          "sha256": "19b535442442e46a935e8ee5c65e9ca79f4d4b76a98a43769e56563e62ec2119"
+          "sha256": "eff6e763cc42c8ee3bea48468af2c989146b3f3a3b1b4b97697be1dfd3c46b5c"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/abilities/comrade.png",
@@ -1052,7 +1052,7 @@
             512,
             512
           ],
-          "sha256": "b1e33fc217c8b20178ab90500f28aed683d5dab99c339868e53dcfdf19be6925"
+          "sha256": "1d1178f3aeac10fc981144dc1d3690793aa9d9742e60cdc40a849ae5a0996b6b"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/abilities/gas.png",
@@ -1076,7 +1076,7 @@
             512,
             512
           ],
-          "sha256": "a6148bfa0e179f1998c3976598dd797e8253276dc101152333c396688b38e3af"
+          "sha256": "b66857b75184eeaefb22d793e1880e092f8628ebf03d956e4554e181c45f2cce"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/abilities/grenade.png",
@@ -1100,7 +1100,7 @@
             512,
             512
           ],
-          "sha256": "5e31b4708b8ef867fa721b053c324f69426d3a168acc9feb8fc4930aeeecef18"
+          "sha256": "2c9910d03a264d17a85e02c177dfeaee704e59e3a7f4bf5f5830121862ccc22c"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/headquarters/hq_medbay.png",
@@ -1124,7 +1124,7 @@
             512,
             512
           ],
-          "sha256": "90bcff83ad89b3e610f1d8317a387809306602963dfea4932328687107da0bb9"
+          "sha256": "87d230d88d9105c5326c7b7571477efec1ce7329139948c01a0fe151f57ef162"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/headquarters/hq_plating.png",
@@ -1148,7 +1148,7 @@
             512,
             512
           ],
-          "sha256": "a958b5b6a8a00be58f6f6b231bc21b87e7b086bb2eba332d03c95fcca6d0f5cf"
+          "sha256": "faf57553a9c0db2d7b1acc409e3b4eab209abf84dbb566ffd289e732c3fa2b16"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/headquarters/hq_regen.png",
@@ -1172,7 +1172,7 @@
             512,
             512
           ],
-          "sha256": "790b9de3b5c08d0f5a271545b28720fc1c4d284fb0629b6caafaf5a357be157e"
+          "sha256": "486bed342c167778e41021bec686dac7b345f40b82551be05472ccffac42e1b4"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/headquarters/hq_supply.png",
@@ -1196,7 +1196,7 @@
             512,
             512
           ],
-          "sha256": "eb6d2d120da106f3928b6fd13c3a110e287375ce15a5619d4c1195484dd9a1ca"
+          "sha256": "0ca0b31dc2264b91987badd2ac80e679a76d8c2ad967fcb4a5c049c98e3e067f"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/headquarters/hq_interceptor.png",
@@ -1220,7 +1220,7 @@
             512,
             512
           ],
-          "sha256": "daeafe174519ff618cc3c7f3cba2ba3711230418dff584138acc3b2f8eecb877"
+          "sha256": "64094ab7821ca5a7ea88a7936bfb2c931058a5f2bf53494d3b3f66bc0b694940"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/headquarters/hq_tesla.png",
@@ -1244,7 +1244,7 @@
             512,
             512
           ],
-          "sha256": "477f3f57a76e311f367667796caa7521289eda8b106dad2e3cd75335513806c0"
+          "sha256": "a5fad67c6028361cc86930f62ad949691491a79dbaa4b20fa5c34901d9f460a3"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/headquarters/hq_patch.png",
@@ -1268,7 +1268,7 @@
             512,
             512
           ],
-          "sha256": "8c0f545438d56983d81e0ac19ead6c2faa59181f3cd919b6bfb19bbae581e457"
+          "sha256": "f57ebf5a9350b732e61beb9b95fd172c5f6d1ae473b67b301f1f4aedaef8728e"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/headquarters/hq_field.png",
@@ -1292,7 +1292,7 @@
             512,
             512
           ],
-          "sha256": "6030231c5b90932c9f386b28f0656be772d3dd2bfa188a46e6b576e9509a933c"
+          "sha256": "a7f54a6815df7d40fad2271f6dd875403605fe7906980753d39c13a53a27138f"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/headquarters/hq_emp.png",
@@ -1316,7 +1316,7 @@
             512,
             512
           ],
-          "sha256": "747f4eafbc1196c36146b2940b09f9411299e3d4f94f74a85df283b0c6c2a6e0"
+          "sha256": "3dc1b36c5f13b8611f25486a0fef2278b27d844cb2548433e67bbce22989b3cf"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/abilities/shield.png",
@@ -1340,7 +1340,7 @@
             512,
             512
           ],
-          "sha256": "2b47be0f999690bb3309eb2d30a5e5db68c1e8375b8c9896c645f2a656cd70f1"
+          "sha256": "fb5d5f1800cff6380d4fc021077b9ab60f0b90033c9f63d0750a9668ed515c2b"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/abilities/laser.png",
@@ -1364,7 +1364,7 @@
             512,
             512
           ],
-          "sha256": "dd956841c50749b717744683a654603e5e5bb6f6f67222c3e1295fdf67097269"
+          "sha256": "68a2bc444f98f944f8b833ceb556624e1d858b023d5832eea1e0bc1f00bbe9bc"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/abilities/mine.png",
@@ -1388,7 +1388,7 @@
             512,
             512
           ],
-          "sha256": "baddd9b52ee446393795a34226e60344fd9d3e476222252c1adbbca6eb14012f"
+          "sha256": "958d9b364a2d93a2cca5360fb5e0789743af720bb6b1e0ee44bce56abe56d252"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/abilities/field_repair.png",
@@ -1412,7 +1412,7 @@
             512,
             512
           ],
-          "sha256": "7b3d1033a49293091de0e6a22925fd9e60a581d37630bfde1d18010c5f06be03"
+          "sha256": "164d69e28e2d088d3a3822112894388e6bb650955278dd040284d239648ce42b"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/garage/buggy_armor.png",
@@ -1436,7 +1436,7 @@
             512,
             512
           ],
-          "sha256": "0e5331538b1d2e0c24ea637401d724b503313a268db3f38984a4f85f5d32d52c"
+          "sha256": "8f4adb4d7c793c10e9ce62b6304482168c65f6f69210c6234d75c52a4bbd9c0a"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/garage/buggy_gun.png",
@@ -1460,7 +1460,7 @@
             512,
             512
           ],
-          "sha256": "fc2aa9b359d6605b5220e9eb6e52296efb91ba328581973ecca9553796733111"
+          "sha256": "8ae518c915f296d6ec8911f7f76c6aa368703f85809453ac55d9a8fcec8302cc"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/garage/buggy_loader.png",
@@ -1484,7 +1484,7 @@
             512,
             512
           ],
-          "sha256": "c3bf2fe4538eb4d3073c57e568333db95741eb0383e3f690eb0af973596d5891"
+          "sha256": "1adb532e1b3f6d5a36fb4190d2fdd6f53f6be944c19a93b35fee666c781b0ccb"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/garage/apc_armor.png",
@@ -1508,7 +1508,7 @@
             512,
             512
           ],
-          "sha256": "e1c0bbe6eed007544bfafdb4f1f60e0290371b98bfa80dba9dcefd891c2e61dd"
+          "sha256": "9f070867688124b62066bd91ed8bf1947233ab678c93ed42dcfc6f5d3a80625e"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/garage/apc_gun.png",
@@ -1532,7 +1532,7 @@
             512,
             512
           ],
-          "sha256": "eb03a2a6fd9f736b4fbc05a4bb4af229a5d9157058f9bbf0a3063d5f5ccdc605"
+          "sha256": "9893b005703e07aff658f344fa0a759f68db7b7cefff63e1ef0a675579323a19"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/garage/apc_loader.png",
@@ -1556,7 +1556,7 @@
             512,
             512
           ],
-          "sha256": "757f343f95d3fe9ccd5c5ffeb74af977737e145488371e47b6527250a2794556"
+          "sha256": "92f78c28f62e1886b027cf37c9071af14e7ac4c2ae77a8599ce974b576402fd0"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/garage/tank_armor.png",
@@ -1580,7 +1580,7 @@
             512,
             512
           ],
-          "sha256": "9ae5780abb0c600fec50ed8fc75ef6238009fd9e2d60a976f5aaabfad358321f"
+          "sha256": "6c386d796717e97df382b6091e389d99e4e1585c2095ff410236b28a545fef70"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/garage/tank_gun.png",
@@ -1604,7 +1604,7 @@
             512,
             512
           ],
-          "sha256": "1f8b1d00066584744dd8961284b3c36fad06720f51591c619e40ae0ecd0aca51"
+          "sha256": "117e9bb83075618157026a365797a6ef9f21291a5f760c80148c2ac30ee6f05c"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/garage/tank_loader.png",
@@ -1628,7 +1628,7 @@
             512,
             512
           ],
-          "sha256": "dc72a383d3a42ca6cda8e95ba226db7d152257491f9845bcdfb452ead32e984e"
+          "sha256": "fbbf8c5aa6f315ae15e2312e8ca4300c23093214683a57bc0ca2685f36a124bf"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/stats/crit_chance.png",
@@ -1652,7 +1652,7 @@
             512,
             512
           ],
-          "sha256": "0cdcadd989fe6ceaad08f935dcf798497af50695201a21417117ff4abbdb5c64"
+          "sha256": "cc183aab6ee08238e0259e12665d43bdcbf44f564f18dce4dca464d90521121c"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/stats/crit_damage.png",
@@ -1676,7 +1676,7 @@
             512,
             512
           ],
-          "sha256": "7b1db1ee035bff2dd537e9c94177512a7f39eb8062eb2b6f306c91c1826c23fb"
+          "sha256": "4d0f929a1dd82e94be22f39dc6ad90e5fc8476aa12371a7546bdd329d06a2f1b"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/stats/dodge.png",
@@ -1700,7 +1700,7 @@
             512,
             512
           ],
-          "sha256": "9c473bd482ad1ae2939d7c0d79a928b3ba3149bb93b9496943458e386a53e50d"
+          "sha256": "948df03a6eebe19a19a504653d3db7328f23d299126f22820bbcb1c60b33a72c"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/stats/luck.png",
@@ -1724,7 +1724,7 @@
             512,
             512
           ],
-          "sha256": "03367d08f857cb9ede77bcf76559bb5a2878abe0bf7b43793e2d2b060b11611f"
+          "sha256": "776c5211eb2cfcb11bda647e19df9f85325ba8873e6f0c6b1f6e9c364a5811fb"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/stats/guard_bullet.png",
@@ -1748,7 +1748,7 @@
             512,
             512
           ],
-          "sha256": "5fc37ed0ef5625852a706e4aed4cfe5761a730c9271a0cc0c50f88f1efdf1abf"
+          "sha256": "bbb312ca7dbe9bd8e5385ce3222ec5494296d7b4ae26c1541645feee61f7c225"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/stats/guard_vehicle.png",
@@ -1772,7 +1772,7 @@
             512,
             512
           ],
-          "sha256": "b7985960e249e975f16fb042d431a1c8a93d786033dccf938c7ef7b374d58224"
+          "sha256": "28c0375080780746c9fe0b52c7b5ade84d28adda614d958d2c340a8ac11c11f8"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/stats/guard_blast.png",
@@ -1796,7 +1796,7 @@
             512,
             512
           ],
-          "sha256": "d401d3193f068fbea16c1bc8eac610ac0d50eb3df1e1957765b17834548999f8"
+          "sha256": "d6943eb51bdb9de11d334a023a9439bb7f70dcbaf49df03f7e3af4afa22645af"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/stats/burn_chance.png",
@@ -1820,7 +1820,7 @@
             512,
             512
           ],
-          "sha256": "14ba422c10d2cc06fc8659235a5e381485453d44b2889bd34058e8843a3a0a6c"
+          "sha256": "2ba1cf9a36c98a6d599d4df34585adf9818bf4a0646878186c41947a4efa22af"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/stats/marauder.png",
@@ -1844,7 +1844,7 @@
             512,
             512
           ],
-          "sha256": "ca4413bfb19ff02db7943c8507c0034734a3e1145959393b58cf904e8c4450a2"
+          "sha256": "0b42607bc29d5600d3021776fbed28e8a5fd3c1063ed56395e01ee9322fd1d94"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/stats/safe_slots.png",
@@ -1868,7 +1868,7 @@
             512,
             512
           ],
-          "sha256": "ab87f7612aefa984b020e3b59df7a042dec43a049570e73ad5bdb019a70ac815"
+          "sha256": "4e2b9542ec6e07cf7c3c30eccbf8c3f2b9ade54b451225d697fd1de7c824a48a"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/stats/stun_chance.png",
@@ -1892,7 +1892,7 @@
             512,
             512
           ],
-          "sha256": "2b98a08a5e02c71206809d172bc5b65c0d46288c295151da3845d5fc3cc122a5"
+          "sha256": "f34a730555fcb48509eec33ba8b830024f49c8918a513d86aeadd1c27f1b50de"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/stats/shock_bonus.png",
@@ -1916,7 +1916,7 @@
             512,
             512
           ],
-          "sha256": "f723903ccdc1c4127455273cb43d72e78315efd19fe663e2b7b52515d4cf033b"
+          "sha256": "57398ec3999d7ea61f5f688e8df6938a9298aa456cb44ff445c7d88ddd4fa636"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/stats/pierce.png",
@@ -1940,7 +1940,7 @@
             512,
             512
           ],
-          "sha256": "2c697c03b0c2be4e9e7b0e08f4cabeb59ffd5ab872164831f51e614933352e85"
+          "sha256": "ef7eec8665de18963eb38859cbb7a0a3f663f54fd79059c39cb55dd928ef53c5"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/stats/stealth.png",
@@ -1964,7 +1964,7 @@
             512,
             512
           ],
-          "sha256": "6b50b889bbca39b6dd450a1791ea68f9e513a22f543278042779d76f3d7621e4"
+          "sha256": "5af60adb44c7280556d476a5ed6ba8138bbd67be9ffe6e5e601bb7a6273b07c9"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/stats/field_repair.png",
@@ -2081,6 +2081,438 @@
             1024
           ],
           "sha256": "651c39660b32d94b39d674c95125683b158f39386c4278f617ee54b2a88b970d"
+        }
+      }
+    },
+    {
+      "key": "upgrades/burn_heat",
+      "original": "res://assets/icons/upgrades/burn_heat.png",
+      "relative": "icons/upgrades/burn_heat.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/burn_heat.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "afa5d8d0ce2379ede8e99bb89ce892e468c10c17f9569fa776784a4d782df74b"
+        }
+      }
+    },
+    {
+      "key": "upgrades/burn_long",
+      "original": "res://assets/icons/upgrades/burn_long.png",
+      "relative": "icons/upgrades/burn_long.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/burn_long.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "6ccfc152666b37c48df210103f60c9781d9e3d4a92bf64677e9fdaaaee836bec"
+        }
+      }
+    },
+    {
+      "key": "upgrades/shock_arc",
+      "original": "res://assets/icons/upgrades/shock_arc.png",
+      "relative": "icons/upgrades/shock_arc.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/shock_arc.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "a2f6899e0c177da0f08a54be031eac1c8c7d82b4c42314de227790fa1535958d"
+        }
+      }
+    },
+    {
+      "key": "upgrades/shock_overload",
+      "original": "res://assets/icons/upgrades/shock_overload.png",
+      "relative": "icons/upgrades/shock_overload.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/shock_overload.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "970463563c7f10dc21ca09ba2907ecc97d5a3718cbc2d01f50b0e4769484016d"
+        }
+      }
+    },
+    {
+      "key": "upgrades/shock_short",
+      "original": "res://assets/icons/upgrades/shock_short.png",
+      "relative": "icons/upgrades/shock_short.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/shock_short.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "0da1a91cd6d50997b7c6db1669b3e02402f8ac8943614a19a47441d50b178a86"
+        }
+      }
+    },
+    {
+      "key": "upgrades/stun_long",
+      "original": "res://assets/icons/upgrades/stun_long.png",
+      "relative": "icons/upgrades/stun_long.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/stun_long.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "db10ebdd0c31a1200a1f7bf3e8cc5ddef1eb738619e7d6e0fe3945f14b904b20"
+        }
+      }
+    },
+    {
+      "key": "upgrades/stun_often",
+      "original": "res://assets/icons/upgrades/stun_often.png",
+      "relative": "icons/upgrades/stun_often.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/upgrades/stun_often.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "d40ac5a4f9958e530a16fac43fdfc583f9b7be5f75aee9d98757329eb21b98c0"
+        }
+      }
+    },
+    {
+      "key": "stats/burn_power",
+      "original": "res://assets/icons/stats/burn_power.png",
+      "relative": "icons/stats/burn_power.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/stats/burn_power.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "4cbacd6baa423ec136e1ae7b273b70dad56c601d8473471858fed784235f2453"
+        }
+      }
+    },
+    {
+      "key": "stats/shock_power",
+      "original": "res://assets/icons/stats/shock_power.png",
+      "relative": "icons/stats/shock_power.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/stats/shock_power.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "50fd3268cd893238002e57f5aef428704e10535d5799e39ff373dd4b3890c0f1"
+        }
+      }
+    },
+    {
+      "key": "stats/stun_power",
+      "original": "res://assets/icons/stats/stun_power.png",
+      "relative": "icons/stats/stun_power.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/stats/stun_power.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "44c9281a542e18d8451df1cdc89d2f4f30f64bcda0967937e6ed034a5cd9b481"
+        }
+      }
+    },
+    {
+      "key": "pickups/freeze",
+      "original": "res://assets/icons/pickups/freeze.png",
+      "relative": "icons/pickups/freeze.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/pickups/freeze.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "c6551bc616ed93731987afcb236b14cdcaf56aa9d113fb9a46e1ab6fecb74a15"
+        }
+      }
+    },
+    {
+      "key": "pickups/heart",
+      "original": "res://assets/icons/pickups/heart.png",
+      "relative": "icons/pickups/heart.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/pickups/heart.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "410c9095ba5d96e552717a2363851b402fad9c284846ff553b8468c94ab24392"
+        }
+      }
+    },
+    {
+      "key": "pickups/pressure",
+      "original": "res://assets/icons/pickups/pressure.png",
+      "relative": "icons/pickups/pressure.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/pickups/pressure.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "e811b1ab5d1595c295b32140601b641b5726251aa4fa9dd64cd9bc1551caf332"
+        }
+      }
+    },
+    {
+      "key": "pickups/repair",
+      "original": "res://assets/icons/pickups/repair.png",
+      "relative": "icons/pickups/repair.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/pickups/repair.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "622a08e11f81bac1ac90d5399ffe757abf34e1a68f17e36b8a93bf38191ad659"
+        }
+      }
+    },
+    {
+      "key": "pickups/star",
+      "original": "res://assets/icons/pickups/star.png",
+      "relative": "icons/pickups/star.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/pickups/star.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "bfa9d69a2e3d4aa8b726a80747d3ccd188dde7eacde311756d425fa5b0216b1f"
+        }
+      }
+    },
+    {
+      "key": "pickups/turret",
+      "original": "res://assets/icons/pickups/turret.png",
+      "relative": "icons/pickups/turret.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/pickups/turret.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "72ba263647dc926229cba570dce501e20a9e5dfccd3cf6517c97c87c0b44c4da"
+        }
+      }
+    },
+    {
+      "key": "pickups/vehicle",
+      "original": "res://assets/icons/pickups/vehicle.png",
+      "relative": "icons/pickups/vehicle.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/pickups/vehicle.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "8c652006fd236e7319afd0b5b245cfb47d319e5937aee444122983a1c88afac1"
+        }
+      }
+    },
+    {
+      "key": "pickups/vehicle_repair",
+      "original": "res://assets/icons/pickups/vehicle_repair.png",
+      "relative": "icons/pickups/vehicle_repair.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/pickups/vehicle_repair.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "297a9aaaef52a94972e5eedab4a7ff1f5915b56aad451700aac3939f6f4e5657"
+        }
+      }
+    },
+    {
+      "key": "pickups/wall",
+      "original": "res://assets/icons/pickups/wall.png",
+      "relative": "icons/pickups/wall.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/pickups/wall.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "4b9f2881f43614fe970bd42be31a78aa11849e6b4ddbaf7e22ed7dab185eb2e1"
+        }
+      }
+    },
+    {
+      "key": "weapons/grenade_launcher",
+      "original": "res://assets/icons/weapons/grenade_launcher.png",
+      "relative": "icons/weapons/grenade_launcher.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/weapons/grenade_launcher.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "4c159fb829eaa7859d6b0d5788fc00979adc3937dc8b1600655f93d61e57b01b"
+        }
+      }
+    },
+    {
+      "key": "weapons/mg",
+      "original": "res://assets/icons/weapons/mg.png",
+      "relative": "icons/weapons/mg.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/weapons/mg.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "328351a3f5545f949e5624d33f064e7259190622a4eb93de2d179430b5d17dd6"
+        }
+      }
+    },
+    {
+      "key": "weapons/pistol",
+      "original": "res://assets/icons/weapons/pistol.png",
+      "relative": "icons/weapons/pistol.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/weapons/pistol.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "34d957bb6f7ed1458de83e739a6f957d454fdc029d2585fb95f5a7a33df280fe"
+        }
+      }
+    },
+    {
+      "key": "weapons/rifle",
+      "original": "res://assets/icons/weapons/rifle.png",
+      "relative": "icons/weapons/rifle.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/weapons/rifle.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "b0bbc0e2e76957f17ec42a3b59079617437c74700852e3d2ba69ab088b30b77c"
+        }
+      }
+    },
+    {
+      "key": "weapons/rpg",
+      "original": "res://assets/icons/weapons/rpg.png",
+      "relative": "icons/weapons/rpg.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/weapons/rpg.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "c2f1ca7d6cdd0001ebf22dd8fe7026d1b03f912feb7315b163db2da7db310c0e"
+        }
+      }
+    },
+    {
+      "key": "weapons/shotgun",
+      "original": "res://assets/icons/weapons/shotgun.png",
+      "relative": "icons/weapons/shotgun.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/weapons/shotgun.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "085b0c09303421e64880fbe5aac8cbc5429ef5eb3ca27aadf317b9110f3ed350"
+        }
+      }
+    },
+    {
+      "key": "weapons/smg",
+      "original": "res://assets/icons/weapons/smg.png",
+      "relative": "icons/weapons/smg.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/weapons/smg.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "9616f76cbc4a4b942f5144821484502072762b0650bf636f6e5f649d109c6ad5"
+        }
+      }
+    },
+    {
+      "key": "weapons/sniper",
+      "original": "res://assets/icons/weapons/sniper.png",
+      "relative": "icons/weapons/sniper.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/weapons/sniper.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "89fe6b3a761a3631789e880cebfbf24005b88b60d37e9195c534f0d0fd527821"
         }
       }
     }

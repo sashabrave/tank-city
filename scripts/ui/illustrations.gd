@@ -9,7 +9,7 @@ const SETS=["gpt_image_2_5","nano_banana"]
 const NAMES=["GPT","Nano Banana"]
 const DEFAULT="gpt_image_2_5"
 const ROOT="res://assets/illustrations/"
-const PREFIXES=["icons/upgrades/","icons/stats/","icons/abilities/","icons/headquarters/","icons/garage/","portraits/v16/","ui/enemies/enemy_atlas_v1.png","ui/workshops/atlas.png"]
+const PREFIXES=["icons/upgrades/","icons/stats/","icons/abilities/","icons/headquarters/","icons/garage/","icons/pickups/","icons/weapons/","portraits/v16/","ui/enemies/enemy_atlas_v1.png","ui/workshops/atlas.png"]
 
 static func current()->String:
 	var value=str(Settings.values.get("illustration_set",DEFAULT))
