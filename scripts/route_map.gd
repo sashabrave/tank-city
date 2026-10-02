@@ -174,6 +174,8 @@ func _ready():
 	Visuals.ring(player_marker,Color("f3b95f"),2.0/1.5)
 	player_marker.position=current_point()+Vector3(0,.17,2)*MINI_SCALE
 	foreground_hangar=preload("res://scripts/route_foreground.gd").new();add_child(foreground_hangar)
+	# Past the boss: the pass with a checkpoint and the burning war beyond (T-007).
+	var pass_scene=preload("res://scripts/route_pass.gd").new();add_child(pass_scene);pass_scene.build(stage_z(plan.size()-1))
 	scatter_battlefield()
 	for info in plan[0]:path_line(START_POINT,previews[info.id].position)
 	start_pad=Node3D.new();start_pad.name="StartPad";add_child(start_pad);start_pad.position=START_POINT;start_pad.scale=Vector3.ONE*MINI_SCALE
@@ -224,7 +226,7 @@ func confirm_service():
 	if travelling or not needs_service or pending_service not in fork_positions:return
 	var branch=pending_service;travelling=true;close_dialog();service_requested.emit(branch,available)
 func move_camera():
-	scroll=clampf(scroll,0,-stage_z(plan.size()-1))
+	scroll=clampf(scroll,0,-stage_z(plan.size()-1)+11.0)  # a look past the boss at the pass (T-007)
 	for id in previews:
 		previews[id].visible=absf(previews[id].position.z+scroll)<30
 	for node in service_nodes:node.visible=absf(node.position.z+scroll)<30
