@@ -13,7 +13,8 @@
 					"Портреты и миниатюры классов отражены: бойцы смотрят в другую сторону.",
 					"Диалог бойца в хабе: 60 коротких советов о механиках и 20 историй из жизни заставы. Клавиши показаны плашками. Кнопка «Ещё» покажет ещё три реплики.",
 					"Тени без зерна: мягкость теперь даёт ровное размытие вместо шумной полутени. Кирпич без мелкого мерцающего шума.",
-					"Кладка плотнее: тонкие швы, сквозь стену больше не просвечивает. Кирпич оранжево-персиковый, армированный заметно темнее."
+					"Кладка плотнее: тонкие швы, сквозь стену больше не просвечивает. Кирпич оранжево-персиковый, армированный заметно темнее.",
+					"Экран командного центра в хабе больше не зеркальный и стал живым военным пультом: контурная карта с радаром и целями, чертёж танка с поворотной башней, телеметрия и бегущий журнал."
 				]
 			},
 			"en": {
@@ -26,7 +27,8 @@
 					"Class portraits and miniatures are mirrored to face the other way.",
 					"The soldier's hub chat: 60 short tips on mechanics and 20 tiny stories from the outpost. Keys are shown as key caps. «More» shows three more lines.",
 					"Grain-free shadows: softness is now an even blur instead of a noisy penumbra. Bricks no longer shimmer with fine noise.",
-					"Denser brickwork: thin joints, no light shining through the wall. Bricks are orange-peach, reinforced ones clearly darker."
+					"Denser brickwork: thin joints, no light shining through the wall. Bricks are orange-peach, reinforced ones clearly darker.",
+					"The hub command screen is no longer mirrored and became a live military console: a contour map with radar and targets, a tank blueprint with a turning turret, telemetry and a scrolling log."
 				]
 			}
 		},
