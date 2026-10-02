@@ -566,7 +566,7 @@
 			"scene": "merchant_room",
 			"shot": "res://tasks/shots/T-045.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "в комнате торговца не работают анимации",
 			"type": "bug",
 			"version": "0.7.1-pre"
