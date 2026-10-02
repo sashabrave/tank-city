@@ -179,7 +179,7 @@ func build_dev_menu():
 	build.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT);build.offset_left=-408;build.offset_right=-332;build.offset_top=-112;build.offset_bottom=-36
 	# Thumb-zone actions share the ability tiles' height (76) and top line.
 	root.get_node("StartButton").offset_top=-112;root.get_node("StartButton").offset_bottom=-36
-	build.icon=UiKit.interface_icon("build");build.expand_icon=true;build.add_theme_constant_override("icon_max_width",34);build.icon_alignment=HORIZONTAL_ALIGNMENT_CENTER
+	build.icon=load("res://assets/ui/construction/crane.png");build.expand_icon=true;build.add_theme_constant_override("icon_max_width",52);build.icon_alignment=HORIZONTAL_ALIGNMENT_CENTER
 	build.pressed.connect(show_build_menu)
 	menu.get_node("DebugAlloyButton").pressed.connect(func():Game.earn(1000);refresh())
 	menu.get_node("RecipeShopButton").pressed.connect(func():toggle_dev_menu(false);show_recipe_shop())

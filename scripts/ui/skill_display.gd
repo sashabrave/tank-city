@@ -19,12 +19,13 @@ func plate_text()->String:
 func _draw():
 	var center=Vector2(38,38)
 	if cooling and active<=0:
-		draw_circle(center,31,Color(0,0,0,.14))
+		# Recharging reads at a glance: the icon is dimmed, the refilled part brightens back (T-059).
+		draw_circle(center,31,Color(0,0,0,.46))
 		var points=PackedVector2Array([center])
 		for i in range(65):
 			var angle=-PI/2+TAU*progress*i/64
 			points.append(center+Vector2(cos(angle),sin(angle))*31)
-		if progress>0:draw_colored_polygon(points,Color(1,1,1,.4))
+		if progress>0:draw_colored_polygon(points,Color(1,1,1,.18))
 		draw_arc(center,31,-PI/2,-PI/2+TAU*progress,64,Color(1,1,1,.65),2,true)
 	var font=UiKit.field_font()
 	if active>0:
@@ -36,5 +37,7 @@ func _draw():
 	var counting=cooling and remaining>0.05
 	var width=maxf(30,font.get_string_size(text,HORIZONTAL_ALIGNMENT_LEFT,-1,14).x+14)
 	var plate=Rect2((76-width)*.5,80,width,22)
-	draw_style_box(UiKit.style(Color("3a3222") if counting else Color("242d27"),6,UiKit.ORANGE if counting else Color("697166")),plate)
-	draw_string(font,Vector2(plate.position.x,plate.position.y+16),text,HORIZONTAL_ALIGNMENT_CENTER,width,14,UiKit.ORANGE if counting else UiKit.INK)
+	# Accent means "ready": the key glows in the accent colour; a countdown is plain bold white on dark.
+	var ready_key=not counting and action!=""
+	draw_style_box(UiKit.style(Color("3a3222") if ready_key else Color("151a17"),6,UiKit.ORANGE if ready_key else Color("8a918a")),plate)
+	draw_string(font,Vector2(plate.position.x,plate.position.y+16),text,HORIZONTAL_ALIGNMENT_CENTER,width,15 if counting else 14,UiKit.ORANGE if ready_key else Color.WHITE)

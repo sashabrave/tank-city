@@ -748,7 +748,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-059.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "иконки способностей акценты наоборот",
 			"type": "bug",
 			"version": "0.7.1-pre"
@@ -774,7 +774,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-061.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "блин перерисуй иконки способностей в хигсфилд гпт2.5.",
 			"type": "polish",
 			"version": "0.7.1-pre"

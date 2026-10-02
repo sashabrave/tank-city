@@ -10,7 +10,9 @@
 					"Некоторые фонари на поле изредка помигивают.",
 					"Солнце снова честное: на рассвете и закате оно низкое, тени длиннее, но мягче.",
 					"Панели в бою стали полупрозрачным стеклом, как остальной интерфейс.",
-					"«Глубина света» (настройки графики): мягкие тени на полу у стен и блоков, чуть теплее солнце и контрастнее картинка."
+					"«Глубина света» (настройки графики): мягкие тени на полу у стен и блоков, чуть теплее солнце и контрастнее картинка.",
+					"Новые иконки способностей без плашек, у каждой свой силуэт и цвет; на кнопке строительства — башенный кран.",
+					"Кнопки способностей: готовая способность подсвечивает клавишу, на перезарядке иконка темнеет, а секунды крупные и белые."
 				]
 			},
 			"en": {
@@ -20,7 +22,9 @@
 					"Some field lamps flicker now and then.",
 					"The sun is honest again: low at dawn and sunset, with longer but softer shadows.",
 					"Battle panels are frosted glass now, like the rest of the interface.",
-					"«Light depth» (graphics settings): soft floor shadows by walls and blocks, a slightly warmer sun and more contrast."
+					"«Light depth» (graphics settings): soft floor shadows by walls and blocks, a slightly warmer sun and more contrast.",
+					"New plate-free ability icons, each with its own silhouette and colour; a tower crane on the build button.",
+					"Ability buttons: a ready ability lights up its key; while recharging the icon dims and the seconds are big and white."
 				]
 			}
 		},
