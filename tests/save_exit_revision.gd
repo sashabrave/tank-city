@@ -58,10 +58,12 @@ func run():
 	var box=view.find_child("ChangelogBox",true,false)
 	check(box!=null and box.get_child_count()>0,"changelog tab lists entries")
 	await shot("/tmp/r13-save-exit-changelog.png")
-	var first_title=box.get_child(0).get_child(0).get_child(0).get_child(1).text
+	await settle();box=view.find_child("ChangelogBox",true,false)
+	var first_title=box.get_child(1).text
 	Texts.set_language("en");view.refresh();await settle()
 	box=view.find_child("ChangelogBox",true,false)
-	check(box.get_child(0).get_child(0).get_child(0).get_child(1).text!=first_title,"changelog follows language")
+	check(box.get_child(1).text!=first_title,"changelog follows language")
+	check(view.find_child("ChangelogRail",true,false).get_child_count()>=2,"version rail lists releases")
 	Texts.set_language("ru")
 	view.queue_free();await settle()
 	var hub_view=preload("res://scripts/ui/field_tablet.gd").new();hub_view.can_leave=false;add_child(hub_view);await settle()

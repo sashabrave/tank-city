@@ -23,7 +23,9 @@
 					"Характеристики бойца сгруппированы (огонь, живучесть, способности, спецпатроны, разведка, тыл), занимают меньше места, нулевые строки скрыты.",
 					"Новые портреты и миниатюры классов (набор GPT): пропорции как у игровых бойцов, крупная голова и короткие лапы.",
 					"Враги набираются опыта по ходу мира: в первых комнатах они целятся дольше (перед выстрелом виден блик у ствола), отдыхают между перебежками, реже сидят в окопах и реже штурмуют. К последним комнатам всё быстрее и злее. Середина мира как раньше.",
-					"После каждого зачищенного поля боец восстанавливает 1 здоровья."
+					"После каждого зачищенного поля боец восстанавливает 1 здоровья.",
+					"Снег и песок ложатся только на настоящие грани блока: над пустой частью Г-образного полублока больше ничего не висит.",
+					"Изменения в планшете читаются одной лентой: слева список версий, справа все записи подряд с датами."
 				]
 			},
 			"en": {
@@ -46,7 +48,9 @@
 					"Hero stats are grouped (fire, survival, abilities, special ammo, recon, logistics), take less room, and zero rows are hidden.",
 					"New class portraits and miniatures (GPT set): proportions match the in-game soldiers, big head and short legs.",
 					"Enemies gain experience through a world: in the first rooms they aim longer (a glint at the muzzle warns of the shot), rest between dashes, use trenches and storm less. By the last rooms they are faster and meaner. The middle of the world plays as before.",
-					"After each cleared field the soldier restores 1 health."
+					"After each cleared field the soldier restores 1 health.",
+					"Snow and sand settle only on real block faces: nothing hangs over the empty part of an L-shaped half block.",
+					"The changelog in the tablet reads as one feed: versions on the left, all entries with dates on the right."
 				]
 			}
 		},

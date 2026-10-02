@@ -289,38 +289,39 @@ func about_page():
 # Changelog entries carry their own ru/en text, so the box is excluded from automatic translation.
 # Version tabs on top; the selected release shows a summary line and compact sections.
 var changelog_version=""
+## Changelog as one vertical feed: a narrow rail of versions on the left jumps the feed to that release,
+## the feed lists every release with its date, titled blocks and items. Nothing hides behind tabs.
 func changelog_page():
 	var notes=preload("res://scripts/ui/changelog.gd")
 	var versions:Array=notes.versions()
 	if versions.is_empty():UiKit.label(content,"—",Vector2(22,124),Vector2(300,30),16);return
 	if changelog_version not in versions:changelog_version=versions[0]
-	var tabs=versions.slice(0,5).map(func(v):return [v,("Альфа "+v) if v!="earlier" else "Ранее"])
-	var width=content.size.x-44
-	UiKit.tab_row(content,Vector2(22,124),width,tabs,changelog_version,func(v):changelog_version=v;refresh(),34)
-	var chosen:Array=notes.for_version(changelog_version)
-	var total=0;var newest=""
-	for entry in chosen:
-		total+=entry.get(Texts.language,entry.get("ru",{})).get("items",[]).size()
-		var day=str(entry.get("date",""))
-		if day>newest:newest=day
-	var summary=UiKit.label(content,"%s · %s · изменений: %d" % [("Альфа "+changelog_version) if changelog_version!="earlier" else "Ранее",notes.date_text(newest),total],Vector2(22,170),Vector2(width,24),14,UiKit.MUTED)
-	summary.set_meta("text_editor",true)
-	var box=scroller(Vector2(22,200),Vector2(width,content.size.y-216));box.name="ChangelogBox";box.set_meta("text_editor",true)
-	box.add_theme_constant_override("separation",10)
-	for entry in chosen:
-		var text:Dictionary=entry.get(Texts.language,entry.get("ru",{}))
-		var items:Array=text.get("items",[])
-		var card=PanelContainer.new();box.add_child(card);card.add_theme_stylebox_override("panel",UiKit.style(Color("2c352e"),7))
-		var margin=MarginContainer.new();card.add_child(margin)
-		for side in ["left","right"]:margin.add_theme_constant_override("margin_"+side,14)
-		for side in ["top","bottom"]:margin.add_theme_constant_override("margin_"+side,10)
-		var column=VBoxContainer.new();margin.add_child(column);column.add_theme_constant_override("separation",6)
-		var head=HBoxContainer.new();column.add_child(head)
-		var heading=Label.new();head.add_child(heading);heading.text=str(text.get("title",""));heading.add_theme_font_size_override("font_size",18);heading.add_theme_color_override("font_color",UiKit.INK);heading.size_flags_horizontal=Control.SIZE_EXPAND_FILL
-		var count=Label.new();head.add_child(count);count.text=str(items.size());count.add_theme_font_size_override("font_size",13);count.add_theme_color_override("font_color",UiKit.ORANGE)
-		for item in items:
-			var line=Label.new();column.add_child(line);line.text="·  "+str(item);line.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;line.add_theme_font_size_override("font_size",14);line.add_theme_color_override("font_color",UiKit.INK)
-	UiKit.reveal_list(box)
+	var rail_width=150.0;var top=124.0;var height=content.size.y-top-16
+	var rail=scroller(Vector2(22,top),Vector2(rail_width,height));rail.name="ChangelogRail";rail.add_theme_constant_override("separation",4)
+	var feed=scroller(Vector2(22+rail_width+16,top),Vector2(content.size.x-44-rail_width-16,height));feed.name="ChangelogBox";feed.set_meta("text_editor",true)
+	feed.add_theme_constant_override("separation",6)
+	var scroll:ScrollContainer=feed.get_parent();var anchors={}
+	for version in versions:
+		var chosen:Array=notes.for_version(version);var newest=""
+		for entry in chosen:
+			if str(entry.get("date",""))>newest:newest=str(entry.get("date",""))
+		var name=("Альфа "+version) if version!="earlier" else "Ранее"
+		var header=VBoxContainer.new();feed.add_child(header);header.add_theme_constant_override("separation",0);anchors[version]=header
+		var title=Label.new();header.add_child(title);title.text=Texts.render(name);title.add_theme_font_size_override("font_size",22);title.add_theme_color_override("font_color",UiKit.ORANGE if version==versions[0] else UiKit.INK)
+		var date=Label.new();header.add_child(date);date.text=notes.date_text(newest);date.add_theme_font_size_override("font_size",13);date.add_theme_color_override("font_color",UiKit.MUTED)
+		for entry in chosen:
+			var text:Dictionary=entry.get(Texts.language,entry.get("ru",{}))
+			var heading=Label.new();feed.add_child(heading);heading.text=str(text.get("title",""));heading.add_theme_font_size_override("font_size",16);heading.add_theme_color_override("font_color",UiKit.INK);heading.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+			for item in text.get("items",[]):
+				var row=HBoxContainer.new();feed.add_child(row);row.add_theme_constant_override("separation",10)
+				var dot=Label.new();row.add_child(dot);dot.text="•";dot.add_theme_color_override("font_color",UiKit.ORANGE);dot.add_theme_font_size_override("font_size",14);dot.size_flags_vertical=Control.SIZE_SHRINK_BEGIN
+				var line=Label.new();row.add_child(line);line.text=str(item);line.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;line.size_flags_horizontal=Control.SIZE_EXPAND_FILL;line.add_theme_font_size_override("font_size",14);line.add_theme_color_override("font_color",UiKit.INK)
+		var gap=Control.new();gap.custom_minimum_size.y=18;feed.add_child(gap)
+		var jump=UiKit.button(rail,name,Vector2.ZERO,Vector2(rail_width,36),func():changelog_version=version;scroll.scroll_vertical=int(anchors[version].position.y),version==changelog_version)
+		jump.custom_minimum_size=Vector2(rail_width,36);jump.add_theme_font_size_override("font_size",14);jump.name="Version_"+version
+	# Reopening keeps the release that was chosen last.
+	(func():
+		if is_instance_valid(scroll) and anchors.has(changelog_version):scroll.scroll_vertical=int(anchors[changelog_version].position.y)).call_deferred()
 func can_quit()->bool:
 	return not OS.has_feature("mobile") and not OS.has_feature("web")
 func confirm_quit():

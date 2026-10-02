@@ -24,6 +24,32 @@ static func bounds(node:Node3D)->AABB:
 		result=box_bounds if first else result.merge(box_bounds);first=false
 	return result if not first else AABB(node.global_position+Vector3(-.45,0,-.45),Vector3(.9,1,.9))
 
+## Concrete halves and L-cuts are made of quarters: a 2×2 grid. Each quarter is probed nearer the block centre so
+## bevelled corners do not read as holes.
+const TOP_GRID=2
+## Height of the highest upward face over each quarter of the block bounds (NAN where nothing is there).
+## Half and L-shaped concrete leave some quarters empty: caps there would hang in the air.
+static func top_cells(node:Node3D,area:AABB)->Array:
+	var triangles=[]
+	for mesh in node.find_children("*","MeshInstance3D",true,false):
+		if mesh.is_in_group("block_dressing") or fixture(node,mesh) or mesh.mesh==null:continue
+		var faces:PackedVector3Array=mesh.mesh.get_faces();var xf:Transform3D=mesh.global_transform
+		for i in range(0,faces.size(),3):
+			var a=xf*faces[i];var b=xf*faces[i+1];var c=xf*faces[i+2]
+			if absf((b-a).cross(c-a).normalized().y)>.85 and minf(a.y,minf(b.y,c.y))>area.position.y+area.size.y*.5:triangles.append([a,b,c])
+	var result=[];var cell=Vector2(area.size.x,area.size.z)/TOP_GRID;var middle=Vector2(area.get_center().x,area.get_center().z)
+	for row in TOP_GRID:
+		for column in TOP_GRID:
+			var corner=Vector2(area.position.x+(column+.5)*cell.x,area.position.z+(row+.5)*cell.y)
+			var height=NAN
+			# A few probes per quarter: a probe on a shared triangle edge may miss both triangles.
+			for probe in [middle.lerp(corner,.7),middle.lerp(corner,.55)+Vector2(.013,.007),middle.lerp(corner,.85)-Vector2(.009,.011)]:
+				for t in triangles:
+					if Geometry2D.point_is_inside_triangle(probe,Vector2(t[0].x,t[0].z),Vector2(t[1].x,t[1].z),Vector2(t[2].x,t[2].z)):
+						var top=maxf(t[0].y,maxf(t[1].y,t[2].y));height=top if is_nan(height) else maxf(height,top)
+			result.append(height)
+	return result
+
 ## Lamps, floodlights and light cones mounted on a block are not part of its shape.
 static func fixture(root:Node,mesh:Node)->bool:
 	var node=mesh
@@ -87,9 +113,23 @@ static func drifts(arena,kind:String):
 			var cover=1.0 if snow else rng.randf_range(.55,.8)
 			var offset=Vector3.ZERO if snow else Vector3(rng.randf_range(-.1,.1),0,rng.randf_range(-.1,.1))
 			var top=Vector3(area.get_center().x,area.end.y,area.get_center().z)+offset
-			# Square pillow that follows the block top, plus a soft rounded crown.
-			if snow:piece(wall.node,box,color,top+Vector3(0,.02,0),Vector3(size.x*.97,.04,size.z*.97),0.0,"weather_drifts")
-			piece(wall.node,sphere,color,top+Vector3(0,.035 if snow else 0.0,0),Vector3(size.x*.84*cover,.1 if snow else .08,size.z*.84*cover),0.0,"weather_drifts")
+			var heights=top_cells(wall.node,area)
+			var present=heights.filter(func(h):return not is_nan(h))
+			var flat=present.size()==heights.size() and present.max()-present.min()<.03
+			if flat or present.is_empty():
+				# Square pillow that follows the block top, plus a soft rounded crown.
+				if not present.is_empty():top.y=present.max()
+				if snow:piece(wall.node,box,color,top+Vector3(0,.02,0),Vector3(size.x*.97,.04,size.z*.97),0.0,"weather_drifts")
+				piece(wall.node,sphere,color,top+Vector3(0,.035 if snow else 0.0,0),Vector3(size.x*.84*cover,.1 if snow else .08,size.z*.84*cover),0.0,"weather_drifts")
+			else:
+				# Half and L-shaped blocks or raised details: a pillow on each real top quarter at its own height,
+				# never over the empty part.
+				var step=Vector2(size.x,size.z)/TOP_GRID
+				for i in heights.size():
+					if is_nan(heights[i]):continue
+					var center=Vector3(area.position.x+(i%TOP_GRID+.5)*step.x,heights[i],area.position.z+(i/TOP_GRID+.5)*step.y)
+					if snow:piece(wall.node,box,color,center+Vector3(0,.02,0),Vector3(step.x*.97,.04,step.y*.97),0.0,"weather_drifts")
+					piece(wall.node,sphere,color,center+Vector3(0,.03 if snow else 0.0,0),Vector3(step.x*.8*cover,.07 if snow else .06,step.y*.8*cover),0.0,"weather_drifts")
 		if rng.randf()<(.14 if snow else .2):
 			# Front edge faces the camera; the side arm goes to the visible right more often.
 			var side=1.0 if rng.randf()<.7 else -1.0
