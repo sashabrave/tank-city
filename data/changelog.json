@@ -2,6 +2,34 @@
 	"entries": [
 		{
 			"date": "2026-10-02",
+			"version": "0.7.1",
+			"ru": {
+				"title": "Мелочи, которые мешали",
+				"items": [
+					"Подсказка у окопа стала полупрозрачной: «E Выйти · C Вниз/Вверх».",
+					"Погода на карте маршрута — маленький значок в углу комнаты, дождей на 30% меньше.",
+					"Ящики со сплавом стоят вплотную к блокам, в углах, и не мешают проходу; они стали чуть крупнее.",
+					"Камера карты маршрута держит машину в кадре и смотрит чуть вперёд по ходу.",
+					"Облака у краёв поля выплывают из-за экрана, а не появляются внезапно.",
+					"Знак «!» над экраном задач стал крупнее, светится и подпрыгивает.",
+					"Новый логотип из кирпичных букв и новые шрифты интерфейса."
+				]
+			},
+			"en": {
+				"title": "Little things that got in the way",
+				"items": [
+					"The trench hint is half-transparent now: «E Exit · C Down/Up».",
+					"Route map weather is a small corner indicator, and there is 30% less rain.",
+					"Alloy crates sit snug in corners against blocks and stay out of passages; they are a bit bigger.",
+					"The route map camera keeps the car in view and looks slightly ahead.",
+					"Edge clouds drift in from off screen instead of popping up.",
+					"The «!» above the task screen is bigger, glows and bounces.",
+					"A new brick-letter logo and new interface fonts."
+				]
+			}
+		},
+		{
+			"date": "2026-10-02",
 			"version": "0.7.0",
 			"ru": {
 				"title": "Новая типографика",

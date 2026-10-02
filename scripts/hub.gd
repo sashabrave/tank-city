@@ -125,8 +125,11 @@ func _ready():
 	command_model.rotation.y=.55  # screen turned toward the hub centre and the camera
 	build_command_screen()
 	command_meshes=command_model.find_children("*","MeshInstance3D",true,false).filter(func(m):return not command_beams.is_ancestor_of(m))
-	command_alert=Visuals.label3d(self,"!",command_pos+Vector3(0,3.1,0),Color("ed4f40"),52)
-	command_alert.no_depth_test=true
+	# Task alert: a big glowing «!» that hops above the command screen.
+	command_alert=Visuals.label3d(self,"!",command_pos+Vector3(0,3.1,0),Color("ed4f40"),96)
+	command_alert.no_depth_test=true;command_alert.pixel_size=.014;command_alert.outline_size=16;command_alert.outline_modulate=Color(0,0,0,.55)
+	var halo=Visuals.label3d(command_alert,"!",Vector3(0,0,-.01),Color(1,.55,.4,.35),128);halo.name="Halo";halo.no_depth_test=true;halo.outline_size=0;halo.pixel_size=.014
+	var glow=OmniLight3D.new();glow.name="Glow";command_alert.add_child(glow);glow.light_color=Color("ff6a4d");glow.omni_range=2.6;glow.light_energy=1.4
 	refresh_command_alert()
 	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Управление",command_pos,1.65)
 	preload("res://scripts/ui/recycling_station.gd").model(self,recycling_pos)
@@ -241,7 +244,14 @@ func _physics_process(delta):
 		var targets=Game.progression.build_targets()
 		for id in build_arrows:
 			if is_instance_valid(build_arrows[id]):build_arrows[id].visible=id not in Game.built_workshops and (id in Game.research_unlocks or id in targets)
-	if is_instance_valid(command_alert):command_alert.position.y=command_pos.y+3.1+(1-cos(hint_clock*TAU/2.8))*.08
+	if is_instance_valid(command_alert):
+		# A hop every 1.2 s with a squash on landing; the halo and the light pulse with it.
+		var t=fposmod(hint_clock,1.2)/1.2;var hop=sin(minf(t/.45,1.0)*PI) if t<.45 else 0.0
+		command_alert.position.y=command_pos.y+3.4+hop*.5
+		var squash=1.0-(.18*sin((t-.45)/.15*PI) if t>=.45 and t<.6 else 0.0)
+		command_alert.scale=Vector3(2.0-squash,squash,1.0)
+		var pulse=.5+.5*sin(hint_clock*TAU/1.2)
+		command_alert.get_node("Halo").modulate.a=.2+.3*pulse;command_alert.get_node("Glow").light_energy=.9+1.1*pulse
 	for arrow in build_arrows.values():
 		if is_instance_valid(arrow):arrow.position.y=1.9+(1-cos(hint_clock*TAU/4.8))*.18
 	if is_instance_valid(build_menu):
