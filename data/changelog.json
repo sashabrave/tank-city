@@ -50,7 +50,8 @@
 					"Щитоносец сначала поворачивается к бойцу и плавно выставляет щит перед собой, а потом так же плавно опускает его.",
 					"«Лента» стала «Связью»: первой идёт история звонков майора (любой можно пересмотреть), сообщения больше не повторяют задания и не горят без дела.",
 					"Бонусы на поле больше не лежат вечно: через 25 секунд они исчезают, последние 5 секунд мигая.",
-					"У каждой вылазки своё название сражения по биому: «Битва при Медной роще», «Котёл у Ворчливого пустыря», «Прорыв к Лунному перевалу»."
+					"У каждой вылазки своё название сражения по биому: «Битва при Медной роще», «Котёл у Ворчливого пустыря», «Прорыв к Лунному перевалу».",
+					"Сервисные комнаты и торговец: у каждого визита своё настроение света, подвесные лампы с мягкими лучами, а за краем поля угадываются силуэты базы — краны, контейнеры, фермы."
 				]
 			},
 			"en": {
@@ -100,7 +101,8 @@
 					"The shield bearer first turns to the soldier and smoothly plants the shield in front, then lowers it just as smoothly.",
 					"«Feed» became «Comms»: the major's call history comes first (any call can be replayed), messages no longer repeat tasks or light up for nothing.",
 					"Field bonuses no longer lie forever: they vanish after 25 seconds, blinking for the last 5.",
-					"Every sortie gets its own battle name from its biome: «Battle of Copper Grove», «Pocket at Grumpy Wasteland», «Push to Moon Pass»."
+					"Every sortie gets its own battle name from its biome: «Battle of Copper Grove», «Pocket at Grumpy Wasteland», «Push to Moon Pass».",
+					"Service rooms and the merchant: each visit has its own light mood, pendant lamps with soft beams, and base silhouettes — cranes, containers, gantries — loom beyond the edge."
 				]
 			}
 		},
