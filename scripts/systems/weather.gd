@@ -59,6 +59,15 @@ static func weighted(options:Array,roll:float)->String:
 	return options[0]
 
 static func look(context:Node)->Dictionary:return LOOK.get(pick(context),{})
+## Wind of the current weather along +X (the way rain slants, snow drifts and sand streaks), units per second.
+## Biome particles ride it so they never fight the weather.
+func wind()->Vector3:
+	match kind:
+		"rain":var style=RAIN.get(rain_style,RAIN.shower);return Vector3(float(style.slant)*float(style.fall)*.9,0,0)
+		"snow":return Vector3(.35,0,.05)
+		"sandstorm":return Vector3(3.2,0,.15)
+		"fog":return Vector3(.15,0,0)
+	return Vector3(.45,0,.08)
 
 func setup(context):
 	arena=context;name="Weather"

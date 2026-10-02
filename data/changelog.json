@@ -33,7 +33,8 @@
 					"Выбор мира стал коллекцией карточек: картинка, номер, название, прогресс полей и медаль за пройденный мир, без лишнего текста. Последний открытый мир выбран сразу, E отправляет в бой, стрелки переключают.",
 					"Карта маршрута: прокрутка двумя пальцами на тачпаде Mac.",
 					"Карта маршрута заполняет весь экран: большие пирамидальные горы уходят за края, между ними руины хрущёвок и кирпичных многоэтажек разной степени разрушения. Расстановка новая в каждом забеге.",
-					"Логово генерала на карте стало большим и грозным: танк босса на железном троне из сваренных листов с шипами, кольцо штыков и огонь в жаровнях."
+					"Логово генерала на карте стало большим и грозным: танк босса на железном троне из сваренных листов с шипами, кольцо штыков и огонь в жаровнях.",
+					"Изредка над полем пролетает лист, пепел, песчинка или пух — по биому, не больше трёх за раз и по ветру текущей погоды. Отключается вместе с «Атмосферными частицами»."
 				]
 			},
 			"en": {
@@ -66,7 +67,8 @@
 					"World select is now a set of collectible cards: art, number, name, field progress and a medal for a cleared world, no clutter. The newest open world is preselected, E deploys, arrows switch.",
 					"Route map: two-finger trackpad scrolling on Mac.",
 					"The route map fills the whole screen: big pyramid mountains run past the edges, with ruined panel blocks and brick high-rises between them in various states of damage. The layout changes every run.",
-					"The general's lair on the map is big and menacing: the boss tank on an iron throne of welded spiked plates, a ring of bayonets and burning braziers."
+					"The general's lair on the map is big and menacing: the boss tank on an iron throne of welded spiked plates, a ring of bayonets and burning braziers.",
+					"Now and then a leaf, ash flake, sand grain or fluff drifts over the field — by biome, no more than three at once and with the wind of the current weather. Turns off with «Atmosphere particles»."
 				]
 			}
 		},
