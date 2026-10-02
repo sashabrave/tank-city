@@ -24,7 +24,8 @@
 					"Видеозвонок больше не проматывается случайным нажатием в момент открытия.",
 					"Флаг выхода появляется только после того, как открыт сундук командира — награда больше не остаётся забытой.",
 					"Киношный свет: контровой свет в дополнительном цвете обрисовывает модели, у каждой комнаты своё настроение; работает в бою, хабе и на карте.",
-					"Настройки графики разделены на «Графику» и «Экран», сверху — пресет «Экономно / Стандарт / Кино»."
+					"Настройки графики разделены на «Графику» и «Экран», сверху — пресет «Экономно / Стандарт / Кино».",
+					"Свет: меньше случайных фонарей на поле, а металл и вода отражают настоящую сцену вокруг."
 				]
 			},
 			"en": {
@@ -48,7 +49,8 @@
 					"A video call no longer skips on a stray key press as it opens.",
 					"The exit flag appears only after the commander's chest is opened, so the reward is never left behind.",
 					"Cinematic light: a complementary back light outlines models, each room gets its own mood; works in battle, the hub and the map.",
-					"Graphics settings are split into «Graphics» and «Screen», with an «Economy / Standard / Cinema» preset on top."
+					"Graphics settings are split into «Graphics» and «Screen», with an «Economy / Standard / Cinema» preset on top.",
+					"Lighting: fewer random lamps on the field, and metal and water reflect the real scene around them."
 				]
 			}
 		},

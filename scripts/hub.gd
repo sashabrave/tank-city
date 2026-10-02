@@ -87,6 +87,8 @@ func _ready():
 	for x in range(-5,8):
 		for z in range(-3,5):positions.append(Vector3(x,0,z))
 	Visuals.tiled_floor(self,positions)
+	# Hangar reflections for metal (T-065): captured once after the hub is built.
+	(func():preload("res://scripts/world_lighting.gd").reflection_probe(self,Vector3(16,6,10),Vector3(1,0,.5))).call_deferred()
 	var gate=Visuals.model("gate",self,Vector3(5,0,-2))
 	gate.scale=Vector3(1.4,1.4,1.4)
 	Visuals.box(self,Vector3(5,.03,-2),Vector3(2.6,.03,1.7),Color("d29849"))

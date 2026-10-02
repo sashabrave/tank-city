@@ -139,7 +139,7 @@ def build(family, variant):
                 t.blob((x, y, h * .7), .33 * scale * PUFF, NEEDLES, squash=.62)
                 t.blob((x - .05, y + .03, h * .9), .15 * scale * PUFF, TIPS, squash=.8)
         elif family == "palm":
-            h = 1.02 * scale
+            h = 1.2 * scale
             lean = rng.uniform(-.1, .1)
             seg = 4
             for k in range(seg):  # segmented trunk with little rings
@@ -153,7 +153,7 @@ def build(family, variant):
             for j in range(fronds):
                 a = j * math.tau / fronds + rng.uniform(-.2, .2)
                 d = Vector((math.cos(a), math.sin(a), 0)); side = Vector((-math.sin(a), math.cos(a), 0))
-                length = rng.uniform(.4, .56); lift = rng.uniform(.08, .16); droop = rng.uniform(.22, .36)
+                length = rng.uniform(.33, .44); lift = rng.uniform(.08, .15); droop = rng.uniform(.2, .32)
                 steps = 6
                 spine = [top + d * (length * k / steps) + Vector((0, 0, lift * math.sin(math.pi * .8 * k / steps) - droop * (k / steps) ** 2)) for k in range(steps + 1)]
                 for k in range(steps):

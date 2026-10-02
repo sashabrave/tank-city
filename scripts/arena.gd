@@ -342,6 +342,7 @@ func begin_room(index: int):
 	var dressing=preload("res://scripts/systems/field_dressing.gd").new();add_child(dressing);dressing.setup(self)
 	var crates=preload("res://scripts/systems/field_crates.gd").new();add_child(crates);crates.setup(self)
 	preload("res://scripts/systems/floor_ao.gd").build_for(self)
+	preload("res://scripts/world_lighting.gd").reflection_probe(self,Vector3(grid_size+4,6,grid_size+4))
 	var previous=get_node_or_null("BiomeParticles")
 	if previous:previous.name="BiomeParticlesOld";previous.queue_free()
 	var drifting=preload("res://scripts/systems/biome_particles.gd").new();add_child(drifting);drifting.setup(self,weather)

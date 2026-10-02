@@ -274,11 +274,12 @@ static func field(arena):
 	var rng=RandomNumberGenerator.new();rng.seed=arena.run_seed+arena.room_index*3907+711
 	var candidates=arena.walls.keys().filter(func(c):return arena.walls[c].hp<0 and not arena.walls[c].has("half_side") and c.y>1 and c.y<arena.grid_size-2)
 	# Fixtures sit on existing solid cover; no new collision or pathfinding cells.
-	var count=mini(candidates.size(),rng.randi_range(2,4))
+	# Fewer, deliberate pools of light (T-065): overlapping lamps read as noise from above.
+	var count=mini(candidates.size(),rng.randi_range(1,3))
 	for i in range(count):
 		var index=rng.randi_range(0,candidates.size()-1);var cell=candidates.pop_at(index)
 		preload("res://scripts/base_surroundings.gd").lamp(arena.walls[cell].node,Vector3(0,1.0,0))
-	for i in range(mini(2,candidates.size())):
+	for i in range(mini(rng.randi_range(0,1),candidates.size())):
 		var index=rng.randi_range(0,candidates.size()-1);var cell=candidates.pop_at(index)
 		floodlight(arena.walls[cell].node,Vector3(0,1.02,0),rng.randf()*TAU)
 	# A few fixtures stutter now and then (T-016): about a quarter of the field lamps, never all at once.
@@ -293,6 +294,15 @@ static func field(arena):
 		var drum=preload("res://scripts/fire_barrel.gd").new();drum.intensity=.5;drum.tint=Color(arena.room_palette().wall).darkened(.62).lerp(Color("3a2c24"),.3);arena.add_child(drum)
 		drum.position=arena.world_pos(Vector2i(-1 if side<0 else arena.grid_size,row))+Vector3(side*.35,0,0)
 
+## One reflection probe over a whole field or the hub (T-065/T-005): captured once when the room is built,
+## so metal and water reflect the real scene instead of an empty sky. Costs only at room load.
+static func reflection_probe(parent:Node3D,extent:Vector3,center:=Vector3.ZERO):
+	var old=parent.get_node_or_null("SceneReflection")
+	if old:old.name="SceneReflectionOld";old.queue_free()
+	if not bool(Settings.values.get("shiny_metal",true)) or not bool(Settings.values.get("shaders",true)):return
+	var probe=ReflectionProbe.new();probe.name="SceneReflection";parent.add_child(probe)
+	probe.position=center+Vector3(0,1.6,0);probe.size=extent;probe.box_projection=true;probe.update_mode=ReflectionProbe.UPDATE_ONCE
+	probe.intensity=.8;probe.max_distance=extent.length();probe.enable_shadows=false
 static func add_cone(light:SpotLight3D):
 	var cone=MeshInstance3D.new();cone.name="SoftCone";cone.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	var mesh=CylinderMesh.new();mesh.top_radius=.018;mesh.bottom_radius=tan(deg_to_rad(light.spot_angle))*light.spot_range*.68;mesh.height=light.spot_range*.8;mesh.radial_segments=16;mesh.rings=1;mesh.cap_top=false;mesh.cap_bottom=false
