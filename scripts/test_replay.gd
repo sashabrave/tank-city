@@ -34,7 +34,7 @@ func next():
 			var choices=Campaign.service_options(arena.run_seed,event.room)
 			for i in range(2):
 				var branch=choices[i]
-				UiKit.button(panel,{"vehicle":"Механик","ability":"Способность","headquarters":"Штаб"}[branch],Vector2(30+i*435,215),Vector2(410,60),func():open_service(branch,event.room),i==1)
+				UiKit.button(panel,{"vehicle":"Механик","ability":"Способность","headquarters":"Штаб","merchant":"Торговец"}[branch],Vector2(30+i*435,215),Vector2(410,60),func():open_service(branch,event.room),i==1)
 	var root=arena.hud.root
 	var old=root.get_node_or_null("ReplayProgress")
 	if old:old.queue_free()

@@ -4,9 +4,10 @@ func _ready():
 	Game.save_enabled=false;Game.sound_enabled=false;Settings.persistence_enabled=false
 	for world in range(1,4):
 		Campaign.configure(world)
-		assert(Campaign.SIZES.size()==7 and Campaign.BOSSES==[6],"Six fields and boss in every world")
+		# World 3 adds the final citadel after its boss.
+		assert(Campaign.BOSSES[0]==6 and Campaign.BOSSES==([6,7] if world==3 else [6]) and Campaign.SIZES.size()==Campaign.BOSSES.back()+1,"Six fields and boss in every world")
 		for seed_value in range(300):
-			for room in range(Campaign.SIZES.size()-1):
+			for room in range(Campaign.BOSSES[0]):
 				for wave in range(3):
 					var roster=WaveDirector.build(seed_value,room,wave)
 					assert(roster==WaveDirector.build(seed_value,room,wave),"Deterministic")
@@ -16,10 +17,15 @@ func _ready():
 						if e.weapon=="rpg" or e.kind=="tank":heavy+=1
 						elif e.kind in WaveDirector.LIGHT:light+=1
 						else:people+=1
+					# Waves are squads of the field's tier or lighter: infantry, then light vehicles; tanks open every late wave.
+					var squads=SquadCatalog.pool(WaveDirector.content_tier(room),wave).map(func(sq):return sq.id)
+					assert(roster.all(func(e):return e.squad in squads),"Squads of the field tier")
+					assert(people>0)
 					if room<2:assert(light==0 and heavy==0)
-					elif room<4:assert(people==3 and light>=3 and heavy==0)
-					else:assert(people==2 and light==2 and heavy>=3)
-					assert(roster.filter(func(e):return e.kind=="tank").size()<=3)
+					elif room<4:assert(heavy==0)
+					else:assert(roster[0].kind=="tank" and heavy>=1)
+					for kind in SquadCatalog.CAPS:
+						assert(roster.filter(func(e):return e.weapon=="rpg" if kind=="rpg" else e.kind==kind).size()<=SquadCatalog.CAPS[kind])
 					checks+=1
 				for lane in range(3):
 					var e=WaveDirector.commander_entry(seed_value,room,"%d:%d" % [room,lane])
