@@ -540,7 +540,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-043.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "боссы комнат явно должны быть сильнее в 2 раза где-то  и опаснее",
 			"type": "bug",
 			"version": "0.7.1-pre"
