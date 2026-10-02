@@ -46,6 +46,15 @@ static func glass(parent: Node,pos: Vector2,dimensions: Vector2,color=Color("242
 	else:s.bg_color=Color(color,.94)
 	return widget
 
+## Turn an existing panel (scene or code) into frosted glass, the same look as glass() (T-042).
+static func glassify(widget:Panel,color=Color("242d27")):
+	var s=style(Color(color,1.0),18,Color(1,1,1,.16));s.set_corner_radius_all(18);s.border_color=Color(1,1,1,.16)
+	widget.add_theme_stylebox_override("panel",s)
+	if Settings.values.get("ui_glass",true):
+		var material=ShaderMaterial.new();material.shader=preload("res://shaders/ui/glass.gdshader");widget.material=material
+		widget.resized.connect(func():material.set_shader_parameter("panel_height",maxf(widget.size.y,1.0)))
+		material.set_shader_parameter("panel_height",maxf(widget.size.y,1.0))
+	else:s.bg_color=Color(color,.94)
 ## Notification markers (design system). One meaning per colour, the same in 2D and in the world:
 ## news — something new not yet seen; ready — an action is affordable now; goal — where to go next.
 const NOTICE={"news":Color("ff6b57"),"ready":Color("8fe895"),"goal":Color("f1cf55")}

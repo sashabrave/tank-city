@@ -100,6 +100,9 @@ func _ready():
 	biome_panel=UiKit.panel(root,Vector2(20,320),Vector2(235,78))
 	biome_label=UiKit.label(biome_panel,"",Vector2(12,8),Vector2(211,62),13)
 	biome_label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	# Every top-level HUD panel is frosted glass, like the rest of the interface (T-042).
+	for child in root.get_children():
+		if child is Panel:UiKit.glassify(child)
 	_layout()
 
 func _layout():

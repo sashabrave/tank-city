@@ -8,7 +8,8 @@
 				"items": [
 					"При уроне краснеет только боец или машина, свет фонаря и фар остаётся прежним.",
 					"Некоторые фонари на поле изредка помигивают.",
-					"Солнце снова честное: на рассвете и закате оно низкое, тени длиннее, но мягче."
+					"Солнце снова честное: на рассвете и закате оно низкое, тени длиннее, но мягче.",
+					"Панели в бою стали полупрозрачным стеклом, как остальной интерфейс."
 				]
 			},
 			"en": {
@@ -16,7 +17,8 @@
 				"items": [
 					"On a hit only the soldier or vehicle turns red; flashlights and headlights keep their colour.",
 					"Some field lamps flicker now and then.",
-					"The sun is honest again: low at dawn and sunset, with longer but softer shadows."
+					"The sun is honest again: low at dawn and sunset, with longer but softer shadows.",
+					"Battle panels are frosted glass now, like the rest of the interface."
 				]
 			}
 		},

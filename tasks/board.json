@@ -527,7 +527,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-042.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "сделай все панельки в игре на экране боя/карты тоже прозрачными размытами как в игре остальные,",
 			"type": "bug",
 			"version": "0.7.1-pre"
