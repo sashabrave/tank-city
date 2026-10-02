@@ -1628,7 +1628,7 @@
             512,
             512
           ],
-          "sha256": "fbbf8c5aa6f315ae15e2312e8ca4300c23093214683a57bc0ca2685f36a124bf"
+          "sha256": "61d37386a3558a8ea15dc72c8a7fba4446732699970156011bc472e2adc1c79f"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/stats/crit_chance.png",
@@ -1700,7 +1700,7 @@
             512,
             512
           ],
-          "sha256": "948df03a6eebe19a19a504653d3db7328f23d299126f22820bbcb1c60b33a72c"
+          "sha256": "008811c53b404fde0abb0adfa2b9d8201a36b4c7fb30af6e6641ae7262223d7b"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/stats/luck.png",
@@ -1748,7 +1748,7 @@
             512,
             512
           ],
-          "sha256": "bbb312ca7dbe9bd8e5385ce3222ec5494296d7b4ae26c1541645feee61f7c225"
+          "sha256": "48725ea2dbf8212cd85705c3bc89eb91b29cd9f7866ed4450d22a2665de98631"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/stats/guard_vehicle.png",
@@ -1820,7 +1820,7 @@
             512,
             512
           ],
-          "sha256": "2ba1cf9a36c98a6d599d4df34585adf9818bf4a0646878186c41947a4efa22af"
+          "sha256": "ac1dc531fa2f7eb95ab36fadbe365905b7198c599d02a9984a374e4ca175f8cc"
         },
         "nano_banana": {
           "path": "res://assets/illustrations/nano_banana/icons/stats/marauder.png",

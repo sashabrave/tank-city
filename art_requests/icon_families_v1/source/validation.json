@@ -8,5 +8,10 @@
   ],
   "mode": "RGBA",
   "transparent_corners": true,
-  "frame_centers_transparent": true
+  "frame_centers_transparent": true,
+  "covered_original_icons": 82,
+  "windowed_godot": true,
+  "production_generations": 4,
+  "source_revision": "876e36e^",
+  "pending_refresh_in_parallel_install": 4
 }

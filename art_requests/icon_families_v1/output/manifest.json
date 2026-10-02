@@ -5,7 +5,7 @@
     {
       "path": "upgrades/ace.png",
       "family": "firepower",
-      "source": "assets/illustrations/gpt_image_2_5/icons/upgrades/ace.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/upgrades/ace.png",
       "size": [
         512,
         512
@@ -15,7 +15,7 @@
     {
       "path": "upgrades/boarding.png",
       "family": "logistics",
-      "source": "assets/illustrations/gpt_image_2_5/icons/upgrades/boarding.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/upgrades/boarding.png",
       "size": [
         512,
         512
@@ -25,7 +25,7 @@
     {
       "path": "upgrades/crew.png",
       "family": "logistics",
-      "source": "assets/illustrations/gpt_image_2_5/icons/upgrades/crew.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/upgrades/crew.png",
       "size": [
         512,
         512
@@ -35,7 +35,7 @@
     {
       "path": "upgrades/crit_chance.png",
       "family": "firepower",
-      "source": "assets/illustrations/gpt_image_2_5/icons/upgrades/crit_chance.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/upgrades/crit_chance.png",
       "size": [
         512,
         512
@@ -45,7 +45,7 @@
     {
       "path": "upgrades/crit_damage.png",
       "family": "firepower",
-      "source": "assets/illustrations/gpt_image_2_5/icons/upgrades/crit_damage.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/upgrades/crit_damage.png",
       "size": [
         512,
         512
@@ -55,7 +55,7 @@
     {
       "path": "upgrades/damage.png",
       "family": "firepower",
-      "source": "assets/illustrations/gpt_image_2_5/icons/upgrades/damage.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/upgrades/damage.png",
       "size": [
         512,
         512
@@ -65,7 +65,7 @@
     {
       "path": "upgrades/device_cooldown.png",
       "family": "logistics",
-      "source": "assets/illustrations/gpt_image_2_5/icons/upgrades/device_cooldown.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/upgrades/device_cooldown.png",
       "size": [
         512,
         512
@@ -75,7 +75,7 @@
     {
       "path": "upgrades/device_power.png",
       "family": "logistics",
-      "source": "assets/illustrations/gpt_image_2_5/icons/upgrades/device_power.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/upgrades/device_power.png",
       "size": [
         512,
         512
@@ -85,7 +85,7 @@
     {
       "path": "upgrades/dodge.png",
       "family": "survival",
-      "source": "assets/illustrations/gpt_image_2_5/icons/upgrades/dodge.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/upgrades/dodge.png",
       "size": [
         512,
         512
@@ -95,7 +95,7 @@
     {
       "path": "upgrades/exit_dash.png",
       "family": "logistics",
-      "source": "assets/illustrations/gpt_image_2_5/icons/upgrades/exit_dash.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/upgrades/exit_dash.png",
       "size": [
         512,
         512
@@ -105,7 +105,7 @@
     {
       "path": "upgrades/field_repair.png",
       "family": "logistics",
-      "source": "assets/illustrations/gpt_image_2_5/icons/upgrades/field_repair.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/upgrades/field_repair.png",
       "size": [
         512,
         512
@@ -115,7 +115,7 @@
     {
       "path": "upgrades/fire.png",
       "family": "firepower",
-      "source": "assets/illustrations/gpt_image_2_5/icons/upgrades/fire.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/upgrades/fire.png",
       "size": [
         512,
         512
@@ -125,7 +125,7 @@
     {
       "path": "upgrades/fortress.png",
       "family": "survival",
-      "source": "assets/illustrations/gpt_image_2_5/icons/upgrades/fortress.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/upgrades/fortress.png",
       "size": [
         512,
         512
@@ -135,7 +135,7 @@
     {
       "path": "upgrades/ghost.png",
       "family": "recon",
-      "source": "assets/illustrations/gpt_image_2_5/icons/upgrades/ghost.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/upgrades/ghost.png",
       "size": [
         512,
         512
@@ -145,7 +145,7 @@
     {
       "path": "upgrades/guard_blast.png",
       "family": "survival",
-      "source": "assets/illustrations/gpt_image_2_5/icons/upgrades/guard_blast.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/upgrades/guard_blast.png",
       "size": [
         512,
         512
@@ -155,7 +155,7 @@
     {
       "path": "upgrades/guard_bullet.png",
       "family": "survival",
-      "source": "assets/illustrations/gpt_image_2_5/icons/upgrades/guard_bullet.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/upgrades/guard_bullet.png",
       "size": [
         512,
         512
@@ -165,7 +165,7 @@
     {
       "path": "upgrades/guard_vehicle.png",
       "family": "survival",
-      "source": "assets/illustrations/gpt_image_2_5/icons/upgrades/guard_vehicle.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/upgrades/guard_vehicle.png",
       "size": [
         512,
         512
@@ -175,7 +175,7 @@
     {
       "path": "upgrades/healing.png",
       "family": "survival",
-      "source": "assets/illustrations/gpt_image_2_5/icons/upgrades/healing.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/upgrades/healing.png",
       "size": [
         512,
         512
@@ -185,7 +185,7 @@
     {
       "path": "upgrades/health.png",
       "family": "survival",
-      "source": "assets/illustrations/gpt_image_2_5/icons/upgrades/health.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/upgrades/health.png",
       "size": [
         512,
         512
@@ -195,7 +195,7 @@
     {
       "path": "upgrades/intercept.png",
       "family": "firepower",
-      "source": "assets/illustrations/gpt_image_2_5/icons/upgrades/intercept.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/upgrades/intercept.png",
       "size": [
         512,
         512
@@ -205,7 +205,7 @@
     {
       "path": "upgrades/landing.png",
       "family": "logistics",
-      "source": "assets/illustrations/gpt_image_2_5/icons/upgrades/landing.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/upgrades/landing.png",
       "size": [
         512,
         512
@@ -215,7 +215,7 @@
     {
       "path": "upgrades/last_stand.png",
       "family": "survival",
-      "source": "assets/illustrations/gpt_image_2_5/icons/upgrades/last_stand.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/upgrades/last_stand.png",
       "size": [
         512,
         512
@@ -225,7 +225,7 @@
     {
       "path": "upgrades/luck.png",
       "family": "recon",
-      "source": "assets/illustrations/gpt_image_2_5/icons/upgrades/luck.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/upgrades/luck.png",
       "size": [
         512,
         512
@@ -235,7 +235,7 @@
     {
       "path": "upgrades/marauder.png",
       "family": "recon",
-      "source": "assets/illustrations/gpt_image_2_5/icons/upgrades/marauder.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/upgrades/marauder.png",
       "size": [
         512,
         512
@@ -245,7 +245,7 @@
     {
       "path": "upgrades/opening_shot.png",
       "family": "firepower",
-      "source": "assets/illustrations/gpt_image_2_5/icons/upgrades/opening_shot.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/upgrades/opening_shot.png",
       "size": [
         512,
         512
@@ -255,7 +255,7 @@
     {
       "path": "upgrades/pierce.png",
       "family": "firepower",
-      "source": "assets/illustrations/gpt_image_2_5/icons/upgrades/pierce.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/upgrades/pierce.png",
       "size": [
         512,
         512
@@ -265,7 +265,7 @@
     {
       "path": "upgrades/range.png",
       "family": "firepower",
-      "source": "assets/illustrations/gpt_image_2_5/icons/upgrades/range.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/upgrades/range.png",
       "size": [
         512,
         512
@@ -275,7 +275,7 @@
     {
       "path": "upgrades/safe.png",
       "family": "logistics",
-      "source": "assets/illustrations/gpt_image_2_5/icons/upgrades/safe.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/upgrades/safe.png",
       "size": [
         512,
         512
@@ -285,7 +285,7 @@
     {
       "path": "upgrades/speed.png",
       "family": "logistics",
-      "source": "assets/illustrations/gpt_image_2_5/icons/upgrades/speed.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/upgrades/speed.png",
       "size": [
         512,
         512
@@ -295,7 +295,7 @@
     {
       "path": "upgrades/stealth.png",
       "family": "recon",
-      "source": "assets/illustrations/gpt_image_2_5/icons/upgrades/stealth.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/upgrades/stealth.png",
       "size": [
         512,
         512
@@ -305,7 +305,7 @@
     {
       "path": "upgrades/weapon_damage.png",
       "family": "firepower",
-      "source": "assets/illustrations/gpt_image_2_5/icons/upgrades/weapon_damage.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/upgrades/weapon_damage.png",
       "size": [
         512,
         512
@@ -315,7 +315,7 @@
     {
       "path": "upgrades/weapon_fire.png",
       "family": "firepower",
-      "source": "assets/illustrations/gpt_image_2_5/icons/upgrades/weapon_fire.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/upgrades/weapon_fire.png",
       "size": [
         512,
         512
@@ -325,7 +325,7 @@
     {
       "path": "upgrades/weapon_intercept.png",
       "family": "firepower",
-      "source": "assets/illustrations/gpt_image_2_5/icons/upgrades/weapon_intercept.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/upgrades/weapon_intercept.png",
       "size": [
         512,
         512
@@ -455,7 +455,7 @@
     {
       "path": "abilities/airstrike.png",
       "family": "abilities",
-      "source": "assets/illustrations/gpt_image_2_5/icons/abilities/airstrike.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/abilities/airstrike.png",
       "size": [
         512,
         512
@@ -465,7 +465,7 @@
     {
       "path": "abilities/ally_drone.png",
       "family": "abilities",
-      "source": "assets/illustrations/gpt_image_2_5/icons/abilities/ally_drone.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/abilities/ally_drone.png",
       "size": [
         512,
         512
@@ -475,7 +475,7 @@
     {
       "path": "abilities/barrier.png",
       "family": "abilities",
-      "source": "assets/illustrations/gpt_image_2_5/icons/abilities/barrier.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/abilities/barrier.png",
       "size": [
         512,
         512
@@ -485,7 +485,7 @@
     {
       "path": "abilities/cloak.png",
       "family": "abilities",
-      "source": "assets/illustrations/gpt_image_2_5/icons/abilities/cloak.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/abilities/cloak.png",
       "size": [
         512,
         512
@@ -495,7 +495,7 @@
     {
       "path": "abilities/comrade.png",
       "family": "abilities",
-      "source": "assets/illustrations/gpt_image_2_5/icons/abilities/comrade.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/abilities/comrade.png",
       "size": [
         512,
         512
@@ -505,7 +505,7 @@
     {
       "path": "abilities/field_repair.png",
       "family": "abilities",
-      "source": "assets/illustrations/gpt_image_2_5/icons/abilities/field_repair.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/abilities/field_repair.png",
       "size": [
         512,
         512
@@ -515,7 +515,7 @@
     {
       "path": "abilities/gas.png",
       "family": "abilities",
-      "source": "assets/illustrations/gpt_image_2_5/icons/abilities/gas.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/abilities/gas.png",
       "size": [
         512,
         512
@@ -525,7 +525,7 @@
     {
       "path": "abilities/grenade.png",
       "family": "abilities",
-      "source": "assets/illustrations/gpt_image_2_5/icons/abilities/grenade.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/abilities/grenade.png",
       "size": [
         512,
         512
@@ -535,7 +535,7 @@
     {
       "path": "abilities/laser.png",
       "family": "abilities",
-      "source": "assets/illustrations/gpt_image_2_5/icons/abilities/laser.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/abilities/laser.png",
       "size": [
         512,
         512
@@ -545,7 +545,7 @@
     {
       "path": "abilities/mine.png",
       "family": "abilities",
-      "source": "assets/illustrations/gpt_image_2_5/icons/abilities/mine.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/abilities/mine.png",
       "size": [
         512,
         512
@@ -555,7 +555,7 @@
     {
       "path": "abilities/shield.png",
       "family": "abilities",
-      "source": "assets/illustrations/gpt_image_2_5/icons/abilities/shield.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/abilities/shield.png",
       "size": [
         512,
         512
@@ -565,7 +565,7 @@
     {
       "path": "headquarters/hq_emp.png",
       "family": "headquarters",
-      "source": "assets/illustrations/gpt_image_2_5/icons/headquarters/hq_emp.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/headquarters/hq_emp.png",
       "size": [
         512,
         512
@@ -575,7 +575,7 @@
     {
       "path": "headquarters/hq_field.png",
       "family": "headquarters",
-      "source": "assets/illustrations/gpt_image_2_5/icons/headquarters/hq_field.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/headquarters/hq_field.png",
       "size": [
         512,
         512
@@ -585,7 +585,7 @@
     {
       "path": "headquarters/hq_interceptor.png",
       "family": "headquarters",
-      "source": "assets/illustrations/gpt_image_2_5/icons/headquarters/hq_interceptor.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/headquarters/hq_interceptor.png",
       "size": [
         512,
         512
@@ -595,7 +595,7 @@
     {
       "path": "headquarters/hq_medbay.png",
       "family": "headquarters",
-      "source": "assets/illustrations/gpt_image_2_5/icons/headquarters/hq_medbay.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/headquarters/hq_medbay.png",
       "size": [
         512,
         512
@@ -605,7 +605,7 @@
     {
       "path": "headquarters/hq_patch.png",
       "family": "headquarters",
-      "source": "assets/illustrations/gpt_image_2_5/icons/headquarters/hq_patch.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/headquarters/hq_patch.png",
       "size": [
         512,
         512
@@ -615,7 +615,7 @@
     {
       "path": "headquarters/hq_plating.png",
       "family": "headquarters",
-      "source": "assets/illustrations/gpt_image_2_5/icons/headquarters/hq_plating.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/headquarters/hq_plating.png",
       "size": [
         512,
         512
@@ -625,7 +625,7 @@
     {
       "path": "headquarters/hq_regen.png",
       "family": "headquarters",
-      "source": "assets/illustrations/gpt_image_2_5/icons/headquarters/hq_regen.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/headquarters/hq_regen.png",
       "size": [
         512,
         512
@@ -635,7 +635,7 @@
     {
       "path": "headquarters/hq_supply.png",
       "family": "headquarters",
-      "source": "assets/illustrations/gpt_image_2_5/icons/headquarters/hq_supply.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/headquarters/hq_supply.png",
       "size": [
         512,
         512
@@ -645,7 +645,7 @@
     {
       "path": "headquarters/hq_tesla.png",
       "family": "headquarters",
-      "source": "assets/illustrations/gpt_image_2_5/icons/headquarters/hq_tesla.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/headquarters/hq_tesla.png",
       "size": [
         512,
         512
@@ -655,7 +655,7 @@
     {
       "path": "garage/apc_armor.png",
       "family": "garage",
-      "source": "assets/illustrations/gpt_image_2_5/icons/garage/apc_armor.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/garage/apc_armor.png",
       "size": [
         512,
         512
@@ -665,7 +665,7 @@
     {
       "path": "garage/apc_gun.png",
       "family": "garage",
-      "source": "assets/illustrations/gpt_image_2_5/icons/garage/apc_gun.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/garage/apc_gun.png",
       "size": [
         512,
         512
@@ -675,7 +675,7 @@
     {
       "path": "garage/apc_loader.png",
       "family": "garage",
-      "source": "assets/illustrations/gpt_image_2_5/icons/garage/apc_loader.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/garage/apc_loader.png",
       "size": [
         512,
         512
@@ -685,7 +685,7 @@
     {
       "path": "garage/buggy_armor.png",
       "family": "garage",
-      "source": "assets/illustrations/gpt_image_2_5/icons/garage/buggy_armor.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/garage/buggy_armor.png",
       "size": [
         512,
         512
@@ -695,7 +695,7 @@
     {
       "path": "garage/buggy_gun.png",
       "family": "garage",
-      "source": "assets/illustrations/gpt_image_2_5/icons/garage/buggy_gun.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/garage/buggy_gun.png",
       "size": [
         512,
         512
@@ -705,7 +705,7 @@
     {
       "path": "garage/buggy_loader.png",
       "family": "garage",
-      "source": "assets/illustrations/gpt_image_2_5/icons/garage/buggy_loader.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/garage/buggy_loader.png",
       "size": [
         512,
         512
@@ -715,7 +715,7 @@
     {
       "path": "garage/tank_armor.png",
       "family": "garage",
-      "source": "assets/illustrations/gpt_image_2_5/icons/garage/tank_armor.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/garage/tank_armor.png",
       "size": [
         512,
         512
@@ -725,7 +725,7 @@
     {
       "path": "garage/tank_gun.png",
       "family": "garage",
-      "source": "assets/illustrations/gpt_image_2_5/icons/garage/tank_gun.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/garage/tank_gun.png",
       "size": [
         512,
         512
@@ -735,7 +735,7 @@
     {
       "path": "garage/tank_loader.png",
       "family": "garage",
-      "source": "assets/illustrations/gpt_image_2_5/icons/garage/tank_loader.png",
+      "source": "git:876e36e^/assets/illustrations/gpt_image_2_5/icons/garage/tank_loader.png",
       "size": [
         512,
         512
@@ -750,7 +750,7 @@
         512,
         512
       ],
-      "sha256": "fbbf8c5aa6f315ae15e2312e8ca4300c23093214683a57bc0ca2685f36a124bf"
+      "sha256": "61d37386a3558a8ea15dc72c8a7fba4446732699970156011bc472e2adc1c79f"
     },
     {
       "path": "stats/crit_damage.png",
@@ -780,7 +780,7 @@
         512,
         512
       ],
-      "sha256": "948df03a6eebe19a19a504653d3db7328f23d299126f22820bbcb1c60b33a72c"
+      "sha256": "008811c53b404fde0abb0adfa2b9d8201a36b4c7fb30af6e6641ae7262223d7b"
     },
     {
       "path": "stats/guard_bullet.png",
@@ -800,7 +800,7 @@
         512,
         512
       ],
-      "sha256": "bbb312ca7dbe9bd8e5385ce3222ec5494296d7b4ae26c1541645feee61f7c225"
+      "sha256": "48725ea2dbf8212cd85705c3bc89eb91b29cd9f7866ed4450d22a2665de98631"
     },
     {
       "path": "stats/guard_blast.png",
@@ -830,7 +830,7 @@
         512,
         512
       ],
-      "sha256": "2ba1cf9a36c98a6d599d4df34585adf9818bf4a0646878186c41947a4efa22af"
+      "sha256": "ac1dc531fa2f7eb95ab36fadbe365905b7198c599d02a9984a374e4ca175f8cc"
     },
     {
       "path": "stats/safe_slots.png",
