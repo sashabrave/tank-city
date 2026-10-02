@@ -114,7 +114,7 @@ func _ready():
 	resized.connect(layout);layout();show_step()
 	Game.sound("telegram_accept",self)
 	Game.notifications.post("Видеосвязь: "+MAJOR)
-	next_button.grab_focus()
+	# No button is focused on open: a stray Space/Enter/E from the game must not skip the first line (T-048).
 
 func layout():
 	const PAD=24.0
@@ -154,6 +154,7 @@ func show_step():
 	reveal=create_tween();reveal.tween_property(line_label,"visible_ratio",1.0,clampf(line_label.text.length()*.018,.25,1.2))
 
 func advance():
+	if clock<.6:return
 	if line_label.visible_ratio<1.0:
 		if reveal:reveal.kill()
 		line_label.visible_ratio=1.0;return

@@ -1,5 +1,5 @@
 {
-	"next_id": 67,
+	"next_id": 68,
 	"tasks": [
 		{
 			"id": "T-001",
@@ -605,7 +605,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-048.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "на видео звонках по умолчанию в фокусе кнопка \"дальше\" я пропустил текст звонка;",
 			"type": "bug",
 			"version": "0.7.1-pre"
@@ -835,6 +835,18 @@
 			"priority": 1,
 			"status": "backlog",
 			"version": "0.7.2",
+			"created": "2026-10-02",
+			"source": "chat",
+			"shot": ""
+		},
+		{
+			"id": "T-067",
+			"title": "Раздел «Связь» в планшете: архив звонков и писем",
+			"note": "Из T-048: пропущенный звонок можно перечитать.",
+			"type": "idea",
+			"priority": 2,
+			"status": "backlog",
+			"version": "0.8",
 			"created": "2026-10-02",
 			"source": "chat",
 			"shot": ""

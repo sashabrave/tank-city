@@ -20,7 +20,8 @@
 					"Песок: дюны крупнее, их меньше, и они изгибаются по-разному.",
 					"Пальмы получили настоящие перистые листья вместо «вазы» на макушке.",
 					"В бою справа сверху рядом с «Поле» видно звёзды сложности арены.",
-					"На экране выбора мира выбранный мир сразу обведён рамкой."
+					"На экране выбора мира выбранный мир сразу обведён рамкой.",
+					"Видеозвонок больше не проматывается случайным нажатием в момент открытия."
 				]
 			},
 			"en": {
@@ -40,7 +41,8 @@
 					"Sand: bigger, fewer dunes that curve in different ways.",
 					"Palms got real feathered leaves instead of a vase-like top.",
 					"In battle, the arena's difficulty stars show next to «Field» in the top right.",
-					"On the world select screen the chosen world is framed right away."
+					"On the world select screen the chosen world is framed right away.",
+					"A video call no longer skips on a stray key press as it opens."
 				]
 			}
 		},

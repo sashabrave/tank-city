@@ -14,6 +14,8 @@ func run():
 	var built=Game.built_workshops.duplicate();Game.built_workshops.erase("garage")
 	check(Call.due(null)=="intro","intro comes first")
 	var view=Call.new();view.id="intro";add_child(view);await get_tree().process_frame
+	view.advance();check(view.step==0,"a stray key right after opening does not skip the first line")
+	view.clock=1.0
 	for i in range(40):
 		if not is_instance_valid(view):break
 		view.advance();view.advance()
