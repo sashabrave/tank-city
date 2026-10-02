@@ -26,6 +26,8 @@ func run():
 	var husk=arena.make_wreck("apc",Vector2i(2,4),Vector2i.UP,true)
 	husk.explode()
 	check(husk in arena.room.wrecks and husk.husk and not husk.boardable,"blown-up vehicle stays as a charred husk")
+	await get_tree().process_frame
+	check(husk.model.find_children("*","Light3D",true,false).is_empty() and husk.model.find_children("SoftCone","MeshInstance3D",true,false).is_empty(),"husk has no headlights or light cones (T-085)")
 	husk.take_damage(3.0);check(is_instance_valid(husk) and not husk.spent,"the husk takes a few hits")
 	husk.take_damage(3.0);check(husk.spent and husk not in arena.room.wrecks,"enough hits break it apart")
 	print("WRECK CREW: %d failures" % failures);get_tree().quit(1 if failures else 0)

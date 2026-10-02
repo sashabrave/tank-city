@@ -208,6 +208,8 @@ static func tint_model(node: Node, tint: Color):
 	# Local overrides keep the shared palette and actor colors unchanged.
 	var mat=material(tint)
 	for mesh in node.find_children("*","MeshInstance3D",true,false):
+		# Light cones and floor shadows keep their own shaders (a tinted cone drew a black wedge, T-085).
+		if mesh.name in ["SoftCone","ContactShadow"]:continue
 		mesh.material_override=mat
 
 static func cozy_model(kind:String,parent:Node3D,pos:Vector3)->Node3D:

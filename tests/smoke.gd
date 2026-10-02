@@ -95,7 +95,7 @@ func run():
 			arena.room_index=room;arena.wave=wave;arena.phase="combat";arena.spawn_queue.clear()
 			arena.room_boss_spawned=true;arena.finish_wave()
 			if wave==2:arena.open_flag()
-			check(arena.phase=="upgrade","upgrade r%d w%d" % [room+1,wave+1])
+			check(arena.phase=="upgrade","upgrade r%d w%d (%s, mode %s)" % [room+1,wave+1,arena.phase,arena.room.mode])
 			arena.apply_upgrade("damage")
 			if wave==2:
 				check(arena.reward_claimed and arena.room_index==room,"flag upgrade waits for departure")

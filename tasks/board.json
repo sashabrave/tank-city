@@ -1003,8 +1003,8 @@
 		},
 		{
 			"id": "T-080",
-			"title": "Плавающий тест challenge_cache_revision: «card rarity follows the stars» иногда падает",
-			"note": "",
+			"title": "Плавающие тесты: challenge_cache_revision («card rarity follows the stars»), smoke («upgrade r6 w1»)",
+			"note": "smoke иногда падает на поле 6 (случайный маршрут); в сообщение добавлены фаза и режим комнаты.",
 			"type": "bug",
 			"priority": 3,
 			"status": "backlog",
@@ -1072,7 +1072,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-085.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "машина взорвалась и какая то черная масса на карте вылезла",
 			"type": "bug",
 			"version": "0.7.2-pre"
