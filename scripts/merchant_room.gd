@@ -1,6 +1,7 @@
 extends Node3D
-## Merchant stop: spend run tokens on cards, healing, rerolls, a blueprint or the slot machine.
-## Stock is rolled once per visit from the run's combat RNG; the slot machine can be played repeatedly.
+## Merchant stop: spend run tokens on cards, healing, rerolls or a blueprint at the counter;
+## the slot machine stands apart — E next to it pulls the lever and opens the reel window at once.
+## Stock and slot outcomes come from the run's combat RNG; reels animate on their own visual RNG.
 signal completed(index: int)
 signal hub_requested
 const CARD_PRICES=[3,5,8,12]
@@ -21,7 +22,10 @@ var interact_button:Button
 var stock:Array=[]
 var status_text=""
 var shop_revealed=false
+## Outcome id of the latest pull (see SLOT_TABLE); the reel window lands on its symbol.
+var last_slot="empty"
 const COUNTER=Vector3(0,0,-1)
+const SLOT_SPOT=Vector3(2.5,0,-1.3)
 func _ready():
 	add_to_group("notification_context")
 	Visuals.setup_world(self,12,Vector3.ZERO)
@@ -31,6 +35,7 @@ func _ready():
 	Visuals.tiled_floor(self,positions,Color("98917f"))
 	Visuals.box(self,Vector3(0,-.4,.5),Vector3(9.3,.6,8.3),Color("7d7462"))
 	build_stall()
+	build_slot_machine()
 	avatar=Visuals.model("soldier",self,destination)
 	var canvas=CanvasLayer.new();add_child(canvas);root=Control.new();canvas.add_child(root);root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);root.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	var heading=UiKit.glass(root,Vector2(25,25),Vector2(590,120),Color("242d27ed"));heading.mouse_filter=Control.MOUSE_FILTER_IGNORE
@@ -42,16 +47,31 @@ func _ready():
 	UiKit.button(root,"Дальше →",Vector2(size.x-330,size.y-90),Vector2(290,60),func():completed.emit(index),true)
 	UiKit.button(root,"Вернуться в хаб",Vector2(40,165),Vector2(250,48),func():hub_requested.emit())
 	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Торговец",COUNTER,1.8,func():return true)
+	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Автомат · %d жетона" % SLOT_PRICE,SLOT_SPOT,1.9,func():return true)
 	stock=roll_stock()
 func build_stall():
 	var wood=Color("8a6a48");var cloth=Color("c9793f")
 	Visuals.box(self,COUNTER+Vector3(0,.45,0),Vector3(2.6,.9,.9),wood)
 	for x in [-1.25,1.25]:Visuals.box(self,COUNTER+Vector3(x,1.25,-.35),Vector3(.12,2.5,.12),wood.darkened(.3))
 	for i in range(5):Visuals.box(self,COUNTER+Vector3(-1.1+i*.55,2.45,-.1),Vector3(.55,.08,1.1),cloth if i%2==0 else Color("e8dcc0"))
-	for p in [Vector3(-2,0,-1.5),Vector3(2.1,0,-1.4),Vector3(2.3,0,-.4)]:Visuals.box(self,p+Vector3(0,.3,0),Vector3(.6,.6,.6),Color("9c8156"))
+	for p in [Vector3(-2,0,-1.5),Vector3(3.7,0,-1.3)]:Visuals.box(self,p+Vector3(0,.3,0),Vector3(.6,.6,.6),Color("9c8156"))
 	Visuals.box(self,Vector3(-2.3,.6,.4),Vector3(.8,1.2,.6),Color("5b6770"))
 	Visuals.box(self,Vector3(-2.3,1.0,.71),Vector3(.55,.3,.02),Color("e5b34f"))
 	Visuals.label3d(self,"Торговец · E",COUNTER+Vector3(0,2.9,0),Color("fff0ce"),28)
+## Cabinet slot machine facing the room: red body, gold trim, three lit reel windows and a side lever.
+func build_slot_machine():
+	var machine=Node3D.new();machine.name="SlotMachine";add_child(machine);machine.position=SLOT_SPOT;machine.scale=Vector3.ONE*1.25
+	var red=Color("a8352d");var gold=Color("e5b34f")
+	Visuals.box(machine,Vector3(0,.35,0),Vector3(1.1,.7,.8),red.darkened(.25))
+	Visuals.box(machine,Vector3(0,1.15,-.05),Vector3(1.0,.9,.7),red)
+	Visuals.box(machine,Vector3(0,1.15,.31),Vector3(.86,.42,.04),Color("1d211f"))
+	for i in range(3):Visuals.box(machine,Vector3(-.28+i*.28,1.15,.34),Vector3(.22,.32,.02),Color("f4ecd6"))
+	Visuals.box(machine,Vector3(0,.74,.3),Vector3(1.04,.06,.32),gold)
+	Visuals.box(machine,Vector3(0,1.78,-.05),Vector3(1.1,.36,.74),gold)
+	Visuals.box(machine,Vector3(0,1.78,.33),Vector3(.8,.2,.02),Color("fff0ce"))
+	Visuals.box(machine,Vector3(.6,1.1,0),Vector3(.08,.5,.08),Color("6b6f6a"))
+	Visuals.box(machine,Vector3(.6,1.42,0),Vector3(.16,.16,.16),Color("d64a3c"))
+	var glow=OmniLight3D.new();machine.add_child(glow);glow.position=Vector3(0,1.4,.8);glow.light_color=Color("ffd27a");glow.light_energy=.7;glow.omni_range=2.4
 
 ## Stock entries: {kind, id, tier, price, sold}. Cards use UpgradeRegistry; the blueprint appears in 40% of visits.
 func roll_stock()->Array:
@@ -66,7 +86,6 @@ func roll_stock()->Array:
 	if rng.randf()<.4:
 		var recipe=EncounterRules.recipe(1,rng,arena.run.pending_recipes,Campaign.progress_index(index))
 		if not recipe.is_empty():result.append({"kind":"blueprint","recipe":recipe,"price":10,"sold":false})
-	result.append({"kind":"slot","price":SLOT_PRICE,"sold":false})
 	return result
 
 func _physics_process(delta):
@@ -83,10 +102,13 @@ func _physics_process(delta):
 			var next=cell+dir;facing=dir;avatar.rotation.y=atan2(-float(dir.x),-float(dir.y))
 			if next.x>=-3 and next.x<=3 and next.y>=0 and next.y<=4:
 				cell=next;destination=Vector3(cell.x,0,cell.y);moving=true
-	interact_button.disabled=avatar.position.distance_to(COUNTER)>2.2
+	interact_button.disabled=avatar.position.distance_to(COUNTER)>2.2 and not near_slot()
 	if Game.wants_interact():interact()
+func near_slot()->bool:return avatar.position.distance_to(SLOT_SPOT)<1.9 and avatar.position.distance_to(SLOT_SPOT)<avatar.position.distance_to(COUNTER)
 func interact():
-	if is_instance_valid(modal) or avatar.position.distance_to(COUNTER)>2.2:return
+	if is_instance_valid(modal):return
+	if near_slot():pull_lever();return
+	if avatar.position.distance_to(COUNTER)>2.2:return
 	Game.reset_input();dpad.clear();dpad.enabled=false
 	open_shop()
 func open_shop():
@@ -148,6 +170,17 @@ func purchase(i:int)->bool:
 	Game.sound("upgrade" if entry.kind=="card" else "pickup",self)
 	if is_instance_valid(modal):close_shop(false);open_shop()
 	return true
+## E at the machine: pay, decide the outcome, show the reels. The prize is already granted; the window only reveals it.
+func pull_lever()->bool:
+	if arena.run.tokens<SLOT_PRICE:
+		Game.sound("ui_denied",self);status_text="Автомату нужно %d жетона" % SLOT_PRICE;return false
+	arena.run.tokens-=SLOT_PRICE
+	var line=play_slot();status_text=line
+	Game.progression.event("slot_play")
+	Game.reset_input();dpad.clear();dpad.enabled=false
+	modal=preload("res://scripts/ui/slot_window.gd").new().setup(last_slot,line);root.add_child(modal)
+	modal.finished.connect(func():modal=null;Game.reset_input();dpad.clear();dpad.enabled=true)
+	return true
 func heal_full():
 	arena.run.soldier_hp=arena.run.soldier_max_hp
 	if is_instance_valid(arena.room.player) and arena.room.player.kind=="soldier":arena.room.player.hp=arena.run.soldier_hp;arena.room.player.refresh_health()
@@ -159,18 +192,19 @@ func play_slot()->String:
 	for outcome in SLOT_TABLE:
 		pick-=outcome[1]
 		if pick<0:result=outcome[0];break
+	last_slot=result
 	match result:
-		"tokens":arena.run.tokens+=SLOT_PRICE*2;return "Автомат: жетоны вернулись вдвойне"
-		"heal":heal_full();return "Автомат: полное лечение"
+		"tokens":arena.run.tokens+=SLOT_PRICE*2;return "Жетоны вернулись вдвойне"
+		"heal":heal_full();return "Полное лечение"
 		"card0","card1","card2":
 			var ids=RunUpgrades.roll(arena,1)
-			if ids.is_empty():return "Автомат: пусто"
+			if ids.is_empty():last_slot="empty";return "Автомат: пусто"
 			var tier=int(result.right(1));RunUpgrades.apply(arena,ids[0],tier)
 			if tier==2:
 				var tiger=Skins.grant("slot",RandomNumberGenerator.new())
 				if tiger!="":return "Джекпот: %s · и форма «%s»" % [UpgradeRegistry.get_def(ids[0]).title,Skins.UNIFORMS[tiger].name]
-			return "Автомат: %s · %s" % [LootCatalog.RARITY_NAMES[tier],UpgradeRegistry.get_def(ids[0]).title]
-	return "Автомат: пусто"
+			return "%s · %s" % [LootCatalog.RARITY_NAMES[tier],UpgradeRegistry.get_def(ids[0]).title]
+	return "Пусто. Повезёт в другой раз"
 func close_shop(restore_controls:bool=true):
 	if is_instance_valid(modal):modal.get_parent().remove_child(modal);modal.queue_free();modal=null
 	if restore_controls:Game.reset_input();dpad.clear();dpad.enabled=true

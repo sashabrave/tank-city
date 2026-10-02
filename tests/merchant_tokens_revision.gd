@@ -34,17 +34,26 @@ func run():
 	main.show_service("merchant",2);await settle()
 	var shop=main.current
 	check(shop.get_script()==load("res://scripts/merchant_room.gd"),"merchant stop opens")
-	check(shop.stock.any(func(e):return e.kind=="card") and shop.stock.any(func(e):return e.kind=="slot"),"stock has cards and the slot machine")
+	check(shop.stock.any(func(e):return e.kind=="card") and shop.find_child("SlotMachine",true,false)!=null,"stock has cards; the slot machine stands apart")
 	var heal=shop.stock.map(func(e):return e.kind).find("heal")
 	check(shop.purchase(heal) and arena.run.soldier_hp==arena.run.soldier_max_hp and arena.run.tokens==27,"heal bought for tokens")
 	check(not shop.purchase(heal),"sold item cannot be bought twice")
 	var card=shop.stock.map(func(e):return e.kind).find("card");var history=arena.run.upgrade_history.size();var price=shop.stock[card].price
 	check(shop.purchase(card) and arena.run.upgrade_history.size()==history+1 and arena.run.tokens==27-price,"card bought and applied")
-	var slot=shop.stock.map(func(e):return e.kind).find("slot");var before=arena.run.tokens
-	check(shop.purchase(slot) and shop.purchase(slot),"slot machine plays repeatedly")
+	var before=arena.run.tokens
+	shop.avatar.position=Vector3(2,0,0);shop.interact();await settle()
+	var reels=shop.find_child("SlotWindow",true,false)
+	check(reels!=null and reels.find_child("Reel2",true,false)!=null,"E at the machine opens the reel window at once")
+	var strip=reels.reels[0].strip.position.y
+	await get_tree().create_timer(.25).timeout
+	check(reels.reels[0].strip.position.y>strip,"reels spin")
+	await get_tree().create_timer(1.3).timeout
+	check(not is_instance_valid(reels) and shop.modal==null,"window closes by itself after the verdict")
+	shop.interact();await settle();shop.modal.finish();await settle()
 	check(arena.run.tokens-before in [-4,0,4],"each pull costs 2 or pays back double")
 	arena.run.tokens=0
-	check(not shop.purchase(slot),"no tokens, no play")
+	check(not shop.pull_lever(),"no tokens, no play")
+	shop.avatar.position=Vector3(0,0,3)
 	shop.interact_button.disabled=false;shop.avatar.position=shop.COUNTER+Vector3(0,0,1);shop.interact();await settle()
 	check(shop.find_child("MerchantShop",true,false)!=null,"shop window opens at the counter")
 	shop.close_shop()

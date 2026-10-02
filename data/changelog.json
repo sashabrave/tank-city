@@ -15,7 +15,9 @@
 					"Враги приходят отрядами, а не случайной кучей: дозоры, штурмовые пары, расчёты гранатомётов, мотодозоры, бронегруппы, батареи, танковые клинья и истребители танков. Набор отрядов меняется от поля к полю.",
 					"Бой ощущается плотнее: вспышки у ствола, гильзы под ногами, искры по броне, лёгкая тряска при взрывах и короткий стоп-кадр, когда разлетается техника или командир. Тряску и стоп-кадр выключает «Анимации интерфейса».",
 					"Документы слиты в сплав: уровни классов стоят сплав, накопленные документы переплавлены (1 к 40). Валюты: сплав, жетоны, чертежи.",
-					"Задания и телеграммы — одна лента: готовые к сдаче и новые сверху, взятые ниже, выполненные в самом низу."
+					"Задания и телеграммы — одна лента: готовые к сдаче и новые сверху, взятые ниже, выполненные в самом низу.",
+					"У торговца стоит настоящий игровой автомат: подойди, нажми E — барабаны крутятся в большом окне, приз выдаётся сразу.",
+					"Подсказка окопа стала одной спокойной плашкой под клеткой: «E В окоп», внутри «E Выйти · C Пригнуться» — без прыжков размера."
 				]
 			},
 			"en": {
@@ -30,7 +32,9 @@
 					"Enemies arrive in squads, not a random pile: patrols, assault pairs, grenade teams, moto patrols, armour groups, batteries, tank wedges and tank hunters. The squad mix changes from field to field.",
 					"Combat feels punchier: muzzle flashes, casings at your feet, sparks on armour, a light shake on explosions and a short hit-stop when a vehicle or commander goes down. Shake and hit-stop follow «Interface animations».",
 					"Documents merged into alloy: class levels cost alloy, stored documents were melted (1 to 40). Currencies: alloy, tokens, blueprints.",
-					"Missions and telegrams share one feed: ready and new on top, taken below, finished at the bottom."
+					"Missions and telegrams share one feed: ready and new on top, taken below, finished at the bottom.",
+					"The merchant has a real slot machine: walk up, press E, watch the big reels spin; the prize is granted at once.",
+					"The trench hint is now one calm chip under the cell: «E Into trench», inside «E Exit · C Crouch», with no jumping size."
 				]
 			}
 		},
