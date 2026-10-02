@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="Texture2D" path="res://assets/ui/branding_v1/war_cats_logo.png" id="99_brand_logo"]
+[ext_resource type="Texture2D" path="res://assets/ui/branding_v1/war_cats_logo_v2.png" id="99_brand_logo"]
 
 [ext_resource type="Texture2D" path="res://assets/icons/v1/alloy.png" id="1_wkqdn"]
 [ext_resource type="Script" path="res://scripts/touch_controls.gd" id="2_hye22"]
@@ -958,11 +958,12 @@ anchor_bottom = 1.0
 mouse_filter = 2
 
 [node name="GameTitle" type="TextureRect" parent="." unique_id=689421280]
+texture_filter = 2
 layout_mode = 0
-offset_left = 38.0
-offset_top = 28.0
-offset_right = 320.0
-offset_bottom = 145.0
+offset_left = 68.0
+offset_top = 24.0
+offset_right = 336.0
+offset_bottom = 184.0
 mouse_filter = 2
 texture = ExtResource("99_brand_logo")
 expand_mode = 1
