@@ -198,6 +198,9 @@ func depth_light(on:bool,night:=false):
 		var k=clampf((lum-.56)/.14,0.0,1.0)
 		environment.tonemap_exposure*=1.0-.13*k;environment.ambient_light_energy*=1.0-.18*k
 		environment.adjustment_contrast*=1.0+.07*k;sun.shadow_opacity=minf(1.0,sun.shadow_opacity*(1.0+.12*k))
+		# Golden hour on sand turned the whole frame yellow: the sun gets a little more neutral and softer there.
+		sun.light_color=sun.light_color.lerp(Color("fff1df"),.35*k);sun.light_energy*=1.0-.1*k
+		environment.adjustment_saturation*=1.0-.14*k
 	environment.ambient_light_color=environment.ambient_light_color.lerp(Color("9db0d8"),.12)
 	# Softer sun shadows: the surface colour shows through instead of near-black patches.
 	sun.shadow_opacity*=.82

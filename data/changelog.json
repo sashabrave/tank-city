@@ -83,7 +83,8 @@
 					"Песок: на клетке три диагональные дюны (маленькая, большая из угла в угол и ещё одна большая); бочки и полублоки больше не обводятся тенью, плитки под ними не кажутся приподнятыми",
 					"Экран поражения: видно, кто добил базу или бойца; рюкзак показан целиком — закрытые ячейки с замком",
 					"Жетоны: при поражении они высыпаются из счётчика, а плашка плавно сворачивается; при появлении счётчик жетонов плавно раздвигает плашку",
-					"Точки обновлений без обводки; стенд «Развитие заставы» на клетку ближе и не прячется под фермой, над ним прыгает «!», когда достигнута новая цель"
+					"Точки обновлений без обводки; стенд «Развитие заставы» на клетку ближе и не прячется под фермой, над ним прыгает «!», когда достигнута новая цель",
+					"Днём на светлых полах картинка глубже: меньше пересвета, мягче жёлтый золотой час, спокойнее песок"
 				]
 			},
 			"en": {
@@ -166,7 +167,8 @@
 					"Sand: three diagonal dunes per cell (small, a big corner-to-corner one and another big one); barrels and half blocks no longer get a shadow ring, so their tiles do not look raised",
 					"Defeat screen: shows who finished the base or the soldier; the whole backpack is shown — locked slots with a padlock",
 					"Tokens: on defeat they spill out of the counter and the strip folds smoothly; when tokens appear, their counter widens the strip smoothly",
-					"Update dots without an outline; the «Outpost progress» board moved a cell forward out from under the truss, with a hopping «!» when a new goal is reached"
+					"Update dots without an outline; the «Outpost progress» board moved a cell forward out from under the truss, with a hopping «!» when a new goal is reached",
+					"Daylight on light floors looks deeper: less washout, a softer yellow at golden hour, calmer sand"
 				]
 			}
 		},
