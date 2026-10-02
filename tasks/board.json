@@ -215,7 +215,7 @@
 			"scene": "route_map",
 			"shot": "res://tasks/shots/T-018.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "на экране выбора мира должны быть выделены рамкой дефолтные блоки и уровень сложности",
 			"type": "polish",
 			"version": "0.7.1-pre"

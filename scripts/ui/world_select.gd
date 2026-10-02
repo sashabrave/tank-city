@@ -85,6 +85,14 @@ func focus(i:int):
 		var c:Button=cards[k];var chosen=k==current
 		c.pivot_offset=CARD*.5
 		create_tween().tween_property(c,"scale",Vector2.ONE*(1.04 if chosen else 1.0),.12)
+		# The chosen world is framed from the first frame (T-018), not only after a key press.
+		if not c.has_meta("base_style"):c.set_meta("base_style",c.get_theme_stylebox("normal"))
+		var base:StyleBox=c.get_meta("base_style")
+		if chosen and base is StyleBoxFlat:
+			var framed:StyleBoxFlat=base.duplicate();framed.border_color=UiKit.ORANGE;framed.set_border_width_all(3)
+			for key in ["normal","hover","focus"]:c.add_theme_stylebox_override(key,framed)
+		elif base:
+			for key in ["normal","hover","focus"]:c.add_theme_stylebox_override(key,base)
 	if is_instance_valid(cards[current]):cards[current].grab_focus()
 
 func launch():
