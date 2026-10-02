@@ -17,6 +17,9 @@ SHEETS = ROOT / "art_requests/icon_kit_v1/sheets"
 LAYERS = ROOT / "art_requests/icon_kit_v1/layers"
 OUT = ROOT / "assets/ui/icon_kit"
 CANVAS = 384
+# Author decisions after play (brief, «Решения автора после игры»): gold alloy bars and the silver paw
+# token replace the generated symbols; a rebuild keeps those files.
+AUTHOR_KEPT = {"alloy", "token"}
 FAMILY = {"fire": (205, 72, 58), "ammo": (214, 152, 50), "survival": (92, 135, 62), "recon": (40, 132, 140), "logistics": (176, 146, 104)}
 
 
@@ -149,6 +152,8 @@ def main():
 	for (sheet, cols, rows), names in symbols.items():
 		grid = cells(sheet, cols, rows)
 		for i, name in enumerate(names.split()):
+			if name in AUTHOR_KEPT and (OUT / f"symbols/{name}.png").exists():
+				continue
 			save(single(grid[(i // cols, i % cols)]), f"symbols/{name}.png")
 	badges = cells("badges_v1.png", 4, 3)
 	for i, name in enumerate("up longer often plus shield buggy apc tank bullet bomb tank_shell cooldown".split()):
