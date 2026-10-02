@@ -10,6 +10,9 @@ func run():
 	Game.equipped_abilities=["barrier","grenade","gas"];Game.ability_slots=3
 	var arena=load("res://scenes/arena.tscn").instantiate();add_child(arena);arena.auto_pause_enabled=false;arena.set_physics_process(false);arena.player.set_physics_process(false);arena.phase="combat"
 	check(arena.abilities.interval()==33 and arena.abilities.barrier_count()==1,"barrier baseline")
+	# Face a cell inside the field (a random seed may put the soldier with his back to the edge).
+	for d in [Vector2i.UP,Vector2i.LEFT,Vector2i.RIGHT,Vector2i.DOWN]:
+		if arena.inside(arena.player.cell+d) and not arena.room.trenches.has(arena.player.cell+d) and not arena.terrain.movement_blocked_at_cell(arena.player.cell+d):arena.player.facing=d;break
 	var front=arena.player.cell+arena.player.facing
 	if arena.walls.has(front):arena.walls[front].node.queue_free();arena.walls.erase(front)
 	check(arena.abilities.cast(),"barrier casts")

@@ -27,7 +27,8 @@
 					"Настройки графики разделены на «Графику» и «Экран», сверху — пресет «Экономно / Стандарт / Кино».",
 					"Свет: меньше случайных фонарей на поле, а металл и вода отражают настоящую сцену вокруг.",
 					"Фонари и фары: рисунок пятна как у настоящего фонаря, слабый видимый луч (в тумане и ночью заметнее), фары машин тоже с лучом.",
-					"Тени холоднее, но с оттенком поверхности; ночью свет и тени контрастнее."
+					"Тени холоднее, но с оттенком поверхности; ночью свет и тени контрастнее.",
+					"Сундук появляется с отскоком и лёгким наездом камеры, а при открытии подпрыгивает со вспышкой."
 				]
 			},
 			"en": {
@@ -54,7 +55,8 @@
 					"Graphics settings are split into «Graphics» and «Screen», with an «Economy / Standard / Cinema» preset on top.",
 					"Lighting: fewer random lamps on the field, and metal and water reflect the real scene around them.",
 					"Lamps and headlights: a real torch pattern on the ground, a faint visible beam (stronger at night and in fog), vehicle headlights get beams too.",
-					"Shadows are cooler but keep the surface hue; at night light and shadows have more contrast."
+					"Shadows are cooler but keep the surface hue; at night light and shadows have more contrast.",
+					"A chest drops in with a bounce and a slight camera push, and jumps with a flash when opened."
 				]
 			}
 		},

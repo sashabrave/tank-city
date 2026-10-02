@@ -267,7 +267,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-022.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "добавить анимацию открытия и открытия сундука, и наезда камеры небольшого при появлении бонусом",
 			"type": "polish",
 			"version": "0.7.1-pre"

@@ -171,6 +171,9 @@ func drop_recipe(cell: Vector2i,_recipe: Dictionary):
 	Visuals.label3d(node,"Сундук "+EncounterRules.STARS[2 if arena.room.boss_room else arena.room.difficulty]+" · E",Vector3(0,1.4,0),Color("fff0ac"),40)
 	preload("res://scripts/interaction_prompt.gd").attach(node,arena,"Сундук",Vector3.ZERO,1.65)
 	arena.room.pickups.append({"kind":"recipe_draft","elite":elite,"final":arena.room.boss_room,"offers":[],"node":node,"visual":visual})
+	# Arrival: the chest drops in with a bounce and the camera leans in a little (T-022).
+	visual.scale=Vector3.ONE*.2;var arrive=node.create_tween();arrive.tween_property(visual,"scale",Vector3.ONE*1.08,.22).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT);arrive.tween_property(visual,"scale",Vector3.ONE*.95,.12)
+	var feel=arena.get_node_or_null("CombatFeel");if feel:feel.punch_in()
 	arena.toast("Трофей командира · подойди и нажми E")
 func nearest_recipe() -> Dictionary:
 	if not is_instance_valid(arena.room.player):return {}
@@ -179,6 +182,11 @@ func nearest_recipe() -> Dictionary:
 	return {}
 func open_recipe_draft(pickup: Dictionary):
 	Game.sound("chest_open",arena)
+	# Opening: the chest jumps, the lid side flashes and a burst of light rises (T-022); runs under the pause.
+	if is_instance_valid(pickup.get("visual")):
+		var v:Node3D=pickup.visual;var pop=v.create_tween();pop.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+		pop.tween_property(v,"scale",Vector3(1.15,.8,1.15),.08);pop.tween_property(v,"scale",Vector3(.9,1.25,.9),.12);pop.tween_property(v,"scale",Vector3.ONE*.95,.18)
+		arena.burst(pickup.node.position+Vector3.UP*.6,Color("ffd56a"),.6)
 	if pickup.offers.is_empty():pickup.offers=chest_offers(pickup.get("elite",true))
 	arena.room.draft_pickup=pickup;arena.room.previous_phase=arena.phase;arena.phase="paused";Game.reset_input();arena.hud.show_recipe_draft()
 func reroll_recipe_draft():
