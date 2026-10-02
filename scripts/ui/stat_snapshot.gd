@@ -8,31 +8,37 @@ static func weapon(arena=null,id:String="")->Array:
 	for spec in [["damage","Урон",""],["rate","Темп"," /с"],["range","Дальность"," м"],["intercept","Напор","%"]]:
 		result.append(row(spec[1],base[spec[0]],current[spec[0]],spec[2]))
 	return result
+## Rows grouped by what they are about; the dossier hides optional stats that are zero both at base and now.
 static func fighter(arena=null)->Array:
 	var run=arena.run if is_instance_valid(arena) else null
-	var rows=[row("Максимум здоровья",CombatStats.initial_health(),run.soldier_max_hp if run!=null else CombatStats.initial_health()),row("Скорость пешком",CombatStats.soldier_speed(),CombatStats.soldier_speed(run)," м/с")]
-	rows.append_array(weapon(arena,run.weapon if run!=null else Game.selected_weapon))
-	for spec in [["healing_multiplier","Эффективность лечения"],["ability_power_multiplier","Сила способностей"],["ability_cooldown_multiplier","Время перезарядки способностей"]]:
-		rows.append(row(spec[1],100,100*float(run.get(spec[0])) if run!=null else 100,"%"))
-	rows.append_array(registry(arena))
-	if is_instance_valid(arena) and is_instance_valid(arena.player):
+	var health=row("Максимум здоровья",CombatStats.initial_health(),run.soldier_max_hp if run!=null else CombatStats.initial_health())
+	var speed=row("Скорость пешком",CombatStats.soldier_speed(),CombatStats.soldier_speed(run)," м/с")
+	var gun=weapon(arena,run.weapon if run!=null else Game.selected_weapon)
+	if is_instance_valid(arena) and is_instance_valid(arena.player) and arena.player.kind=="soldier":
 		var actor=arena.player
-		if actor.kind=="soldier":
-			rows[1].current=actor.speed
-			rows[2].current=actor.damage
-			rows[3].current=1.0/actor.fire_interval*arena.effects.modify("fire_rate",1.0)
-	return rows
+		speed.current=actor.speed;gun[0].current=actor.damage;gun[1].current=1.0/actor.fire_interval*arena.effects.modify("fire_rate",1.0)
+	var percent=func(field:String,title:String):return row(title,100,100*float(run.get(field)) if run!=null else 100,"%")
+	var groups={"fire":gun.duplicate(),"survival":[health,speed,percent.call("healing_multiplier","Эффективность лечения")],"abilities":[percent.call("ability_power_multiplier","Сила способностей"),percent.call("ability_cooldown_multiplier","Перезарядка способностей")],"ammo":[],"recon":[],"logistics":[]}
+	for def in StatRegistry.all():
+		var item=registry_row(def,arena)
+		if is_zero_approx(float(item.base)) and is_zero_approx(float(item.current)):continue
+		groups[def.family].append(item)
+	var result=[]
+	for key in ["fire","survival","abilities","ammo","recon","logistics"]:
+		if groups[key].is_empty():continue
+		result.append({"group":"Способности" if key=="abilities" else RunUpgrades.FAMILIES[key]})
+		result.append_array(groups[key])
+	return result
 ## Every StatRegistry characteristic: base = what a run starts with (hub training included), current = now.
 ## A new stat file shows up here without UI changes.
 static func registry(arena=null)->Array:
-	var result=[]
-	for def in StatRegistry.all():
-		var base=StatRegistry.value(def,null);var current=StatRegistry.value(def,arena if is_instance_valid(arena) else null)
-		match def.format:
-			"percent":result.append(row(def.title,base*100,current*100,"%"))
-			"multiplier":result.append(row(def.title,base,current,"×"))
-			_:result.append(row(def.title,base,current))
-	return result
+	return StatRegistry.all().map(func(def):return registry_row(def,arena))
+static func registry_row(def,arena=null)->Dictionary:
+	var base=StatRegistry.value(def,null);var current=StatRegistry.value(def,arena if is_instance_valid(arena) else null)
+	match def.format:
+		"percent":return row(def.title,base*100,current*100,"%")
+		"multiplier":return row(def.title,base,current,"×")
+	return row(def.title,base,current)
 static func add_bars(parent:Control,pos:Vector2,width:float,rows:Array,row_height:float=48,adaptive:bool=false):
 	var bars=preload("res://scripts/ui/comparison_bars.gd").new();bars.rows=rows;bars.row_height=row_height;bars.adaptive_columns=adaptive;parent.add_child(bars);bars.position=pos;bars.size=Vector2(width,0);bars.reflow();return bars
 static func status(arena=null)->Array:
@@ -59,3 +65,40 @@ static func follow_grid(parent:Control,bars:Control):
 		for item in following:
 			if is_instance_valid(item[0]):item[0].position.y=item[1]+shift
 		parent.custom_minimum_size.y=minimum+shift)
+
+## Hero state for the tablet: live effect timers (the same table as the HUD strip) and the bullet effects of
+## this run. [{icon, title, value, remaining}] — remaining 0..1 for a timer, -1 for "active", null for none.
+static func state(arena=null)->Array:
+	var result=[]
+	if not is_instance_valid(arena) or arena.run==null:
+		result.append({"icon":"damage","title":"Эффекты пуль","value":"Берутся картами в бою","remaining":null})
+		var base=[]
+		for id in ["burn_power","shock_power","stun_power"]:
+			var def=StatRegistry.get_def(id)
+			if def!=null and StatRegistry.level(id)>0:base.append(def.title+" "+StatRegistry.text(def,StatRegistry.base_value(def)))
+		if not base.is_empty():result.append({"icon":"upgrades/fire","title":"База из Казармы","value":" · ".join(base),"remaining":null})
+		return result
+	var strip=preload("res://scripts/ui/status_strip.gd").new();strip.arena=arena
+	var entries={};var raw=strip.entries()
+	for id in raw:entries[id]=[raw[id][0],float(raw[id][1].call())]
+	strip.free()
+	# Full timer lengths are known to the live HUD strip (remembered when each effect started).
+	var totals={}
+	for node in arena.find_children("*","HBoxContainer",true,false):
+		if node.get_script()==preload("res://scripts/ui/status_strip.gd"):totals=node.totals
+	if totals.is_empty() and is_instance_valid(arena.get_tree()):
+		for node in arena.get_tree().root.find_children("*","HBoxContainer",true,false):
+			if node.get_script()==preload("res://scripts/ui/status_strip.gd") and node.arena==arena:totals=node.totals
+	for id in entries:
+		var left=float(entries[id][1])
+		if left==0.0:continue
+		result.append({"icon":entries[id][0],"title":preload("res://scripts/ui/status_strip.gd").HINTS.get(id,id).get_slice(":",0),"value":"%s с" % UiKit.number(snappedf(left,.1)) if left>0 else "Активно","remaining":-1.0 if left<0 else clampf(left/maxf(left,float(totals.get(id,left))),0,1)})
+	var run=arena.run
+	if run.burn_chance>0:
+		result.append({"icon":"fire","title":"Поджог","value":"%d%% · урон ×%s · %s с" % [roundi(minf(CombatMods.CAPS.burn_chance,run.burn_chance)*100),UiKit.number(1.0+run.burn_power),UiKit.number(CombatMods.burn_time(run))]+(" · цепь" if "chain_fire" in run.behavior_cards else ""),"remaining":null})
+	if run.stun_chance>0:
+		result.append({"icon":"star","title":"Контузия","value":"%d%% · %s с" % [roundi(minf(CombatMods.CAPS.stun_chance,run.stun_chance)*100),UiKit.number(CombatMods.stun_time(run))]+(" · от крита" if "crit_stun" in run.behavior_cards else ""),"remaining":null})
+	if run.shock_bonus>0:
+		result.append({"icon":"device_power","title":"ЭМИ","value":"+%d%% по технике" % roundi(minf(CombatMods.CAPS.shock_bonus,run.shock_bonus+run.shock_power)*100),"remaining":null})
+	if result.is_empty():result.append({"icon":"heart","title":"Без эффектов","value":"Эффекты пуль берутся картами в бою","remaining":null})
+	return result

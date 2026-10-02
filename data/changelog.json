@@ -17,7 +17,10 @@
 					"Экран командного центра в хабе больше не зеркальный и стал живым военным пультом: контурная карта с радаром и целями, чертёж танка с поворотной башней, телеметрия и бегущий журнал.",
 					"Эффекты пуль берутся только в бою: сначала базовая карта («Зажигательные патроны», «Контузия», «ЭМИ-патроны»), затем три её усиления, например «Цепная реакция»: горящие враги поджигают соседей. В Казарме осталась только небольшая база. Сплав за прежнюю выучку эффектов возвращён.",
 					"Статусы видно сразу: горящий враг в язычках пламени, замороженный в глыбе льда, оглушённый со звёздами, усыплённый газом с «Z z z». У полоски здоровья маленький значок статуса.",
-					"Газ теперь мягкое зелёное облако, одинаковое в бою, песочнице и хабе."
+					"Газ теперь мягкое зелёное облако, одинаковое в бою, песочнице и хабе.",
+					"Значки эффектов бойца показывают остаток времени закраской по кругу, как у способностей. «Десант», «Выдержка» и «Рывок» больше не висят на экране после окончания.",
+					"Планшет → Снаряжение: новый блок «Состояние» с активными эффектами, их таймерами и эффектами пуль этой вылазки.",
+					"Характеристики бойца сгруппированы (огонь, живучесть, способности, спецпатроны, разведка, тыл), занимают меньше места, нулевые строки скрыты."
 				]
 			},
 			"en": {
@@ -34,7 +37,10 @@
 					"The hub command screen is no longer mirrored and became a live military console: a contour map with radar and targets, a tank blueprint with a turning turret, telemetry and a scrolling log.",
 					"Bullet effects are taken in battle only: first the base card («Incendiary rounds», «Concussion», «EMP rounds»), then its three enhancements, such as «Chain reaction»: burning enemies set neighbours alight. The Barracks keep only a small base. Alloy for the old effect training is refunded.",
 					"Statuses are clear at a glance: a burning enemy has flame tongues, a frozen one sits in a block of ice, a stunned one has stars, a gassed one sleeps with «Z z z». A small status icon sits by the health bar.",
-					"Gas is now a soft green cloud, the same in battle, the sandbox and the hub."
+					"Gas is now a soft green cloud, the same in battle, the sandbox and the hub.",
+					"Hero effect icons show the time left as a circular fill, like abilities. «Landing», «Opening shot» and «Dash» no longer stay on screen after they end.",
+					"Tablet → Equipment: a new «State» block with active effects, their timers and this sortie's bullet effects.",
+					"Hero stats are grouped (fire, survival, abilities, special ammo, recon, logistics), take less room, and zero rows are hidden."
 				]
 			}
 		},

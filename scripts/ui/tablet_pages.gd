@@ -17,6 +17,14 @@ func details(title:String,body:String,action:Callable=Callable()):
 	var text=UiKit.label(card,body,Vector2(22,65),Vector2(520,155),18);text.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;text.vertical_alignment=VERTICAL_ALIGNMENT_TOP
 	UiKit.button(card,"Понятно",Vector2(22,235),Vector2(250 if action.is_valid() else 526,44),overlay.queue_free)
 	if action.is_valid():UiKit.button(card,"Оставить на поле",Vector2(284,235),Vector2(264,44),func():action.call();overlay.queue_free())
+func state_chip(parent:Control,pos:Vector2,item:Dictionary):
+	var chip=Panel.new();parent.add_child(chip);chip.position=pos;chip.size=Vector2(222,48);chip.mouse_filter=Control.MOUSE_FILTER_PASS;chip.tooltip_text=Texts.render(str(item.title)+": "+str(item.value))
+	chip.add_theme_stylebox_override("panel",UiKit.style(Color(1,1,1,.04),10,Color(1,1,1,.1)))
+	var art=TextureRect.new();chip.add_child(art);art.texture=UiKit.icon_texture(str(item.icon));art.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;art.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;art.position=Vector2(11,11);art.size=Vector2(26,26);art.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	if item.remaining!=null:
+		var sector=preload("res://scripts/ui/timer_sector.gd").new();chip.add_child(sector);sector.position=Vector2(6,6);sector.size=Vector2(36,36);sector.mouse_filter=Control.MOUSE_FILTER_IGNORE;sector.set_remaining(float(item.remaining))
+	UiKit.label(chip,str(item.title),Vector2(50,4),Vector2(166,22),14).clip_text=true
+	UiKit.label(chip,str(item.value),Vector2(50,24),Vector2(166,20),12,UiKit.MUTED).clip_text=true
 func cell(parent,pos:Vector2,id:String,title:String,info:String,locked=false,dimensions=Vector2(96,96),action:Callable=Callable()):
 	var b=UiKit.button(parent,"🔒" if locked else "",pos,dimensions,func():details(title,info,action));b.tooltip_text=title+"\n"+info
 	if not locked and id!="":UiKit.icon(b,id,Vector2(9,7),dimensions-Vector2(18,22))
@@ -46,6 +54,12 @@ func inventory():
 	UiKit.label(body,"Штаб",Vector2(540,326+shift),Vector2(140,28),17)
 	var hq=Game.hq_loadout();var module=hq[0] if not hq.is_empty() else ""
 	cell(body,Vector2(540,362+shift),module,HQCatalog.DATA.get(module,{}).get("name","Поддержка штаба"),HQCatalog.DATA.get(module,{}).get("description","Выбери модуль в «Штабе» → Технологии."),false,Vector2(76,76))
+	# State: live effect timers and this run's bullet effects, three compact chips per row.
+	var state=STATS.state(arena if is_instance_valid(arena) else null)
+	var section=Control.new();section.name="StateSection";body.add_child(section);section.position=Vector2(0,462+shift);section.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	UiKit.label(section,"Состояние",Vector2.ZERO,Vector2(690,30),UiKit.SECTION_SIZE)
+	for i in state.size():state_chip(section,Vector2((i%3)*232,38+floori(i/3.0)*56),state[i])
+	shift+=38+ceilf(state.size()/3.0)*56+14
 	UiKit.label(body,"Трофеи · открыто %d из 6 ячеек" % Game.backpack_slots,Vector2(0,462+shift),Vector2(690,30),UiKit.SECTION_SIZE)
 	var recipes=arena.pending_recipes if is_instance_valid(arena) else []
 	for i in range(6):
@@ -59,8 +73,9 @@ func inventory():
 	UiKit.label(body,"Ресурсы / не занимают ячейки",Vector2(0,626+shift),Vector2(690,28),18)
 	cell(body,Vector2(0,666+shift),"","Сплав","Всего: %d. В этой вылазке: %d." % [Game.credits,arena.earned if is_instance_valid(arena) else 0]);UiKit.label(body,"%d ◈" % Game.credits,Vector2(5,700+shift),Vector2(90,30),18)
 	cell(body,Vector2(110,666+shift),"","Документы","Секретные документы: %d. Постоянная валюта исследований." % Game.cores);UiKit.label(body,"%d док." % Game.cores,Vector2(115,700+shift),Vector2(90,30),18)
+	body.custom_minimum_size.y=maxf(775,775+shift)
 	if is_instance_valid(arena) and not arena.recipe_offer.is_empty():
-		var take=UiKit.button(body,"Подобрать: "+Game.recipe_name(arena.recipe_offer.recipe),Vector2(0,778+shift),Vector2(680,45),func():arena.take_offered_recipe();view.closed.emit());take.disabled=recipes.size()>=Game.backpack_slots;body.custom_minimum_size.y=835
+		var take=UiKit.button(body,"Подобрать: "+Game.recipe_name(arena.recipe_offer.recipe),Vector2(0,778+shift),Vector2(680,45),func():arena.take_offered_recipe();view.closed.emit());take.disabled=recipes.size()>=Game.backpack_slots;body.custom_minimum_size.y=835+maxf(0,shift)
 	STATS.follow_grid(body,bars)
 func fighter():
 	var body=page("Боец",850)
@@ -69,7 +84,8 @@ func fighter():
 	UiKit.label(body,"%s\n%s" % [ClassCatalog.info(Game.selected_class).role,Game.CLASSES[Game.selected_class].desc],Vector2(125,42),Vector2(550,70),17).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	var rows=STATS.fighter(arena if is_instance_valid(arena) else null)
 	UiKit.label(body,"База включает хаб · цветом — изменения вылазки и активные эффекты",Vector2(0,128),Vector2(690,28),13,UiKit.MUTED)
-	var bars=STATS.add_bars(body,Vector2(0,168),680,rows,64,true)
+	# Grouped two-column dossier on 80% of the page width: short lines read at a glance.
+	var bars=STATS.add_bars(body,Vector2(0,168),roundf(maxf(440,body.size.x if body.size.x>0 else 690)*.8),rows,64,true)
 	var upgrades_y=178+bars.content_height()
 	for line in STATS.status(arena if is_instance_valid(arena) else null):
 		UiKit.label(body,line,Vector2(0,upgrades_y),Vector2(690,44),15).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
