@@ -151,9 +151,10 @@ func _process(_delta):
 	if countdown.visible:Texts.set_text(countdown,str(data.countdown))
 	if not data.player.is_empty():
 		var player=data.player
-		var weapon=LOOT.WEAPONS[arena.weapon];Texts.set_text(vehicle_label,weapon.name.to_lower());armor_meter.hide()
-		var icon_path="res://assets/icons/v1/"+weapon.icon+".png"
-		if ResourceLoader.exists(icon_path) and (weapon_icon.texture==null or weapon_icon.texture.resource_path!=icon_path):weapon_icon.texture=load(icon_path)
+		var weapon=LOOT.WEAPONS[arena.weapon];Texts.set_text(vehicle_label,weapon.name);armor_meter.hide()
+		# Same weapon art as the tablet and arsenal (illustration set, transparent margins trimmed).
+		var art=UiKit.trimmed(UiKit.icon_texture(arena.weapon))
+		if weapon_icon.texture!=art:weapon_icon.texture=art;weapon_icon.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;weapon_icon.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		var benchmark=preload("res://scripts/ui/weapon_benchmarks.gd").weapon(arena.weapon)
 		var actual=preload("res://scripts/ui/weapon_benchmarks.gd").current_weapon(arena)
 		weapon_bars.set_rows([["Урон",actual.damage,benchmark.damage],["Темп",actual.rate,benchmark.rate," /с"],["Напор",actual.intercept,benchmark.intercept,"%"]])
@@ -314,7 +315,7 @@ func set_transport_visible(value:bool):
 	showing_transport=value
 	weapon_bars.visible=not value;vehicle_label.visible=not value
 	left_info.size=Vector2(76,76) if value else Vector2(235,168)
-	weapon_icon.position=Vector2(12,10)
+	weapon_icon.position=Vector2(12,10) if value else Vector2(10,10);weapon_icon.size=Vector2(52,52) if value else Vector2(74,52)
 	left_info.tooltip_text=LOOT.WEAPONS[arena.weapon].name if value else ""
 	if transport_tween and transport_tween.is_valid():transport_tween.kill()
 	transport_panel.show()

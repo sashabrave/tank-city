@@ -19,7 +19,8 @@
 					"У торговца стоит настоящий игровой автомат: подойди, нажми E — барабаны крутятся в большом окне, приз выдаётся сразу.",
 					"Подсказка окопа стала одной спокойной плашкой под клеткой: «E В окоп», внутри «E Выйти · C Пригнуться» — без прыжков размера.",
 					"Видеосвязь теперь звонит: в углу хаба вибрирует кнопка с трубкой, отвечаешь когда удобно. Добавлено восемь новых звонков майора по ходу истории.",
-					"Задания считают только сделанное после взятия; сюжетные постройки и покупки засчитываются всегда. Оперштаб выдаёт поручения по одному, по порядку истории."
+					"Задания считают только сделанное после взятия; сюжетные постройки и покупки засчитываются всегда. Оперштаб выдаёт поручения по одному, по порядку истории.",
+					"Оружие в HUD и планшете берёт одну картинку и занимает всю ячейку; название РПГ больше не превращается в «Рпг»."
 				]
 			},
 			"en": {
@@ -38,7 +39,8 @@
 					"The merchant has a real slot machine: walk up, press E, watch the big reels spin; the prize is granted at once.",
 					"The trench hint is now one calm chip under the cell: «E Into trench», inside «E Exit · C Crouch», with no jumping size.",
 					"Video calls now ring: a handset button buzzes in the hub corner and you answer when ready. Eight new calls from the major follow the story.",
-					"Tasks count only what you do after taking them; story builds and purchases always count. Operations hands out briefings one at a time in story order."
+					"Tasks count only what you do after taking them; story builds and purchases always count. Operations hands out briefings one at a time in story order.",
+					"Weapons in the HUD and tablet use one picture and fill the whole cell; the RPG name no longer turns into «Rpg»."
 				]
 			}
 		},

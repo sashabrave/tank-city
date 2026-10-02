@@ -37,9 +37,11 @@ func inventory():
 	var weapon_stats=CombatStats.weapon(arena if is_instance_valid(arena) else null,weapon)
 	var portrait=TextureRect.new();body.add_child(portrait);portrait.texture=preload("res://scripts/ui/class_gallery.gd").texture(Game.selected_class,true);portrait.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;portrait.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;portrait.position=Vector2(0,5);portrait.size=Vector2(205,330)
 	UiKit.label(body,Game.CLASSES[Game.selected_class].name,Vector2(0,338),Vector2(205,30),18).horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
-	cell(body,Vector2(225,0),weapon,data.name,"Характеристики и улучшения — кнопка «Подробнее».",false,Vector2(96,82))
-	UiKit.label(body,data.name,Vector2(337,4),Vector2(360,30),22)
-	UiKit.button(body,"Подробнее",Vector2(337,43),Vector2(180,34),func():weapon_details(weapon)).add_theme_font_size_override("font_size",15)
+	# Weapons are wide: a landscape cell, the art fills it edge to edge (facing right, no plate).
+	var weapon_cell=cell(body,Vector2(225,0),"",data.name,"Характеристики и улучшения — кнопка «Подробнее».",false,Vector2(170,82))
+	UiKit.icon(weapon_cell,weapon,Vector2(8,6),Vector2(154,70)).name="WeaponArt"
+	UiKit.label(body,data.name,Vector2(411,4),Vector2(290,30),22)
+	UiKit.button(body,"Подробнее",Vector2(411,43),Vector2(180,34),func():weapon_details(weapon)).add_theme_font_size_override("font_size",15)
 	var bars=STATS.add_bars(body,Vector2(225,95),470,STATS.weapon(arena if is_instance_valid(arena) else null,weapon),64,true)
 	# Everything below the weapon bars flows from their real height (no fixed gap under compact rows).
 	var shift=95+bars.content_height()+6-288
