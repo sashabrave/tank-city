@@ -204,6 +204,8 @@ static func icon_texture(id:String)->Texture2D:
 	if not icon_cache.has(key):icon_cache[key]=icon_lookup(id)
 	return icon_cache[key]
 static func icon_lookup(id:String)->Texture2D:
+	# Station upgrade art (T-056): drawn GPT icons for the hub stations' general rows.
+	if id.begins_with("upgrade/") and ResourceLoader.exists("res://assets/ui/upgrade_icons/"+id.get_slice("/",1)+".png"):return load("res://assets/ui/upgrade_icons/"+id.get_slice("/",1)+".png")
 	if id.begins_with("building/") and ResourceLoader.exists("res://assets/ui/buildings/"+id.get_slice("/",1)+".png"):return load("res://assets/ui/buildings/"+id.get_slice("/",1)+".png")
 	if "/" in id:
 		if id.get_slice("/",0) in ART_GROUPS:

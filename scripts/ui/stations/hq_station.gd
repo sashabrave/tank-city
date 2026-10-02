@@ -1,6 +1,6 @@
 extends RefCounted
 ## «Штаб» (HQ blueprint): support technologies, base defence, insurance and the other buildings.
-const DEFENCE=[["base","Прочность базы","repair"],["turret","Союзные турели","turret"]]
+const DEFENCE=[["base","Прочность базы","upgrade/base"],["turret","Союзные турели","upgrade/turret"]]
 const BUILDINGS=["weapons","yard","garage","range"]
 func title()->String:return "Штаб"
 func subtitle()->String:return "Поддержка, оборона, страховка, постройки."
@@ -17,8 +17,8 @@ func items(tab:String)->Array:
 				var unlocked=Game.branch_unlocked(row[0])
 				result.append({"id":row[0],"title":row[1],"icon":row[2],"caption":"ур. %d / %d" % [Game.level(row[0]),Game.upgrade_cap(row[0])] if unlocked else "Открыть · %d ◈" % Game.UNLOCK_COSTS[row[0]],"state":"owned" if unlocked else "ready"})
 		"insurance":
-			result.append({"id":"alloy","title":"Страховка сплава","icon":"alloy","caption":"%d / %d" % [Game.progression.insurance,Balance.CONFIG.economy.insurance_cap],"state":"owned"})
-			result.append({"id":"rescue","title":"Страховка чертежей","icon":"blueprint","caption":"%d / 10" % Game.rescue_level if "rescue" in Game.research_unlocks else "Нужен чертёж","state":"owned" if "rescue" in Game.research_unlocks else "locked"})
+			result.append({"id":"alloy","title":"Страховка сплава","icon":"upgrade/insurance_alloy","caption":"%d / %d" % [Game.progression.insurance,Balance.CONFIG.economy.insurance_cap],"state":"owned"})
+			result.append({"id":"rescue","title":"Страховка чертежей","icon":"upgrade/insurance_blueprint","caption":"%d / 10" % Game.rescue_level if "rescue" in Game.research_unlocks else "Нужен чертёж","state":"owned" if "rescue" in Game.research_unlocks else "locked"})
 		"build":
 			for id in BUILDINGS:
 				var built=id in Game.built_workshops;var known=Game.building_known(id);var blocker=Game.building_blocker(id)
@@ -41,9 +41,9 @@ func detail(tab:String,id:String)->Dictionary:
 		"insurance":
 			if id=="alloy":
 				var cap=Balance.CONFIG.economy.insurance_cap;var n=Game.progression.insurance
-				return {"title":"Страховка сплава","icon":"alloy","text":"Меньше потерь добытого сплава при выбывании.","rows":[["Потеря при выбывании","%d%%" % roundi(Game.death_loss_fraction()*100),"%d%%" % roundi(Game.death_loss_fraction(mini(n+1,cap))*100)]],"actions":[{"id":"buy","text":"Максимум" if n>=cap else "Улучшить · %d ◈" % Game.insurance_cost(),"enabled":n<cap and Game.credits>=Game.insurance_cost(),"primary":true}]}
+				return {"title":"Страховка сплава","icon":"upgrade/insurance_alloy","text":"Меньше потерь добытого сплава при выбывании.","rows":[["Потеря при выбывании","%d%%" % roundi(Game.death_loss_fraction()*100),"%d%%" % roundi(Game.death_loss_fraction(mini(n+1,cap))*100)]],"actions":[{"id":"buy","text":"Максимум" if n>=cap else "Улучшить · %d ◈" % Game.insurance_cost(),"enabled":n<cap and Game.credits>=Game.insurance_cost(),"primary":true}]}
 			var known="rescue" in Game.research_unlocks;var price=Game.special_cost("rescue")
-			return {"title":"Страховка чертежей","icon":"blueprint","text":"Шанс сохранить чертежи из рюкзака при выбывании." if known else "Нужен чертёж страховки.","rows":[["Шанс","%d%%" % (Game.rescue_level*6),"%d%%" % (mini(Game.rescue_level+1,10)*6)]],"actions":[{"id":"buy","text":"Максимум" if price<0 and known else "Улучшить · %d ◈" % price,"enabled":known and price>=0 and Game.credits>=price,"primary":true}]}
+			return {"title":"Страховка чертежей","icon":"upgrade/insurance_blueprint","text":"Шанс сохранить чертежи из рюкзака при выбывании." if known else "Нужен чертёж страховки.","rows":[["Шанс","%d%%" % (Game.rescue_level*6),"%d%%" % (mini(Game.rescue_level+1,10)*6)]],"actions":[{"id":"buy","text":"Максимум" if price<0 and known else "Улучшить · %d ◈" % price,"enabled":known and price>=0 and Game.credits>=price,"primary":true}]}
 		"build":
 			var built=id in Game.built_workshops;var known=Game.building_known(id);var blocker=Game.building_blocker(id)
 			var text=preload("res://scripts/ui/build_catalog.gd").INFO.get(id,["",""])[1]

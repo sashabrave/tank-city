@@ -709,7 +709,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-056.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "во всех весрстаках обнови иконки (где векторные где чата гпт имадже 2.5 сhiggsfield)",
 			"type": "bug",
 			"version": "0.7.1-pre"

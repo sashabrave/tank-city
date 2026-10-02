@@ -56,7 +56,8 @@
 					"У полевого механика можно забрать стоящую машину в следующий бой: багги 60, БТР 110, танк 180 сплава.",
 					"Стрельбище во дворе: длинная дорожка с огневой точкой, мишень далеко за мешками с песком и щитом, трасса для машин шире.",
 					"«Сводка» в командном центре: крупные иконки со шкалами прогресса и статистика за всё время — время в игре, вылазки, враги по типам, испытания и другое.",
-					"Ночью сквозь поле медленно проплывают едва заметные лунные лучи."
+					"Ночью сквозь поле медленно проплывают едва заметные лунные лучи.",
+					"Новые нарисованные иконки улучшений в Казарме и Штабе: здоровье, сила, скорость, напор, лечение, аптечки, удача, прочность базы, турели и страховки; у иконок способностей убрана цветная кайма."
 				]
 			},
 			"en": {
@@ -112,7 +113,8 @@
 					"At the field mechanic you can take the parked vehicle into the next fight: buggy 60, APC 110, tank 180 alloy.",
 					"Yard range: a long lane with a firing spot, the target far away behind sandbags and a backstop, and a wider track for vehicles.",
 					"The command centre «Summary»: big icons with progress bars and all-time stats — time played, sorties, enemies by type, challenges and more.",
-					"At night faint moonbeams slowly drift across the field."
+					"At night faint moonbeams slowly drift across the field.",
+					"New drawn upgrade icons in the Barracks and HQ: health, strength, speed, pressure, healing, medkits, luck, base armour, turrets and insurance; the colour fringe on ability icons is gone."
 				]
 			}
 		},

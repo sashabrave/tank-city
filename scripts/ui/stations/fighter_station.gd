@@ -2,7 +2,7 @@ extends RefCounted
 ## «Казарма» (always available): classes and their abilities, general upgrades, the stat tree («Выучка»),
 ## field supply, backpack and rerolls. The stat tree is built from StatRegistry.
 const GENERAL=[["health","Здоровье","+2 HP за уровень"],["damage","Сила","+5% базового урона за уровень"],["mobility","Скорость","Прирост уменьшается с каждым уровнем"],["pressure","Напор","Шанс, что твой снаряд переживёт столкновение"]]
-const SUPPLY=[["heal","Сила лечения","heart"],["supplies","Аптечки в передышках","heart"],["luck","Удача","star"]]
+const SUPPLY=[["heal","Сила лечения","upgrade/heal"],["supplies","Аптечки в передышках","upgrade/supplies"],["luck","Удача","upgrade/luck"]]
 func title()->String:return "Казарма"
 func subtitle()->String:return "Классы, выучка, снабжение — на все вылазки."
 func tabs()->Array:return [["shells","Классы","fighter"],["general","Общие улучшения","health"],["training","Выучка","rare"],["supply","Снабжение","heart"],["kit","Снаряжение","inventory"]]
@@ -18,7 +18,7 @@ func items(tab:String)->Array:
 				var concept=ClassCatalog.CONCEPTS[i]
 				result.append({"id":"concept_%d" % i,"title":concept[0],"icon":"fighter","group":"В разработке","caption":concept[1],"state":"locked"})
 		"general":
-			for row in GENERAL:result.append({"id":row[0],"title":row[1],"icon":row[0] if row[0]!="mobility" else "speed","caption":"ур. %d" % Game.level(row[0]),"state":"owned"})
+			for row in GENERAL:result.append({"id":row[0],"title":row[1],"icon":"upgrade/"+row[0],"caption":"ур. %d" % Game.level(row[0]),"state":"owned"})
 		"supply":
 			for row in SUPPLY:
 				var unlocked=Game.branch_unlocked(row[0])
@@ -51,7 +51,7 @@ func detail(tab:String,id:String)->Dictionary:
 				"lines":ClassCatalog.modifier_lines(id)+["Q · %s%s" % [AbilityCatalog.DATA[first].name," ✓" if id in Game.class_first_slots else ""],"1 · %s%s" % [AbilityCatalog.DATA[second].name," ✓" if id in Game.class_second_slots else ""]],"actions":actions}
 		"general":
 			var row=GENERAL.filter(func(r):return r[0]==id)[0]
-			return {"title":row[1],"icon":id if id!="mobility" else "speed","text":row[2]+". Действует во всех классах; бесплатный сброс возвращает всё вложенное.","rows":[["Уровень",Game.level(id),Game.level(id)+1]],"actions":[{"id":"buy","text":"Улучшить · %d ◈" % Game.cost(id),"enabled":Game.credits>=Game.cost(id),"primary":true},{"id":"reset","text":"Сбросить · вернуть %d ◈" % Game.shell_refund(),"enabled":Game.shell_refund()>0}]}
+			return {"title":row[1],"icon":"upgrade/"+id,"text":row[2]+". Действует во всех классах; бесплатный сброс возвращает всё вложенное.","rows":[["Уровень",Game.level(id),Game.level(id)+1]],"actions":[{"id":"buy","text":"Улучшить · %d ◈" % Game.cost(id),"enabled":Game.credits>=Game.cost(id),"primary":true},{"id":"reset","text":"Сбросить · вернуть %d ◈" % Game.shell_refund(),"enabled":Game.shell_refund()>0}]}
 		"training":
 			var def=StatRegistry.get_def(id);var level=StatRegistry.level(id)
 			var now=StatRegistry.base_value(def);var then=now+(def.step if level<def.max_level else 0.0)
