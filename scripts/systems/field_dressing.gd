@@ -18,7 +18,9 @@ func free_cell(cell:Vector2i)->bool:
 	var g=arena.grid_size
 	if cell.x<1 or cell.x>g-2 or cell.y<3 or cell.y>g-5:return false
 	if cell.x in arena.spawn_columns() and cell.y<=3:return false
-	return not arena.walls.has(cell) and not arena.room.trenches.has(cell) and not arena.terrain.movement_blocked_at_cell(cell) and not arena.nets.has(cell)
+	for q in [Vector2i(0,0),Vector2i(1,0),Vector2i(0,1),Vector2i(1,1)]:
+		if arena.terrain.patches.has(cell*2+q):return false
+	return not arena.walls.has(cell) and not arena.room.trenches.has(cell) and not arena.nets.has(cell) and arena.current_layout[cell.y][cell.x]=="."
 ## Every spawn marker cell on row 0 and the side rows must still reach the HQ apron.
 func connected()->bool:
 	var g=arena.grid_size;var start=Vector2i(arena.room.base_cell.x,g-2)
@@ -54,6 +56,8 @@ func containers():
 		for c in cells:
 			for cell in c:
 				var wall=arena.walls[cell];wall["style_kind"]="container"
+				# The layout knows the container too, so terrain and later passes treat it as concrete.
+				BattleMapGenerator.put(arena.current_layout,cell,"C")
 				if is_instance_valid(wall.node):wall.node.visible=false
 			build(c,along_x,Color(pair[rng.randi_range(0,1)]),tall)
 		packs-=1

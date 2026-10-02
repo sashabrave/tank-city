@@ -39,8 +39,11 @@ static func build(seed_value:int)->Array:
 	# Endless has no map, so its rooms stay battles.
 	if gradual() and not Campaign.endless:
 		for special in WORLD1_SPECIALS:
+			# One special point per stage: prefer a listed stage that has none yet.
 			var stage=special.stages[rng.randi_range(0,special.stages.size()-1)]
-			if stage>=plan.size() or plan[stage].size()<2:continue
+			var open=special.stages.filter(func(s):return s<plan.size() and plan[s].all(func(n):return n.type=="battle"))
+			if not open.is_empty() and stage not in open:stage=open[0]
+			if stage>=plan.size() or plan[stage].size()<2 or plan[stage].any(func(n):return n.type!="battle"):continue
 			# Specials take an ordinary battle node, never another special.
 			var free=plan[stage].filter(func(n):return n.type=="battle")
 			if free.size()<2:continue
