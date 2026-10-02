@@ -38,7 +38,8 @@
 					"Счётчик валют: больше воздуха между иконкой и числом, а при появлении жетонов блок плавно раздвигается.",
 					"Числа на карточках усилений округлены: здоровье и проценты целые, дробь только у темпа, урона и метров.",
 					"Жетоны стали яркими монетами с лапой: подлетают выше, медленно падают кувыркаясь, светятся, искрят и звенят по-своему.",
-					"Своя граната и динамит задевают и своих: 1 урона бойцу в радиусе взрыва и 1 — штабу."
+					"Своя граната и динамит задевают и своих: 1 урона бойцу в радиусе взрыва и 1 — штабу.",
+					"Дрон-камикадзе взрывается, если врежется в бойца, а заложенная дроном бомба больше не исчезает с концом волны."
 				]
 			},
 			"en": {
@@ -76,7 +77,8 @@
 					"Currency strip: more space between icon and number, and it widens smoothly when tokens appear.",
 					"Numbers on upgrade cards are rounded: health and percents are whole, decimals only for rate, damage and metres.",
 					"Tokens are now bright paw coins: they pop higher, fall slowly with a tumble, glow, sparkle and chime their own way.",
-					"Your own grenades and dynamite hurt your side too: 1 damage to the soldier in the blast and 1 to the HQ."
+					"Your own grenades and dynamite hurt your side too: 1 damage to the soldier in the blast and 1 to the HQ.",
+					"A kamikaze drone blows up when it runs into the soldier, and a planted drone bomb no longer vanishes when the wave ends."
 				]
 			}
 		},

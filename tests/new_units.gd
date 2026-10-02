@@ -39,7 +39,8 @@ func run():
 	var buggy=arena.player
 	# Player vehicles take their numbers from the garage catalog (origin, zone and upgrades).
 	check(is_equal_approx(buggy.damage,GarageCatalog.stats("buggy",arena,buggy.vehicle_origin,buggy.vehicle_zone).damage),"buggy damage from garage stats")
-	buggy.shoot();check(arena.projectiles.back().speed==20,"buggy high velocity bullets")
+	buggy.fire_cooldown=0;buggy.turn_left=0;var shots=arena.projectiles.size();buggy.shoot()
+	check(arena.projectiles.size()>shots and arena.projectiles.back().speed==20,"buggy high velocity bullets")
 	arena.interact();check(arena.player.kind=="soldier","buggy can be exited")
 	for kind in ["drone","buggy"]:
 		var unit=arena.spawn_actor(kind,Vector2i(0,0),false);unit.set_physics_process(false);unit.movement_pause=99

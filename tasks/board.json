@@ -1,5 +1,5 @@
 {
-	"next_id": 71,
+	"next_id": 72,
 	"tasks": [
 		{
 			"id": "T-001",
@@ -332,7 +332,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-027.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "дрон камикадзе должен взрываться об игрока",
 			"type": "polish",
 			"version": "0.7.1-pre"
@@ -501,7 +501,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-040.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "перед минибоссом успел заспавниться дрон камикадзе, он ехал к базе и пропал когда дрон появился",
 			"type": "bug",
 			"version": "0.7.1-pre"
@@ -514,7 +514,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-041.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "прошлая задача про дрона",
 			"type": "bug",
 			"version": "0.7.1-pre"
@@ -881,6 +881,18 @@
 			"note": "266 WAV в assets/audio/music; нужен ffmpeg/oggenc. Уменьшит пакет и проверку Gatekeeper.",
 			"type": "polish",
 			"priority": 2,
+			"status": "backlog",
+			"version": "0.8",
+			"created": "2026-10-02",
+			"source": "chat",
+			"shot": ""
+		},
+		{
+			"id": "T-071",
+			"title": "Дрон-минёр: модель закапывающегося дрона",
+			"note": "Из T-027: когда дрон закладывает мину — тот же дрон, но зарывается: крутит колёсами, пыль и камешки.",
+			"type": "polish",
+			"priority": 3,
 			"status": "backlog",
 			"version": "0.8",
 			"created": "2026-10-02",

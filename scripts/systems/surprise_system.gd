@@ -25,8 +25,7 @@ func tick(delta:float):
 func end_wave():
 	# Only clear residual ordnance after every spawned enemy has been defeated.
 	if arena.enemy_count()>0:return
-	for bomb in arena.bombs.duplicate():
-		if is_instance_valid(bomb):bomb.spent=true;bomb.queue_free()
-	arena.bombs.clear()
+	# Planted drone bombs are left to go off (T-040/T-041): a drone that reached the base does its job
+	# even if the wave ends or the commander arrives meanwhile.
 	for bullet in arena.projectiles.duplicate():
 		if is_instance_valid(bullet) and not bullet.friendly:bullet.consume()
