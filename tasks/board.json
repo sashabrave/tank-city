@@ -371,7 +371,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-030.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "у верстаков убери счетчик валюты справа в окне",
 			"type": "bug",
 			"version": "0.7.1-pre"
