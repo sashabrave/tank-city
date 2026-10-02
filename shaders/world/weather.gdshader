@@ -19,8 +19,11 @@ void vertex(){
  fade=1.0;
  if(kind==0){
   float life=fract(TIME*fall*rate+phase);
-  origin.y=mix(6.5,-.1,life);origin.x+=life*slant;
-  fade=smoothstep(0.0,.12,life)*(1.0-smoothstep(.9,1.0,life));
+  // Wind gusts sweep across as moving bands: denser, more slanted rain inside a gust, thin rain between.
+  float gust=.5+.5*sin(origin.x*.32+origin.z*.18-TIME*1.1)*sin(origin.z*.27-origin.x*.09+TIME*.6);
+  gust=smoothstep(.15,.85,gust);
+  origin.y=mix(6.5,-.1,life);origin.x+=life*slant*(.6+.8*gust);
+  fade=mix(.2,1.0,gust)*smoothstep(0.0,.12,life)*(1.0-smoothstep(.9,1.0,life));
  }else if(kind==1){
   float life=fract(TIME*.085*rate+phase);
   origin.y=mix(6.0,0.0,life);

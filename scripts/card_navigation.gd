@@ -13,6 +13,13 @@ func available()->Array:
 	var owner=scope()
 	var nodes=owner.find_children("*","Button",true,false) if owner else get_tree().get_nodes_in_group("reward_choice")
 	return nodes.filter(func(b):return is_instance_valid(b) and not b.is_queued_for_deletion() and b.is_visible_in_tree() and not b.disabled)
+## First pick in a new scope: the button the dialog focused itself, then one marked "default_choice"
+## (e.g. «Продолжить» in the hub greeting, T-076), then the first one.
+func initial(choices:Array,focused)->Button:
+	if focused in choices:return focused
+	for b in choices:
+		if b.has_meta("default_choice"):return b
+	return choices[0]
 func choose(button:Button):
 	selected=button;button.focus_mode=Control.FOCUS_ALL;button.grab_focus()
 func _input(event):
@@ -35,7 +42,7 @@ func _input(event):
 			if not event.is_pressed():release_required=false
 			get_viewport().set_input_as_handled();return
 	if choices.is_empty() or not event.is_pressed() or event.is_echo():return
-	if not is_instance_valid(selected) or selected not in choices:choose(choices[0])
+	if not is_instance_valid(selected) or selected not in choices:choose(initial(choices,get_viewport().gui_get_focus_owner()))
 	var direction=Vector2.ZERO
 	if event.is_action("east"):direction=Vector2.RIGHT
 	elif event.is_action("west"):direction=Vector2.LEFT
@@ -59,8 +66,8 @@ func _process(_delta):
 	if not transition_locked and not Input.is_action_pressed("interact"):release_required=false
 	var choices=available()
 	if choices.is_empty():selected=null;return
-	if not is_instance_valid(selected) or selected not in choices:choose(choices[0])
 	var focused=get_viewport().gui_get_focus_owner()
+	if not is_instance_valid(selected) or selected not in choices:choose(initial(choices,focused))
 	if focused in choices:selected=focused
 	for button in choices:
 		button.focus_mode=Control.FOCUS_ALL

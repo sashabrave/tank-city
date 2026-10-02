@@ -11,7 +11,7 @@ func fit_panel():
 	var width=hud.right_info.size.x-32
 	content.size.x=width
 	content.size.y=content.get_combined_minimum_size().y
-	position=hud.right_info.position+Vector2(16,roster.position.y+roster.content_height()+10)
+	position=hud.right_info.position+Vector2(16,roster.position.y+roster.content_height()+18)
 	size=Vector2(width,content.size.y)
 	# Hidden (a choice screen is open): autowrapped labels measure at zero width and grow tall,
 	# so the panel keeps only the roster height.
@@ -35,10 +35,18 @@ func _process(delta):
 	for name in ["normal","hover","pressed","focus"]:
 		var style=toggle.get_theme_stylebox(name).duplicate();style.content_margin_top=3;style.content_margin_bottom=3;toggle.add_theme_stylebox_override(name,style)
 	if not p.tracker_collapsed:
-		for q in quests:
-			var label=Label.new();content.add_child(label)
-			Texts.set_text(label,q.text+"\n%s: %d / %d" % [preload("res://scripts/progression/quest_catalog.gd").counter_name(q.event),p.count(q),q.goal])
-			label.add_theme_font_size_override("font_size",12)
-			label.add_theme_color_override("font_color",Color("f1eedb"))
+		# Each tracked task is its own row: name on the left, counter on the right, a thin line between (T-078).
+		for i in range(quests.size()):
+			var q=quests[i]
+			if i>0:
+				var line=ColorRect.new();content.add_child(line);line.custom_minimum_size=Vector2(0,1);line.color=Color(1,1,1,.08);line.mouse_filter=Control.MOUSE_FILTER_IGNORE
+			var row=HBoxContainer.new();content.add_child(row);row.add_theme_constant_override("separation",8);row.mouse_filter=Control.MOUSE_FILTER_IGNORE
+			var label=Label.new();row.add_child(label);label.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+			Texts.set_text(label,q.text)
+			label.add_theme_font_size_override("font_size",12);label.add_theme_color_override("font_color",Color("f1eedb"))
 			label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+			var done=p.count(q)>=q.goal
+			var counter=Label.new();row.add_child(counter);counter.text="%d / %d" % [mini(p.count(q),q.goal),q.goal];counter.size_flags_vertical=Control.SIZE_SHRINK_BEGIN
+			counter.tooltip_text=Texts.render(preload("res://scripts/progression/quest_catalog.gd").counter_name(q.event))
+			counter.add_theme_font_size_override("font_size",12);counter.add_theme_color_override("font_color",UiKit.ORANGE if done else UiKit.MUTED)
 	fit_panel()

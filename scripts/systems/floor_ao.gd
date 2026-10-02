@@ -13,6 +13,14 @@ static func build_for(context)->Node:
 	var ao=load("res://scripts/systems/floor_ao.gd").new();ao.name="FloorAO";ao.arena=context;context.add_child(ao);ao.rebuild();return ao
 static func build_props(context:Node3D,skip:Array=[])->Node:
 	var ao=load("res://scripts/systems/floor_ao.gd").new();ao.name="FloorAO";context.add_child(ao);ao.rebuild_props(context,skip);return ao
+## A small soft shadow under a soldier (the hero in battle and in the hub): one quad in box mode that follows
+## the model, so the figure stands on the floor even in flat light.
+static func contact_shadow(model:Node3D):
+	if model.has_node("ContactShadow"):return
+	var shadow=MeshInstance3D.new();shadow.name="ContactShadow";var quad=QuadMesh.new();quad.size=Vector2(1.15,1.15);quad.orientation=PlaneMesh.FACE_Y;shadow.mesh=quad
+	shadow.position.y=LIFT+.004;shadow.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var mat=ShaderMaterial.new();mat.shader=preload("res://shaders/world/contact_shadow.gdshader");shadow.material_override=mat
+	model.add_child(shadow)
 func _ready():
 	cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	var mat=ShaderMaterial.new();mat.shader=preload("res://shaders/world/floor_ao.gdshader");mat.set_shader_parameter("depth",DEPTH);material_override=mat

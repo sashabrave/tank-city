@@ -1,5 +1,5 @@
 {
-	"next_id": 79,
+	"next_id": 81,
 	"tasks": [
 		{
 			"id": "T-001",
@@ -931,7 +931,7 @@
 			"scene": "arena",
 			"shot": "",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "грозы классно, когда идет дождь то пусть на карте боя тоже грозы",
 			"type": "polish",
 			"version": "0.7.1-pre"
@@ -944,7 +944,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-075.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "и еще давно бесят эти полосы овальные сверху и снтзу экрана",
 			"type": "polish",
 			"version": "0.7.1-pre"
@@ -957,7 +957,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-076.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "диалогове окно на старте должно сфокусировано на кнопке продолжить которая открвает хаю",
 			"type": "bug",
 			"version": "0.7.1-pre"
@@ -983,10 +983,35 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-078.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "в плашке инфы поля иконки полей выходят за границы походу, сделай звезду поменьше, шкалу адаптивной по иширине",
 			"type": "polish",
 			"version": "0.7.2-pre"
+		},
+		{
+			"created": "2026-10-02",
+			"id": "T-079",
+			"note": "выглядит так будто это тень на них влиеюет на полную закрасу блока.",
+			"priority": 1,
+			"scene": "arena",
+			"shot": "res://tasks/shots/T-079.png",
+			"source": "game",
+			"status": "review",
+			"title": "не понял, блоки пола разныые по нассыщенности",
+			"type": "bug",
+			"version": "0.7.2-pre"
+		},
+		{
+			"id": "T-080",
+			"title": "Плавающий тест challenge_cache_revision: «card rarity follows the stars» иногда падает",
+			"note": "",
+			"type": "bug",
+			"priority": 3,
+			"status": "backlog",
+			"version": "0.7.2",
+			"created": "2026-10-02",
+			"source": "chat",
+			"shot": ""
 		}
 	]
 }

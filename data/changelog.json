@@ -63,7 +63,12 @@
 					"На доске задач появился раздел «Для меня»: решения, которые ждут автора, и готовое к проверке в игре.",
 					"Свет фонарей и фар с мягким краем, без резкой границы конуса; рисунок в пятне спокойнее, фонарь меньше трясётся на бегу",
 					"Тени у стен и блоков сплошные, огибают углы и мягко тают; мягкие тени под предметами в хабе",
-					"Вода и лужи — чистая гладь без полосок и пятен; убраны лунные конусы с неба; «Кино» в хабе работает плавнее; в углу снова FPS и номер сборки"
+					"Вода и лужи — чистая гладь без полосок и пятен; убраны лунные конусы с неба; «Кино» в хабе работает плавнее; в углу снова FPS и номер сборки",
+					"Грозы в бою во время дождя: вспышки молний и гром; дождь идёт на весь экран и порывами ветра",
+					"Плашка поля: звезда меньше, шкалы полей и волн по ширине плашки, точка командира в конце волн, пройденное закрашено полупрозрачно; задачи разбиты строками со счётчиками справа",
+					"Приветствие в хабе сразу выделяет «Продолжить»; убраны светлые полосы по краям экрана от размытия; песок и трава на поле больше не выглядят как тёмные или светлые клетки",
+					"Вернули свет ламп, прожекторов и фар ночью (текстура пятна гасила свет и роняла FPS); тени ночью размыты как днём; новая ночная палитра — серебристая луна и синие тени",
+					"Под героем мягкая тень; фонарь на груди больше не отбрасывает тень оружия на бегу; иконка «Противотанковый ёж» — настоящий ёж"
 				]
 			},
 			"en": {
@@ -126,7 +131,12 @@
 					"The task board has a «For me» view: decisions waiting for the author and work ready to check in game.",
 					"Flashlights and headlights have a soft edge with no hard cone outline; calmer beam pattern and less shake while running",
 					"Wall and block shadows are continuous, wrap corners and fade softly; soft contact shadows under hub props",
-					"Water and puddles are a clean surface without strips or blotches; sky moon cones removed; «Cinema» runs smoother in the hub; FPS and build number back in the corner"
+					"Water and puddles are a clean surface without strips or blotches; sky moon cones removed; «Cinema» runs smoother in the hub; FPS and build number back in the corner",
+					"Thunderstorms in battle during rain: lightning flashes and thunder; rain covers the whole screen and comes in gusts",
+					"Field panel: smaller star, field and wave pips fit the panel, a commander dot after the waves, finished steps translucent; tasks split into rows with counters on the right",
+					"The hub greeting focuses «Continue» right away; removed light bands at screen edges from the blur; sand and grass patches no longer look like dark or light cells",
+					"Lamp, searchlight and headlight light is back at night (the beam texture switched light off and cost FPS); night shadows blur like the day ones; new night palette — silver moon and blue shadows",
+					"A soft shadow under the hero; the chest lamp no longer casts the weapon's shadow while running; the anti-tank hedgehog icon now shows a real hedgehog"
 				]
 			}
 		},

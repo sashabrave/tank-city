@@ -84,7 +84,7 @@ func hanging_lamps():
 		var bulb=Visuals.box(self,at+Vector3(0,-.12,0),Vector3(.16,.06,.16),Color("fff0c8"));bulb.material_override=Visuals.material(Color("fff0c8"),true)
 		var lamp=SpotLight3D.new();add_child(lamp);lamp.position=at+Vector3(0,-.15,0);lamp.rotation_degrees=Vector3(-90,0,0)
 		lamp.light_color=Color("ffe1ad");lamp.light_energy=2.2;lamp.spot_range=5.0;lamp.spot_angle=40;lamp.shadow_enabled=i==0
-		lamp.light_projector=preload("res://scripts/world_lighting.gd").lamp_cookie()
+
 		preload("res://scripts/world_lighting.gd").add_cone(lamp);lamp.get_node("SoftCone").material_override.set_shader_parameter("density",.012)
 		if i==1:preload("res://scripts/light_flicker.gd").attach(lamp,rng.randi())
 func shell():

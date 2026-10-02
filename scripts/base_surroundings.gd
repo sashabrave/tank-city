@@ -10,7 +10,7 @@ static func lamp(parent:Node3D,pos:Vector3):
 	Visuals.model(kind,rig)
 	var spec=STANDS[kind]
 	var light=preload("res://scripts/world_lighting.gd").beam(rig,spec.anchor,true,1)
-	light.rotation.x=deg_to_rad(spec.tilt);light.spot_range=spec.range;light.spot_angle=spec.angle;light.set_meta("day_energy",.15);light.set_meta("night_energy",1.7)
+	light.rotation.x=deg_to_rad(spec.tilt);light.spot_range=spec.range;light.spot_angle=spec.angle;light.set_meta("day_energy",.15);light.set_meta("night_energy",1.35)
 static func tree(parent:Node3D,pos:Vector3,height:float):
 	Visuals.box(parent,pos+Vector3.UP*height*.23,Vector3(height*.08,height*.46,height*.08),Color("665641"))
 	for i in range(3):

@@ -122,6 +122,8 @@ func apply():
 	# with noise that reads as grain on small geometry like brick courses.
 	sun.light_angular_distance=0.0
 	sun.shadow_blur=clampf(1.0+float(style.softness)*.5,1.0,4.0) if soft else 1.0
+	# Moonlight shadows read as blurry as the day ones.
+	if soft and night:sun.shadow_blur=clampf(sun.shadow_blur*1.8,2.0,5.0)
 	sun.shadow_opacity=float(style.shadow) if cozy else 1.0
 	sun.light_specular=float(style.specular) if cozy else .5
 	var time:Dictionary=moment(get_parent(),night) if cozy else {}
@@ -179,10 +181,13 @@ func cinematic_light(on:bool,night:bool,sun_angle:Vector3):
 func depth_light(on:bool,night:=false):
 	if not on:return
 	if night:
-		# Night depth: moonlit contrast — crisper shadows, a slightly bluer fill, lamps stand out against it.
-		environment.adjustment_contrast*=1.1
-		environment.ambient_light_color=environment.ambient_light_color.lerp(Color("6f86c4"),.2)
-		sun.shadow_opacity=minf(1.0,sun.shadow_opacity*1.1)
+		# Night recipe, tuned like the day one: silver-blue moonlight that shapes the forms, a deep blue fill
+		# so shadows stay coloured (never black or brown), slightly muted colour, warm lamps glowing against it.
+		environment.adjustment_contrast*=1.08;environment.adjustment_saturation*=.92
+		sun.light_color=sun.light_color.lerp(Color("b4c8ff"),.5);sun.light_energy*=1.25
+		environment.ambient_light_color=environment.ambient_light_color.lerp(Color("5f74b0"),.35)
+		sun.shadow_opacity=minf(1.0,sun.shadow_opacity)*.8
+		environment.glow_intensity*=1.3
 		return
 	environment.adjustment_contrast*=1.08;environment.adjustment_saturation*=1.05
 	sun.light_color=sun.light_color.lerp(Color("ffd6a8"),.15);sun.light_energy*=1.06
@@ -220,9 +225,10 @@ func update_lamps():
 		if light.get_meta("occluded_beam",false) and board.has_method("wall_contacts"):
 			var forward=-light.global_basis.z.normalized()
 			if not board.wall_contacts(light.global_position,forward,.04).is_empty():light.visible=false
-		light.shadow_enabled=light.visible and (light.get_meta("occluded_beam",false) or (cozy and i<3))
+		light.shadow_enabled=light.visible and not light.get_meta("no_shadow",false) and (light.get_meta("occluded_beam",false) or (cozy and i<3))
 		light.light_volumetric_fog_energy=1.5 if cozy else 0.0
-		light.shadow_blur=1.5 if cozy and Settings.values.get("soft_shadows",true) else 1.0
+		# Lamp shadows at night were crisp next to the soft day ones; a wider filter blurs them the same way.
+		light.shadow_blur=(3.2 if night else 1.5) if cozy and Settings.values.get("soft_shadows",true) else 1.0
 		if light is SpotLight3D:
 			if not light.has_node("SoftCone"):add_cone(light)
 			# A faint beam is always visible; night and fog make it denser (T-058).
@@ -240,27 +246,10 @@ static func lamp(parent:Node3D,position:Vector3):
 	light.light_color=Color("ffcc83");light.light_energy=1.6;light.omni_range=7;light.omni_attenuation=1.3;light.shadow_enabled=false
 	light.add_to_group("night_lamps");light.visible=Settings.values.get("world_lighting","day")=="night"
 
-## Lamp cookie (T-058): a real torch pattern on the ground — hot centre, a brighter reflector ring and a soft,
-## slightly uneven rim — instead of a flat disc. One procedural texture shared by every spotlight.
-static var cookie:ImageTexture  # v2: soft rim
-static func lamp_cookie()->ImageTexture:
-	if cookie:return cookie
-	var size=128;var image=Image.create(size,size,false,Image.FORMAT_L8)
-	var rng=RandomNumberGenerator.new();rng.seed=4411
-	var wobble=[];for i in range(16):wobble.append(rng.randf_range(-.03,.03))
-	for y in range(size):
-		for x in range(size):
-			var p=Vector2(x,y)/float(size-1)*2.0-Vector2.ONE;var r=p.length()
-			var a=fposmod(atan2(p.y,p.x)/TAU,1.0)*16.0;var k=int(a)%16;var w=lerpf(wobble[k],wobble[(k+1)%16],a-floor(a))
-			# Soft, wide falloff to nothing at the rim (no hard cone edge) and a gentle pattern (T: softer cookie).
-			var edge=1.0-smoothstep(.35+w,1.0,r)
-			var value=edge*(.8+.2*(1.0-smoothstep(0.0,.4,r))+.07*exp(-pow((r-.55)/.08,2.0)))
-			image.set_pixel(x,y,Color(value,value,value))
-	image.generate_mipmaps();cookie=ImageTexture.create_from_image(image);return cookie
 static func beam(parent:Node3D,pos:Vector3,always=false,priority=1)->SpotLight3D:
 	var light=SpotLight3D.new();light.name="Headlight";parent.add_child(light);light.position=pos;light.rotation.x=deg_to_rad(-16)
-	light.light_projector=lamp_cookie()
-	light.light_color=Color("ffe1ad");light.light_energy=2.1;light.spot_range=3.8;light.spot_angle=34;light.spot_attenuation=1.0;light.spot_angle_attenuation=2.2;light.shadow_enabled=false
+	# No projector texture: in Godot 4.7 a runtime cookie switched the light off entirely (hub went dark, 0.7.2).
+	light.light_color=Color("ffe1ad");light.light_energy=2.1;light.spot_range=3.8;light.spot_angle=34;light.spot_attenuation=1.0;light.shadow_enabled=false
 	light.set_meta("day_energy",.65 if always else 0.0);light.set_meta("night_energy",2.1);light.set_meta("priority",priority)
 	light.add_to_group("night_lamps");light.visible=always or Settings.values.world_lighting=="night";return light
 
@@ -299,8 +288,10 @@ static func headlights(parent:Node3D,vehicle=false,always=false):
 		var lamp=parent.find_child("Flashlight",true,false)
 		if lamp is Node3D:
 			var steady=preload("res://scripts/beam_steady.gd").new();steady.name="SteadyBeam";steady.lamp=lamp;rig.add_child(steady)
-			beam(steady,Vector3.ZERO,false,4)
-		else:beam(rig,Vector3(.12,.65,-.24),false,4)
+			beam(steady,Vector3.ZERO,false,4).set_meta("no_shadow",true)
+		else:beam(rig,Vector3(.12,.65,-.24),false,4).set_meta("no_shadow",true)
+		# A chest lamp casts no shadows: its own soldier's weapon flickered across the beam while running.
+		preload("res://scripts/systems/floor_ao.gd").contact_shadow(parent)
 
 ## Compact fixtures (tools/build_lights_v1.py): an armoured searchlight on a turntable for block tops, a caged
 ## bulkhead lamp on a bracket for walls (`wall` true). The spotlight sits in the modelled lens.

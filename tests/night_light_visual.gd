@@ -1,5 +1,5 @@
 extends Node3D
-## Night field: lamps, beams, cookies and shadows. Window shot /tmp/r13-night.png.
+## Night field: lamps, beams and shadows. Window shot /tmp/r13-night.png.
 func _ready():call_deferred("run")
 func run():
 	Game.save_enabled=false;Game.sound_enabled=false;Settings.persistence_enabled=false;Campaign.configure(1)

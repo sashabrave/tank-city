@@ -9,6 +9,7 @@ var armor_meter: Control
 var wave_label: Label
 var enemy_label: Label
 var stage_pips:Control
+var star_mark:Label
 var wave_pips:Control
 var credits: Label
 var tip: Label
@@ -54,6 +55,8 @@ func _ready():
 	status_strip=preload("res://scripts/ui/status_strip.gd").new();status_strip.name="StatusStrip";status_strip.arena=arena;root.add_child(status_strip)
 	left_info=root.get_node("WeaponPanel");weapon_icon=left_info.get_node("WeaponIcon");vehicle_label=left_info.get_node("WeaponName");intercept_label=left_info.get_node("WeaponStats");armor_meter=left_info.get_node("VehicleHealth")
 	right_info=root.get_node("RoomPanel");wave_label=right_info.get_node("StageLabel");enemy_label=right_info.get_node("WaveLabel");right_info.get_node("EnemyRoster").arena=arena
+	star_mark=Label.new();right_info.add_child(star_mark);star_mark.name="StarMark";star_mark.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	star_mark.add_theme_font_size_override("font_size",15);star_mark.add_theme_color_override("font_color",Color("f1eedb"))
 	stage_pips=preload("res://scripts/ui/pip_strip.gd").new();right_info.add_child(stage_pips);wave_pips=preload("res://scripts/ui/pip_strip.gd").new();right_info.add_child(wave_pips)
 	pause_button=root.get_node("PauseButton");pause_button.pressed.connect(func():arena.pause_battle())
 	pause_button.text="";pause_button.icon=UiKit.interface_icon("pause");pause_button.expand_icon=true;pause_button.icon_alignment=HORIZONTAL_ALIGNMENT_CENTER;pause_button.add_theme_constant_override("icon_max_width",22)
@@ -137,16 +140,25 @@ func _process(_delta):
 	var plain=not arena.sandbox and not data.boss_room and not Campaign.endless
 	# The arena's difficulty stars sit right after the title (T-023), before the stage pips.
 	var stars=EncounterRules.STARS[clampi(arena.room.difficulty,0,2)] if not arena.sandbox and not data.boss_room else ""
-	Texts.set_text(wave_label,("Песочница" if arena.sandbox else "Босс мира" if data.boss_room else "Поле" if plain else "Поле %d" % data.stage)+(" "+stars if stars!="" else ""))
-	stage_pips.visible=plain;stage_pips.set_state(6,data.stage-1,data.stage-1);stage_pips.position=Vector2(wave_label.position.x+text_width(wave_label)+12,wave_label.position.y+wave_label.size.y*.5-3)
+	Texts.set_text(wave_label,"Песочница" if arena.sandbox else "Босс мира" if data.boss_room else "Поле" if plain else "Поле %d" % data.stage)
+	# Stars are a smaller mark after the title; the pips take whatever width is left in the panel (T-078).
+	star_mark.visible=stars!="";star_mark.text=stars
+	star_mark.position=Vector2(wave_label.position.x+text_width(wave_label)+6,wave_label.position.y+wave_label.size.y*.5-star_mark.size.y*.5)
+	var after_title=(star_mark.position.x+star_mark.get_minimum_size().x if star_mark.visible else wave_label.position.x+text_width(wave_label))+12
+	stage_pips.visible=plain;stage_pips.set_state(6,data.stage-1,data.stage-1,-1,right_info.size.x-20-after_title)
+	stage_pips.position=Vector2(after_title,wave_label.position.y+wave_label.size.y*.5-stage_pips.size.y*.5)
 	var waves=not arena.sandbox and not arena.challenges.active() and not data.boss_room
 	wave_pips.visible=waves
 	if arena.sandbox and not arena.challenges.active():Texts.set_text(enemy_label,"F2 — админ")
 	elif arena.challenges.active():Texts.set_text(enemy_label,arena.challenges.status())
 	elif data.boss_room:Texts.set_text(enemy_label,BossCatalog.encounter(arena.run_seed,arena.room_index).name)
 	else:
-		Texts.set_text(enemy_label,"Волна");wave_pips.set_state(3,data.wave-1,data.wave-1)
-		wave_pips.position=Vector2(enemy_label.position.x+text_width(enemy_label)+12,enemy_label.position.y+enemy_label.size.y*.5-3)
+		Texts.set_text(enemy_label,"Волна")
+		var wave_x=enemy_label.position.x+text_width(enemy_label)+12
+		# The commander comes after the last wave: a big dot at the end; waves count as done while he is out.
+		var fighting_commander=data.commander>0
+		wave_pips.set_state(3,3 if fighting_commander else data.wave-1,-1 if fighting_commander else data.wave-1,data.commander,right_info.size.x-20-wave_x)
+		wave_pips.position=Vector2(wave_x,enemy_label.position.y+enemy_label.size.y*.5-wave_pips.size.y*.5)
 	tip.hide();Texts.set_text(star_label,"★ Звезда · %.1f с" % data.star);star_label.visible=data.star>0
 	ability_button.hide()
 	for i in range(skill_buttons.size()):

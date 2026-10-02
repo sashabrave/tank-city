@@ -163,8 +163,10 @@ func draw_patch(p:Vector2i,tint:Color):
 	var color=tint;var height=.0
 	if kind=="ice":color=tint.lerp(Color("a1c4d2"),.42)
 	elif kind=="water":color=tint.lerp(Color("416d80"),.65).darkened(.12);height=-.035
-	elif kind=="sand":color=tint.lerp(Color("c4ac77"),.58)
-	elif kind=="vegetation":color=tint.darkened(.10)
+	# Sand and grass differ from the floor by hue more than by brightness: flat lighter/darker cells read
+	# as a shading bug, especially at night (T-079).
+	elif kind=="sand":color=tint.lerp(Color("c9b07a"),.38)
+	elif kind=="vegetation":color=tint.lerp(Color("7f9a5e"),.22).darkened(.03)
 	if kind=="water":
 		# Water cells share one shader batch (shaders/world/water.gdshader), tinted by the biome.
 		var mesh=BoxMesh.new();mesh.size=Vector3.ONE;mesh.subdivide_width=2;mesh.subdivide_depth=2

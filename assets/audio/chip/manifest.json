@@ -1363,5 +1363,12 @@
       "collect_token_02.wav"
     ],
     "loop": false
+  },
+  "weather_thunder": {
+    "files": [
+      "weather_thunder_01.wav",
+      "weather_thunder_02.wav"
+    ],
+    "loop": false
   }
 }

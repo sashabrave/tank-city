@@ -22,7 +22,9 @@ void fragment() {
    float fi=float(i)+.5;
    float r=sqrt(fi/12.0);float a=fi*2.39996;
    vec2 offset=vec2(cos(a),sin(a))*r*radius;
-   sum+=textureLod(scene_texture,SCREEN_UV+offset,1.0).rgb;weight+=1.0;
+   // Keep taps inside the frame: samples past the edge smeared a light band with an oval bulge (T-075).
+   vec2 uv=clamp(SCREEN_UV+offset,SCREEN_PIXEL_SIZE*3.0,1.0-SCREEN_PIXEL_SIZE*3.0);
+   sum+=textureLod(scene_texture,uv,1.0).rgb;weight+=1.0;
   }
   vec3 soft=sum/weight;
   // Miniature look: slightly richer colour where it is out of focus.
