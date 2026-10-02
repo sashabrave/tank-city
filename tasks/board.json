@@ -761,7 +761,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-060.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "еденици здоровья и подобные штуки на карточках кроме самых задротских или важных округляй до целых",
 			"type": "polish",
 			"version": "0.7.1-pre"

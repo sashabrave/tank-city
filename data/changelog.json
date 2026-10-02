@@ -35,7 +35,8 @@
 					"Во дворе: E у машины сажает в неё, а меню стоянки открывается у отдельного терминала рядом.",
 					"Между волнами время не замирает: бонусы долетают, можно стрелять и пользоваться способностями.",
 					"Неготовая способность отвечает мягким глухим звуком.",
-					"Счётчик валют: больше воздуха между иконкой и числом, а при появлении жетонов блок плавно раздвигается."
+					"Счётчик валют: больше воздуха между иконкой и числом, а при появлении жетонов блок плавно раздвигается.",
+					"Числа на карточках усилений округлены: здоровье и проценты целые, дробь только у темпа, урона и метров."
 				]
 			},
 			"en": {
@@ -70,7 +71,8 @@
 					"In the yard: E at the vehicle boards it, and the motor pool menu opens at a separate terminal next to it.",
 					"Between waves time does not freeze: bonuses keep falling, and you can shoot and use abilities.",
 					"An ability that isn't ready answers with a soft, dull thud.",
-					"Currency strip: more space between icon and number, and it widens smoothly when tokens appear."
+					"Currency strip: more space between icon and number, and it widens smoothly when tokens appear.",
+					"Numbers on upgrade cards are rounded: health and percents are whole, decimals only for rate, damage and metres."
 				]
 			}
 		},

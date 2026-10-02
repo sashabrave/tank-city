@@ -190,8 +190,12 @@ static func card_rows(arena,def:UpgradeDef,tier:int)->Array:
 	var label=PREVIEW_LABELS.get(def.preview,[def.title,""]);var delta=float(change[1])-float(change[0])
 	if is_zero_approx(delta):return []
 	var unit=str(label[1]).strip_edges()
-	var value=("+" if delta>0 else "−")+UiKit.number(absf(roundf(delta)) if unit=="%" else absf(snappedf(delta,.01)))+(unit if unit=="%" else (" "+unit if unit!="" else ""))
-	var shown=func(v:float)->String:return UiKit.number(roundf(v) if unit=="%" else snappedf(v,.01))+(unit if unit=="%" else (" "+unit if unit!="" else ""))
+	# T-060: whole numbers for health, percents and other counts; one decimal only where it matters
+	# (rate per second, metres, seconds) and the change would vanish when rounded.
+	var fine=unit in ["/с","м","с"] or label[0] in ["Урон","Скорость"] or absf(delta)<.95
+	var step=.1 if fine else 1.0
+	var value=("+" if delta>0 else "−")+UiKit.number(absf(snappedf(delta,step)))+(unit if unit=="%" else (" "+unit if unit!="" else ""))
+	var shown=func(v:float)->String:return UiKit.number(snappedf(v,step))+(unit if unit=="%" else (" "+unit if unit!="" else ""))
 	return [[value,str(label[0]).to_lower() if label[0]!="HP" else "HP",shown.call(float(change[0])),shown.call(float(change[1]))]]
 ## First sentence of a card description: the card stays short, the full text is in the tooltip.
 static func short_detail(text:String)->String:
