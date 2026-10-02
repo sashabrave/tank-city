@@ -358,7 +358,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-029.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "в меню строительства выровняй отступы у э лементов, замени иконки нагенери в хиггсилд гптимадж 2.5",
 			"type": "polish",
 			"version": "0.7.1-pre"

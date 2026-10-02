@@ -12,7 +12,8 @@
 					"Панели в бою стали полупрозрачным стеклом, как остальной интерфейс.",
 					"«Глубина света» (настройки графики): мягкие тени на полу у стен и блоков, чуть теплее солнце и контрастнее картинка.",
 					"Новые иконки способностей без плашек, у каждой свой силуэт и цвет; на кнопке строительства — башенный кран.",
-					"Кнопки способностей: готовая способность подсвечивает клавишу, на перезарядке иконка темнеет, а секунды крупные и белые."
+					"Кнопки способностей: готовая способность подсвечивает клавишу, на перезарядке иконка темнеет, а секунды крупные и белые.",
+					"Новые миниатюры построек и станций в меню строительства и в штабе; ровные отступы карточек."
 				]
 			},
 			"en": {
@@ -24,7 +25,8 @@
 					"Battle panels are frosted glass now, like the rest of the interface.",
 					"«Light depth» (graphics settings): soft floor shadows by walls and blocks, a slightly warmer sun and more contrast.",
 					"New plate-free ability icons, each with its own silhouette and colour; a tower crane on the build button.",
-					"Ability buttons: a ready ability lights up its key; while recharging the icon dims and the seconds are big and white."
+					"Ability buttons: a ready ability lights up its key; while recharging the icon dims and the seconds are big and white.",
+					"New building and station miniatures in the build menu and the HQ; even card spacing."
 				]
 			}
 		},

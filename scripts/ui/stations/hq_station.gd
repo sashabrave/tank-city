@@ -22,7 +22,7 @@ func items(tab:String)->Array:
 		"build":
 			for id in BUILDINGS:
 				var built=id in Game.built_workshops;var known=Game.building_known(id);var blocker=Game.building_blocker(id)
-				result.append({"id":id,"group":"Площадка снаружи" if id in ["yard","garage","range"] else "Ангар","title":building_name(id),"icon":{"weapons":"inventory","yard":"base","garage":"vehicle","range":"sniper"}[id],"caption":"Построено" if built else ("Нужна площадка" if blocker!="" else "%d ◈" % Game.building_cost(id)) if known else "Нужен чертёж","state":"active" if built else "ready" if known and blocker=="" else "locked"})
+				result.append({"id":id,"group":"Площадка снаружи" if id in ["yard","garage","range"] else "Ангар","title":building_name(id),"icon":"building/"+id,"caption":"Построено" if built else ("Нужна площадка" if blocker!="" else "%d ◈" % Game.building_cost(id)) if known else "Нужен чертёж","state":"active" if built else "ready" if known and blocker=="" else "locked"})
 	return result
 static func building_name(id:String)->String:return {"weapons":"Арсенал","yard":"Площадка","garage":"Стоянка","range":"Полигон","headquarters":"Штаб"}.get(id,id)
 func detail(tab:String,id:String)->Dictionary:
@@ -48,7 +48,7 @@ func detail(tab:String,id:String)->Dictionary:
 			var built=id in Game.built_workshops;var known=Game.building_known(id);var blocker=Game.building_blocker(id)
 			var text=preload("res://scripts/ui/build_catalog.gd").INFO.get(id,["",""])[1]
 			if blocker!="":text+=" Сначала купи площадку."
-			return {"title":building_name(id),"icon":{"weapons":"inventory","yard":"base","garage":"vehicle","range":"sniper"}[id],"text":text if known else "Чертёж постройки выпадает в вылазках.","actions":[] if built else [{"id":"build","text":("Купить · %d ◈" if id=="yard" else "Построить · %d ◈") % Game.building_cost(id),"enabled":known and blocker=="" and Game.credits>=Game.building_cost(id),"primary":true}]}
+			return {"title":building_name(id),"icon":"building/"+id,"text":text if known else "Чертёж постройки выпадает в вылазках.","actions":[] if built else [{"id":"build","text":("Купить · %d ◈" if id=="yard" else "Построить · %d ◈") % Game.building_cost(id),"enabled":known and blocker=="" and Game.credits>=Game.building_cost(id),"primary":true}]}
 	return {}
 func act(tab:String,id:String,action:String)->String:
 	match [tab,action]:
