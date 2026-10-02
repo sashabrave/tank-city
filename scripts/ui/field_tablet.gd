@@ -176,28 +176,44 @@ func quest_page():
 	var p=Game.progression
 	if manage:p.prepare_telegrams()
 	UiKit.label(content,"Задачи",Vector2(UiKit.PAGE_PADDING,20),Vector2(700,28),UiKit.PAGE_TITLE_SIZE)
-	# One feed, no sender tabs: what needs you is on top, taken work sinks, finished orders go to the bottom.
-	var full=content.size.x-UiKit.PAGE_PADDING*2
+	# T-057: vertical filter tabs on the left — main story/institute, operations, done — each with a dot when it
+	# holds something new or ready. Inside a tab: what needs you on top, taken work below.
+	var tabs_w=170.0;var gap=16.0
+	var full=content.size.x-UiKit.PAGE_PADDING*2-tabs_w-gap
 	quest_bubble_width=full-56-14
-	quest_filter="all"
+	if quest_filter not in ["main","operations","completed"]:quest_filter="main"
+	var Qc=preload("res://scripts/progression/quest_catalog.gd")
 	var quests=p.quests("available" if manage else "active")
-	var finished=p.quests("completed").slice(-8)
-	var feed_top=UiKit.PAGE_CONTENT_TOP
-	var box=scroller(Vector2(UiKit.PAGE_PADDING,feed_top),Vector2(full,content.size.y-feed_top-16));box.name="QuestFeed";box.add_theme_constant_override("separation",12)
+	var is_ops=func(q):return Qc.sender(q)=="operations"
+	var news_of=func(q):
+		var order=str(q.id).begins_with("order_");var count=p.count(q)
+		return p.operations_news() if order else ("quest:"+q.id not in p.seen or (count>=q.goal and "ready:"+q.id not in p.seen))
 	var incoming=p.telegram.is_empty() and not p.telegram_options.is_empty() and p.order_wait==0
-	if incoming:telegram_offer_card(box)
-	if quests.is_empty() and finished.is_empty() and not incoming:list_button(box,"Нет заданий",func():pass)
-	# Rank: ready to hand in 4, new 3, offer not taken yet 2, in progress 1; finished entries follow at the bottom.
-	var ranked=quests.map(func(q):
-		var order=str(q.id).begins_with("order_");var count=p.count(q);var taken=q.id in p.accepted or order
-		var news=p.operations_news() if order else ("quest:"+q.id not in p.seen or (count>=q.goal and "ready:"+q.id not in p.seen))
-		var ready=count>=q.goal
-		return {"q":q,"count":count,"news":news,"ready":ready,"done":false,"rank":4 if ready else 3 if news else 2 if not taken else 1})
-	ranked.sort_custom(func(a,b):return a.rank>b.rank)
-	for q in finished:ranked.append({"q":q,"count":int(q.goal),"news":false,"ready":false,"done":true,"rank":0})
+	var counts={"main":quests.filter(func(q):return not is_ops.call(q) and news_of.call(q)).size(),"operations":quests.filter(func(q):return is_ops.call(q) and news_of.call(q)).size()+(1 if incoming else 0),"completed":0}
+	var feed_top=UiKit.PAGE_CONTENT_TOP
+	for i in range(3):
+		var key=["main","operations","completed"][i]
+		var t=UiKit.button(content,["Основные","Оперштаб","Выполнено"][i],Vector2(UiKit.PAGE_PADDING,feed_top+i*52),Vector2(tabs_w,44),func():quest_filter=key;refresh(),key==quest_filter)
+		t.name="QuestTab_"+key;t.alignment=HORIZONTAL_ALIGNMENT_LEFT;t.add_theme_font_size_override("font_size",16)
+		if counts[key]>0:UiKit.badge(t,"news",counts[key],"trailing")
+	var box=scroller(Vector2(UiKit.PAGE_PADDING+tabs_w+gap,feed_top),Vector2(full,content.size.y-feed_top-16));box.name="QuestFeed";box.add_theme_constant_override("separation",12)
+	var shown=[]
+	if quest_filter=="completed":shown=p.quests("completed").slice(-20);shown.reverse()
+	else:shown=quests.filter(func(q):return is_ops.call(q)==(quest_filter=="operations"))
+	# A new telegram offer needs an answer: it sits on top of both open tabs.
+	if quest_filter!="completed" and incoming:telegram_offer_card(box);p.viewed_updates["operations"]=p.operations_signature()
+	if shown.is_empty() and not (quest_filter!="completed" and incoming):list_button(box,"Нет заданий",func():pass)
+	# Rank: ready to hand in 4, new 3, offer not taken yet 2, in progress 1.
+	var done=quest_filter=="completed"
+	var ranked=shown.map(func(q):
+		var order=str(q.id).begins_with("order_");var count=int(q.goal) if done else p.count(q);var taken=q.id in p.accepted or order
+		var news=false if done else news_of.call(q)
+		var ready=not done and count>=q.goal
+		return {"q":q,"count":count,"news":news,"ready":ready,"done":done,"rank":0 if done else 4 if ready else 3 if news else 2 if not taken else 1})
+	if not done:ranked.sort_custom(func(a,b):return a.rank>b.rank)
 	for i in range(ranked.size()):
 		var card=quest_message(ranked[i].q,ranked[i].count,ranked[i].news,ranked[i].ready,ranked[i].done);box.add_child(card)
-		if ranked[i].done:card.modulate.a=.55
+		if ranked[i].done:card.modulate.a=.7
 		if ranked[i].news:UiKit.arrive(card,i)
 		else:UiKit.reveal(card,i)
 	p.view_quest_updates(quest_filter)
@@ -228,8 +244,18 @@ func quest_message(q:Dictionary,count:int,news:bool,ready:bool,done:bool)->Contr
 	if order:reward+=" · осталось вылазок: %d" % q.get("runs_left",0)
 	UiKit.label(bubble,reward,Vector2(14,158),Vector2(bw-28,24),15,UiKit.MUTED)
 	if not done and taken:
-		var eye=UiKit.button(bubble,"" if q.id in p.tracked else "+",Vector2(bw-51,8),Vector2(38,32),func():p.toggle_track(q.id);refresh());eye.tooltip_text="Не отслеживать" if q.id in p.tracked else "Отслеживать"
-		if q.id in p.tracked:eye.add_child(preload("res://scripts/ui/tracked_eye.gd").new())
+		# T-028: a pin that is orange while tracked and grey otherwise; toggling only recolours it (no page rebuild,
+		# so the message never blinks out).
+		var pin=UiKit.button(bubble,"",Vector2(bw-51,8),Vector2(38,32),func():pass);pin.name="TrackPin"
+		pin.icon=UiKit.interface_icon("pin");pin.expand_icon=true;pin.add_theme_constant_override("icon_max_width",18);pin.icon_alignment=HORIZONTAL_ALIGNMENT_CENTER
+		for state in ["normal","hover","pressed","focus"]:
+			var tight=pin.get_theme_stylebox(state).duplicate();tight.content_margin_left=4;tight.content_margin_right=4;tight.content_margin_top=4;tight.content_margin_bottom=4;pin.add_theme_stylebox_override(state,tight)
+		var paint=func():
+			var on=q.id in p.tracked
+			pin.add_theme_color_override("icon_normal_color",UiKit.ORANGE if on else Color(1,1,1,.35));pin.add_theme_color_override("icon_hover_color",UiKit.ORANGE if on else Color(1,1,1,.7))
+			pin.tooltip_text=Texts.localized("Не отслеживать" if on else "Отслеживать")
+		paint.call()
+		pin.pressed.connect(func():p.toggle_track(q.id);paint.call())
 	if actions and taken:
 		var claim=UiKit.button(bubble,"Забрать награду",Vector2(14,196),Vector2(bw-28,40),func():
 			UiKit.leave(row,func():

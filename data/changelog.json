@@ -45,7 +45,8 @@
 					"У всех карточек усилений появилось понятное описание, а в планшете у взятых карточек видно, что они делают.",
 					"Карточки «Мощность устройств» и «Перезарядка устройств» переименованы в «Сила способностей» и «Быстрые способности».",
 					"Итог вылазки: колонки шире разнесены, рюкзак виден всегда, а потерянные чертежи обугливаются и падают за край экрана.",
-					"Вкладки станций с доступной покупкой или улучшением отмечены зелёной точкой; стрелки к постройкам в хабе стали мягкими круглыми маркерами."
+					"Вкладки станций с доступной покупкой или улучшением отмечены зелёной точкой; стрелки к постройкам в хабе стали мягкими круглыми маркерами.",
+					"Задачи: слева вертикальные фильтры «Основные / Оперштаб / Выполнено» с точками новых; отслеживание — булавка, которая просто меняет цвет, без мигания карточки."
 				]
 			},
 			"en": {
@@ -90,7 +91,8 @@
 					"Every upgrade card now has a clear description, and the tablet shows what each taken card does.",
 					"The «Device power» and «Device cooldown» cards are now «Ability power» and «Quick abilities».",
 					"Run summary: columns spaced wider, the backpack is always shown, and lost blueprints char and fall off the screen.",
-					"Station tabs with something affordable get a green dot; hub build arrows became soft round markers."
+					"Station tabs with something affordable get a green dot; hub build arrows became soft round markers.",
+					"Tasks: vertical filters «Main / Operations / Done» on the left with new-item dots; tracking is a pin that just changes colour, the card no longer blinks."
 				]
 			}
 		},

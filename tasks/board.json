@@ -345,7 +345,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-028.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "кнопка отслеживать не работает адекватно",
 			"type": "bug",
 			"version": "0.7.1-pre"
@@ -722,7 +722,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-057.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "в задачах дай всетаки вертикальные табы фильтры с индикаторами на них",
 			"type": "bug",
 			"version": "0.7.1-pre"

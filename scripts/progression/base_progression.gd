@@ -210,7 +210,10 @@ func view_quest_updates(filter:String):
 	if filter in ["all","operations"]:viewed_updates["operations"]=operations_signature()
 	for q in quests("available"):
 		if str(q.id).begins_with("order_"):continue
-		if filter=="operations" or filter=="completed":continue
+		if filter=="completed":continue
+		# "main" (story + institute) and "operations" (briefings) mark only their own messages as seen.
+		if filter=="main" and q in QUESTS.BRIEFINGS:continue
+		if filter=="operations" and q not in QUESTS.BRIEFINGS:continue
 		if filter=="general" and q in QUESTS.INSTITUTE:continue
 		if filter=="institute" and q not in QUESTS.INSTITUTE:continue
 		for id in ["quest:"+q.id,"ready:"+q.id]:
