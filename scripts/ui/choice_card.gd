@@ -61,12 +61,26 @@ static func minimal(card:Panel,data:Dictionary):
 	var chip_text=UiKit.label(chip,data.category,Vector2(22,2),Vector2(160,20),12,family_color.lightened(.2))
 	var dot=Panel.new();chip.add_child(dot);dot.position=Vector2(9,8);dot.size=Vector2(7,7);dot.add_theme_stylebox_override("panel",UiKit.style(family_color,4,family_color))
 	chip.position=Vector2(14,14);chip.size=Vector2(chip_text.get_theme_font("font").get_string_size(Texts.render(data.category),HORIZONTAL_ALIGNMENT_LEFT,-1,12).x+32,24)
-	var pips=preload("res://scripts/ui/pip_strip.gd").new();card.add_child(pips)
-	var tier=int(data.get("tier",0));pips.set_state(tier+1,tier+1,-1);pips.modulate=data.color.lightened(.35);pips.position=Vector2(width-pips.size.x-16,23)
-	var title:Label=card.get_node("Title");title.position=Vector2(16,170);title.size=Vector2(width-32,34);title.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;title.vertical_alignment=VERTICAL_ALIGNMENT_CENTER
+	# Icon family frames (roadmap stage 1): the full 512 canvas of the icon under a rarity frame, chevrons for
+	# how many times the card was already taken. Rarity now reads from the frame, so the corner pips are gone.
+	var tier=clampi(int(data.get("tier",0)),0,3)
+	var full=UiKit.icon_texture(data.get("art_key",data.icon))
+	if full:icon.texture=full
+	icon.position=Vector2(width*.5-68,34);icon.size=Vector2(136,136)
+	icon.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;icon.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
+	var frame=TextureRect.new();frame.name="RarityFrame";icon.add_child(frame);frame.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	frame.texture=load("res://assets/ui/icon_frames/rarity_%s.png" % ["common","rare","epic","legendary"][tier])
+	frame.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;frame.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;frame.position=Vector2.ZERO;frame.size=icon.size
+	var owned=mini(3,int(data.get("stacks",0)))
+	if owned>0:
+		var chevrons=TextureRect.new();chevrons.name="PowerChevrons";icon.add_child(chevrons);chevrons.mouse_filter=Control.MOUSE_FILTER_IGNORE
+		chevrons.texture=load("res://assets/ui/icon_frames/power_%d.png" % owned);chevrons.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;chevrons.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		chevrons.position=Vector2.ZERO;chevrons.size=icon.size
+		chevrons.tooltip_text=Texts.render("Уже взято: %d") % owned
+	var title:Label=card.get_node("Title");title.position=Vector2(16,176);title.size=Vector2(width-32,34);title.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;title.vertical_alignment=VERTICAL_ALIGNMENT_CENTER
 	for key in ["Description","NumericDescription"]:
 		var body=card.get_node_or_null(key)
-		if body:body.position=Vector2(18,214);body.size=Vector2(width-36,card.size.y-228)
+		if body:body.position=Vector2(18,220);body.size=Vector2(width-36,card.size.y-234)
 		if body is Label:body.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
 	var rich=card.get_node_or_null("NumericDescription")
 	if rich is RichTextLabel:rich.text="[center]"+rich.text+"[/center]"
@@ -83,7 +97,7 @@ static func table(card:Panel,data:Dictionary,width:float,accent:Color):
 	for key in ["Description","NumericDescription"]:
 		var body=card.get_node_or_null(key)
 		if body:body.hide()
-	var y=214.0
+	var y=220.0
 	for row in data.rows:
 		var value=UiKit.label(card,str(row[0]),Vector2(16,y),Vector2(width-32,36),28,accent.lightened(.25));value.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;value.vertical_alignment=VERTICAL_ALIGNMENT_CENTER;value.name="RowValue"
 		var compare=RichTextLabel.new();compare.name="RowParam";card.add_child(compare);compare.position=Vector2(16,y+40);compare.size=Vector2(width-32,24)

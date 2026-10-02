@@ -207,4 +207,4 @@ static func card(arena,offer:Dictionary)->Dictionary:
 	var detail=preview_text(arena,offer.id,tier)
 	if def.detail!="":detail=def.detail if detail=="" else detail+"\n"+def.detail
 	tier=clampi(tier,0,TIER_NAMES.size()-1)
-	return {"rows":rows,"short":short_detail(def.detail),"category":FAMILIES.get(def.family,def.category),"title":def.title,"detail":detail,"icon":def.icon if def.icon!="" else def.id,"art_key":"upgrades/"+def.id,"heading":TIER_NAMES[tier],"color":Color(arena.LOOT.RARITY_COLORS[tier]),"disabled":false,"button":"Выбрать","family":def.family,"tier":tier}
+	return {"rows":rows,"short":short_detail(def.detail),"category":FAMILIES.get(def.family,def.category),"title":def.title,"detail":detail,"icon":def.icon if def.icon!="" else def.id,"art_key":"upgrades/"+def.id,"heading":TIER_NAMES[tier],"color":Color(arena.LOOT.RARITY_COLORS[tier]),"disabled":false,"button":"Выбрать","family":def.family,"tier":tier,"stacks":stacks(arena,def.id)}

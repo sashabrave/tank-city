@@ -75,7 +75,8 @@
 					"Воры бонусов: враг может стащить бонус, пролежавший на поле, и получить смешной бафф (отъелся, разогнал затвор, кирпичная каска, педаль газа, стал звездой); убей вора — бонус выпадет обратно",
 					"Дрон-минёр больше не бросает отдельную бомбу: он сам зарывается в землю, крутит колёсами и разбрасывает пыль и камешки",
 					"Техника, постройки и пропсы получили запечённое затенение: стыки, ниши и щели темнее, модели выглядят объёмнее",
-					"Кнопка «Пропустить» в видеозвонке штаба теперь называется «Положить трубку»"
+					"Кнопка «Пропустить» в видеозвонке штаба теперь называется «Положить трубку»",
+					"Карточки усилений: иконка в рамке редкости, шевроны показывают, сколько раз карточка уже взята"
 				]
 			},
 			"en": {
@@ -150,7 +151,8 @@
 					"Bonus thieves: an enemy can snatch a bonus left on the field and get a silly buff (stuffed, souped-up bolt, brick helmet, gas pedal, star); kill the thief and the bonus drops back",
 					"The mine drone no longer drops a separate bomb: it burrows into the ground itself, spinning its wheels and throwing up dust and pebbles",
 					"Vehicles, buildings and props got baked ambient occlusion: seams, niches and gaps are darker, models look more solid",
-					"The HQ video call's Skip button is now called Hang up"
+					"The HQ video call's Skip button is now called Hang up",
+					"Upgrade cards: the icon sits in a rarity frame, chevrons show how many times the card was already taken"
 				]
 			}
 		},
