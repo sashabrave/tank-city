@@ -371,6 +371,7 @@ func shoot() -> bool:
 		var perpendicular=Vector3(-facing.y,0,facing.x)
 		for offset in [-1.2,0.0,1.2]:arena.spawn_bullet(self,position+perpendicular*offset,facing,damage,player_owned)
 	else:arena.spawn_bullet(self,position,facing,damage,player_owned)
+	if player_owned and kind!="soldier" and arena.run!=null:arena.effects.emit("vehicle_shot",{"actor":self})
 	if model.has_method("kick"):model.kick()
 
 	return true
@@ -388,6 +389,11 @@ func take_damage(amount: float,blast:Vector3=Vector3.ZERO,vehicle_credit:String=
 		amount=CombatMods.incoming(arena,amount,source)
 		if amount<0:
 			arena.burst(position+Vector3.UP*.5,Color("d9f2ff"),.3);invulnerable=.25;return
+	if player_owned and arena.run!=null and amount>0:amount=arena.effects.modify("incoming_damage",amount,{"actor":self})
+	# Legendary «Второе дыхание»: once per field a lethal hit leaves 1 HP.
+	if player_owned and kind=="soldier" and arena.run!=null and hp-amount<=0 and arena.effects.modify("second_wind",0.0,{"actor":self})>0:
+		arena.burst(position+Vector3.UP*.5,Color("ffd27a"),.8);Game.sound("shield_restore",self);arena.toast("Второе дыхание")
+		hp=1.0;arena.soldier_hp=hp;invulnerable=2.0;refresh_health();return
 	if player_owned and kind=="soldier" and arena.run!=null and not arena.run.mercy_used and hp>1.0 and hp-amount<=0 and not arena.sandbox:
 		# Once per run a lethal hit leaves 1 HP and a moment to escape.
 		arena.run.mercy_used=true;amount=hp-1.0

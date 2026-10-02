@@ -118,6 +118,11 @@ func show_service(branch: String,index: int):
 ## A service placed on the route as an ordinary node: after it the next stage opens.
 func show_node_service(branch:String,index:int):
 	Game.progression.event("visit_"+branch)
+	if branch=="legend" and is_instance_valid(current) and "root" in current:
+		var post=preload("res://scripts/legend_stop.gd").new();post.arena=run_arena;post.index=index
+		current.root.add_child(post)
+		post.done.connect(func():run_arena.run.route_choices=route_choices;show_map(index+1))
+		return
 	if branch=="headquarters" and is_instance_valid(current) and "root" in current:
 		# Depot pit stop: cards over the map, then the next stage opens.
 		var stop=preload("res://scripts/depot_stop.gd").new();stop.arena=run_arena;stop.index=index

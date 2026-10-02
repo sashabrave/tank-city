@@ -141,12 +141,13 @@ func _ready():
 			if skipped:color=color.darkened(.28)
 			var branch=RoutePlan.node_branch(info)
 			if branch=="headquarters":MINI.depot(node)
+			elif branch=="legend":MINI.command_post(node)
 			elif branch=="vehicle":MINI.service(node,true,Color("839c9f").darkened(.28 if skipped else 0.0))
 			elif info.type in RoutePlan.CHALLENGES:MINI.challenge(node,info.type,color)
 			elif stage in Campaign.BOSSES:MINI.boss(node,color);node.scale*=1.45
 			else:MINI.battle(node,posmod(wave_seed+stage*3+info.lane*7,4),color,visited,info.difficulty)
 			if branch=="" and not skipped:MINI.weather(node,MINI.weather_for(preload("res://scripts/biome_catalog.gd").entry(wave_seed,stage)))
-			var caption={"vehicle":"Техника","headquarters":"Депо"}.get(branch,ChallengeRooms.TITLES.get(info.type,"%02d" % (stage+1)))
+			var caption={"vehicle":"Техника","headquarters":"Депо","legend":"Захваченный КП"}.get(branch,ChallengeRooms.TITLES.get(info.type,"%02d" % (stage+1)))
 			Visuals.label3d(node,"✓ "+caption if visited else caption,Vector3(0,.35,3.65),Color("f3eee0"),30).pixel_size=.025
 			if not visited and not skipped and branch=="":
 				for badge in range(info.difficulty):MINI.star(node,info.difficulty,badge)

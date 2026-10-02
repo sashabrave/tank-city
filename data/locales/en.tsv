@@ -2425,3 +2425,23 @@ II · без передышки, штаб слабее · +50%	II · no breather
 III · элитные командиры, +1 враг · +100%	III · elite commanders, +1 enemy · +100%
 Откроется после ступени %s	Opens after step %s
 мира	the world
+Захваченный КП	Captured CP
+Захваченный КП · легендарное правило	Captured CP · legendary rule
+Дальше без правила	Move on without a rule
+Рикошет	Ricochet
+Каждое третье попадание отскакивает в ближайшего врага: 60% урона.	Every third hit bounces to the nearest enemy for 60% damage.
+Ярость	Fury
+Каждое убийство: +5% урона до конца поля, до +50%.	Each kill: +5% damage until the end of the field, up to +50%.
+Второе дыхание	Second wind
+Раз за поле смертельный удар оставляет 1 здоровья и 2 с неуязвимости.	Once per field a lethal hit leaves 1 health and 2 s of invulnerability.
+Детонатор	Detonator
+Убитые враги взрываются: 1,5 урона соседям рядом.	Killed enemies burst: 1.5 damage to neighbours.
+Стальная воля	Iron will
+Пока техника стреляет, она получает на 70% меньше урона.	While the vehicle is firing it takes 70% less damage.
+Таран	Ram
+Техника давит пехоту при наезде.	The vehicle crushes infantry it drives into.
+Мастерская на колёсах	Workshop on wheels
+Техника чинит 1 брони каждые 3 с.	The vehicle repairs 1 armour every 3 s.
+Залп	Volley
+Техника стреляет тремя снарядами веером: боковые по 50% урона.	The vehicle fires three shells in a fan: side shells deal 50% damage.
+Ярость · +%d%%	Fury · +%d%%

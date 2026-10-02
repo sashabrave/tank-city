@@ -94,6 +94,7 @@ func bullet_hit(bullet) -> bool:
 			var amount=actor.max_hp if bullet.star_power else bullet.damage
 			if not bullet.star_power and CombatMods.player_bullet(bullet):amount=CombatMods.outgoing(arena,bullet,actor)
 			actor.take_damage(amount,Vector3.ZERO,bullet.vehicle_credit,CombatMods.bullet_source(bullet) if actor.player_owned else "")
+			if CombatMods.player_bullet(bullet) and not actor.player_owned:arena.effects.emit("enemy_hit",{"target":actor,"bullet":bullet,"damage":amount})
 			if not pierce_on(bullet):return true
 	if not arena.room.boss_room and not bullet.friendly and cell==arena.room.base_cell:
 		damage_base(bullet.damage)

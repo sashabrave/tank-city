@@ -1,8 +1,9 @@
 extends RefCounted
 ## Event bus of one run. Gameplay code emits events and queries modifiers; active card effects answer.
 ## Active effects follow run.behavior_cards, so checkpoints and tests only need that list.
-## Events: shot, kill, player_damaged, vehicle_enter, vehicle_exit, wave_start, room_start.
-## Modifiers: shot_damage, fire_rate, move_speed.
+## Events: shot, kill, player_damaged, vehicle_enter, vehicle_exit, wave_start, room_start, enemy_hit
+## {target,bullet,damage}, vehicle_shot {actor}, tick {delta} (combat only).
+## Modifiers: shot_damage, fire_rate, move_speed, incoming_damage {actor}, second_wind (>0 saves a lethal hit).
 var arena
 var instances:Dictionary={}
 func _init(context):

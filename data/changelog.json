@@ -10,7 +10,8 @@
 					"Убраны мини-игры «Напёрстки» и «Переключатели» и второй набор иллюстраций: в игре один стиль GPT.",
 					"Подорванная техника больше не исчезает: на поле остаётся обугленный корпус, он дымит и тлеет. Пара выстрелов или взрыв разносят его на обломки.",
 					"Из подбитой вражеской техники выпрыгивает экипаж с пистолетами. Механик за 4 секунды чинит машину, и она снова в бою, если его не остановить.",
-					"Лестница испытаний: после прохождения мира под его карточкой открываются ступени I, II и III. Каждая делает врагов опытнее и платит больше сплава. На II нет передышки и штаб слабее, на III командиры элитные и в волнах на одного врага больше."
+					"Лестница испытаний: после прохождения мира под его карточкой открываются ступени I, II и III. Каждая делает врагов опытнее и платит больше сплава. На II нет передышки и штаб слабее, на III командиры элитные и в волнах на одного врага больше.",
+					"На карте мира появилась точка «Захваченный КП»: в сундуке врага три легендарных правила, берёшь одно. Восемь правил меняют стиль игры — для бойца (Рикошет, Ярость, Второе дыхание, Детонатор) и для техники (Стальная воля, Таран, Мастерская на колёсах, Залп)."
 				]
 			},
 			"en": {
@@ -20,7 +21,8 @@
 					"The «Shell game» and «Switches» mini-games and the second illustration set are gone: the game uses one GPT style.",
 					"Destroyed vehicles no longer vanish: a charred hull stays on the field, smoking and smouldering. A few shots or a blast break it apart.",
 					"A knocked-out enemy vehicle drops its crew with pistols. The mechanic repairs the vehicle in 4 seconds and it rejoins the fight unless you stop him.",
-					"Challenge ladder: once a world is cleared, steps I, II and III open under its card. Each makes enemies more seasoned and pays more alloy. II removes the breather and weakens the HQ, III brings elite commanders and one more enemy per wave."
+					"Challenge ladder: once a world is cleared, steps I, II and III open under its card. Each makes enemies more seasoned and pays more alloy. II removes the breather and weakens the HQ, III brings elite commanders and one more enemy per wave.",
+					"A «Captured CP» point appears on the world map: the enemy war chest holds three legendary rules, take one. Eight rules change how you play — for the soldier (Ricochet, Fury, Second wind, Detonator) and for vehicles (Iron will, Ram, Workshop on wheels, Volley)."
 				]
 			}
 		},

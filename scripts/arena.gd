@@ -513,6 +513,7 @@ func _unhandled_input(event):
 		pause_battle()
 
 func _physics_process(delta):
+	if phase=="combat" and run!=null:effects.emit("tick",{"delta":delta})
 	if phase == "countdown":
 		var before=ceili(countdown)
 		countdown -= delta

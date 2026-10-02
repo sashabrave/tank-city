@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="UpgradeDef" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrades/upgrade_def.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/upgrades/effects/legend_volley.gd" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = "legend_volley"
+title = "Залп"
+category = "Тактика"
+family = "fire"
+icon = "legendary"
+min_tier = 3
+flag = true
+tags = PackedStringArray("legendary")
+weight = 0
+max_stacks = 1
+detail = "Техника стреляет тремя снарядами веером: боковые по 50% урона."
+effect = ExtResource("2")

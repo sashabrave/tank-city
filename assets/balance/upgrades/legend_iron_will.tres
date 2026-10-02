@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="UpgradeDef" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrades/upgrade_def.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/upgrades/effects/legend_iron_will.gd" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = "legend_iron_will"
+title = "Стальная воля"
+category = "Тактика"
+family = "survival"
+icon = "legendary"
+min_tier = 3
+flag = true
+tags = PackedStringArray("legendary")
+weight = 0
+max_stacks = 1
+detail = "Пока техника стреляет, она получает на 70% меньше урона."
+effect = ExtResource("2")

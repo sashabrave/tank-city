@@ -207,6 +207,21 @@ static func depot(parent:Node3D):
 	for i in range(3):
 		for side in [-1,1]:
 			var chevron=Visuals.box(parent,Vector3(side*.34,.31,2.3-i*.6),Vector3(.7,.03,.14),Color("f0d27a"));chevron.rotation.y=side*.75
+## «Захваченный КП»: a dark enemy bunker with a torn red flag, sandbags, a radio mast and a glowing chest.
+static func command_post(parent:Node3D):
+	base(parent,Color("5b5752"),true)
+	var concrete=Color("6f6c66");var dark=Color("3a3734")
+	Visuals.box(parent,Vector3(0,.75,-.4),Vector3(3.4,1.1,2.2),concrete)
+	Visuals.box(parent,Vector3(0,1.4,-.4),Vector3(3.8,.25,2.6),dark)
+	Visuals.box(parent,Vector3(0,.8,.73),Vector3(1.6,.22,.06),Color("1d1c1b"))  # firing slit
+	sandbags(parent,Vector3(0,.3,1.8),7,1.6,Color("a8996f"))
+	var mast=cylinder(parent,Vector3(1.4,1.5,-1.1),.05,2.2,dark,6)
+	var flag=Visuals.box(parent,Vector3(.95,3.2,-1.1),Vector3(.9,.5,.04),Color("c8452f"))
+	var anim=animator(parent);anim.add(flag,"rotation:y",[0.0,.2,0.0,-.15])
+	var chest=Visuals.box(parent,Vector3(-1.5,.55,1.2),Vector3(.8,.5,.55),Color("6b4a2a"))
+	var glow=Visuals.box(parent,Vector3(-1.5,.83,1.2),Vector3(.7,.06,.45),Color("ffd36a"));glow.material_override=Visuals.material(Color("ffd36a"),true)
+	anim.add(glow,"visible",[true,true,false,true])
+	star(parent,1)
 ## Weather over a node, from the room's biome: snow, rain, sun, fog or embers. Static meshes stepped by
 ## the diorama animator — no particles, a few boxes per node.
 static func weather(parent:Node3D,kind:String):

@@ -6,8 +6,8 @@ const STAGE_STEP=11.2
 ## World 1: difficulty levels offered on each regular stage (0 simple, 1 ★, 2 ★★). Hard rooms appear later.
 const WORLD1_LEVELS=[[0,0,1],[0,1,1],[0,1,2],[0,1,2],[1,1,2],[1,2,2]]
 ## World 1: service points mixed into regular stages as ordinary nodes, one per listed stage range.
-const WORLD1_SPECIALS=[{"type":"mechanic","stages":[1,2]},{"type":"workshop","stages":[3,4]}]
-const SERVICE_BRANCH={"mechanic":"vehicle","workshop":"headquarters"}
+const WORLD1_SPECIALS=[{"type":"mechanic","stages":[1,2]},{"type":"workshop","stages":[3,4]},{"type":"command_post","stages":[4,5]}]
+const SERVICE_BRANCH={"mechanic":"vehicle","workshop":"headquarters","command_post":"legend"}
 ## Challenge rooms mixed into world 1 stages 2–6: one special point per stage in total. Types join this list as they are built.
 const CHALLENGES=["cache","hold","survive"]
 static func gradual()->bool:return Campaign.world==1
@@ -41,7 +41,10 @@ static func build(seed_value:int)->Array:
 		for special in WORLD1_SPECIALS:
 			var stage=special.stages[rng.randi_range(0,special.stages.size()-1)]
 			if stage>=plan.size() or plan[stage].size()<2:continue
-			var node=plan[stage][rng.randi_range(0,plan[stage].size()-1)]
+			# Specials take an ordinary battle node, never another special.
+			var free=plan[stage].filter(func(n):return n.type=="battle")
+			if free.size()<2:continue
+			var node=free[rng.randi_range(0,free.size()-1)]
 			node.type=special.type;node.difficulty=0;node.elite=false
 		for stage in range(1,mini(6,plan.size())):
 			if plan[stage].size()<2 or plan[stage].any(func(n):return n.type!="battle"):continue
