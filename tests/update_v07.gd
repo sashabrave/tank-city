@@ -7,7 +7,7 @@ func check(ok,message):
 	if not ok:failures+=1;push_error("FAIL: "+message)
 func _ready():call_deferred("run")
 func run():
-	Game.save_enabled=false;Game.sound_enabled=false;Game.reset_upgrades()
+	Game.save_enabled=false;Settings.persistence_enabled=false;Game.sound_enabled=false;Game.reset_upgrades()
 	var rng=RandomNumberGenerator.new();rng.seed=77
 	var pending=[];Game.backpack_slots=6;Game.built_workshops=Game.BUILD_COST.keys()
 	for i in range(200):Game.discover_recipe(rng,pending)
@@ -49,17 +49,18 @@ func run():
 	arena.hud.show_pause()
 	check(arena.recipe_summary().contains("Снайперка") and not arena.can_extract_recipes(),"pause lists carried recipe before safe extraction")
 	arena.resolve_recipes_on_return()
-	check(arena.pending_recipes.is_empty() and "sniper" not in Game.weapon_unlocks,"retreat midbattle loses recipes")
-	arena.pending_recipes=[{"id":"sniper","category":"weapon"}];arena.room_cleared=true
+	check(arena.pending_recipes.is_empty() and "sniper" in Game.weapon_unlocks,"voluntary retreat midbattle banks recipes")
+	arena.pending_recipes=[{"id":"heavy","category":"weapon"}];arena.room_cleared=true
 	check(arena.can_extract_recipes(),"cleared room allows safe extraction")
-	arena.resolve_recipes_on_return()
-	check("sniper" in Game.weapon_unlocks and arena.pending_recipes.is_empty(),"safe hub return banks recipe")
+	arena.run.lost_run=true;check(not arena.can_extract_recipes(),"lost run blocks extraction")
+	arena.resolve_recipes_on_return();arena.run.lost_run=false
+	check(arena.pending_recipes.is_empty() and "heavy" not in Game.weapon_unlocks,"lost run loses recipes on return")
 	arena.pending_recipes=[{"id":"smg","category":"weapon"}];arena.finish_run(false,"test")
 	check(arena.pending_recipes.is_empty() and "smg" not in Game.weapon_unlocks,"death loses pending recipe even after earlier room")
-	var original_path=Game.save_path;Game.save_path="/private/tmp/tank-v07-persistence.json";Game.save_enabled=true
+	var original_path=Game.save_path;Game.save_path="/private/tmp/tank-v07-%d/profile.json" % Time.get_ticks_usec();Game.profiles.selected=true;Game.save_blocked=false;Game.save_enabled=true
 	Game.bonus_unlocks=["heart"];arena.pending_recipes=[{"id":"star","category":"bonus"}];Game.save_progress();Game.load_progress()
 	check("star" not in Game.bonus_unlocks,"ordinary saves do not bank backpack")
-	arena.phase="combat";arena.room_cleared=true;arena.resolve_recipes_on_return();Game.bonus_unlocks=["heart"];Game.load_progress()
+	arena.phase="combat";arena.lost_run=false;arena.room_cleared=true;arena.resolve_recipes_on_return();Game.bonus_unlocks=["heart"];Game.load_progress()
 	check("star" in Game.bonus_unlocks and Game.bonus_level("star")==3,"banked star recipe and levels persist")
 	Game.save_enabled=false;Game.save_path=original_path
 	Game.bonus_unlocks=["heart"]

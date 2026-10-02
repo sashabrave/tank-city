@@ -24,12 +24,14 @@ func cover():
 	var tween=create_tween();tween.tween_property(shade,"modulate:a",1.0,.12)
 	await tween.finished
 	# Two presented frames guarantee the veil is on screen before the heavy work blocks the thread.
-	await RenderingServer.frame_post_draw
-	await RenderingServer.frame_post_draw
+	await presented();await presented()
 
 func reveal():
-	await RenderingServer.frame_post_draw
-	await RenderingServer.frame_post_draw
+	await presented();await presented()
 	var tween=create_tween();tween.tween_property(shade,"modulate:a",0.0,FADE)
 	await tween.finished
 	queue_free()
+## Headless never draws, so frame_post_draw never fires there: wait for a processed frame instead.
+func presented():
+	if DisplayServer.get_name()=="headless":await get_tree().process_frame
+	else:await RenderingServer.frame_post_draw

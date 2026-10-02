@@ -8,7 +8,8 @@ func check(value:bool,message:String):
 func _ready():call_deferred("run")
 func run():
 	Game.save_enabled=false;Settings.persistence_enabled=false;Game.sound_enabled=false
-	var main=load("res://scripts/main.gd").new();add_child(main)
+	# Main defers its own hub/profile screen on ready: let it settle before starting the run.
+	var main=load("res://scripts/main.gd").new();add_child(main);await get_tree().process_frame;await get_tree().process_frame
 	main.start_run();main.enter_room(0);await get_tree().process_frame
 	main.show_map(1);await get_tree().process_frame
 	var cp=Game.run_checkpoint.duplicate(true)
