@@ -127,7 +127,7 @@
 			"note": "Любое открытое оружие за плату в каждой сервисной комнате; машину можно взять за сплав.",
 			"type": "idea",
 			"priority": 2,
-			"status": "backlog",
+			"status": "review",
 			"version": "0.9",
 			"created": "2026-10-02",
 			"source": "chat",

@@ -5,6 +5,7 @@ var arena
 var index=2
 var branch="vehicle"
 var vehicle="buggy"
+var locker:Node3D
 var avatar: Node3D
 var cell=Vector2i(0,3)
 var destination=Vector3(0,0,3)
@@ -55,6 +56,7 @@ func _ready():
 	UiKit.button(root,"Вернуться в хаб",Vector2(40,165),Vector2(250,48),func():hub_requested.emit())
 	preload("res://scripts/interaction_prompt.gd").attach(self,self,{"vehicle":"Механик","ability":"Инструктор","headquarters":"Штаб"}[branch],Vector3(0,0,-1),1.8,func():return not claimed)
 	offers=arena.reward.service_offers(branch)
+	locker=preload("res://scripts/weapon_locker.gd").place(self,arena,Vector3(-3.4,0,0.5))
 ## The mechanic works on the player's vehicle: the one driven now, the one waiting for the next room, or the starting one.
 func current_vehicle()->String:
 	if is_instance_valid(arena.player) and arena.player.kind in GarageCatalog.VEHICLES:return arena.player.kind
@@ -87,7 +89,11 @@ func _physics_process(delta):
 func interact():
 	if claimed:
 		completed.emit(index);return
-	if is_instance_valid(modal) or avatar.position.distance_to(Vector3(0,0,-1))>1.8:return
+	if is_instance_valid(modal):return
+	if is_instance_valid(locker) and locker.near(avatar):
+		Game.reset_input();dpad.clear();dpad.enabled=false
+		locker.open(root,func():Game.reset_input();dpad.clear();dpad.enabled=true);modal=locker.modal;return
+	if avatar.position.distance_to(Vector3(0,0,-1))>1.8:return
 	Game.reset_input();dpad.clear();dpad.enabled=false
 	if branch=="ability":
 		var salute=Visuals.box(avatar,Vector3(.27,.85,-.1),Vector3(.12,.38,.12),Color("a4ad85"));salute.rotation.z=-.8

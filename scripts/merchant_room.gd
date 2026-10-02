@@ -10,6 +10,7 @@ const SLOT_PRICE=2
 const SLOT_TABLE=[["empty",40],["tokens",20],["heal",10],["card0",18],["card1",9],["card2",3]]
 var arena
 var index=2
+var locker:Node3D
 var avatar:Node3D
 var cell=Vector2i(0,3)
 var destination=Vector3(0,0,3)
@@ -51,6 +52,7 @@ func _ready():
 	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Торговец",COUNTER,1.8,func():return true)
 	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Автомат · %d жетона" % SLOT_PRICE,SLOT_SPOT,1.9,func():return true)
 	stock=roll_stock()
+	locker=preload("res://scripts/weapon_locker.gd").place(self,arena,Vector3(-3.4,0,0.5))
 func build_stall():
 	var wood=Color("8a6a48");var cloth=Color("c9793f")
 	Visuals.box(self,COUNTER+Vector3(0,.45,0),Vector3(2.6,.9,.9),wood)
@@ -111,6 +113,9 @@ func _physics_process(delta):
 func near_slot()->bool:return avatar.position.distance_to(SLOT_SPOT)<1.9 and avatar.position.distance_to(SLOT_SPOT)<avatar.position.distance_to(COUNTER)
 func interact():
 	if is_instance_valid(modal):return
+	if is_instance_valid(locker) and locker.near(avatar):
+		Game.reset_input();dpad.clear();dpad.enabled=false
+		locker.open(root,func():Game.reset_input();dpad.clear();dpad.enabled=true);modal=locker.modal;return
 	if near_slot():pull_lever();return
 	if avatar.position.distance_to(COUNTER)>2.2:return
 	Game.reset_input();dpad.clear();dpad.enabled=false

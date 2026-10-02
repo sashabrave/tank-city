@@ -16,4 +16,10 @@ func run():
 	for branch in ["vehicle","ability","headquarters","merchant"]:
 		main.show_service(branch,2);await get_tree().create_timer(.9).timeout
 		await shot("/tmp/r13-room-%s.png" % branch)
+	# Weapon locker at the merchant: walk up, open, switch the weapon for alloy.
+	var shop=main.current;Game.credits=200;if "smg" not in Game.weapon_unlocks:Game.weapon_unlocks.append("smg")
+	shop.avatar.position=shop.locker.position+Vector3(.8,0,0);shop.interact();await get_tree().create_timer(.4).timeout
+	await shot("/tmp/r13-room-locker.png")
+	var menu=shop.find_child("WeaponLockerMenu",true,false)
+	print("LOCKER opened=",menu!=null)
 	get_tree().quit(0)
