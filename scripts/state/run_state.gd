@@ -12,6 +12,8 @@ var earned = 0
 var tokens=0
 var lost_alloy=0
 var kills = 0
+## Kills by enemy icon id (EnemyTypeIcon.IDS): the result screen lines them up.
+var kills_by:Dictionary={}
 var elapsed = 0.0
 var weapon = "pistol"
 var rerolls_left=0

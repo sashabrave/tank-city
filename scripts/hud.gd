@@ -272,55 +272,9 @@ func show_pause():
 
 ## Run summary: rows arrive one by one like a ladder — numbers count up, bars fill, each row clicks;
 ## blueprints are shown as backpack cards (lost ones dimmed). Records get a badge.
+## End of a sortie: the loot ledger and the kill staircase live in scripts/ui/run_result.gd.
 func show_result(won:bool,reason:String):
-	var panel=modal_base("Задание завершено" if won else "Связь потеряна",reason,"",600)
-	var kept=maxi(0,arena.earned-arena.run.lost_alloy)
-	var docs=maxi(0,Game.cores-int(arena.get_meta("start_documents",Game.cores)))
-	var fields=mini(arena.room_index+(1 if won else 0),Campaign.SIZES.size())
-	var best=int(Game.progression.counters.get("best_kills",0));var record=arena.kills>best and arena.kills>0
-	if record:Game.progression.event("best_kills",arena.kills,true)
-	var rows=[["Поля",fields,Campaign.SIZES.size(),"%d / %d" % [fields,Campaign.SIZES.size()]],
-		["Враги",arena.kills,maxi(best,arena.kills),str(arena.kills)],
-		["Время",int(arena.elapsed),maxi(1,int(arena.elapsed)),"%d:%02d" % [int(arena.elapsed/60.0),int(arena.elapsed)%60]],
-		["Сплав",kept,maxi(1,kept+arena.run.lost_alloy),"+%d ◈" % kept],
-		["Документы",docs,maxi(1,docs),"+%d" % docs]]
-	var daily_best=-1;var daily_score=0
-	if Campaign.daily:
-		daily_best=int(DailyRun.best(Campaign.daily_key).get("score",-1));daily_score=DailyRun.score(Campaign.cycle,arena.room_index,arena.kills)
-		rows.append(["Счёт дня",daily_score,maxi(1,maxi(daily_best,daily_score)),str(daily_score)])
-	var y=150.0
-	for i in range(rows.size()):
-		var row=rows[i]
-		var line=Control.new();panel.add_child(line);line.position=Vector2(30,y);line.size=Vector2(880,34);line.modulate.a=0
-		UiKit.label(line,row[0],Vector2(0,4),Vector2(170,26),17,UiKit.MUTED)
-		var track=ColorRect.new();line.add_child(track);track.position=Vector2(180,15);track.size=Vector2(520,6);track.color=Color(1,1,1,.1)
-		var fill=ColorRect.new();track.add_child(fill);fill.size=Vector2(0,6);fill.color=UiKit.ORANGE if i<3 else Color("8fe895")
-		var value=UiKit.label(line,"",Vector2(720,0),Vector2(160,32),20);value.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
-		if i==1 and record:UiKit.label(line,"Рекорд",Vector2(600,-14),Vector2(100,18),12,UiKit.ORANGE).horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
-		if i==2:track.hide()
-		if i==5 and daily_score>daily_best:UiKit.label(line,"Рекорд дня",Vector2(560,-14),Vector2(140,18),12,UiKit.ORANGE).horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
-		if i==3 and arena.run.lost_alloy>0:UiKit.label(line,"потеряно %d" % arena.run.lost_alloy,Vector2(560,-14),Vector2(140,18),12,Color("ff6b57")).horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
-		var share=clampf(float(row[1])/float(maxi(1,row[2])),0.0,1.0);var text=str(row[3]);var target=int(row[1])
-		var tween=line.create_tween();tween.tween_interval(.15+i*.22)
-		tween.tween_callback(func():Game.sound("pickup",self))
-		tween.tween_property(line,"modulate:a",1.0,.15)
-		tween.parallel().tween_property(fill,"size:x",520.0*share,.45).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-		tween.parallel().tween_method(func(v:float):value.text=text if int(v)>=target else str(int(v)),0.0,float(target),.45)
-		tween.tween_callback(func():Texts.set_text(value,text))
-		y+=40
-	var saved=arena.pending_recipes if won else arena.get_meta("saved_recipes",[])
-	var lost=arena.get_meta("lost_recipes",[])
-	UiKit.label(panel,"Чертежи" if not (saved.is_empty() and lost.is_empty()) else "Чертежей нет",Vector2(30,y+8),Vector2(400,24),16,UiKit.MUTED)
-	var x=30.0;var index=0
-	for entry in saved.map(func(r):return [r,true])+lost.map(func(r):return [r,false]):
-		var cell=UiKit.panel(panel,Vector2(x,y+38),Vector2(104,104),Color("2f3b33") if entry[1] else Color("262b27"));cell.modulate.a=0
-		var art=UiKit.icon(cell,str(entry[0].get("id","")),Vector2(20,10),Vector2(64,56));UiKit.locked_preview(art,not entry[1])
-		var name=UiKit.label(cell,Game.recipe_name(entry[0]),Vector2(6,68),Vector2(92,30),11,UiKit.INK if entry[1] else UiKit.MUTED);name.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;name.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-		if not entry[1]:UiKit.label(cell,"Потерян",Vector2(6,2),Vector2(92,16),10,Color("ff6b57")).horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
-		var reveal=cell.create_tween();reveal.tween_interval(.15+rows.size()*.22+index*.12);reveal.tween_callback(func():Game.sound("ui_confirm",self));reveal.tween_property(cell,"modulate:a",1.0,.18)
-		x+=114;index+=1
-		if x>800:break
-	UiKit.button(panel,"В хаб",Vector2(630,530),Vector2(280,52),func():arena.leave(),true)
+	preload("res://scripts/ui/run_result.gd").show(self,arena,won,reason)
 
 func show_departure():
 	if Campaign.endless:arena.depart_room();return

@@ -301,6 +301,8 @@ func award_kill(actor):
 	var amount=roundi(EncounterRules.kill_alloy(actor.kind,actor.rank,arena.room.room_index,actor.elite,arena.room.difficulty)*CombatMods.loot_multiplier(arena))
 	CombatMods.on_kill(arena,actor)
 	preload("res://scripts/resource_drop.gd").spawn(arena,actor.position,amount,"alloy",actor.resource_blast);arena.run.kills+=1
+	var icon_id="commander" if actor.elite else preload("res://scripts/ui/enemy_type_icon.gd").IDS[preload("res://scripts/ui/enemy_type_icon.gd").index_for(actor.kind,actor.enemy_weapon)]
+	arena.run.kills_by[icon_id]=int(arena.run.kills_by.get(icon_id,0))+1
 	var tokens=token_drop(actor)
 	if tokens>0:preload("res://scripts/resource_drop.gd").spawn(arena,actor.position,tokens,"tokens",actor.resource_blast)
 	Game.progression.event("drones" if actor.kind in ["drone","flyer"] else "armor" if actor.kind in ["tank","apc","buggy"] else "infantry")
