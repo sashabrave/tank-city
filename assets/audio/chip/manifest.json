@@ -1349,5 +1349,12 @@
       "call_ring_02.wav"
     ],
     "loop": false
+  },
+  "ability_denied": {
+    "files": [
+      "ability_denied_01.wav",
+      "ability_denied_02.wav"
+    ],
+    "loop": false
   }
 }

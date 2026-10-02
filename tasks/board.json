@@ -254,7 +254,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-021.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "на звук неактивной способности нужен приятный отрицательный глухой звук",
 			"type": "polish",
 			"version": "0.7.1-pre"

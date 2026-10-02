@@ -39,7 +39,11 @@ func block_hit()->bool:return shield_time>0
 func shield_duration()->float:return minf(8.0,power()+level.utility*.5)
 func cast_slot(index:int)->bool:
 	if index<0 or index>=slots.size():return false
-	select(slots[index]);return cast()
+	select(slots[index])
+	var ok=cast()
+	# A soft, low thud when the ability is not ready (T-021); never on a successful cast.
+	if not ok and is_instance_valid(arena.player) and not arena.player.dead:Game.sound("ability_denied",arena)
+	return ok
 func interval() -> float:
 	return maxf(Balance.CONFIG.combat.minimum_ability_cooldown,AbilityCatalog.DATA.get(selected,AbilityCatalog.DATA.barrier).cooldown*arena.run.ability_cooldown_multiplier*pow(Balance.CONFIG.combat.ability_cooldown_multiplier,level.cooldown)*(.9-Game.class_specialization()*.01 if Game.selected_class=="engineer" else 1.0))
 func power() -> float:return AbilityCatalog.DATA.get(selected,AbilityCatalog.DATA.barrier).power*arena.run.ability_power_multiplier*(1+level.power*Balance.CONFIG.combat.ability_power_step)

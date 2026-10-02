@@ -36,7 +36,7 @@ func _process(delta):
 func cast(slot:int):
 	if hub.phase!="combat" or slot>=Game.hero_loadout().size():return
 	var id=Game.hero_loadout()[slot]
-	if cooldowns.get(id,0)>0 or not Game.ability_available(id):return
+	if cooldowns.get(id,0)>0 or not Game.ability_available(id):Game.sound("ability_denied",hub);return
 	var effect=load("res://scripts/hub_ability_effect.gd").new();effect.hub=hub;effect.kind=id;hub.add_child(effect)
 	if not effect.accepted:effect.queue_free();return
 	var duration=4.0 if id=="shield" else float(AbilityCatalog.DATA[id].power) if id=="cloak" else 0.0
