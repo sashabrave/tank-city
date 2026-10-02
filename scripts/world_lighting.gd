@@ -145,6 +145,7 @@ func apply():
 	else:sun.rotation_degrees=Vector3(-55,-32,0)
 	depth_light(cozy and bool(Settings.values.get("depth_light",true)),night)
 	cinematic_light(cozy and bool(Settings.values.get("cinematic_light",true)),night,Vector3(style.sun_angle) if cozy else Vector3(-55,-32,0))
+	moon_shafts(cozy and night and bool(Settings.values.get("cinematic_light",true)) and get_parent().has_method("room_palette"))
 	refresh_materials()
 	update_lamps()
 ## «Киношный свет» (T-066): a second, shadowless back light opposite the sun in a complementary colour
@@ -163,6 +164,28 @@ func cinematic_light(on:bool,night:bool,sun_angle:Vector3):
 	var recipe=(CINE_NIGHT if night else CINE_DAY)[rng.randi_range(0,(CINE_NIGHT if night else CINE_DAY).size()-1)]
 	rim.light_color=Color(recipe[0]);rim.light_energy=float(recipe[1])
 	rim.rotation_degrees=Vector3(-rng.randf_range(16,28),sun_angle.y+180.0+rng.randf_range(-25,25),0)
+## Night sky glow (T-067): three huge, very faint moonbeam shafts slanting down through the scene and drifting
+## slowly, plus a soft cool sheen — cheap unshaded cones, night and «Киношный свет» only.
+func moon_shafts(on:bool):
+	var holder:Node3D=get_node_or_null("MoonShafts")
+	if not on:
+		if holder:holder.queue_free()
+		return
+	if holder:return
+	holder=Node3D.new();holder.name="MoonShafts";add_child(holder)
+	var rng=RandomNumberGenerator.new();rng.seed=hash([Game.visual_run_seed,"moon_shafts"])
+	for i in range(3):
+		var shaft=MeshInstance3D.new();var mesh=CylinderMesh.new();mesh.top_radius=.6;mesh.bottom_radius=rng.randf_range(2.2,3.4);mesh.height=22;mesh.radial_segments=12;mesh.cap_top=false;mesh.cap_bottom=false
+		shaft.mesh=mesh;shaft.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		var mat=ShaderMaterial.new();mat.shader=preload("res://shaders/world/light_cone.gdshader");mat.set_shader_parameter("tint",Color("b9d0ff"));mat.set_shader_parameter("density",.05)
+		shaft.material_override=mat;holder.add_child(shaft)
+		shaft.position=Vector3(rng.randf_range(-7,7),9,rng.randf_range(-6,6));shaft.rotation=Vector3(rng.randf_range(-.35,-.2),rng.randf()*TAU,rng.randf_range(-.2,.2))
+		shaft.set_meta("drift",Vector2(rng.randf_range(-.25,.25),rng.randf_range(-.15,.15)))
+func drift_shafts(delta):
+	var holder=get_node_or_null("MoonShafts")
+	if holder:
+		for shaft in holder.get_children():
+			var d:Vector2=shaft.get_meta("drift");shaft.position.x=wrapf(shaft.position.x+d.x*delta,-9,9);shaft.position.z=wrapf(shaft.position.z+d.y*delta,-8,8)
 ## «Глубина света» (T-062), cheap: grid AO on the floor (systems/floor_ao.gd), a slightly warmer sun and
 ## a hint of cool fill (warm light / cool shadow), a touch more contrast. AgX was tried and greyed the sand
 ## palette, so the style's filmic tonemap stays.
@@ -180,6 +203,7 @@ func depth_light(on:bool,night:=false):
 	# Softer sun shadows: the surface colour shows through instead of near-black patches.
 	sun.shadow_opacity*=.82
 func _process(delta):
+	drift_shafts(delta)
 	elapsed+=delta
 	if elapsed<.25:return
 	elapsed=0.0;update_lamps()
