@@ -618,7 +618,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-049.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "переосмысли настройки вообще, у нас много добавилось, наверное нужно больше разделов сгрупировныннх по логически стандартно",
 			"type": "polish",
 			"version": "0.7.1-pre"
@@ -833,7 +833,7 @@
 			"note": "Пресеты света по кадру (ключевой/заполняющий/контровой), объём, случайный выбор на комнату, гибкая настройка.",
 			"type": "idea",
 			"priority": 1,
-			"status": "backlog",
+			"status": "review",
 			"version": "0.7.2",
 			"created": "2026-10-02",
 			"source": "chat",

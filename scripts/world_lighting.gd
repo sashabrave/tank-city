@@ -144,8 +144,25 @@ func apply():
 		environment.ambient_light_energy=(.34*float(time.get("ambient",1.0))) if night else float(style.ambient)
 	else:sun.rotation_degrees=Vector3(-55,-32,0)
 	depth_light(cozy and bool(Settings.values.get("depth_light",true)) and not night)
+	cinematic_light(cozy and bool(Settings.values.get("cinematic_light",true)),night,Vector3(style.sun_angle) if cozy else Vector3(-55,-32,0))
 	refresh_materials()
 	update_lamps()
+## «Киношный свет» (T-066): a second, shadowless back light opposite the sun in a complementary colour
+## (warm key / cool rim, or the reverse at night). It outlines every model so it reads in volume. The recipe
+## is picked per room from the visual seed, so each field gets its own mood; hub and route map use room 0.
+const CINE_DAY=[["8fb8ff",.5],["c7a0ff",.45],["a8e0ff",.4],["ffb3c8",.38]]
+const CINE_NIGHT=[["ff9f6b",.32],["7fe0d0",.28],["c7a0ff",.3]]
+func cinematic_light(on:bool,night:bool,sun_angle:Vector3):
+	var rim:DirectionalLight3D=get_node_or_null("CineRim")
+	if rim==null:
+		rim=DirectionalLight3D.new();rim.name="CineRim";rim.shadow_enabled=false;rim.light_specular=.7;add_child(rim)
+	rim.visible=on
+	if not on:return
+	var room=int(get_parent().get("room_index")) if get_parent().get("room_index")!=null else 0
+	var rng=RandomNumberGenerator.new();rng.seed=hash([Game.visual_run_seed,room,"cine"])
+	var recipe=(CINE_NIGHT if night else CINE_DAY)[rng.randi_range(0,(CINE_NIGHT if night else CINE_DAY).size()-1)]
+	rim.light_color=Color(recipe[0]);rim.light_energy=float(recipe[1])
+	rim.rotation_degrees=Vector3(-rng.randf_range(16,28),sun_angle.y+180.0+rng.randf_range(-25,25),0)
 ## «Глубина света» (T-062), cheap: grid AO on the floor (systems/floor_ao.gd), a slightly warmer sun and
 ## a hint of cool fill (warm light / cool shadow), a touch more contrast. AgX was tried and greyed the sand
 ## palette, so the style's filmic tonemap stays.

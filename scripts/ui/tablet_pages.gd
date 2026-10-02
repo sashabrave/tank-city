@@ -209,14 +209,16 @@ func radio():
 	if rows.is_empty():UiKit.label(box,"Здесь пока нет композиций",Vector2.ZERO,Vector2(450,40),15,UiKit.MUTED)
 func settings():
 	UiKit.label(content,"Настройки",Vector2(UiKit.PAGE_PADDING,20),Vector2(727,28),UiKit.PAGE_TITLE_SIZE)
-	var tabs=["Видео","Звук","Управление","Интерфейс"]
+	var tabs=["Графика","Экран","Звук","Управление","Интерфейс"]
+	if view.settings_tab=="Видео":view.settings_tab="Графика"
 	# Same full-width tab row as the quest filters: equal sizes, the active tab only changes colour.
 	for button in UiKit.tab_row(content,Vector2(UiKit.PAGE_PADDING,UiKit.PAGE_CONTENT_TOP),content.size.x-UiKit.PAGE_PADDING*2,tabs.map(func(t):return [t,t]),view.settings_tab,func(key):view.settings_tab=key;view.waiting_key="";view.refresh()):
 		button.add_theme_font_size_override("font_size",16)
 	var box=view.scroller(Vector2(UiKit.PAGE_PADDING,UiKit.PAGE_CONTENT_TOP+40+UiKit.TAB_CONTENT_GAP),Vector2(727,366))
 	var body=Control.new();box.add_child(body);body.custom_minimum_size=Vector2(705,350)
 	var y=0
-	if view.settings_tab=="Видео":
+	if view.settings_tab=="Графика":
+		# One choice sets every switch below at once; any switch can still be changed by hand afterwards (T-049).
 		preload("res://scripts/ui/appearance_card.gd").build(body)
 		var shaders=CheckButton.new();body.add_child(shaders);shaders.position.y=256;Texts.set_text(shaders,"Шейдеры · уютный свет и металл");shaders.size=Vector2(700,40);shaders.button_pressed=Settings.values.get("shaders",true)
 		shaders.toggled.connect(func(enabled):Settings.change("shaders",enabled);view.refresh.call_deferred())
@@ -227,7 +229,7 @@ func settings():
 		else:setting_choice(body,["sun_day","Солнце в бою",["Случайно","Рассвет","Утро","Полдень","Золотой час","Закат"],["random","dawn","morning","noon","golden","sunset"],"Случайно — своё положение солнца в каждой комнате, чаще рассвет и золотые часы."],434)
 		setting_choice(body,["weather","Погода в бою",["Случайно","Ясно","Дождь","Снег","Туман","Песчаная буря"],["random","clear","rain","snow","fog","sandstorm"],"Случайно — на новом этапе погода иногда меняется. Только оформление, на бой не влияет."],522)
 		y=610
-		var names={"soft_shadows":"Мягкие тени","ambient_occlusion":"Затенение углов","glow":"Блики и свечение","haze":"Дымка вдали","rim_light":"Контурный свет","shiny_metal":"Блестящий металл","depth_light":"Глубина света"}
+		var names={"soft_shadows":"Мягкие тени","ambient_occlusion":"Затенение углов","glow":"Блики и свечение","haze":"Дымка вдали","rim_light":"Контурный свет","shiny_metal":"Блестящий металл","depth_light":"Глубина света","cinematic_light":"Киношный свет"}
 		for i in range(Settings.SHADER_OPTIONS.size()):
 			var key=Settings.SHADER_OPTIONS[i]
 			var toggle=CheckButton.new();body.add_child(toggle);Texts.set_text(toggle,names[key]);toggle.position=Vector2((i%2)*355,y+int(i/2.0)*42);toggle.size=Vector2(340,38)
@@ -236,7 +238,14 @@ func settings():
 		y+=128
 		var note=UiKit.label(body,"Затенение углов доступно на компьютере (Forward+). На слабых устройствах сначала выключи затенение и мягкие тени.",Vector2(0,y),Vector2(700,40),14,UiKit.MUTED);note.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 		y+=54
-		for entry in [["atmosphere","Атмосферные частицы",["Выключены","Включены"],[false,true],"Редкая пыль, листья и ночные светлячки. Без физических столкновений."],["tilt_shift","Размытие краёв",["Выключено","Включено"],[false,true],"Мягкий tilt-shift сверху и снизу. Центр поля и интерфейс остаются чёткими."],["light_budget","Источники света",["Экономно · 6","Обычно · 10","Больше света · 14"],[6,10,14],"Ближайшие фонари; в режиме шейдеров до трёх источников отбрасывают тени."],["fullscreen","Режим экрана",["Окно","Полный экран"],[false,true],"Полный экран занимает весь дисплей."],["vsync","Вертикальная синхронизация",["Выключена","Включена"],[false,true],"Убирает разрывы изображения; может ограничивать FPS."],["render_scale","Разрешение 3D",["Авто","100%","75%","50%"],["auto","100","75","50"],"Мир рисуется в меньшем разрешении и чётко масштабируется, интерфейс остаётся резким. Авто снижает разрешение на больших и Retina-экранах."],["quality","Сглаживание MSAA",["Выключено","2×","4×"],[0,1,2],"Сглаживает края моделей. 4× сильнее нагружает графику."],["fps","Лимит кадров",["30 FPS","60 FPS","120 FPS","Без ограничения"],[30,60,120,0],"Верхняя граница; реальная частота зависит от устройства и VSync."]]:
+		for entry in [["atmosphere","Атмосферные частицы",["Выключены","Включены"],[false,true],"Редкая пыль, листья и ночные светлячки. Без физических столкновений."],["tilt_shift","Размытие краёв",["Выключено","Включено"],[false,true],"Мягкий tilt-shift сверху и снизу. Центр поля и интерфейс остаются чёткими."],["light_budget","Источники света",["Экономно · 6","Обычно · 10","Больше света · 14"],[6,10,14],"Ближайшие фонари; в режиме шейдеров до трёх источников отбрасывают тени."]]:
+			setting_choice(body,entry,y);y+=88
+		# The preset goes on top: everything built above moves down one row (T-049).
+		for child in body.get_children():child.position.y+=104
+		setting_choice(body,["graphics_preset","Пресет графики",["Экономно","Стандарт","Кино"],["eco","standard","cinema"],"Экономно — для слабых устройств; Кино — весь свет, тени и эффекты."],0)
+		y+=104
+	elif view.settings_tab=="Экран":
+		for entry in [["fullscreen","Режим экрана",["Окно","Полный экран"],[false,true],"Полный экран занимает весь дисплей."],["vsync","Вертикальная синхронизация",["Выключена","Включена"],[false,true],"Убирает разрывы изображения; может ограничивать FPS."],["render_scale","Разрешение 3D",["Авто","100%","75%","50%"],["auto","100","75","50"],"Мир рисуется в меньшем разрешении и чётко масштабируется, интерфейс остаётся резким. Авто снижает разрешение на больших и Retina-экранах."],["quality","Сглаживание MSAA",["Выключено","2×","4×"],[0,1,2],"Сглаживает края моделей. 4× сильнее нагружает графику."],["fps","Лимит кадров",["30 FPS","60 FPS","120 FPS","Без ограничения"],[30,60,120,0],"Верхняя граница; реальная частота зависит от устройства и VSync."]]:
 			setting_choice(body,entry,y);y+=88
 	elif view.settings_tab=="Звук":
 		for entry in [["master","Общая громкость","Меняет громкость всей игры."],["music","Музыка","Музыкальные композиции и радио."],["effects","Звуки игры","Выстрелы, взрывы и звуковые сигналы."]]:
@@ -270,12 +279,15 @@ func settings():
 	UiKit.button(content,"Сбросить вкладку",Vector2(22,535),Vector2(240,36),func():
 		if view.settings_tab=="Управление":Settings.keys=Settings.DEFAULT_KEYS.duplicate()
 		else:
-			var group={"Видео":["atmosphere","tilt_shift","ui_theme","shaders","shader_style","sun_day","sun_night","weather","soft_shadows","ambient_occlusion","glow","haze","rim_light","shiny_metal","world_lighting","light_budget","fullscreen","vsync","render_scale","quality","fps"],"Звук":["master","music","effects"],"Интерфейс":["input_scheme","biome_info","language","ui_motion","show_fps","ui_glass","ui_accent"]}[view.settings_tab]
+			var group={"Графика":["graphics_preset","atmosphere","tilt_shift","ui_theme","shaders","shader_style","sun_day","sun_night","weather","soft_shadows","ambient_occlusion","glow","haze","rim_light","shiny_metal","depth_light","cinematic_light","world_lighting","light_budget"],"Экран":["fullscreen","vsync","render_scale","quality","fps"],"Звук":["master","music","effects"],"Интерфейс":["input_scheme","biome_info","language","ui_motion","show_fps","ui_glass","ui_accent"]}[view.settings_tab]
 			for key in group:Settings.values[key]=Settings.DEFAULT_VALUES[key]
 		Settings.apply();Settings.save();view.waiting_key="";view.refresh()).add_theme_font_size_override("font_size",15)
 func setting_choice(body,entry,y):
 	UiKit.label(body,entry[1],Vector2(0,y),Vector2(380,34),18)
 	var option=OptionButton.new();body.add_child(option);option.position=Vector2(395,y);option.size=Vector2(305,36);option.add_theme_font_size_override("font_size",17)
 	for label in entry[2]:option.add_item(label)
-	option.select(entry[3].find(Settings.values[entry[0]]));option.item_selected.connect(func(index):Settings.change(entry[0],entry[3][index]))
+	option.select(entry[3].find(Settings.values[entry[0]]));option.item_selected.connect(func(index):
+		Settings.change(entry[0],entry[3][index])
+		# A preset flips many switches: redraw the page so they show it.
+		if entry[0]=="graphics_preset":view.refresh.call_deferred())
 	var hint=UiKit.label(body,entry[4],Vector2(0,y+42),Vector2(700,44),14,UiKit.MUTED);hint.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
