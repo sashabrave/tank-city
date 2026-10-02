@@ -29,6 +29,7 @@ default_bus_layout=""
 
 [autoload]
 
+TestGuard="*res://scripts/test_guard.gd"
 Texts="*res://scripts/ui/game_texts.gd"
 Game="*res://scripts/game.gd"
 Settings="*res://scripts/settings.gd"

@@ -1,0 +1,24 @@
+# Быстрый набор: ключевые проверки после каждого заметного изменения (~5 минут).
+# Одно имя теста на строку (без .tscn). Полный набор — все tests/*.tscn, кроме *_visual, capture, chaos_monkey, *probe*.
+quests_revision
+save_integrity_revision
+save_exit_revision
+boot_profiles_revision
+daily_run_revision
+daily_board_revision
+resource_drops
+merchant_tokens_revision
+challenge_cache_revision
+maze_revision
+squads_revision
+combat_feel_revision
+wreck_crew_revision
+legend_rules_revision
+challenge_ladder_revision
+stations_revision
+video_call_revision
+tablet_content
+trench_regression
+combat_terrain_revision
+biomes_revision
+card_table_visual
