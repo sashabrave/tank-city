@@ -20,13 +20,6 @@ static func open_bench(hub,id:String):
 		"headquarters":hub.open_station("hq")
 		"garage":hub.open_station("garage")
 		_:hub.close_station()
-static func discoveries(id:String)->Array:
-	match id:
-		"weapons":return Game.weapon_unlocks
-		"bonuses":return Game.bonus_unlocks
-		"headquarters":return Game.hq_unlocks
-		"garage":return Game.garage.unlocks
-	return []
 ## Build news is only about the building itself. Finds inside a built station light that station's
 ## bench dot (station_notices); the old per-item «bench:» keys are no longer marked by station screens.
 static func has_news(id:String)->bool:return fresh(id)

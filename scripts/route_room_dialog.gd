@@ -19,7 +19,7 @@ static func build(route,info:Dictionary)->Control:
 	if major:commander_name=BossCatalog.encounter(route.wave_seed,info.stage).name
 	if not major:
 		total+=1
-		income+=EncounterRules.kill_alloy(commander,WaveDirector.max_rank(info.stage),info.stage,true,info.difficulty)+4+info.stage*2
+		income+=EncounterRules.kill_alloy(commander,WaveDirector.max_rank(info.stage),info.stage,true,info.difficulty)+Balance.CONFIG.economy.clear_reward+Campaign.progress_index(info.stage)*Balance.CONFIG.economy.clear_reward_per_room
 	var reward="≈ %d ◈ · %s" % [income,EncounterRules.reward_text(info.difficulty)]
 	if major:reward+=" · документы"
 	var rows=[["Бой", "%d врагов + помощь · %s" % [total,EncounterRules.NAMES[info.difficulty]]],["Босс",commander_name+" "+EncounterRules.STARS[info.difficulty]],["Награда",reward]]

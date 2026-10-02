@@ -33,7 +33,6 @@ func items(tab:String)->Array:
 			result.append({"id":"backpack","title":"Рюкзак","icon":"inventory","caption":"%d / 6 ячеек" % Game.backpack_slots,"state":"max" if Game.backpack_slots>=6 else "owned"})
 			result.append({"id":"reroll","title":"Перебросы","icon":"reroll","caption":"+%d за забег" % Game.reroll_level if "reroll" in Game.research_unlocks else "Нужен чертёж","state":"locked" if "reroll" not in Game.research_unlocks else "owned"})
 	return result
-func price_text(id:String)->String:return ("%d ◈" if id in ["gunner","driver"] else "%d док.") % Game.class_price(id)
 func detail(tab:String,id:String)->Dictionary:
 	match tab:
 		"shells":

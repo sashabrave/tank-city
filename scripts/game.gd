@@ -579,7 +579,6 @@ func buy_class_slot(id:String)->bool:
 	if id not in class_first_slots or id not in class_unlocks or id in class_second_slots or int(class_levels.get(id,0))<5 or credits<2500:return false
 	credits-=2500;class_second_slots.append(id);save_progress();return true
 
-func ability_required_level(id:String)->int:return mini(3,TIERS.tier(id)+1)
 func ability_available(id:String)->bool:
 	if id in CLASS_SKILLS.values() or id in CLASS_SECOND.values():return id in class_loadout() and selected_class in class_unlocks
 	return id in ability_unlocks

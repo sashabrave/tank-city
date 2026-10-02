@@ -60,7 +60,6 @@ static func commander_entry(seed_value:int,room:int,node_id:String="")->Dictiona
 	var kind="boss" if room in Campaign.BOSSES else "grenadier" if type=="rpg" else str(type)
 	return {"kind":kind,"weapon":"rpg" if type=="rpg" and kind!="boss" else EnemyLoadouts.default_for(kind)}
 
-static func wave_title(wave:int)->String:return ["Контакт","Поддержка","Фланги"][clampi(wave,0,2)]
 static func wave_hint(wave:int)->String:return ["Угроза впереди · изучи противника","Основные силы под прикрытием","Заходы с двух сторон · меняй позицию"][clampi(wave,0,2)]
 static func side_spawn_cells(size:int,wave:int)->Array:
 	var sides=[]

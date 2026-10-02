@@ -302,23 +302,7 @@ func show_recipe_draft():
 	var roll=panel.get_node("RerollButton");Texts.set_text(roll,"Переброс · осталось %d" % arena.rerolls_left);roll.pressed.connect(func():arena.reroll_recipe_draft());roll.disabled=arena.rerolls_left<=0
 	add_skip(panel,arena.reward.skip_chest)
 	animate_choices(panel)
-func show_stats():
-	var panel=modal_base("Полевой справочник","Герой / техника","Все открытые бонусы и текущие характеристики",650)
-	var player=arena.player
-	UiKit.label(panel,"Уровень %d · сумма улучшений хаба" % Game.total_upgrade_level(),Vector2(30,142),Vector2(850,25),17)
-	UiKit.stat_bars(panel,Vector2(30,175),405,[["Здоровье героя",arena.soldier_hp,arena.soldier_max_hp],["Скорость",player.speed,6]],34)
-	var benchmark=preload("res://scripts/ui/weapon_benchmarks.gd").weapon(arena.weapon) if player.kind=="soldier" else preload("res://scripts/ui/weapon_benchmarks.gd").vehicle(player.kind)
-	UiKit.stat_bars(panel,Vector2(470,175),405,[["Урон",player.damage,benchmark.damage],["Темп",1/player.fire_interval,benchmark.rate," /с"]],34)
-	for i in range(Game.bonus_unlocks.size()):
-		var id=Game.bonus_unlocks[i];var x=30+(i%3)*294;var y=255+int(i/3.0)*89
-		UiKit.icon(panel,id,Vector2(x,y),Vector2(50,50));UiKit.label(panel,LOOT.BONUSES[id].name,Vector2(x+57,y+3),Vector2(225,25),15)
-		UiKit.label(panel,"Ур. %d · сила ×%.1f" % [Game.bonus_level(id),arena.bonus_strength(id)],Vector2(x+57,y+31),Vector2(225,25),14,UiKit.MUTED)
-	UiKit.button(panel,"Вернуться в паузу",Vector2(30,565),Vector2(880,55),show_pause)
 
-func show_zone_clear():
-	var panel=modal_base("Генерал повержен","Сектор зачищен","Вернуться с трофеями или продолжить поход.",335)
-	UiKit.button(panel,"В хаб с наградами",Vector2(30,215),Vector2(410,65),func():arena.leave())
-	UiKit.button(panel,"Следующий сектор",Vector2(465,215),Vector2(445,65),func():arena.depart_room(),true)
 
 func add_skip(panel:Panel,callback:Callable):
 	var reroll=panel.get_node("RerollButton")

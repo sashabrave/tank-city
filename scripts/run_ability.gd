@@ -35,7 +35,6 @@ func tick(delta):
 		if id!=selected:states[id].cooldown=maxf(0,states[id].cooldown-delta)
 	cloak_time=maxf(0,cloak_time-delta)
 	shield_time=maxf(0,shield_time-delta)
-func shield_interval()->float:return AbilityCatalog.DATA.shield.cooldown
 func block_hit()->bool:return shield_time>0
 func shield_duration()->float:return minf(8.0,power()+level.utility*.5)
 func cast_slot(index:int)->bool:

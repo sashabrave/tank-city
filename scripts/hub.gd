@@ -231,7 +231,6 @@ func build_dev_menu():
 func toggle_dev_menu(open=null):
 	var menu=root.get_node("DevMenu");menu.visible=not menu.visible if open==null else bool(open)
 	if menu.visible:UiKit.reveal(menu,0,Vector2(0,-10),.2)
-func dev_button(id:String)->Button:return root.get_node("DevMenu/"+id)
 
 func refresh():
 	credits.hide()
@@ -619,15 +618,6 @@ func show_abilities():
 		UiKit.label(card,data.description,Vector2(100,44),Vector2(280,67),14).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 		var button=UiKit.button(card,"Взят" if Game.gadget==id else "Взять" if id in Game.purchased_gadgets else "Открыть · %d ◈" % Game.gadget_cost(id),Vector2(10,122),Vector2(376,36),func():Game.unlock_or_equip_ability(id);refresh());button.disabled=not known or Game.gadget==id;UiKit.muted_locked_button(button)
 
-func equip_ability(id):
-	if not Game.ability_available(id):return
-	var existing=Game.equipped_abilities.find(id)
-	if existing>=0 and existing!=equip_slot:
-		if equip_slot<Game.equipped_abilities.size():Game.equipped_abilities[existing]=Game.equipped_abilities[equip_slot]
-		else:return
-	if equip_slot>=Game.equipped_abilities.size():Game.equipped_abilities.append(id)
-	else:Game.equipped_abilities[equip_slot]=id
-	Game.selected_ability=Game.equipped_abilities[0];Game.save_progress();refresh()
 func show_systems():
 	for i in range(2):
 		var alloy=i==0
