@@ -69,7 +69,7 @@ func enemy_aim(actor) -> Vector2i:
 		return actor.facing if not seek_open_lane and needs_breach(actor) and arena.walls.has(next) and arena.walls[next].hp>0 else Vector2i.ZERO
 	var weapon_range=EnemyLoadouts.profile(actor.enemy_weapon).range if actor.kind in ["soldier","shield"] else 7.0
 	for wreck in arena.room.wrecks:
-		if not is_instance_valid(wreck) or wreck.spent or wreck.unstable or wreck.delivery_left>0 or arena.flat_distance(actor.position,wreck.position)>minf(5,weapon_range):continue
+		if not is_instance_valid(wreck) or wreck.spent or wreck.unstable or wreck.husk or wreck.delivery_left>0 or arena.flat_distance(actor.position,wreck.position)>minf(5,weapon_range):continue
 		var direction=arena.aligned_direction(actor.cell,wreck.cell)
 		if direction!=Vector2i.ZERO and arena.clear_line(actor.cell,wreck.cell):return direction
 	if actor.kind=="grenadier":return Vector2i.ZERO

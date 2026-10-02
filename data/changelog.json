@@ -7,14 +7,18 @@
 				"title": "Испытания, легенды и живое поле",
 				"items": [
 					"Карточки усилений читаются как таблица: слева крупно изменение, справа параметр, ниже одна короткая фраза. Полное описание — в подсказке.",
-					"Убраны мини-игры «Напёрстки» и «Переключатели» и второй набор иллюстраций: в игре один стиль GPT."
+					"Убраны мини-игры «Напёрстки» и «Переключатели» и второй набор иллюстраций: в игре один стиль GPT.",
+					"Подорванная техника больше не исчезает: на поле остаётся обугленный корпус, он дымит и тлеет. Пара выстрелов или взрыв разносят его на обломки.",
+					"Из подбитой вражеской техники выпрыгивает экипаж с пистолетами. Механик за 4 секунды чинит машину, и она снова в бою, если его не остановить."
 				]
 			},
 			"en": {
 				"title": "Challenges, legends and a living field",
 				"items": [
 					"Upgrade cards read like a table: the change in large type on the left, the parameter on the right, one short line below. The full text is in the tooltip.",
-					"The «Shell game» and «Switches» mini-games and the second illustration set are gone: the game uses one GPT style."
+					"The «Shell game» and «Switches» mini-games and the second illustration set are gone: the game uses one GPT style.",
+					"Destroyed vehicles no longer vanish: a charred hull stays on the field, smoking and smouldering. A few shots or a blast break it apart.",
+					"A knocked-out enemy vehicle drops its crew with pistols. The mechanic repairs the vehicle in 4 seconds and it rejoins the fight unless you stop him."
 				]
 			}
 		},

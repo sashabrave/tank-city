@@ -138,6 +138,7 @@ func actor_destroyed(actor):
 		elif UnitKinds.is_vehicle(actor.kind):
 			var wreck=arena.make_wreck(actor.kind,actor.cell,actor.facing,false,arena.vehicle.player_armor(actor.kind,"captured",Campaign.zone(arena.room_index))*.5,"captured",Campaign.zone(arena.room_index));wreck.salvaged=true
 			mark_trophy(wreck)
+			bail_out(actor,wreck)
 		else: arena.burst(actor.position,Color("d69a54"),.8 if actor.kind=="boss" else .4)
 		if actor.kind=="boss":
 			if not arena.room.actors.any(func(a):return is_instance_valid(a) and not a.dead and a.kind=="boss") and arena.room.spawn_queue.is_empty():
@@ -300,3 +301,20 @@ func mark_trophy(wreck):
 	if is_instance_valid(player) and player.kind=="soldier":
 		arena.toast(TROPHY_HINTS.get(wreck.kind,"Трофей: подойди и займи"));Game.sound("quest_ready",wreck)
 
+
+## Enemy crews bail out of a knocked-out vehicle: pistol dogs with 1 HP. The first one is the mechanic: he stays
+## by the wreck and repairs it (Wreck.REPAIR_TIME) unless he is shot or the hero takes the wreck first.
+const CREW={"buggy":[0,1],"apc":[1,2],"tank":[2,2]}
+func bail_out(actor,wreck):
+	if arena.room.boss_room:return
+	var span:Array=CREW.get(actor.kind,[0,0]);var rng=arena.run.combat_rng if arena.run!=null else RandomNumberGenerator.new()
+	var count=rng.randi_range(span[0],span[1])
+	if actor.kind=="buggy" and rng.randf()<.5:count=1
+	for i in range(count):
+		var cell=arena.find_free_near(actor.cell)
+		var dog=arena.spawn_actor("soldier",cell,false,false,actor.rank,false,"pistol")
+		dog.hp=1.0;dog.max_hp=1.0;dog.refresh_health();dog.set_meta("crew",true)
+		if i==0:dog.set_meta("mechanic",true);dog.movement_pause=REPAIR_HOLD;wreck.mechanic=dog
+	if count>0:Game.sound("enemy_surprise",wreck)
+## The mechanic stays put while repairing (no walking away from the wreck).
+const REPAIR_HOLD=4.5
