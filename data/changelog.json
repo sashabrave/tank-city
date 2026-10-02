@@ -27,7 +27,8 @@
 					"Снег и песок ложатся только на настоящие грани блока: над пустой частью Г-образного полублока больше ничего не висит.",
 					"Изменения в планшете читаются одной лентой: слева список версий, справа все записи подряд с датами.",
 					"Штаб заезжает на поле сразу с нужной стороны и встаёт без резкого разворота, уезжает вперёд. Ограждение собирается чуть спокойнее. На карте мира штаб больше не разворачивается, доехав до точки.",
-					"Лычки у полоски здоровья врага показывают его профессионализм в этом мире: одна в начале, две в середине, три в конце и у босса."
+					"Лычки у полоски здоровья врага показывают его профессионализм в этом мире: одна в начале, две в середине, три в конце и у босса.",
+					"Пистолет и ПП бьют на одинаковую короткую дистанцию (9 клеток). ПП стреляет короткими очередями по 3 пули, урон в секунду прежний."
 				]
 			},
 			"en": {
@@ -54,7 +55,8 @@
 					"Snow and sand settle only on real block faces: nothing hangs over the empty part of an L-shaped half block.",
 					"The changelog in the tablet reads as one feed: versions on the left, all entries with dates on the right.",
 					"The HQ drives onto the field from the right side and stops without a sudden spin, then leaves driving forward. The defence wall builds a bit more calmly. On the world map the HQ no longer turns around when it arrives.",
-					"Chevrons by an enemy's health bar show its professionalism in this world: one at the start, two in the middle, three at the end and at the boss."
+					"Chevrons by an enemy's health bar show its professionalism in this world: one at the start, two in the middle, three at the end and at the boss.",
+					"The pistol and the SMG share the same short range (9 tiles). The SMG fires short bursts of 3 rounds with the same damage per second."
 				]
 			}
 		},

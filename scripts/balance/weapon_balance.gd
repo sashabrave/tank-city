@@ -9,6 +9,9 @@ extends Resource
 @export_range(1, 100, 0.1) var speed: float = 16.0
 @export_range(1, 100, 0.1) var range: float = 13.0
 @export_range(1, 20, 1) var pellets: int = 1
+## Shots per trigger pull (SMG bursts); the next pull waits `interval` from the first shot.
+@export_range(1, 6, 1) var burst: int = 1
+@export_range(0, 0.5, 0.01, "suffix:s") var burst_gap: float = 0.0
 @export var pierce: bool = false
 @export_range(0, 10, 0.1) var blast: float = 0.0
 @export_range(0.01, 1, 0.01) var intercept: float = 0.8
@@ -16,4 +19,4 @@ extends Resource
 @export_multiline var role: String = "Описание оружия"
 
 func as_dict()->Dictionary:
-	return {"name":name, "rarity":rarity, "damage":damage, "interval":interval, "speed":speed, "range":range, "pellets":pellets, "pierce":pierce, "blast":blast, "intercept":intercept, "icon":icon, "role":role}
+	return {"name":name, "rarity":rarity, "damage":damage, "interval":interval, "speed":speed, "range":range, "pellets":pellets, "burst":burst, "burst_gap":burst_gap, "pierce":pierce, "blast":blast, "intercept":intercept, "icon":icon, "role":role}

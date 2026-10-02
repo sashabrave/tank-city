@@ -265,7 +265,14 @@ func player_pressure()->float:
 	return probability/(1-probability)
 
 func fire_weapon(actor):
-	var data=arena.LOOT.WEAPONS[arena.run.weapon]
+	var weapon_id=arena.run.weapon;var data=arena.LOOT.WEAPONS[weapon_id]
+	volley(actor,data)
+	# Bursts (SMG): the rest of the pull follows on pausable timers in the facing of that moment.
+	for k in range(1,int(data.get("burst",1))):
+		arena.get_tree().create_timer(float(data.get("burst_gap",.07))*k,false).timeout.connect(func():
+			if is_instance_valid(actor) and not actor.dead and arena.phase=="combat" and arena.run.weapon==weapon_id:
+				volley(actor,data);Game.weapon_sound(actor))
+func volley(actor,data:Dictionary):
 	var multiplier=arena.effects.modify("shot_damage",1.0,{"actor":actor})
 	arena.effects.emit("shot",{"actor":actor})
 	for i in range(data.pellets):

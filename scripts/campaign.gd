@@ -16,7 +16,7 @@ static func configure(id:int,infinite:bool=false,is_daily:bool=false):
 	var hp=CombatStats.initial_health()
 	var weapon=Game.LOOT.WEAPONS[Game.selected_weapon]
 	var stats=CombatStats.weapon()
-	var dps=stats.damage*weapon.pellets/stats.interval
+	var dps=stats.damage*weapon.pellets*weapon.get("burst",1)/stats.interval
 	endless_strength=clampf(.8+.12*sqrt(maxf(0,hp-3))+.10*sqrt(maxf(0,dps-2.5))+.12*Game.garage.owned.size(),1,2.5)
 	if daily:endless_strength=DailyRun.STRENGTH  # same enemies for everyone that day
 	# Odd sizes only (the HQ needs a centre column); growth slows toward the boss.
