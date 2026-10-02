@@ -6,6 +6,7 @@
 			"ru": {
 				"title": "Испытания, легенды и живое поле",
 				"items": [
+					"Новый логотип: буквы из кирпича, кот в танке вырывается вправо. Плашка с логотипом в хабе стала крупнее.",
 					"Карточки усилений читаются как таблица: слева крупно изменение, справа параметр, ниже одна короткая фраза. Полное описание — в подсказке.",
 					"Убраны мини-игры «Напёрстки» и «Переключатели» и второй набор иллюстраций: в игре один стиль GPT.",
 					"Подорванная техника больше не исчезает: на поле остаётся обугленный корпус, он дымит и тлеет. Пара выстрелов или взрыв разносят его на обломки.",
@@ -34,6 +35,7 @@
 			"en": {
 				"title": "Challenges, legends and a living field",
 				"items": [
+					"New logo: brick letters with the cat's tank bursting out to the right. The logo plate in the hub is larger.",
 					"Upgrade cards read like a table: the change in large type on the left, the parameter on the right, one short line below. The full text is in the tooltip.",
 					"The «Shell game» and «Switches» mini-games and the second illustration set are gone: the game uses one GPT style.",
 					"Destroyed vehicles no longer vanish: a charred hull stays on the field, smoking and smouldering. A few shots or a blast break it apart.",

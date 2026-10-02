@@ -1,0 +1,9 @@
+One large square sheet with a clean 3x3 grid of 9 different game logo variations for the video game "WAR CATS". Thin even gutters between cells, each cell on its own plain dark charcoal background, no labels, no numbers, no extra text anywhere.
+
+Every logo in the grid follows the same brief:
+- The title "WAR CATS" in ALL CAPS, typeset in the Rubik Dirt font style: very heavy rounded bold letters with a gritty distressed texture. Each letter is built out of laid bricks — visible orange-red brick courses and mortar lines inside the letterforms, chunky bevelled 3D extrusion, dark outline. Spelling must be exactly W-A-R C-A-T-S.
+- To the RIGHT of the letters, the orange tabby cat commander in a small chunky olive-green tank (same character and tank as the reference image: white pilot helmet with cat ears, amber goggles, olive uniform), the tank driving to the RIGHT, away from the text, cannon pointing right, treads kicking up dust.
+- Brick chunks, shards and mortar dust explode and fly off the letters as if the tank just smashed through them: dynamic, powerful, motion streaks, debris flying outward, strong sense of speed and impact.
+- Style: stylised matte low-poly clay 3D look matching the reference, warm orange, olive and cream palette, punchy readable game-logo silhouette.
+
+Make the 9 cells clearly different from each other: vary the layout (one line vs two stacked lines, slight tilt, arched baseline), brick colour (orange, red clay, sandy, weathered grey-orange), amount and direction of flying debris, tank pose (straight, wheelie, drifting, jumping off a brick ramp), camera angle, and effects (dust cloud, sparks, small muzzle flash). Every cell is a complete, finished logo with the full title readable.

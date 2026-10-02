@@ -142,7 +142,7 @@ func build_ui():
 	root=preload("res://scenes/ui/hub_screen.tscn").instantiate();canvas.add_child(root)
 	root.get_node("GalleryButton").pressed.connect(func():gallery_requested.emit())
 	title=root.get_node("GameTitle");credits=root.get_node("AlloyLabel")
-	var title_plate=UiKit.glass(root,Vector2(30,25),Vector2(300,130),Color("242d27ed"));title_plate.mouse_filter=Control.MOUSE_FILTER_IGNORE;root.move_child(title_plate,0)
+	var title_plate=UiKit.glass(root,Vector2(30,25),Vector2(345,150),Color("242d27ed"));title_plate.mouse_filter=Control.MOUSE_FILTER_IGNORE;root.move_child(title_plate,0)
 	for child in root.get_children():
 		if child is TextureRect and child.position==Vector2(48,109):child.hide()
 	credits.size.x=600;credits.add_theme_font_size_override("font_size",23)
@@ -158,11 +158,11 @@ func build_ui():
 ## Test tools live in one glass menu under the logo; construction is reached in the world (locked benches)
 ## and from HQ → Buildings, so it sits here only as a shortcut.
 func build_dev_menu():
-	var toggle=UiKit.button(root,"Инструменты",Vector2(30,171),Vector2(300,50),func():toggle_dev_menu());toggle.name="ToolsButton"
+	var toggle=UiKit.button(root,"Инструменты",Vector2(30,191),Vector2(345,50),func():toggle_dev_menu());toggle.name="ToolsButton"
 	toggle.icon=UiKit.interface_icon("debug");toggle.expand_icon=true;toggle.add_theme_constant_override("icon_max_width",20);toggle.add_theme_font_size_override("font_size",18)
 	var rows=[["DebugAlloyButton","+1000 сплава"],["RecipeShopButton","Магазин чертежей"],["SandboxButton","Песочница"],["DevMapButton","Дев-режим карты: выкл"]]
 	const PAD=12.0;const ROW=46.0;const GAP=8.0
-	var menu=UiKit.glass(root,Vector2(30,229),Vector2(300,PAD*2+rows.size()*ROW+(rows.size()-1)*GAP));menu.name="DevMenu";menu.hide();menu.z_index=20
+	var menu=UiKit.glass(root,Vector2(30,249),Vector2(345,PAD*2+rows.size()*ROW+(rows.size()-1)*GAP));menu.name="DevMenu";menu.hide();menu.z_index=20
 	var y=PAD
 	for row in rows:
 		var half=row.size()>2
@@ -171,7 +171,7 @@ func build_dev_menu():
 			if button==null:button=UiKit.button(menu,row[i+1],Vector2.ZERO,Vector2.ZERO,func():pass);button.name=row[i]
 			else:button.get_parent().remove_child(button);menu.add_child(button)
 			button.text=row[i+1];button.add_theme_font_size_override("font_size",16)
-			var width=(276.0-GAP)*.5 if half else 276.0
+			var width=(321.0-GAP)*.5 if half else 321.0
 			button.position=Vector2(PAD+(i/2)*(width+GAP),y);button.size=Vector2(width,ROW)
 		y+=ROW+GAP
 	root.get_node("GalleryButton").hide()
