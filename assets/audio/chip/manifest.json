@@ -1342,5 +1342,12 @@
       "base_alert_03.wav"
     ],
     "loop": false
+  },
+  "call_ring": {
+    "files": [
+      "call_ring_01.wav",
+      "call_ring_02.wav"
+    ],
+    "loop": false
   }
 }

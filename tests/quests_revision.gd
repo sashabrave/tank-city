@@ -20,6 +20,23 @@ func run():
 	var quest=Q.STORY.filter(func(q):return q.id=="general1")[0]
 	p.accepted.append(quest.id);p.event(quest.event,1,true);var cores=Game.cores;var credits=Game.credits
 	check(p.claim(quest) and Game.credits==credits+quest.alloy+quest.docs*Game.DOC_ALLOY,"claim pays alloy with documents melted in")
+	# Actions count only after taking the quest; one-shot story states count from the profile.
+	p.event("extracted",50)
+	var first=Q.STORY[0]
+	check(p.count(first)==0 and not p.claim(first),"alloy carried before taking the quest does not count")
+	if first.id not in p.accepted:p.accept_quest(first.id)
+	p.quest_progress[first.id]=0
+	p.event("extracted",first.goal)
+	check(p.count(first)==first.goal and p.claim(first),"alloy carried after taking it completes the quest")
+	Game.built_workshops.append("garage");p.sync()
+	var garage=Q.BRIEFINGS.filter(func(q):return q.id=="garage_build")[0]
+	check(p.count(garage)==1,"a bench built earlier still completes the story step")
+	# One operations briefing at a time, in story order.
+	p.counters["world_depth_1"]=6;p.counters["merchant_buy"]=1;p.counters["challenge_any"]=3
+	var offered=p.quests("available").filter(func(q):return Q.sender(q)=="operations" and not str(q.id).begins_with("order_"))
+	check(offered.size()==1 and offered[0].id==Q.BRIEFINGS[0].id,"one briefing offered: %s" % str(offered.map(func(q):return q.id)))
+	p.accept_quest(offered[0].id)
+	check(p.quests("available").filter(func(q):return q in Q.BRIEFINGS).map(func(q):return q.id)==[offered[0].id],"the taken briefing stays alone until handed in")
 	var before=int(p.counters.get("challenge_any",0))
 	Campaign.configure(1)
 	var arena=load("res://scenes/arena.tscn").instantiate();arena.sandbox=true;arena.sandbox_mode="hold";arena.sandbox_difficulty=2;add_child(arena);arena.set_physics_process(false);await settle()
@@ -34,7 +51,7 @@ func run():
 	var view=preload("res://scripts/ui/field_tablet.gd").new();view.manage=true;view.tab="quests";add_child(view);await settle()
 	var feed=view.find_child("QuestFeed",true,false)
 	check(feed!=null and feed.get_child_count()>0,"quest feed renders")
-	var first=feed.get_children().filter(func(c):return c.name.begins_with("Quest_"))
-	check(not first.is_empty() and first[0].has_node("Bubble"),"quests are messages with bubbles")
+	var cards=feed.get_children().filter(func(c):return c.name.begins_with("Quest_"))
+	check(not cards.is_empty() and cards[0].has_node("Bubble"),"quests are messages with bubbles")
 	view.queue_free();await settle()
 	print("QUESTS: %d failures" % failures);get_tree().quit(1 if failures else 0)

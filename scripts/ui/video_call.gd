@@ -21,6 +21,37 @@ const CALLS={
 	"general":[
 		[MAJOR,"У генерала щит на 60% и 30%. Разбей генератор на фланге."],
 	],
+	"first_haul":[
+		[MAJOR,"Сплав донёс — уже польза. В принтере он превращается в здоровье и урон."],
+		[SOLDIER,"То есть можно не геройствовать, а просто носить?"],
+		[MAJOR,"Носить и не умирать. Это и есть геройство."],
+	],
+	"tasks":[
+		[MAJOR,"Задачи сдавай в командном центре. Важное само всплывёт наверх."],
+		[MAJOR,"Считается только то, что сделал после того, как взял. Без приписок."],
+	],
+	"merchant":[
+		[MAJOR,"Торговец берёт жетоны. Автомат у него честный. Почти."],
+		[SOLDIER,"Почти?"],
+		[MAJOR,"Жетоны всё равно сгорают после вылазки. Крути."],
+	],
+	"challenge":[
+		[MAJOR,"Особая точка пройдена. Оперштаб будет подкидывать такие по одной."],
+	],
+	"headquarters":[
+		[MAJOR,"Штаб стоит. Там технологии поддержки — бери то, что спасает именно тебя."],
+	],
+	"legend":[
+		[MAJOR,"Захватил КП? Легендарное правило — это не карта, это характер. Держи его до конца вылазки."],
+	],
+	"general_down":[
+		[MAJOR,"Генерал повержен. Не верю, но рапорт подпишу."],
+		[SOLDIER,"Можно в отпуск?"],
+		[MAJOR,"Открыт бесконечный рубеж и мир 2. На карточке мира — лестница испытаний. Вот твой отпуск."],
+	],
+	"ladder":[
+		[MAJOR,"Испытание взято. Враги злее, награда жирнее. Дальше — сам решай, насколько ты псих."],
+	],
 }
 var id="intro"
 var step=0
@@ -38,14 +69,26 @@ var reveal:Tween
 ## First call whose condition holds and that was not shown yet; "" when none.
 static func due(hub)->String:
 	var p=Game.progression
-	var order=["intro","first_death","garage","general"]
+	var c=func(key:String)->int:return int(p.counters.get(key,0))
+	# Story order: the first unseen call whose moment has come rings next, one per hub visit.
+	var order=["intro","first_death","first_haul","tasks","merchant","challenge","headquarters","garage","legend","general","general_down","ladder"]
 	for call in order:
 		if "call_"+call in p.seen:continue
+		var ready=false
 		match call:
-			"intro":return call
-			"first_death":if int(p.counters.get("deaths",0))>=1:return call
-			"garage":if "garage" in Game.built_workshops:return call
-			"general":if int(p.counters.get("world_depth_1",0))>=4:return call
+			"intro":ready=true
+			"first_death":ready=c.call("deaths")>=1
+			"first_haul":ready=c.call("extracted")>=1
+			"tasks":ready=not p.claimed.is_empty()
+			"merchant":ready=c.call("merchant_buy")+c.call("slot_play")>=1
+			"challenge":ready=c.call("challenge_any")>=1
+			"headquarters":ready="headquarters" in Game.built_workshops
+			"garage":ready="garage" in Game.built_workshops
+			"legend":ready=c.call("legend_taken")>=1
+			"general":ready=c.call("world_depth_1")>=4
+			"general_down":ready=1 in p.cleared_worlds
+			"ladder":ready=c.call("challenge_w1")>=1
+		if ready:return call
 	return ""
 
 static func mark_seen(call:String):

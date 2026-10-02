@@ -21,12 +21,14 @@ var weapon_levels:Dictionary={}
 var counters:Dictionary={}
 var daily:Dictionary={}  # DailyRun records by UTC date
 var claimed:Array=[]
+## Progress of accepted action quests, counted only after the quest was taken (id → value).
+var quest_progress:Dictionary={}
 var boss_classes:Array=[]
 var telegram:Dictionary={}
 var telegram_options:Array=[]
 var telegram_result="Выбери приказ на следующую вылазку"
 func serialize()->Dictionary:
-	return {"accepted":accepted,"viewed_updates":viewed_updates,"worlds":cleared_worlds,"tracked":tracked,"collapsed":tracker_collapsed,"completed_orders":completed_orders,"order_wait":order_wait,"order_serial":order_serial,"sortie_active":sortie_active,"combat_entered":combat_entered,"sortie_counts":sortie_counts,"recent_sorties":recent_sorties,"seen":seen,"level":level,"xp":xp,"insurance":insurance,"weapons":weapon_levels,"counters":counters,"daily":daily,"claimed":claimed,"boss_classes":boss_classes,"telegram":telegram,"telegram_options":telegram_options,"telegram_result":telegram_result}
+	return {"accepted":accepted,"viewed_updates":viewed_updates,"worlds":cleared_worlds,"tracked":tracked,"collapsed":tracker_collapsed,"completed_orders":completed_orders,"order_wait":order_wait,"order_serial":order_serial,"sortie_active":sortie_active,"combat_entered":combat_entered,"sortie_counts":sortie_counts,"recent_sorties":recent_sorties,"seen":seen,"level":level,"xp":xp,"insurance":insurance,"weapons":weapon_levels,"counters":counters,"daily":daily,"claimed":claimed,"quest_progress":quest_progress,"boss_classes":boss_classes,"telegram":telegram,"telegram_options":telegram_options,"telegram_result":telegram_result}
 func restore(data:Dictionary):
 	cleared_worlds=data.get("worlds",[]).map(func(value):return int(value));tracked=data.get("tracked",["first_alloy","institute_character"]);tracker_collapsed=data.get("collapsed",false)
 	accepted=data.get("accepted",tracked.duplicate());viewed_updates=data.get("viewed_updates",{})
@@ -35,6 +37,11 @@ func restore(data:Dictionary):
 	recent_sorties=data.get("recent_sorties",[]).slice(-3)
 	seen=data.get("seen",[]);level=maxi(1,int(data.get("level",1)));xp=maxi(0,int(data.get("xp",0)));insurance=clampi(int(data.get("insurance",0)),0,10)
 	weapon_levels=data.get("weapons",{});counters=data.get("counters",{});daily=data.get("daily",{});claimed=data.get("claimed",[]);boss_classes=data.get("boss_classes",[]);telegram=data.get("telegram",{});telegram_options=data.get("telegram_options",[]);telegram_result=data.get("telegram_result",telegram_result)
+	quest_progress=data.get("quest_progress",{})
+	# Saves before 0.7 kept no per-quest progress: quests already taken keep what they had.
+	if not data.has("quest_progress"):
+		for q in QUESTS.STORY+QUESTS.INSTITUTE+QUESTS.BRIEFINGS:
+			if q.id in accepted and q.id not in claimed:quest_progress[q.id]=int(counters.get(q.event,0))
 	if not data.has("worlds"):
 		for pair in [[1,"boss_6"],[2,"boss_15"],[3,"boss_16"]]:
 			if int(counters.get(pair[1],0))>0:cleared_worlds.append(pair[0])
@@ -54,6 +61,17 @@ func event(id:String,amount:int=1,maximum:bool=false):
 	if sortie_active and not maximum:sortie_counts[id]=int(sortie_counts.get(id,0))+amount
 	counters[id]=maxi(int(counters.get(id,0)),amount) if maximum else int(counters.get(id,0))+amount
 	if not telegram.is_empty() and telegram.get("active",false) and telegram.event==id:telegram.progress=mini(telegram.goal,telegram.progress+amount)
+	if state_event(id):return
+	for q in QUESTS.STORY+QUESTS.INSTITUTE+QUESTS.BRIEFINGS:
+		if q.event!=id or q.id not in accepted or q.id in claimed:continue
+		var now=int(quest_progress.get(q.id,0))
+		quest_progress[q.id]=maxi(now,amount) if maximum else now+amount
+## One-shot story states (built, owned, opened, cleared) count from the profile, so a step done earlier never
+## blocks the story. Everything else is an action and counts only after the quest is taken.
+const STATE_PREFIXES=["world_clear_","own_","build_","recipe_","enter_world_"]
+const STATE_EVENTS=["vehicle_equipment","health_level","camp_level","shells","weapon_level","boss_classes","enter_endless"]
+static func state_event(id:String)->bool:
+	return id in STATE_EVENTS or STATE_PREFIXES.any(func(prefix):return id.begins_with(prefix))
 func sync():
 	for id in cleared_worlds:event("world_clear_"+str(id),1,true)
 	for kind in Game.garage.owned:event("own_"+kind,1,true)
@@ -73,7 +91,7 @@ func active(chain:Array)->Dictionary:
 		if target<=Game.CLASSES.size():return {"id":"another_class_"+str(target),"text":"Победи гигабосса новым классом","event":"boss_classes","goal":target,"alloy":500+100*(target-2),"xp":400}
 	return {}
 func claim(quest:Dictionary)->bool:
-	if quest.is_empty() or quest.id not in accepted or quest.id in claimed or int(counters.get(quest.event,0))<quest.goal:return false
+	if quest.is_empty() or quest.id not in accepted or quest.id in claimed or count(quest)<quest.goal:return false
 	var was_tracked=quest.id in tracked;tracked.erase(quest.id)
 	claimed.append(quest.id)
 	xp+=int(quest.get("xp",0));Game.earn(int(quest.alloy)+int(quest.get("docs",0))*Game.DOC_ALLOY);Game.save_progress();return true
@@ -131,7 +149,10 @@ func complete_world(id:int):
 		Game.notifications.post("Мир %d завершён\n" % id+("Открыты мир 2 и бесконечный режим" if id==1 else "Открыт мир 3" if id==2 else "Гигабосс уничтожен"),"Командование","important")
 	event("world_clear_"+str(id),1,true)
 	Game.save_progress()
-func count(q:Dictionary)->int:return mini(int(q.goal),int(q.get("progress",0)) if str(q.id).begins_with("order_") else int(counters.get(q.event,0)))
+func count(q:Dictionary)->int:
+	if str(q.id).begins_with("order_"):return mini(int(q.goal),int(q.get("progress",0)))
+	if state_event(str(q.event)):return mini(int(q.goal),int(counters.get(q.event,0)))
+	return mini(int(q.goal),int(quest_progress.get(q.id,0)))
 func quests(filter:String="active")->Array:
 	sync();var result=[]
 	for chain in [QUESTS.STORY,QUESTS.INSTITUTE]:
@@ -141,15 +162,25 @@ func quests(filter:String="active")->Array:
 		else:
 			var q=active(chain)
 			if not q.is_empty():result.append(q)
-	for q in QUESTS.BRIEFINGS:
-		if filter=="completed":
+	if filter=="completed":
+		for q in QUESTS.BRIEFINGS:
 			if q.id in claimed:result.append(q)
-		elif q.id not in claimed and int(counters.get(q.get("requires",""),0))>=int(q.get("threshold",0)):result.append(q)
+	else:
+		var briefing=current_briefing()
+		if not briefing.is_empty():result.append(briefing)
 	if filter=="completed":result.append_array(completed_orders)
 	elif not telegram.is_empty():result.append(telegram)
 	if filter not in ["available","completed"]:result=result.filter(func(q):return q.id in accepted or str(q.id).begins_with("order_"))
 	if filter=="tracked":return result.filter(func(q):return q.id in tracked)
 	return result
+## Operations briefings come one at a time in story order: the taken one until it is handed in, else the
+## first whose requirement is met.
+func current_briefing()->Dictionary:
+	for q in QUESTS.BRIEFINGS:
+		if q.id in accepted and q.id not in claimed:return q
+	for q in QUESTS.BRIEFINGS:
+		if q.id not in claimed and int(counters.get(q.get("requires",""),0))>=int(q.get("threshold",0)):return q
+	return {}
 func toggle_track(id:String):
 	if not quests().any(func(q):return q.id==id):return
 	if id in tracked:tracked.erase(id)
@@ -200,7 +231,7 @@ func mark_seen():
 
 func accept_quest(id:String)->bool:
 	if id in accepted or not quests("available").any(func(q):return q.id==id):return false
-	accepted.append(id)
+	accepted.append(id);quest_progress[id]=0
 	if tracked.size()<3:tracked.append(id)
 	Game.save_progress();return true
 func update_signature(section:String)->String:

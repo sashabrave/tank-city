@@ -653,7 +653,16 @@ func present_call():
 	var VideoCall=preload("res://scripts/ui/video_call.gd")
 	var call=VideoCall.due(self)
 	if call=="" or phase!="combat":present_unlock();return
+	# The call rings in the corner; the player answers when ready, nothing is blocked meanwhile.
+	if root.has_node("IncomingCall"):return
+	var ring=preload("res://scripts/ui/incoming_call.gd").new();ring.call_id=call;root.add_child(ring)
+	ring.answered.connect(func():open_call(call))
+	present_unlock()
+func open_call(call:String):
+	# Answered while an unlock card is open: the call starts right after it.
+	while is_inside_tree() and phase!="combat":await get_tree().process_frame
+	if not is_inside_tree():return
 	phase="intro";dpad.enabled=false;fire_pad.enabled=false
-	var view=VideoCall.new();view.id=call;root.add_child(view)
+	var view=preload("res://scripts/ui/video_call.gd").new();view.id=call;root.add_child(view)
 	view.closed.connect(func():
-		phase="combat";dpad.enabled=true;fire_pad.enabled=true;Game.reset_input();call_deferred("present_unlock"))
+		phase="combat";dpad.enabled=true;fire_pad.enabled=true;Game.reset_input())

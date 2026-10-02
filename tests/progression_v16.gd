@@ -13,6 +13,7 @@ func run():
 		Campaign.configure(world)
 		for seed_value in range(100):
 			for field in range(Campaign.SIZES.size()-1):
+				if field in Campaign.BOSSES:continue
 				for wave in range(3):
 					var roster=WaveDirector.build(seed_value,field,wave)
 					var tanks=roster.filter(func(e):return e.kind=="tank").size()

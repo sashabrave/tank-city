@@ -29,7 +29,7 @@ func sample_progression():
 	for chain in [p.QUESTS.STORY,p.QUESTS.INSTITUTE]:
 		for q in chain:
 			if q.id in p.claimed:continue
-			if int(p.counters.get(q.event,0))>=q.goal:ready.append(q.id)
+			if q.id in p.accepted and p.count(q)>=q.goal:ready.append(q.id)
 			break
 	var state={"object":p.get_instance_id(),"level":p.level,"claimed":p.claimed.size(),"telegram":p.telegram.get("id",""),"weapons":p.weapon_levels.duplicate(),"built":Game.built_workshops.size(),"ready":ready}
 	if not previous.is_empty() and previous.object==state.object:

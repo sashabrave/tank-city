@@ -18,10 +18,14 @@ static func build(seed_value:int,room:int,wave:int,difficulty:int=0,node_id:Stri
 	var tier=content_tier(room)
 	# Squads, not a random pile: pick weighted squads until the wave is full, respecting kind caps.
 	var options=SquadCatalog.pool(tier,wave);var counts={};var types=[];var guard=0
+	# Tank pacing: no tank squads before tanks are introduced; from then on every wave opens with one.
+	var has_tank=func(sq):return sq.members.any(func(m):return m[0]=="tank")
+	if not tanks_in_wave(room,wave):options=options.filter(func(sq):return not has_tank.call(sq))
+	var lead=options.filter(has_tank) if tanks_in_wave(room,wave) else []
 	while types.size()<target and guard<40:
 		guard+=1
-		var allowed=options.filter(func(sq):return sq.members.all(func(m):return int(counts.get(m[0],0))+sq.members.filter(func(o):return o[0]==m[0]).size()<=int(SquadCatalog.CAPS.get(m[0],99))))
-		if allowed.is_empty():allowed=SquadCatalog.pool(1,wave)
+		var allowed=(lead if not lead.is_empty() and guard==1 else options).filter(func(sq):return sq.members.all(func(m):return int(counts.get(m[0],0))+sq.members.filter(func(o):return o[0]==m[0]).size()<=int(SquadCatalog.CAPS.get(m[0],99))))
+		if allowed.is_empty():allowed=SquadCatalog.pool(1,wave).filter(func(sq):return not has_tank.call(sq))
 		var total=0.0
 		for sq in allowed:total+=SquadCatalog.weight(sq,tier)
 		var pick=rng.randf()*total;var squad=allowed.back()

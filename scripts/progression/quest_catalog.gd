@@ -28,24 +28,25 @@ const INSTITUTE=[
 {"id":"comrade","text":"Совместная операция","event":"upgrade_comrade","goal":1,"alloy":170,"docs":1,"xp":140,"hint":"Возьми товарища и улучши его у инструктора."},
 {"id":"airstrike","text":"Поддержка авиации","event":"recipe_airstrike","goal":1,"alloy":220,"docs":2,"xp":180,"hint":"Чертёж авиаудара выпадает на сложных точках ближе к генералу и с него самого."},
 {"id":"shell_all","text":"Все классы","event":"shells","goal":6,"alloy":400,"docs":3,"xp":300,"hint":"Открой все классы бойца."}]
+## Operations briefings in story order; BaseProgression.current_briefing offers one at a time.
 const BRIEFINGS=[
-{"id":"garage_build","text":"Стоянка","event":"build_garage","goal":1,"alloy":70,"docs":0,"xp":65,"requires":"world_depth_1","threshold":2,"hint":"Найди чертёж Стоянки и построй её — в «Строительстве» или в Штабе → Постройки."},
-{"id":"garage_buggy","text":"Личный багги","event":"own_buggy","goal":1,"alloy":100,"docs":0,"xp":90,"requires":"build_garage","threshold":1,"hint":"Добудь чертёж багги и купи машину на стоянке."},
-{"id":"garage_equipment","text":"Оборудование машины","event":"vehicle_equipment","goal":1,"alloy":100,"docs":0,"xp":90,"requires":"own_buggy","threshold":1,"hint":"Донеси чертёж оборудования и купи улучшение на стоянке."},
-{"id":"garage_apc","text":"Бронегруппа","event":"own_apc","goal":1,"alloy":200,"docs":1,"xp":170,"requires":"own_buggy","threshold":1,"hint":"Чертёж БТР выпадает во второй половине пути мира 1. Купи машину на стоянке."},
-{"id":"garage_tank","text":"Тяжёлый прорыв","event":"own_tank","goal":1,"alloy":350,"docs":2,"xp":280,"requires":"own_apc","threshold":1,"hint":"Чертёж танка — самый редкий: сложные точки у генерала и сам генерал."},
-{"id":"hq_upgrade","text":"Технология штаба","event":"upgrade_hq","goal":1,"alloy":120,"docs":0,"xp":110,"requires":"build_headquarters","threshold":1,"hint":"В Штабе купи постоянный уровень технологии."},
 {"id":"visit_mechanic","text":"Полевой механик","event":"visit_vehicle","goal":1,"alloy":50,"docs":0,"xp":40,"requires":"world_depth_1","threshold":1,"hint":"На карте мира 1 механик стоит обычной точкой второго–третьего этапа. Загляни к нему."},
-{"id":"visit_workshop","text":"Мастерская штаба","event":"visit_headquarters","goal":1,"alloy":60,"docs":0,"xp":50,"requires":"world_depth_1","threshold":3,"hint":"Мастерская штаба ждёт на четвёртом–пятом этапе маршрута."},
 {"id":"challenge_cache","text":"Вскрыть тайник","event":"challenge_cache","goal":1,"alloy":80,"docs":1,"xp":60,"requires":"world_depth_1","threshold":1,"hint":"Открой тайник и отбейся от засады ветеранов."},
-{"id":"challenge_hold","text":"Точка удержана","event":"challenge_hold","goal":1,"alloy":80,"docs":1,"xp":60,"requires":"world_depth_1","threshold":1,"hint":"Пройди удержание: стой в зоне, пока шкала не заполнится."},
-{"id":"challenge_survive","text":"Под огнём","event":"challenge_survive","goal":1,"alloy":80,"docs":1,"xp":60,"requires":"world_depth_1","threshold":1,"hint":"Пройди выживание без патронов под артобстрелом."},
-{"id":"challenge_hard","text":"Две звезды","event":"challenge_hard","goal":3,"alloy":200,"docs":2,"xp":150,"requires":"challenge_any","threshold":2,"hint":"Пройди три испытания со звёздами ★★."},
 {"id":"barrels","text":"Бочковой салют","event":"barrel_kills","goal":5,"alloy":70,"docs":0,"xp":50,"requires":"world_depth_1","threshold":1,"hint":"Уничтожь пятерых врагов взрывом бочек."},
+{"id":"visit_workshop","text":"Мастерская штаба","event":"visit_headquarters","goal":1,"alloy":60,"docs":0,"xp":50,"requires":"world_depth_1","threshold":3,"hint":"Мастерская штаба ждёт на четвёртом–пятом этапе маршрута."},
+{"id":"challenge_hold","text":"Точка удержана","event":"challenge_hold","goal":1,"alloy":80,"docs":1,"xp":60,"requires":"world_depth_1","threshold":1,"hint":"Пройди удержание: стой в зоне, пока шкала не заполнится."},
+{"id":"garage_build","text":"Стоянка","event":"build_garage","goal":1,"alloy":70,"docs":0,"xp":65,"requires":"world_depth_1","threshold":2,"hint":"Найди чертёж Стоянки и построй её — в «Строительстве» или в Штабе → Постройки."},
 {"id":"tokens","text":"Коллекционер жетонов","event":"tokens","goal":25,"alloy":80,"docs":0,"xp":60,"requires":"merchant_buy","threshold":1,"hint":"Собери 25 жетонов. Их чаще носят техника и ветераны, командир — всегда."},
+{"id":"challenge_survive","text":"Под огнём","event":"challenge_survive","goal":1,"alloy":80,"docs":1,"xp":60,"requires":"world_depth_1","threshold":1,"hint":"Пройди выживание без патронов под артобстрелом."},
+{"id":"garage_buggy","text":"Личный багги","event":"own_buggy","goal":1,"alloy":100,"docs":0,"xp":90,"requires":"build_garage","threshold":1,"hint":"Добудь чертёж багги и купи машину на стоянке."},
 {"id":"slot_machine","text":"Азартный рядовой","event":"slot_play","goal":5,"alloy":60,"docs":0,"xp":40,"requires":"merchant_buy","threshold":1,"hint":"Сыграй пять раз на игровом автомате торговца."},
 {"id":"tactics","text":"Тактик","event":"behavior_cards","goal":3,"alloy":90,"docs":1,"xp":70,"requires":"world_depth_1","threshold":2,"hint":"Возьми три карты «Тактика» за всё время."},
-{"id":"stack","text":"Специалист","event":"card_stack","goal":5,"alloy":150,"docs":1,"xp":110,"requires":"world_depth_1","threshold":3,"hint":"В одном забеге возьми пять одинаковых карт улучшения."}]
+{"id":"hq_upgrade","text":"Технология штаба","event":"upgrade_hq","goal":1,"alloy":120,"docs":0,"xp":110,"requires":"build_headquarters","threshold":1,"hint":"В Штабе купи постоянный уровень технологии."},
+{"id":"garage_equipment","text":"Оборудование машины","event":"vehicle_equipment","goal":1,"alloy":100,"docs":0,"xp":90,"requires":"own_buggy","threshold":1,"hint":"Донеси чертёж оборудования и купи улучшение на стоянке."},
+{"id":"challenge_hard","text":"Две звезды","event":"challenge_hard","goal":3,"alloy":200,"docs":2,"xp":150,"requires":"challenge_any","threshold":2,"hint":"Пройди три испытания со звёздами ★★."},
+{"id":"garage_apc","text":"Бронегруппа","event":"own_apc","goal":1,"alloy":200,"docs":1,"xp":170,"requires":"own_buggy","threshold":1,"hint":"Чертёж БТР выпадает во второй половине пути мира 1. Купи машину на стоянке."},
+{"id":"stack","text":"Специалист","event":"card_stack","goal":5,"alloy":150,"docs":1,"xp":110,"requires":"world_depth_1","threshold":3,"hint":"В одном забеге возьми пять одинаковых карт улучшения."},
+{"id":"garage_tank","text":"Тяжёлый прорыв","event":"own_tank","goal":1,"alloy":350,"docs":2,"xp":280,"requires":"own_apc","threshold":1,"hint":"Чертёж танка — самый редкий: сложные точки у генерала и сам генерал."}]
 const TELEGRAMS=[
 {"id":"buggy_patrol","vehicle":"buggy","text":"Враги на багги","event":"kills_buggy","goal":12,"alloy":80,"xp":50},
 {"id":"apc_patrol","vehicle":"apc","text":"Враги на БТР","event":"kills_apc","goal":18,"alloy":130,"xp":80},
