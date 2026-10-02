@@ -77,6 +77,7 @@ var room_index=int(Time.get_ticks_usec()/7)%15
 func room_palette()->Dictionary:return preload("res://scripts/biome_catalog.gd").entry(run_seed,room_index)
 var command_screen:ShaderMaterial
 var command_beams:Node3D
+var roadmap_alert:Label3D
 var hq_bench_pos=Vector3(-2,0,3)
 var weapon_bench_pos=Vector3(0,0,3)
 
@@ -248,6 +249,7 @@ func _physics_process(delta):
 		badge.visible=Game.research_unlocks.any(func(id):return id in Game.BUILD_COST.keys() and preload("res://scripts/ui/build_catalog.gd").has_news(id))
 		hint_refresh=.3
 		refresh_command_alert()
+		if is_instance_valid(roadmap_alert):roadmap_alert.visible=not preload("res://scripts/ui/stations/roadmap_station.gd").new().unseen_done().is_empty()
 		var targets=Game.progression.build_targets()
 		for id in build_arrows:
 			if is_instance_valid(build_arrows[id]):build_arrows[id].visible=id not in Game.built_workshops and (id in Game.research_unlocks or id in targets)
@@ -259,6 +261,7 @@ func _physics_process(delta):
 		command_alert.scale=Vector3(2.0-squash,squash,1.0)
 		var pulse=.5+.5*sin(hint_clock*TAU/1.2)
 		command_alert.get_node("Halo").modulate.a=.2+.3*pulse;command_alert.get_node("Glow").light_energy=.9+1.1*pulse
+	if is_instance_valid(roadmap_alert) and roadmap_alert.visible:roadmap_alert.position.y=2.05+absf(sin(hint_clock*3.0))*.12
 	for arrow in build_arrows.values():
 		if is_instance_valid(arrow):arrow.position.y=1.9+(1-cos(hint_clock*TAU/4.8))*.18
 	if is_instance_valid(build_menu):
@@ -303,7 +306,8 @@ func _physics_process(delta):
 ## Uniform locker on the old bonus-bench spot by the back wall.
 const WARDROBE_POS=Vector3(-3,0,-1)
 ## «Развитие заставы»: the meta roadmap board by the back wall.
-const ROADMAP_POS=Vector3(1,0,-2)
+## One cell forward of the back wall so the truss does not hide it (T-088).
+const ROADMAP_POS=Vector3(1,0,-1)
 func build_roadmap():
 	var board=Node3D.new();board.name="Roadmap";add_child(board);board.position=ROADMAP_POS
 	var wood=Color("6d5a40");var cork=Color("b89a6a")
@@ -318,6 +322,8 @@ func build_roadmap():
 			var color=Color("e8dcc0") if i<2-row%2 else Color("f2a33a") if i==2-row%2 else Color("9c8f74")
 			Visuals.box(board,Vector3(-.45+i*.3,y,.07),Vector3(.18,.14,.01),color)
 	Visuals.label3d(board,"Развитие заставы",Vector3(0,2.0,0),Color("dcf6ec"),22)
+	# A reached goal not seen yet: an orange «!» hops over the board until the station is opened.
+	roadmap_alert=Visuals.label3d(board,"!",Vector3(.62,2.05,0),UiKit.ORANGE,64);roadmap_alert.outline_size=12;roadmap_alert.name="RoadmapAlert"
 	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Развитие заставы",ROADMAP_POS,1.3,func():return not mounted)
 func build_wardrobe():
 	var locker=Node3D.new();locker.name="Wardrobe";add_child(locker);locker.position=WARDROBE_POS
@@ -492,7 +498,7 @@ func hub_free(p: Vector2i) -> bool:
 	if p.x< -4 or p.y< -2 or p.y>4:return false
 	# Command centre (left edge), crates by the back wall, the range pad and the arsenal spot. The retired
 	# workbench cells (character at 0,-1 and bonuses at -3,-1) are walkable floor now.
-	if p in [Vector2i(-4,0),Vector2i(-4,1),Vector2i(-4,2),Vector2i(0,3),Vector2i(-2,-2),Vector2i(-1,-2),Vector2i(-3,-1),Vector2i(1,-2)]:return false
+	if p in [Vector2i(-4,0),Vector2i(-4,1),Vector2i(-4,2),Vector2i(0,3),Vector2i(-2,-2),Vector2i(-1,-2),Vector2i(-3,-1),Vector2i(1,-1)]:return false
 	if not mounted and training_tank.visible and Vector2i(roundi(training_tank.position.x),roundi(training_tank.position.z))==p:return false
 	return true
 
@@ -634,6 +640,9 @@ func open_station(kind:String):
 	var screen=preload("res://scripts/ui/station_screen.gd").new();screen.name="Station_"+kind;screen.provider=load(STATIONS[kind][1]).new();screen.station_kind=kind
 	build_menu=screen;root.add_child(screen);screen.closed.connect(close_station);screen.changed.connect(refresh)
 	if kind=="wardrobe":screen.changed.connect(refresh_uniform)
+	if kind=="roadmap":
+		screen.provider.mark_seen()
+		if is_instance_valid(roadmap_alert):roadmap_alert.hide()
 
 func nearest_locked() -> String:
 	if mounted:return ""

@@ -6,6 +6,16 @@ func title()->String:return "Развитие заставы"
 func subtitle()->String:return "Что уже сделано и куда идти дальше"
 func tabs()->Array:return [["story","Поход","quests"],["ladder","Испытания","rare"],["base","Застава","build"],["army","Бойцы и техника","fighter"],["arsenal","Арсенал","damage"]]
 func counter(key:String)->int:return int(Game.progression.counters.get(key,0))
+## Reached goals the player has not looked at yet (T-088): the hub board lights up until the station is opened.
+func unseen_done()->Array:
+	var result=[]
+	for tab in tabs():
+		for step in steps(tab[0]):
+			if step[2] and "roadmap:"+str(step[0]) not in Game.progression.seen:result.append(step[0])
+	return result
+func mark_seen():
+	for id in unseen_done():Game.progression.seen.append("roadmap:"+str(id))
+	Game.save_progress()
 func steps(tab:String)->Array:
 	var p=Game.progression
 	match tab:

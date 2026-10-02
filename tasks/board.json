@@ -1098,7 +1098,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-087.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "тут точки обновлений на вкладках / элементах должны быть без обводки",
 			"type": "polish",
 			"version": "0.7.2-pre"
@@ -1111,7 +1111,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-088.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "развитие заставы стенд вынеси на одну клетку вниз, сейчас не видно",
 			"type": "polish",
 			"version": "0.7.2-pre"

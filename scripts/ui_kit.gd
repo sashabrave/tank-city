@@ -63,7 +63,8 @@ static func badge(parent:Control,kind:="news",count:=0,place:="corner")->Panel:
 	var old=parent.get_node_or_null("Badge")
 	if old:old.get_parent().remove_child(old);old.queue_free()
 	var dot=Panel.new();dot.name="Badge";parent.add_child(dot);dot.mouse_filter=Control.MOUSE_FILTER_IGNORE;dot.z_index=1
-	var s=StyleBoxFlat.new();s.bg_color=NOTICE.get(kind,NOTICE.news);s.set_corner_radius_all(10);s.set_border_width_all(2);s.border_color=Color("1b211d")
+	# Plain dot, no outline (T-087).
+	var s=StyleBoxFlat.new();s.bg_color=NOTICE.get(kind,NOTICE.news);s.set_corner_radius_all(10);s.anti_aliasing=true
 	dot.add_theme_stylebox_override("panel",s)
 	dot.size=Vector2(12,12)
 	if count>0:
