@@ -52,7 +52,8 @@
 					"Бонусы на поле больше не лежат вечно: через 25 секунд они исчезают, последние 5 секунд мигая.",
 					"У каждой вылазки своё название сражения по биому: «Битва при Медной роще», «Котёл у Ворчливого пустыря», «Прорыв к Лунному перевалу».",
 					"Сервисные комнаты и торговец: у каждого визита своё настроение света, подвесные лампы с мягкими лучами, а за краем поля угадываются силуэты базы — краны, контейнеры, фермы.",
-					"В сервисных комнатах и у торговца стоит оружейный шкаф: за 30 сплава можно взять любое открытое оружие до конца вылазки."
+					"В сервисных комнатах и у торговца стоит оружейный шкаф: за 30 сплава можно взять любое открытое оружие до конца вылазки.",
+					"У полевого механика можно забрать стоящую машину в следующий бой: багги 60, БТР 110, танк 180 сплава."
 				]
 			},
 			"en": {
@@ -104,7 +105,8 @@
 					"Field bonuses no longer lie forever: they vanish after 25 seconds, blinking for the last 5.",
 					"Every sortie gets its own battle name from its biome: «Battle of Copper Grove», «Pocket at Grumpy Wasteland», «Push to Moon Pass».",
 					"Service rooms and the merchant: each visit has its own light mood, pendant lamps with soft beams, and base silhouettes — cranes, containers, gantries — loom beyond the edge.",
-					"Service rooms and the merchant have a weapon locker: for 30 alloy take any unlocked weapon for the rest of the sortie."
+					"Service rooms and the merchant have a weapon locker: for 30 alloy take any unlocked weapon for the rest of the sortie.",
+					"At the field mechanic you can take the parked vehicle into the next fight: buggy 60, APC 110, tank 180 alloy."
 				]
 			}
 		},

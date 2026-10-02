@@ -6,6 +6,9 @@ var index=2
 var branch="vehicle"
 var vehicle="buggy"
 var locker:Node3D
+## Price to take the mechanic's parked vehicle into the next field (T-011).
+const VEHICLE_PRICES={"buggy":60,"apc":110,"tank":180}
+const PARKED=Vector3(2.2,0,-1.2)
 var avatar: Node3D
 var cell=Vector2i(0,3)
 var destination=Vector3(0,0,3)
@@ -33,6 +36,9 @@ func _ready():
 	if branch=="vehicle":
 		Visuals.model("workbench",self,Vector3(0,0,-1))
 		Visuals.model(vehicle,self,Vector3(2.2,.16,-1.2))
+		# T-011: when the soldier is on foot, the parked vehicle can be taken into the next field for alloy.
+		if not (is_instance_valid(arena.player) and arena.player.kind in GarageCatalog.VEHICLES) and arena.pending_vehicle=="":
+			Visuals.label3d(self,"%s · %d ◈ · E" % [GarageCatalog.VEHICLES.get(vehicle,{}).get("name",vehicle),VEHICLE_PRICES.get(vehicle,80)],Vector3(2.2,1.7,-.4),Color("ffe2a8"),24).name="TakeVehicleLabel"
 		Visuals.label3d(self,"Механик · E",Vector3(0,2,-1),Color("fff0ce"),28)
 	elif branch=="headquarters":
 		Visuals.model("base",self,Vector3(0,0,-1))
@@ -93,6 +99,12 @@ func interact():
 	if is_instance_valid(locker) and locker.near(avatar):
 		Game.reset_input();dpad.clear();dpad.enabled=false
 		locker.open(root,func():Game.reset_input();dpad.clear();dpad.enabled=true);modal=locker.modal;return
+	if branch=="vehicle" and has_node("TakeVehicleLabel") and avatar.position.distance_to(PARKED)<1.5:
+		var price=int(VEHICLE_PRICES.get(vehicle,80))
+		if Game.credits<price:Game.sound("ui_denied",self);return
+		Game.credits-=price;Game.save_progress();arena.pending_vehicle=vehicle;Game.sound("weapon_equip",self)
+		get_node("TakeVehicleLabel").queue_free();Visuals.label3d(self,"Ждёт на старте поля",Vector3(2.2,1.7,-.4),Color("bdf0b0"),24)
+		return
 	if avatar.position.distance_to(Vector3(0,0,-1))>1.8:return
 	Game.reset_input();dpad.clear();dpad.enabled=false
 	if branch=="ability":
