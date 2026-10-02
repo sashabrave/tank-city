@@ -34,7 +34,8 @@
 					"Первый запуск новой сборки быстрее: шейдеры готовятся заранее (около 8 секунд вместо 19).",
 					"Во дворе: E у машины сажает в неё, а меню стоянки открывается у отдельного терминала рядом.",
 					"Между волнами время не замирает: бонусы долетают, можно стрелять и пользоваться способностями.",
-					"Неготовая способность отвечает мягким глухим звуком."
+					"Неготовая способность отвечает мягким глухим звуком.",
+					"Счётчик валют: больше воздуха между иконкой и числом, а при появлении жетонов блок плавно раздвигается."
 				]
 			},
 			"en": {
@@ -68,7 +69,8 @@
 					"The first launch of a new build is faster: shaders are prepared in advance (about 8 seconds instead of 19).",
 					"In the yard: E at the vehicle boards it, and the motor pool menu opens at a separate terminal next to it.",
 					"Between waves time does not freeze: bonuses keep falling, and you can shoot and use abilities.",
-					"An ability that isn't ready answers with a soft, dull thud."
+					"An ability that isn't ready answers with a soft, dull thud.",
+					"Currency strip: more space between icon and number, and it widens smoothly when tokens appear."
 				]
 			}
 		},

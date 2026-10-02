@@ -384,7 +384,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-031.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "общий счетчки валют, дай чуть пространства иконке от текста, сделай этот блок адаптивным по ширине-высоте,",
 			"type": "polish",
 			"version": "0.7.1-pre"

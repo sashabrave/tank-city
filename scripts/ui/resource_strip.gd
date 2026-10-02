@@ -17,7 +17,7 @@ func _ready():
 	layer=90;process_mode=Node.PROCESS_MODE_ALWAYS
 	get_tree().node_added.connect(decorate_currency)
 	panel=UiKit.panel(self,Vector2.ZERO,Vector2(212,38),Color("e4e9dc"));panel.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	label=UiKit.label(panel,"",Vector2(41,3),Vector2(70,32),17)
+	label=UiKit.label(panel,"",Vector2(46,3),Vector2(70,32),17)
 	pickup_targets["alloy"]=UiKit.icon(panel,"alloy",Vector2(10,4),Vector2(30,30))
 	document_icon=UiKit.icon(panel,"documents",Vector2(114,4),Vector2(30,30))
 	pickup_targets["documents"]=pickup_targets["alloy"]
@@ -49,14 +49,16 @@ func _process(_delta):
 	label.size.x=maxf(35,font.get_string_size(label.text,HORIZONTAL_ALIGNMENT_LEFT,-1,17).x+8)
 	# Documents were merged into alloy in 0.7; the strip keeps alloy and run tokens only.
 	document_icon.visible=false;documents.visible=false
-	panel.size.x=label.position.x+label.size.x+10
+	# T-031: a little air between each icon and its number; the strip grows smoothly when tokens appear.
+	var target=label.position.x+label.size.x+12
 	var run_value=run_tokens()
 	token_icon.visible=run_value>=0;tokens.visible=run_value>=0
 	if run_value>=0:
 		Texts.set_text(tokens,str(run_value));tokens.vertical_alignment=VERTICAL_ALIGNMENT_CENTER
-		token_icon.position.x=panel.size.x+4;tokens.position.x=token_icon.position.x+32
+		token_icon.position.x=target+6;tokens.position.x=token_icon.position.x+36
 		tokens.size.x=maxf(24,font.get_string_size(tokens.text,HORIZONTAL_ALIGNMENT_LEFT,-1,17).x+8)
-		panel.size.x=tokens.position.x+tokens.size.x+10
+		target=tokens.position.x+tokens.size.x+12
+	panel.size.x=lerpf(panel.size.x,target,minf(1.0,_delta*14.0)) if absf(panel.size.x-target)>.5 else target
 	panel.position.x=(get_viewport().get_visible_rect().size.x-panel.size.x)*.5
 
 func change(amount:int,documents:bool):
