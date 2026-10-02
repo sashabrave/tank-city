@@ -471,7 +471,9 @@ func spawn_actor(kind: String, cell: Vector2i, owned: bool, allied=false,rank: i
 			for x in range(1,grid_size-1):
 				if not walls.has(Vector2i(x,band)) and not terrain.movement_blocked_at_cell(Vector2i(x,band)) and not trenches.has(Vector2i(x,band)) and absi(x-cell.x)<=maxi(3,int(grid_size*.2)):options.append(Vector2i(x,band))
 			if not options.is_empty():actor.route_points.append(options[combat_rng.randi_range(0,options.size()-1)])
-	if kind=="soldier" and not owned and not trenches.is_empty() and combat_rng.randf()<.35:
+	if not owned and not allied:
+		actor.aim_delay_time=Professionalism.of(self,"aim_delay");actor.pause_scale=Professionalism.of(self,"pause")
+	if kind=="soldier" and not owned and not trenches.is_empty() and combat_rng.randf()<Professionalism.of(self,"trench_share"):
 		actor.route_points=[trenches.keys()[combat_rng.randi_range(0,trenches.size()-1)]]
 	if kind=="drone":actor.flank=-1 if cell.x<grid_size/2 else 1
 	preload("res://scripts/status_fx.gd").of(actor)

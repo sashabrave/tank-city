@@ -21,7 +21,9 @@
 					"Значки эффектов бойца показывают остаток времени закраской по кругу, как у способностей. «Десант», «Выдержка» и «Рывок» больше не висят на экране после окончания.",
 					"Планшет → Снаряжение: новый блок «Состояние» с активными эффектами, их таймерами и эффектами пуль этой вылазки.",
 					"Характеристики бойца сгруппированы (огонь, живучесть, способности, спецпатроны, разведка, тыл), занимают меньше места, нулевые строки скрыты.",
-					"Новые портреты и миниатюры классов (набор GPT): пропорции как у игровых бойцов, крупная голова и короткие лапы."
+					"Новые портреты и миниатюры классов (набор GPT): пропорции как у игровых бойцов, крупная голова и короткие лапы.",
+					"Враги набираются опыта по ходу мира: в первых комнатах они целятся дольше (перед выстрелом виден блик у ствола), отдыхают между перебежками, реже сидят в окопах и реже штурмуют. К последним комнатам всё быстрее и злее. Середина мира как раньше.",
+					"После каждого зачищенного поля боец восстанавливает 1 здоровья."
 				]
 			},
 			"en": {
@@ -42,7 +44,9 @@
 					"Hero effect icons show the time left as a circular fill, like abilities. «Landing», «Opening shot» and «Dash» no longer stay on screen after they end.",
 					"Tablet → Equipment: a new «State» block with active effects, their timers and this sortie's bullet effects.",
 					"Hero stats are grouped (fire, survival, abilities, special ammo, recon, logistics), take less room, and zero rows are hidden.",
-					"New class portraits and miniatures (GPT set): proportions match the in-game soldiers, big head and short legs."
+					"New class portraits and miniatures (GPT set): proportions match the in-game soldiers, big head and short legs.",
+					"Enemies gain experience through a world: in the first rooms they aim longer (a glint at the muzzle warns of the shot), rest between dashes, use trenches and storm less. By the last rooms they are faster and meaner. The middle of the world plays as before.",
+					"After each cleared field the soldier restores 1 health."
 				]
 			}
 		},

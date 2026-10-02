@@ -60,6 +60,12 @@ var brain_cooldown = 0.0
 var burst_steps = 0.0
 var burst_index = 0
 var movement_pause = 0.0
+## Professionalism (scripts/combat/professionalism.gd), fixed per room at spawn: seconds from lining up to the
+## first shot, and the multiplier of rests between dashes. Allies keep 0 / 1.
+var aim_delay_time=0.0
+var pause_scale=1.0
+var aim_hold=0.0
+var aim_glint:MeshInstance3D
 var invulnerable = 0.0
 var dead = false
 var elite=false # Marks every room commander for existing combat AI.
@@ -247,7 +253,7 @@ func _physics_process(delta):
 				var steps=2 if kind in ["apc","grenadier"] or (kind=="soldier" and burst_index%2==1) else 1
 				if burst_steps>=steps and assault_time<=0:
 					burst_steps=0;burst_index+=1
-					movement_pause={"soldier":.8,"apc":1.15,"tank":1.5,"boss":1.8,"drone":.65,"grenadier":1.1,"shield":1.0}[kind]*.8+arena.combat_rng.randf_range(0,.2)
+					movement_pause={"soldier":.8,"apc":1.15,"tank":1.5,"boss":1.8,"drone":.65,"grenadier":1.1,"shield":1.0}[kind]*.8*pause_scale+arena.combat_rng.randf_range(0,.2)
 		if kind == "soldier": model.position.y = absf(sin(Time.get_ticks_msec()*.016))*.015
 	else: model.position.y = 0
 	if not moving:arena.terrain.begin_slide(self)
@@ -271,9 +277,10 @@ func _physics_process(delta):
 		return
 	if not player_owned and kind=="buggy":
 		var aim=arena.enemy_aim(self)
+		track_aim(aim,delta)
 		if aim!=Vector2i.ZERO:
 			set_facing(aim)
-			if shoot() and aim==Vector2i.DOWN and cell.x==arena.base_cell.x:fire_cooldown=2.4
+			if aimed_shot() and aim==Vector2i.DOWN and cell.x==arena.base_cell.x:fire_cooldown=2.4
 		elif not moving:
 			brain_cooldown-=delta
 			if brain_cooldown>0:return
@@ -298,18 +305,39 @@ func _physics_process(delta):
 		if Game.wants_fire() and arena.phase=="combat": shoot()
 		if Game.wants_interact(): arena.interact()
 	else:
+		var lined_up=arena.enemy_aim(self)
+		track_aim(lined_up,delta)
 		brain_cooldown -= delta
 		if not moving and brain_cooldown <= 0:
 			brain_cooldown = .04 if uses_quarter_steps() else .16
-			var aim = arena.enemy_aim(self)
+			var aim = lined_up
 			if aim != Vector2i.ZERO:
 				set_facing(aim)
-				shoot()
+				aimed_shot()
 			else:
 				var dir = arena.path_direction(self)
 				set_facing(dir)
 				if turn_left == 0: try_move(dir)
-		if turn_left == 0 and arena.enemy_aim(self) == facing: shoot()
+		if turn_left == 0 and lined_up == facing: aimed_shot()
+
+## Professionalism: time spent lined up on a target. It drains fast when the line breaks, so a hero who
+## steps out of the line gets a fresh aim delay; a glint at the muzzle telegraphs the shot.
+func track_aim(aim:Vector2i,delta:float):
+	if aim!=Vector2i.ZERO:aim_hold+=delta
+	else:aim_hold=maxf(0,aim_hold-delta*3.0)
+	var aiming=aim_delay_time>0 and aim!=Vector2i.ZERO and aim_hold<aim_delay_time
+	if aiming and not is_instance_valid(aim_glint):
+		aim_glint=MeshInstance3D.new();aim_glint.name="AimGlint";var ball=SphereMesh.new();ball.radius=.07;ball.height=.14;ball.radial_segments=8;ball.rings=4;aim_glint.mesh=ball
+		aim_glint.material_override=Visuals.material(Color("ffe39a"),true);aim_glint.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF;add_child(aim_glint)
+	if is_instance_valid(aim_glint):
+		aim_glint.visible=aiming
+		if aiming:
+			var t=aim_hold/aim_delay_time
+			aim_glint.position=Vector3(facing.x,0,facing.y)*.38*footprint+Vector3.UP*(.55 if uses_quarter_steps() else .45)
+			aim_glint.scale=Vector3.ONE*(.4+t*1.1)
+func aimed_shot()->bool:
+	if aim_hold<aim_delay_time:return false
+	return shoot()
 
 func uses_quarter_steps()->bool:
 	return player_owned or kind in ["soldier","grenadier","sniper","shield"]

@@ -2,6 +2,8 @@ extends RefCounted
 ## Flow system. Owns rules; Arena remains the scene coordinator.
 signal changed(previous:String,current:String)
 const PHASES=["countdown","combat","paused","upgrade","map","result"]
+## HP restored after each cleared field (campaign and endless).
+const ROOM_HEAL=1.0
 var current="countdown"
 var arena
 
@@ -69,6 +71,12 @@ func finish_wave():
 	arena.room.upgrade_offers.clear()
 	if arena.room.next_is_room:
 		arena.room.room_cleared=true
+		# A breather after every cleared field: the soldier patches up 1 HP (never above the maximum).
+		var patched=minf(ROOM_HEAL,arena.run.soldier_max_hp-arena.run.soldier_hp)
+		if patched>0:
+			arena.run.soldier_hp+=patched
+			if is_instance_valid(arena.room.player) and arena.room.player.kind=="soldier":arena.room.player.hp=arena.run.soldier_hp;arena.room.player.refresh_health()
+			arena.toast("Передышка · +%s здоровья" % UiKit.number(patched))
 		var reward=Balance.CONFIG.economy.clear_reward+Campaign.progress_index(arena.room.room_index)*Balance.CONFIG.economy.clear_reward_per_room
 		Game.earn(reward);arena.run.earned+=reward
 		place_flag("Награда · +%d ◈" % reward)

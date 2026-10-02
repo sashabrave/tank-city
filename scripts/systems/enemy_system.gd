@@ -411,7 +411,7 @@ func attention_tick(actor,delta:float):
 	var stalled=actor.idle_progress_time>=6 and actor.cell.y<arena.grid_size-4
 	if not stalled and actor.attention_timer>0:return
 	actor.attention_timer=arena.combat_rng.randf_range(10,16)
-	if not stalled and arena.combat_rng.randf()>.4:return
+	if not stalled and arena.combat_rng.randf()>Professionalism.of(arena,"assault_chance"):return
 	actor.assault_time=arena.combat_rng.randf_range(8,11);actor.trench_return_delay=actor.assault_time+6
 	actor.idle_progress_time=0;actor.route_points.clear();actor.occupying_trench=false;actor.hidden_in_trench=false;actor.model.position.y=0
 	actor.movement_pause=0;actor.brain_cooldown=0;actor.trench_time=0
