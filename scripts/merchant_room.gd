@@ -93,11 +93,11 @@ func _physics_process(delta):
 		if Input.is_action_just_pressed("pause"):close_shop()
 		return
 	if Input.is_action_just_pressed("pause"):preload("res://scripts/ui/pause_tablet.gd").open(self,Callable(),func():hub_requested.emit());return
+	# The kit model walks only when told (T-045): idle while standing, walk cycle while moving.
+	if "preview_moving" in avatar:avatar.preview_moving=moving;avatar.preview_speed=3.4
 	if moving:
 		avatar.position=avatar.position.move_toward(destination,3.8*delta)
 		if avatar.position.distance_to(destination)<.01:moving=false
-	# The kit model walks only when told (T-045): idle while standing, walk cycle while moving.
-	if "preview_moving" in avatar:avatar.preview_moving=moving;avatar.preview_speed=3.4
 	else:
 		var dir=Game.direction()
 		if dir!=Vector2i.ZERO:
