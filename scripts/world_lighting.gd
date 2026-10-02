@@ -82,6 +82,12 @@ func apply():
 	environment.ssao_intensity=float(style.ssao)
 	environment.ssao_detail=.6
 	environment.ssao_light_affect=.15
+	# T-063: «Кино» adds stronger contact shadows and bounced colour light (SSIL); other presets skip the cost.
+	var cinema=str(Settings.values.get("graphics_preset","standard"))=="cinema" and advanced and cozy
+	environment.ssil_enabled=cinema
+	if cinema:
+		environment.ssao_intensity*=1.35;environment.ssao_radius=.9
+		environment.ssil_radius=4.0;environment.ssil_intensity=.8;environment.ssil_sharpness=.98;environment.ssil_normal_rejection=1.0
 	# Glow picks only bright highlights (metal glints, gold, lamps) instead of washing the frame.
 	environment.glow_enabled=option.call("glow")
 	environment.glow_intensity=float(style.glow)

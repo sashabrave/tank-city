@@ -797,7 +797,7 @@
 			"note": "Средняя цена по производительности, только Forward+. После замера FPS.",
 			"type": "polish",
 			"priority": 3,
-			"status": "backlog",
+			"status": "review",
 			"version": "0.8",
 			"created": "2026-10-02",
 			"source": "chat",
