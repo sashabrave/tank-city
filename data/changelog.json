@@ -21,7 +21,8 @@
 					"Кнопка паузы в бою показывает значок паузы вместо букв «Ii».",
 					"Карточки усилений стали чище: крупная иконка, по центру большое изменение, под ним параметр — старое значение зачёркнуто, рядом итоговое. Карточки в ряду выровнены по общим линиям.",
 					"Новый приказ оперштаба — три плитки в ряд: сложность, иконка цели, задача, срок и награда. Экран задач больше не вылезает за край, когда меню свёрнуто.",
-					"Тир на площадке снова работает: пули, выпущенные во дворе, долетают до манекена, а не исчезают у края ангара."
+					"Тир на площадке снова работает: пули, выпущенные во дворе, долетают до манекена, а не исчезают у края ангара.",
+					"В шкафу в хабе новая вкладка «Модель игрока»: можно примерить экспериментальных котов — ручной сборки, Tripo и Hunyuan. Внешний вид, на бой не влияет."
 				]
 			},
 			"en": {
@@ -42,7 +43,8 @@
 					"The pause button in battle shows a pause icon instead of the letters «Ii».",
 					"Upgrade cards are cleaner: a big icon, the change large in the centre, the parameter below with the old value struck through next to the resulting one. Cards in a row share common lines.",
 					"A new order from operations is three tiles in a row: difficulty, goal icon, task, deadline and reward. The task screen no longer spills past its edge when the menu is collapsed.",
-					"The yard range works again: shots fired in the yard reach the dummy instead of vanishing at the hangar edge."
+					"The yard range works again: shots fired in the yard reach the dummy instead of vanishing at the hangar edge.",
+					"The hub wardrobe has a new «Player model» tab: try the experimental cats — hand-built, Tripo and Hunyuan. Looks only, no effect on combat."
 				]
 			}
 		},

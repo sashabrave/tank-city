@@ -2556,3 +2556,13 @@ III · элитные командиры, +1 враг · +100%	III · elite comm
 Топ	Top
 Вниз	Down
 Вверх	Up
+Модель игрока	Player model
+Кот v6	Cat v6
+Кот ручной сборки	Hand-built cat
+Кот Tripo	Tripo cat
+Кот Hunyuan	Hunyuan cat
+Модель выбрана	Model selected
+Модель игры. Окрас и форма меняются, как раньше.	The game's model. Coat and uniform change as before.
+Собран в Blender по листам деталей. Голова крупнее, рюкзак за спиной. Форма из шкафа применяется.	Built in Blender from part sheets. Bigger head, backpack on the back. The wardrobe uniform applies.
+Опыт с генератором Tripo: своя запечённая текстура, форма из шкафа не применяется.	Tripo generator experiment: its own baked texture, the wardrobe uniform does not apply.
+Опыт с генератором Hunyuan3D: своя текстура и рюкзак, форма из шкафа не применяется.	Hunyuan3D generator experiment: its own texture and backpack, the wardrobe uniform does not apply.

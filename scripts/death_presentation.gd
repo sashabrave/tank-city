@@ -22,7 +22,7 @@ static func play(arena,base_destroyed:bool,done:Callable):
 			tween.tween_property(bit,"position",target,.55);tween.tween_property(bit,"rotation",Vector3(rng.randf()*3,rng.randf()*3,rng.randf()*3),.55)
 		Game.sound("vehicle_destroy",arena)
 	else:
-		var fallen=Visuals.model("soldier",arena,focus)
+		var fallen=Visuals.model("soldier",arena,focus,"cat",true)
 		Visuals.equip_model(fallen,arena.weapon)
 		if is_instance_valid(arena.player):
 			fallen.rotation.y=arena.player.rotation.y;arena.player.hide()

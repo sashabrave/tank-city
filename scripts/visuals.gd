@@ -6,8 +6,9 @@ static var brushed_roughness:ImageTexture
 const INFANTRY=["soldier","grenadier","shield","sniper","rpg_soldier"]
 const VEHICLES=["tank","apc","buggy","drone","flyer","boss"]
 ## species "dog" swaps infantry for the enemy dogs; vehicles and props ignore it.
-static func model(kind: String, parent: Node3D, pos = Vector3.ZERO, species:String="cat") -> Node3D:
-	if kind in ["soldier","grenadier","shield","sniper","rpg_soldier","boss","tank","apc","buggy","drone","flyer","mortar"] or kind.begins_with("weapon_"):return kit_model(kind,parent,pos,species)
+## player=true: the player's own soldier, which wears the cat mesh chosen in the wardrobe (PlayerModels).
+static func model(kind: String, parent: Node3D, pos = Vector3.ZERO, species:String="cat", player:=false) -> Node3D:
+	if kind in ["soldier","grenadier","shield","sniper","rpg_soldier","boss","tank","apc","buggy","drone","flyer","mortar"] or kind.begins_with("weapon_"):return kit_model(kind,parent,pos,species,player)
 	var environment_kind="bench_mechanic" if kind=="workbench" else kind
 	var environment_path=("res://assets/models/cover_v1/" if kind in ["net","trench"] else "res://assets/models/concrete_v1/" if kind.begins_with("concrete_") else "res://assets/models/biome_props/" if kind.begins_with("biome_") else "res://assets/models/environment_v7/")+environment_kind.trim_prefix("biome_")+".glb"
 	var obj = load(environment_path if ResourceLoader.exists(environment_path) else "res://assets/models/" + kind + ".glb").instantiate()
@@ -19,7 +20,7 @@ static func model(kind: String, parent: Node3D, pos = Vector3.ZERO, species:Stri
 	if environment_kind.begins_with("bench_"):obj.rotation.y=PI
 	return obj
 
-static func kit_model(kind:String,parent:Node3D,pos:Vector3,species:String="cat")->Node3D:
+static func kit_model(kind:String,parent:Node3D,pos:Vector3,species:String="cat",player:=false)->Node3D:
 	# The mortar has its own states (warning, lob, reload) on top of the kit wrapper.
 	var wrapper=load("res://scripts/mortar_model.gd" if kind=="mortar" else "res://scripts/kit_model.gd").new()
 	wrapper.kind=kind
@@ -28,7 +29,9 @@ static func kit_model(kind:String,parent:Node3D,pos:Vector3,species:String="cat"
 	# v6: low-poly chibi cat infantry and weapons (tools/build_infantry_v6.py, build_weapons_v6.py).
 	# Vehicles: kit_v4 geometry re-dressed with v6 materials (tools/rematerial_kit_v4.py).
 	var family="infantry_v6" if kind in INFANTRY or kind.begins_with("weapon_") else "vehicles_v6" if kind in VEHICLES or kind=="mortar" else "kit_v4"
-	var art=load("res://assets/models/"+family+"/"+("dog_" if dog else "")+kind+".glb").instantiate()
+	var art_path="res://assets/models/"+family+"/"+("dog_" if dog else "")+kind+".glb"
+	if player and kind=="soldier" and not dog:art_path=PlayerModels.path(Game.player_model)
+	var art=load(art_path).instantiate()
 	wrapper.add_child(art)
 	# One authored cell is .93 units.
 	art.scale=Vector3.ONE/.93*model_scale(kind)

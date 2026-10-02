@@ -107,11 +107,7 @@ func _ready():
 		if x in [4,5,6]:continue
 		var style=preload("res://scripts/concrete_style.gd").pick(17041,Vector2i(x,-3))
 		Visuals.model(preload("res://scripts/concrete_style.gd").asset(style),self,Vector3(x,0,-3))
-	avatar=Visuals.model("soldier",self,Vector3(2,0,2))
-	Visuals.equip_model(avatar,Game.selected_weapon)
-	preload("res://scripts/world_lighting.gd").headlights(avatar)
-	avatar.rotation.y=PI
-	Visuals.ring(avatar,Color("fac47a"),.44)
+	spawn_avatar(Vector3(2,0,2),PI)
 	# Cool rim light from behind and above keeps the soldier readable against the floor.
 	dummy=Node3D.new();add_child(dummy);dummy.position=YARD_DUMMY
 	Visuals.model("training_dummy",dummy).scale=Vector3.ONE*1.3  # tools/build_yard_props.py; stands apart in the range pen
@@ -327,7 +323,18 @@ func build_wardrobe():
 	Visuals.box(hanger,Vector3(0,.82,0),Vector3(.34,.32,.13),Color("4a5039"))
 	Visuals.label3d(locker,"Шкаф",Vector3(0,2.15,0),Color("dcf6ec"),22)
 	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Шкаф",WARDROBE_POS,1.3,func():return not mounted)
+## Player soldier in the hub: the wardrobe's cat model with the selected weapon, lamp and ring.
+func spawn_avatar(pos:Vector3,yaw:float):
+	avatar=Visuals.model("soldier",self,pos,"cat",true)
+	avatar.set_meta("player_model",Game.player_model)
+	Visuals.equip_model(avatar,Game.selected_weapon)
+	preload("res://scripts/world_lighting.gd").headlights(avatar)
+	avatar.rotation.y=yaw
+	Visuals.ring(avatar,Color("fac47a"),.44)
 func refresh_uniform():
+	if is_instance_valid(avatar) and avatar.get_meta("player_model","")!=Game.player_model:
+		var pos=avatar.position;var yaw=avatar.rotation.y;var shown=avatar.visible
+		avatar.queue_free();spawn_avatar(pos,yaw);avatar.visible=shown
 	if is_instance_valid(uniform_preview):
 		var camo=Skins.camo(Game.skin);uniform_preview.material_override=Visuals.material(camo.get("camo_a",Color("5d6147")))
 	if is_instance_valid(avatar) and avatar.has_method("apply_palette"):avatar.apply_palette()

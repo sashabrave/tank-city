@@ -147,7 +147,7 @@ func _ready():
 		var vehicle_stats=GarageCatalog.stats(kind,arena,vehicle_origin,vehicle_zone)
 		max_hp=vehicle_stats.hp;hp=max_hp;damage=vehicle_stats.damage;fire_interval=vehicle_stats.interval;speed=vehicle_stats.speed
 	if player_owned:speed=minf(speed,Balance.speed_cap())
-	model = Visuals.model(BossCatalog.encounter(arena.run_seed,arena.room_index).model if kind=="boss" else EnemyLoadouts.model_for(kind,enemy_weapon),self,Vector3.ZERO,"cat" if player_owned or allied else "dog")
+	model = Visuals.model(BossCatalog.encounter(arena.run_seed,arena.room_index).model if kind=="boss" else EnemyLoadouts.model_for(kind,enemy_weapon),self,Vector3.ZERO,"cat" if player_owned or allied else "dog",player_owned)
 	if player_owned or UnitKinds.is_vehicle(kind):preload("res://scripts/world_lighting.gd").headlights(model,kind!="soldier")
 	if kind=="shield":
 		shield_visual=Visuals.named_part(model,"shield_panel_pivot");shield_rest=shield_visual.basis
