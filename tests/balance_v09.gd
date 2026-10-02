@@ -1,4 +1,5 @@
 extends "res://tests/balance_v08.gd"
+## test-timeout: 420 (simulates a long run)
 var stage_limit=15
 func _ready():
 	Game.save_enabled=false;Game.sound_enabled=false;Game.reset_upgrades()
@@ -16,6 +17,9 @@ func advance():
 func _physics_process(_delta):
 	if finished:return
 	ticks+=1
+	# The exit waits for the commander's chest (T-044): the bot takes the chest without picking a card.
+	if arena.room.has_meta("pending_flag"):
+		for chest in arena.room.pickups.filter(func(c):return c.kind=="recipe_draft"):arena.reward.consume_chest(chest)
 	if arena.phase=="result" or (arena.room_index==stage_limit and arena.boss_defeated) or ticks>130000:
 		finished=true;print("BALANCE09 seed=%d stage=%d kills=%d time=%.1f hp=%.2f base=%.2f earned=%d clear=%s timeout=%s" % [seed_value,arena.room_index+1,arena.kills,arena.elapsed,arena.soldier_hp,arena.base_hp,arena.earned,arena.boss_defeated,ticks>130000]);get_tree().quit();return
 	if arena.phase=="countdown":arena.countdown=minf(arena.countdown,.1)

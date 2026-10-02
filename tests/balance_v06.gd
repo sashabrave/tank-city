@@ -1,4 +1,5 @@
 extends "res://tests/playthrough.gd"
+## test-timeout: 420 (simulates a long run)
 var tier=0
 var seed_value=42
 var service_choice="vehicle"

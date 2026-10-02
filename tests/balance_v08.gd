@@ -1,4 +1,5 @@
 extends "res://tests/playthrough.gd"
+## test-timeout: 420 (simulates a long run)
 var tier=0
 var seed_value=42
 var service_choice="vehicle"
@@ -19,6 +20,9 @@ func _ready():
 func _physics_process(_delta):
 	if finished:return
 	ticks+=1
+	# The exit waits for the commander's chest (T-044): the bot takes the chest without picking a card.
+	if arena.room.has_meta("pending_flag"):
+		for chest in arena.room.pickups.filter(func(c):return c.kind=="recipe_draft"):arena.reward.consume_chest(chest)
 	if arena.phase=="countdown":arena.countdown=minf(arena.countdown,.1)
 	elif arena.phase=="upgrade" and arena.reward_claimed:
 		var next=arena.room_index+1
