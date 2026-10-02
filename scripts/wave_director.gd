@@ -16,32 +16,28 @@ static func build(seed_value:int,room:int,wave:int,difficulty:int=0,node_id:Stri
 	if node_id!="":rng.seed+=node_id.hash()
 	var target=wave_size(room,wave,difficulty)
 	var tier=content_tier(room)
-	var infantry=["soldier","shield"] if wave==0 else PEOPLE
-	var light=["buggy","apc"] if wave==0 else LIGHT
-	var groups=[{"pool":infantry,"count":target if tier==1 else 3 if tier==2 else 2}]
-	if tier>=2:groups.append({"pool":light,"count":target-3 if tier==2 else 2})
-	if tier==3:groups.append({"pool":HEAVY,"count":mini(6,target-4)})
-	var types=[]
-	for group in groups:
-		var counts={}
-		for i in range(group.count):
-			var candidates=group.pool.filter(func(k):return int(counts.get(k,0))<(1 if k in ["mortar","sniper"] else 3 if k in HEAVY else group.count))
-			var kind=group.pool[posmod(seed_value+room+wave,group.pool.size())] if i==0 else candidates[rng.randi_range(0,candidates.size()-1)]
-			if group.pool==HEAVY and i<2:kind=HEAVY[posmod(seed_value+room+wave+i,2)]
-			if wave==1 and i==0:
-				if group.pool==PEOPLE:kind="sniper" if tier==3 else "grenadier"
-				elif group.pool==LIGHT:kind="mortar"
-			types.append(kind);counts[kind]=int(counts.get(kind,0))+1
-	# Shuffle with this local RNG, preserving preview/combat determinism.
-	for i in range(types.size()-1,0,-1):
-		var j=rng.randi_range(0,i);var swap=types[i];types[i]=types[j];types[j]=swap
+	# Squads, not a random pile: pick weighted squads until the wave is full, respecting kind caps.
+	var options=SquadCatalog.pool(tier,wave);var counts={};var types=[];var guard=0
+	while types.size()<target and guard<40:
+		guard+=1
+		var allowed=options.filter(func(sq):return sq.members.all(func(m):return int(counts.get(m[0],0))+sq.members.filter(func(o):return o[0]==m[0]).size()<=int(SquadCatalog.CAPS.get(m[0],99))))
+		if allowed.is_empty():allowed=SquadCatalog.pool(1,wave)
+		var total=0.0
+		for sq in allowed:total+=SquadCatalog.weight(sq,tier)
+		var pick=rng.randf()*total;var squad=allowed.back()
+		for sq in allowed:
+			pick-=SquadCatalog.weight(sq,tier)
+			if pick<0:squad=sq;break
+		for member in squad.members:
+			if types.size()>=target:break
+			types.append({"type":member[0],"weapon":member[1],"squad":squad.id});counts[member[0]]=int(counts.get(member[0],0))+1
 	var result=[]
-	for type in types:
-		var kind="grenadier" if type=="rpg" else str(type)
+	for entry in types:
+		var type=str(entry.type)
+		var kind="grenadier" if type=="rpg" else type
 		var rank=max_rank(room)
-		var weapon=EnemyLoadouts.BASIC[rng.randi_range(0,3)] if kind=="soldier" else EnemyLoadouts.default_for(kind)
-		if type=="rpg":weapon="rpg"
-		result.append({"kind":kind,"rank":rank,"weapon":weapon})
+		var weapon="rpg" if type=="rpg" else EnemyLoadouts.BASIC[rng.randi_range(0,3)] if entry.weapon=="*" else str(entry.weapon) if entry.weapon!="" else EnemyLoadouts.default_for(kind)
+		result.append({"kind":kind,"rank":rank,"weapon":weapon,"squad":entry.squad})
 	return result
 ## Enemies in one wave: base + field × step + wave + stars (+ endless sectors); vehicle fields have a minimum.
 ## All numbers live in Balance.CONFIG.campaign.
