@@ -37,7 +37,7 @@ func run():
 	var original=Game.save_path;Game.save_path="/tmp/garage_profile.json";Game.save_enabled=true;Game.save_progress();Game.garage=load("res://scripts/garage/state.gd").new();Game.load_progress();Game.save_enabled=false;Game.save_path=original
 	assert(Game.garage.owned.size()==3 and Game.garage.selected=="buggy" and Game.garage.level("buggy","armor")==1)
 	Game.new_recipes.clear();var hub=load("res://scenes/hub.tscn").instantiate();add_child(hub);await get_tree().create_timer(.55).timeout
-	hub.show_garage();await get_tree().create_timer(.15).timeout
+	hub.open_station("garage");await get_tree().create_timer(.15).timeout
 	if DisplayServer.get_name()!="headless":RenderingServer.force_draw();get_viewport().get_texture().get_image().save_png("/tmp/garage_workbench.png")
 	assert(Game.garage.choose("") and Game.garage.starting_vehicle()=="")
 	print("GARAGE PASS: recipes, sequence, prices, base gates, equipment, start mounted, dismount/remount, room carry, captured stock, kill credit, profile and UI")

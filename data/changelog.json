@@ -2,6 +2,30 @@
 	"entries": [
 		{
 			"date": "2026-10-01",
+			"version": "0.6.0",
+			"ru": {
+				"title": "Большое обновление: прочный фундамент",
+				"items": [
+					"Хаб легче: убраны старые скрытые экраны верстаков, которые загружались при каждом входе. Все станции открываются через новые экраны.",
+					"Размер волн, рост силы врагов по полям, здоровье боссов, множители миров и время первого дрона теперь настраиваются в одном ресурсе кампании, а не спрятаны в коде. Поведение игры прежнее.",
+					"Перезарядка вражеского снайпера берётся из его описания, как у остальных врагов.",
+					"Подготовка к новым мирам и врагам: семейства пехоты и техники описаны в одном месте, новый тип врага не ломает награды, карточку поля и паузы между перебежками.",
+					"Удалено около 4 тысяч строк устаревшего кода, сцен и тестов."
+				]
+			},
+			"en": {
+				"title": "Big update: a solid foundation",
+				"items": [
+					"A lighter hub: the old hidden workbench screens that loaded on every visit are gone. Every station opens through the new screens.",
+					"Wave size, enemy growth per field, boss health, world multipliers and the first drone timer are now tuned in one campaign resource instead of being hidden in code. Gameplay is unchanged.",
+					"The enemy sniper's reload is read from its description like every other enemy.",
+					"Ready for new worlds and enemies: infantry and vehicle families live in one place, so a new enemy type no longer breaks rewards, the field card or pauses between dashes.",
+					"About 4 thousand lines of outdated code, scenes and tests removed."
+				]
+			}
+		},
+		{
+			"date": "2026-10-01",
 			"version": "0.5.1",
 			"ru": {
 				"title": "Ящики, фанфары и статистика профиля",

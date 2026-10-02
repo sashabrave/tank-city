@@ -10,12 +10,8 @@ extends Resource
 @export_range(1,5,0.05) var rank_damage:float=1.3
 @export_range(1,5,0.05) var rank_pressure:float=1.2
 @export_group("Боссы — суммарное здоровье")
-@export_range(1,10000,10) var first_boss_health:float=700
-@export_range(1,10000,10) var second_boss_health:float=1100
-@export_range(1,20000,10) var superboss_health:float=1600
 @export_group("Способности и защита")
 @export_range(1,120,0.5) var shield_cooldown:float=32
-@export_range(1,30,0.5) var shield_minimum_cooldown:float=6
 @export_range(0.1,1,0.01) var ability_cooldown_multiplier:float=0.82
 @export_range(0,2,0.01) var ability_power_step:float=0.35
 @export_range(0.1,30,0.1) var minimum_ability_cooldown:float=5

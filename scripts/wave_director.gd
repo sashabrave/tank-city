@@ -1,10 +1,7 @@
 class_name WaveDirector
 extends RefCounted
 static var COST=Balance.CONFIG.wave_costs()
-static var BUDGETS=Balance.CONFIG.campaign.wave_budgets.map(func(v):return [v.x,v.y,v.z])
-static var COUNTS=Balance.CONFIG.campaign.wave_counts.map(func(v):return [v.x,v.y,v.z])
-static var CAPS=Balance.CONFIG.campaign.active_enemy_caps
-const PEOPLE=["soldier","shield","grenadier","sniper"]
+const PEOPLE=["soldier","shield","grenadier","sniper"]  # draw order matters for seeded waves; same set as UnitKinds.INFANTRY
 const LIGHT=["buggy","mortar","apc"]
 const HEAVY=["rpg","tank"]
 const MACHINES=["buggy","apc","mortar","tank"]
@@ -17,9 +14,8 @@ static func build(seed_value:int,room:int,wave:int,difficulty:int=0,node_id:Stri
 	if room in Campaign.BOSSES:return [{"kind":"boss","rank":1}]
 	var rng=RandomNumberGenerator.new();rng.seed=seed_value+room*7919+wave*317+Campaign.world*991+Campaign.cycle*65537
 	if node_id!="":rng.seed+=node_id.hash()
-	var target=4+floori(room*.8)+wave+mini(16,Campaign.cycle*2)+clampi(difficulty,0,2)
+	var target=wave_size(room,wave,difficulty)
 	var tier=content_tier(room)
-	if tier==2:target=maxi(6,target)
 	var infantry=["soldier","shield"] if wave==0 else PEOPLE
 	var light=["buggy","apc"] if wave==0 else LIGHT
 	var groups=[{"pool":infantry,"count":target if tier==1 else 3 if tier==2 else 2}]
@@ -47,6 +43,12 @@ static func build(seed_value:int,room:int,wave:int,difficulty:int=0,node_id:Stri
 		if type=="rpg":weapon="rpg"
 		result.append({"kind":kind,"rank":rank,"weapon":weapon})
 	return result
+## Enemies in one wave: base + field × step + wave + stars (+ endless sectors); vehicle fields have a minimum.
+## All numbers live in Balance.CONFIG.campaign.
+static func wave_size(room:int,wave:int,difficulty:int=0)->int:
+	var t=Balance.CONFIG.campaign
+	var size=t.wave_base_size+floori(room*t.wave_size_per_field)+wave*t.wave_size_per_wave+mini(t.endless_size_cap,Campaign.cycle*t.endless_size_per_sector)+clampi(difficulty,0,2)*t.wave_size_per_star
+	return maxi(t.vehicle_wave_minimum,size) if content_tier(room)==2 else size
 static func generate(seed_value:int,room:int,wave:int,_baseline:Array=[])->Array:return build(seed_value,room,wave).map(func(entry):return entry.kind)
 
 # Content tiers are local to every world, independent of enemy stat ranks.

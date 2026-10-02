@@ -9,13 +9,7 @@ var printer_pos=Vector3(3,0,3)
 var printer_model:Node3D
 var avatar: Node3D
 var root: Control
-var station: Panel
 var credits: Label
-var health_button: Button
-var damage_button: Button
-var reset_button: Button
-var luck_button: Button
-var turret_button: Button
 var start_button: Button
 var status: Label
 var title: TextureRect
@@ -40,9 +34,6 @@ var turn_from=0.0
 var turn_to=0.0
 var phase="combat"
 var projectiles: Array=[]
-var workshop_tab=0
-var equip_slot=0
-var ability_page=0
 var hub_skills:Control
 var training_barriers:Array=[]
 ## Outdoor yard to the right of the hangar, through the gap between the racks (row y=0): the parking spot
@@ -65,15 +56,10 @@ var bench_signature:Array=[]
 var bench_dots:Dictionary={}
 var command_model:Node3D
 var training_ability_cooldown=0.0
-var tab_buttons: Array=[]
-var workshop_content: Control
 var build_tab=0
 var recipe_tab="weapon"
 var build_menu: Control
 var bench_visuals: Node3D
-var weapon_station: Panel
-var bonus_station: Panel
-var bonus_content: Control
 var bonus_bench_pos=Vector3(-3,0,-1)
 var hint_clock=0.0
 var hint_refresh=0.0
@@ -164,35 +150,8 @@ func build_ui():
 	start_button=root.get_node("StartButton");start_button.pressed.connect(launch)
 	root.get_node("SettingsButton").hide()
 	board_button=root.get_node("InteractButton");board_button.pressed.connect(interact);board_button.hide()
-	station=root.get_node("CharacterWorkshop");weapon_station=root.get_node("WeaponWorkshop");bonus_station=root.get_node("BonusWorkshop")
-	for panel in [station,weapon_station,bonus_station]:
-		panel.z_index=10;panel.add_to_group("selection_scope");panel.get_node("CloseButton").pressed.connect(close_station)
-	for i in range(5):
-		var button=station.get_node("Tab"+str(i));button.icon=UiKit.icon_texture(["heart","base","guide","inventory","settings"][i]);button.expand_icon=true;button.add_theme_constant_override("icon_max_width",22);tab_buttons.append(button);button.pressed.connect(func():workshop_tab=i;refresh())
-	workshop_content=station.get_node("Content");bonus_content=bonus_station.get_node("Content")
-	for pair in [[weapon_station,"weapons"],[bonus_station,"bonuses"]]:
-		var panel=pair[0];var id=pair[1]
-		preload("res://scripts/ui/build_catalog.gd").preview(panel,id,Vector2(20,12),Vector2(110,104))
-		panel.get_node("Heading").position.x=144;panel.get_node("Heading").size.x=650
-		panel.get_node("Hint").position.x=144;panel.get_node("Hint").size.x=660;panel.get_node("Hint").text="Выбери оружие и улучши его навсегда" if id=="weapons" else "Усиления выпадают в бою · развитие сохраняется"
-	var bonus_scroll=ScrollContainer.new();bonus_station.add_child(bonus_scroll);bonus_scroll.position=Vector2(25,120);bonus_scroll.size=Vector2(890,455);bonus_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
-	bonus_station.remove_child(bonus_content);bonus_scroll.add_child(bonus_content);bonus_content.position=Vector2.ZERO;bonus_content.custom_minimum_size=Vector2(872,ceilf(LOOT.BONUSES.size()/3.0)*205)
-
-	reset_button=station.get_node("ResetButton");reset_button.pressed.connect(reset_upgrades)
-	status=station.get_node("StatusLabel")
-	# Vertical branches keep the same content width for ability trees.
-	station.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
-	station.size=Vector2(1120,650);station.position=(get_viewport().get_visible_rect().size-station.size)*.5
-	preload("res://scripts/ui/build_catalog.gd").preview(station,"character",Vector2(20,10),Vector2(86,70))
-	station.get_node("Heading").position.x=122
-	station.get_node("Heading").text="Прокачка базы"
-	station.add_theme_stylebox_override("panel",UiKit.style(Color("242d27"),18))
-	station.get_node("CloseButton").position.x=1020
-	for i in range(tab_buttons.size()):
-		tab_buttons[i].position=Vector2(22,90+i*65);tab_buttons[i].size=Vector2(210,52)
-	workshop_content.position=Vector2(260,100)
-	reset_button.position=Vector2(22,578);reset_button.size.x=210;reset_button.add_theme_font_size_override("font_size",15)
-	status.position=Vector2(260,593)
+	# Interaction notes («E — выйти»): kept as a hidden label; stations open through station_screen.gd.
+	status=Label.new();status.name="StatusLabel";status.visible=false;root.add_child(status)
 	refresh()
 
 ## Test tools live in one glass menu under the logo; construction is reached in the world (locked benches)
@@ -235,49 +194,8 @@ func toggle_dev_menu(open=null):
 func refresh():
 	credits.hide()
 	update_bench_visuals()
-	refresh_catalogs()
-	for i in range(tab_buttons.size()):tab_buttons[i].text=["Снабжение","Поддержка","Разведка","Снаряжение","Системы"][i];tab_buttons[i].add_theme_stylebox_override("normal",UiKit.style(Color("584a2c") if i==workshop_tab else Color("242d27"),8))
-	if not is_instance_valid(workshop_content) or not station.visible:return
-	for child in workshop_content.get_children():workshop_content.remove_child(child);child.queue_free()
-	if workshop_tab==3:show_abilities();return
-	if workshop_tab==4:show_systems();return
-	var groups=[["heal","supplies"],["base","turret"],["rarity","luck"]]
-	var names={"supplies":"Аптечки в передышках","health":"Здоровье героя","base":"Прочность базы","heal":"Сила лечения","recovery":"Перезарядка щита","damage":"Сила атаки","turret":"Союзные турели","mobility":"Скорость передвижения","rarity":"Удача улучшений","luck":"Частота дропа"}
-	var details={
-		"supplies":"%d аптечек у механика/генерала · подбираются вручную" % Game.camp_level,
-		"health":"%d HP · +2 HP/ур. Базе +1 каждые 5 ур." % (Balance.CONFIG.combat.hero_health+Game.health_upgrade_bonus()),
-		"base":"%d HP базы · +1 HP за уровень" % (Balance.CONFIG.combat.base_health+int(Game.health_level/5.0)+Game.base_level),
-		"heal":"Сердце %.2f · база %.2f · броня %.2f; +0,15/ур." % [Game.heal_amount(),2+Game.heal_level*.15,3+Game.heal_level*.15],
-		"recovery":"%.1f с до восстановления · −5%%/ур." % (Balance.CONFIG.combat.shield_cooldown*pow(.95,Game.recovery_level)),
-		"damage":"Стволы +%d%% базы; техника +%.2f урона" % [Game.damage_level*5,Game.meta_damage()],
-		"turret":"%.2f урона по площади · +0,05/ур." % Game.turret_damage(),
-		"mobility":"%.2f клетки/с пешком · Убывающий прирост скорости" % (Balance.CONFIG.combat.hero_speed*Game.mobility_multiplier()),
-		"rarity":"Редкие %.1f%% · эпик %.1f%%; эпик +0,6 %%/ур." % [27+Game.rarity_level*.6,8+Game.rarity_level*.6],
-		"luck":"Сердце %.1f%% · бонус %.1f%%; +0,5 %%/ур." % [Game.heart_chance()*100,Game.bonus_chance()*100]}
-	var icons={"heal":"heart","supplies":"heart","base":"repair","turret":"turret","rarity":"star","luck":"alloy"}
-	for i in range(groups[workshop_tab].size()):
-		var branch=groups[workshop_tab][i];var unlocked=Game.branch_unlocked(branch)
-		var card=UiKit.panel(workshop_content,Vector2(0,i*190),Vector2(810,174),Color("30382f"))
-		UiKit.locked_preview(UiKit.icon(card,icons.get(branch,"settings"),Vector2(16,22),Vector2(96,96)),not unlocked)
-		UiKit.label(card,names[branch],Vector2(132,14),Vector2(650,32),22)
-		UiKit.label(card,details[branch],Vector2(132,52),Vector2(650,45),16,UiKit.MUTED).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-		UiKit.label(card,"Уровень %d / %d" % [Game.level(branch),Game.upgrade_cap(branch)],Vector2(132,115),Vector2(275,32),17)
-		var title=("Максимум" if Game.level(branch)>=Game.upgrade_cap(branch) else "+1 · %d ◈" % Game.cost(branch)) if unlocked else "Открыть · %d ◈" % Game.UNLOCK_COSTS[branch]
-		var button=UiKit.button(card,title,Vector2(450,115),Vector2(340,42),func():buy(branch))
-		button.disabled=(Game.level(branch)>=Game.upgrade_cap(branch) or Game.credits<Game.cost(branch)) if unlocked else Game.credits<Game.UNLOCK_COSTS[branch];UiKit.muted_locked_button(button)
 
-func reset_upgrades():
-	Game.reset_upgrades()
-	mounted=false;moving=false;cell=Vector2i(2,2);destination=Vector3(2,0,2);avatar.position=destination;avatar.show()
-	training_tank.position=YARD_PARK;update_bench_visuals();close_station()
-	Texts.set_text(status,"Профиль обнулён.")
-	refresh()
 
-func buy(branch: String):
-	if (Game.purchase(branch) if Game.branch_unlocked(branch) else Game.unlock_branch(branch)):
-		Game.sound("upgrade",self)
-		Texts.set_text(status,"Улучшено.")
-		refresh()
 
 ## Idle: dark screen paging abstract maps and dossiers. News: the screen glows with a letter icon and a real
 ## blue spot light from it softly lights the floor in front. No fake beams.
@@ -301,7 +219,7 @@ func refresh_command_alert():
 	command_alert.modulate=UiKit.NOTICE.news if news=="general" else UiKit.NOTICE.goal
 
 func sync_model_animation():
-	var active=phase=="combat" and moving and not station.visible and not weapon_station.visible and not bonus_station.visible and not is_instance_valid(build_menu)
+	var active=phase=="combat" and moving and not is_instance_valid(build_menu)
 	avatar.preview_moving=active and not mounted;avatar.preview_speed=3.4
 	training_tank.preview_moving=active and mounted;training_tank.preview_speed=2.7
 
@@ -326,7 +244,7 @@ func _physics_process(delta):
 	if is_instance_valid(command_alert):command_alert.position.y=command_pos.y+3.1+(1-cos(hint_clock*TAU/2.8))*.08
 	for arrow in build_arrows.values():
 		if is_instance_valid(arrow):arrow.position.y=1.9+(1-cos(hint_clock*TAU/4.8))*.18
-	if station.visible or weapon_station.visible or bonus_station.visible or is_instance_valid(build_menu):
+	if is_instance_valid(build_menu):
 		if Input.is_action_just_pressed("pause"):close_station()
 		return
 	if Input.is_action_just_pressed("pause"):preload("res://scripts/ui/pause_tablet.gd").open(self);return
@@ -526,7 +444,7 @@ func hub_free(p: Vector2i) -> bool:
 
 func interact():
 	if phase=="intro":return
-	if station.visible or weapon_station.visible or bonus_station.visible or is_instance_valid(build_menu):close_station();return
+	if is_instance_valid(build_menu):close_station();return
 	if moving:return
 	if not mounted and avatar.position.distance_to(recycling_pos)<1.3:show_recycling();return
 	if not mounted and avatar.position.distance_to(hq_bench_pos)<1.2:open_station("hq");return
@@ -559,7 +477,7 @@ func interact():
 func launch():
 	if phase=="intro":return
 	if exit_queued:return
-	if station.visible or weapon_station.visible or bonus_station.visible or is_instance_valid(build_menu):return
+	if is_instance_valid(build_menu):return
 	exit_queued=true
 	Game.reset_input()
 	start_requested.emit()
@@ -569,12 +487,12 @@ func close_station():
 	if is_instance_valid(build_menu) and str(build_menu.get("station_kind") if "station_kind" in build_menu else "")!="":
 		preload("res://scripts/ui/station_notices.gd").mark_viewed(build_menu.station_kind)
 	if is_instance_valid(build_menu):build_menu.get_parent().remove_child(build_menu);build_menu.queue_free();build_menu=null
-	station.hide();weapon_station.hide();bonus_station.hide();phase="combat";Game.reset_input();dpad.clear();fire_pad.clear();dpad.enabled=true;fire_pad.enabled=true;start_button.disabled=false
+	phase="combat";Game.reset_input();dpad.clear();fire_pad.clear();dpad.enabled=true;fire_pad.enabled=true;start_button.disabled=false
 	call_deferred("present_unlock")
 
 func shoot():
 	if phase=="intro":return
-	if station.visible or weapon_station.visible or bonus_station.visible or is_instance_valid(build_menu):return
+	if is_instance_valid(build_menu):return
 	var controlled=training_tank if mounted else avatar
 	controlled.kick()
 	var data=LOOT.WEAPONS[Game.selected_weapon]
@@ -601,102 +519,9 @@ func bullet_hit(bullet) -> bool:
 	var p=Vector2i(roundi(pos.x),roundi(pos.z))
 	return p in [Vector2i(-2,-2),Vector2i(-1,-2),Vector2i(0,-1)] or p.y== -3
 
-func open_workshop(weapons: bool,bonuses: bool=false):
-	if ("bonuses" if bonuses else "weapons" if weapons else "character") not in Game.built_workshops:show_build_menu();return
-	preload("res://scripts/ui/build_catalog.gd").mark("bonuses" if bonuses else "weapons" if weapons else "character")
-	station.visible=not weapons and not bonuses;weapon_station.visible=weapons;bonus_station.visible=bonuses;phase="workshop"
-	Game.reset_input();dpad.clear();fire_pad.clear();dpad.enabled=false;fire_pad.enabled=false
-	start_button.disabled=true;board_button.disabled=true;refresh()
 
-func show_abilities():
-	UiKit.label(workshop_content,"Гаджет / F",Vector2.ZERO,Vector2(800,38),23)
-	var ids=["barrier","mine","laser","airstrike"]
-	for i in range(ids.size()):
-		var id=ids[i];var known=Game.ability_available(id);var data=AbilityCatalog.DATA[id]
-		var card=UiKit.panel(workshop_content,Vector2((i%2)*408,55+floori(i/2.0)*180),Vector2(396,168))
-		UiKit.locked_preview(UiKit.icon(card,id,Vector2(10,10),Vector2(76,76)),not known);UiKit.label(card,("" if known else "🔒 ")+data.name,Vector2(100,10),Vector2(280,30),19)
-		UiKit.label(card,data.description,Vector2(100,44),Vector2(280,67),14).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-		var button=UiKit.button(card,"Взят" if Game.gadget==id else "Взять" if id in Game.purchased_gadgets else "Открыть · %d ◈" % Game.gadget_cost(id),Vector2(10,122),Vector2(376,36),func():Game.unlock_or_equip_ability(id);refresh());button.disabled=not known or Game.gadget==id;UiKit.muted_locked_button(button)
 
-func show_systems():
-	for i in range(2):
-		var alloy=i==0
-		var price=Game.insurance_cost() if alloy else Game.special_cost("rescue")
-		var capped=Game.progression.insurance>=Balance.CONFIG.economy.insurance_cap if alloy else price<0
-		var known=alloy or "rescue" in Game.research_unlocks
-		var card=UiKit.panel(workshop_content,Vector2(0,i*226),Vector2(810,212),Color("30382f"))
-		UiKit.locked_preview(UiKit.icon(card,"alloy" if alloy else "documents",Vector2(18,34),Vector2(96,96)),not known)
-		UiKit.label(card,"Страховка сплава" if alloy else "Страховка чертежей",Vector2(136,16),Vector2(650,34),23)
-		var description="При выбывании теряется %d%% сплава, добытого за вылазку." % roundi(Game.death_loss_fraction()*100) if alloy else "Шанс сохранить каждый найденный чертёж при выбывании."
-		UiKit.label(card,description,Vector2(136,58),Vector2(650,45),16,UiKit.MUTED).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-		var detail="Потеря: %d%% → %d%%" % [roundi(Game.death_loss_fraction()*100),roundi(Game.death_loss_fraction(Game.progression.insurance+1)*100)] if alloy else "Сохранение: %d%% → %d%%" % [Game.rescue_level*6,mini(60,(Game.rescue_level+1)*6)]
-		if capped and known:detail="Достигнут предел" if alloy and Game.progression.insurance<Balance.CONFIG.economy.insurance_cap else "Достигнут максимум"
-		UiKit.label(card,detail,Vector2(136,108),Vector2(650,30),18)
-		var button=UiKit.button(card,"Нужен чертёж" if not known else "Предел улучшений" if capped else "Улучшить · %d ◈" % price,Vector2(136,156),Vector2(650,40),func():
-			if alloy:Game.buy_insurance()
-			else:Game.buy_special("rescue")
-			refresh())
-		button.disabled=not known or capped or Game.credits<price;UiKit.muted_locked_button(button)
 
-func refresh_catalogs():
-	if not is_instance_valid(bonus_content):return
-	if weapon_station.visible:
-		for child in weapon_station.get_children():
-			if child.has_meta("weapon_card") or child.name=="CatalogScroll":weapon_station.remove_child(child);child.queue_free()
-		var scroll=ScrollContainer.new();scroll.name="CatalogScroll";weapon_station.add_child(scroll);scroll.position=Vector2(25,130);scroll.size=Vector2(850,445);scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
-		var cards=Control.new();scroll.add_child(cards);cards.custom_minimum_size=Vector2(825,ceilf(LOOT.WEAPONS.size()/3.0)*310)
-		var weapons=LOOT.WEAPONS.keys()
-		for i in range(weapons.size()):
-			var id=weapons[i];var info=LOOT.WEAPONS[id];var unlocked=id in Game.weapon_unlocks
-			var card=preload("res://scenes/ui/weapon_card.tscn").instantiate();cards.add_child(card);card.position=Vector2((i%3)*278,int(i/3.0)*310);card.set_meta("weapon_card",true)
-			var style=card.get_theme_stylebox("panel").duplicate();style.bg_color=Color("29322b");style.border_color=Color(LOOT.RARITY_COLORS[info.rarity]).darkened(.25) if unlocked else Color("535d51");card.add_theme_stylebox_override("panel",style)
-			UiKit.locked_preview(card.get_node("Icon"),not unlocked);card.get_node("Icon").texture=UiKit.icon_texture(info.icon);card.get_node("Title").text=("" if unlocked else "🔒 ")+info.name
-			if unlocked:preload("res://scripts/ui/build_catalog.gd").item_dot(card,"weapons",id,Vector2(243,12))
-			card.get_node("Description").hide()
-			card.get_node("Icon").position=Vector2(54,42);card.get_node("Icon").size=Vector2(162,108)
-			card.get_node("Title").size.x=244
-			var benchmark=preload("res://scripts/ui/weapon_benchmarks.gd").weapon(id)
-			UiKit.stat_bars(card,Vector2(15,150),244,[["Урон × "+str(info.pellets),info.damage*Game.weapon_factor(id),benchmark.damage],["Темп",1.0/info.interval,benchmark.rate," /с"],["Дальность",info.range,benchmark.range]],28)
-			card.tooltip_text=preload("res://scripts/ui/weapon_benchmarks.gd").hint(id) if unlocked else "🔒 Нужен чертёж"
-			var button=card.get_node("ChooseButton");Texts.set_text(button,"Взято в бой" if id==Game.selected_weapon else "Взять в бой" if unlocked else "🔒 Нужен чертёж");button.pressed.connect(func():Game.equip_weapon(id);refresh())
-			button.disabled=not unlocked or id==Game.selected_weapon
-			UiKit.muted_locked_button(button)
-			button.position.y=240;button.add_theme_font_size_override("font_size",15)
-			var tune=UiKit.button(card,"Ур. %d · +1,5%% · %d ◈" % [Game.weapon_level(id),Game.weapon_upgrade_cost(id)] if unlocked else "🔒 Улучшение",Vector2(15,271),Vector2(244,28),func():Game.upgrade_weapon(id);refresh())
-			card.size=Vector2(268,302)
-			for compact in [button,tune]:
-				for state in ["normal","hover","pressed","disabled","focus"]:
-					var compact_style=compact.get_theme_stylebox(state).duplicate();compact_style.content_margin_top=3;compact_style.content_margin_bottom=3;compact.add_theme_stylebox_override(state,compact_style)
-				compact.custom_minimum_size=Vector2.ZERO;compact.size=Vector2(244,28)
-			tune.add_theme_font_size_override("font_size",13)
-			if unlocked and Game.weapon_level(id)>=Balance.CONFIG.economy.weapon_level_cap:Texts.set_text(tune,"Ур. %d · %s" % [Game.weapon_level(id),"максимум"])
-			tune.disabled=not unlocked or Game.weapon_level(id)>=Balance.CONFIG.economy.weapon_level_cap or Game.credits<Game.weapon_upgrade_cost(id)
-			UiKit.muted_locked_button(tune)
-	if bonus_station.visible:
-		for child in bonus_content.get_children():bonus_content.remove_child(child);child.queue_free()
-		var ids=LOOT.BONUSES.keys()
-		for i in range(ids.size()):
-			var id=ids[i];var info=LOOT.BONUSES[id];var owned=id in Game.bonus_unlocks;var level=Game.bonus_level(id)
-			var card=preload("res://scenes/ui/bonus_card.tscn").instantiate();bonus_content.add_child(card);card.position=Vector2((i%3)*298,int(i/3.0)*205)
-			var style=card.get_theme_stylebox("panel").duplicate();style.bg_color=Color("29322b");style.border_color=Color(LOOT.RARITY_COLORS[info.rarity]).darkened(.25) if owned else Color("535d51");card.add_theme_stylebox_override("panel",style)
-			card.tooltip_text=info.effect if owned else "🔒 Нужен чертёж"
-			card.get_node("Icon").texture=UiKit.icon_texture(id);UiKit.locked_preview(card.get_node("Icon"),not owned)
-			if owned:preload("res://scripts/ui/build_catalog.gd").item_dot(card,"bonuses",id,Vector2(266,8))
-			card.size=Vector2(286,195)
-			card.get_node("Icon").position=Vector2(10,8);card.get_node("Icon").size=Vector2(78,78)
-			card.get_node("Title").position=Vector2(98,12);card.get_node("Title").size.x=176
-			card.get_node("Rarity").position=Vector2(98,47)
-			card.get_node("Description").position=Vector2(12,94);card.get_node("Description").size=Vector2(262,48)
-			card.get_node("ChooseButton").position.y=152
-			card.get_node("Title").text=("" if owned else "🔒 ")+info.name;card.get_node("Rarity").text=(LOOT.RARITY_NAMES[info.rarity]+" · %d/3" % level) if owned else "🔒 Закрыто"
-			var detail=info.effect+"\n"+("Дроп: +0,2 %/ур." if id=="heart" else "Общий дроп: +0,1 %/ур.")
-			if id=="star":detail="Неуязвимость · 1 выстрел\nБетон · %.1f с (+1,5/ур.)\nШанс II/III: %.2f / %.2f%%" % [Game.star_duration(),(.006+level*.0015)*100,(.015+level*.003)*100]
-			card.get_node("Description").text=info.effect;card.get_node("Description").tooltip_text=detail if owned else ""
-			if owned and level<3:UiKit.numeric_description(card.get_node("Description"),bonus_change(id,level))
-			var price=Game.bonus_cost(id)
-			var button=card.get_node("ChooseButton");Texts.set_text(button,"🔒 Нужен чертёж" if not owned else ("Максимум" if level>=Balance.CONFIG.economy.bonus_level_cap else "+1 · %d ◈" % price))
-			button.pressed.connect(func():Game.upgrade_bonus(id);refresh());button.disabled=not owned or level>=Balance.CONFIG.economy.bonus_level_cap or Game.credits<price
-			UiKit.muted_locked_button(button)
 
 func update_bench_visuals():
 	if is_instance_valid(avatar) and avatar.weapon_id!=Game.selected_weapon:Visuals.equip_model(avatar,Game.selected_weapon)
@@ -756,30 +581,20 @@ func nearest_locked() -> String:
 func bench_available(id:String)->bool:
 	var notices=preload("res://scripts/ui/station_notices.gd")
 	return id in notices.BENCHES and notices.has_dot(notices.BENCHES[id])
-func show_classes():preload("res://scripts/ui/fighter_station.gd").shell(self)
 
-func show_class_catalog():
-	close_station();phase="workshop";dpad.enabled=false;fire_pad.enabled=false;start_button.disabled=true
-	build_menu=preload("res://scripts/ui/class_gallery.gd").new();root.add_child(build_menu);build_menu.closed.connect(close_station);build_menu.shell_requested.connect(show_classes)
 
+## Dev «reset profile» (recipe shop): wipe upgrades, park the avatar and the training tank.
+func reset_upgrades():
+	Game.reset_upgrades()
+	mounted=false;moving=false;cell=Vector2i(2,2);destination=Vector3(2,0,2);avatar.position=destination;avatar.show()
+	training_tank.position=YARD_PARK;update_bench_visuals();close_station()
+	Texts.set_text(status,"Профиль обнулён.")
+	refresh()
 func show_recipe_shop():
 	close_station();phase="workshop";dpad.enabled=false;fire_pad.enabled=false;start_button.disabled=true
 	build_menu=load("res://scripts/garage/recipe_shop.gd").new();root.add_child(build_menu)
 	build_menu.closed.connect(close_station);build_menu.changed.connect(refresh);build_menu.reset_requested.connect(reset_upgrades)
 
-func bonus_change(id:String,level:int)->String:
-	var before=0.0;var after=0.0;var title="Сила";var suffix=""
-	match id:
-		"heart","repair","vehicle_repair":
-			var base=Game.heal_amount() if id=="heart" else (2 if id=="repair" else 3)+Game.heal_level*.15
-			before=base*(1+level*.1);after=base*(1+(level+1)*.1);title="Броня" if id=="vehicle_repair" else "Лечение"
-		"star":before=6+level*1.5;after=before+1.5;title="Длительность";suffix=" с"
-		"freeze":before=3+level;after=before+1;title="Длительность";suffix=" с"
-		"pressure":before=8+level*2;after=before+2;title="Длительность";suffix=" с"
-		"wall":before=4+level;after=before+1;title="HP стен"
-		"turret":before=Balance.CONFIG.enemy("mortar").health+level;after=before+1;title="HP турели"
-		"vehicle":before=pow(.92,level)*100;after=pow(.92,level+1)*100;title="Время доставки";suffix="%"
-	return UiKit.change_text(title,before,after,suffix)
 
 func show_command():
 	close_station();phase="workshop";dpad.enabled=false;fire_pad.enabled=false;start_button.disabled=true
@@ -812,16 +627,7 @@ func use_training_ability(slot:int=0):
 	if phase=="intro":return
 	hub_skills.cast(slot)
 
-func show_hq_workshop():
-	if "headquarters" not in Game.built_workshops:build_tab=0;show_build_menu();return
-	close_station();phase="workshop";dpad.enabled=false;fire_pad.enabled=false;start_button.disabled=true
-	build_menu=preload("res://scenes/headquarters/workbench.tscn").instantiate();root.add_child(build_menu);build_menu.closed.connect(close_station)
 
-func show_garage():
-	if "garage" not in Game.built_workshops:build_tab=1;show_build_menu();return
-	close_station();phase="workshop";dpad.enabled=false;fire_pad.enabled=false;start_button.disabled=true
-	build_menu=load("res://scenes/garage/workbench.tscn").instantiate();root.add_child(build_menu)
-	build_menu.closed.connect(close_station);build_menu.changed.connect(refresh)
 
 func show_recycling():
 	close_station();phase="workshop";Game.reset_input()

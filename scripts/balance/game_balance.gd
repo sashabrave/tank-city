@@ -26,5 +26,9 @@ func enemy(id:String)->EnemyBalance:
 func wave_costs()->Dictionary:
 	var result={}
 	# Preserve the original order, which participates in seeded wave generation.
-	for id in ["drone","flyer","soldier","grenadier","shield","sniper","buggy","apc","mortar","tank","boss"]:result[id]=enemy(id).wave_cost
+	const ORDER=["drone","flyer","soldier","grenadier","shield","sniper","buggy","apc","mortar","tank","boss"]
+	for id in ORDER:result[id]=enemy(id).wave_cost
+	# Enemies added later as resources join after the original order (it feeds seeded generation).
+	for entry in enemies:
+		if entry.id not in result:result[entry.id]=entry.wave_cost
 	return result

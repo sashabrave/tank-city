@@ -56,7 +56,7 @@ func run():
 	arena.hud._show_upgrades_now();await get_tree().create_timer(.3).timeout;shot("cards")
 	arena.queue_free();await get_tree().process_frame
 	var hub=load("res://scenes/hub.tscn").instantiate();add_child(hub);await get_tree().create_timer(.3).timeout;shot("hub")
-	hub.show_hq_workshop();await get_tree().create_timer(.3).timeout;shot("workbench")
+	hub.open_station("hq");await get_tree().create_timer(.3).timeout;shot("workbench")
 	assert(Game.upgrade_hq("hq_medbay"))
 	var original_path=Game.save_path;Game.save_path="/tmp/hq_profile_test.json";Game.save_enabled=true;Game.save_progress();Game.hq_unlocks=[];Game.hq_levels={};Game.load_progress();assert("hq_tesla" in Game.hq_unlocks and Game.hq_levels.hq_medbay==1);Game.save_enabled=false;Game.save_path=original_path
 	print("HQ PASS: recipe/build/gates, repeating medkit/pause timing, heal, Q cooldown, shield, regeneration, Tesla, interceptor, cards, workbench, save/load")

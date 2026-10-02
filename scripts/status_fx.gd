@@ -127,7 +127,7 @@ func build_stars():
 ## A single bevel-free block of ice around the model: footprint-wide, up to the HP bar.
 func build_ice():
 	ice=MeshInstance3D.new();ice.name="IceBlock";var box=BoxMesh.new()
-	var width=.62 if actor.footprint<=1 and actor.kind in ["soldier","shield","sniper","grenadier"] else .92*actor.footprint
+	var width=.62 if actor.footprint<=1 and UnitKinds.is_infantry(actor.kind) else .92*actor.footprint
 	var height=top()*.9
 	box.size=Vector3(width,height,width);ice.mesh=box;ice.position.y=height*.5;ice.rotation.y=.18
 	ice.material_override=paint("ice");ice.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF;add_child(ice)

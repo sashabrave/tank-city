@@ -7,14 +7,14 @@ func start_wave():
 	if room.surprise_initialized:return
 	room.surprise_initialized=true
 	room.surprise_rng.seed=arena.run.run_seed+room.room_index*104729+room.route_node_id.hash()+271
-	room.surprise_timer=maxf(0.0,room.surprise_rng.randf_range(15.0,30.0)-room.combat_elapsed)
+	room.surprise_timer=maxf(0.0,room.surprise_rng.randf_range(Balance.CONFIG.campaign.first_surprise_min,Balance.CONFIG.campaign.first_surprise_max)-room.combat_elapsed)
 func tick(delta:float):
 	var room=arena.room;var tuning=Balance.CONFIG.campaign
 	if arena.phase!="combat" or room.room_cleared or room.boss_defeated:return
 	# Never wait for or dispatch a late drone after the main fight is over.
 	if room.spawn_queue.is_empty() and arena.wave_enemy_count()==0:return
 	room.surprise_timer-=delta
-	if room.surprise_timer>0 or room.combat_elapsed<15.0:return
+	if room.surprise_timer>0 or room.combat_elapsed<tuning.first_surprise_min:return
 	room.surprise_timer=room.surprise_rng.randf_range(tuning.surprise_delay_min,tuning.surprise_delay_max)
 	if arena.enemy_count()-arena.wave_enemy_count()>=tuning.surprise_active_cap:return
 	var kind="flyer" if room.surprise_rng.randf()<.5 else "drone"

@@ -33,7 +33,7 @@ static func kit_model(kind:String,parent:Node3D,pos:Vector3,species:String="cat"
 	# One authored cell is .93 units.
 	art.scale=Vector3.ONE/.93*model_scale(kind)
 	parent.add_child(wrapper);wrapper.position=pos
-	if kind in ["tank","apc","buggy"]:preload("res://scripts/world_lighting.gd").headlights(wrapper,true)
+	if UnitKinds.is_vehicle(kind):preload("res://scripts/world_lighting.gd").headlights(wrapper,true)
 	return wrapper
 
 static func model_scale(kind:String)->float:
@@ -213,7 +213,7 @@ static func cozy_model(kind:String,parent:Node3D,pos:Vector3)->Node3D:
 	var bounds=mesh_bounds(art,Transform3D.IDENTITY)
 	var target=3.6 if kind=="boss" else (.65 if kind.begins_with("bonus_") else 1.05)
 	var factor=target/maxf(bounds.size.x,bounds.size.z)
-	if kind in ["soldier","grenadier","shield","sniper"]:factor=1.25/bounds.size.y
+	if UnitKinds.is_infantry(kind):factor=1.25/bounds.size.y
 	if kind.begins_with("weapon_"):factor=.75/maxf(bounds.size.z,.1)
 	art.scale*=factor
 	art.position=Vector3(-bounds.get_center().x*factor,-bounds.position.y*factor,-bounds.get_center().z*factor)

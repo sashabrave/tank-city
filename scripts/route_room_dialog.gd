@@ -14,7 +14,7 @@ static func build(route,info:Dictionary)->Control:
 	var major=info.stage in Campaign.BOSSES
 	var commander_entry=WaveDirector.commander_entry(route.wave_seed,info.stage,info.id)
 	var commander=commander_entry.kind
-	var commander_name={"sniper":"Снайпер","soldier":"Стрелок","shield":"Щитовой","grenadier":"Гранатомётчик","tank":"Танк","apc":"БТР","buggy":"Багги","boss":"Генерал"}[commander]
+	var commander_name={"sniper":"Снайпер","soldier":"Стрелок","shield":"Щитовой","grenadier":"Гранатомётчик","tank":"Танк","apc":"БТР","buggy":"Багги","boss":"Генерал"}.get(commander,commander.capitalize())
 	if commander_entry.weapon=="rpg":commander_name="РПГшник"
 	if major:commander_name=BossCatalog.encounter(route.wave_seed,info.stage).name
 	if not major:

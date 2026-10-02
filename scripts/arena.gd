@@ -856,7 +856,7 @@ func wall_contacts(pos:Vector3,direction:Vector3,width:float)->Array:
 			if walls.has(c) and preload("res://scripts/section_wall.gd").overlap(walls[c],world_pos(c),pos,half):result.append(c)
 	return result
 func body_size(actor)->float:
-	return 1.0 if actor.occupying_trench else .49 if actor.kind in ["soldier","grenadier","sniper","shield"] else float(actor.footprint)
+	return 1.0 if actor.occupying_trench else .49 if UnitKinds.is_infantry(actor.kind) else float(actor.footprint)
 func can_stand(pos:Vector3,actor,ignore_actors:bool=false,static_only:bool=false)->bool:
 	var half=body_size(actor)*.5;var edge=grid_size*.5
 	if actor.kind!="flyer" and terrain.blocked(pos,half):return false

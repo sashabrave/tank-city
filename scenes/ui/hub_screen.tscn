@@ -5,9 +5,6 @@
 [ext_resource type="Texture2D" path="res://assets/icons/v1/alloy.png" id="1_wkqdn"]
 [ext_resource type="Script" path="res://scripts/touch_controls.gd" id="2_hye22"]
 
-[ext_resource type="PackedScene" path="res://scenes/ui/character_workshop.tscn" id="CharacterWorkshop"]
-[ext_resource type="PackedScene" path="res://scenes/ui/weapon_workshop.tscn" id="WeaponWorkshop"]
-[ext_resource type="PackedScene" path="res://scenes/ui/bonus_workshop.tscn" id="BonusWorkshop"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mwv13"]
 content_margin_left = 18.0
@@ -1138,14 +1135,5 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_qjpos")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_7v3pa")
 text = "Полигон · Объекты"
 
-
-[node name="CharacterWorkshop" parent="." instance=ExtResource("CharacterWorkshop")]
-visible = false
-
-[node name="WeaponWorkshop" parent="." instance=ExtResource("WeaponWorkshop")]
-visible = false
-
-[node name="BonusWorkshop" parent="." instance=ExtResource("BonusWorkshop")]
-visible = false
 
 

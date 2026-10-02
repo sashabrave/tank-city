@@ -15,7 +15,7 @@ func base_firing_cells(actor)->Array:
 	if not base_lane_user(actor):return []
 	if base_lanes_revision!=arena.navigation.base_revision:
 		base_lanes_revision=arena.navigation.base_revision;base_lanes.clear()
-	var width=1.0 if actor.kind in ["buggy","apc","tank"] else .5
+	var width=1.0 if UnitKinds.is_vehicle(actor.kind) else .5
 	var reach=base_weapon_range(actor);var key=[width,reach,arena.body_size(actor),actor.kind=="soldier"]
 	if base_lanes.has(key):return base_lanes[key]
 	var cells=[];var center=arena.world_pos(arena.base_cell)
@@ -37,7 +37,7 @@ func base_aim(actor)->Vector2i:
 	var direction=Vector2i.ZERO
 	if absf(delta.x)<.26:direction=Vector2i(0,signi(roundi(delta.z)))
 	elif absf(delta.z)<.26:direction=Vector2i(signi(roundi(delta.x)),0)
-	var width=1.0 if actor.kind in ["buggy","apc","tank"] else .5
+	var width=1.0 if UnitKinds.is_vehicle(actor.kind) else .5
 	var key=[actor.position,arena.navigation.base_revision,width,base_weapon_range(actor)]
 	var cached:Dictionary=actor.get_meta("base_aim_cache",{})
 	if not cached.is_empty() and cached.key==key:return cached.direction
@@ -320,7 +320,7 @@ func sniper_step(actor,delta: float):
 			bullet.position=actor.position+Vector3.UP*bullet.SNIPER_HEIGHT+bullet.travel_direction*.4
 			arena.add_child(bullet);arena.room.projectiles.append(bullet)
 			actor.model.kick()
-			actor.sniper_line.queue_free();actor.fire_cooldown=4.0
+			actor.sniper_line.queue_free();actor.fire_cooldown=actor.fire_interval  # sniper.tres enemy_interval
 			Game.weapon_sound(actor)
 	elif actor.fire_cooldown<=0:
 		actor.sniper_target=arena.room.player.position

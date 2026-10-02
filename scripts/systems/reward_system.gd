@@ -305,7 +305,7 @@ func award_kill(actor):
 	arena.run.kills_by[icon_id]=int(arena.run.kills_by.get(icon_id,0))+1
 	var tokens=token_drop(actor)
 	if tokens>0:preload("res://scripts/resource_drop.gd").spawn(arena,actor.position,tokens,"tokens",actor.resource_blast)
-	Game.progression.event("drones" if actor.kind in ["drone","flyer"] else "armor" if actor.kind in ["tank","apc","buggy"] else "infantry")
+	Game.progression.event("drones" if UnitKinds.is_flying(actor.kind) else "armor" if UnitKinds.is_vehicle(actor.kind) else "infantry")
 	if actor.kind=="boss":
 		if not arena.room.actors.any(func(a):return is_instance_valid(a) and not a.dead and a.kind=="boss") and arena.room.spawn_queue.is_empty():
 			preload("res://scripts/resource_drop.gd").spawn(arena,actor.position,Campaign.world if not Campaign.endless else 1,"documents",actor.resource_blast)

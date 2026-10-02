@@ -9,7 +9,7 @@ func run():
 	assert(Game.shell_refund()==10000-Game.credits)
 	var hub=load("res://scenes/hub.tscn").instantiate();add_child(hub)
 	await get_tree().create_timer(.6).timeout
-	hub.show_classes()
+	hub.open_station("fighter")
 	await get_tree().process_frame
 	if DisplayServer.get_name()!="headless":
 		await RenderingServer.frame_post_draw

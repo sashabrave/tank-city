@@ -21,19 +21,19 @@
 | Урон пистолета, дробь, темп огня | `assets/balance/weapons/pistol.tres` и другие оружия | Damage — урон одной пули; Interval — секунд между выстрелами; Speed — скорость пули; Range — дальность; Pellets — число пуль |
 | Способность | `assets/balance/abilities/*.tres` | Cooldown — пауза между применениями; Power — урон/HP/длительность (зависит от способности); Price — цена открытия |
 | Прочность и скорость врага/техники | `assets/balance/enemies/*.tres` | Health, Move Speed; Enemy Damage/Enemy Interval — вражеская атака; Damage/Fire Interval — базовые параметры союзной техники; Player Speed — скорость занятой машины |
-| HP героя, базы, боссов, щит | `assets/balance/combat.tres` | Hero/Base Health, First/Second/Superboss Health, Shield Cooldown; здесь же запал/радиус гранаты и задержки волн |
-| Сколько врагов | `assets/balance/campaign.tres` | Wave Counts: 6 строк, X/Y/Z — волны 1/2/3; Active Enemy Caps — одновременно обычных врагов |
-| Порядок техники и доля | тот же `campaign.tres` | Vehicle First Room: **индекс с нуля**; Machine Weights — относительный вес техники в шести комнатах |
-| Случайные дроны | тот же `campaign.tres` | Drone Surprise Chance; Surprise Delay Min/Max; Limit Per Wave; Active Cap |
-| Усложнение второй зоны | тот же `campaign.tres` | Zone Two Health/Damage и Step; Population — число врагов; Budget Bonus — сила состава |
+| HP героя и базы | `assets/balance/combat.tres` | Hero/Base Health; здесь же запал/радиус гранаты и задержки волн |
+| Миры: здоровье, урон, боссы | `assets/balance/campaign.tres` | World Health / World Damage / World Boss Health — по одному значению на мир; Health Step Per Field (мир 1 и остальные), Damage Step Per Field |
+| Сколько врагов в волне | тот же `campaign.tres` | Wave Base Size + Wave Size Per Field × поле + Wave Size Per Wave × волна + Wave Size Per Star × звёзды; Vehicle Wave Minimum; в бесконечном режиме Endless Size Per Sector / Cap |
+| Сколько врагов одновременно | тот же `campaign.tres` | Active Base + номер мира + поле / Active Fields Per Step, не больше Active Cap |
+| Случайные дроны | тот же `campaign.tres` | First Surprise Min/Max — первый выезд; Surprise Delay Min/Max — следующие; Surprise Active Cap |
 | Цены, дроп, лечение | `assets/balance/economy.tres` | Upgrade Base/Step Cost; Building Costs; Heart/Bonus Chance; Heal Amount; Chest Alloy |
 | Цена второго навыка | тот же `economy.tres` | Second Ability Slot Documents, сейчас 12 секретных документов; победа над гигабоссом всё равно обязательна |
 
 **Пример:** пистолет стреляет раз в 0,60 с. Установи Interval = 0,50, сохрани ресурс, перезапусти игру — получится 2 выстрела в секунду. Speed = 16 меняет скорость полёта пули, а не частоту стрельбы.
 
-**Число врагов и бюджет — разные вещи.** Counts задаёт размер состава, Budgets — доступную «стоимость» врагов. Если поднять только количество, директор может не собрать его из дорогих бойцов. Wave Cost находится в ресурсе каждого врага. Machine Weights — вес выбора, не точный процент: бюджет и ограничения тоже влияют.
+**Состав волны.** Размер считается формулой из `campaign.tres`, а виды врагов — по ступени поля: поля 1–2 только пехота, 3–4 добавляют лёгкую технику, 5–6 тяжёлую. Wave Cost в ресурсе врага влияет только на порядок подкреплений командира. Профессионализм врагов (задержка прицела, паузы, окопы, штурм) — `scripts/combat/professionalism.gd`.
 
-Не удаляй элементы из массивов кампании: сейчас структура рассчитана на 17 этапов, 6 наборов обычных волн. Боссы стоят на этапах 7, 16, 17. Добавление новых зон требует изменения логики. Изменение размера поля не добавляет новые нарисованные вручную карты.
+Новый мир добавляется одной записью в каждый массив World ... и строкой в `Campaign.WORLDS` (название, размеры полей).
 
 Настройки способности Description/Role — текст подсказки. Если меняешь число, указанное в описании, обнови и описание. Ресурсы задают базовые значения; временные карточки и постоянные улучшения применяются поверх них.
 

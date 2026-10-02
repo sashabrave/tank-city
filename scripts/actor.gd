@@ -148,11 +148,11 @@ func _ready():
 		max_hp=vehicle_stats.hp;hp=max_hp;damage=vehicle_stats.damage;fire_interval=vehicle_stats.interval;speed=vehicle_stats.speed
 	if player_owned:speed=minf(speed,Balance.speed_cap())
 	model = Visuals.model(BossCatalog.encounter(arena.run_seed,arena.room_index).model if kind=="boss" else EnemyLoadouts.model_for(kind,enemy_weapon),self,Vector3.ZERO,"cat" if player_owned or allied else "dog")
-	if player_owned or kind in ["tank","apc","buggy"]:preload("res://scripts/world_lighting.gd").headlights(model,kind!="soldier")
+	if player_owned or UnitKinds.is_vehicle(kind):preload("res://scripts/world_lighting.gd").headlights(model,kind!="soldier")
 	if kind=="shield":
 		shield_visual=Visuals.named_part(model,"shield_panel_pivot");shield_rest=shield_visual.basis
 		shield_visual.basis=shield_rest*Basis(Vector3.RIGHT,.5)
-	if kind in ["soldier","grenadier","shield","sniper"]:Visuals.equip_model(model,enemy_weapon)
+	if UnitKinds.is_infantry(kind):Visuals.equip_model(model,enemy_weapon)
 	if kind=="flyer":model.position.y=1.25
 	if kind=="boss":
 		model.scale=Vector3.ONE*BossCatalog.encounter(arena.run_seed,arena.room_index).scale
@@ -256,7 +256,7 @@ func _physics_process(delta):
 				var steps=2 if kind in ["apc","grenadier"] or (kind=="soldier" and burst_index%2==1) else 1
 				if burst_steps>=steps and assault_time<=0:
 					burst_steps=0;burst_index+=1
-					movement_pause={"soldier":.8,"apc":1.15,"tank":1.5,"boss":1.8,"drone":.65,"grenadier":1.1,"shield":1.0}[kind]*.8*pause_scale+arena.combat_rng.randf_range(0,.2)
+					movement_pause={"soldier":.8,"apc":1.15,"tank":1.5,"boss":1.8,"drone":.65,"grenadier":1.1,"shield":1.0}.get(kind,1.0)*.8*pause_scale+arena.combat_rng.randf_range(0,.2)
 		if kind == "soldier": model.position.y = absf(sin(Time.get_ticks_msec()*.016))*.015
 	else: model.position.y = 0
 	if not moving:arena.terrain.begin_slide(self)
@@ -343,7 +343,7 @@ func aimed_shot()->bool:
 	return shoot()
 
 func uses_quarter_steps()->bool:
-	return player_owned or kind in ["soldier","grenadier","sniper","shield"]
+	return player_owned or UnitKinds.is_infantry(kind)
 
 func try_move(dir: Vector2i):
 	if kind=="mortar" or dir == Vector2i.ZERO or moving or (not player_owned and kind not in ["drone","buggy"] and movement_pause>0): return
@@ -405,7 +405,7 @@ func take_damage(amount: float,blast:Vector3=Vector3.ZERO,vehicle_credit:String=
 		if kind == "soldier": arena.soldier_hp = maxf(0,hp)
 		Game.sound("player_hurt",self)
 		arena.effects.emit("player_damaged",{"actor":self,"amount":amount})
-	else:Game.sound("hit_body" if kind in ["soldier","grenadier","sniper","shield"] else "hit_metal",self)
+	else:Game.sound("hit_body" if UnitKinds.is_infantry(kind) else "hit_metal",self)
 	refresh_health()
 	if hp>0 and is_instance_valid(model) and model.has_method("flinch"):model.flinch()
 	arena.burst(position+Vector3.UP*.4,Color("ffbd61"),.3)

@@ -34,7 +34,7 @@ func _physics_process(delta):
 	if kind=="gas":
 		# Sleeping infantry: held like a stun, shown with «Z z z» instead of stars.
 		for enemy in arena.actors:
-			if is_instance_valid(enemy) and not enemy.player_owned and not enemy.allied and enemy.kind in ["soldier","grenadier","sniper","shield"] and arena.flat_distance(position,enemy.position)<1.5+utility*.35:
+			if is_instance_valid(enemy) and not enemy.player_owned and not enemy.allied and UnitKinds.is_infantry(enemy.kind) and arena.flat_distance(position,enemy.position)<1.5+utility*.35:
 				enemy.stun_time=maxf(enemy.stun_time,.2);enemy.sleep_time=maxf(enemy.sleep_time,.2)
 		if age>=power:
 			# The cloud thins out on its own; the effect ends now.

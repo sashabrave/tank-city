@@ -115,7 +115,7 @@ func damage_base(amount: float):
 	if arena.room.base_hp<=0: arena.finish_run(false,"База уничтожена")
 
 func actor_destroyed(actor):
-	Game.sound("infantry_down" if actor.kind in ["soldier","grenadier","sniper","shield"] else "vehicle_destroy",actor)
+	Game.sound("infantry_down" if UnitKinds.is_infantry(actor.kind) else "vehicle_destroy",actor)
 	if is_instance_valid(actor.sniper_line):actor.sniper_line.queue_free()
 	if actor.wave_slot>=0 and actor.wave_slot<arena.room.wave_roster.size():arena.room.wave_roster[actor.wave_slot].state="dead"
 	arena.room.actors.erase(actor)
@@ -135,7 +135,7 @@ func actor_destroyed(actor):
 	else:
 		arena.reward.award_kill(actor)
 		if actor.kind in ["drone","flyer"]:drone_death_explosion(actor.position)
-		elif actor.kind in ["apc","tank","buggy"]:
+		elif UnitKinds.is_vehicle(actor.kind):
 			var wreck=arena.make_wreck(actor.kind,actor.cell,actor.facing,false,arena.vehicle.player_armor(actor.kind,"captured",Campaign.zone(arena.room_index))*.5,"captured",Campaign.zone(arena.room_index));wreck.salvaged=true
 			mark_trophy(wreck)
 		else: arena.burst(actor.position,Color("d69a54"),.8 if actor.kind=="boss" else .4)

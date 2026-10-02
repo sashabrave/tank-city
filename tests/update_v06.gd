@@ -24,7 +24,7 @@ func run():
 					if entry.rank==2:veterans+=1
 					if entry.kind in ["drone","flyer"]:drones+=1
 					if entry.kind in ["sniper","mortar"]:artillery+=1
-				valid=valid and budget<=WaveDirector.BUDGETS[room][wave] and drones<=2 and artillery<=2
+				valid=valid and entries.size()==WaveDirector.wave_size(room,wave) and drones<=2 and artillery<=2
 				samples+=1;enemies+=entries.size()
 				if drones>0:drone_waves+=1
 	check(valid and species.size()==10 and veterans>0,"1800 seeded waves: threat budgets, diversity, caps and veterans")

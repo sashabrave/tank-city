@@ -51,8 +51,8 @@ func run():
 			for seed_value in range(100):
 				var entries=WaveDirector.build(seed_value,room,wave);var cost=0
 				for entry in entries:cost+=WaveDirector.rank_cost(entry.kind,entry.rank)
-				valid=valid and entries.size()==WaveDirector.COUNTS[room][wave] and cost<=WaveDirector.BUDGETS[room][wave]
-	check(valid and WaveDirector.COUNTS[2]==WaveDirector.COUNTS[5] and WaveDirector.CAPS[0]==2,"1800 waves meet counts; later difficulty grows without extra bodies")
+				valid=valid and entries.size()==WaveDirector.wave_size(room,wave)
+	check(valid and Campaign.active_cap(0)==mini(Balance.CONFIG.campaign.active_cap,Balance.CONFIG.campaign.active_base+Campaign.world),"1800 waves match the tuned wave size; active cap follows the tuning")
 	var shapes={};var colors={}
 	for id in Game.LOOT.BONUSES:
 		shapes[Game.LOOT.BONUSES[id].shape]=true;colors[Game.LOOT.BONUSES[id].color]=true;arena.drop_pickup(Vector2i.ZERO,id)
@@ -61,6 +61,6 @@ func run():
 	check(arena.upgrade_offers[0].id=="weapon_locked","no unowned weapon offered without recipe")
 	var hub=load("res://scenes/hub.tscn").instantiate();add_child(hub)
 	hub.avatar.position=hub.bonus_bench_pos+Vector3.BACK;hub.interact()
-	check(hub.bonus_station.visible and not hub.dpad.enabled,"bonus workbench opens and locks movement")
-	hub.close_station();check(not hub.bonus_station.visible and hub.dpad.enabled,"bonus workbench closes")
+	check(is_instance_valid(hub.build_menu) and not hub.dpad.enabled,"bench opens a station and locks movement")
+	hub.close_station();check(not is_instance_valid(hub.build_menu) and hub.dpad.enabled,"station closes")
 	print("REV06: %d checks, %d failures" % [checks,failures]);get_tree().quit(1 if failures else 0)

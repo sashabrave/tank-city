@@ -20,3 +20,9 @@
 - **Сигналы без слушателей или без отправителя:** route_map.enter_requested, route_map.test_requested, class_gallery.shell_requested, FlowSystem.changed, InputScheme.changed.
 - **Крупные ассеты:** assets/audio/music 618 МБ wav (boss_variation_1/2 не используются); nano_banana 19 МБ уходит в сборку как второй набор иллюстраций; assets/models/cozy 3,2 МБ почти наверняка мёртв.
 - **Устаревшие тесты:** editor_workflow, update_v05/v06/v08, campaign_v09 (boss_lasers), refactor_contract (нет tmp/refactor-before), визуальные тесты пишут в несуществующий art_demo. Падали и до этой сессии: reinforced_brick «Placement follows the route», printer_revision, route_map_v8.
+
+## Сделано в 0.6.0
+- Старые экраны верстаков удалены: панели CharacterWorkshop/WeaponWorkshop/BonusWorkshop в hub_screen.tscn, их сцены и карточки, garage/hq workbench, model_preview, прослойка ui/fighter_station.gd и функции hub.gd вокруг них. Статус взаимодействия — скрытая метка StatusLabel. 12 исторических тестов старого интерфейса удалены, 7 переведены на open_station.
+- CampaignTuning переписан: только читаемые игрой поля (миры, рост по полям, размер волны, лимит активных, дроны). Campaign.hp_scale/damage_scale/boss_health/active_cap, WaveDirector.wave_size и SurpriseSystem берут числа оттуда; значения по умолчанию равны прежним. Мёртвые поля и дубли здоровья боссов в combat_tuning удалены. Перезарядка снайпера читается из sniper.tres (4,0 с).
+- UnitKinds (scripts/combat/unit_kinds.gd) — семейства пехоты, техники и летающих. Копии списков в actor, arena, visuals, status_fx, ability_effect, combat/reward/enemy systems заменены. Словари по типу (награда за убийство, имя командира, паузы перебежек) берут значение по умолчанию для нового типа. GameBalance.wave_costs добавляет новых врагов из ресурсов после прежнего порядка.
+- Остаются: списки миров 1..3 в контрольной точке и Campaign.configure, белый список гаджетов, цены техники в garage/state.gd.

@@ -9,10 +9,10 @@ func _ready():call_deferred("run")
 func run():
 	Game.save_enabled=false;Game.sound_enabled=false;Game.damage_level=0
 	var hub=load("res://scenes/hub.tscn").instantiate();add_child(hub);hub.set_physics_process(false)
-	check(not hub.station.visible,"workshop hidden initially")
-	hub.interact();check(not hub.station.visible,"E away from workshop does not open it")
+	check(not is_instance_valid(hub.build_menu),"workshop hidden initially")
+	hub.interact();check(not is_instance_valid(hub.build_menu),"E away from workshop does not open it")
 	hub.avatar.position=Vector3(0,0,0);hub.cell=Vector2i(0,0);hub.interact()
-	check(hub.station.visible and not hub.dpad.enabled and hub.start_button.disabled,"E near workbench opens modal and disables movement")
+	check(is_instance_valid(hub.build_menu) and not hub.dpad.enabled and hub.start_button.disabled,"E near workbench opens modal and disables movement")
 	hub.shoot();check(hub.projectiles.is_empty(),"no shooting inside workshop")
 	hub.close_station();check(hub.phase=="combat" and hub.dpad.enabled,"close restores controls")
 	hub.avatar.position=Vector3(2,0,2);hub.cell=Vector2i(2,2);hub.facing=Vector2i.UP;hub.shoot()
