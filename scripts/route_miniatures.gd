@@ -251,13 +251,13 @@ static func weather(parent:Node3D,kind:String):
 			for i in range(3):
 				var ember=Visuals.box(sky,Vector3(-.4+i*.4,-1.8,0),Vector3(.12,.12,.12),Color("ff8a3d"));ember.material_override=Visuals.material(Color("ff8a3d"),true)
 				anim.add(ember,"position:y",[-1.8-i*.2,-1.3-i*.2,-.8-i*.2,-2.3])
-## Live weather above a route tile: the real weather of that room as a tiny scene — a cloud with falling
+## Live weather indicator at the upper-left of a route tile: the real weather of that room as a tiny scene — a cloud with falling
 ## rain or snow, a thunderstorm (downpour) with flashes, drifting fog or blowing sand. Clear sky shows nothing.
 static func live_weather(parent:Node3D,kind:String,rain_style:String=""):
 	if kind in ["","clear"]:return
 	# Above the room plaque (the caption at the tile front); the map camera looks almost straight down, so
 	# the emitter leans so drops fall towards the camera bottom (+z) along their long side.
-	var sky=Node3D.new();sky.name="Weather";parent.add_child(sky);sky.position=Vector3(0,2.4,1.2);sky.scale=Vector3.ONE*1.25
+	var sky=Node3D.new();sky.name="Weather";parent.add_child(sky);sky.position=Vector3(-2.3,3.6,.2);sky.scale=Vector3.ONE*.9
 	var storm=kind=="rain" and rain_style=="downpour"
 	if kind in ["rain","snow"]:
 		var grey=Color("6c757c") if storm else Color("b9c2c6") if kind=="rain" else Color("f1f2ee")

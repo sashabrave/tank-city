@@ -517,7 +517,8 @@ func drive(delta):
 		player_marker.rotation.y=lerp_angle(player_marker.rotation.y,atan2(-drive_velocity.x,-drive_velocity.z),minf(1,delta*9))
 		follow_camera=true
 	if follow_camera and not dragging:
-		scroll=lerpf(scroll,-player_marker.position.z-2.0,minf(1,delta*3));move_camera()
+		# Vertical follow only, a little ahead of the car in its driving direction.
+		scroll=lerpf(scroll,-player_marker.position.z-2.0-drive_velocity.z*.45,minf(1,delta*6));move_camera()
 	update_card()
 func nearest_target(radius:float)->Dictionary:
 	var here=Vector3(player_marker.position.x,0,player_marker.position.z);var best={};var best_d=radius

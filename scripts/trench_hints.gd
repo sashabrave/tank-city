@@ -1,6 +1,6 @@
 extends Node3D
 ## One calm trench hint: a fixed-size chip under the trench cell, never over the soldier.
-## Near: «E  В окоп». Inside: «E  Выйти   C  Пригнуться» (or «Встать» while crouched).
+## Near: «E  В окоп». Inside: «E  Выйти   C  Вниз» (or «Вверх» while crouched). Half-transparent: a hint, not a panel.
 ## Keys are tappable on touch; the chip never scales or jumps — only its words change.
 const HEIGHT=28.0
 var arena
@@ -14,7 +14,8 @@ var crouch_text:Label
 func _ready():
 	var canvas=CanvasLayer.new();canvas.layer=4;add_child(canvas)
 	chip=Panel.new();chip.name="TrenchHint";canvas.add_child(chip);chip.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	chip.add_theme_stylebox_override("panel",UiKit.style(Color(.16,.21,.18,.82),7))
+	var back=StyleBoxFlat.new();back.bg_color=Color(.1,.13,.11,.45);back.set_corner_radius_all(7)
+	chip.add_theme_stylebox_override("panel",back);chip.modulate.a=.8
 	row=HBoxContainer.new();chip.add_child(row);row.position=Vector2(5,3);row.add_theme_constant_override("separation",6);row.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	var pill=preload("res://scripts/ui/key_pill.gd")
 	enter=pill.new();enter.action="interact";enter.side=22;row.add_child(enter)
@@ -36,10 +37,10 @@ func _process(_delta):
 	enter.refresh();crouch.refresh()
 	Texts.set_text(enter_text,"Выйти" if inside else "В окоп")
 	crouch.visible=inside;crouch_text.visible=inside
-	if inside:Texts.set_text(crouch_text,"Встать" if player.hidden_in_trench else "Пригнуться")
+	if inside:Texts.set_text(crouch_text,"Вверх" if player.hidden_in_trench else "Вниз")
 	# The crouch word keeps the width of the longer variant, so toggling never resizes the chip.
 	var font=crouch_text.get_theme_font("font")
-	crouch_text.custom_minimum_size.x=ceilf(maxf(font.get_string_size(Texts.render("Пригнуться"),HORIZONTAL_ALIGNMENT_LEFT,-1,14).x,font.get_string_size(Texts.render("Встать"),HORIZONTAL_ALIGNMENT_LEFT,-1,14).x))
+	crouch_text.custom_minimum_size.x=ceilf(maxf(font.get_string_size(Texts.render("Вниз"),HORIZONTAL_ALIGNMENT_LEFT,-1,14).x,font.get_string_size(Texts.render("Вверх"),HORIZONTAL_ALIGNMENT_LEFT,-1,14).x))
 	row.size=row.get_combined_minimum_size()
 	chip.size=Vector2(row.size.x+10,HEIGHT)
 	var anchor=camera.unproject_position(global_position+Vector3(0,0,.6))

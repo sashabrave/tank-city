@@ -1,10 +1,10 @@
 extends Node3D
-## Army crates: a few small olive boxes (a quarter of a cell) per field, usually alone, sometimes in a pair,
+## Army crates: a few small olive boxes (about a quarter of a cell, 1.2× the first version) per field, usually alone, sometimes in a pair,
 ## rarely stacked up to three. A player bullet breaks one into splinters with a wooden crack; with a small
 ## chance it holds a little alloy. Anything walking into a crate kicks it apart too, so crates never block
 ## movement or pathfinding. Placement and loot use their own RNG seeded by the room, not the combat RNG.
-const SIZE=Vector3(.22,.16,.17)
-const HIT_RADIUS=.2
+const SIZE=Vector3(.264,.192,.204)
+const HIT_RADIUS=.24
 const LOOT_CHANCE=.15
 const LOOT=[2,4]
 var arena
@@ -16,22 +16,34 @@ func setup(context):
 	arena=context;name="FieldCrates"
 	rng.seed=hash([arena.run_seed,arena.room_index,"field_crates"])
 	if arena.boss_room:return
-	var cells=[]
+	# Crates hide in corners against cover: an inner corner of two walls first, else the end of a block.
+	# The crate is pressed into the corner of its cell, so passages stay free.
+	var spots_all=[];var dirs=[Vector2i.LEFT,Vector2i.RIGHT,Vector2i.UP,Vector2i.DOWN]
 	for x in range(1,arena.grid_size-1):
 		for y in range(2,arena.grid_size-4):
 			var cell=Vector2i(x,y)
 			if arena.walls.has(cell) or arena.trenches.has(cell) or arena.terrain.movement_blocked_at_cell(cell):continue
-			# Crates lean against cover: at least one wall next to the cell.
-			if not [Vector2i.LEFT,Vector2i.RIGHT,Vector2i.UP,Vector2i.DOWN].any(func(d):return arena.walls.has(cell+d)):continue
-			cells.append(cell)
-	var spots=mini(cells.size(),rng.randi_range(2,4))
+			for d in dirs:
+				if not arena.walls.has(cell+d):continue
+				for p in [Vector2i(d.y,d.x),Vector2i(-d.y,-d.x)]:
+					var inner=arena.walls.has(cell+p)
+					var block_end=not arena.walls.has(cell+d+p)
+					if inner or block_end:spots_all.append({"cell":cell,"d":d,"p":p,"rank":2 if inner else 1})
+	var inner_spots=spots_all.filter(func(s):return s.rank==2)
+	var pool=inner_spots if inner_spots.size()>=2 else spots_all
+	var used={}
+	var spots=mini(pool.size(),rng.randi_range(2,4))
 	for i in range(spots):
-		var cell=cells.pop_at(rng.randi_range(0,cells.size()-1))
-		var corner=Vector3(rng.randf_range(-.28,.28),0,rng.randf_range(-.28,.28))
-		var base=arena.world_pos(cell)+corner
+		if pool.is_empty():break
+		var spot=pool.pop_at(rng.randi_range(0,pool.size()-1))
+		if used.has(spot.cell):continue
+		used[spot.cell]=true
+		var inset=.5-SIZE.x*.55
+		var base=arena.world_pos(spot.cell)+Vector3(spot.d.x,0,spot.d.y)*inset+Vector3(spot.p.x,0,spot.p.y)*inset
 		var height=1+(1 if rng.randf()<.1 else 0)+(1 if rng.randf()<.03 else 0)
-		for level in range(height):add_crate(base+Vector3(rng.randf_range(-.02,.02),level*SIZE.y,rng.randf_range(-.02,.02)),rng.randf_range(-.4,.4))
-		if rng.randf()<.25:add_crate(base+Vector3(SIZE.x*1.05*(1 if corner.x<0 else -1),0,rng.randf_range(-.05,.05)),rng.randf_range(-.4,.4))
+		for level in range(height):add_crate(base+Vector3(rng.randf_range(-.02,.02),level*SIZE.y,rng.randf_range(-.02,.02)),rng.randf_range(-.15,.15))
+		# A second crate along the wall, away from the corner.
+		if rng.randf()<.25:add_crate(base-Vector3(spot.p.x,0,spot.p.y)*SIZE.x*1.08,rng.randf_range(-.15,.15))
 
 static func part(kind:String)->Array:
 	if parts.has(kind):return parts[kind]

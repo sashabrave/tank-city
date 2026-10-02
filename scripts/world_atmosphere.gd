@@ -7,7 +7,8 @@ var haze:ColorRect
 var clouds:Array[GeometryInstance3D]=[]
 var anchored=false
 ## Battle edge clouds: two big blurry clusters near the camera that drift slowly along the left
-## and right edges of the field (up or down), wrapping around. Visual RNG only.
+## and right edges of the field (up or down). They wrap far beyond the screen and fade in and out near
+## the ends of their lane, so a cloud never pops up in view. Visual RNG only.
 var drifters:Array=[]
 var drift_span=20.0
 func _ready():
@@ -58,7 +59,7 @@ func battle_clouds(grid_size:int,seed_value:int):
 		if is_instance_valid(entry.node):entry.node.queue_free()
 	drifters.clear()
 	var rng=RandomNumberGenerator.new();rng.seed=hash([seed_value,"edge_clouds"])
-	drift_span=grid_size+14.0
+	drift_span=grid_size+44.0
 	for side in [-1.0,1.0]:
 		var discs:Array=[];var scale_value=rng.randf_range(6.0,8.4)
 		for i in range(rng.randi_range(5,7)):
@@ -70,9 +71,9 @@ func battle_clouds(grid_size:int,seed_value:int):
 			multi.set_instance_transform(i,Transform3D(Basis.IDENTITY.scaled(Vector3.ONE*discs[i][1]),discs[i][0]))
 			multi.set_instance_custom_data(i,Color(discs[i][2],discs[i][3],0,1))
 		var node=MultiMeshInstance3D.new();node.name="EdgeCloud";node.multimesh=multi;node.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF;node.extra_cull_margin=12
-		var mat=ShaderMaterial.new();mat.shader=preload("res://shaders/world/map_clouds.gdshader");mat.set_shader_parameter("opacity",.5);node.material_override=mat
+		var mat=ShaderMaterial.new();mat.shader=preload("res://shaders/world/map_clouds.gdshader");mat.set_shader_parameter("opacity",.55);node.material_override=mat
 		add_child(node);clouds.append(node)
-		node.position=Vector3(side*(grid_size*.5+rng.randf_range(9.0,11.5)),rng.randf_range(10.0,12.5),rng.randf_range(-drift_span*.5,drift_span*.5))
+		node.position=Vector3(side*(grid_size*.5+rng.randf_range(7.6,9.8)),rng.randf_range(10.0,12.5),rng.randf_range(-drift_span*.5,drift_span*.5))
 		drifters.append({"node":node,"speed":rng.randf_range(.18,.32)*(1.0 if rng.randf()<.5 else -1.0)})
 	apply()
 
@@ -81,8 +82,11 @@ func _process(_delta):
 		var node:Node3D=entry.node
 		if not is_instance_valid(node):continue
 		node.position.z+=float(entry.speed)*_delta
-		if node.position.z>drift_span*.5+6.0:node.position.z=-drift_span*.5-6.0
-		elif node.position.z<-drift_span*.5-6.0:node.position.z=drift_span*.5+6.0
+		if node.position.z>drift_span*.5:node.position.z=-drift_span*.5
+		elif node.position.z<-drift_span*.5:node.position.z=drift_span*.5
+		# Fade over the last 10 units of the lane (all of it off screen): the wrap is never seen.
+		var edge=drift_span*.5-absf(node.position.z)
+		node.material_override.set_shader_parameter("opacity",.55*clampf(edge/10.0,0.0,1.0))
 	var camera=get_viewport().get_camera_3d()
 	if camera:
 		var forward=-camera.global_basis.z

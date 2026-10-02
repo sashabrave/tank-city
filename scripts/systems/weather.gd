@@ -4,7 +4,7 @@ extends Node3D
 const BIOMES=preload("res://scripts/biome_catalog.gd")
 const CHANGE_CHANCE=.35
 ## Clear sky dominates; rain is a rare event (it hurts readability), a downpour rarer still.
-const WEIGHTS={"clear":1.0,"fog":.22,"rain":.1,"snow":.3,"sandstorm":.18}
+const WEIGHTS={"clear":1.0,"fog":.22,"rain":.07,"snow":.3,"sandstorm":.18}
 const KINDS=["clear","rain","snow","fog","sandstorm"]
 ## Lighting multipliers read by WorldLighting; haze colour/amount by WorldAtmosphere.
 const LOOK={
