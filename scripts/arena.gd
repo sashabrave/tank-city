@@ -309,6 +309,7 @@ func begin_room(index: int):
 	for child in get_children():
 		if child==presentation or child==hud or child==camera or child is WorldEnvironment or child is DirectionalLight3D or child.name in ["WorldLighting","WorldAtmosphere","SandboxAdmin"]:continue
 		remove_child(child);child.queue_free()
+	if room.has_meta("pending_flag"):room.remove_meta("pending_flag")
 	room.commander_countdown=false;room_cleared=false;room_boss_spawned=false;reward_claimed=false;flag=null;flag_armed=true;upgrade_offers.clear();trenches.clear()
 	room.resource_drops.clear();actors.clear();wrecks.clear();walls.clear();pickups.clear();nets.clear();projectiles.clear();bombs.clear();grenades.clear()
 	twin_boss=index in Campaign.BOSSES and BossCatalog.encounter(run_seed,index).count==2

@@ -250,8 +250,8 @@ func apply_secret(offer):
 			else:arena.run.intercept_chance=minf(.95,arena.run.intercept_chance+.2)
 func consume_chest(chest):
 	if chest not in arena.room.pickups:return
-	# Documents now drop from the final boss, independently of chest selection.
 	arena.room.pickups.erase(chest);preload("res://scripts/battle_stage.gd").vanish(chest.node,.2,.2)
+	arena.flow.release_flag()
 func bonus_strength(id:String)->float:return Game.bonus_power(id)+arena.run.run_bonus_levels.get(id,0)*.1
 
 func effective_bonus_level(id:String)->int:return Game.bonus_level(id)+int(arena.run.run_bonus_levels.get(id,0))

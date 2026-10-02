@@ -21,7 +21,8 @@
 					"Пальмы получили настоящие перистые листья вместо «вазы» на макушке.",
 					"В бою справа сверху рядом с «Поле» видно звёзды сложности арены.",
 					"На экране выбора мира выбранный мир сразу обведён рамкой.",
-					"Видеозвонок больше не проматывается случайным нажатием в момент открытия."
+					"Видеозвонок больше не проматывается случайным нажатием в момент открытия.",
+					"Флаг выхода появляется только после того, как открыт сундук командира — награда больше не остаётся забытой."
 				]
 			},
 			"en": {
@@ -42,7 +43,8 @@
 					"Palms got real feathered leaves instead of a vase-like top.",
 					"In battle, the arena's difficulty stars show next to «Field» in the top right.",
 					"On the world select screen the chosen world is framed right away.",
-					"A video call no longer skips on a stray key press as it opens."
+					"A video call no longer skips on a stray key press as it opens.",
+					"The exit flag appears only after the commander's chest is opened, so the reward is never left behind."
 				]
 			}
 		},

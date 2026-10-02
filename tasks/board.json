@@ -553,7 +553,7 @@
 			"scene": "route_map",
 			"shot": "res://tasks/shots/T-044.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "я уже который раз забываю забрать сундук после босса и уезжаю на флаг,",
 			"type": "bug",
 			"version": "0.7.1-pre"
