@@ -402,6 +402,8 @@ func take_damage(amount: float,blast:Vector3=Vector3.ZERO,vehicle_credit:String=
 		arena.floating_number(position,-amount);hp=1.0;arena.soldier_hp=hp;invulnerable=1.6;refresh_health()
 		preload("res://scripts/status_fx.gd").of(self).hit()
 		arena.effects.emit("player_damaged",{"actor":self,"amount":amount})
+		var feel=arena.get_node_or_null("CombatFeel")
+		if feel:feel.shake(.3);feel.hit_stop(.04)
 		return
 	arena.floating_number(position,-minf(hp,amount))
 	if amount>0:preload("res://scripts/status_fx.gd").of(self).hit()
@@ -411,6 +413,8 @@ func take_damage(amount: float,blast:Vector3=Vector3.ZERO,vehicle_credit:String=
 		if kind == "soldier": arena.soldier_hp = maxf(0,hp)
 		Game.sound("player_hurt",self)
 		arena.effects.emit("player_damaged",{"actor":self,"amount":amount})
+		var hit_feel=arena.get_node_or_null("CombatFeel")
+		if hit_feel:hit_feel.shake(.3);hit_feel.hit_stop(.04)
 	else:Game.sound("hit_body" if UnitKinds.is_infantry(kind) else "hit_metal",self)
 	refresh_health()
 	if hp>0 and is_instance_valid(model) and model.has_method("flinch"):model.flinch()

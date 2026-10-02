@@ -331,6 +331,8 @@ func begin_room(index: int):
 	preload("res://scripts/world_lighting.gd").field(self)
 	preload("res://scripts/systems/block_decor.gd").decorate(self)
 	var weather=preload("res://scripts/systems/weather.gd").new();add_child(weather);weather.setup(self)
+	if get_node_or_null("CombatFeel")==null:
+		var feel=preload("res://scripts/combat/combat_feel.gd").new();add_child(feel);feel.setup(self)
 	var old_crates=get_node_or_null("FieldCrates")
 	if old_crates:old_crates.name="FieldCratesOld";old_crates.queue_free()
 	var crates=preload("res://scripts/systems/field_crates.gd").new();add_child(crates);crates.setup(self)

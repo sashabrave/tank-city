@@ -34,6 +34,10 @@ func spawn_bullet(owner_actor,pos: Vector3,dir: Vector2i,damage: float,friendly:
 	bullet.speed = 20.0 if owner_actor.kind=="buggy" else (13.0 if friendly else 7.5)
 	arena.add_child(bullet)
 	arena.room.projectiles.append(bullet)
+	var feel=arena.get_node_or_null("CombatFeel")
+	if feel:
+		feel.muzzle(owner_actor,bullet.global_position,bullet.travel_direction)
+		if owner_actor.player_owned and owner_actor.kind=="soldier":feel.casing(owner_actor,bullet.travel_direction)
 	return bullet
 
 func bullet_hit(bullet) -> bool:
@@ -95,6 +99,8 @@ func bullet_hit(bullet) -> bool:
 			if not bullet.star_power and CombatMods.player_bullet(bullet):amount=CombatMods.outgoing(arena,bullet,actor)
 			actor.take_damage(amount,Vector3.ZERO,bullet.vehicle_credit,CombatMods.bullet_source(bullet) if actor.player_owned else "")
 			if CombatMods.player_bullet(bullet) and not actor.player_owned:arena.effects.emit("enemy_hit",{"target":actor,"bullet":bullet,"damage":amount})
+			var feel=arena.get_node_or_null("CombatFeel")
+			if feel and not actor.player_owned:feel.impact(actor,actor.position)
 			if not pierce_on(bullet):return true
 	if not arena.room.boss_room and not bullet.friendly and cell==arena.room.base_cell:
 		damage_base(bullet.damage)
@@ -116,6 +122,10 @@ func damage_base(amount: float):
 	if arena.room.base_hp<=0: arena.finish_run(false,"База уничтожена")
 
 func actor_destroyed(actor):
+	var feel=arena.get_node_or_null("CombatFeel")
+	if feel and not actor.player_owned:
+		if actor.kind=="boss" or actor.elite:feel.shake(.55);feel.hit_stop(.12)
+		elif UnitKinds.is_vehicle(actor.kind):feel.shake(.35);feel.hit_stop(.05)
 	Game.sound("infantry_down" if UnitKinds.is_infantry(actor.kind) else "vehicle_destroy",actor)
 	if is_instance_valid(actor.sniper_line):actor.sniper_line.queue_free()
 	if actor.wave_slot>=0 and actor.wave_slot<arena.room.wave_roster.size():arena.room.wave_roster[actor.wave_slot].state="dead"
@@ -196,6 +206,8 @@ func pressure_flash(pos:Vector3):
 	tween.tween_callback(icon.queue_free)
 
 func explosion(pos: Vector3,amount: float):
+	var feel=arena.get_node_or_null("CombatFeel")
+	if feel:feel.shake(clampf(.18+amount*.06,.18,.6))
 	arena.burst(pos+Vector3.UP*.3,Color("e78331"),1.45)
 	Game.sound("explosion_heavy",arena)
 	for actor in arena.room.actors.duplicate():
