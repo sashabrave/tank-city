@@ -436,7 +436,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-035.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "в колонке меню планшета есть количество цифр",
 			"type": "bug",
 			"version": "0.7.1-pre"
@@ -449,7 +449,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-036.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "в колонке меню планешта есть цифры надо пофикисить",
 			"type": "polish",
 			"version": "0.7.1-pre"

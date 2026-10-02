@@ -76,7 +76,7 @@ func refresh():
 	var p=Game.progression
 	if tab in ["active","tracked","completed","orders"]:
 		quest_filter={"completed":"completed","orders":"operations"}.get(tab,"all");tab="quests"
-	var tabs=[["inventory","Снаряжение"],["fighter","Боец"],["quests","Задачи · %d" % p.quests("available" if manage else "active").size()],["notifications","Лента · %d" % Game.notifications.unread()],["music","Радио"],["settings","Настройки"],["guide","Энциклопедия"],["about","Об игре"],["tech","Тех. информация"]]
+	var tabs=[["inventory","Снаряжение"],["fighter","Боец"],["quests","Задачи"],["notifications","Лента"],["music","Радио"],["settings","Настройки"],["guide","Энциклопедия"],["about","Об игре"],["tech","Тех. информация"]]
 	# Command centre: quests first, then a compact summary; loadout, radio and settings stay in the field tablet.
 	if manage:tabs=[tabs[2],["base","Сводка"],tabs[3],["guide","Энциклопедия"],["tech","Тех. информация"]]
 	for i in range(tabs.size()):
