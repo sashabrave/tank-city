@@ -1356,5 +1356,12 @@
       "ability_denied_02.wav"
     ],
     "loop": false
+  },
+  "collect_token": {
+    "files": [
+      "collect_token_01.wav",
+      "collect_token_02.wav"
+    ],
+    "loop": false
   }
 }

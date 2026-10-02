@@ -306,7 +306,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-025.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "я вообще  не понимаю когда выпадают жетоны",
 			"type": "polish",
 			"version": "0.7.1-pre"

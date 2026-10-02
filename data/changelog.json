@@ -36,7 +36,8 @@
 					"Между волнами время не замирает: бонусы долетают, можно стрелять и пользоваться способностями.",
 					"Неготовая способность отвечает мягким глухим звуком.",
 					"Счётчик валют: больше воздуха между иконкой и числом, а при появлении жетонов блок плавно раздвигается.",
-					"Числа на карточках усилений округлены: здоровье и проценты целые, дробь только у темпа, урона и метров."
+					"Числа на карточках усилений округлены: здоровье и проценты целые, дробь только у темпа, урона и метров.",
+					"Жетоны стали яркими монетами с лапой: подлетают выше, медленно падают кувыркаясь, светятся, искрят и звенят по-своему."
 				]
 			},
 			"en": {
@@ -72,7 +73,8 @@
 					"Between waves time does not freeze: bonuses keep falling, and you can shoot and use abilities.",
 					"An ability that isn't ready answers with a soft, dull thud.",
 					"Currency strip: more space between icon and number, and it widens smoothly when tokens appear.",
-					"Numbers on upgrade cards are rounded: health and percents are whole, decimals only for rate, damage and metres."
+					"Numbers on upgrade cards are rounded: health and percents are whole, decimals only for rate, damage and metres.",
+					"Tokens are now bright paw coins: they pop higher, fall slowly with a tumble, glow, sparkle and chime their own way."
 				]
 			}
 		},
