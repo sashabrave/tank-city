@@ -1,4 +1,6 @@
 extends RefCounted
+## Seconds a landed field bonus stays before it disappears (T-046).
+const BONUS_LIFETIME=25.0
 ## Reward system. Owns rules; Arena remains the scene coordinator.
 var arena
 
@@ -227,7 +229,7 @@ func collect_nearby_pickups(delta):
 		if arena.flat_distance(arena.room.player.position,pickup.node.position)>1.35:pickup["blocked"]=false
 		if arena.run.elapsed<float(pickup.get("land_at",0.0)):continue
 		if pickup.kind not in ["recipe_draft","cache"] and arena.flat_distance(arena.room.player.position,pickup.node.position)<1.1 and arena.clear_shot(arena.room.player.position,pickup.node.position,.05) and not pickup.get("blocked",false):collect_pickup(pickup)
-	for pickup in arena.room.pickups:
+	for pickup in arena.room.pickups.duplicate():
 		if pickup.kind=="recipe_draft":continue  # chests stand still on the ground
 		var falling=float(pickup.get("land_at",0.0))-arena.run.elapsed
 		if falling>0:
@@ -235,6 +237,12 @@ func collect_nearby_pickups(delta):
 		if is_instance_valid(pickup.get("chute")):
 			pickup.chute.queue_free();pickup.erase("chute");arena.burst(pickup.node.position+Vector3.UP*.2,Color("d8cfb4"),.45);Game.sound("delivery_land",arena)
 		pickup.visual.rotation.y+=delta;pickup.visual.position.y=.45+sin(arena.run.elapsed*3)*.07
+		# T-046: a field bonus does not lie forever — it blinks for its last 5 seconds and is gone after 25.
+		if pickup.kind!="cache" and pickup.has("land_at"):
+			var left=float(pickup.land_at)+BONUS_LIFETIME-arena.run.elapsed
+			if left<5.0:pickup.node.visible=fposmod(arena.run.elapsed*(3.0 if left>2.0 else 7.0),1.0)<.6
+			if left<=0:
+				arena.room.pickups.erase(pickup);arena.burst(pickup.node.position+Vector3.UP*.3,Color("d8cfb4"),.35);pickup.node.queue_free()
 func chest_offers(_elite:bool=true)->Array:
 	var difficulty=2 if arena.room.boss_room else arena.room.difficulty
 	# Chest cards come from the same registry and rarity roll as wave offers, never below the room difficulty.
