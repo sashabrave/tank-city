@@ -405,6 +405,7 @@ func take_damage(amount: float,blast:Vector3=Vector3.ZERO,vehicle_credit:String=
 		var feel=arena.get_node_or_null("CombatFeel")
 		if feel:feel.shake(.3);feel.hit_stop(.04)
 		return
+	if not player_owned and arena.get("reward")!=null:amount=arena.reward.thieves.incoming(self,amount)
 	arena.floating_number(position,-minf(hp,amount))
 	if amount>0:preload("res://scripts/status_fx.gd").of(self).hit()
 	hp = maxf(0,hp-amount)

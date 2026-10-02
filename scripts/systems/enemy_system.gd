@@ -282,6 +282,8 @@ func drone_step(actor):
 	var drop_cell=Vector2i(arena.room.base_cell.x+side*(2 if arena.room.walls.has(wall_cell) else 1),arena.room.grid_size-1)
 	if actor.cell==drop_cell:
 		var bomb=load("res://scenes/bomb.tscn").instantiate();bomb.arena=arena;bomb.damage=3.0*(1.55 if actor.rank==3 else 1.3 if actor.rank==2 else 1.0)*actor.strength_scale;bomb.position=actor.position
+		# T-071: the drone itself becomes the bomb — it digs in instead of dropping a separate shell.
+		if is_instance_valid(actor.model):bomb.drone_model=actor.model
 		arena.add_child(bomb);arena.room.bombs.append(bomb)
 		if actor.wave_slot>=0 and actor.wave_slot<arena.room.wave_roster.size():arena.room.wave_roster[actor.wave_slot].state="dead"
 		actor.dead=true;arena.room.actors.erase(actor);actor.queue_free()

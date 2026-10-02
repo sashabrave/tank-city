@@ -3,9 +3,10 @@ extends RefCounted
 const BONUS_LIFETIME=25.0
 ## Reward system. Owns rules; Arena remains the scene coordinator.
 var arena
+var thieves
 
 func _init(context):
-	arena=context
+	arena=context;thieves=preload("res://scripts/systems/bonus_thieves.gd").new(context)
 
 func drop_pickup(_cell: Vector2i,kind: String):
 	var candidates: Array[Vector2i]=[]
@@ -21,6 +22,9 @@ func drop_pickup(_cell: Vector2i,kind: String):
 	var cell=candidates[arena.run.combat_rng.randi_range(0,candidates.size()-1)]
 	if kind=="vehicle" and arena.unlocked_vehicle()=="":kind="repair" if "repair" in Game.bonus_unlocks else "heart"
 	if kind=="turret" and arena.room.room_index<2:kind="repair" if "repair" in Game.bonus_unlocks else "heart"
+	place_pickup(cell,kind)
+## A field bonus on a given cell, parachuting down for `fall` seconds (also used when a thief drops one, T-072).
+func place_pickup(cell:Vector2i,kind:String,fall:=1.1):
 	var node=Node3D.new();arena.add_child(node);node.position=arena.world_pos(cell)
 	var visual=arena.LOOT.visual(node,kind)
 	var info=arena.LOOT.BONUSES[kind]
@@ -30,7 +34,7 @@ func drop_pickup(_cell: Vector2i,kind: String):
 		var pulse=node.create_tween().set_loops();pulse.tween_property(ring,"scale",Vector3.ONE*1.18,.6);pulse.tween_property(ring,"scale",Vector3.ONE,.6)
 	# Arrival: it floats down under a small parachute, the canopy folds on landing with a puff of dust.
 	var chute=parachute(visual,Color(info.color))
-	arena.room.pickups.append({"node":node,"visual":visual,"kind":kind,"land_at":arena.run.elapsed+1.1,"chute":chute})
+	arena.room.pickups.append({"node":node,"visual":visual,"kind":kind,"land_at":arena.run.elapsed+fall,"chute":chute})
 
 ## Ram-air wing over a falling bonus: five cloth cells along an arch (round cells read as semicircles
 ## from the front), matte khaki/olive, only the centre cell hints at the bonus colour. Visual only.
@@ -225,6 +229,7 @@ func reroll_cards() -> bool:
 
 func collect_nearby_pickups(delta):
 	if not is_instance_valid(arena.room.player):return
+	thieves.tick(delta)
 	for pickup in arena.room.pickups.duplicate():
 		if arena.flat_distance(arena.room.player.position,pickup.node.position)>1.35:pickup["blocked"]=false
 		if arena.run.elapsed<float(pickup.get("land_at",0.0)):continue

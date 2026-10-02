@@ -71,7 +71,10 @@
 					"Под героем мягкая тень; фонарь на груди больше не отбрасывает тень оружия на бегу; иконка «Противотанковый ёж» — настоящий ёж",
 					"Настройки экрана: кнопки «Применить» и «Сохранить», список разрешений окна, галочка Retina; смена других настроек больше не сбрасывает полный экран и размер окна",
 					"Клетки пола у стен больше не темнеют целиком — тень только у края; рядом с FPS виден счётчик фризов",
-					"Музыка сжата в OGG: игра стала заметно легче"
+					"Музыка сжата в OGG: игра стала заметно легче",
+					"Воры бонусов: враг может стащить бонус, пролежавший на поле, и получить смешной бафф (отъелся, разогнал затвор, кирпичная каска, педаль газа, стал звездой); убей вора — бонус выпадет обратно",
+					"Дрон-минёр больше не бросает отдельную бомбу: он сам зарывается в землю, крутит колёсами и разбрасывает пыль и камешки",
+					"Техника, постройки и пропсы получили запечённое затенение: стыки, ниши и щели темнее, модели выглядят объёмнее"
 				]
 			},
 			"en": {
@@ -142,7 +145,10 @@
 					"A soft shadow under the hero; the chest lamp no longer casts the weapon's shadow while running; the anti-tank hedgehog icon now shows a real hedgehog",
 					"Screen settings: Apply and Save buttons, a window size list, a Retina checkbox; changing other options no longer resets fullscreen or the window size",
 					"Floor cells next to walls no longer darken entirely — only the edge gets shadow; a hitch counter next to FPS",
-					"Music compressed to OGG: the game is much smaller"
+					"Music compressed to OGG: the game is much smaller",
+					"Bonus thieves: an enemy can snatch a bonus left on the field and get a silly buff (stuffed, souped-up bolt, brick helmet, gas pedal, star); kill the thief and the bonus drops back",
+					"The mine drone no longer drops a separate bomb: it burrows into the ground itself, spinning its wheels and throwing up dust and pebbles",
+					"Vehicles, buildings and props got baked ambient occlusion: seams, niches and gaps are darker, models look more solid"
 				]
 			}
 		},

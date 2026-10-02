@@ -65,6 +65,8 @@ func _physics_process(delta):
 
 ## Bullets fly through groves; the tree they cross gives a shiver and a few twigs (visual only).
 func rustle_grove():
+	# The hub range has no grid or groves.
+	if not arena.has_method("grid_pos") or arena.get("terrain")==null:return
 	var cell=arena.grid_pos(position)
 	if cell==grove_cell:return
 	grove_cell=cell

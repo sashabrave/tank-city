@@ -2,6 +2,8 @@ extends Sprite3D
 var ratio=1.0
 var rank=0
 var rendered_key=Vector2i(-1,-1)
+## Frame colour, e.g. the bonus a thief carries (T-072); transparent — the usual dark frame.
+var accent:=Color.TRANSPARENT
 func _ready():
 	billboard=BaseMaterial3D.BILLBOARD_ENABLED
 	pixel_size=.009
@@ -13,7 +15,7 @@ func set_health(value: float,maximum: float):
 	if key==rendered_key:return
 	rendered_key=key
 	var img=Image.create(96,12,false,Image.FORMAT_RGBA8)
-	img.fill(Color("26332c"))
+	img.fill(Color("26332c") if accent.a<=0 else accent)
 	img.fill_rect(Rect2i(2,2,92,8),Color("aeb8a4"))
 	var color=Color("d85b50").lerp(Color("e4bb54"),ratio*2) if ratio<.5 else Color("e4bb54").lerp(Color("6ba064"),(ratio-.5)*2)
 	if ratio>0:img.fill_rect(Rect2i(2,2,maxi(1,roundi(92*ratio)),8),color)
