@@ -399,7 +399,8 @@ func build_yard():
 	var post=Color("5b5f57")
 	Visuals.box(parking_sign,Vector3(0,.55,0),Vector3(.07,1.1,.07),post)
 	Visuals.box(parking_sign,Vector3(0,1.15,0),Vector3(.6,.45,.05),Color("2f3b33"))
-	var icon=Sprite3D.new();icon.texture=UiKit.icon_texture("vehicle");icon.pixel_size=.4/maxf(1.0,float(icon.texture.get_width()));icon.position=Vector3(0,1.15,.035);parking_sign.add_child(icon)
+	var icon=Sprite3D.new();icon.texture=load("res://assets/icons/v1/vehicle.png");  # world sign: plain sprite, not the UI pin
+	icon.pixel_size=.4/maxf(1.0,float(icon.texture.get_width()));icon.position=Vector3(0,1.15,.035);parking_sign.add_child(icon)
 ## Fenced range in the north-east corner, open on the west side so vehicles can drive in.
 func range_pen(yard:Node3D):
 	var post=Color("5b5f57");var rail=Color("9aa093")
