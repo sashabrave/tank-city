@@ -2,7 +2,7 @@ extends MultiMeshInstance3D
 ## Grid ambient occlusion for the field floor (setting «Глубина света»): along every floor-cell edge that
 ## touches a wall, a flat strip darkens the floor towards a cool shade; inner corners get two strips.
 ## One draw call; rebuilt when a wall is destroyed. Visual only.
-const DEPTH=.6
+const DEPTH=.34
 const LIFT=.006
 var arena
 static func build_for(context)->Node:
