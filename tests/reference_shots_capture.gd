@@ -51,6 +51,23 @@ func run():
 	arena=arena_scene(4);await get_tree().create_timer(1.2).timeout;arena.set_physics_process(false)
 	arena.room.upgrade_offers=[{"id":"burn_heat","tier":1},{"id":"crit_chance","tier":2},{"id":"health","tier":3}]
 	arena.hud._show_upgrades_now();await get_tree().create_timer(1.2).timeout;await shot("upgrade_cards")
+	await clear()
+	# Service rooms: the field mechanic and the merchant (dusk light of the rooms).
+	arena=arena_scene(4);await get_tree().create_timer(.8).timeout;remove_child(arena);arena.auto_pause_enabled=false
+	for branch in ["vehicle","merchant"]:
+		var room=load("res://scripts/merchant_room.gd" if branch=="merchant" else "res://scripts/service_room.gd").new()
+		if branch!="merchant":room.branch=branch
+		room.arena=arena;room.index=2;add_child(room)
+		await get_tree().create_timer(1.4).timeout;await shot("room_"+("mechanic" if branch=="vehicle" else "merchant"))
+		await clear()
+	# World boss, golden light.
+	Settings.values.sun_day="golden";Settings.apply()
+	arena=arena_scene(1);await get_tree().create_timer(.8).timeout
+	arena.begin_room(6);arena.phase="combat";arena.spawn_queue.clear()
+	var spec=BossCatalog.encounter(1,6)
+	for i in range(spec.count):
+		var boss=arena.spawn_actor("boss",Vector2i(arena.grid_size/2-3+i*6,4),false);boss.wave_slot=i
+	await get_tree().create_timer(2.5).timeout;await shot("boss_fight")
 	Settings.values.show_fps=true;Settings.values.world_lighting="day";Settings.values.sun_day="random";Settings.values.weather="random"
 	print("REFERENCE SHOTS: ",n)
 	get_tree().quit()
