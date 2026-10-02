@@ -55,7 +55,7 @@ func finish_wave():
 				arena.phase="paused";depart_room()
 			else:
 				Game.progression.complete_world(Campaign.world)
-				finish_run(true,"Мир %d завершён · %s" % [Campaign.world,Campaign.WORLDS[Campaign.world].name])
+				finish_run(true,"Мир %d · %s — победа" % [Campaign.world,BattleNames.current()])
 		return
 	if arena.room.wave==2 and not arena.room.room_boss_spawned:
 		arena.room.commander_countdown=true;arena.countdown=3.0;arena.phase="countdown"

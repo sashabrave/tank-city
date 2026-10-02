@@ -62,7 +62,7 @@ static func active_cap(index:int)->int:
 static func title(index:int)->String:
 	if daily:return "Забег дня · сектор %d · поле %d" % [cycle+1,index+1]
 	if endless:return "Бесконечный · сектор %d · поле %d" % [cycle+1,index+1]
-	return "%s · %s" % [WORLDS[world].name,"Гигабосс" if is_final(index) else "Генерал" if index in BOSSES else "поле %d / %d" % [index+1,6]]
+	return "%s · %s" % [BattleNames.current(),"Гигабосс" if is_final(index) else "Генерал" if index in BOSSES else "поле %d / %d" % [index+1,6]]
 static func unlocked(id:int)->bool:return id==1 or id-1 in Game.progression.cleared_worlds
 static func infinite_unlocked()->bool:return 1 in Game.progression.cleared_worlds
 static func service_options(seed_value:int,index:int)->Array:
