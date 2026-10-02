@@ -72,7 +72,8 @@ static func show(hud,arena,won:bool,reason:String):
 	if record:UiKit.label(kills,"Рекорд",Vector2(column-190,-12),Vector2(100,16),12,UiKit.ORANGE)
 	if Campaign.daily:
 		var score=DailyRun.score(Campaign.cycle,arena.room_index,arena.kills);var day_best=int(DailyRun.best(Campaign.daily_key).get("score",-1))
-		ledger(panel,right+Vector2(0,138),column,"Счёт дня"+(" · рекорд" if score>day_best else ""),str(score),UiKit.ORANGE if score>day_best else UiKit.INK,at.call())
+		var place=DailyBoard.place(Campaign.daily_key,score)
+		ledger(panel,right+Vector2(0,138),column,"Счёт дня"+(" · место %d" % place if place<=DailyBoard.TOP else "")+(" · рекорд" if score>day_best else ""),str(score),UiKit.ORANGE if score>day_best else UiKit.INK,at.call())
 	# Killed enemies: one tile per type, each a little higher and to the right — a staircase.
 	var kinds:Array=arena.run.kills_by.keys()
 	kinds.sort_custom(func(a,b):return int(arena.run.kills_by[a])>int(arena.run.kills_by[b]))

@@ -58,7 +58,7 @@ func card(panel:Control,i:int,pos:Vector2)->Button:
 	UiKit.label(button,Campaign.WORLDS[i+1].name if i<3 else "Бесконечный",Vector2(16,268),Vector2(CARD.x-32,30),22,UiKit.INK if unlocked else UiKit.MUTED)
 	# The biomes of the world, in route order, under its name.
 	var biomes=preload("res://scripts/biome_catalog.gd").world_line(i+1) if i<3 else "все биомы вперемешку"
-	var line=UiKit.label(button,biomes,Vector2(16,296),Vector2(CARD.x-32,18),13,UiKit.MUTED);line.name="Biomes";line.clip_text=true
+	var line=UiKit.label(button,biomes,Vector2(16,296),Vector2(CARD.x-32,18),12,UiKit.MUTED);line.name="Biomes";line.clip_text=true
 	if not unlocked:
 		UiKit.label(button,"Пройди мир %d" % i if i<3 else "Пройди мир 1",Vector2(16,318),Vector2(CARD.x-32,24),15,UiKit.MUTED)
 	elif i<3:
@@ -72,7 +72,9 @@ func card(panel:Control,i:int,pos:Vector2)->Button:
 	else:
 		var best=int(Game.progression.counters.get("endless_cycle",0))
 		UiKit.label(button,"Лучший сектор: %d" % best if best>0 else "Сектор за сектором",Vector2(16,318),Vector2(CARD.x-32,24),15,UiKit.MUTED)
-		var daily=UiKit.button(button,"Забег дня",Vector2(16,CARD.y-52),Vector2(CARD.x-32,38),func():daily_selected.emit())
+		var daily=UiKit.button(button,"Забег дня",Vector2(16,CARD.y-52),Vector2(CARD.x-32-66,38),func():daily_selected.emit())
+		var board=UiKit.button(button,"Топ",Vector2(CARD.x-74,CARD.y-52),Vector2(58,38),func():show_board());board.name="DailyBoard"
+		board.add_theme_font_size_override("font_size",15);board.tooltip_text=Texts.localized("Таблица дня")
 		daily.add_theme_font_size_override("font_size",15);daily.tooltip_text=Texts.render("Одно поле на всех на сегодня. "+DailyRun.describe(DailyRun.best(DailyRun.today_key())))
 	if not unlocked:button.modulate=Color(1,1,1,.85)
 	return button
@@ -93,6 +95,10 @@ func launch():
 
 ## Modal: keys are taken before the hub sees them (E would otherwise also reach the hub interaction).
 func _input(event):
+	# The daily table is a small modal: Esc or E closes it and nothing else reacts.
+	if has_node("DailyBoardView"):
+		if event.is_action_pressed("pause") or event.is_action_pressed("interact"):get_viewport().set_input_as_handled();get_node("DailyBoardView").queue_free()
+		return
 	if event.is_action_pressed("pause"):get_viewport().set_input_as_handled();cancelled.emit();return
 	if event.is_action_pressed("interact") or (event is InputEventKey and event.pressed and not event.echo and event.keycode in [KEY_ENTER,KEY_KP_ENTER]):
 		get_viewport().set_input_as_handled();launch()
@@ -131,3 +137,24 @@ func refresh_ladder(card:Button,world:int):
 		var node=card.get_node_or_null(name)
 		if node:card.remove_child(node);node.queue_free()
 	ladder_row(card,world)
+
+## Today's local leaderboard: every profile on this computer, best first.
+func show_board():
+	if has_node("DailyBoardView"):return
+	var view=Control.new();view.name="DailyBoardView";add_child(view);view.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);view.add_to_group("selection_scope")
+	var shade=ColorRect.new();view.add_child(shade);shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);shade.color=Color(0,0,0,.5)
+	shade.gui_input.connect(func(e):if e is InputEventMouseButton and e.pressed:view.queue_free())
+	var size=Vector2(620,560);var panel=UiKit.glass(view,((get_viewport_rect().size-size)*.5).round(),size)
+	UiKit.label(panel,"Таблица дня",Vector2(26,18),Vector2(400,36),26)
+	UiKit.label(panel,DailyRun.today_key()+" · все профили на этом компьютере",Vector2(26,56),Vector2(560,22),14,UiKit.MUTED)
+	var close=UiKit.button(panel,"",Vector2(size.x-62,16),Vector2(44,40),func():view.queue_free());close.icon=UiKit.interface_icon("close");close.expand_icon=true;close.add_theme_constant_override("icon_max_width",18)
+	var rows=DailyBoard.top(DailyRun.today_key())
+	if rows.is_empty():UiKit.label(panel,"Сегодня ещё никто не играл. Будь первым.",Vector2(26,110),Vector2(560,30),17,UiKit.MUTED)
+	for i in range(rows.size()):
+		var e=rows[i];var y=96+i*44;var mine=int(e.get("slot",0))==Game.profiles.active
+		var row=Panel.new();panel.add_child(row);row.position=Vector2(20,y);row.size=Vector2(size.x-40,38)
+		row.add_theme_stylebox_override("panel",UiKit.style(Color("4a3f28") if mine else Color("2f3b33"),8,UiKit.ORANGE if mine else Color.TRANSPARENT))
+		UiKit.label(row,str(i+1),Vector2(12,6),Vector2(30,26),18,UiKit.ORANGE if i<3 else UiKit.INK)
+		UiKit.label(row,"Профиль %d" % int(e.get("slot",1)),Vector2(48,8),Vector2(130,24),15)
+		UiKit.label(row,DailyRun.describe(e),Vector2(180,8),Vector2(270,24),14,UiKit.MUTED)
+		var score=UiKit.label(row,str(int(e.get("score",0))),Vector2(size.x-200,8),Vector2(150,24),15);score.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT

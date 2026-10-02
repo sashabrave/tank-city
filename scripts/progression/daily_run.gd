@@ -33,6 +33,7 @@ static func record(key:String,cycle:int,field:int,kills:int,elapsed:float)->bool
 	if improved:
 		entry.merge({"score":result,"cycle":cycle,"field":field,"kills":kills,"elapsed":roundf(elapsed),"class":Game.selected_class,"weapon":Game.selected_weapon},true)
 	Game.progression.daily[key]=entry
+	DailyBoard.add(key,DailyBoard.entry_for(cycle,field,kills,elapsed))
 	var days=Game.progression.daily.keys();days.sort()
 	while days.size()>KEEP_DAYS:Game.progression.daily.erase(days.pop_front())
 	return improved
