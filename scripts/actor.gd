@@ -435,10 +435,21 @@ func update_shield(delta: float):
 	match shield_phase:
 		"ready":
 			if is_instance_valid(arena.player) and arena.flat_distance(position,arena.player.position)<7:
-				shield_phase="raising";shield_time=.55;shield_visual.basis=shield_rest*Basis(Vector3.RIGHT,.25)
-		"raising":shield_phase="active";shield_time=1.1;shield_visual.basis=shield_rest
-		"active":shield_phase="cooldown";shield_time=2.2;shield_visual.basis=shield_rest*Basis(Vector3.RIGHT,.5)
+				# T-054/T-055: turn to the soldier first, then plant the shield in front in one readable motion.
+				var to=arena.player.position-position
+				set_facing(Vector2i(signi(roundi(to.x)),0) if absf(to.x)>absf(to.z) else Vector2i(0,signi(roundi(to.z))))
+				shield_phase="raising";shield_time=.55;shield_pose(Vector3(0,.0,-.12),shield_rest,.5)
+		"raising":shield_phase="active";shield_time=1.1;shield_pose(Vector3(0,-.04,-.2),shield_rest,.12)
+		"active":shield_phase="cooldown";shield_time=2.2;shield_pose(Vector3.ZERO,shield_rest*Basis(Vector3.RIGHT,.5),.35)
 		"cooldown":shield_phase="ready";shield_time=0
+## Smoothly moves the shield panel to a pose (offset from its rest position, rotation) instead of snapping.
+var shield_origin=Vector3.INF
+func shield_pose(offset:Vector3,basis:Basis,time:float):
+	if not is_instance_valid(shield_visual):return
+	if shield_origin==Vector3.INF:shield_origin=shield_visual.position
+	var tween=shield_visual.create_tween().set_parallel(true).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(shield_visual,"position",shield_origin+offset,time)
+	tween.tween_property(shield_visual,"basis",basis,time)
 
 func blocks_shot(travel: Vector3) -> bool:
 	return kind=="shield" and shield_phase=="active" and travel.normalized().dot(Vector3(facing.x,0,facing.y))<-.7

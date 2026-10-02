@@ -683,7 +683,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-054.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "Щитоносец както странно анимируетс непонятно",
 			"type": "bug",
 			"version": "0.7.1-pre"
@@ -696,7 +696,7 @@
 			"scene": "arena",
 			"shot": "",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "Щитоносец ставит щит перед собой чтобы анимация была более читаемая",
 			"type": "polish",
 			"version": "0.7.1-pre"
