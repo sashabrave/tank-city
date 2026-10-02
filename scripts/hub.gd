@@ -580,7 +580,9 @@ func update_bench_visuals():
 		for id in Game.BUILD_COST:
 			var pos={"headquarters":hq_bench_pos,"character":Vector3(0,0,-1),"weapons":weapon_bench_pos,"bonuses":bonus_bench_pos,"garage":YARD_PARK,"range":YARD_DUMMY}[id]
 			if id not in Game.built_workshops:
-				var arrow=Visuals.label3d(bench_visuals,"▼",pos+Vector3.UP*1.5,UiKit.NOTICE.goal,38);arrow.modulate.a=.82;arrow.outline_size=6
+				# A soft round marker instead of a sharp triangle (T-052): a light disc with a small chevron.
+				var arrow=Visuals.label3d(bench_visuals,"⌄",pos+Vector3.UP*1.55,Color("fff3c8"),64);arrow.modulate.a=.95;arrow.outline_size=0
+				var disc=Visuals.label3d(arrow,"●",Vector3(0,.02,-.01),UiKit.NOTICE.goal,96);disc.modulate.a=.55;disc.outline_size=0;disc.no_depth_test=true
 				arrow.no_depth_test=true;arrow.visible=id in Game.research_unlocks or id in Game.progression.build_targets();build_arrows[id]=arrow
 			if id not in ["garage","range"]:
 				preload("res://scripts/interaction_prompt.gd").attach(bench_visuals,self,Game.RESEARCH[id].name if id in Game.built_workshops else "🔒 Построить · "+Game.RESEARCH[id].name,pos,1.25)

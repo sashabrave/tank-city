@@ -657,7 +657,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-052.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "в арсенали (как и везде) если что-то доступно для покупки от на вкладке справа должна быть иконка уведомления",
 			"type": "bug",
 			"version": "0.7.1-pre"

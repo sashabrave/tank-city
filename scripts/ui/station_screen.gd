@@ -37,6 +37,11 @@ const STATUS={
 	"goal":["Следующая цель",Color("f2a33a"),Color("4a3f28"),Color("c98a33")],
 	"later":["Позже",Color("6c736b"),Color("30352f"),Color("3f463f")],
 }
+## Something on tab `key` can be bought or upgraded right now (status() reads the current tab, so it is swapped).
+func affordable_in(key:String)->bool:
+	var saved=tab;tab=key
+	var found=provider.items(key).any(func(item):return status(item) in ["buy","upgrade"])
+	tab=saved;return found
 func status(item:Dictionary)->String:
 	if item.has("status"):return str(item.status)
 	var state=str(item.get("state","owned"))
@@ -108,6 +113,8 @@ func build():
 		for state in ["normal","hover","pressed","disabled"]:
 			var tight=b.get_theme_stylebox(state).duplicate();tight.content_margin_left=14;tight.content_margin_right=10;b.add_theme_stylebox_override(state,tight)
 		b.expand_icon=true;b.add_theme_constant_override("icon_max_width",22);b.add_theme_constant_override("h_separation",10);b.alignment=HORIZONTAL_ALIGNMENT_LEFT;b.add_theme_font_size_override("font_size",16)
+		# T-052: a tab with something affordable right now carries a «ready» dot, as everywhere else.
+		if key!=tab and affordable_in(key):UiKit.badge(b,"ready",0,"trailing")
 	var scroll=ScrollContainer.new();panel.add_child(scroll);scroll.position=Vector2(232,96);scroll.size=Vector2(530,532);scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
 	var items=provider.items(tab)
 	if selected=="" and not items.is_empty():selected=items[0].id
