@@ -3,6 +3,8 @@ extends CanvasLayer
 ## mode "board": four status columns (F9, or «Задачи» in the hub tools). The game is paused while open.
 const COLUMN_W=300.0
 var mode="board"
+## Board view: "board" (four columns) or "me" (what needs the author).
+var view="board"
 var shot:Image
 var root:Control
 var was_paused=false
@@ -78,6 +80,13 @@ func build_board():
 	UiKit.label(panel,"F8 — новая задача из любого места игры · Esc — закрыть",Vector2(24,50),Vector2(600,20),13,UiKit.MUTED)
 	var add=UiKit.button(panel,"+ Задача",Vector2(size.x-268,16),Vector2(180,42),func():mode="add";set_meta("from_board",true);build(),true);add.name="AddTask"
 	var close_b=UiKit.button(panel,"",Vector2(size.x-72,16),Vector2(48,42),close);close_b.icon=UiKit.interface_icon("close");close_b.expand_icon=true;close_b.add_theme_constant_override("icon_max_width",18)
+	# Two views: the whole board, or «Для меня» — only what needs the author: decisions and checks.
+	var views=[["board","Вся доска"],["me","Для меня · %d" % (TaskBoard.for_me("decide").size()+TaskBoard.for_me("check").size())]]
+	for i in range(2):
+		var key=views[i][0]
+		var t=UiKit.button(panel,views[i][1],Vector2(size.x-620+i*170,16),Vector2(160,42),func():view=key;build(),key==view);t.name="View_"+key;t.add_theme_font_size_override("font_size",15)
+	if view=="me":
+		build_me(panel,size);return
 	var col_w=(size.x-24*5)/4.0
 	for i in range(TaskBoard.STATUSES.size()):
 		var status=TaskBoard.STATUSES[i];var x=24+i*(col_w+24)
@@ -86,6 +95,17 @@ func build_board():
 		var scroll=ScrollContainer.new();panel.add_child(scroll);scroll.position=Vector2(x,116);scroll.size=Vector2(col_w,size.y-136);scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;scroll.name="Column_"+status
 		var box=VBoxContainer.new();scroll.add_child(box);box.size_flags_horizontal=Control.SIZE_EXPAND_FILL;box.add_theme_constant_override("separation",8)
 		for task in items:card(box,task,col_w-12,i)
+## «Для меня»: left — decisions (questions to the author), right — done work waiting for the author's check.
+func build_me(panel:Panel,size:Vector2):
+	var col_w=(size.x-24*3)/2.0
+	for i in range(2):
+		var kind=["decide","check"][i];var x=24+i*(col_w+24)
+		var items=TaskBoard.for_me(kind)
+		UiKit.label(panel,"%s · %d" % [["Решить","Проверить в игре"][i],items.size()],Vector2(x,84),Vector2(col_w,26),17)
+		var scroll=ScrollContainer.new();panel.add_child(scroll);scroll.position=Vector2(x,116);scroll.size=Vector2(col_w,size.y-136);scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;scroll.name="Me_"+kind
+		var box=VBoxContainer.new();scroll.add_child(box);box.size_flags_horizontal=Control.SIZE_EXPAND_FILL;box.add_theme_constant_override("separation",8)
+		for task in items:card(box,task,col_w-12,TaskBoard.STATUSES.find(str(task.get("status","backlog"))))
+		if items.is_empty():UiKit.label(box,"Пусто",Vector2.ZERO,Vector2(col_w,30),15,UiKit.MUTED)
 func card(box:VBoxContainer,task:Dictionary,width:float,column:int):
 	var tint={"bug":Color("5a3a34"),"idea":Color("34485a"),"polish":Color("3c4a36"),"question":Color("5a4a2a")}.get(task.get("type","idea"),Color("3c4a36"))
 	var c=Panel.new();box.add_child(c);c.custom_minimum_size=Vector2(width,104);c.name="Task_"+str(task.id)

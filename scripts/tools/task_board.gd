@@ -80,3 +80,7 @@ static func scene_name()->String:
 	for child in scene.get_children():
 		if child.get_script() and child.get_script().resource_path.get_file() in ["hub.gd","arena.gd","route_map.gd","merchant_room.gd","service_room.gd"]:return child.get_script().resource_path.get_file().get_basename()
 	return scene.name
+## Tasks that need the author: "decide" — open questions; "check" — work waiting in «Проверить».
+static func for_me(kind:String)->Array:
+	if kind=="decide":return tasks().filter(func(t):return t.get("type","")=="question" and t.get("status","")!="done")
+	return column("review")
