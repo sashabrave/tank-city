@@ -25,7 +25,9 @@ const MOMENTS={
 }
 const DAY_MOMENTS=["dawn","morning","noon","golden","sunset"]
 const NIGHT_MOMENTS=["dusk","moon","predawn"]
-const MIN_DAY_ELEVATION=34.0
+## Below this sun height, shadows fade towards LOW_SUN_SHADOW opacity so long stripes do not cover the field.
+const LOW_SUN=30.0
+const LOW_SUN_SHADOW=.55
 ## Battle-only moment; hub and route map keep the style sun. Deterministic per run and room,
 ## seeded from the visual seed so gameplay RNG is never touched.
 static func moment(context:Node,night:bool)->Dictionary:
@@ -43,9 +45,8 @@ static func moment(context:Node,night:bool)->Dictionary:
 	var entry:Dictionary=MOMENTS[choice].duplicate()
 	var span:Vector2=entry.elevation
 	var elevation=rng.randf_range(span.x,span.y)
-	# Readability: a low sun stretched blurred shadows 3–4 cells across the field and read as stripes.
-	# The colour keeps the dawn/sunset mood; the shadow length stays about one cell or less.
-	if not night:elevation=maxf(elevation,MIN_DAY_ELEVATION+(elevation-span.x)*.4)
+	# Realistic height for every moment (T-006): dawn and sunset are low. Long low shadows stay readable
+	# because apply() makes them lighter the lower the sun is (shadow_opacity), not shorter.
 	# Avoid the sun straight behind the camera (yaw ~10°): it flattens every shadow.
 	var yaw=wrapf(10.0+rng.randf_range(35,325),-180,180)
 	entry.id=choice;entry.angle=Vector3(-elevation,yaw,0)
@@ -126,6 +127,8 @@ func apply():
 		environment.adjustment_saturation=float(style.saturation)*float(weather.saturation)
 	if cozy:
 		sun.rotation_degrees=style.sun_angle
+		var height=-float(Vector3(style.sun_angle).x)
+		if not night and height<LOW_SUN:sun.shadow_opacity*=lerpf(LOW_SUN_SHADOW,1.0,clampf((height-12.0)/(LOW_SUN-12.0),0.0,1.0))
 		sun.light_color=Color(style.sun) if not night or not time.is_empty() else Color("9ab7e0")
 		sun.light_energy=float(style.sun_energy) if not night or not time.is_empty() else .3
 		# Fill light is a style colour (lilac-blue shadows); the bright sky is used only for reflections.

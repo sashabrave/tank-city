@@ -67,7 +67,7 @@
 			"note": "Убрать подъём солнца ради теней, вернуть реалистичную высоту.",
 			"type": "polish",
 			"priority": 2,
-			"status": "doing",
+			"status": "review",
 			"version": "0.8",
 			"created": "2026-10-02",
 			"source": "chat",
