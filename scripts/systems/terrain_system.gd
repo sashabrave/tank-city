@@ -176,12 +176,51 @@ func draw_patch(p:Vector2i,tint:Color):
 	if kind=="ice":
 		for i in range(2):batch_box(pos+Vector3(-.07+i*.13,height+.003,-.12+i*.21),Vector3(.19,.004,.009),(color.darkened(.16) if kind=="ice" else color.lightened(.2)),.9,.25 if kind=="water" else -.45+i*.7)
 	elif kind=="sand":
-		# Four dune patterns (T-024); the pattern and a half turn come from the patch position, so neighbours differ.
-		var key=absi(hash(Vector2i(roundi(pos.x*4),roundi(pos.z*4))))
-		var variant=key%4
-		if not sand_variants.has(variant):sand_variants[variant]=sand_ripples(variant)
-		batch("ridges%d" % variant,sand_variants[variant],Transform3D(Basis(Vector3.UP,PI*float((key/4)%2)),pos),color.lightened(.035),.9)
-		batches["ridges%d" % variant]["no_shadow"]=true
+		# T-084: a whole sand cell gets three diagonal dunes — small, big from corner to corner, big — drawn once
+		# from its top-left patch; the diagonal and a mirror come from the cell, so neighbours differ. A lone sand
+		# patch (cell only partly sand) keeps the small two-ridge pattern.
+		var whole=p.x%2==0 and p.y%2==0 and [Vector2i(1,0),Vector2i(0,1),Vector2i(1,1)].all(func(d):return patches.get(p+d,"")=="sand")
+		var part_of_whole=patches.get(Vector2i(p.x-p.x%2,p.y-p.y%2),"")=="sand" and [Vector2i(1,0),Vector2i(0,1),Vector2i(1,1)].all(func(d):return patches.get(Vector2i(p.x-p.x%2,p.y-p.y%2)+d,"")=="sand")
+		if whole:
+			var key=absi(hash(p))
+			var variant=key%3
+			if not cell_dunes.has(variant):cell_dunes[variant]=sand_dunes(variant)
+			batch("dunes%d" % variant,cell_dunes[variant],Transform3D(Basis(Vector3.UP,PI*.5*float((key/3)%4)),pos+Vector3(.25,0,.25)),color.lightened(.035),.9)
+			batches["dunes%d" % variant]["no_shadow"]=true
+		elif not part_of_whole:
+			var key=absi(hash(Vector2i(roundi(pos.x*4),roundi(pos.z*4))))
+			var variant=key%4
+			if not sand_variants.has(variant):sand_variants[variant]=sand_ripples(variant)
+			batch("ridges%d" % variant,sand_variants[variant],Transform3D(Basis(Vector3.UP,PI*float((key/4)%2)),pos),color.lightened(.035),.9)
+			batches["ridges%d" % variant]["no_shadow"]=true
+## Three diagonal dunes over a whole 1×1 sand cell (T-084): a small one near a corner, a big one from corner to
+## corner and another big one beside it. Same soft asymmetric profile as the ridges; variants differ in sizes
+## and bends.
+var cell_dunes:={}
+func sand_dunes(variant:int=0)->ArrayMesh:
+	var rng=RandomNumberGenerator.new();rng.seed=4411+variant*97
+	var surface=SurfaceTool.new();surface.begin(Mesh.PRIMITIVE_TRIANGLES)
+	const NX=18;const NZ=7;var base=0
+	var along=Vector2(1,1).normalized();var across=Vector2(-1,1).normalized()  # keeps the winding (mirrored axes culled the faces)
+	# [offset across the diagonal, half length, height, width]
+	var specs=[[-.38,.24,.03,.08],[0.0,.66,.06,.13],[.35,.44,.05,.12]]
+	for spec in specs:
+		var half_len=float(spec[1])*rng.randf_range(.92,1.05);var height=float(spec[2])*rng.randf_range(.9,1.1);var width=float(spec[3])
+		var bend=rng.randf_range(.02,.05)*(1.0 if rng.randf()<.5 else -1.0);var phase=rng.randf()*TAU
+		for iz in range(NZ+1):
+			for ix in range(NX+1):
+				var u=float(ix)/NX;var v=float(iz)/NZ
+				var a=lerpf(-half_len,half_len,u);var b=float(spec[0])+lerpf(-width,width,v)+sin(u*PI*1.2+phase)*bend
+				var flat=along*a+across*b
+				var fade=pow(sin(u*PI),.8);var profile=pow(sin(pow(v,.8)*PI),1.4)
+				surface.set_uv(Vector2(u,v))
+				surface.add_vertex(Vector3(clampf(flat.x,-.49,.49),height*profile*fade+.001,clampf(flat.y,-.49,.49)))
+		for iz in range(NZ):
+			for ix in range(NX):
+				var k=base+iz*(NX+1)+ix
+				for id in [k,k+1,k+NX+1,k+1,k+NX+2,k+NX+1]:surface.add_index(id)
+		base+=(NX+1)*(NZ+1)
+	surface.generate_normals();return surface.commit()
 ## Dunes on sand (T-024): two broad, low, curving ridges per patch with their own height, length and bend
 ## (variant-seeded, visual only), smooth normals, fading into the floor at the ends. No shadow casting, so a
 ## flashlight shows no triangle grid.

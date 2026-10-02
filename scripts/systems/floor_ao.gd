@@ -32,13 +32,18 @@ func rebuild():
 	var g=arena.grid_size
 	var sides=[[Vector2i.LEFT,1],[Vector2i.RIGHT,2],[Vector2i.UP,4],[Vector2i.DOWN,8]]
 	var corners=[[Vector2i(-1,-1),1],[Vector2i(1,-1),2],[Vector2i(-1,1),4],[Vector2i(1,1),8]]
+	# Only tall cover casts floor shadow: a ring around a barrel or a half block made its cell read as a raised
+	# tile (T-092).
+	var tall={}
+	for cell in arena.walls:
+		if casts(arena.walls[cell]):tall[cell]=true
 	for y in range(g):
 		for x in range(g):
 			var cell=Vector2i(x,y)
 			if arena.walls.has(cell):continue
 			var s=0;var c=0
-			for e in sides:if arena.walls.has(cell+e[0]):s+=e[1]
-			for e in corners:if arena.walls.has(cell+e[0]):c+=e[1]
+			for e in sides:if tall.has(cell+e[0]):s+=e[1]
+			for e in corners:if tall.has(cell+e[0]):c+=e[1]
 			if s or c:cells.append([cell,s,c])
 	var quad=QuadMesh.new();quad.size=Vector2.ONE;quad.orientation=PlaneMesh.FACE_Y
 	var mm=MultiMesh.new();mm.transform_format=MultiMesh.TRANSFORM_3D;mm.use_custom_data=true;mm.mesh=quad;mm.instance_count=cells.size()
@@ -46,6 +51,16 @@ func rebuild():
 		var origin=arena.world_pos(cells[i][0]);origin.y+=LIFT
 		mm.set_instance_transform(i,Transform3D(Basis.IDENTITY,origin));mm.set_instance_custom_data(i,Color(cells[i][1],cells[i][2],0,0))
 	multimesh=mm
+const TALL=.6
+static func casts(wall:Dictionary)->bool:
+	if wall.get("barrel",false) or wall.get("barrier",false) or wall.has("half_side"):return false
+	var node=wall.get("node")
+	if not is_instance_valid(node):return true
+	if not node.has_meta("ao_height"):
+		node.set_meta("ao_height",Visuals.mesh_bounds(node,Transform3D.IDENTITY).size.y*node.scale.y)
+	# Batched walls (bricks in a MultiMesh) have no plain mesh to measure: count them as tall.
+	var height=float(node.get_meta("ao_height"))
+	return height<.05 or height>=TALL
 func rebuild_props(root:Node3D,skip:Array):
 	material_override.set_shader_parameter("boxes",true);material_override.set_shader_parameter("strength",.3)
 	var items=[]
