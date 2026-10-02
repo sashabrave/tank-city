@@ -40,6 +40,8 @@ var training_barriers:Array=[]
 ## and a fenced range with the dummy. Vehicles can drive out there too; the camera slides to follow.
 const YARD_PARK=Vector3(11,0,-2)
 const YARD_DUMMY=Vector3(16,0,-2)
+## Motor pool terminal next to the parking bay (T-014).
+const GARAGE_TERMINAL=Vector3(11,0,-3)
 ## Rectangular test track in the south of the yard (centre, half extents) and the guard booth cell.
 const TRACK_CENTER=Vector3(13.9,0,1.9)
 ## Half extents of the rectangular track.
@@ -135,7 +137,10 @@ func _ready():
 	hub_skills=preload("res://scripts/ui/hub_skills.gd").new();hub_skills.hub=self;root.add_child(hub_skills)
 	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Казарма",printer_pos,1.4)
 	preload("res://scripts/interaction_prompt.gd").attach(self,self,"В бой",Vector3(5,0,-2),2.2)
-	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Стоянка",YARD_PARK,1.65,func():return "garage" in Game.built_workshops and not mounted)
+	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Стоянка",GARAGE_TERMINAL,1.2,func():return "garage" in Game.built_workshops and not mounted)
+	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Сесть",YARD_PARK,1.65,func():return "garage" in Game.built_workshops and not mounted and training_tank.visible)
+	var terminal=Visuals.box(self,GARAGE_TERMINAL+Vector3(0,.55,0),Vector3(.45,1.1,.3),Color("5b6650"));terminal.name="GarageTerminal"
+	var screen=Visuals.box(self,GARAGE_TERMINAL+Vector3(0,.82,.16),Vector3(.34,.26,.02),Color("7fd0ff"));screen.material_override=Visuals.material(Color("7fd0ff"),true)
 	preload("res://scripts/printer_intro.gd").play(self)
 
 func build_ui():
@@ -283,7 +288,7 @@ func _physics_process(delta):
 	board_button.disabled=moving or (not near_station and not near_weapon and not near_bonus and not mounted and avatar.position.distance_to(training_tank.position)>1.65)
 	if not mounted and avatar.position.distance_to(printer_pos)<1.4:Texts.set_text(board_button,"Боец [E]");board_button.disabled=moving
 	if not mounted and avatar.position.distance_to(command_pos)<1.65:Texts.set_text(board_button,"Управление [E]");board_button.disabled=moving
-	if not mounted and "garage" in Game.built_workshops and avatar.position.distance_to(YARD_PARK)<1.65:Texts.set_text(board_button,"Стоянка [E]");board_button.disabled=moving
+	if not mounted and "garage" in Game.built_workshops and (avatar.position.distance_to(GARAGE_TERMINAL)<1.2 or (not training_tank.visible and avatar.position.distance_to(YARD_PARK)<1.65)):Texts.set_text(board_button,"Стоянка [E]");board_button.disabled=moving
 	if nearest_locked()!="":Texts.set_text(board_button,"Построить [E]");board_button.disabled=moving
 	if not mounted and avatar.position.distance_to(hq_bench_pos)<1.2:Texts.set_text(board_button,"Технологии [E]");board_button.disabled=moving
 	if not mounted and avatar.position.distance_to(recycling_pos)<1.3:Texts.set_text(board_button,"Продать [E]");board_button.disabled=moving
@@ -471,7 +476,7 @@ func hub_free(p: Vector2i) -> bool:
 		if "yard" not in Game.built_workshops:return false
 		# Yard: the rack gap (x 8-9 only on row 0), then open concrete x 10-17, y -3..3 except the dummy and booth.
 		if p.x<=9:return p.y==0
-		return p.x<=17 and p.y>=-3 and p.y<=3 and p!=Vector2i(roundi(YARD_DUMMY.x),roundi(YARD_DUMMY.z)) and p!=BOOTH_CELL
+		return p.x<=17 and p.y>=-3 and p.y<=3 and p!=Vector2i(roundi(YARD_DUMMY.x),roundi(YARD_DUMMY.z)) and p!=BOOTH_CELL and p!=Vector2i(roundi(GARAGE_TERMINAL.x),roundi(GARAGE_TERMINAL.z))
 	if p.x< -4 or p.y< -2 or p.y>4:return false
 	# Command centre (left edge), crates by the back wall, the range pad and the arsenal spot. The retired
 	# workbench cells (character at 0,-1 and bonuses at -3,-1) are walkable floor now.
@@ -489,7 +494,9 @@ func interact():
 	if not mounted and avatar.position.distance_to(printer_pos)<1.4:open_station("fighter");return
 	if not mounted and avatar.position.distance_to(WARDROBE_POS)<1.3:open_station("wardrobe");return
 	if not mounted and avatar.position.distance_to(ROADMAP_POS)<1.3:open_station("roadmap");return
-	if not mounted and "garage" in Game.built_workshops and avatar.position.distance_to(YARD_PARK)<1.65:open_station("garage");return
+	# T-014: with a vehicle parked, E boards it; the motor pool station opens from its terminal beside the bay.
+	if not mounted and "garage" in Game.built_workshops and avatar.position.distance_to(GARAGE_TERMINAL)<1.2:open_station("garage");return
+	if not mounted and "garage" in Game.built_workshops and not training_tank.visible and avatar.position.distance_to(YARD_PARK)<1.65:open_station("garage");return
 	var locked=nearest_locked()
 	if locked!="":build_tab=1 if locked in ["garage","range"] else 0;show_build_menu();return
 	if not mounted and "yard" not in Game.built_workshops and avatar.position.distance_to(Vector3(7,0,0))<1.3:show_build_menu();return

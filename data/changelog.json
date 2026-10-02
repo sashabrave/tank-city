@@ -31,7 +31,8 @@
 					"Сундук появляется с отскоком и лёгким наездом камеры, а при открытии подпрыгивает со вспышкой.",
 					"Карта маршрута: внизу неподвижный массивный гараж со сложной крышей, вверху за генералом — перевал с КПП, шлагбаумами и горящим миром за ним.",
 					"Враги больше не стоят над штабом, стреляя в бетонный полублок: они ищут открытую линию.",
-					"Первый запуск новой сборки быстрее: шейдеры готовятся заранее (около 8 секунд вместо 19)."
+					"Первый запуск новой сборки быстрее: шейдеры готовятся заранее (около 8 секунд вместо 19).",
+					"Во дворе: E у машины сажает в неё, а меню стоянки открывается у отдельного терминала рядом."
 				]
 			},
 			"en": {
@@ -62,7 +63,8 @@
 					"A chest drops in with a bounce and a slight camera push, and jumps with a flash when opened.",
 					"Route map: a static massive garage with a detailed roof at the bottom, and past the general a mountain pass with a checkpoint, barriers and a burning world beyond.",
 					"Enemies no longer stand above the HQ firing into a concrete half-block: they look for an open lane.",
-					"The first launch of a new build is faster: shaders are prepared in advance (about 8 seconds instead of 19)."
+					"The first launch of a new build is faster: shaders are prepared in advance (about 8 seconds instead of 19).",
+					"In the yard: E at the vehicle boards it, and the motor pool menu opens at a separate terminal next to it."
 				]
 			}
 		},

@@ -163,7 +163,7 @@
 			"note": "В hub.interact() ветка стоянки (YARD_PARK < 1.65) стоит раньше посадки с тем же радиусом: E у машины всегда открывает гараж. Найдено помощником по тестам.",
 			"type": "bug",
 			"priority": 2,
-			"status": "backlog",
+			"status": "review",
 			"version": "0.7.2",
 			"created": "2026-10-02",
 			"source": "chat",
