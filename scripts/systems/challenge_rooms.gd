@@ -138,13 +138,16 @@ func tick_hold(delta:float):
 	if progress>=goal:complete(zone.position)
 
 func start_maze():
-	goal=MAZE_SECONDS[clampi(arena.room.difficulty,0,2)];timed_out=false
+	# Time grows with the field: the table is for a 15-cell field.
+	goal=roundf(MAZE_SECONDS[clampi(arena.room.difficulty,0,2)]*maxf(1.0,arena.room.grid_size/15.0));timed_out=false
 	var cell=ChallengeLayouts.maze_goal(arena.room.grid_size,arena.run_seed+arena.room.room_index*977,arena.room.difficulty)
 	goal_flag=Node3D.new();goal_flag.name="MazeGoal";arena.add_child(goal_flag);goal_flag.position=arena.world_pos(cell)
 	Visuals.ring(goal_flag,Color("5fc46a"),.7)
 	Visuals.box(goal_flag,Vector3(0,1.1,0),Vector3(.08,2.2,.08),Color("eee9d8"))
 	Visuals.box(goal_flag,Vector3(.36,1.85,0),Vector3(.7,.45,.06),Color("4fb85c"))
 	var glow=OmniLight3D.new();goal_flag.add_child(glow);glow.position=Vector3(0,1.6,0);glow.light_color=Color("7dffa0");glow.light_energy=1.2;glow.omni_range=2.6
+	var stash=ChallengeLayouts.maze_chest(arena.room.grid_size,arena.run_seed+arena.room.room_index*977,arena.room.difficulty)
+	if stash.x>=0:arena.reward.drop_recipe(stash,{"elite":false})
 	darkness=preload("res://scripts/ui/maze_darkness.gd").new();darkness.arena=arena;arena.add_child(darkness)
 	if is_instance_valid(arena.presentation):arena.presentation.announce("Тёмный лабиринт","Найди зелёный флаг до конца отсчёта",.8)
 	arena.toast("Темно. Видно только вокруг бойца — ищи зелёный флаг")

@@ -112,8 +112,12 @@ static func maze_plan(size:int,seed_value:int,difficulty:int)->Dictionary:
 		for dir in [Vector2i.RIGHT,Vector2i.LEFT,Vector2i.UP,Vector2i.DOWN]:
 			var to=at+dir
 			if open.has(to) and not distance.has(to):distance[to]=distance[at]+1;queue.append(to)
-	return {"open":open,"goal":far,"entry":entry,"last":last}
+	# Small chest: a dead end well away from the entrance that is not the goal.
+	var ends=nodes.filter(func(n):return n!=far and n!=entry and distance.has(n) and distance[n]*3>=distance[far] and [Vector2i.RIGHT,Vector2i.LEFT,Vector2i.UP,Vector2i.DOWN].filter(func(d):return open.has(n+d)).size()==1)
+	var chest=ends[rng.randi_range(0,ends.size()-1)] if not ends.is_empty() else Vector2i(-1,-1)
+	return {"open":open,"goal":far,"entry":entry,"last":last,"chest":chest}
 static func maze_goal(size:int,seed_value:int,difficulty:int)->Vector2i:return maze_plan(size,seed_value,difficulty).goal
+static func maze_chest(size:int,seed_value:int,difficulty:int)->Vector2i:return maze_plan(size,seed_value,difficulty).chest
 static func maze(rows:Array,size:int,seed_value:int,difficulty:int):
 	var plan=maze_plan(size,seed_value,difficulty)
 	for y in range(0,size-4):

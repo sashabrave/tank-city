@@ -29,6 +29,8 @@ func run():
 	check(is_instance_valid(goal),"green flag placed")
 	check(is_instance_valid(arena.challenges.darkness),"darkness covers the field")
 	check(arena.room.spawn_queue.is_empty() and arena.enemy_count()==0,"no enemies in the maze")
+	check(arena.grid_size==Campaign.SIZES.max(),"maze field is as big as the boss arena (%d)" % arena.grid_size)
+	check(arena.room.pickups.any(func(p):return p.kind=="recipe_draft" and not p.elite),"a small chest waits in a dead end")
 	# Walking route from the soldier to the flag through the real board (walls and terrain).
 	var start=arena.grid_pos(arena.room.player.position);var target=arena.grid_pos(goal.position)
 	var seen={start:true};var queue=[start]

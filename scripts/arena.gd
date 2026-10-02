@@ -321,6 +321,8 @@ func begin_room(index: int):
 	room.commander=null;room.commander_help_timer=0;room.commander_help_waves=0;room.commander_help_pool.clear()
 	room_index=index;grid_size=ROOM_SIZES[index];boss_room=index in Campaign.BOSSES;boss_defeated=false
 	if sandbox and sandbox_size>0 and not boss_room:grid_size=sandbox_size
+	# The dark maze is a big field, like the boss arena: the largest size of this world.
+	if room.mode=="maze" and not (sandbox and sandbox_size>0):grid_size=ROOM_SIZES.max()
 	base_cell=Vector2i(int(grid_size/2),grid_size-1)
 	headquarters.room_started()
 	reinforcement_timer=9.2
