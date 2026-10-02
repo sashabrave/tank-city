@@ -293,7 +293,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-024.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "текстура песка",
 			"type": "polish",
 			"version": "0.7.1-pre"

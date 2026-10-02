@@ -5,7 +5,6 @@ var patches:Dictionary={}
 var vegetation:Dictionary={}  # cell → grove node, for the bullet rustle (visual only)
 var strips:Array=[]
 var batches:Dictionary={}
-var sand_mesh:ArrayMesh
 func _init(context):arena=context
 func half_pos(p:Vector2i)->Vector3:
 	return Vector3(p.x*.5-arena.grid_size*.5+.25,0,p.y*.5-arena.grid_size*.5+.25)
@@ -175,23 +174,33 @@ func draw_patch(p:Vector2i,tint:Color):
 	if kind=="ice":
 		for i in range(2):batch_box(pos+Vector3(-.07+i*.13,height+.003,-.12+i*.21),Vector3(.19,.004,.009),(color.darkened(.16) if kind=="ice" else color.lightened(.2)),.9,.25 if kind=="water" else -.45+i*.7)
 	elif kind=="sand":
-		if sand_mesh==null:sand_mesh=sand_ripples()
-		batch("ridges",sand_mesh,Transform3D(Basis.IDENTITY,pos),color.lightened(.035),.9)
-		batches.ridges["no_shadow"]=true
-## Wind ripples on sand: three soft, low waves with smooth normals, fading into the floor at the ends.
-## Smooth indexed grid instead of faceted triangles; no shadow casting, so a flashlight shows no triangle grid.
-func sand_ripples()->ArrayMesh:
+		# Four dune patterns (T-024); the pattern and a half turn come from the patch position, so neighbours differ.
+		var key=absi(hash(Vector2i(roundi(pos.x*4),roundi(pos.z*4))))
+		var variant=key%4
+		if not sand_variants.has(variant):sand_variants[variant]=sand_ripples(variant)
+		batch("ridges%d" % variant,sand_variants[variant],Transform3D(Basis(Vector3.UP,PI*float((key/4)%2)),pos),color.lightened(.035),.9)
+		batches["ridges%d" % variant]["no_shadow"]=true
+## Dunes on sand (T-024): two broad, low, curving ridges per patch with their own height, length and bend
+## (variant-seeded, visual only), smooth normals, fading into the floor at the ends. No shadow casting, so a
+## flashlight shows no triangle grid.
+var sand_variants:={}
+func sand_ripples(variant:int=0)->ArrayMesh:
+	var rng=RandomNumberGenerator.new();rng.seed=9013+variant*131
 	var surface=SurfaceTool.new();surface.begin(Mesh.PRIMITIVE_TRIANGLES)
-	const NX=10;const NZ=6;var base=0
-	for i in range(3):
-		var z0=-.17+i*.16
+	const NX=14;const NZ=7;var base=0
+	for i in range(2):
+		var z0=-.12+i*.24+rng.randf_range(-.03,.03)
+		var half_len=rng.randf_range(.17,.25);var height=rng.randf_range(.03,.055);var width=rng.randf_range(.09,.13)
+		var bend=rng.randf_range(.025,.06)*(1.0 if rng.randf()<.5 else -1.0);var phase=rng.randf()*TAU;var shift=rng.randf_range(-.04,.04)
 		for iz in range(NZ+1):
 			for ix in range(NX+1):
 				var u=float(ix)/NX;var v=float(iz)/NZ
-				var x=lerpf(-.24,.24,u);var z=z0+lerpf(-.065,.065,v)+sin(u*PI*1.6+i)*.012
-				var fade=sin(u*PI)
+				var x=shift+lerpf(-half_len,half_len,u);var z=z0+lerpf(-width,width,v)+sin(u*PI*1.3+phase)*bend
+				var fade=pow(sin(u*PI),.8)
 				surface.set_uv(Vector2(u,v))
-				surface.add_vertex(Vector3(x,.022*pow(sin(v*PI),1.5)*fade+.001,z))
+				# Asymmetric profile: a gentle windward slope and a steeper lee side.
+				var profile=pow(sin(pow(v,.8)*PI),1.4)
+				surface.add_vertex(Vector3(x,height*profile*fade+.001,z))
 		for iz in range(NZ):
 			for ix in range(NX):
 				var k=base+iz*(NX+1)+ix
