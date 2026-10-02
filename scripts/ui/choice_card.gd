@@ -70,7 +70,25 @@ static func minimal(card:Panel,data:Dictionary):
 		if body is Label:body.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
 	var rich=card.get_node_or_null("NumericDescription")
 	if rich is RichTextLabel:rich.text="[center]"+rich.text+"[/center]"
+	if not data.get("rows",[]).is_empty():table(card,data,width,family_color)
 	var button:Button=card.get_node("ChooseButton");button.position=Vector2.ZERO;button.size=card.size;Texts.set_text(button,"")
 	var clear=StyleBoxEmpty.new()
 	for key in ["normal","hover","pressed","focus","disabled"]:button.add_theme_stylebox_override(key,clear)
 	card.move_child(button,card.get_child_count()-1)
+
+## Table view: big change values in the left column, short parameter names in the right one, then one short
+## sentence. The long description moves to the tooltip.
+static func table(card:Panel,data:Dictionary,width:float,accent:Color):
+	for key in ["Description","NumericDescription"]:
+		var body=card.get_node_or_null(key)
+		if body:body.hide()
+	var y=188.0
+	for row in data.rows:
+		var value=UiKit.label(card,str(row[0]),Vector2(16,y),Vector2(width*.42-16,32),24,accent.lightened(.25));value.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT;value.name="RowValue"
+		UiKit.label(card,str(row[1]),Vector2(width*.42+10,y+5),Vector2(width*.58-26,26),15,UiKit.MUTED).name="RowParam"
+		var rule=ColorRect.new();card.add_child(rule);rule.position=Vector2(width*.42,y+4);rule.size=Vector2(1,24);rule.color=Color(1,1,1,.12);rule.mouse_filter=Control.MOUSE_FILTER_IGNORE
+		y+=36
+	var short=str(data.get("short",""))
+	if short!="":
+		var note=UiKit.label(card,short,Vector2(18,y+4),Vector2(width-36,maxf(24,card.size.y-y-16)),13,UiKit.MUTED);note.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;note.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;note.name="ShortNote"
+	card.tooltip_text=Texts.render(str(data.get("detail","")))

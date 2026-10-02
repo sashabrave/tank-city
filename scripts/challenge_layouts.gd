@@ -7,7 +7,7 @@ extends RefCounted
 static func center(size:int,mode:String)->Vector2i:
 	return Vector2i(int(size/2),int(size/3)) if mode=="hold" else Vector2i(int(size/2),int(size/2)-1)
 static func plaza_radius(mode:String)->float:
-	return {"thimbles":4.6,"switches":4.2,"cache":2.2,"hold":2.2,"survive":3.0}.get(mode,0.0)
+	return {"cache":2.2,"hold":2.2,"survive":3.0}.get(mode,0.0)
 ## Terrain patches (water, vegetation…) stay out of the plaza.
 static func keeps_clear(size:int,mode:String,cell:Vector2i)->bool:
 	return Vector2(cell-center(size,mode)).length()<plaza_radius(mode)+.8
@@ -19,7 +19,6 @@ static func apply(rows:Array,size:int,mode:String,seed_value:int):
 	var rng=RandomNumberGenerator.new();rng.seed=seed_value+4099
 	frame(rows,size)
 	match mode:
-		"thimbles","switches":puzzle_plaza(rows,size,mode)
 		"cache":cache_vault(rows,size)
 		"hold":hold_redoubt(rows,size)
 		"survive":survive_shelters(rows,size,rng)
@@ -43,15 +42,6 @@ static func frame(rows:Array,size:int):
 		var tip=Vector2i(middle+offset,3)
 		for cell in [tip,tip+Vector2i(-1,1),tip+Vector2i(1,1)]:put(rows,cell,"K",size)
 
-static func puzzle_plaza(rows:Array,size:int,mode:String):
-	var c=center(size,mode);var r=plaza_radius(mode)
-	# Rubble ring marks the plaza border; four concrete pylons guard its diagonals.
-	for y in range(size):
-		for x in range(size):
-			var d=Vector2(Vector2i(x,y)-c).length()
-			if d>=r and d<r+.9 and (x+y)%2==0:put(rows,Vector2i(x,y),"R",size)
-	for dir in [Vector2i(1,1),Vector2i(-1,1),Vector2i(1,-1),Vector2i(-1,-1)]:
-		put(rows,c+dir*roundi(r*.72+1),"C",size)
 
 static func cache_vault(rows:Array,size:int):
 	var c=center(size,"cache")

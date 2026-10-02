@@ -1,6 +1,24 @@
 {
 	"entries": [
 		{
+			"date": "2026-10-02",
+			"version": "0.7.0",
+			"ru": {
+				"title": "Испытания, легенды и живое поле",
+				"items": [
+					"Карточки усилений читаются как таблица: слева крупно изменение, справа параметр, ниже одна короткая фраза. Полное описание — в подсказке.",
+					"Убраны мини-игры «Напёрстки» и «Переключатели» и второй набор иллюстраций: в игре один стиль GPT."
+				]
+			},
+			"en": {
+				"title": "Challenges, legends and a living field",
+				"items": [
+					"Upgrade cards read like a table: the change in large type on the left, the parameter on the right, one short line below. The full text is in the tooltip.",
+					"The «Shell game» and «Switches» mini-games and the second illustration set are gone: the game uses one GPT style."
+				]
+			}
+		},
+		{
 			"date": "2026-10-01",
 			"version": "0.6.0",
 			"ru": {

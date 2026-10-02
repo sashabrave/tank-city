@@ -1,12 +1,12 @@
 class_name Illustrations
 extends RefCounted
-## Two interchangeable illustration sets (assets/illustrations/<set>/…, same relative paths and sizes):
+## Illustration sets (one shipped today: GPT; Nano Banana was removed in 0.7) (assets/illustrations/<set>/…, same relative paths and sizes):
 ## unique card/stat/ability/HQ/garage icons, class portraits and miniatures, the enemy wave atlas and the
 ## workshop atlas. Callers keep asking for the classic path ("res://assets/icons/upgrades/x.png",
 ## "res://assets/portraits/v16/portraits.png"…); path() points it at the chosen set. Shared art (items,
 ## weapons, hearts, guide, logo) is not part of a set and passes through unchanged.
-const SETS=["gpt_image_2_5","nano_banana"]
-const NAMES=["GPT","Nano Banana"]
+const SETS=["gpt_image_2_5"]
+const NAMES=["GPT"]
 const DEFAULT="gpt_image_2_5"
 const ROOT="res://assets/illustrations/"
 const PREFIXES=["icons/upgrades/","icons/stats/","icons/abilities/","icons/headquarters/","icons/garage/","icons/pickups/","icons/weapons/","portraits/v16/","ui/enemies/enemy_atlas_v1.png","ui/workshops/atlas.png"]

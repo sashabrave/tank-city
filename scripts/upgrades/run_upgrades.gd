@@ -182,9 +182,23 @@ static func preview_text(arena,id:String,tier:int)->String:
 	if label[1]=="%":change=[roundf(change[0]),roundf(change[1])]
 	return UiKit.change_text(label[0],change[0],change[1],label[1])
 
+## Table rows of a card: [value, parameter] — the change on the left, the short parameter name on the right.
+static func card_rows(arena,def:UpgradeDef,tier:int)->Array:
+	if def.preview=="" or not is_instance_valid(arena.room.player):return []
+	var change=measure_change(arena,def,Balance.tier_power(tier))
+	var label=PREVIEW_LABELS.get(def.preview,[def.title,""]);var delta=float(change[1])-float(change[0])
+	if is_zero_approx(delta):return []
+	var unit=str(label[1]).strip_edges()
+	var value=("+" if delta>0 else "−")+UiKit.number(absf(roundf(delta)) if unit=="%" else absf(snappedf(delta,.01)))+(unit if unit=="%" else (" "+unit if unit!="" else ""))
+	return [[value,str(label[0]).to_lower() if label[0]!="HP" else "HP"]]
+## First sentence of a card description: the card stays short, the full text is in the tooltip.
+static func short_detail(text:String)->String:
+	var cut=text.find(". ")
+	return text if cut<0 else text.substr(0,cut+1)
 static func card(arena,offer:Dictionary)->Dictionary:
 	var def=UpgradeRegistry.get_def(offer.id);var tier=int(offer.tier)
+	var rows=card_rows(arena,def,tier)
 	var detail=preview_text(arena,offer.id,tier)
 	if def.detail!="":detail=def.detail if detail=="" else detail+"\n"+def.detail
 	tier=clampi(tier,0,TIER_NAMES.size()-1)
-	return {"category":FAMILIES.get(def.family,def.category),"title":def.title,"detail":detail,"icon":def.icon if def.icon!="" else def.id,"art_key":"upgrades/"+def.id,"heading":TIER_NAMES[tier],"color":Color(arena.LOOT.RARITY_COLORS[tier]),"disabled":false,"button":"Выбрать","family":def.family,"tier":tier}
+	return {"rows":rows,"short":short_detail(def.detail),"category":FAMILIES.get(def.family,def.category),"title":def.title,"detail":detail,"icon":def.icon if def.icon!="" else def.id,"art_key":"upgrades/"+def.id,"heading":TIER_NAMES[tier],"color":Color(arena.LOOT.RARITY_COLORS[tier]),"disabled":false,"button":"Выбрать","family":def.family,"tier":tier}

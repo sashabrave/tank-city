@@ -40,8 +40,6 @@ const BRIEFINGS=[
 {"id":"challenge_cache","text":"Вскрыть тайник","event":"challenge_cache","goal":1,"alloy":80,"docs":1,"xp":60,"requires":"world_depth_1","threshold":1,"hint":"Открой тайник и отбейся от засады ветеранов."},
 {"id":"challenge_hold","text":"Точка удержана","event":"challenge_hold","goal":1,"alloy":80,"docs":1,"xp":60,"requires":"world_depth_1","threshold":1,"hint":"Пройди удержание: стой в зоне, пока шкала не заполнится."},
 {"id":"challenge_survive","text":"Под огнём","event":"challenge_survive","goal":1,"alloy":80,"docs":1,"xp":60,"requires":"world_depth_1","threshold":1,"hint":"Пройди выживание без патронов под артобстрелом."},
-{"id":"challenge_thimbles","text":"Зоркий глаз","event":"challenge_thimbles","goal":1,"alloy":80,"docs":1,"xp":60,"requires":"world_depth_1","threshold":1,"hint":"Угадай колпак со штабом в напёрстках."},
-{"id":"challenge_switches","text":"Код сейфа","event":"challenge_switches","goal":1,"alloy":80,"docs":1,"xp":60,"requires":"world_depth_1","threshold":1,"hint":"Повтори порядок огней на переключателях и открой сейф."},
 {"id":"challenge_hard","text":"Две звезды","event":"challenge_hard","goal":3,"alloy":200,"docs":2,"xp":150,"requires":"challenge_any","threshold":2,"hint":"Пройди три испытания со звёздами ★★."},
 {"id":"barrels","text":"Бочковой салют","event":"barrel_kills","goal":5,"alloy":70,"docs":0,"xp":50,"requires":"world_depth_1","threshold":1,"hint":"Уничтожь пятерых врагов взрывом бочек."},
 {"id":"tokens","text":"Коллекционер жетонов","event":"tokens","goal":25,"alloy":80,"docs":0,"xp":60,"requires":"merchant_buy","threshold":1,"hint":"Собери 25 жетонов. Их чаще носят техника и ветераны, командир — всегда."},

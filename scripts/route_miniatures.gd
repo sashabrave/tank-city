@@ -322,13 +322,6 @@ static func challenge(parent:Node3D,type:String,color:Color):
 			Visuals.ring(parent,Color("e5b34f"),2.1)
 			Visuals.box(parent,Vector3(0,1.4,0),Vector3(.18,2.4,.18),Color("eee9d8"))
 			Visuals.box(parent,Vector3(.7,2.2,0),Vector3(1.3,.8,.1),Color("e5b34f"))
-		"thimbles":
-			for x in [-1.3,0,1.3]:
-				var cup=MeshInstance3D.new();var shape=CylinderMesh.new();shape.top_radius=.28;shape.bottom_radius=.48;shape.height=.9;cup.mesh=shape;cup.position=Vector3(x,.75,0);cup.material_override=Visuals.material(Color("56645a"));parent.add_child(cup)
-		"switches":
-			var colors=[Color("d8453a"),Color("e5b34f"),Color("5aa469"),Color("4f86c6")]
-			for i in range(4):Visuals.box(parent,Vector3(-1.2+(i%2)*2.4,.36,-1.2+int(i/2)*2.4),Vector3(1.1,.1,1.1),colors[i])
-			Visuals.box(parent,Vector3(0,.8,0),Vector3(1,1,1),Color("59605a"))
 		"survive":
 			for p in [Vector3(-1.2,0,-.8),Vector3(1,0,.6),Vector3(-.2,0,1.3)]:
 				var ring=Visuals.ring(parent,Color("d8453a"),.9);ring.position=p+Vector3(0,.32,0)
