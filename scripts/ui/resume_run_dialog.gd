@@ -7,7 +7,7 @@ func _ready():
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);add_to_group("selection_scope")
 	var dim=ColorRect.new();add_child(dim);dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);dim.color=Color(0,0,0,.6)
 	var panel=UiKit.glass(self,(get_viewport_rect().size-Vector2(900,310))*.5,Vector2(900,310))
-	UiKit.label(panel,"Продолжить забег?",Vector2(28,22),Vector2(780,48),30)
+	UiKit.accent(UiKit.label(panel,"Продолжить забег?",Vector2(28,22),Vector2(780,48),30))
 	UiKit.button(panel,"×",Vector2(817,20),Vector2(52,44),func():cancelled.emit())
 	var place="Гигабосс" if int(checkpoint.index)==7 else "босс" if int(checkpoint.index)==6 else "поле %d / 6" % (int(checkpoint.index)+1)
 	var status=("Бесконечный · сектор %d" % (int(checkpoint.cycle)+1)) if checkpoint.endless else "Мир %d · %s" % [int(checkpoint.world),Campaign.WORLDS[int(checkpoint.world)].name]

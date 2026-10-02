@@ -54,7 +54,7 @@ static func minimal(card:Panel,data:Dictionary):
 		var node=card.get_node_or_null(key)
 		if node:node.hide()
 	var width=card.size.x if card.size.x>0 else 280.0
-	var icon:TextureRect=card.get_node("Icon");icon.position=Vector2(width*.5-46,44);icon.size=Vector2(92,92)
+	var icon:TextureRect=card.get_node("Icon");icon.position=Vector2(width*.5-56,46);icon.size=Vector2(112,112)
 	var chip=Panel.new();chip.name="FamilyChip";card.add_child(chip);chip.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	var family_color:Color=FAMILY_COLORS.get(data.family,UiKit.MUTED)
 	chip.add_theme_stylebox_override("panel",UiKit.style(Color(family_color,.16),10,Color(family_color,.5)))
@@ -63,32 +63,69 @@ static func minimal(card:Panel,data:Dictionary):
 	chip.position=Vector2(14,14);chip.size=Vector2(chip_text.get_theme_font("font").get_string_size(Texts.render(data.category),HORIZONTAL_ALIGNMENT_LEFT,-1,12).x+32,24)
 	var pips=preload("res://scripts/ui/pip_strip.gd").new();card.add_child(pips)
 	var tier=int(data.get("tier",0));pips.set_state(tier+1,tier+1,-1);pips.modulate=data.color.lightened(.35);pips.position=Vector2(width-pips.size.x-16,23)
-	var title:Label=card.get_node("Title");title.position=Vector2(16,146);title.size=Vector2(width-32,34);title.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+	var title:Label=card.get_node("Title");title.position=Vector2(16,170);title.size=Vector2(width-32,34);title.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;title.vertical_alignment=VERTICAL_ALIGNMENT_CENTER
 	for key in ["Description","NumericDescription"]:
 		var body=card.get_node_or_null(key)
-		if body:body.position=Vector2(18,186);body.size=Vector2(width-36,card.size.y-200)
+		if body:body.position=Vector2(18,214);body.size=Vector2(width-36,card.size.y-228)
 		if body is Label:body.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
 	var rich=card.get_node_or_null("NumericDescription")
 	if rich is RichTextLabel:rich.text="[center]"+rich.text+"[/center]"
 	if not data.get("rows",[]).is_empty():table(card,data,width,family_color)
+	balance(card)
 	var button:Button=card.get_node("ChooseButton");button.position=Vector2.ZERO;button.size=card.size;Texts.set_text(button,"")
 	var clear=StyleBoxEmpty.new()
 	for key in ["normal","hover","pressed","focus","disabled"]:button.add_theme_stylebox_override(key,clear)
 	card.move_child(button,card.get_child_count()-1)
 
-## Table view: big change values in the left column, short parameter names in the right one, then one short
-## sentence. The long description moves to the tooltip.
+## Change view, centred on an 8 px rhythm: the change in large type, below it the parameter with the old
+## value struck through and the resulting one, then one short sentence. The long description is the tooltip.
 static func table(card:Panel,data:Dictionary,width:float,accent:Color):
 	for key in ["Description","NumericDescription"]:
 		var body=card.get_node_or_null(key)
 		if body:body.hide()
-	var y=188.0
+	var y=214.0
 	for row in data.rows:
-		var value=UiKit.label(card,str(row[0]),Vector2(16,y),Vector2(width*.42-16,32),24,accent.lightened(.25));value.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT;value.name="RowValue"
-		UiKit.label(card,str(row[1]),Vector2(width*.42+10,y+5),Vector2(width*.58-26,26),15,UiKit.MUTED).name="RowParam"
-		var rule=ColorRect.new();card.add_child(rule);rule.position=Vector2(width*.42,y+4);rule.size=Vector2(1,24);rule.color=Color(1,1,1,.12);rule.mouse_filter=Control.MOUSE_FILTER_IGNORE
-		y+=36
-	var short=str(data.get("short",""))
+		var value=UiKit.label(card,str(row[0]),Vector2(16,y),Vector2(width-32,36),28,accent.lightened(.25));value.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;value.vertical_alignment=VERTICAL_ALIGNMENT_CENTER;value.name="RowValue"
+		var compare=RichTextLabel.new();compare.name="RowParam";card.add_child(compare);compare.position=Vector2(16,y+40);compare.size=Vector2(width-32,24)
+		compare.bbcode_enabled=true;compare.scroll_active=false;compare.fit_content=true;compare.mouse_filter=Control.MOUSE_FILTER_IGNORE;compare.autowrap_mode=TextServer.AUTOWRAP_OFF
+		compare.add_theme_font_override("normal_font",UiKit.field_font());compare.add_theme_font_override("bold_font",UiKit.bold_font());compare.add_theme_font_size_override("normal_font_size",15);compare.add_theme_font_size_override("bold_font_size",15)
+		compare.add_theme_color_override("default_color",UiKit.MUTED)
+		var name=Texts.render(str(row[1]));name=name.left(1).to_upper()+name.substr(1)
+		var text="[center]%s" % name
+		if row.size()>=4:text+="   [color=#8d9589][s]%s[/s][/color]  →  [b][color=#f1eedb]%s[/color][/b]" % [Texts.render(str(row[2])),Texts.render(str(row[3]))]
+		compare.text=text+"[/center]"
+		y+=76
+	var short=str(data.get("short","")).trim_suffix(".")
 	if short!="":
-		var note=UiKit.label(card,short,Vector2(18,y+4),Vector2(width-36,maxf(24,card.size.y-y-16)),13,UiKit.MUTED);note.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;note.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;note.name="ShortNote"
+		var note=UiKit.label(card,short,Vector2(22,y),Vector2(width-44,maxf(24,card.size.y-y-16)),14,UiKit.MUTED);note.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;note.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;note.vertical_alignment=VERTICAL_ALIGNMENT_TOP;note.name="ShortNote"
+		note.add_theme_constant_override("line_spacing",2)
 	card.tooltip_text=Texts.render(str(data.get("detail","")))
+## Vertical balance: the block from the icon to the last line sits in the middle of the space under the chip.
+static func balance(card:Panel):
+	var parts:Array=[card.get_node("Icon"),card.get_node("Title")]
+	for child in card.get_children():
+		if str(child.name).begins_with("RowValue") or str(child.name).begins_with("RowParam") or child.name in ["ShortNote","Description","NumericDescription"]:
+			if child.visible:parts.append(child)
+	var top=INF;var bottom=0.0
+	for part in parts:
+		var height=part.size.y
+		if part is Label and part.autowrap_mode!=TextServer.AUTOWRAP_OFF:
+			height=part.get_theme_font("font").get_multiline_string_size(part.text,HORIZONTAL_ALIGNMENT_LEFT,part.size.x,part.get_theme_font_size("font_size")).y
+		elif part is RichTextLabel and not part.fit_content:height=part.get_content_height()
+		top=minf(top,part.position.y);bottom=maxf(bottom,part.position.y+height)
+	var area_top=44.0;var area_bottom=card.size.y-20.0
+	var shift=floorf(((area_bottom-area_top)-(bottom-top))*.5+area_top-top)
+	# Cards in one row share the smallest shift, so titles and values stay on common lines.
+	card.set_meta("balance_shift",maxf(0.0,shift));card.set_meta("balance_parts",parts)
+	var row=card.get_parent()
+	if row and not row.has_meta("balance_pending"):row.set_meta("balance_pending",true);align_row.call_deferred(row)
+static func align_row(row:Node):
+	if not is_instance_valid(row):return
+	row.remove_meta("balance_pending")
+	var cards=row.get_children().filter(func(c):return c.has_meta("balance_shift"))
+	if cards.is_empty():return
+	var shift=cards.map(func(c):return float(c.get_meta("balance_shift"))).min()
+	for card in cards:
+		for part in card.get_meta("balance_parts"):
+			if is_instance_valid(part):part.position.y+=shift
+		card.remove_meta("balance_shift");card.remove_meta("balance_parts")

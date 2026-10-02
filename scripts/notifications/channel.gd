@@ -59,7 +59,7 @@ func show_item(item:Dictionary):
 	var margin=MarginContainer.new();panel.add_child(margin);margin.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	for side in ["left","right","top","bottom"]:margin.add_theme_constant_override("margin_"+side,8)
 	var column=VBoxContainer.new();margin.add_child(column);column.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	var caption=Label.new();column.add_child(caption);Texts.set_text(caption,"▰ "+item.sender+" / Канал");caption.clip_text=true;caption.mouse_filter=Control.MOUSE_FILTER_IGNORE;caption.add_theme_font_size_override("font_size",10);caption.add_theme_color_override("font_color",Color("a2b9a8"))
-	var body=Label.new();column.add_child(body);Texts.set_text(body,item.text);body.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;body.custom_minimum_size.x=219;body.max_lines_visible=2;body.mouse_filter=Control.MOUSE_FILTER_IGNORE;body.add_theme_font_size_override("font_size",13);body.add_theme_color_override("font_color",Color("e7eddf"))
+	var caption=Label.new();column.add_child(caption);Texts.set_text(caption,"▰ "+item.sender+" / Канал");caption.clip_text=true;caption.mouse_filter=Control.MOUSE_FILTER_IGNORE;caption.add_theme_font_size_override("font_size",11);caption.add_theme_color_override("font_color",Color("a2b9a8"))
+	var body=Label.new();column.add_child(body);Texts.set_text(body,item.text);body.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;body.custom_minimum_size.x=219;body.max_lines_visible=3;body.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS;body.mouse_filter=Control.MOUSE_FILTER_IGNORE;body.add_theme_font_size_override("font_size",13);body.add_theme_color_override("font_color",Color("e7eddf"))
 	if UiKit.motion_enabled():UiKit.reveal(panel,0,Vector2(0,-30),.3)
 	else:panel.modulate.a=1.0

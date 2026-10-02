@@ -16,6 +16,7 @@ static func scan(kind:String)->Array:
 	var key=state_key()
 	if key!=cache_key:cache.clear();cache_key=key
 	if cache.has(kind):return cache[kind]
+	if not STATIONS.has(kind):return []
 	var screen=preload("res://scripts/ui/station_screen.gd").new()
 	screen.provider=load(STATIONS[kind]).new()
 	var result=[]

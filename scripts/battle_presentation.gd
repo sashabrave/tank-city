@@ -22,7 +22,7 @@ var follow:Node3D
 var tilt:Node
 func _ready():
 	layer=30
-	heading=Label.new();heading.set_meta("keep_theme_colors",true);add_child(heading);heading.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+	heading=Label.new();heading.set_meta("keep_theme_colors",true);add_child(heading);UiKit.accent(heading);heading.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
 	heading.mouse_filter=Control.MOUSE_FILTER_IGNORE;heading.add_theme_color_override("font_color",Color.WHITE)
 	heading.add_theme_color_override("font_shadow_color",Color(0,0,0,.35));heading.add_theme_constant_override("shadow_offset_y",3)
 	caption=Label.new();caption.set_meta("keep_theme_colors",true);add_child(caption);caption.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;caption.mouse_filter=Control.MOUSE_FILTER_IGNORE

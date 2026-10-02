@@ -39,6 +39,17 @@ func render(value:String)->String:
 	matches.sort_custom(func(a,b):return a.start>b.start)
 	for found in matches:value=value.substr(0,found.start)+found.text+value.substr(found.end)
 	return SentenceCase.normalize(NumberDisplay.clean(localized(value)))
+## Minimal typography: labels and buttons drop the full stop at the end of each line. Ellipses and
+## listed abbreviations («т. д.», «мин.», «etc.») keep theirs; rich text (guides, dialogues) is untouched.
+static var abbreviation:RegEx
+func tidy(node:Node,value:String)->String:
+	if not (node is Label or node is Button) or not "." in value:return value
+	if abbreviation==null:abbreviation=RegEx.new();abbreviation.compile("(?i)(?:^|[\\s(])(?:т\\.\\s?[дп]|др|см|мин|сек|макс|шт|etc|e\\.g|i\\.e|vs)\\.$")
+	var lines=value.split("\n")
+	for i in range(lines.size()):
+		var line:String=lines[i].strip_edges(false,true)
+		if line.ends_with(".") and not line.ends_with("..") and abbreviation.search(line)==null:lines[i]=line.left(-1)
+	return "\n".join(lines)
 # Dynamic labels are formatted before assignment, so layout never sees a temporary case/language.
 func set_text(node:Node,value:String):
 	if node is LineEdit or node is TextEdit:
@@ -47,7 +58,7 @@ func set_text(node:Node,value:String):
 	while parent!=null:
 		if parent.has_meta("text_editor"):node.text=value;return
 		parent=parent.get_parent()
-	var rendered=render(value)
+	var rendered=tidy(node,render(value))
 	node.set_meta("text_source",value);node.set_meta("text_rendered",rendered);node.set_meta("text_revision",revision)
 	if node.text!=rendered:node.text=rendered
 func update_widget(node):
@@ -63,7 +74,7 @@ func update_widget(node):
 	var current=node.text
 	var original=node.get_meta("text_source",current)
 	if current!=node.get_meta("text_rendered",current):original=current
-	var rendered=render(original)
+	var rendered=tidy(node,render(original))
 	if node is Control and tooltips.has(original.to_lower()):node.tooltip_text=render(tooltips[original.to_lower()])
 	node.set_meta("text_revision",revision)
 	node.set_meta("text_source",original);node.set_meta("text_rendered",rendered)

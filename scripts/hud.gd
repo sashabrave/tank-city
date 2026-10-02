@@ -56,6 +56,7 @@ func _ready():
 	right_info=root.get_node("RoomPanel");wave_label=right_info.get_node("StageLabel");enemy_label=right_info.get_node("WaveLabel");right_info.get_node("EnemyRoster").arena=arena
 	stage_pips=preload("res://scripts/ui/pip_strip.gd").new();right_info.add_child(stage_pips);wave_pips=preload("res://scripts/ui/pip_strip.gd").new();right_info.add_child(wave_pips)
 	pause_button=root.get_node("PauseButton");pause_button.pressed.connect(func():arena.pause_battle())
+	pause_button.text="";pause_button.icon=UiKit.interface_icon("pause");pause_button.expand_icon=true;pause_button.icon_alignment=HORIZONTAL_ALIGNMENT_CENTER;pause_button.add_theme_constant_override("icon_max_width",22)
 	dpad=root.get_node("MovePad");dpad.apply_movement_layout();fire_pad=root.get_node("FirePad")
 	ability_button=root.get_node("LegacyAbility")
 	star_label=root.get_node("StarLabel");interact_button=root.get_node("InteractButton");interact_button.pressed.connect(func():arena.interact());interact_button.hide()
@@ -206,7 +207,7 @@ func modal_base(kicker: String,heading: String,subtitle: String,height=410) -> P
 	var s=get_viewport().get_visible_rect().size
 	var panel=UiKit.glass(modal,Vector2(s.x/2-470,s.y/2-height/2.0),Vector2(940,height),UiKit.CREAM)
 	UiKit.label(panel,kicker,Vector2(30,23),Vector2(850,25),14,UiKit.MUTED)
-	UiKit.label(panel,heading,Vector2(30,60),Vector2(880,52),36)
+	UiKit.accent(UiKit.label(panel,heading,Vector2(30,60),Vector2(880,52),36))
 	UiKit.label(panel,subtitle,Vector2(30,119),Vector2(880,30),18,UiKit.MUTED)
 	return panel
 

@@ -10,7 +10,7 @@ func _ready():
 	for side in ["left","right"]:margin.add_theme_constant_override("margin_"+side,18)
 	for side in ["top","bottom"]:margin.add_theme_constant_override("margin_"+side,14)
 	var column=VBoxContainer.new();margin.add_child(column);column.mouse_filter=Control.MOUSE_FILTER_IGNORE;column.add_theme_constant_override("separation",8)
-	var font=SystemFont.new();font.font_names=PackedStringArray(["Arial","Noto Sans","DejaVu Sans"]);font.font_weight=400
+	var font=UiKit.field_font()
 	var date=Time.get_datetime_dict_from_unix_time(int(entry.time))
 	var caption=Label.new();column.add_child(caption);Texts.set_text(caption,("●  " if not entry.read else "")+entry.sender+" · %02d:%02d" % [date.hour,date.minute]);caption.add_theme_font_override("font",font);caption.add_theme_font_size_override("font_size",12);caption.add_theme_color_override("font_color",UiKit.MUTED);caption.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	var body=Label.new();column.add_child(body);Texts.set_text(body,entry.text);body.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;body.add_theme_font_override("font",font);body.add_theme_font_size_override("font_size",15);body.add_theme_color_override("font_color",UiKit.INK);body.add_theme_constant_override("line_spacing",4);body.mouse_filter=Control.MOUSE_FILTER_IGNORE

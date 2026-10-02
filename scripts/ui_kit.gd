@@ -76,7 +76,7 @@ static func label(parent: Node,text: String,pos: Vector2,dimensions: Vector2,fon
 	widget.add_theme_color_override("font_color",text_color(color))
 	widget.add_theme_font_size_override("font_size",font_size)
 	widget.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	widget.add_child(preload("res://scripts/ui/currency_icons.gd").new())
+	var inline=preload("res://scripts/ui/currency_icons.gd").new();widget.add_child(inline);inline.fit(widget)
 	return widget
 
 static func button(parent: Node,text: String,pos: Vector2,dimensions: Vector2,callback: Callable,primary=false) -> Button:
@@ -96,7 +96,7 @@ static func button(parent: Node,text: String,pos: Vector2,dimensions: Vector2,ca
 	widget.focus_mode=Control.FOCUS_NONE
 	widget.pressed.connect(callback)
 	press_bounce(widget)
-	widget.add_child(preload("res://scripts/ui/currency_icons.gd").new())
+	var inline=preload("res://scripts/ui/currency_icons.gd").new();widget.add_child(inline);inline.fit(widget)
 	if text=="Выбрать":widget.add_to_group("reward_choice")
 	return widget
 
@@ -239,7 +239,7 @@ static func numeric_description(label:Control,text:String):
 	var rich=RichTextLabel.new();rich.name="NumericDescription";label.get_parent().add_child(rich)
 	rich.position=label.position;rich.size=label.size;rich.mouse_filter=Control.MOUSE_FILTER_IGNORE;rich.bbcode_enabled=true;rich.scroll_active=false
 	rich.add_theme_color_override("default_color",INK);rich.add_theme_font_size_override("normal_font_size",label.get_theme_font_size("font_size"))
-	var bold=SystemFont.new();bold.font_names=PackedStringArray(["Arial"]);bold.font_weight=700;rich.add_theme_font_override("bold_font",bold)
+	rich.add_theme_font_override("normal_font",field_font());rich.add_theme_font_override("bold_font",bold_font())
 	# Design system: the old value is grey, the new one green and bold.
 	var regex=RegEx.new();regex.compile("([0-9]+(?:[.,][0-9]+)?(?:%| с| /с)?)(\\s*→\\s*)([0-9]+(?:[.,][0-9]+)?(?:%| с| /с)?)")
 	Texts.set_text(rich,regex.sub(text,"[color=#8d9589]$1[/color][color=#6f7a6c]$2[/color][b][color=#8fe895]$3[/color][/b]",true));label.hide()
@@ -257,11 +257,22 @@ static func muted_locked_button(button:Button):
 	button.add_theme_color_override("font_disabled_color",Color(.65,.69,.61,.65))
 	button.add_theme_color_override("icon_disabled_color",Color(1,1,1,.25))
 
-static var shared_font:SystemFont
-static func field_font()->SystemFont:
-	if shared_font==null:
-		shared_font=SystemFont.new();shared_font.font_names=PackedStringArray(["Arial","Noto Sans","DejaVu Sans"]);shared_font.font_weight=600
-	return shared_font
+## Typography (design system): Inter SemiBold for all interface text, Inter Bold for emphasis inside
+## rich text, Rubik Dirt only as a rare accent (5–10% of the text: hub call to action, screen titles,
+## run results). Minimal punctuation: no full stop after labels, buttons and single-sentence hints.
+const FONT_BASE=preload("res://assets/ui/fonts/inter_semibold.tres")
+const FONT_REGULAR=preload("res://assets/ui/fonts/inter_regular.tres")
+const FONT_BOLD=preload("res://assets/ui/fonts/inter_bold.tres")
+const FONT_ACCENT=preload("res://assets/ui/fonts/accent.tres")
+static func field_font()->Font:return FONT_BASE
+static func bold_font()->Font:return FONT_BOLD
+static func accent_font()->Font:return FONT_ACCENT
+## Switches a label or button to the accent face.
+static func accent(control:Control,font_size:=0)->Control:
+	control.add_theme_font_override("font",FONT_ACCENT)
+	if control is RichTextLabel:control.add_theme_font_override("normal_font",FONT_ACCENT)
+	if font_size>0:control.add_theme_font_size_override("normal_font_size" if control is RichTextLabel else "font_size",font_size)
+	return control
 
 static func surface_color(color:Color)->Color:
 	# Compatibility for existing light-panel callers; semantic accents stay distinct.

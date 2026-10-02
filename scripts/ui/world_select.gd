@@ -20,7 +20,7 @@ func _ready():
 	var dim=ColorRect.new();add_child(dim);dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);dim.color=Color(0,0,0,.6)
 	var size_total=Vector2(CARD.x*4+18*3+52,CARD.y+150)
 	var panel=UiKit.glass(self,(get_viewport_rect().size-size_total)*.5,size_total);panel.name="WorldPanel"
-	UiKit.label(panel,"Куда выдвигаемся",Vector2(26,20),Vector2(600,42),28)
+	UiKit.accent(UiKit.label(panel,"Куда выдвигаемся",Vector2(26,20),Vector2(600,42),28))
 	UiKit.button(panel,"×",Vector2(size_total.x-72,17),Vector2(56,46),func():cancelled.emit())
 	if OS.is_debug_build():UiKit.button(panel,"unlock-dev",Vector2(size_total.x-250,22),Vector2(160,38),unlock_worlds).add_theme_font_size_override("font_size",13)
 	cards.clear()
@@ -50,7 +50,7 @@ func card(panel:Control,i:int,pos:Vector2)->Button:
 		var picture=TextureRect.new();art.add_child(picture);picture.texture=load(path);picture.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;picture.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_COVERED;picture.size=art.size;picture.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	else:
 		var backdrop=preload("res://scripts/ui/world_backdrop.gd").new();backdrop.tint=TINTS[i];backdrop.kind=i;art.add_child(backdrop);backdrop.size=art.size;backdrop.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	var number=UiKit.label(art,"0%d" % (i+1) if i<3 else "∞",Vector2(14,4),Vector2(120,80),62,Color(1,1,1,.92));number.add_theme_constant_override("outline_size",8);number.add_theme_color_override("font_outline_color",Color(0,0,0,.35))
+	var number=UiKit.label(art,"0%d" % (i+1) if i<3 else "∞",Vector2(14,4),Vector2(120,80),62,Color(1,1,1,.92));UiKit.accent(number);number.add_theme_constant_override("outline_size",8);number.add_theme_color_override("font_outline_color",Color(0,0,0,.35))
 	if not unlocked:
 		var shade=ColorRect.new();art.add_child(shade);shade.size=art.size;shade.color=Color(0,0,0,.62);shade.mouse_filter=Control.MOUSE_FILTER_IGNORE
 		UiKit.icon(art,"lock",art.size*.5-Vector2(26,26),Vector2(52,52))
@@ -58,7 +58,7 @@ func card(panel:Control,i:int,pos:Vector2)->Button:
 	UiKit.label(button,Campaign.WORLDS[i+1].name if i<3 else "Бесконечный",Vector2(16,268),Vector2(CARD.x-32,30),22,UiKit.INK if unlocked else UiKit.MUTED)
 	# The biomes of the world, in route order, under its name.
 	var biomes=preload("res://scripts/biome_catalog.gd").world_line(i+1) if i<3 else "все биомы вперемешку"
-	var line=UiKit.label(button,biomes,Vector2(16,296),Vector2(CARD.x-32,18),12,UiKit.MUTED);line.name="Biomes";line.clip_text=true
+	var line=UiKit.label(button,biomes,Vector2(14,296),Vector2(CARD.x-26,18),12,UiKit.MUTED);line.name="Biomes";line.clip_text=true
 	if not unlocked:
 		UiKit.label(button,"Пройди мир %d" % i if i<3 else "Пройди мир 1",Vector2(16,318),Vector2(CARD.x-32,24),15,UiKit.MUTED)
 	elif i<3:

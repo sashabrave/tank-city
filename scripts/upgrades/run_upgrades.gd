@@ -182,7 +182,8 @@ static func preview_text(arena,id:String,tier:int)->String:
 	if label[1]=="%":change=[roundf(change[0]),roundf(change[1])]
 	return UiKit.change_text(label[0],change[0],change[1],label[1])
 
-## Table rows of a card: [value, parameter] — the change on the left, the short parameter name on the right.
+## Rows of a card: [change, parameter, before, after] — the change in large type, then the parameter with its
+## old (struck through) and resulting value.
 static func card_rows(arena,def:UpgradeDef,tier:int)->Array:
 	if def.preview=="" or not is_instance_valid(arena.room.player):return []
 	var change=measure_change(arena,def,Balance.tier_power(tier))
@@ -190,7 +191,8 @@ static func card_rows(arena,def:UpgradeDef,tier:int)->Array:
 	if is_zero_approx(delta):return []
 	var unit=str(label[1]).strip_edges()
 	var value=("+" if delta>0 else "−")+UiKit.number(absf(roundf(delta)) if unit=="%" else absf(snappedf(delta,.01)))+(unit if unit=="%" else (" "+unit if unit!="" else ""))
-	return [[value,str(label[0]).to_lower() if label[0]!="HP" else "HP"]]
+	var shown=func(v:float)->String:return UiKit.number(roundf(v) if unit=="%" else snappedf(v,.01))+(unit if unit=="%" else (" "+unit if unit!="" else ""))
+	return [[value,str(label[0]).to_lower() if label[0]!="HP" else "HP",shown.call(float(change[0])),shown.call(float(change[1]))]]
 ## First sentence of a card description: the card stays short, the full text is in the tooltip.
 static func short_detail(text:String)->String:
 	var cut=text.find(". ")

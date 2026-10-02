@@ -148,7 +148,7 @@ func build_ui():
 	credits.size.x=600;credits.add_theme_font_size_override("font_size",23)
 	build_dev_menu()
 	dpad=root.get_node("MovePad");dpad.apply_movement_layout();fire_pad=root.get_node("FirePad")
-	start_button=root.get_node("StartButton");start_button.pressed.connect(launch)
+	start_button=root.get_node("StartButton");start_button.pressed.connect(launch);UiKit.accent(start_button,26)
 	root.get_node("SettingsButton").hide()
 	board_button=root.get_node("InteractButton");board_button.pressed.connect(interact);board_button.hide()
 	# Interaction notes («E — выйти»): kept as a hidden label; stations open through station_screen.gd.
@@ -625,7 +625,7 @@ func present_unlock():
 	build_menu=Control.new();root.add_child(build_menu);build_menu.add_to_group("selection_scope");build_menu.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	var shade=ColorRect.new();build_menu.add_child(shade);shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);shade.color=Color(0,0,0,.55)
 	var panel=UiKit.panel(build_menu,(get_viewport().get_visible_rect().size-Vector2(680,390))*.5,Vector2(680,390))
-	UiKit.label(panel,"Новое открытие",Vector2(25,25),Vector2(630,40),29)
+	UiKit.accent(UiKit.label(panel,"Новое открытие",Vector2(25,25),Vector2(630,40),29))
 	UiKit.icon(panel,recipe.id if recipe.category!="research" else "recipe",Vector2(25,90),Vector2(120,120))
 	UiKit.label(panel,Game.recipe_name(recipe),Vector2(165,98),Vector2(490,60),26)
 	var info=Game.recipe_catalog(recipe.category)[recipe.id]

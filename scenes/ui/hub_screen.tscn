@@ -1072,7 +1072,7 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_i34x4")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_5d6km")
 theme_override_styles/hover = SubResource("StyleBoxFlat_13c20")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_p7yk0")
-text = "В бой →"
+text = "В бой"
 
 [node name="SettingsButton" type="Button" parent="." unique_id=738997203]
 visible = false
