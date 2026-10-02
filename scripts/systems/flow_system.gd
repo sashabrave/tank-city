@@ -60,7 +60,7 @@ func finish_wave():
 	if arena.room.wave==2 and not arena.room.room_boss_spawned:
 		arena.room.commander_countdown=true;arena.countdown=3.0;arena.phase="countdown"
 		Game.reset_input()
-		arena.presentation.announce("Командир · 3","",.65)
+		arena.presentation.announce("Командир · 3","",.65);Game.music_stinger("commander")
 		return
 	Game.progression.event("waves")
 	if arena.room.wave==2:Game.progression.record_field(arena.room.room_index)

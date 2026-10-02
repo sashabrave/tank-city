@@ -24,7 +24,7 @@ func summary(slot:int)->Dictionary:
 	if not exists(slot):return {"empty":true}
 	var result=Store.load_file(path(slot),Schema.validate)
 	if not result.ok:return {"empty":false,"error":result.error}
-	return {"empty":false,"level":int(result.data.get("progression",{}).get("level",1)),"credits":int(result.data.get("credits",0)),"class":result.data.get("v09",{}).get("class","recruit"),"recovered":result.get("recovered",false)}
+	return {"empty":false,"level":int(result.data.get("progression",{}).get("level",1)),"credits":int(result.data.get("credits",0)),"class":result.data.get("v09",{}).get("class","recruit"),"recovered":result.get("recovered",false),"runs":int(result.data.get("progression",{}).get("counters",{}).get("runs",0)),"play_seconds":float(result.data.get("progression",{}).get("counters",{}).get("play_seconds",0))}
 func choose(slot:int,create:bool=false)->bool:
 	if slot not in range(1,COUNT+1):return false
 	if selected and slot==active and not create and not Game.save_blocked:return true

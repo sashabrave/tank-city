@@ -2,6 +2,28 @@
 	"entries": [
 		{
 			"date": "2026-10-01",
+			"version": "0.5.1",
+			"ru": {
+				"title": "Ящики, фанфары и статистика профиля",
+				"items": [
+					"На карточке профиля видно общее время в игре и число забегов.",
+					"Во время фанфар (начало боя, выход командира, победа, поражение) фоновая музыка заметно стихает, а потом плавно возвращается.",
+					"На поле появились армейские ящики размером в четверть клетки, иногда парой и очень редко стопкой до трёх. Выстрел разносит ящик в щепки с треском дерева, иногда внутри немного сплава. Пройти сквозь ящик тоже можно: он развалится.",
+					"Картинки миров на экране «Куда выдвигаемся»."
+				]
+			},
+			"en": {
+				"title": "Crates, fanfares and profile stats",
+				"items": [
+					"Profile cards show total play time and the number of runs.",
+					"During fanfares (battle start, commander arrival, victory, defeat) the background music drops noticeably and then eases back.",
+					"Army crates now sit on the field: a quarter of a tile, sometimes in pairs and very rarely stacked up to three. A shot smashes a crate into splinters with a wooden crack, sometimes with a little alloy inside. Walking into a crate breaks it too.",
+					"Artwork for the worlds on the «Where to next» screen."
+				]
+			}
+		},
+		{
+			"date": "2026-10-01",
 			"version": "0.5.0",
 			"ru": {
 				"title": "Надёжные сохранения и эффекты в бою",

@@ -93,6 +93,7 @@ func prepare_telegrams():
 	Game.save_progress()
 func begin_run():
 	sortie_counts.clear();sortie_active=true;combat_entered=false
+	counters["runs"]=int(counters.get("runs",0))+1
 	prepare_telegrams()
 	if not telegram.is_empty():telegram.active=true
 	for id in Game.equipped_abilities:event("use_"+id)

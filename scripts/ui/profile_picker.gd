@@ -32,7 +32,7 @@ func build_card(slot:int):
 	var art=TextureRect.new();card.add_child(art);art.name="Art";art.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;art.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;art.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	art.texture=preload("res://assets/ui/illustrations/route.tres") if info.empty else preload("res://scripts/ui/class_gallery.gd").texture(info.get("class","recruit"))
 	art.modulate.a=.5 if info.empty else 1.0
-	var summary="Чистый старт · новая база" if info.empty else info.error if info.has("error") else "%d сплава" % info.credits
+	var summary="Чистый старт · новая база" if info.empty else info.error if info.has("error") else "%d сплава\n%s · %s" % [info.credits,runs_text(int(info.runs)),play_time_text(float(info.play_seconds))]
 	var caption=UiKit.label(card,summary,Vector2.ZERO,Vector2.ZERO,17,UiKit.MUTED);caption.name="Summary";caption.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	var choose=UiKit.button(card,"Создать мир" if info.empty else "Продолжить",Vector2.ZERO,Vector2.ZERO,func():choose_slot(slot,info.empty),true);choose.name="Choose";choose.focus_mode=Control.FOCUS_ALL
 	choose.disabled=current and not Game.save_blocked
@@ -45,8 +45,8 @@ func layout():
 	for i in range(cards.size()):
 		var card=cards[i];card.position=Vector2(24+i*(card_width+16),136);card.size=Vector2(card_width,card_height)
 		for key in ["Title","State"]:card.get_node(key).size.x=card_width-36
-		var art=card.get_node("Art");art.position=Vector2(18,82);art.size=Vector2(card_width-36,maxf(64,card_height-246))
-		var caption=card.get_node("Summary");caption.position=Vector2(18,card_height-172);caption.size=Vector2(card_width-36,42)
+		var art=card.get_node("Art");art.position=Vector2(18,82);art.size=Vector2(card_width-36,maxf(64,card_height-272))
+		var caption=card.get_node("Summary");caption.position=Vector2(18,card_height-186);caption.size=Vector2(card_width-36,56)
 		for key in ["Choose","Delete"]:
 			var button=card.get_node(key);button.position=Vector2(16,card_height-(116 if key=="Choose" else 55));button.size=Vector2(card_width-32,44 if key=="Choose" else 32);button.add_theme_font_size_override("font_size",18 if key=="Choose" else 14)
 	status.position=Vector2(24,height-64);status.size=Vector2(width-245,46)
@@ -79,3 +79,15 @@ func _unhandled_input(event):
 		if is_instance_valid(confirm):cancel_delete()
 		elif not startup:closed.emit()
 		get_viewport().set_input_as_handled()
+
+## «12 забегов» with Russian plural forms (English is handled by the locale templates).
+static func runs_text(count:int)->String:
+	var tail=count%100;var last=count%10
+	var word="забегов" if tail in range(11,15) else "забег" if last==1 else "забега" if last in [2,3,4] else "забегов"
+	return "%d %s" % [count,word]
+## Total time in the game: «3 ч 12 мин», «45 мин», «меньше минуты».
+static func play_time_text(seconds:float)->String:
+	var minutes=int(seconds/60.0);var hours=minutes/60
+	if hours>0:return "%d ч %d мин" % [hours,minutes%60]
+	if minutes>0:return "%d мин" % minutes
+	return "меньше минуты"

@@ -111,6 +111,10 @@ var sound_times: Dictionary={}
 var music_controller: Node
 var effects_controller: Node
 
+## Total time with a profile open (pause counts out: the tree is paused then). Stored in progression counters.
+func _process(delta):
+	if save_enabled and profiles.selected and progression!=null:
+		progression.counters["play_seconds"]=float(progression.counters.get("play_seconds",0.0))+delta
 func _ready():
 	add_child(input_router);input_router.register_actions()
 	BUILD_COST["headquarters"]=240

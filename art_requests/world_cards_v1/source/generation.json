@@ -1,0 +1,70 @@
+{
+  "requests": [
+    {
+      "index": 0,
+      "params": {
+        "model": "gpt_image_2_5",
+        "folder_id": "b6d33678-4471-43a8-bd76-4d910b162d50",
+        "use_unlim": false,
+        "quality": "high",
+        "resolution": "2k",
+        "variant": "flare",
+        "aspect_ratio": "8:9",
+        "background": "opaque",
+        "medias": [
+          {
+            "role": "image",
+            "value": "fde99cf9-2fa9-4b9c-8a2e-cc3d984e1fcc"
+          }
+        ],
+        "prompt": "War Cats four world-card illustrations in ONE precise 2 columns x2 rows atlas, each panel portrait aspect8:9. Four independent full-bleed scenes with exact central seams, NO frames NO borders NO gutters NO text NO numbers NO letters. Reference only for soft painted3D cozy military miniature STYLE, do not include its large characters or portraits. Large smooth simple shapes, gentle tilt-shift, matte toy buildings and rounded terrain, painterly warm light, controlled detail. Wide atmospheric elevated three-quarter landscape views. Each panel instantly distinct at120px width. Keep upper LEFT30%width and20%height of EACH panel calm plain sky/haze for game title overlay. All main landmarks centered, important elements within central90% for crop safety. TOP LEFT: peaceful GREEN small-town outskirts courtyard in warm morning light, humble houses on right, wooden fence and clothesline with just three simple hanging cloths, plump sandbags in foreground, leafy garden and a curved dirt path bearing tank tracks. ONE tiny distant puppy scout with floppy ears in brick-red helmet, barely noticeable, no other characters. Cozy sense of first hints of war. TOP RIGHT: OCHRE sandy rolling ridge at evening, tall sparse pines and winding trenches hugging slopes, a distant enemy outpost and two faint searchlight beams in haze, broad diagonal layered hill silhouettes; amber dusk. BOTTOM LEFT: imposing COLD BLUE GRAY canine concrete citadel, central broad fortress with three blocky towers, low coils of barbed wire in foreground, small RED signal lights, red ember glow behind walls under storm-blue sky. Dramatic final-stage atmosphere but miniature toy aesthetic, no gore, no realistic army insignia. BOTTOM RIGHT: COPPER PINK sunset, an endless winding road leading to tiny distant horizon, clearly readable successive belts of green field in near foreground then old blocky ruins in middle distance then snowy mountains far away; hopeful adventurous just-one-more-sector feel, sweeping road S silhouette. Four different dominant palettes GREEN/OCHRE/BLUE-GRAY-RED/COPPER-PINK. No national flags or real military symbols. Do not let one scene cross into another panel."
+      }
+    },
+    {
+      "index": 1,
+      "params": {
+        "model": "gpt_image_2_5",
+        "folder_id": "b6d33678-4471-43a8-bd76-4d910b162d50",
+        "use_unlim": false,
+        "quality": "high",
+        "resolution": "2k",
+        "variant": "flare",
+        "aspect_ratio": "1:1",
+        "background": "transparent",
+        "medias": [
+          {
+            "role": "image",
+            "value": "7b865f9f-9b6c-4d36-a172-047bbc9d5c73"
+          }
+        ],
+        "prompt": "One single isolated game ability object, NO backing plate or frame (will be composited onto the approved turquoise ability button later). Exactly THREE chunky brick-red dynamite sticks bundled together with broad dark olive canvas binding tape, short curved fuse at top with one bold golden spark. Diagonal three-quarter view, immediately readable32px, big simple soft rounded cylinders, clearly three visible circular ends, no labels no lettering no digits. Match reference cozy smooth painted3D military miniatures, top-left light, warm matte materials, no polygon facets, minimal details. Transparent RGBA around whole object, no background, no floor, no haze, generous20% empty margin all around. This is a game icon, not realistic instructions or diagram."
+      }
+    }
+  ],
+  "jobs": [
+    {
+      "index": 0,
+      "job_id": "3dc82a44-96c2-4fdd-ba32-b1b32d0e1dbd",
+      "status": "pending",
+      "adjustments": {
+        "medias[0].role": {
+          "requested": "image",
+          "used": "image_references",
+          "reason": "GPT Image 2.5 backend expects schema-key media roles"
+        }
+      }
+    },
+    {
+      "index": 1,
+      "job_id": "e7d43c54-ba0d-4232-96a0-aaed3bdee739",
+      "status": "pending",
+      "adjustments": {
+        "medias[0].role": {
+          "requested": "image",
+          "used": "image_references",
+          "reason": "GPT Image 2.5 backend expects schema-key media roles"
+        }
+      }
+    }
+  ]
+}

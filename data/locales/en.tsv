@@ -2412,3 +2412,10 @@ E — в хаб	E — to the hub
 Жар +25% · защита от взрывов +15% · динамит	Heat +25% · blast protection +15% · dynamite
 
 Когда здоровья бойца (или брони его машины) остаётся 25% и меньше, урон его выстрелов вырастает на 30%. Работает пешком и в технике. Неуязвимости не даёт.	When the soldier (or their vehicle's armour) is at 25% or less, their shots deal 30% more damage. Works on foot and in a vehicle. Does not grant invulnerability.
+%d сплава\n%s · %s	%d alloy\n%s · %s
+%d забег	%d run
+%d забега	%d runs
+%d забегов	%d runs
+%d ч %d мин	%d h %d min
+%d мин	%d min
+меньше минуты	under a minute

@@ -29,6 +29,9 @@ var enabled_before=true
 var context=""
 var current_track=""
 var duck=0.0
+const BED_BUS="TankCityMusicBed"
+## How far the background music drops under a fanfare, dB.
+const FANFARE_DUCK=-22.0
 var fade:Tween
 var stinger:AudioStreamPlayer
 var stinger_priority=0
@@ -58,10 +61,13 @@ func _ready():
 		if parsed is Dictionary:themes=parsed
 	pick_hub_theme()
 	if AudioServer.get_bus_index("TankCityMusic")<0:AudioServer.add_bus();AudioServer.set_bus_name(AudioServer.bus_count-1,"TankCityMusic")
+	# The background bed has its own bus inside the music bus, so a fanfare can push it down without muting itself.
+	if AudioServer.get_bus_index(BED_BUS)<0:
+		AudioServer.add_bus();var bed=AudioServer.bus_count-1;AudioServer.set_bus_name(bed,BED_BUS);AudioServer.set_bus_send(bed,"TankCityMusic")
 	for i in range(2):
-		var player=AudioStreamPlayer.new();add_child(player);backgrounds.append(player);player.volume_db=-60;player.bus="TankCityMusic"
+		var player=AudioStreamPlayer.new();add_child(player);backgrounds.append(player);player.volume_db=-60;player.bus=BED_BUS
 		player.finished.connect(func():if player==backgrounds[active]:track_finished())
-	stinger=AudioStreamPlayer.new();add_child(stinger);stinger.volume_db=-6;stinger.bus="TankCityMusic"
+	stinger=AudioStreamPlayer.new();add_child(stinger);stinger.volume_db=-4;stinger.bus="TankCityMusic"
 	stinger.finished.connect(func():stinger_priority=0)
 func theme_for(group:String)->String:return hub_theme if group in ["hub","map"] else battle_theme
 func theme_track(group:String)->String:
@@ -185,7 +191,7 @@ func subtitle()->String:
 	return "%s · %d / %d" % [CONTEXT_NAMES[group],TRACKS[group].find(current_track)+1,TRACKS[group].size()]
 ## Old event ids map onto the fanfares of the current theme.
 func fanfare_for(id:String)->String:
-	var kind={"hub_map_greeting":"greeting","battle_greeting":"start","wave_victory":"victory","boss_victory":"victory","defeat":"defeat"}.get(id,"")
+	var kind={"hub_map_greeting":"greeting","battle_greeting":"start","commander":"start","wave_victory":"victory","boss_victory":"victory","defeat":"defeat"}.get(id,"")
 	if kind=="":return id
 	var theme=hub_theme if kind=="greeting" or (kind=="victory" and context in ["hub","map"]) else battle_theme
 	var variants=themes.get(theme,{}).get(kind,[])
@@ -218,8 +224,12 @@ func _process(delta):
 	if not enabled_before and context!="":backgrounds[active].play();backgrounds[active].stream_paused=paused
 	enabled_before=true
 	var bus=AudioServer.get_bus_index("TankCityMusic")
-	duck=lerpf(duck,-3.0 if stinger.playing else 0.0,minf(1,delta*5))
-	if bus>=0:AudioServer.set_bus_volume_db(bus,linear_to_db(maxf(.0001,Settings.values.music))+duck)
+	# Fanfares (battle start, wave and boss victory, commander, defeat) duck the background bed hard and fast,
+	# then let it swell back slowly once they end.
+	duck=lerpf(duck,FANFARE_DUCK if stinger.playing else 0.0,minf(1,delta*(8.0 if stinger.playing else 1.6)))
+	if bus>=0:AudioServer.set_bus_volume_db(bus,linear_to_db(maxf(.0001,Settings.values.music)))
+	var bed=AudioServer.get_bus_index(BED_BUS)
+	if bed>=0:AudioServer.set_bus_volume_db(bed,duck)
 
 func toggle_play():
 	paused=not paused

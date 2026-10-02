@@ -1,0 +1,46 @@
+{
+  "worlds": [
+    {
+      "file": "world_1.png",
+      "size": [
+        960,
+        1080
+      ],
+      "mode": "RGB",
+      "sha256": "5380c1ea9ed169316707c4779effb47ab0d670cb19151ef007073b41da01ec14"
+    },
+    {
+      "file": "world_2.png",
+      "size": [
+        960,
+        1080
+      ],
+      "mode": "RGB",
+      "sha256": "6b8b4d46ef8b9195e82ffa4821957fe435a6386c9b2c9582f602aec7f0ac1e5d"
+    },
+    {
+      "file": "world_3.png",
+      "size": [
+        960,
+        1080
+      ],
+      "mode": "RGB",
+      "sha256": "006f4c5904dba57a6cba13210f6d4990916a9b8e3bdacaf9da694029b859b8d6"
+    },
+    {
+      "file": "endless.png",
+      "size": [
+        960,
+        1080
+      ],
+      "mode": "RGB",
+      "sha256": "e8282782e885d8be5d45f23a84c352d262ec8ea6a55f23e3052265f8ab4d258f"
+    }
+  ],
+  "dynamite_size": [
+    512,
+    512
+  ],
+  "dynamite_mode": "RGBA",
+  "generations": 2
+}
