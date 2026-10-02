@@ -191,6 +191,13 @@ func depth_light(on:bool,night:=false):
 		return
 	environment.adjustment_contrast*=1.08;environment.adjustment_saturation*=1.05
 	sun.light_color=sun.light_color.lerp(Color("ffd6a8"),.15);sun.light_energy*=1.06
+	# Light floors (sand, pale concrete) washed out in daylight and read flat: the lighter the floor, the lower
+	# the exposure and fill and the firmer the contrast and sun shadows. Mid and dark biomes stay as they are.
+	if get_parent().has_method("room_palette"):
+		var lum=Color(get_parent().room_palette().floor).get_luminance()
+		var k=clampf((lum-.56)/.14,0.0,1.0)
+		environment.tonemap_exposure*=1.0-.13*k;environment.ambient_light_energy*=1.0-.18*k
+		environment.adjustment_contrast*=1.0+.07*k;sun.shadow_opacity=minf(1.0,sun.shadow_opacity*(1.0+.12*k))
 	environment.ambient_light_color=environment.ambient_light_color.lerp(Color("9db0d8"),.12)
 	# Softer sun shadows: the surface colour shows through instead of near-black patches.
 	sun.shadow_opacity*=.82
