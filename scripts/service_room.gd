@@ -23,6 +23,8 @@ var offers: Array=[]
 var medkits: Array=[]
 var facing=Vector2i.UP
 var dressing
+var walker
+var vehicle_prompt
 func _ready():
 	add_to_group("notification_context")
 	vehicle=current_vehicle()
@@ -51,6 +53,7 @@ func _ready():
 		var kit=Node3D.new();add_child(kit);kit.position=Vector3([-2.4,-.8,.8,2.4][i],0,2)
 		arena.LOOT.visual(kit,"heart");Visuals.label3d(kit,"Аптечка",Vector3(0,1.1,0),Color("f6c5bc"),25);medkits.append(kit)
 	avatar=Visuals.model("soldier",self,destination,"cat",true)
+	walker=preload("res://scripts/room_walker.gd").new(avatar)
 	var canvas=CanvasLayer.new();add_child(canvas);root=Control.new();canvas.add_child(root);root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);root.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	var heading_plate=UiKit.glass(root,Vector2(25,25),Vector2(590,120),Color("242d27ed"));heading_plate.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	UiKit.accent(UiKit.label(root,{"vehicle":"Полевой механик","ability":"Подготовка бойца","headquarters":"Мастерская штаба"}[branch],Vector2(40,30),Vector2(800,60),32))
@@ -61,6 +64,10 @@ func _ready():
 	continue_button=UiKit.button(root,"В следующий бой →" if Campaign.endless else "На карту →",Vector2(size.x-330,size.y-90),Vector2(290,60),func():completed.emit(index),true);continue_button.disabled=true
 	UiKit.button(root,"Вернуться в хаб",Vector2(40,165),Vector2(250,48),func():hub_requested.emit())
 	preload("res://scripts/interaction_prompt.gd").attach(self,self,{"vehicle":"Механик","ability":"Инструктор","headquarters":"Штаб"}[branch],Vector3(0,0,-1),1.8,func():return not claimed)
+	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Выход на карту",Vector3(dressing.EXIT_CELL.x,0,dressing.EXIT_CELL.y),1.3,func():return claimed)
+	if has_node("TakeVehicleLabel"):
+		var vehicle_name=GarageCatalog.VEHICLES.get(vehicle,{}).get("name",vehicle)
+		vehicle_prompt=preload("res://scripts/interaction_prompt.gd").attach(self,self,Texts.render("Купить")+" %s · %d" % [Texts.render(vehicle_name),VEHICLE_PRICES.get(vehicle,80)],PARKED,1.6,func():return has_node("TakeVehicleLabel"))
 	offers=arena.reward.service_offers(branch)
 	locker=preload("res://scripts/weapon_locker.gd").place(self,arena,Vector3(-3.4,0,0.5))
 ## The mechanic works on the player's vehicle: the one driven now, the one waiting for the next room, or the starting one.
@@ -72,6 +79,8 @@ func current_vehicle()->String:
 	var start=Game.garage.starting_vehicle()
 	return start if start in GarageCatalog.VEHICLES else "buggy"
 func _physics_process(delta):
+	# Same as the hub: the on-screen pad only for touch play.
+	if is_instance_valid(dpad):dpad.visible=InputScheme.touch()
 	if not is_instance_valid(modal):collect_medkits()
 	if is_instance_valid(modal):
 		if Input.is_action_just_pressed("pause"):close_cards()
@@ -79,22 +88,20 @@ func _physics_process(delta):
 	if Input.is_action_just_pressed("pause"):preload("res://scripts/ui/pause_tablet.gd").open(self,Callable(),func():hub_requested.emit());return
 	# The kit model walks only when told (T-045): idle while standing, walk cycle while moving.
 	if "preview_moving" in avatar:avatar.preview_moving=moving;avatar.preview_speed=3.4
-	if moving:
-		avatar.position=avatar.position.move_toward(destination,3.8*delta)
-		if avatar.position.distance_to(destination)<.01:moving=false
-	else:
-		var dir=Game.direction()
-		if dir!=Vector2i.ZERO:
-			var next=cell+dir;facing=dir;avatar.rotation.y=atan2(-float(dir.x),-float(dir.y))
-			var exit=next==dressing.EXIT_CELL and claimed
-			if exit or (next.x>=-3 and next.x<=3 and next.y>=-2 and next.y<=4 and next not in [Vector2i(0,-1),Vector2i(2,-1)]):
-				cell=next;destination=Vector3(cell.x,0,cell.y);moving=true
-	if claimed and not moving and cell==dressing.EXIT_CELL:completed.emit(index);set_physics_process(false);return
+	walker.step(delta,Game.direction(),stand);moving=walker.moving;cell=walker.cell();facing=walker.facing
 	interact_button.disabled=claimed or avatar.position.distance_to(Vector3(0,0,-1))>1.8
 	if Game.wants_interact():interact()
+## Floor the hero may stand on: the room, minus the bench and the parked vehicle; the exit opens once claimed.
+func stand(p:Vector3)->bool:
+	var c=Vector2i(roundi(p.x),roundi(p.z))
+	if claimed and absf(p.z-dressing.EXIT_CELL.y)<.3 and p.x>=2.75 and p.x<=dressing.EXIT_CELL.x+.01:return true
+	return p.x>=-3.01 and p.x<=3.01 and p.z>=-2.01 and p.z<=4.01 and c not in [Vector2i(0,-1),Vector2i(2,-1)]
+func at_exit()->bool:return claimed and avatar.position.distance_to(Vector3(dressing.EXIT_CELL.x,0,dressing.EXIT_CELL.y))<1.3
 func interact():
+	# Leave only from the exit zone (T-083): a stray E elsewhere does nothing.
 	if claimed:
-		completed.emit(index);return
+		if at_exit():completed.emit(index);set_physics_process(false)
+		return
 	if is_instance_valid(modal):return
 	if is_instance_valid(locker) and locker.near(avatar):
 		Game.reset_input();dpad.clear();dpad.enabled=false
@@ -103,7 +110,9 @@ func interact():
 		var price=int(VEHICLE_PRICES.get(vehicle,80))
 		if Game.credits<price:Game.sound("ui_denied",self);return
 		Game.credits-=price;Game.save_progress();arena.pending_vehicle=vehicle;Game.sound("weapon_equip",self)
-		get_node("TakeVehicleLabel").queue_free();Visuals.label3d(self,"Ждёт на старте поля",Vector3(2.2,1.7,-.4),Color("bdf0b0"),24)
+		get_node("TakeVehicleLabel").name="BoughtVehicleLabel";get_node("BoughtVehicleLabel").queue_free()
+		Visuals.label3d(self,"Техника доставлена — ждёт на старте поля",Vector3(2.2,1.7,-.4),Color("bdf0b0"),24)
+		arena.toast(Texts.render("Техника доставлена"))
 		return
 	if avatar.position.distance_to(Vector3(0,0,-1))>1.8:return
 	Game.reset_input();dpad.clear();dpad.enabled=false

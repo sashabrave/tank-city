@@ -75,13 +75,12 @@ static func silhouettes(parent:Node3D,rng:RandomNumberGenerator,tint:=Color("3a4
 				Visuals.box(parent,Vector3(x,3.2,z),Vector3(.4,6.4,.4),shade);var jib=Visuals.box(parent,Vector3(x+side*1.6,6.2,z),Vector3(3.6,.3,.3),shade);jib.rotation.y=rng.randf_range(-.3,.3)  # points away from the room
 			"covered":
 				Visuals.box(parent,Vector3(x,.6,z),Vector3(2.4,1.2,1.5),shade);Visuals.box(parent,Vector3(x,1.25,z),Vector3(2.5,.12,1.6),shade.lightened(.05))
-## Two industrial pendant lamps over the room with soft visible cones; one of them stutters now and then.
+## Two pendant lamps over the room (light and soft cones only, fixtures out of frame); one stutters now and then.
 func hanging_lamps():
 	for i in range(2):
 		var at=Vector3(-1.8+i*3.6,3.6,rng.randf_range(-.5,1.5))
-		Visuals.box(self,at+Vector3(0,.6,0),Vector3(.03,1.2,.03),Color("2a2e2c"))
-		var shade=Visuals.box(self,at,Vector3(.5,.18,.5),Color("3d4542"))
-		var bulb=Visuals.box(self,at+Vector3(0,-.12,0),Vector3(.16,.06,.16),Color("fff0c8"));bulb.material_override=Visuals.material(Color("fff0c8"),true)
+		# The lamp bodies hung between the camera and the vehicle bay and hid the car (T-083): only their light
+		# and soft cone stay, as if the fixtures are above the frame.
 		var lamp=SpotLight3D.new();add_child(lamp);lamp.position=at+Vector3(0,-.15,0);lamp.rotation_degrees=Vector3(-90,0,0)
 		lamp.light_color=Color("ffe1ad");lamp.light_energy=2.2;lamp.spot_range=5.0;lamp.spot_angle=40;lamp.shadow_enabled=i==0
 

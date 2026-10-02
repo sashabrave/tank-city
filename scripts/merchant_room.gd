@@ -15,6 +15,7 @@ var avatar:Node3D
 var cell=Vector2i(0,3)
 var destination=Vector3(0,0,3)
 var moving=false
+var walker
 var facing=Vector2i.UP
 var root:Control
 var dpad:Control
@@ -40,6 +41,7 @@ func _ready():
 	var shapes_rng=RandomNumberGenerator.new();shapes_rng.seed=Game.visual_run_seed+index*31
 	preload("res://scripts/service_dressing.gd").silhouettes(self,shapes_rng,Color("b7ae9c"))
 	avatar=Visuals.model("soldier",self,destination,"cat",true)
+	walker=preload("res://scripts/room_walker.gd").new(avatar)
 	var canvas=CanvasLayer.new();add_child(canvas);root=Control.new();canvas.add_child(root);root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);root.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	var heading=UiKit.glass(root,Vector2(25,25),Vector2(590,120),Color("242d27ed"));heading.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	UiKit.accent(UiKit.label(root,"Торговец",Vector2(40,30),Vector2(800,60),32))
@@ -93,21 +95,16 @@ func roll_stock()->Array:
 	return result
 
 func _physics_process(delta):
+	# Same as the hub: the on-screen pad only for touch play.
+	if is_instance_valid(dpad):dpad.visible=InputScheme.touch()
 	if is_instance_valid(modal):
 		if Input.is_action_just_pressed("pause"):close_shop()
 		return
 	if Input.is_action_just_pressed("pause"):preload("res://scripts/ui/pause_tablet.gd").open(self,Callable(),func():hub_requested.emit());return
 	# The kit model walks only when told (T-045): idle while standing, walk cycle while moving.
 	if "preview_moving" in avatar:avatar.preview_moving=moving;avatar.preview_speed=3.4
-	if moving:
-		avatar.position=avatar.position.move_toward(destination,3.8*delta)
-		if avatar.position.distance_to(destination)<.01:moving=false
-	else:
-		var dir=Game.direction()
-		if dir!=Vector2i.ZERO:
-			var next=cell+dir;facing=dir;avatar.rotation.y=atan2(-float(dir.x),-float(dir.y))
-			if next.x>=-3 and next.x<=3 and next.y>=0 and next.y<=4:
-				cell=next;destination=Vector3(cell.x,0,cell.y);moving=true
+	walker.step(delta,Game.direction(),func(p:Vector3):return p.x>=-3.01 and p.x<=3.01 and p.z>=-.01 and p.z<=4.01)
+	moving=walker.moving;cell=walker.cell();facing=walker.facing
 	interact_button.disabled=avatar.position.distance_to(COUNTER)>2.2 and not near_slot()
 	if Game.wants_interact():interact()
 func near_slot()->bool:return avatar.position.distance_to(SLOT_SPOT)<1.9 and avatar.position.distance_to(SLOT_SPOT)<avatar.position.distance_to(COUNTER)

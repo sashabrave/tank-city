@@ -77,7 +77,8 @@
 					"Техника, постройки и пропсы получили запечённое затенение: стыки, ниши и щели темнее, модели выглядят объёмнее",
 					"Кнопка «Пропустить» в видеозвонке штаба теперь называется «Положить трубку»",
 					"Карточки усилений: иконка в рамке редкости, шевроны показывают, сколько раз карточка уже взята",
-					"Исправлено: под героем мигала клетка вместе со статусами; летящий в счётчик жетон показывал не ту иконку"
+					"Исправлено: под героем мигала клетка вместе со статусами; летящий в счётчик жетон показывал не ту иконку",
+					"Комнаты улучшения и торговец: то же плавное управление, что в хабе; выход только из зоны выхода по E; технику явно покупают по E с ценой («Техника доставлена»); лампы больше не закрывают машину; экранный джойстик только на сенсоре"
 				]
 			},
 			"en": {
@@ -154,7 +155,8 @@
 					"Vehicles, buildings and props got baked ambient occlusion: seams, niches and gaps are darker, models look more solid",
 					"The HQ video call's Skip button is now called Hang up",
 					"Upgrade cards: the icon sits in a rarity frame, chevrons show how many times the card was already taken",
-					"Fixed: the cell under the hero flashed along with status effects; the token flying to the counter showed the wrong icon"
+					"Fixed: the cell under the hero flashed along with status effects; the token flying to the counter showed the wrong icon",
+					"Upgrade rooms and the merchant: the same smooth controls as the hub; leave only from the exit zone with E; buy the vehicle explicitly with E and a price («Vehicle delivered»); lamps no longer hide the car; the on-screen stick only on touch"
 				]
 			}
 		},

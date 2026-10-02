@@ -1,5 +1,5 @@
 {
-	"next_id": 93,
+	"next_id": 97,
 	"tasks": [
 		{
 			"id": "T-001",
@@ -1033,7 +1033,7 @@
 			"scene": "service_room",
 			"shot": "res://tasks/shots/T-082.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "в команатах улучшения управление какое-то странное негладкое",
 			"type": "bug",
 			"version": "0.7.2-pre"
@@ -1046,7 +1046,7 @@
 			"scene": "route_map",
 			"shot": "res://tasks/shots/T-083.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "в комнатах улучшения вообще не очень понятная логика,",
 			"type": "bug",
 			"version": "0.7.2-pre"
@@ -1165,6 +1165,58 @@
 			"source": "game",
 			"status": "backlog",
 			"title": "некоторый блоки на полу на которых маленькие предметы выглядят приоднятыми над остальным (бочка полублок) наверное гдето тени накладываются которые ты фиксил в такой эффект, можно ли это размотать и чтоб вы плитки пола выглядели гладенькие?",
+			"type": "bug",
+			"version": "0.7.2-pre"
+		},
+		{
+			"created": "2026-10-02",
+			"id": "T-093",
+			"note": "",
+			"priority": 2.0,
+			"scene": "arena",
+			"shot": "res://tasks/shots/T-093.png",
+			"source": "game",
+			"status": "backlog",
+			"title": "над казармой в хабе должно мигать уведомление если доступно что обновить (зеленое)",
+			"type": "bug",
+			"version": "0.7.2-pre"
+		},
+		{
+			"created": "2026-10-02",
+			"id": "T-094",
+			"note": "",
+			"priority": 2.0,
+			"scene": "arena",
+			"shot": "res://tasks/shots/T-094.png",
+			"source": "game",
+			"status": "backlog",
+			"title": "для входа - выхода в окоп нужна простенькая анимация",
+			"type": "bug",
+			"version": "0.7.2-pre"
+		},
+		{
+			"created": "2026-10-02",
+			"id": "T-095",
+			"note": "я добрался до минибосса, он меня убил, сплава у меня осталось на руках явно больше 30. Давай и это тожезасчитывать за выполнение, ну типа в любом случае принес в хаб столько то сплава",
+			"priority": 2.0,
+			"scene": "hub",
+			"shot": "res://tasks/shots/T-095.png",
+			"source": "game",
+			"status": "backlog",
+			"title": "квест про сплав первый",
+			"type": "bug",
+			"version": "0.7.2-pre"
+		},
+		{
+			"created": "2026-10-02",
+			"id": "T-096",
+			"note": "потести вобщем настройки, подгони их к стандартам индустрии, но переосмысли в наш формат",
+			"priority": 2,
+			"scene": "hub",
+			"shot": "res://tasks/shots/T-096.png",
+			"source": "game",
+			"status": "backlog",
+			"title": "настройки графики не применяются, как их делать?",
 			"type": "bug",
 			"version": "0.7.2-pre"
 		}

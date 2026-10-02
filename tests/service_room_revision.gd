@@ -19,12 +19,16 @@ func run():
 		Game.touch_direction=Vector2i.RIGHT;await get_tree().physics_frame;await get_tree().physics_frame;Game.touch_direction=Vector2i.ZERO
 		check(room.cell!=room.dressing.EXIT_CELL,branch+": gate blocks before the choice")
 		room.skip_choice();check(room.dressing.open,branch+": gate opens after the choice")
+		# T-083: leaving takes E in the exit zone; E anywhere else does nothing.
+		room.avatar.position=Vector3(0,0,3);room.interact()
+		check(not done[0],branch+": E away from the exit keeps the room")
+		room.avatar.position=Vector3(room.dressing.EXIT_CELL.x-1,0,room.dressing.EXIT_CELL.y)
 		Game.touch_direction=Vector2i.RIGHT
-		for i in range(60):
-			await get_tree().physics_frame
-			if done[0]:break
+		for i in range(30):await get_tree().physics_frame
 		Game.touch_direction=Vector2i.ZERO
-		check(done[0],branch+": walking through the gate completes the room")
+		check(room.avatar.position.x>room.dressing.EXIT_CELL.x-.6,branch+": the hero walks into the open gate")
+		room.interact()
+		check(done[0],branch+": E at the gate completes the room")
 		room.queue_free();await get_tree().process_frame
 	arena.queue_free()
 	print("SERVICE ROOM: %d failures" % errors);get_tree().quit(1 if errors else 0)
