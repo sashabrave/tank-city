@@ -58,7 +58,8 @@
 					"«Сводка» в командном центре: крупные иконки со шкалами прогресса и статистика за всё время — время в игре, вылазки, враги по типам, испытания и другое.",
 					"Ночью сквозь поле медленно проплывают едва заметные лунные лучи.",
 					"Новые нарисованные иконки улучшений в Казарме и Штабе: здоровье, сила, скорость, напор, лечение, аптечки, удача, прочность базы, турели и страховки; у иконок способностей убрана цветная кайма.",
-					"Пресет «Кино» включает отражённый цветной свет и более глубокие тени в углах."
+					"Пресет «Кино» включает отражённый цветной свет и более глубокие тени в углах.",
+					"В тёмном лабиринте бродят зомби-солдаты: без оружия, медленно шаркают на свет бойца и кусают на 1 урона; их можно застрелить."
 				]
 			},
 			"en": {
@@ -116,7 +117,8 @@
 					"The command centre «Summary»: big icons with progress bars and all-time stats — time played, sorties, enemies by type, challenges and more.",
 					"At night faint moonbeams slowly drift across the field.",
 					"New drawn upgrade icons in the Barracks and HQ: health, strength, speed, pressure, healing, medkits, luck, base armour, turrets and insurance; the colour fringe on ability icons is gone.",
-					"The «Cinema» preset turns on bounced colour light and deeper corner shadows."
+					"The «Cinema» preset turns on bounced colour light and deeper corner shadows.",
+					"Zombie soldiers roam the dark maze: unarmed, they shamble slowly towards the soldier's light and bite for 1 damage; they can be shot."
 				]
 			}
 		},

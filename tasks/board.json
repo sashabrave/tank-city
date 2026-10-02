@@ -175,7 +175,7 @@
 			"note": "После перехода на отряды: угроза поля 2 — 0,62 от прежней, поля 6 — 1,13; волны в конце до 9–10 врагов. Решить, нормально ли это.",
 			"type": "question",
 			"priority": 2,
-			"status": "backlog",
+			"status": "done",
 			"version": "0.7.2",
 			"created": "2026-10-02",
 			"source": "chat",
@@ -462,7 +462,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-037.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "подумай про ловушки и скримеры в лабиринте? очень лайтово изящно и минимаоистично геймдизайнерски",
 			"type": "idea",
 			"version": "0.7.1-pre"
