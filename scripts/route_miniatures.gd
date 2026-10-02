@@ -337,6 +337,12 @@ static func challenge(parent:Node3D,type:String,color:Color):
 			Visuals.ring(parent,Color("e5b34f"),2.1)
 			Visuals.box(parent,Vector3(0,1.4,0),Vector3(.18,2.4,.18),Color("eee9d8"))
 			Visuals.box(parent,Vector3(.7,2.2,0),Vector3(1.3,.8,.1),Color("e5b34f"))
+		"maze":
+			# Concrete maze walls with a green flag in the far corner.
+			for w in [[Vector3(-1.2,.55,-.4),Vector3(.3,.6,2.2)],[Vector3(0,.55,-1.2),Vector3(2.2,.6,.3)],[Vector3(.4,.55,.5),Vector3(.3,.6,1.6)],[Vector3(1.3,.55,0),Vector3(.3,.6,1.8)],[Vector3(-.4,.55,1.3),Vector3(1.4,.6,.3)]]:
+				Visuals.box(parent,w[0],w[1],Color("8f938c"))
+			Visuals.box(parent,Vector3(.9,1.2,-.9),Vector3(.1,1.6,.1),Color("eee9d8"))
+			Visuals.box(parent,Vector3(1.2,1.75,-.9),Vector3(.55,.35,.06),Color("4fb85c"))
 		"survive":
 			for p in [Vector3(-1.2,0,-.8),Vector3(1,0,.6),Vector3(-.2,0,1.3)]:
 				var ring=Visuals.ring(parent,Color("d8453a"),.9);ring.position=p+Vector3(0,.32,0)

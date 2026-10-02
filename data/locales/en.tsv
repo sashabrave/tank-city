@@ -1479,7 +1479,7 @@ Changelog	Changelog
 Сундук в центре поля. Откроешь — с двух сторон придёт засада ветеранов. Можно уйти через выход, не открывая.	A chest in the middle of the field. Opening it brings a veteran ambush from both sides. You can leave through the exit without opening it.
 Награда: Сплав и обычные карты	Reward: alloy and common cards
 Награда: Редкие карты или чертёж	Reward: rare cards or a blueprint
-Награда: Эпические карты, документы или редкий чертёж	Reward: epic cards, documents or a rare blueprint
+Награда: Эпические карты, много сплава или редкий чертёж	Reward: epic cards, extra alloy or a rare blueprint
 Испытание	Challenge
 Удержание	Hold
 Держи точку	Hold the point
@@ -1591,7 +1591,7 @@ F2 — админ	F2 — admin
 Взорви бочками %d врагов	Blow up %d enemies with barrels
 Собери %d жетонов	Collect %d tokens
 Особое задание	Special task
-На карте есть особые точки: тайник, удержание, выживание. Пройди любую.	The map has special points: cache, hold, survival. Complete any of them.
+На карте есть особые точки: тайник, удержание, выживание, тёмный лабиринт. Пройди любую.	The map has special points: cache, hold, survival, dark maze. Complete any of them.
 Сделка на марше	Deal on the march
 Собери жетоны с врагов и купи что-нибудь у торговца в сервисном ряду.	Collect tokens from enemies and buy something from the merchant in a service row.
 Зачисти первое поле Пограничья: три волны и командира.	Clear the first Borderland field: three waves and the commander.
@@ -2026,7 +2026,7 @@ Q Прицельный выстрел · 1 Ложная позиция	Q Aimed s
 Куплено: 	Bought: 
 Сплав и обычные карты	Alloy and common cards
 Редкие карты или чертёж	Rare cards or a blueprint
-Эпические карты, документы или редкий чертёж	Epic cards, documents or a rare blueprint
+Эпические карты, много сплава или редкий чертёж	Epic cards, extra alloy or a rare blueprint
 Сначала заедь на передышку	Stop at the rest point first
 ★ средняя · ★★ сложная · редкие чертежи	★ medium · ★★ hard · rare blueprints
 WASD — ехать · E — войти · колесо, перетаскивание — обзор	WASD to drive · E to enter · wheel, drag to look around
@@ -2471,3 +2471,12 @@ III · элитные командиры, +1 враг · +100%	III · elite comm
 Можно в отпуск?	Can I go on leave?
 Открыт бесконечный рубеж и мир 2. На карточке мира — лестница испытаний. Вот твой отпуск.	The endless line and world 2 are open. The world card has the challenge ladder. That's your leave.
 Испытание взято. Враги злее, награда жирнее. Дальше — сам решай, насколько ты псих.	Challenge taken. Meaner enemies, fatter rewards. How crazy you are from here is up to you.
+Тёмный лабиринт	Dark maze
+Найди зелёный флаг до конца отсчёта	Find the green flag before the countdown ends
+Темно. Видно только вокруг бойца — ищи зелёный флаг	It's dark. You only see around the soldier — find the green flag
+Свет включили	Lights on
+Время вышло · награды нет	Time is up · no reward
+Свет в конце	Light at the end
+Пройди тёмный лабиринт: дойди до зелёного флага, пока не включили свет.	Clear the dark maze: reach the green flag before the lights come on.
+Поле — тёмный бетонный лабиринт, свет только вокруг бойца. Дойди до зелёного флага до конца отсчёта. Чем больше звёзд, тем меньше обходных путей и времени. Не успел — включат свет, но без награды.	The field is a dark concrete maze, lit only around the soldier. Reach the green flag before the countdown ends. More stars mean fewer detours and less time. Too slow — the lights come on, but no reward.
+ · свет включён	 · lights on

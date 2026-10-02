@@ -407,7 +407,7 @@ func _build_map():
 		base_model=Visuals.model("base",self,world_pos(base_cell));base_model.rotation.y=preload("res://scripts/mobile_hq.gd").orientation(run_seed+room_index*719)
 		return
 	current_layout=layout.rows
-	if room.mode!="battle":ChallengeLayouts.apply(current_layout,grid_size,room.mode,run_seed+room_index*977)
+	if room.mode!="battle":ChallengeLayouts.apply(current_layout,grid_size,room.mode,run_seed+room_index*977,room.difficulty)
 	elif Campaign.zone(room_index)>=2:ruin_layout(current_layout)
 	elif Campaign.unified_content():board.scatter_barrels(current_layout)
 	if room.mode=="battle":

@@ -5,7 +5,11 @@ extends RefCounted
 ## surviving it drops a reward chest whose value follows the room difficulty.
 ## hold — stand in the zone while enemies keep coming; progress grows only while no enemy is inside.
 ## survive — weapons are out of ammo; dodge artillery markers until the timer ends.
-const TITLES={"cache":"Тайник","hold":"Удержание","survive":"Выживание"}
+## maze — a dark concrete maze: only the soldier's surroundings are lit; reach the green flag before the timer.
+## When time runs out the lights come on and the exit opens without a reward.
+const TITLES={"cache":"Тайник","hold":"Удержание","survive":"Выживание","maze":"Тёмный лабиринт"}
+const MAZE_SECONDS=[45,40,35]
+const MAZE_REACH=.9
 const AMBUSH_SIZE=[4,6,8]
 const HOLD_SECONDS=[30,40,50]
 const HOLD_RADIUS=1.6
@@ -25,15 +29,20 @@ var arena
 var opened=false
 var rewarded=false
 var chest:Dictionary={}
+var goal_flag:Node3D
+var darkness:CanvasLayer
+var timed_out=false
 func _init(context):
 	arena=context
 func active()->bool:return arena.room.mode!="battle"
 ## Rooms that finish by their own rule, not by an empty wave queue.
-func blocks_waves()->bool:return arena.room.mode in ["hold","survive"] and not rewarded
+func blocks_waves()->bool:return arena.room.mode in ["hold","survive","maze"] and not rewarded and not timed_out
 func weapons_locked()->bool:return arena.room.mode=="survive" and not rewarded
 ## Room change: forget props of the previous challenge (their nodes are freed with the room).
 func reset():
-	opened=false;rewarded=false;chest={};zone=null;shells.clear()
+	opened=false;rewarded=false;chest={};zone=null;shells.clear();timed_out=false;goal_flag=null
+	if is_instance_valid(darkness):darkness.queue_free()
+	darkness=null
 func start():
 	opened=false;rewarded=false;chest={}
 	arena.room.spawn_queue.clear();arena.room.wave_roster.clear();arena.room.wave_spawned=0;arena.room.upgrade_offers.clear()
@@ -45,6 +54,7 @@ func start():
 		"cache":start_cache()
 		"hold":start_hold()
 		"survive":start_survive()
+		"maze":start_maze()
 func start_cache():
 	# The exit is open from the start: taking the risk is optional.
 	arena.room.room_cleared=true;arena.room.reward_claimed=true;arena.room.next_is_room=true
@@ -85,14 +95,16 @@ func tick(delta:float=0.0):
 				rewarded=true;record_success();drop_reward()
 		"hold":tick_hold(delta)
 		"survive":tick_survive(delta)
+		"maze":tick_maze(delta)
 ## Countdown for timed rooms (hold, survive): title, seconds left and done share; empty for other rooms.
 func timer()->Dictionary:
-	if not active() or arena.room.mode not in ["hold","survive"] or goal<=0 or rewarded:return {}
+	if not active() or arena.room.mode not in ["hold","survive","maze"] or goal<=0 or rewarded or timed_out:return {}
 	return {"title":TITLES[arena.room.mode],"left":maxf(0.0,goal-progress),"ratio":clampf(progress/goal,0.0,1.0),"paused":arena.room.mode=="hold" and contested_now}
 func status()->String:
 	match arena.room.mode:
 		"cache":return TITLES.cache+(" · засада" if opened and not rewarded else "")
 		"hold","survive":return TITLES[arena.room.mode]+(" · %d / %d с" % [floori(progress),roundi(goal)] if not rewarded else " · готово")
+		"maze":return TITLES.maze+(" · готово" if rewarded else " · свет включён" if timed_out else " · %d с" % ceili(goal-progress))
 	return ""
 
 func start_hold():
@@ -125,6 +137,35 @@ func tick_hold(delta:float):
 	elif not is_instance_valid(player) or not in_zone(player.position):progress=maxf(0,progress-delta*.25)
 	if progress>=goal:complete(zone.position)
 
+func start_maze():
+	goal=MAZE_SECONDS[clampi(arena.room.difficulty,0,2)];timed_out=false
+	var cell=ChallengeLayouts.maze_goal(arena.room.grid_size,arena.run_seed+arena.room.room_index*977,arena.room.difficulty)
+	goal_flag=Node3D.new();goal_flag.name="MazeGoal";arena.add_child(goal_flag);goal_flag.position=arena.world_pos(cell)
+	Visuals.ring(goal_flag,Color("5fc46a"),.7)
+	Visuals.box(goal_flag,Vector3(0,1.1,0),Vector3(.08,2.2,.08),Color("eee9d8"))
+	Visuals.box(goal_flag,Vector3(.36,1.85,0),Vector3(.7,.45,.06),Color("4fb85c"))
+	var glow=OmniLight3D.new();goal_flag.add_child(glow);glow.position=Vector3(0,1.6,0);glow.light_color=Color("7dffa0");glow.light_energy=1.2;glow.omni_range=2.6
+	darkness=preload("res://scripts/ui/maze_darkness.gd").new();darkness.arena=arena;arena.add_child(darkness)
+	if is_instance_valid(arena.presentation):arena.presentation.announce("Тёмный лабиринт","Найди зелёный флаг до конца отсчёта",.8)
+	arena.toast("Темно. Видно только вокруг бойца — ищи зелёный флаг")
+func tick_maze(delta:float):
+	if rewarded or timed_out:return
+	progress=minf(goal,progress+delta)
+	var player=arena.room.player
+	if is_instance_valid(player) and is_instance_valid(goal_flag) and arena.flat_distance(player.position,goal_flag.position)<MAZE_REACH:
+		if is_instance_valid(darkness):darkness.lift()
+		var at=goal_flag.position;goal_flag.queue_free()
+		complete(at)
+		# The exit stands right at the flag: no walk back through the maze.
+		if is_instance_valid(arena.room.flag):arena.room.flag.position=at;arena.room.flag_armed=false
+		return
+	if progress>=goal:
+		timed_out=true
+		if is_instance_valid(darkness):darkness.lift()
+		arena.room.room_cleared=true;arena.room.reward_claimed=true;arena.room.next_is_room=true
+		arena.flow.place_flag("Выход")
+		if is_instance_valid(player):arena.room.flag.position=arena.world_pos(arena.grid_pos(player.position));arena.room.flag_armed=false
+		if is_instance_valid(arena.presentation):arena.presentation.announce("Свет включили","Время вышло · награды нет",.8)
 func start_survive():
 	goal=SURVIVE_SECONDS[clampi(arena.room.difficulty,0,2)]
 	if is_instance_valid(arena.presentation):arena.presentation.announce("Патроны кончились","Уклоняйся от обстрела",.8)
@@ -190,7 +231,7 @@ func drop_reward():
 	arena.reward.drop_recipe(cell,{"elite":true})
 	var pickup=arena.room.pickups.back();pickup["offers"]=reward_offers(arena.room.difficulty)
 	arena.toast("Засада отбита · забери награду")
-## ★ simple: alloy and common cards; ★ rare cards or a blueprint; ★★ epic cards, documents or a rare blueprint.
+## ★ simple: alloy and common cards; ★ rare cards or a blueprint; ★★ epic cards, extra alloy or a rare blueprint.
 func reward_offers(difficulty:int)->Array:
 	var rng=arena.run.combat_rng
 	var cards=RunUpgrades.roll_offers(arena,2)
