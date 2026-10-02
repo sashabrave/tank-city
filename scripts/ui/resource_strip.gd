@@ -85,7 +85,9 @@ func fly_pickup(kind:String,from:Vector2):
 	if not pickup_targets.has(key):return
 	pickup_flights=pickup_flights.filter(is_instance_valid)
 	if pickup_flights.size()>=32:pickup_flights.pop_front().queue_free()
-	var icon=UiKit.icon(self,key,from-Vector2(15,15),Vector2(30,30))
+	# The flying icon is the same picture as its counter (tokens used the generic «tokens» art, T-089).
+	var icon=UiKit.icon(self,"token" if key=="tokens" else key,from-Vector2(15,15),Vector2(30,30))
+	if key=="tokens":icon.modulate=UiKit.INK
 	icon.mouse_filter=Control.MOUSE_FILTER_IGNORE;pickup_flights.append(icon)
 	var destination:Control=pickup_targets[key]
 	var tween=create_tween().set_pause_mode(Tween.TWEEN_PAUSE_BOUND)

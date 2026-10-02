@@ -95,11 +95,12 @@ func apply(next:String):
 	for mesh in meshes:
 		if is_instance_valid(mesh):mesh.material_overlay=overlay(next) if next!="" else null
 
-## Light cones, lamp lenses and the headlight rig glow on their own: a hit tints only the body.
+## Light cones, lamp lenses, the headlight rig and the contact shadow keep their own look: a hit tints only the
+## body (an overlay on the floor shadow flashed the whole cell, T-091).
 func lighting_part(mesh:Node)->bool:
 	var node=mesh
 	while node!=null and node!=actor:
-		if node.name in ["SoftCone","HeadlightRig","Flashlight","Floodlight"] or node is Light3D:return true
+		if node.name in ["SoftCone","HeadlightRig","Flashlight","Floodlight","ContactShadow","SteadyBeam"] or node is Light3D:return true
 		node=node.get_parent()
 	return false
 func show_marker(next:String):
