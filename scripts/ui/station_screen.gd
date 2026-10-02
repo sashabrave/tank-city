@@ -33,6 +33,9 @@ const STATUS={
 	"active":["Выбрано",Color("7fe08a"),Color("34503a"),Color("6fbf78")],
 	"max":["Максимум",Color("e8c96a"),Color("3a3a2c"),Color("8a7a45")],
 	"new":["Новое",Color("ff8a6b"),Color("2f3b33"),Color("47524a")],
+	"done":["Готово",Color("8fb59a"),Color("2f3b33"),Color("47524a")],
+	"goal":["Следующая цель",Color("f2a33a"),Color("4a3f28"),Color("c98a33")],
+	"later":["Позже",Color("6c736b"),Color("30352f"),Color("3f463f")],
 }
 func status(item:Dictionary)->String:
 	if item.has("status"):return str(item.status)
@@ -70,7 +73,7 @@ func purchase_action(id:String)->Dictionary:
 func status_chip(parent:Control,kind:String,pos:Vector2)->Control:
 	var spec:Array=STATUS.get(kind,STATUS.owned)
 	var chip=PanelContainer.new();chip.name="Status";parent.add_child(chip);chip.position=pos;chip.mouse_filter=Control.MOUSE_FILTER_PASS
-	chip.tooltip_text=Texts.localized({"locked":"Нужен чертёж или предыдущий шаг","soon":"Появится в следующих обновлениях","buy":"Хватает ресурсов — можно купить","short":"Не хватает ресурсов","owned":"Уже есть","upgrade":"Можно улучшить сейчас","upgrade_short":"На улучшение пока не хватает","active":"Используется сейчас","max":"Прокачано до предела","new":"Открыто недавно"}.get(kind,""))
+	chip.tooltip_text=Texts.localized({"locked":"Нужен чертёж или предыдущий шаг","soon":"Появится в следующих обновлениях","buy":"Хватает ресурсов — можно купить","short":"Не хватает ресурсов","owned":"Уже есть","upgrade":"Можно улучшить сейчас","upgrade_short":"На улучшение пока не хватает","active":"Используется сейчас","max":"Прокачано до предела","new":"Открыто недавно","done":"Цель достигнута","goal":"Ближайшая цель этого направления","later":"Откроется после следующей цели"}.get(kind,""))
 	var box=UiKit.style(Color(spec[1],.16),5,Color(spec[1],.5));box.content_margin_left=6;box.content_margin_right=6;box.content_margin_top=1;box.content_margin_bottom=1
 	chip.add_theme_stylebox_override("panel",box)
 	var label=Label.new();chip.add_child(label);Texts.set_text(label,spec[0]);label.add_theme_font_size_override("font_size",11);label.add_theme_color_override("font_color",spec[1].lightened(.15))
@@ -139,7 +142,8 @@ func card(item:Dictionary):
 	UiKit.locked_preview(picture,kind in ["locked","soon"])
 	if kind in ["soon","locked"]:picture.modulate.a=.55 if kind=="soon" else .8
 	status_chip(b,kind,Vector2(6,6))
-	if station_kind!="" and kind not in ["locked","soon"] and preload("res://scripts/ui/station_notices.gd").is_new(station_kind,tab,str(item.id)):
+	# The roadmap shows progress, not unlocks: no «Новое» badges there.
+	if station_kind not in ["","roadmap"] and kind not in ["locked","soon","done","goal","later"] and preload("res://scripts/ui/station_notices.gd").is_new(station_kind,tab,str(item.id)):
 		var fresh=status_chip(b,"new",Vector2(0,6));fresh.name="New"
 		fresh.position.x=b.custom_minimum_size.x-fresh.get_combined_minimum_size().x-6
 	var title=UiKit.label(b,str(item.title),Vector2(8,76),Vector2(150,26),15);title.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;title.clip_text=true

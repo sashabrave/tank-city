@@ -118,6 +118,7 @@ func _ready():
 	dummy.visible="range" in Game.built_workshops
 	build_yard()
 	build_wardrobe()
+	build_roadmap()
 	dummy_label=Visuals.label3d(dummy,"",Vector3(0,1.7,0),Color("f7d891"),26)
 	Game.progression.prepare_telegrams()
 	command_model=Visuals.model("command_center",self,command_pos)
@@ -284,6 +285,23 @@ func _physics_process(delta):
 ## target board behind the dummy, a lamp post, and the parking sign that shows a tank icon while empty.
 ## Uniform locker on the old bonus-bench spot by the back wall.
 const WARDROBE_POS=Vector3(-3,0,-1)
+## «Развитие заставы»: the meta roadmap board by the back wall.
+const ROADMAP_POS=Vector3(1,0,-2)
+func build_roadmap():
+	var board=Node3D.new();board.name="Roadmap";add_child(board);board.position=ROADMAP_POS
+	var wood=Color("6d5a40");var cork=Color("b89a6a")
+	for x in [-.6,.6]:Visuals.box(board,Vector3(x,.75,0),Vector3(.1,1.5,.1),wood.darkened(.25))
+	Visuals.box(board,Vector3(0,1.25,.02),Vector3(1.4,.95,.06),cork)
+	Visuals.box(board,Vector3(0,1.25,-.01),Vector3(1.5,1.05,.04),wood)
+	# Track lines with pinned cards: done cards are pale, the next goal is orange.
+	for row in range(3):
+		var y=1.55-row*.28
+		Visuals.box(board,Vector3(0,y,.06),Vector3(1.2,.02,.01),Color("8a3a2a"))
+		for i in range(4):
+			var color=Color("e8dcc0") if i<2-row%2 else Color("f2a33a") if i==2-row%2 else Color("9c8f74")
+			Visuals.box(board,Vector3(-.45+i*.3,y,.07),Vector3(.18,.14,.01),color)
+	Visuals.label3d(board,"Развитие заставы",Vector3(0,2.0,0),Color("dcf6ec"),22)
+	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Развитие заставы",ROADMAP_POS,1.3,func():return not mounted)
 func build_wardrobe():
 	var locker=Node3D.new();locker.name="Wardrobe";add_child(locker);locker.position=WARDROBE_POS
 	var olive=Color("59603f");var dark=Color("3f4430")
@@ -437,7 +455,7 @@ func hub_free(p: Vector2i) -> bool:
 	if p.x< -4 or p.y< -2 or p.y>4:return false
 	# Command centre (left edge), crates by the back wall, the range pad and the arsenal spot. The retired
 	# workbench cells (character at 0,-1 and bonuses at -3,-1) are walkable floor now.
-	if p in [Vector2i(-4,0),Vector2i(-4,1),Vector2i(-4,2),Vector2i(0,3),Vector2i(-2,-2),Vector2i(-1,-2),Vector2i(-3,-1)]:return false
+	if p in [Vector2i(-4,0),Vector2i(-4,1),Vector2i(-4,2),Vector2i(0,3),Vector2i(-2,-2),Vector2i(-1,-2),Vector2i(-3,-1),Vector2i(1,-2)]:return false
 	if not mounted and training_tank.visible and Vector2i(roundi(training_tank.position.x),roundi(training_tank.position.z))==p:return false
 	return true
 
@@ -450,6 +468,7 @@ func interact():
 	if not mounted and avatar.position.distance_to(command_pos)<1.65:show_command();return
 	if not mounted and avatar.position.distance_to(printer_pos)<1.4:open_station("fighter");return
 	if not mounted and avatar.position.distance_to(WARDROBE_POS)<1.3:open_station("wardrobe");return
+	if not mounted and avatar.position.distance_to(ROADMAP_POS)<1.3:open_station("roadmap");return
 	if not mounted and "garage" in Game.built_workshops and avatar.position.distance_to(YARD_PARK)<1.65:open_station("garage");return
 	var locked=nearest_locked()
 	if locked!="":build_tab=1 if locked in ["garage","range"] else 0;show_build_menu();return
@@ -558,7 +577,7 @@ func update_bench_visuals():
 func show_build_menu():preload("res://scripts/ui/build_menu.gd").show(self)
 
 ## The four stations share one screen (scripts/ui/station_screen.gd); only «Казарма» needs no building.
-const STATIONS={"wardrobe":["","res://scripts/ui/stations/wardrobe_station.gd"],"fighter":["","res://scripts/ui/stations/fighter_station.gd"],"arsenal":["weapons","res://scripts/ui/stations/arsenal_station.gd"],"hq":["headquarters","res://scripts/ui/stations/hq_station.gd"],"garage":["garage","res://scripts/ui/stations/garage_station.gd"]}
+const STATIONS={"roadmap":["","res://scripts/ui/stations/roadmap_station.gd"],"wardrobe":["","res://scripts/ui/stations/wardrobe_station.gd"],"fighter":["","res://scripts/ui/stations/fighter_station.gd"],"arsenal":["weapons","res://scripts/ui/stations/arsenal_station.gd"],"hq":["headquarters","res://scripts/ui/stations/hq_station.gd"],"garage":["garage","res://scripts/ui/stations/garage_station.gd"]}
 func open_station(kind:String):
 	var building=STATIONS[kind][0]
 	if building!="" and building not in Game.built_workshops:build_tab=0;show_build_menu();return

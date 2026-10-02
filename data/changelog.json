@@ -22,7 +22,8 @@
 					"Задания считают только сделанное после взятия; сюжетные постройки и покупки засчитываются всегда. Оперштаб выдаёт поручения по одному, по порядку истории.",
 					"Оружие в HUD и планшете берёт одну картинку и занимает всю ячейку; название РПГ больше не превращается в «Рпг».",
 					"Новое испытание — тёмный лабиринт: видно только вокруг бойца, найди зелёный флаг до конца отсчёта. Чем больше звёзд, тем меньше обходных путей.",
-					"Лабиринт стал большим, как поле босса, а в одном из тупиков прячется сундук."
+					"Лабиринт стал большим, как поле босса, а в одном из тупиков прячется сундук.",
+					"В хабе появилась доска «Развитие заставы»: по пяти направлениям видно, что уже сделано и какая цель следующая."
 				]
 			},
 			"en": {
@@ -44,7 +45,8 @@
 					"Tasks count only what you do after taking them; story builds and purchases always count. Operations hands out briefings one at a time in story order.",
 					"Weapons in the HUD and tablet use one picture and fill the whole cell; the RPG name no longer turns into «Rpg».",
 					"New challenge — the dark maze: you only see around the soldier; find the green flag before the countdown ends. More stars mean fewer detours.",
-					"The maze is now as big as a boss field, and a chest hides in one of its dead ends."
+					"The maze is now as big as a boss field, and a chest hides in one of its dead ends.",
+					"The hub has an «Outpost progress» board: five tracks show what is done and which goal is next."
 				]
 			}
 		},
