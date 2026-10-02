@@ -35,6 +35,8 @@ var ability_available=false
 var camera:Camera3D
 var root:Control
 var scroll=0.0
+## Map units per unit of trackpad pan delta.
+const PAN_SPEED=.35
 var dragging=false
 var drag_distance=0.0
 var travelling=false
@@ -392,9 +394,14 @@ func tap_at(screen_pos:Vector2):
 		if not previews[id].visible:continue
 		var delta=point-previews[id].position
 		if absf(delta.x)<=3.15*MINI_SCALE and absf(delta.z)<=3.15*MINI_SCALE:travel_to_room(previews[id].get_meta("info").stage,id);return
-## Mouse wheel scrolls along the route. Handled in _input: the map UI layer would swallow it otherwise.
+## Mouse wheel and a two-finger trackpad swipe scroll along the route. Handled in _input: the map UI layer
+## would swallow it otherwise. macOS sends trackpad scrolling as InputEventPanGesture, not wheel buttons.
 func _input(event):
-	if travelling or is_instance_valid(modal) or not event is InputEventMouseButton or not event.pressed:return
+	if travelling or is_instance_valid(modal):return
+	if event is InputEventPanGesture:
+		scroll-=event.delta.y*PAN_SPEED;follow_camera=false;move_camera()
+		get_viewport().set_input_as_handled();return
+	if not event is InputEventMouseButton or not event.pressed:return
 	if event.button_index in [MOUSE_BUTTON_WHEEL_UP,MOUSE_BUTTON_WHEEL_DOWN]:
 		scroll+=1.6 if event.button_index==MOUSE_BUTTON_WHEEL_UP else -1.6;follow_camera=false;move_camera()
 		get_viewport().set_input_as_handled()
