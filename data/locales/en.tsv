@@ -2438,7 +2438,6 @@ III · элитные командиры, +1 враг · +100%	III · elite comm
 Убитые враги взрываются: 1,5 урона соседям рядом.	Killed enemies burst: 1.5 damage to neighbours.
 Стальная воля	Iron will
 Пока техника стреляет, она получает на 70% меньше урона.	While the vehicle is firing it takes 70% less damage.
-Таран	Ram
 Техника давит пехоту при наезде.	The vehicle crushes infantry it drives into.
 Мастерская на колёсах	Workshop on wheels
 Техника чинит 1 брони каждые 3 с.	The vehicle repairs 1 armour every 3 s.
@@ -2451,7 +2450,6 @@ III · элитные командиры, +1 враг · +100%	III · elite comm
 Пригнуться	Crouch
 Встать	Stand up
 Автомат · %d жетона	Slot machine · %d tokens
-Игровой автомат	Slot machine
 Пусто. Повезёт в другой раз	Empty. Better luck next time
 Жетоны вернулись вдвойне	Tokens returned double
 Полное лечение	Full heal
