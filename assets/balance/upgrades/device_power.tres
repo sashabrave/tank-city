@@ -6,6 +6,7 @@
 script = ExtResource("1")
 id = "device_power"
 title = "Мощность устройств"
+detail = "Способности бойца сильнее: граната бьёт больнее, щит держит дольше, дрон стреляет мощнее."
 category = "Способность"
 icon = "device_power"
 family = "logistics"

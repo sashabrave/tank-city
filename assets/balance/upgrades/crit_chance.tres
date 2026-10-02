@@ -6,6 +6,7 @@
 script = ExtResource("1")
 id = "crit_chance"
 title = "Меткий глаз"
+detail = "Чаще критические попадания: такая пуля бьёт вдвое сильнее."
 category = "Герой"
 family = "fire"
 icon = "rare"

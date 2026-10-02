@@ -15,4 +15,4 @@ max_stacks = 2
 requires = PackedStringArray("card:stun")
 modifiers = Array[Dictionary]([{"stat": "stun_duration", "op": "add", "value": 0.4}])
 preview = "stun_time"
-detail = "Оглушение длится дольше."
+detail = "Оглушённые враги приходят в себя дольше."

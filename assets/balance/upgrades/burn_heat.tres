@@ -15,4 +15,4 @@ max_stacks = 2
 requires = PackedStringArray("card:burn")
 modifiers = Array[Dictionary]([{"stat": "burn_power", "op": "add", "value": 0.5}])
 preview = "burn_power"
-detail = "Горение жжёт сильнее."
+detail = "Горение жжёт сильнее: больше урона огнём каждую секунду."

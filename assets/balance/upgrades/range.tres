@@ -6,6 +6,7 @@
 script = ExtResource("1")
 id = "range"
 title = "Дальность"
+detail = "Пули летят дальше: можно бить врагов издалека."
 category = "Герой"
 icon = "range"
 family = "recon"

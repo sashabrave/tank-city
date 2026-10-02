@@ -631,7 +631,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-050.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "вроде взял усиление темп а на плашке оружия в бою темп не изменился",
 			"type": "polish",
 			"version": "0.7.1-pre"

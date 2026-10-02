@@ -6,6 +6,7 @@
 script = ExtResource("1")
 id = "healing"
 title = "Медицина"
+detail = "Аптечки и передышки лечат сильнее."
 category = "Герой"
 icon = "healing"
 family = "survival"

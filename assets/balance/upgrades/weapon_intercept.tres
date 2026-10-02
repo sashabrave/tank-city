@@ -13,4 +13,4 @@ tags = PackedStringArray("weapon", "pressure")
 weight = 0
 modifiers = Array[Dictionary]([{"stat": "weapon_mods.@weapon.intercept", "op": "add", "value": 0.05}])
 preview = "intercept"
-detail = "{{pressure.description}}"
+detail = "Текущее оружие чаще сбивает вражеские снаряды (напор)."

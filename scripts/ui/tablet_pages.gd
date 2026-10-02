@@ -107,9 +107,12 @@ func fighter():
 		for i in range(arena.run.upgrade_history.size()):
 			var choice=arena.run.upgrade_history[i];var id=choice.id
 			var title=UpgradeRegistry.get_def(id).title if UpgradeRegistry.has(id) else AbilityCatalog.DATA.get(id,HQCatalog.DATA.get(id,Game.LOOT.WEAPONS.get(id,{}))).get("name",{"damage":"Урон","intercept":"Напор","speed":"Скорость","fire":"Темп","health":"Здоровье","recovery":"Защита","weapon_damage":"Урон оружия","weapon_fire":"Темп оружия","weapon_intercept":"Напор оружия"}.get(id,id))
-			entries.append(["%d. %s" % [i+1,title],choice.get("detail",RunUpgrades.TIER_NAMES[clampi(int(choice.tier),0,3)])])
+			# T-050: the card says what it does (its short description), with the rarity, not just «Обычное».
+			var what=UpgradeRegistry.get_def(id).detail if UpgradeRegistry.has(id) else ""
+			entries.append(["%d. %s" % [i+1,title],choice.get("detail",RunUpgrades.TIER_NAMES[clampi(int(choice.tier),0,3)]),what])
 	for i in range(entries.size()):
-		var b=cell(body,Vector2((i%4)*174,upgrades_y+45+floori(i/4.0)*100),"",str(entries[i][0]),"Текущее усиление: "+str(entries[i][1]),false,Vector2(162,90))
+		var info="Текущее усиление: "+str(entries[i][1])+(("\n"+str(entries[i][2])) if entries[i].size()>2 and str(entries[i][2])!="" else "")
+		var b=cell(body,Vector2((i%4)*174,upgrades_y+45+floori(i/4.0)*100),"",str(entries[i][0]),info,false,Vector2(162,90))
 		UiKit.label(b,str(entries[i][0]),Vector2(8,5),Vector2(147,30),14);UiKit.label(b,str(entries[i][1]) if str(entries[i][1]).length()<18 else "Подробнее…",Vector2(8,39),Vector2(147,40),16)
 	if entries.is_empty():UiKit.label(body,"Усиления появятся во время вылазки",Vector2(0,upgrades_y+45),Vector2(690,35),17,UiKit.MUTED)
 	body.custom_minimum_size.y=maxf(upgrades_y+100,upgrades_y+65+ceilf(entries.size()/4.0)*100)

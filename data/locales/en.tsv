@@ -2598,3 +2598,22 @@ F8 — новая задача из любого места игры · Esc — 
 Киношный свет	Cinematic light
 Глубина света	Light depth
 Сесть	Board
+Горение жжёт сильнее: больше урона огнём каждую секунду.	Burning hits harder: more fire damage every second.
+Подожжённые враги горят дольше.	Set-alight enemies burn for longer.
+Чаще критические попадания: такая пуля бьёт вдвое сильнее.	More critical hits: such a bullet hits twice as hard.
+Критические попадания бьют ещё сильнее.	Critical hits deal even more damage.
+Больше урона от всего: пуль бойца, техники и взрывов.	More damage from everything: the soldier's bullets, vehicles and explosions.
+Способности бойца (граната, щит, дрон и другие) перезаряжаются быстрее.	The soldier's abilities (grenade, shield, drone and others) recharge faster.
+Способности бойца сильнее: граната бьёт больнее, щит держит дольше, дрон стреляет мощнее.	The soldier's abilities are stronger: the grenade hits harder, the shield lasts longer, the drone shoots harder.
+Боец стреляет чаще: меньше пауза между выстрелами.	The soldier fires more often: a shorter pause between shots.
+Шанс увернуться от пули, а при маскировке враги теряют бойца из виду.	A chance to dodge a bullet, and while cloaked enemies lose track of the soldier.
+Входящие пули наносят бойцу меньше урона.	Incoming bullets deal less damage to the soldier.
+Аптечки и передышки лечат сильнее.	Medkits and breathers heal more.
+Больше максимального здоровья бойца.	More maximum health for the soldier.
+Напор: шанс, что твоя пуля собьёт вражеский снаряд в полёте.	Pressure: a chance that your bullet knocks an enemy shot out of the air.
+Пули летят дальше: можно бить врагов издалека.	Bullets fly farther: you can hit enemies from afar.
+Боец бегает быстрее.	The soldier runs faster.
+Оглушённые враги приходят в себя дольше.	Stunned enemies take longer to recover.
+Больше урона у текущего оружия.	More damage for the current weapon.
+Текущее оружие стреляет чаще.	The current weapon fires more often.
+Текущее оружие чаще сбивает вражеские снаряды (напор).	The current weapon knocks down enemy shots more often (pressure).
