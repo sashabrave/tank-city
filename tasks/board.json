@@ -115,7 +115,7 @@
 			"note": "Шире трасса, мишень дальше за мешками, огневая точка, короткий проход из хаба.",
 			"type": "polish",
 			"priority": 2,
-			"status": "backlog",
+			"status": "review",
 			"version": "0.9",
 			"created": "2026-10-02",
 			"source": "chat",
