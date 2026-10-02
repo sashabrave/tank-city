@@ -62,6 +62,8 @@ var ability_unlocks: Array=["barrier","shield"]
 var selected_ability="barrier"
 var branch_unlocks: Array=["health"]
 var weapon_unlocks: Array=["pistol"]
+## Weapons with the second ammo slot bought in the Arsenal (scripts/combat/ammo.gd).
+var ammo_slot_weapons:Array=[]
 var selected_weapon="pistol"
 var backpack_slots=1
 var reroll_level=0
@@ -207,7 +209,7 @@ func reset_upgrades() -> int:
 	progression=preload("res://scripts/progression/base_progression.gd").new()
 	class_first_slots.clear();purchased_gadgets.clear();purchased_hq.clear();class_second_slots.clear();gadget="";superboss_defeated=false;cores=0;selected_class="recruit";class_unlocks=["recruit"];class_levels.clear();specializations.clear();ability_slots=1;equipped_abilities=["barrier"];rescue_level=0;shield_capacity_level=0
 	selected_weapon="pistol";backpack_slots=1;reroll_level=0;camp_level=0;research_unlocks.clear();built_workshops.clear()
-	ability_unlocks=["barrier","shield"];selected_ability="barrier";branch_unlocks=["health"];weapon_unlocks=["pistol"];bonus_unlocks=["heart"];bonus_levels.clear()
+	ability_unlocks=["barrier","shield"];selected_ability="barrier";branch_unlocks=["health"];weapon_unlocks=["pistol"];ammo_slot_weapons=[];bonus_unlocks=["heart"];bonus_levels.clear()
 	health_level=0;damage_level=0;luck_level=0;turret_level=0;rarity_level=0;base_level=0;heal_level=0;mobility_level=0;recovery_level=0;credits=0
 	stat_levels.clear();skins_owned.clear();skin="woodland";player_model=PlayerModels.DEFAULT
 	set_all_recipes(false)
@@ -218,7 +220,7 @@ func earn(amount: int):
 	save_progress()
 
 func serialize_progress()->Dictionary:
-	return {"skins":skins_owned.duplicate(),"skin":skin,"player_model":player_model,"stat_levels":stat_levels.duplicate(),"run_checkpoint":run_checkpoint,"duplicate_recipes":duplicate_recipes,"garage":garage.serialize(),"notifications":notification_history,"class_first_slots":class_first_slots,"purchased_gadgets":purchased_gadgets,"purchased_hq":purchased_hq,"class_second_slots":class_second_slots,"gadget":gadget,"pressure_level":pressure_level,"headquarters":{"slots":hq_slots,"unlocks":hq_unlocks,"modules":hq_modules,"active":hq_active,"levels":hq_levels},"progression":progression.serialize(),"version":ProfileSchema.VERSION,"camp_level":camp_level,"selected_weapon":selected_weapon,"backpack_slots":backpack_slots,"reroll_level":reroll_level,"research":research_unlocks,"built":built_workshops,"credits":credits,"health":health_level,"damage":damage_level,"luck":luck_level,"turret":turret_level,"rarity":rarity_level,"base":base_level,"heal":heal_level,"mobility":mobility_level,"recovery":recovery_level,"v09":{"class_levels":class_levels,"specializations":specializations,"cores":cores,"class":selected_class,"classes":class_unlocks,"superboss_defeated":superboss_defeated,"slots":ability_slots,"equipped":equipped_abilities,"rescue":rescue_level,"shield_capacity":shield_capacity_level},"abilities":ability_unlocks,"selected_ability":selected_ability,"branch_unlocks":branch_unlocks,"weapon_unlocks":weapon_unlocks,"bonus_unlocks":bonus_unlocks,"bonus_levels":bonus_levels}
+	return {"skins":skins_owned.duplicate(),"skin":skin,"player_model":player_model,"stat_levels":stat_levels.duplicate(),"run_checkpoint":run_checkpoint,"duplicate_recipes":duplicate_recipes,"garage":garage.serialize(),"notifications":notification_history,"class_first_slots":class_first_slots,"purchased_gadgets":purchased_gadgets,"purchased_hq":purchased_hq,"class_second_slots":class_second_slots,"gadget":gadget,"pressure_level":pressure_level,"headquarters":{"slots":hq_slots,"unlocks":hq_unlocks,"modules":hq_modules,"active":hq_active,"levels":hq_levels},"progression":progression.serialize(),"version":ProfileSchema.VERSION,"camp_level":camp_level,"selected_weapon":selected_weapon,"backpack_slots":backpack_slots,"reroll_level":reroll_level,"research":research_unlocks,"built":built_workshops,"credits":credits,"health":health_level,"damage":damage_level,"luck":luck_level,"turret":turret_level,"rarity":rarity_level,"base":base_level,"heal":heal_level,"mobility":mobility_level,"recovery":recovery_level,"v09":{"class_levels":class_levels,"specializations":specializations,"cores":cores,"class":selected_class,"classes":class_unlocks,"superboss_defeated":superboss_defeated,"slots":ability_slots,"equipped":equipped_abilities,"rescue":rescue_level,"shield_capacity":shield_capacity_level},"abilities":ability_unlocks,"selected_ability":selected_ability,"branch_unlocks":branch_unlocks,"weapon_unlocks":weapon_unlocks,"ammo_slot_weapons":ammo_slot_weapons,"bonus_unlocks":bonus_unlocks,"bonus_levels":bonus_levels}
 
 func save_progress()->bool:
 	if not save_enabled or not profiles.selected:return true
@@ -334,6 +336,7 @@ func apply_profile(data:Dictionary):
 			if id!="heart" and id in data.get("bonus_unlocks",[]):bonus_unlocks.append(id)
 			bonus_levels[id]=clampi(int(data.get("bonus_levels",{}).get(id,0)),0,3)
 
+		ammo_slot_weapons=data.get("ammo_slot_weapons",[]).filter(func(id):return str(id) in weapon_unlocks).map(func(id):return str(id))
 		selected_weapon=str(data.get("selected_weapon","pistol"));selected_weapon="sniper" if selected_weapon=="heavy" else selected_weapon
 		if selected_weapon not in weapon_unlocks:selected_weapon="pistol"
 		backpack_slots=clampi(int(data.get("backpack_slots",1)),1,6);reroll_level=clampi(int(data.get("reroll_level",0)),0,5)

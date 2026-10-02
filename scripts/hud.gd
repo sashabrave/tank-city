@@ -10,6 +10,9 @@ var wave_label: Label
 var enemy_label: Label
 var stage_pips:Control
 var star_mark:Label
+## Ammo cells in the weapon panel (scripts/combat/ammo.gd): the loaded types, the active one framed.
+var ammo_row:HBoxContainer
+var ammo_signature:=""
 var wave_pips:Control
 var credits: Label
 var tip: Label
@@ -160,6 +163,7 @@ func _process(_delta):
 		wave_pips.set_state(3,3 if fighting_commander else data.wave-1,-1 if fighting_commander else data.wave-1,data.commander,right_info.size.x-20-wave_x)
 		wave_pips.position=Vector2(wave_x,enemy_label.position.y+enemy_label.size.y*.5-wave_pips.size.y*.5)
 	tip.hide();Texts.set_text(star_label,"★ Звезда · %.1f с" % data.star);star_label.visible=data.star>0
+	refresh_ammo()
 	ability_button.hide()
 	for i in range(skill_buttons.size()):
 		var button=skill_buttons[i];var skill=data.skills[i]
@@ -346,3 +350,29 @@ func show_final_preparation():
 	var panel=modal_base("Генерал повержен","Впереди — Цитадель","Выбери комнату усиления на карте, затем брось вызов гигабоссу.",335)
 	UiKit.button(panel,"В хаб с наградами",Vector2(30,215),Vector2(410,65),func():arena.leave())
 	UiKit.button(panel,"К последней подготовке",Vector2(465,215),Vector2(445,65),func():arena.depart_room(),true)
+
+## Ammo cells: one per slot, colour of the ammo type, the active one framed; with two slots a tap (or R / RS)
+## switches. Rebuilt only when the loaded set changes.
+func refresh_ammo():
+	if arena==null or arena.run==null or not is_instance_valid(left_info):return
+	Ammo.ensure(arena.run,arena.weapon)
+	var run=arena.run
+	var signature=str(run.ammo_slots)+str(run.ammo_active)
+	if signature==ammo_signature and is_instance_valid(ammo_row):return
+	ammo_signature=signature
+	if is_instance_valid(ammo_row):ammo_row.queue_free()
+	ammo_row=HBoxContainer.new();ammo_row.name="AmmoRow";left_info.add_child(ammo_row);ammo_row.add_theme_constant_override("separation",5)
+	ammo_row.mouse_filter=Control.MOUSE_FILTER_PASS
+	# Under the weapon name, next to the picture: round cells, then the active ammo's name in its colour.
+	ammo_row.position=Vector2(vehicle_label.position.x,vehicle_label.position.y+28)
+	for i in range(run.ammo_slots.size()):
+		var type=str(run.ammo_slots[i]);var on=i==run.ammo_active;var color=Color(Ammo.COLORS.get(type,"cfd3c8"))
+		var cell=Panel.new();ammo_row.add_child(cell);cell.custom_minimum_size=Vector2(18,18);cell.size_flags_vertical=Control.SIZE_SHRINK_CENTER
+		var style=UiKit.style(color if on else Color(color,.28),9,Color.WHITE if on else Color(color,.6));style.set_border_width_all(2 if on else 1)
+		cell.add_theme_stylebox_override("panel",style)
+		cell.tooltip_text=Texts.render("Патроны")+": "+Texts.render(Ammo.NAMES.get(type,type))+(" · "+Texts.render("активные") if on else "")+(" · R" if run.ammo_slots.size()>1 else "")
+		cell.gui_input.connect(func(event):
+			var tap=(event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT and event.pressed) or (event is InputEventScreenTouch and event.pressed)
+			if tap and Ammo.switch(arena):refresh_ammo())
+	var name_label=Label.new();ammo_row.add_child(name_label);Texts.set_text(name_label,Ammo.NAMES.get(Ammo.active(run),""))
+	name_label.add_theme_font_size_override("font_size",12);name_label.add_theme_color_override("font_color",Color(Ammo.COLORS.get(Ammo.active(run),"cfd3c8")))

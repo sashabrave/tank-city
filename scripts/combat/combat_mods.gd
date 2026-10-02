@@ -31,17 +31,20 @@ static func outgoing(arena,bullet,target)->float:
 	if "last_stand" in run.behavior_cards:
 		var ratio=(shooter.hp/maxf(1.0,shooter.max_hp)) if in_vehicle else (run.soldier_hp/maxf(1.0,float(run.soldier_max_hp)))
 		if ratio<=.25:amount*=1.3
-	if is_machine(target.kind) and run.shock_bonus>0:amount*=1.0+minf(CAPS.shock_bonus,run.shock_bonus+run.shock_power)
+	# Only the active ammo works (T-109): its effects and its improvement cards.
+	var ammo=Ammo.active(run)
+	var shock_on=ammo=="shock";var burn_on=ammo=="burn";var stun_on=ammo=="stun"
+	if is_machine(target.kind) and shock_on and run.shock_bonus>0:amount*=1.0+minf(CAPS.shock_bonus,run.shock_bonus+run.shock_power)
 	if run.stealth>0 and target.hp>=target.max_hp:amount*=1.0+minf(CAPS.stealth,run.stealth)*2.0
 	var rng=run.combat_rng
 	var crit=rng.randf()<crit_chance(arena)
 	if crit:
 		amount*=run.crit_damage+crit_overflow(arena)
 		arena.burst(target.position+Vector3.UP*.5,Color("ffd166"),.35)
-		if "crit_stun" in run.behavior_cards:stun(target,stun_time(run))
-	if run.burn_chance>0 and rng.randf()<minf(CAPS.burn_chance,run.burn_chance):ignite(target,bullet.damage,run)
-	if run.stun_chance>0 and rng.randf()<minf(CAPS.stun_chance,run.stun_chance):stun(target,stun_time(run))
-	if run.shock_bonus>0 and is_machine(target.kind):
+		if stun_on and "crit_stun" in run.behavior_cards:stun(target,stun_time(run))
+	if burn_on and run.burn_chance>0 and rng.randf()<minf(CAPS.burn_chance,run.burn_chance):ignite(target,bullet.damage,run)
+	if stun_on and run.stun_chance>0 and rng.randf()<minf(CAPS.stun_chance,run.stun_chance):stun(target,stun_time(run))
+	if shock_on and run.shock_bonus>0 and is_machine(target.kind):
 		arena.burst(target.position+Vector3.UP*.4,Color("86daec"),.25)
 		if "shock_short" in run.behavior_cards and rng.randf()<.25:stun(target,.6)
 		if "shock_arc" in run.behavior_cards:arc(arena,target,amount*.4)

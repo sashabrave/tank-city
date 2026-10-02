@@ -6,7 +6,7 @@ func run():
 	get_window().size=Vector2i(1600,900)
 	var arena=load("res://scenes/arena.tscn").instantiate();arena.run_seed=31;add_child(arena);arena.auto_pause_enabled=false
 	await get_tree().create_timer(4.0).timeout
-	arena.run.tokens=7
+	arena.run.tokens=7;Game.ammo_slot_weapons=[arena.weapon];RunUpgrades.apply(arena,"burn",0);RunUpgrades.apply(arena,"shock",0)
 	var at=arena.player.position+Vector3(1.2,0,0)
 	preload("res://scripts/resource_drop.gd").spawn(arena,at,25,"alloy");preload("res://scripts/resource_drop.gd").spawn(arena,at+Vector3(0,0,1),3,"tokens")
 	await get_tree().create_timer(1.5).timeout

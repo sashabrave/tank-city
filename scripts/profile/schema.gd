@@ -1,6 +1,6 @@
 extends RefCounted
 const VERSION=13
-const ARRAYS=["skins","duplicate_recipes","notifications","class_first_slots","purchased_gadgets","purchased_hq","class_second_slots","research","built","abilities","branch_unlocks","weapon_unlocks","bonus_unlocks"]
+const ARRAYS=["skins","duplicate_recipes","notifications","class_first_slots","purchased_gadgets","purchased_hq","class_second_slots","research","built","abilities","branch_unlocks","weapon_unlocks","bonus_unlocks","ammo_slot_weapons"]
 ## Former station nodes «Поджог», «ЭМИ по технике», «Контузия»: [cost_base, cost_step] at the time of removal.
 const REFUNDED_EFFECTS={"burn_chance":[70,35],"shock_bonus":[70,35],"stun_chance":[80,40]}
 const MAPS=["garage","headquarters","progression","v09","bonus_levels","stat_levels"]

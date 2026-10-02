@@ -15,11 +15,16 @@ static func stacks(arena,id:String)->int:
 
 static func eligible(arena,def:UpgradeDef,tier:int=3)->bool:
 	if def.weight<=0 or def.min_tier>tier:return false
-	if def.max_stacks>0 and stacks(arena,def.id)>=def.max_stacks:return false
+	# Ammo (T-109): a base ammo card is offered while that type is not loaded (it can come back after being
+	# swapped out); its improvements only while it is loaded.
+	if def.id in Ammo.TYPES:
+		if Ammo.loaded(arena.run,def.id):return false
+	elif def.max_stacks>0 and stacks(arena,def.id)>=def.max_stacks:return false
 	if (def.effect!=null or def.flag) and def.id in arena.run.behavior_cards:return false
 	if "abilities" in def.requires and arena.abilities.slots.is_empty():return false
 	# Enhancements of an effect appear only after its base card: requires "card:burn".
 	for need in def.requires:
+		if need.begins_with("card:") and need.trim_prefix("card:") in Ammo.TYPES and not Ammo.loaded(arena.run,need.trim_prefix("card:")):return false
 		if need.begins_with("card:") and stacks(arena,need.trim_prefix("card:"))==0:return false
 	# A capped stat that would not move is not offered (speed and interception limits).
 	if def.preview!="" and is_instance_valid(arena.player):
@@ -79,8 +84,16 @@ static func roll(arena,count:int)->Array:return roll_offers(arena,count).map(fun
 static func apply(arena,id:String,tier:int,record:bool=true)->bool:
 	var def=UpgradeRegistry.get_def(id)
 	if def==null:push_error("Unknown upgrade: "+id);return false
+	# A base ammo card loads its type; taken again later (after a swap) it only reloads — the stats it gave stay.
+	var reload=id in Ammo.TYPES and stacks(arena,id)>0
+	if id in Ammo.TYPES:Ammo.load(arena.run,id)
 	if record:arena.run.upgrade_history.append({"id":id,"tier":tier})
+	if reload:
+		refresh_player(arena)
+		if is_instance_valid(arena.hud):arena.hud.refresh_ammo()
+		return true
 	apply_power(arena,def,Balance.tier_power(tier))
+	if id in Ammo.TYPES and is_instance_valid(arena.hud):arena.hud.refresh_ammo()
 	if record:
 		if def.effect!=null or def.flag:Game.progression.event("behavior_cards")
 		Game.progression.event("card_stack",stacks(arena,id),true)
@@ -207,4 +220,9 @@ static func card(arena,offer:Dictionary)->Dictionary:
 	var detail=preview_text(arena,offer.id,tier)
 	if def.detail!="":detail=def.detail if detail=="" else detail+"\n"+def.detail
 	tier=clampi(tier,0,TIER_NAMES.size()-1)
-	return {"rows":rows,"short":short_detail(def.detail),"category":FAMILIES.get(def.family,def.category),"title":def.title,"detail":detail,"icon":def.icon if def.icon!="" else def.id,"art_key":"upgrades/"+def.id,"heading":TIER_NAMES[tier],"color":Color(arena.LOOT.RARITY_COLORS[tier]),"disabled":false,"button":"Выбрать","family":def.family,"tier":tier,"stacks":stacks(arena,def.id)}
+	# The card says what it does to the ammo slots (T-109).
+	var short=short_detail(def.detail)
+	if def.id in Ammo.TYPES:
+		var out=Ammo.replacing(arena.run,def.id)
+		short=(Texts.render("Заменит")+": "+Texts.render(Ammo.NAMES[out])+" → "+Texts.render(Ammo.NAMES[def.id])) if out!="" else (Texts.render("Зарядит")+": "+Texts.render(Ammo.NAMES[def.id]))
+	return {"rows":rows,"short":short,"category":FAMILIES.get(def.family,def.category),"title":def.title,"detail":detail,"icon":def.icon if def.icon!="" else def.id,"art_key":"upgrades/"+def.id,"heading":TIER_NAMES[tier],"color":Color(arena.LOOT.RARITY_COLORS[tier]),"disabled":false,"button":"Выбрать","family":def.family,"tier":tier,"stacks":stacks(arena,def.id)}

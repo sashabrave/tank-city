@@ -4,10 +4,10 @@ extends Node
 signal changed
 const SCHEMES=["auto","keyboard","gamepad","touch"]
 ## Gamepad layout (Xbox names; the same positions on other pads).
-const PAD_BUTTONS={"interact":JOY_BUTTON_A,"hide_trench":JOY_BUTTON_B,"fire":JOY_BUTTON_X,"ability":JOY_BUTTON_Y,"class_ability":JOY_BUTTON_LEFT_SHOULDER,"skill_1":JOY_BUTTON_RIGHT_SHOULDER,"pause":JOY_BUTTON_START,
+const PAD_BUTTONS={"interact":JOY_BUTTON_A,"hide_trench":JOY_BUTTON_B,"fire":JOY_BUTTON_X,"ability":JOY_BUTTON_Y,"class_ability":JOY_BUTTON_LEFT_SHOULDER,"skill_1":JOY_BUTTON_RIGHT_SHOULDER,"pause":JOY_BUTTON_START,"ammo_switch":JOY_BUTTON_RIGHT_STICK,
 	"north":JOY_BUTTON_DPAD_UP,"south":JOY_BUTTON_DPAD_DOWN,"west":JOY_BUTTON_DPAD_LEFT,"east":JOY_BUTTON_DPAD_RIGHT}
 const PAD_AXES={"fire":[JOY_AXIS_TRIGGER_RIGHT,1.0],"hq_ability":[JOY_AXIS_TRIGGER_LEFT,1.0],"north":[JOY_AXIS_LEFT_Y,-1.0],"south":[JOY_AXIS_LEFT_Y,1.0],"west":[JOY_AXIS_LEFT_X,-1.0],"east":[JOY_AXIS_LEFT_X,1.0]}
-const PAD_GLYPHS={"interact":"A","hide_trench":"B","fire":"RT","ability":"Y","class_ability":"LB","skill_1":"RB","hq_ability":"LT","pause":"☰"}
+const PAD_GLYPHS={"interact":"A","hide_trench":"B","fire":"RT","ability":"Y","class_ability":"LB","skill_1":"RB","hq_ability":"LT","pause":"☰","ammo_switch":"RS"}
 var device="touch" if OS.has_feature("mobile") else "keyboard"
 func _ready():process_mode=Node.PROCESS_MODE_ALWAYS
 func current()->String:

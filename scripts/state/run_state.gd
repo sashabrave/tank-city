@@ -62,6 +62,9 @@ var luck=0
 var safe_slots=0
 
 var behavior_cards:Array=[]
+## Ammo slots of the weapon (scripts/combat/ammo.gd): loaded types and the active one.
+var ammo_slots:Array=["standard"]
+var ammo_active:=0
 var last_player_shot=-10.0
 var dash_until=0.0
 var dash_ready_at=0.0

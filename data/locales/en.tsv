@@ -2693,3 +2693,15 @@ Retina · полная чёткость	Retina · full sharpness
 Вернутся прежние через %d с	Reverting in %d s
 Вернуть	Revert
 Оставить	Keep
+Патроны	Ammo
+Обычные	Standard
+Контузящие	Concussive
+ЭМИ	EMP
+активные	active
+Заменит	Replaces
+Зарядит	Loads
+Сменить патроны	Switch ammo
+Второй слот патронов · %d ◈	Second ammo slot · %d ◈
+Второй слот патронов открыт	Second ammo slot unlocked
+Слоты патронов: %d%s	Ammo slots: %d%s
+ · R — сменить патроны в бою	 · R — switch ammo in battle
