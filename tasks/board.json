@@ -1,5 +1,5 @@
 {
-	"next_id": 81,
+	"next_id": 82,
 	"tasks": [
 		{
 			"id": "T-001",
@@ -970,7 +970,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-077.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "А кнопку пропустить назови ещё",
 			"type": "bug",
 			"version": "0.7.1-pre"
@@ -1009,6 +1009,18 @@
 			"priority": 3,
 			"status": "backlog",
 			"version": "0.7.2",
+			"created": "2026-10-02",
+			"source": "chat",
+			"shot": ""
+		},
+		{
+			"id": "T-081",
+			"title": "Арт (GPT Image 2.5, когда будут кредиты Higgsfield): иконка «Противотанковый ёж» в общем стиле иконок",
+			"note": "Сейчас временный рендер из Blender (tools/art/render_hedgehog_icon.py). Нужен классический чешский ёж: три балки крест-накрест, шесть концов, стоит на трёх; стиль и ракурс как у assets/illustrations/gpt_image_2_5/icons/abilities/*. Первая попытка GPT дала трёхлучевую звезду — в промпте явно описать 6 концов. Исходники: art_requests/hedgehog_icon_v1.",
+			"type": "polish",
+			"priority": 2,
+			"status": "backlog",
+			"version": "0.8",
 			"created": "2026-10-02",
 			"source": "chat",
 			"shot": ""

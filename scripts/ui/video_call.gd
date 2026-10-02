@@ -112,7 +112,7 @@ func _ready():
 	status=UiKit.label(panel,"Видеосвязь · Главная когтебаза",Vector2.ZERO,Vector2.ZERO,14,UiKit.MUTED)
 	caller=UiKit.label(panel,"",Vector2.ZERO,Vector2.ZERO,20)
 	line_label=UiKit.label(panel,"",Vector2.ZERO,Vector2.ZERO,20);line_label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;line_label.vertical_alignment=VERTICAL_ALIGNMENT_TOP
-	skip_button=UiKit.button(panel,"Пропустить",Vector2.ZERO,Vector2.ZERO,finish)
+	skip_button=UiKit.button(panel,"Положить трубку",Vector2.ZERO,Vector2.ZERO,finish)
 	next_button=UiKit.button(panel,"Дальше",Vector2.ZERO,Vector2.ZERO,advance,true);next_button.focus_mode=Control.FOCUS_ALL
 	resized.connect(layout);layout();show_step()
 	Game.sound("telegram_accept",self)
