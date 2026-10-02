@@ -148,6 +148,8 @@ func depth_light(on:bool):
 	environment.adjustment_contrast*=1.08;environment.adjustment_saturation*=1.05
 	sun.light_color=sun.light_color.lerp(Color("ffd6a8"),.15);sun.light_energy*=1.06
 	environment.ambient_light_color=environment.ambient_light_color.lerp(Color("9db0d8"),.08)
+	# Softer sun shadows: the surface colour shows through instead of near-black patches.
+	sun.shadow_opacity*=.82
 func _process(delta):
 	elapsed+=delta
 	if elapsed<.25:return
