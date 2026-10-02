@@ -33,6 +33,8 @@ static func show(hud,arena,won:bool,reason:String):
 	var fill=ColorRect.new();track.add_child(fill);fill.size=Vector2(0,10);fill.color=UiKit.ORANGE;fill.name="AlloyFill"
 	var grow=panel.create_tween();grow.tween_interval(clock[0]);grow.tween_property(fill,"size:x",column,.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	var y=bar_y+22
+	if not won and lost<=0 and int(arena.run.tokens)>0:
+		var token_drop=panel.create_tween();token_drop.tween_interval(.9);token_drop.tween_callback(func():Game.sound("debris",hud);drop_tokens(hud,int(arena.run.tokens)))
 	if lost>0:
 		var loss_at=at.call(.75)
 		var minus=ledger(panel,Vector2(left.x,y),column,"Отнято при выбывании","−%d" % lost,Color("ff6b57"),loss_at)
@@ -40,7 +42,7 @@ static func show(hud,arena,won:bool,reason:String):
 		var lost_part=ColorRect.new();track.add_child(lost_part);lost_part.color=Color("ff6b57");lost_part.size=Vector2(0,10);lost_part.position.x=column;lost_part.name="LossPart"
 		var share=float(lost)/maxf(1.0,float(earned))
 		var shrink=panel.create_tween();shrink.tween_interval(loss_at)
-		shrink.tween_callback(func():Game.sound("debris",hud);drop_coins(hud,lost))
+		shrink.tween_callback(func():Game.sound("debris",hud);drop_coins(hud,lost);drop_tokens(hud,int(arena.run.tokens)))
 		shrink.tween_property(fill,"size:x",column*(1.0-share),.6).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
 		shrink.parallel().tween_property(lost_part,"size:x",column*share,.6)
 		shrink.parallel().tween_property(lost_part,"position:x",column*(1.0-share),.6)
@@ -147,6 +149,20 @@ static func pop(panel:Control,node:Control,delay:float):
 
 ## Lost alloy: coins drop from the top resource counter, tumble and fall off the bottom of the screen,
 ## with a red «−N» under the counter.
+## Run tokens burn on defeat (T-090): token coins fall out of their counter, which folds away.
+static func drop_tokens(hud,count:int):
+	if count<=0:return
+	var layer:Control=hud.root;var screen=layer.get_viewport_rect().size
+	var icon=ResourceStrip.token_icon
+	var origin=icon.get_global_rect().position if is_instance_valid(icon) and icon.visible else Vector2(screen.x*.5+40,10)
+	ResourceStrip.tokens_lost=true
+	for i in range(clampi(count+2,3,10)):
+		var coin=TextureRect.new();layer.add_child(coin);coin.texture=UiKit.icon_texture("token");coin.modulate=UiKit.INK;coin.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;coin.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		coin.size=Vector2(24,24);coin.pivot_offset=coin.size*.5;coin.position=origin+Vector2(i*5%20,4);coin.z_index=119;coin.mouse_filter=Control.MOUSE_FILTER_IGNORE
+		var fall=coin.create_tween().set_parallel(true)
+		fall.tween_property(coin,"position",coin.position+Vector2((float(i%5)-2.0)*38.0,screen.y+60),1.0+i*.05).set_delay(i*.06).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+		fall.tween_property(coin,"rotation",(1.0 if i%2==0 else -1.0)*TAU*1.2,1.0+i*.05).set_delay(i*.06)
+		fall.chain().tween_callback(coin.queue_free)
 static func drop_coins(hud,lost:int):
 	var layer:Control=hud.root;var screen=layer.get_viewport_rect().size
 	var origin=Vector2(screen.x*.5-60,34)

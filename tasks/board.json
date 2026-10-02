@@ -1137,7 +1137,7 @@
 			"scene": "route_map",
 			"shot": "res://tasks/shots/T-090.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "при проигрыше жетоны тоже должны выпадать, иконка счетчик пропадают из плашки, она свораичвается с анимацией в обычной вид",
 			"type": "polish",
 			"version": "0.7.2-pre"

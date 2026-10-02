@@ -12,6 +12,11 @@ var pickup_flights:Array=[]
 var previous=Vector2i(-1,-1)
 var pending=Vector2i.ZERO
 var delay=0.0
+## Token part of the strip fades in and out (T-090): 0 hidden … 1 shown; the strip width follows it.
+var token_shown=0.0
+var token_last=0
+## Set while the defeat screen drops the run tokens: the counter falls to zero and the part folds away.
+var tokens_lost=false
 func _ready():
 	Game.profile_changed.connect(func():previous=Vector2i(Game.credits,Game.cores);pending=Vector2i.ZERO;delay=0)
 	layer=90;process_mode=Node.PROCESS_MODE_ALWAYS
@@ -52,12 +57,19 @@ func _process(_delta):
 	# T-031: a little air between each icon and its number; the strip grows smoothly when tokens appear.
 	var target=label.position.x+label.size.x+12
 	var run_value=run_tokens()
-	token_icon.visible=run_value>=0;tokens.visible=run_value>=0
-	if run_value>=0:
-		Texts.set_text(tokens,str(run_value));tokens.vertical_alignment=VERTICAL_ALIGNMENT_CENTER
+	var wanted=1.0 if run_value>=0 and not tokens_lost else 0.0
+	if run_value>=0:token_last=run_value
+	if tokens_lost:token_last=0
+	token_shown=move_toward(token_shown,wanted,_delta*4.0)
+	token_icon.visible=token_shown>0.01;tokens.visible=token_shown>0.01
+	if token_shown>0.01:
+		Texts.set_text(tokens,str(token_last));tokens.vertical_alignment=VERTICAL_ALIGNMENT_CENTER
 		token_icon.position.x=target+6;tokens.position.x=token_icon.position.x+36
 		tokens.size.x=maxf(24,font.get_string_size(tokens.text,HORIZONTAL_ALIGNMENT_LEFT,-1,17).x+8)
-		target=tokens.position.x+tokens.size.x+12
+		var ease_shown=token_shown*token_shown*(3.0-2.0*token_shown)
+		token_icon.modulate.a=ease_shown;tokens.modulate.a=ease_shown
+		target+=(tokens.position.x+tokens.size.x+12-target)*ease_shown
+	if run_value<0:tokens_lost=false
 	panel.size.x=lerpf(panel.size.x,target,minf(1.0,_delta*14.0)) if absf(panel.size.x-target)>.5 else target
 	panel.position.x=(get_viewport().get_visible_rect().size.x-panel.size.x)*.5
 
