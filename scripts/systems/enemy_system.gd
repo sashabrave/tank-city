@@ -64,7 +64,7 @@ func enemy_aim(actor) -> Vector2i:
 	if open_shot!=Vector2i.ZERO:return open_shot
 	var seek_open_lane=not base_firing_cells(actor).is_empty()
 	if actor.assault_time>0 and not arena.boss_room:
-		if not seek_open_lane and actor.cell.x==arena.base_cell.x and actor.cell.y>=arena.grid_size-4:return Vector2i.DOWN
+		if not seek_open_lane and actor.cell.x==arena.base_cell.x and actor.cell.y>=arena.grid_size-4 and not concrete_to_base(actor.cell):return Vector2i.DOWN
 		var next=actor.cell+actor.facing
 		return actor.facing if not seek_open_lane and needs_breach(actor) and arena.walls.has(next) and arena.walls[next].hp>0 else Vector2i.ZERO
 	var weapon_range=EnemyLoadouts.profile(actor.enemy_weapon).range if actor.kind in ["soldier","shield"] else 7.0
@@ -73,7 +73,7 @@ func enemy_aim(actor) -> Vector2i:
 		var direction=arena.aligned_direction(actor.cell,wreck.cell)
 		if direction!=Vector2i.ZERO and arena.clear_line(actor.cell,wreck.cell):return direction
 	if actor.kind=="grenadier":return Vector2i.ZERO
-	if not seek_open_lane and actor.kind=="buggy" and not arena.room.boss_room and actor.cell.x==arena.room.base_cell.x and actor.cell.y>=arena.room.grid_size-4:return Vector2i.DOWN
+	if not seek_open_lane and actor.kind=="buggy" and not arena.room.boss_room and actor.cell.x==arena.room.base_cell.x and actor.cell.y>=arena.room.grid_size-4 and not concrete_to_base(actor.cell):return Vector2i.DOWN
 	for turret in arena.room.actors:
 		if not is_instance_valid(turret) or not turret.allied or turret.dead or arena.flat_distance(actor.position,turret.position)>weapon_range:continue
 		var aim=arena.aligned_direction(actor.cell,turret.cell)
@@ -89,16 +89,20 @@ func enemy_aim(actor) -> Vector2i:
 		if dir!=Vector2i.ZERO and delta.length()<=CombatMods.engage_range(arena,weapon_range) and arena.clear_shot(actor.position,end,width):return dir
 	# Shoot toward the base, including through its destructible cover.
 	if not seek_open_lane and not arena.room.boss_room and actor.cell.x == arena.room.base_cell.x and actor.cell.y >= arena.room.grid_size-4:
-		var p = actor.cell+Vector2i.DOWN
-		while p.y<arena.room.base_cell.y:
-			if arena.room.walls.has(p) and arena.room.walls[p].hp<0: return Vector2i.ZERO
-			p += Vector2i.DOWN
-		return Vector2i.DOWN
+		return Vector2i.ZERO if concrete_to_base(actor.cell) else Vector2i.DOWN
 	var next = actor.cell+actor.facing
 	if not seek_open_lane and needs_breach(actor) and arena.room.walls.has(next) and arena.room.walls[next].hp>0:
 		if not actor.uses_quarter_steps() or not arena.can_stand(actor.position+Vector3(actor.facing.x,0,actor.facing.y)*.5,actor,true):return actor.facing
 	return Vector2i.ZERO
 
+## T-002: indestructible cover (concrete, its half-blocks and L-corners) between a cell straight above the HQ
+## and the HQ: shooting down would only hit the concrete, so the unit moves on and looks for a real lane.
+func concrete_to_base(cell:Vector2i)->bool:
+	var p=cell+Vector2i.DOWN
+	while p.y<arena.room.base_cell.y:
+		if arena.room.walls.has(p) and arena.room.walls[p].hp<0:return true
+		p+=Vector2i.DOWN
+	return false
 func needs_breach(actor)->bool:
 	var state:Dictionary=actor.get_meta("quarter_search" if actor.uses_quarter_steps() else "cell_search",{})
 	return state.get("done",false) and state.get("path",[]).is_empty()
