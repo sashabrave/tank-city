@@ -5,7 +5,7 @@
 [resource]
 script = ExtResource("1")
 id = "device_cooldown"
-title = "Перезарядка устройств"
+title = "Быстрые способности"
 detail = "Способности бойца (граната, щит, дрон и другие) перезаряжаются быстрее."
 category = "Способность"
 icon = "device_cooldown"

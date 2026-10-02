@@ -1,7 +1,7 @@
 class_name RunUpgrades
 extends RefCounted
 ## Applies UpgradeDef cards to a run and derives card text and previews from the same modifiers.
-const PREVIEW_LABELS={"hp":["HP",""],"speed":["Скорость",""],"rate":["Темп"," /с"],"damage":["Урон",""],"intercept":["Перехват","%"],"range":["Дальность","%"],"healing":["Лечение","%"],"device_power":["Мощность","%"],"device_cooldown":["Кулдаун","%"],
+const PREVIEW_LABELS={"hp":["HP",""],"speed":["Скорость",""],"rate":["Темп"," /с"],"damage":["Урон",""],"intercept":["Перехват","%"],"range":["Дальность","%"],"healing":["Лечение","%"],"device_power":["Сила способностей","%"],"device_cooldown":["Перезарядка","%"],
 	"crit_chance":["Крит","%"],"crit_damage":["Крит-урон","%"],"dodge":["Уклонение","%"],"guard_bullet":["Защита от пуль","%"],"guard_blast":["Защита от взрывов","%"],"guard_vehicle":["Защита от техники","%"],
 	"pierce":["Пробитие",""],"burn":["Поджог","%"],"burn_power":["Урон горения","%"],"burn_time":["Горение"," с"],"stun_time":["Оглушение"," с"],"shock":["По технике","%"],"stun":["Оглушение","%"],"stealth":["Маскировка","%"],"marauder":["Добыча","%"],"field_repair":["Ремонт за убийство",""],"luck":["Удача",""],"safe_slots":["Сейф рюкзака",""]}
 const FAMILIES={"fire":"Огневая мощь","survival":"Живучесть","ammo":"Спецпатроны","recon":"Разведка","logistics":"Тыл"}

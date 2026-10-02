@@ -42,7 +42,8 @@
 					"Дрон-камикадзе взрывается, если врежется в бойца, а заложенная дроном бомба больше не исчезает с концом волны.",
 					"Командиры полей вдвое крепче, сильнее бьют и чаще стреляют.",
 					"В комнатах торговца и сервиса боец снова ходит с анимацией.",
-					"У всех карточек усилений появилось понятное описание, а в планшете у взятых карточек видно, что они делают."
+					"У всех карточек усилений появилось понятное описание, а в планшете у взятых карточек видно, что они делают.",
+					"Карточки «Мощность устройств» и «Перезарядка устройств» переименованы в «Сила способностей» и «Быстрые способности»."
 				]
 			},
 			"en": {
@@ -84,7 +85,8 @@
 					"A kamikaze drone blows up when it runs into the soldier, and a planted drone bomb no longer vanishes when the wave ends.",
 					"Field commanders are twice as tough, hit harder and fire more often.",
 					"In merchant and service rooms the soldier walks with animation again.",
-					"Every upgrade card now has a clear description, and the tablet shows what each taken card does."
+					"Every upgrade card now has a clear description, and the tablet shows what each taken card does.",
+					"The «Device power» and «Device cooldown» cards are now «Ability power» and «Quick abilities»."
 				]
 			}
 		},
