@@ -36,11 +36,13 @@ func run():
 		arena.begin_room(0);arena.phase="combat"
 		for actor in arena.actors:actor.set_physics_process(false)
 		var columns=arena.spawn_columns();var target=Vector2i(columns[1],0);check(columns.size()==world+2,"spawner count for world "+str(world))
+		# 0.7.1: a blocked central spawner no longer holds the commander back; it enters next to it.
 		var block=arena.spawn_actor("soldier",target,false);block.set_physics_process(false)
-		arena.spawn_room_boss();check(not arena.room_boss_spawned,"blocked central spawner waits")
-		arena.actors.erase(block);block.free()
-		arena.spawn_room_boss()
-		var bosses=arena.actors.filter(func(a):return a.elite)
+		arena.spawn_room_boss();var bosses=arena.actors.filter(func(a):return a.elite)
+		check(arena.room_boss_spawned and bosses.size()==1 and bosses[0].cell!=target and absi(bosses[0].cell.x-target.x)+absi(bosses[0].cell.y-target.y)==1,"blocked central spawner: commander beside it")
+		for actor in bosses+[block]:arena.actors.erase(actor);actor.free()
+		arena.room_boss_spawned=false;arena.spawn_room_boss()
+		bosses=arena.actors.filter(func(a):return a.elite)
 		check(bosses.size()==1 and bosses[0].cell==target,"miniboss at spawner two for "+str(columns.size()))
 		check(bosses[0].model.paint_mode=="enemy","miniboss keeps faction paint")
 	var wreck=arena.make_wreck("apc",Vector2i(1,3),Vector2i.UP,true)
