@@ -124,7 +124,10 @@ static var trim_cache:Dictionary={}
 static func trimmed(texture:Texture2D)->Texture2D:
 	if texture==null or texture is AtlasTexture or texture.resource_path=="" or texture.resource_path.ends_with(".svg"):return texture
 	var key=texture.resource_path
-	if trim_cache.has(key):return trim_cache[key]
+	if trim_cache.has(key):
+		var cached:Texture2D=trim_cache[key]
+		if texture.has_meta("icon_id") and not cached.has_meta("icon_id"):cached.set_meta("icon_id",texture.get_meta("icon_id"))
+		return cached
 	var image=texture.get_image()
 	if image==null or image.is_compressed():trim_cache[key]=texture;return texture
 	var used=image.get_used_rect()
@@ -134,6 +137,7 @@ static func trimmed(texture:Texture2D)->Texture2D:
 	# Barely any margin: keep the original file, nothing to gain.
 	if region.size.x*region.size.y>image.get_width()*image.get_height()*.85:trim_cache[key]=texture;return texture
 	var atlas=AtlasTexture.new();atlas.atlas=texture;atlas.region=region;atlas.set_meta("trim_source",key)
+	if texture.has_meta("icon_id"):atlas.set_meta("icon_id",texture.get_meta("icon_id"))
 	trim_cache[key]=atlas;return atlas
 
 ## Interface motion (design system). All list and card entrances go through reveal(); buttons get a short press bounce.
@@ -164,6 +168,7 @@ static func arrive(node:Control,index:int=0):
 ## Slides a finished item down and out, then runs `done`.
 static func leave(node:Control,done:Callable):
 	if not motion_enabled() or not is_instance_valid(node):done.call();return
+	KitIcon.vanish_all(node)
 	var tween=node.create_tween().set_parallel(true)
 	tween.tween_property(node,"position",node.position+Vector2(0,28),.22).set_trans(Tween.TRANS_QUAD)
 	tween.tween_property(node,"modulate:a",0.0,.22)
@@ -202,7 +207,12 @@ static var icon_cache:Dictionary={}
 ## Memoised: several call sites refresh icons every frame; disk lookups happen once per id and set.
 static func icon_texture(id:String)->Texture2D:
 	var key=Illustrations.current()+"|"+id
-	if not icon_cache.has(key):icon_cache[key]=icon_lookup(id)
+	if not icon_cache.has(key):
+		# Kit icons (data/icon_kit.json): KitIcon animates the layers; KitTexture draws them where one texture is needed.
+		var texture=KitTexture.make(id) if IconKit.has(id) else icon_lookup(id)
+		# The id lets IconMotion give the icon its layers and the shared bounce. Interface glyphs stay still.
+		if texture and not texture.resource_path.ends_with(".svg") and not texture.has_meta("icon_id"):texture.set_meta("icon_id",id)
+		icon_cache[key]=texture
 	return icon_cache[key]
 static func icon_lookup(id:String)->Texture2D:
 	# Station upgrade art (T-056): drawn GPT icons for the hub stations' general rows.

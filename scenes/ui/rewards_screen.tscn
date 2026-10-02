@@ -344,9 +344,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -470.0
-offset_top = -292.5
+offset_top = -312.5
 offset_right = 470.0
-offset_bottom = 292.5
+offset_bottom = 312.5
 theme_override_styles/panel = SubResource("StyleBoxFlat_eeh4b")
 
 [node name="Kicker" type="Label" parent="Panel" unique_id=1852100007]
@@ -386,26 +386,26 @@ clip_text = true
 offset_left = 30.0
 offset_top = 143.0
 offset_right = 310.0
-offset_bottom = 495.0
+offset_bottom = 535.0
 
 [node name="Card2" parent="Panel" instance=ExtResource("choice")]
 offset_left = 325.0
 offset_top = 143.0
 offset_right = 605.0
-offset_bottom = 495.0
+offset_bottom = 535.0
 
 [node name="Card3" parent="Panel" instance=ExtResource("choice")]
 offset_left = 620.0
 offset_top = 143.0
 offset_right = 900.0
-offset_bottom = 495.0
+offset_bottom = 535.0
 
 [node name="RerollButton" type="Button" parent="Panel" unique_id=1501138227]
 layout_mode = 0
 offset_left = 270.0
-offset_top = 520.0
+offset_top = 560.0
 offset_right = 670.0
-offset_bottom = 564.0
+offset_bottom = 604.0
 focus_mode = 0
 theme_override_colors/font_color = Color(0.945, 0.933, 0.859, 1)
 theme_override_colors/font_pressed_color = Color(0.945, 0.933, 0.859, 1)

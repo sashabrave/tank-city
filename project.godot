@@ -42,6 +42,7 @@ PerfOverlay="*res://scripts/ui/perf_overlay.gd"
 InputScheme="*res://scripts/input_scheme.gd"
 TouchHints="*res://scripts/ui/touch_hints.gd"
 TaskHotkeys="*res://scripts/tools/task_hotkeys.gd"
+IconMotion="*res://scripts/ui/icon_motion.gd"
 
 [display]
 

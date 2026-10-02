@@ -48,7 +48,7 @@ static func configure(card:Panel,data:Dictionary,choose:Callable):
 	if data.has("family"):minimal(card,data)
 ## Run upgrade cards, mobile style: the whole card is the button; rarity reads from the border, glow and
 ## 1-4 corner pips (no word); the family is a small chip; big icon, title and the old→new line in the middle.
-const FAMILY_COLORS={"fire":Color("e8784a"),"survival":Color("7cc27a"),"ammo":Color("e0b44f"),"recon":Color("5fc7c0"),"logistics":Color("b7a8e6")}
+const FAMILY_COLORS={"fire":Color("e8784a"),"survival":Color("7cc27a"),"ammo":Color("e0b44f"),"recon":Color("5fc7c0"),"logistics":Color("c4a878")}
 static func minimal(card:Panel,data:Dictionary):
 	for key in ["Rarity","CategoryStripe","CategoryIcon","IconFrame"]:
 		var node=card.get_node_or_null(key)
@@ -66,7 +66,8 @@ static func minimal(card:Panel,data:Dictionary):
 	var tier=clampi(int(data.get("tier",0)),0,3)
 	var full=UiKit.icon_texture(data.get("art_key",data.icon))
 	if full:icon.texture=full
-	icon.position=Vector2(width*.5-68,34);icon.size=Vector2(136,136)
+	# Air inside the frame: the kit picture keeps 13% of the side free on each edge (KitIcon icon_inset).
+	icon.position=Vector2(width*.5-74,46);icon.size=Vector2(148,148);icon.set_meta("icon_inset",.13)
 	icon.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;icon.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
 	var frame=TextureRect.new();frame.name="RarityFrame";icon.add_child(frame);frame.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	frame.texture=load("res://assets/ui/icon_frames/rarity_%s.png" % ["common","rare","epic","legendary"][tier])
@@ -77,10 +78,10 @@ static func minimal(card:Panel,data:Dictionary):
 		chevrons.texture=load("res://assets/ui/icon_frames/power_%d.png" % owned);chevrons.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;chevrons.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		chevrons.position=Vector2.ZERO;chevrons.size=icon.size
 		chevrons.tooltip_text=Texts.render("Уже взято: %d") % owned
-	var title:Label=card.get_node("Title");title.position=Vector2(16,176);title.size=Vector2(width-32,34);title.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;title.vertical_alignment=VERTICAL_ALIGNMENT_CENTER
+	var title:Label=card.get_node("Title");title.position=Vector2(16,208);title.size=Vector2(width-32,34);title.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;title.vertical_alignment=VERTICAL_ALIGNMENT_CENTER
 	for key in ["Description","NumericDescription"]:
 		var body=card.get_node_or_null(key)
-		if body:body.position=Vector2(18,220);body.size=Vector2(width-36,card.size.y-234)
+		if body:body.position=Vector2(18,252);body.size=Vector2(width-36,card.size.y-266)
 		if body is Label:body.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
 	var rich=card.get_node_or_null("NumericDescription")
 	if rich is RichTextLabel:rich.text="[center]"+rich.text+"[/center]"
@@ -97,10 +98,10 @@ static func table(card:Panel,data:Dictionary,width:float,accent:Color):
 	for key in ["Description","NumericDescription"]:
 		var body=card.get_node_or_null(key)
 		if body:body.hide()
-	var y=220.0
+	var y=252.0
 	for row in data.rows:
 		var value=UiKit.label(card,str(row[0]),Vector2(16,y),Vector2(width-32,36),28,accent.lightened(.25));value.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;value.vertical_alignment=VERTICAL_ALIGNMENT_CENTER;value.name="RowValue"
-		var compare=RichTextLabel.new();compare.name="RowParam";card.add_child(compare);compare.position=Vector2(16,y+40);compare.size=Vector2(width-32,24)
+		var compare=RichTextLabel.new();compare.name="RowParam";card.add_child(compare);compare.position=Vector2(16,y+42);compare.size=Vector2(width-32,24)
 		compare.bbcode_enabled=true;compare.scroll_active=false;compare.fit_content=true;compare.mouse_filter=Control.MOUSE_FILTER_IGNORE;compare.autowrap_mode=TextServer.AUTOWRAP_OFF
 		compare.add_theme_font_override("normal_font",UiKit.field_font());compare.add_theme_font_override("bold_font",UiKit.bold_font());compare.add_theme_font_size_override("normal_font_size",15);compare.add_theme_font_size_override("bold_font_size",15)
 		compare.add_theme_color_override("default_color",UiKit.MUTED)
@@ -108,10 +109,10 @@ static func table(card:Panel,data:Dictionary,width:float,accent:Color):
 		var text="[center]%s" % name
 		if row.size()>=4:text+="   [color=#8d9589][s]%s[/s][/color]  →  [b][color=#f1eedb]%s[/color][/b]" % [Texts.render(str(row[2])),Texts.render(str(row[3]))]
 		compare.text=text+"[/center]"
-		y+=76
+		y+=80
 	var short=str(data.get("short","")).trim_suffix(".")
 	if short!="":
-		var note=UiKit.label(card,short,Vector2(22,y),Vector2(width-44,maxf(24,card.size.y-y-16)),14,UiKit.MUTED);note.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;note.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;note.vertical_alignment=VERTICAL_ALIGNMENT_TOP;note.name="ShortNote"
+		var note=UiKit.label(card,short,Vector2(22,y),Vector2(width-44,maxf(44,card.size.y-y-16)),14,UiKit.MUTED);note.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;note.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;note.vertical_alignment=VERTICAL_ALIGNMENT_TOP;note.name="ShortNote"
 		note.add_theme_constant_override("line_spacing",2)
 	card.tooltip_text=Texts.render(str(data.get("detail","")))
 ## Vertical balance: the block from the icon to the last line sits in the middle of the space under the chip.

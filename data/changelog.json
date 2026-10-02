@@ -84,6 +84,7 @@
 					"Экран поражения: видно, кто добил базу или бойца; рюкзак показан целиком — закрытые ячейки с замком",
 					"Жетоны: при поражении они высыпаются из счётчика, а плашка плавно сворачивается; при появлении счётчик жетонов плавно раздвигает плашку",
 					"Точки обновлений без обводки; стенд «Развитие заставы» на клетку ближе и не прячется под фермой, над ним прыгает «!», когда достигнута новая цель",
+					"Новые иконки улучшений, характеристик, способностей, штаба, гаража, бонусов и верстаков: у каждой группы своя узнаваемая основа, у каждого смысла — один простой символ. Иконки мягко пружинят при появлении, наведении и выборе, а слои расходятся с лёгким объёмом.",
 					"Днём на светлых полах картинка глубже: меньше пересвета, мягче жёлтый золотой час, спокойнее песок"
 				]
 			},
@@ -168,6 +169,7 @@
 					"Defeat screen: shows who finished the base or the soldier; the whole backpack is shown — locked slots with a padlock",
 					"Tokens: on defeat they spill out of the counter and the strip folds smoothly; when tokens appear, their counter widens the strip smoothly",
 					"Update dots without an outline; the «Outpost progress» board moved a cell forward out from under the truss, with a hopping «!» when a new goal is reached",
+					"New icons for upgrades, stats, abilities, HQ, garage, bonuses and workbenches: every group has its own recognisable base, every meaning one simple symbol. Icons bounce softly when they appear, on hover and on selection, with layers shifting in light depth.",
 					"Daylight on light floors looks deeper: less washout, a softer yellow at golden hour, calmer sand"
 				]
 			}

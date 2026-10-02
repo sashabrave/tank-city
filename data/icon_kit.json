@@ -537,90 +537,45 @@
 			"symbol": "ammo_belt",
 			"badge": "tank"
 		},
-		"freeze": {
-			"group": "pickup",
-			"variant": "ice",
-			"symbol": "snowflake"
-		},
 		"pickups/freeze": {
 			"group": "pickup",
 			"variant": "ice",
 			"symbol": "snowflake"
-		},
-		"heart": {
-			"group": "pickup",
-			"variant": "red",
-			"symbol": "heart_cage"
 		},
 		"pickups/heart": {
 			"group": "pickup",
 			"variant": "red",
 			"symbol": "heart_cage"
 		},
-		"pressure": {
-			"group": "pickup",
-			"variant": "orange",
-			"symbol": "bullet_vs_rocket"
-		},
 		"pickups/pressure": {
 			"group": "pickup",
 			"variant": "orange",
 			"symbol": "bullet_vs_rocket"
-		},
-		"repair": {
-			"group": "pickup",
-			"variant": "blue",
-			"symbol": "bunker_wrench"
 		},
 		"pickups/repair": {
 			"group": "pickup",
 			"variant": "blue",
 			"symbol": "bunker_wrench"
 		},
-		"star": {
-			"group": "pickup",
-			"variant": "orange",
-			"symbol": "star"
-		},
 		"pickups/star": {
 			"group": "pickup",
 			"variant": "orange",
 			"symbol": "star"
-		},
-		"turret": {
-			"group": "pickup",
-			"variant": "teal",
-			"symbol": "turret"
 		},
 		"pickups/turret": {
 			"group": "pickup",
 			"variant": "teal",
 			"symbol": "turret"
 		},
-		"vehicle": {
-			"group": "pickup",
-			"variant": "olive",
-			"symbol": "jeep"
-		},
 		"pickups/vehicle": {
 			"group": "pickup",
 			"variant": "olive",
 			"symbol": "jeep"
 		},
-		"vehicle_repair": {
-			"group": "pickup",
-			"variant": "olive",
-			"symbol": "wheel_wrench"
-		},
 		"pickups/vehicle_repair": {
 			"group": "pickup",
 			"variant": "olive",
 			"symbol": "wheel_wrench"
-		},
-		"wall": {
-			"group": "pickup",
-			"variant": "blue",
-			"symbol": "bricks"
 		},
 		"pickups/wall": {
 			"group": "pickup",
