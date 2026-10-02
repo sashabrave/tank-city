@@ -280,7 +280,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-023.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "в бою справа сверху в колонке инфы о бое аккуратно показывать количество звезд этой арены",
 			"type": "polish",
 			"version": "0.7.1-pre"

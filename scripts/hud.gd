@@ -135,7 +135,9 @@ func _process(_delta):
 	Texts.set_text(biome_label,arena.BIOMES.caption(arena.run_seed,arena.room_index))
 	# Progress reads as pips: fields of the route and waves of the room; words only where they add meaning.
 	var plain=not arena.sandbox and not data.boss_room and not Campaign.endless
-	Texts.set_text(wave_label,"Песочница" if arena.sandbox else "Босс мира" if data.boss_room else "Поле" if plain else "Поле %d" % data.stage)
+	# The arena's difficulty stars sit right after the title (T-023), before the stage pips.
+	var stars=EncounterRules.STARS[clampi(arena.room.difficulty,0,2)] if not arena.sandbox and not data.boss_room else ""
+	Texts.set_text(wave_label,("Песочница" if arena.sandbox else "Босс мира" if data.boss_room else "Поле" if plain else "Поле %d" % data.stage)+(" "+stars if stars!="" else ""))
 	stage_pips.visible=plain;stage_pips.set_state(6,data.stage-1,data.stage-1);stage_pips.position=Vector2(wave_label.position.x+text_width(wave_label)+12,wave_label.position.y+wave_label.size.y*.5-3)
 	var waves=not arena.sandbox and not arena.challenges.active() and not data.boss_room
 	wave_pips.visible=waves
