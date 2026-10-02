@@ -3,7 +3,7 @@
 Sheets live in art_requests/icon_kit_v1/sheets, results in assets/ui/icon_kit:
   kit/<group>_face[_<variant>].png, kit/<group>_rim[_<variant>].png, kit/<name>.png (auras)
   symbols/<symbol>.png, badges/<badge>.png
-Every kit layer is a 512 canvas. A face is fitted to the outer bounds of its rim (93%), so the rim
+Every kit layer is a 384 canvas (cards show icons at up to 148 px). A face is fitted to the outer bounds of its rim (93%), so the rim
 always hides the face edge and the face has room to slide under the rim during parallax.
 Requires Pillow and numpy:  python tools/art/build_icon_kit.py
 """
@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[2]
 SHEETS = ROOT / "art_requests/icon_kit_v1/sheets"
 LAYERS = ROOT / "art_requests/icon_kit_v1/layers"
 OUT = ROOT / "assets/ui/icon_kit"
-CANVAS = 512
+CANVAS = 384
 FAMILY = {"fire": (205, 72, 58), "ammo": (214, 152, 50), "survival": (92, 135, 62), "recon": (40, 132, 140), "logistics": (176, 146, 104)}
 
 
@@ -108,7 +108,7 @@ def tint(face, rgb):
 def save(im, rel):
 	path = OUT / rel
 	path.parent.mkdir(parents=True, exist_ok=True)
-	im.save(path)
+	im.save(path, optimize=True)
 
 
 def main():
@@ -136,8 +136,8 @@ def main():
 	save(single(b[(2, 3)], .98), "kit/aura_ring.png")
 	# Run upgrades: the approved pilot layers (faces cut from the pilot sheet, rim cut from the same shields).
 	for family in FAMILY:
-		save(Image.open(LAYERS / f"kit/upgrade_back_{family}.png"), f"kit/upgrade_face_{family}.png")
-		save(Image.open(LAYERS / f"kit/upgrade_rim_{family}.png"), f"kit/upgrade_rim_{family}.png")
+		save(Image.open(LAYERS / f"kit/upgrade_back_{family}.png").resize((CANVAS, CANVAS), Image.LANCZOS), f"kit/upgrade_face_{family}.png")
+		save(Image.open(LAYERS / f"kit/upgrade_rim_{family}.png").resize((CANVAS, CANVAS), Image.LANCZOS), f"kit/upgrade_rim_{family}.png")
 
 	symbols = {
 		("symbols_1_v1.png", 5, 4): "burst bullet_burst bullets_fast crosshair bullet_shatter pierce flame flame_chain bolt dizzy bell heart_cage boot_dodge vest bomb tank_shell boot_wind hood clover_casing grenade_up",
@@ -152,7 +152,8 @@ def main():
 			save(single(grid[(i // cols, i % cols)]), f"symbols/{name}.png")
 	badges = cells("badges_v1.png", 4, 3)
 	for i, name in enumerate("up longer often plus shield buggy apc tank bullet bomb tank_shell cooldown".split()):
-		save(single(badges[(i // 4, i % 4)], .96).resize((256, 256), Image.LANCZOS), f"badges/{name}.png")
+		save(single(badges[(i // 4, i % 4)], .96)
+			.resize((192, 192), Image.LANCZOS), f"badges/{name}.png")
 	print("icon kit:", sum(1 for _ in OUT.rglob("*.png")), "png")
 
 
