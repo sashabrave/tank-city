@@ -227,7 +227,7 @@ func settings():
 		else:setting_choice(body,["sun_day","Солнце в бою",["Случайно","Рассвет","Утро","Полдень","Золотой час","Закат"],["random","dawn","morning","noon","golden","sunset"],"Случайно — своё положение солнца в каждой комнате, чаще рассвет и золотые часы."],434)
 		setting_choice(body,["weather","Погода в бою",["Случайно","Ясно","Дождь","Снег","Туман","Песчаная буря"],["random","clear","rain","snow","fog","sandstorm"],"Случайно — на новом этапе погода иногда меняется. Только оформление, на бой не влияет."],522)
 		y=610
-		var names={"soft_shadows":"Мягкие тени","ambient_occlusion":"Затенение углов","glow":"Блики и свечение","haze":"Дымка вдали","rim_light":"Контурный свет","shiny_metal":"Блестящий металл"}
+		var names={"soft_shadows":"Мягкие тени","ambient_occlusion":"Затенение углов","glow":"Блики и свечение","haze":"Дымка вдали","rim_light":"Контурный свет","shiny_metal":"Блестящий металл","depth_light":"Глубина света"}
 		for i in range(Settings.SHADER_OPTIONS.size()):
 			var key=Settings.SHADER_OPTIONS[i]
 			var toggle=CheckButton.new();body.add_child(toggle);Texts.set_text(toggle,names[key]);toggle.position=Vector2((i%2)*355,y+int(i/2.0)*42);toggle.size=Vector2(340,38)

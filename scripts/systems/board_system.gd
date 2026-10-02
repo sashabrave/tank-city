@@ -98,6 +98,7 @@ func damage_wall(cell: Vector2i, amount: float,impact:Vector3=Vector3.ZERO,direc
 		Game.sound("debris",arena)
 		var barrel=arena.room.walls[cell].get("barrel",false)
 		arena.room.walls[cell].node.queue_free();arena.room.walls.erase(cell)
+		var ao=arena.get_node_or_null("FloorAO");if ao:ao.call_deferred("rebuild")
 		if barrel:explode_barrel(cell)
 
 func shred_net(cell: Vector2i):

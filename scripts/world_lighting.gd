@@ -137,8 +137,17 @@ func apply():
 			environment.ambient_light_color=Color(style.fill)
 		environment.ambient_light_energy=(.34*float(time.get("ambient",1.0))) if night else float(style.ambient)
 	else:sun.rotation_degrees=Vector3(-55,-32,0)
+	depth_light(cozy and bool(Settings.values.get("depth_light",true)) and not night)
 	refresh_materials()
 	update_lamps()
+## «Глубина света» (T-062), cheap: grid AO on the floor (systems/floor_ao.gd), a slightly warmer sun and
+## a hint of cool fill (warm light / cool shadow), a touch more contrast. AgX was tried and greyed the sand
+## palette, so the style's filmic tonemap stays.
+func depth_light(on:bool):
+	if not on:return
+	environment.adjustment_contrast*=1.08;environment.adjustment_saturation*=1.05
+	sun.light_color=sun.light_color.lerp(Color("ffd6a8"),.15);sun.light_energy*=1.06
+	environment.ambient_light_color=environment.ambient_light_color.lerp(Color("9db0d8"),.08)
 func _process(delta):
 	elapsed+=delta
 	if elapsed<.25:return
