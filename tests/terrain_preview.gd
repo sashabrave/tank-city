@@ -9,7 +9,9 @@ func run():
 	arena.begin_room(2);arena.auto_pause_enabled=false;arena.set_physics_process(false);arena.phase="upgrade"
 	for a in arena.actors:a.set_physics_process(false)
 	await get_tree().create_timer(2.3).timeout
-	await RenderingServer.frame_post_draw
-	get_viewport().get_texture().get_image().save_png("/tmp/terrain-final.png")
+	# The dummy headless renderer never draws a frame: the snapshot is only taken in a window.
+	if DisplayServer.get_name()!="headless":
+		await RenderingServer.frame_post_draw
+		get_viewport().get_texture().get_image().save_png("/tmp/terrain-final.png")
 	print("PASS terrain visual")
 	get_tree().quit()

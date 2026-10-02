@@ -32,13 +32,15 @@ func run_test():
 	var shot=arena.spawn_bullet(enemy,enemy.position,Vector2i.DOWN,1,false);shot.position=origin
 	assert(not arena.bullet_hit(shot));shot.consume()
 	# Infantry navigation and locomotion use the same open half-cell passage.
-	# The slit sits in the base column, so seal the base lanes: otherwise the soldier
+	# The slit may sit in the base column (field sizes vary), so seal the base lanes: otherwise the soldier
 	# correctly stops in its firing lane instead of following the route.
 	for blocker in [arena.base_cell+Vector2i.UP,arena.base_cell+Vector2i.LEFT,arena.base_cell+Vector2i.RIGHT]:arena.add_wall(blocker,4)
 	assert(arena.enemy.base_firing_cells(enemy).is_empty())
 	player.position=arena.world_pos(Vector2i(1,1))
 	enemy.position=origin+Vector3(0,0,-1);enemy.cell=arena.grid_pos(enemy.position)
-	enemy.route_points=[cell+Vector2i.DOWN];enemy.movement_pause=0
+	# The waypoint lies two cells below: the cell under the wall counts as reached half-way (rounding),
+	# after which the soldier would turn toward the base column of the smaller 0.7 fields.
+	enemy.route_points=[cell+Vector2i.DOWN*2];enemy.movement_pause=0
 	for step in range(8):
 		var direction=Vector2i.ZERO
 		for attempt in range(120):

@@ -24,21 +24,26 @@ func run():
 		arena.reward.apply_trophy_upgrade("damage",0)
 		assert(is_equal_approx(vehicle.damage,next),"Captured and owned card previews match application")
 		arena.player=old;arena.actors.erase(vehicle);vehicle.queue_free()
-	arena.weapon="shotgun";arena.player.apply_weapon();arena.run.behavior_cards=BehaviorCards.DATA.keys();arena.run.elapsed=10
+	# Behaviour cards are UpgradeDef flags/effects: Выдержка marks a volley after 1.5 s of silence (+40% on hit),
+	# Последний рубеж adds +30% damage at 25% health or less, Смена позиции gives a 3 s dash after leaving a vehicle.
+	arena.weapon="shotgun";arena.player.apply_weapon();arena.run.behavior_cards=["opening_shot","last_stand","exit_dash"];arena.run.elapsed=10
 	arena.phase="combat";arena.combat.fire_weapon(arena.player)
 	assert(arena.projectiles.size()==Game.LOOT.WEAPONS.shotgun.pellets)
-	for bullet in arena.projectiles:assert(is_equal_approx(bullet.damage,arena.player.damage*1.4))
-	assert(BehaviorCards.shot_multiplier(arena)==1.0)
-	arena.run.elapsed+=1.5;assert(BehaviorCards.shot_multiplier(arena)==1.4)
-	arena.run.soldier_hp=arena.run.soldier_max_hp*.25;assert(BehaviorCards.rate_multiplier(arena)==1.25)
-	arena.player.fire_cooldown=0;arena.player.turn_left=0;assert(arena.player.shoot())
-	assert(is_equal_approx(arena.player.fire_cooldown,arena.player.fire_interval/1.25))
-	arena.run.soldier_hp=arena.run.soldier_max_hp;assert(BehaviorCards.rate_multiplier(arena)==1)
+	for bullet in arena.projectiles:assert(bullet.opening and is_equal_approx(bullet.damage,arena.player.damage))
+	arena.run.elapsed+=.1;arena.combat.fire_weapon(arena.player);assert(not arena.projectiles.back().opening,"Opening shot needs a pause")
+	arena.run.elapsed+=1.6;arena.combat.fire_weapon(arena.player);assert(arena.projectiles.back().opening)
+	var target=arena.spawn_actor("soldier",arena.find_free_near(Vector2i(2,2)),false);target.set_physics_process(false)
+	var plain=arena.projectiles[arena.projectiles.size()-Game.LOOT.WEAPONS.shotgun.pellets-1];assert(not plain.opening)
+	arena.run.crit_chance=0;arena.run.landing_until=0
+	var full=CombatMods.outgoing(arena,plain,target);assert(is_equal_approx(CombatMods.outgoing(arena,arena.projectiles.back(),target),full*1.4))
+	arena.run.soldier_hp=arena.run.soldier_max_hp*.25;assert(is_equal_approx(CombatMods.outgoing(arena,plain,target),full*1.3))
+	arena.run.soldier_hp=arena.run.soldier_max_hp;assert(is_equal_approx(CombatMods.outgoing(arena,plain,target),full))
+	arena.actors.erase(target);target.queue_free()
 	BehaviorCards.exited_vehicle(arena);assert(BehaviorCards.speed_multiplier(arena)==1.25)
 	var expires=arena.run.dash_until;arena.run.elapsed+=1;BehaviorCards.exited_vehicle(arena);assert(arena.run.dash_until==expires)
 	arena.run.elapsed+=3;assert(BehaviorCards.speed_multiplier(arena)==1)
 	arena.phase="upgrade";arena.room.upgrade_offers.clear();arena.reward.prepare_upgrade_offers()
-	assert(arena.room.upgrade_offers.all(func(o):return o.id not in BehaviorCards.DATA),"No duplicate behavior cards")
+	assert(arena.room.upgrade_offers.all(func(o):return o.id not in arena.run.behavior_cards),"No duplicate behavior cards")
 	arena.queue_free();await get_tree().process_frame
 	print("PASS shared stats: weapons, class health, owned/captured vehicles, previews; 3 behavior triggers, timing and no duplicates")
 	get_tree().quit()

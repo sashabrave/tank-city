@@ -6,7 +6,7 @@ func check(ok:bool,msg:String):
 	if not ok:failures+=1;push_error(msg)
 func _ready():call_deferred("run")
 func run():
-	Game.save_enabled=false;Game.sound_enabled=false;Game.reset_upgrades()
+	Game.save_enabled=false;Settings.persistence_enabled=false;Game.sound_enabled=false;Game.reset_upgrades()
 	var arena=load("res://scenes/arena.tscn").instantiate();add_child(arena);arena.auto_pause_enabled=false;arena.set_physics_process(false);arena.phase="combat"
 	arena.player.set_physics_process(false)
 	for kind in ["drone","flyer"]:
@@ -29,8 +29,11 @@ func run():
 		var flashes=arena.find_children("PressureFlash*","Sprite3D",false,false)
 		check(flashes.size()==(1 if win else 0),"one flash only on successful pressure")
 		check(hostile.spent==win and friendly.spent!=win,"interception result unchanged")
-		if win:check(is_equal_approx(flashes[0].pixel_size,.002),"tiny lightning")
-		await get_tree().create_timer(.22).timeout
+		if win:check(is_equal_approx(flashes[0].pixel_size*flashes[0].texture.get_width(),.256),"tiny lightning (quarter cell)")
+		# The flash lives 0.16 s. A slow frame can advance the timer before the tween starts, so allow
+		# a few more frames, still well under a third of a second of real time.
+		var started=Time.get_ticks_msec();await get_tree().create_timer(.22).timeout
+		while not arena.find_children("PressureFlash*","Sprite3D",false,false).is_empty() and Time.get_ticks_msec()-started<330:await get_tree().process_frame
 		check(arena.find_children("PressureFlash*","Sprite3D",false,false).is_empty(),"flash expires quickly")
 		if is_instance_valid(friendly):friendly.consume()
 		if is_instance_valid(hostile):hostile.consume()
