@@ -278,4 +278,4 @@ func setting_choice(body,entry,y):
 	var option=OptionButton.new();body.add_child(option);option.position=Vector2(395,y);option.size=Vector2(305,36);option.add_theme_font_size_override("font_size",17)
 	for label in entry[2]:option.add_item(label)
 	option.select(entry[3].find(Settings.values[entry[0]]));option.item_selected.connect(func(index):Settings.change(entry[0],entry[3][index]))
-	var hint=UiKit.label(body,entry[4],Vector2(0,y+42),Vector2(700,38),14,UiKit.MUTED);hint.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	var hint=UiKit.label(body,entry[4],Vector2(0,y+42),Vector2(700,44),14,UiKit.MUTED);hint.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART

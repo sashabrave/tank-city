@@ -96,7 +96,7 @@ func build():
 	for child in get_children():child.queue_free()
 	var shade=ColorRect.new();add_child(shade);shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);shade.color=Color(0,0,0,.42)
 	panel=UiKit.glass(self,Vector2.ZERO,Vector2(1120,650),Color("242d27"));panel.name="StationPanel";fit()
-	UiKit.label(panel,provider.title(),Vector2(28,16),Vector2(600,40),28)
+	UiKit.accent(UiKit.label(panel,provider.title(),Vector2(28,16),Vector2(600,40),28))
 	UiKit.label(panel,provider.subtitle(),Vector2(28,54),Vector2(700,24),15,UiKit.MUTED)
 	var alloy=UiKit.label(panel,"%d ◈" % Game.credits,Vector2(880,22),Vector2(150,30),18);alloy.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT;alloy.name="Alloy"
 	var close=UiKit.button(panel,"",Vector2(1046,16),Vector2(52,44),func():closed.emit());close.icon=UiKit.interface_icon("close");close.expand_icon=true;close.add_theme_constant_override("icon_max_width",20);close.name="Close"
@@ -104,7 +104,10 @@ func build():
 	for i in range(tabs.size()):
 		var key=tabs[i][0]
 		var b=UiKit.button(panel,tabs[i][1],Vector2(22,96+i*54),Vector2(190,46),func():tab=key;selected="";notice="";animate_cards=true;build(),key==tab);b.name="Tab_"+key
-		b.icon=UiKit.icon_texture(tabs[i][2]) if tabs[i].size()>2 else null;b.expand_icon=true;b.add_theme_constant_override("icon_max_width",22);b.alignment=HORIZONTAL_ALIGNMENT_LEFT;b.add_theme_font_size_override("font_size",16)
+		b.icon=tab_icon(str(tabs[i][2])) if tabs[i].size()>2 else null;
+		for state in ["normal","hover","pressed","disabled"]:
+			var tight=b.get_theme_stylebox(state).duplicate();tight.content_margin_left=14;tight.content_margin_right=10;b.add_theme_stylebox_override(state,tight)
+		b.expand_icon=true;b.add_theme_constant_override("icon_max_width",22);b.add_theme_constant_override("h_separation",10);b.alignment=HORIZONTAL_ALIGNMENT_LEFT;b.add_theme_font_size_override("font_size",16)
 	var scroll=ScrollContainer.new();panel.add_child(scroll);scroll.position=Vector2(232,96);scroll.size=Vector2(530,532);scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
 	var items=provider.items(tab)
 	if selected=="" and not items.is_empty():selected=items[0].id
@@ -182,3 +185,10 @@ func perform(action:String):
 	var message=str(provider.act(tab,selected,action))
 	if message=="":return
 	Game.sound("upgrade",self);notice=message;changed.emit();build()
+## Tab icons come from the line set (Straight) whenever it has one, so tabs share size and weight;
+## full-colour artwork stays a fallback, trimmed to its visible pixels.
+const TAB_LINE_ICONS={"repair":"build","heart":"medkit","health":"add"}
+static func tab_icon(id:String)->Texture2D:
+	var line=TAB_LINE_ICONS.get(id,id)
+	if ResourceLoader.exists("res://assets/icons/interface_straight/"+line+".svg"):return UiKit.interface_icon(line)
+	return UiKit.trimmed(UiKit.icon_texture(id))

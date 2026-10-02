@@ -12,7 +12,7 @@ func _ready():
 	shade.color=Color("17201c") if startup else Color(0,0,0,.65)
 	shade.set_meta("keep_theme_colors",true)
 	panel=UiKit.glass(self,Vector2.ZERO,Vector2.ZERO)
-	UiKit.label(panel,"Выбери мир",Vector2(28,22),Vector2(900,48),34)
+	UiKit.accent(UiKit.label(panel,"Выбери мир",Vector2(28,22),Vector2(900,48),34))
 	var subtitle=UiKit.label(panel,"Три независимых сохранения. Создай свой первый мир." if startup and not any_profiles() else "У каждого мира своя база, боец и прогресс.",Vector2(28,78),Vector2(900,46),18,UiKit.MUTED);subtitle.name="Subtitle";subtitle.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	for slot in range(1,Game.profiles.COUNT+1):build_card(slot)
 	status=UiKit.label(panel,Game.save_error,Vector2.ZERO,Vector2.ZERO,16,Color("f49d85"));status.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART

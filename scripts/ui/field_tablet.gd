@@ -99,7 +99,8 @@ func refresh():
 		"settings":preload("res://scripts/ui/tablet_pages.gd").new(self).settings()
 		_:quest_page()
 
-	if nav_collapsed and tab in ["inventory","fighter","settings","quests","base","about"]:expand_layout(content,932.0/775.0)
+	# Pages built from content.size (quests) already know the collapsed width; scaling them again pushed cards out.
+	if nav_collapsed and tab in ["inventory","fighter","settings","base","about"]:expand_layout(content,932.0/775.0)
 	if tab=="music":
 		for child in content.get_children():
 			if child is PanelContainer:child.size.x=content.size.x-44
@@ -144,7 +145,10 @@ func animate_navigation():
 	if is_instance_valid(nav_tween):nav_tween.kill()
 	nav_tween=create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	nav_tween.tween_method(apply_navigation,nav_progress,1.0 if nav_collapsed else 0.0,.20)
+## Children of a label (inline currency icons) follow their label's text, and nodes marked nav_static lay
+## themselves out; neither is scaled with the menu animation.
 func capture_navigation_geometry(parent:Node):
+	if parent is Label or parent.has_meta("nav_static"):return
 	for child in parent.get_children():
 		if not child is Control:continue
 		nav_geometry.append({"node":child,"position":child.position,"size":child.size,"minimum":child.custom_minimum_size,"fixed":not parent is Container and is_equal_approx(child.anchor_left,child.anchor_right)})
@@ -237,27 +241,72 @@ func quest_message(q:Dictionary,count:int,news:bool,ready:bool,done:bool)->Contr
 	elif actions:
 		UiKit.button(bubble,"Принять задание",Vector2(14,196),Vector2(bw-28,40),func():p.accept_quest(q.id);refresh(),true).name="Accept"
 	return row
-## Incoming order from Оперштаб as a message with three difficulty options.
+## Incoming order from Оперштаб: a message with the three difficulties as tiles in a row. The bubble and
+## the row follow the feed width (anchors and an HBox), so a collapsed or wider menu never pushes them out.
+const ORDER_TILE_HEIGHT=264.0
+const DIFFICULTY_COLORS={"Лёгкий":Color("8fe895"),"Обычный":Color("f1cf55"),"Сложный":Color("ff8a6b")}
 func telegram_offer_card(box:VBoxContainer):
-	var bw=quest_bubble_width
 	var p=Game.progression;var sender=Q.SENDERS.operations
-	var height=120+p.telegram_options.size()*64+(52 if manage else 30)
+	var height=92+ORDER_TILE_HEIGHT+(62 if manage else 40)
 	var row=Control.new();row.name="TelegramOffer";box.add_child(row);row.custom_minimum_size=Vector2(0,height)
 	var avatar=Panel.new();row.add_child(avatar);avatar.position=Vector2(0,4);avatar.size=Vector2(46,46);avatar.add_theme_stylebox_override("panel",UiKit.style(Color(sender.color),23))
 	var glyph=UiKit.icon(avatar,sender.icon,Vector2(11,11),Vector2(24,24));glyph.texture=UiKit.interface_icon(sender.icon)
-	var bubble=Panel.new();row.add_child(bubble);bubble.name="Bubble";bubble.position=Vector2(56,0);bubble.size=Vector2(bw,height)
+	var bubble=Panel.new();row.add_child(bubble);bubble.name="Bubble"
+	bubble.anchor_right=1.0;bubble.anchor_bottom=1.0;bubble.offset_left=56;bubble.offset_right=-14
 	var style=UiKit.style(Color("eee4bf"),12);style.corner_radius_top_left=3;bubble.add_theme_stylebox_override("panel",style)
-	UiKit.label(bubble,sender.name+" · телеграмма",Vector2(14,8),Vector2(bw-93,20),13,Color(sender.color).darkened(.25))
-	UiKit.label(bubble,"Новый приказ",Vector2(14,28),Vector2(bw-73,30),19)
-	UiKit.label(bubble,"Выбери сложность или откажись.",Vector2(14,60),Vector2(bw-28,26),15,UiKit.MUTED)
-	for i in range(p.telegram_options.size()):
-		var q=p.telegram_options[i];var y=96+i*64
-		var title=UiKit.label(bubble,q.difficulty+" · "+q.text,Vector2(14,y),Vector2(310 if manage else 485,28),16);title.clip_text=true
-		UiKit.label(bubble,"%d вылазки · %d ◈" % [q.run_limit,q.alloy],Vector2(14,y+28),Vector2(310,24),14,UiKit.MUTED)
-		if manage:UiKit.button(bubble,"Принять",Vector2(334,y+6),Vector2(165,42),func():p.choose_telegram(i);refresh(),i==1).add_theme_font_size_override("font_size",15)
-	if manage:UiKit.button(bubble,"Отказаться от телеграммы",Vector2(14,height-50),Vector2(bw-28,40),func():p.abandon_telegram();refresh()).add_theme_font_size_override("font_size",16)
-	else:UiKit.label(bubble,"Принять или отказаться можно в хабе.",Vector2(14,height-30),Vector2(bw-28,24),14,UiKit.MUTED)
+	var header=VBoxContainer.new();bubble.add_child(header);header.anchor_right=1.0;header.offset_left=16;header.offset_right=-16;header.offset_top=10;header.add_theme_constant_override("separation",2);header.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	for line in [[sender.name+" · телеграмма",13,Color(sender.color).darkened(.25)],["Новый приказ",19,UiKit.INK],["Выбери сложность или откажись",15,UiKit.MUTED]]:
+		var label=Label.new();header.add_child(label);Texts.set_text(label,line[0]);label.add_theme_font_override("font",UiKit.field_font());label.add_theme_font_size_override("font_size",line[1]);label.add_theme_color_override("font_color",UiKit.text_color(line[2]));label.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	var tiles=HBoxContainer.new();tiles.name="OrderTiles";bubble.add_child(tiles);tiles.anchor_right=1.0;tiles.offset_left=16;tiles.offset_right=-16;tiles.offset_top=92;tiles.offset_bottom=92+ORDER_TILE_HEIGHT;tiles.add_theme_constant_override("separation",12)
+	for i in range(p.telegram_options.size()):tiles.add_child(order_tile(p.telegram_options[i],i))
+	if manage:
+		var refuse=UiKit.button(bubble,"Отказаться от телеграммы",Vector2.ZERO,Vector2(10,40),func():p.abandon_telegram();refresh());refuse.add_theme_font_size_override("font_size",16)
+		refuse.anchor_top=1.0;refuse.anchor_bottom=1.0;refuse.anchor_right=1.0;refuse.offset_left=16;refuse.offset_right=-16;refuse.offset_top=-54;refuse.offset_bottom=-14
+	else:
+		var later=UiKit.label(bubble,"Принять или отказаться можно в хабе",Vector2.ZERO,Vector2(10,24),14,UiKit.MUTED)
+		later.anchor_top=1.0;later.anchor_bottom=1.0;later.anchor_right=1.0;later.offset_left=16;later.offset_right=-16;later.offset_top=-34;later.offset_bottom=-10
 	UiKit.arrive(row,0)
+## One difficulty as a square tile: difficulty, goal icon, goal, terms, accept. Everything centred.
+func order_tile(q:Dictionary,index:int)->Control:
+	var p=Game.progression
+	var tile=PanelContainer.new();tile.name="Order_%d" % index;tile.size_flags_horizontal=Control.SIZE_EXPAND_FILL;tile.mouse_filter=Control.MOUSE_FILTER_PASS
+	var look=UiKit.style(Color("2c352e"),10,Color(1,1,1,.08));look.set_content_margin_all(12);tile.add_theme_stylebox_override("panel",look)
+	var column=VBoxContainer.new();tile.add_child(column);column.add_theme_constant_override("separation",6);column.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	var tone:Color=DIFFICULTY_COLORS.get(str(q.difficulty),UiKit.MUTED)
+	column.add_child(centered_label(str(q.difficulty),14,tone))
+	# Every goal icon sits on the same round badge, so enemy art, vehicles and line icons read as one set.
+	var holder=Control.new();holder.custom_minimum_size=Vector2(0,72);holder.mouse_filter=Control.MOUSE_FILTER_IGNORE;holder.set_meta("nav_static",true);column.add_child(holder)
+	var badge=Panel.new();holder.add_child(badge);badge.size=Vector2(72,72);badge.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	var round=StyleBoxFlat.new();round.bg_color=Color(tone,.14);round.border_color=Color(tone,.45);round.set_border_width_all(1);round.set_corner_radius_all(36)
+	badge.add_theme_stylebox_override("panel",round)
+	var art=order_icon(str(q.get("event","")));badge.add_child(art)
+	# Line icons are drawn edge to edge, artwork has its own margin: the line set gets a smaller box.
+	var inset=18.0 if art.has_meta("line_icon") else 12.0;art.position=Vector2.ONE*inset;art.size=Vector2.ONE*(72-inset*2)
+	holder.resized.connect(func():badge.position=Vector2((holder.size.x-72)*.5,0))
+	var goal=centered_label(str(q.text),16,UiKit.INK);goal.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;goal.custom_minimum_size.y=48;goal.vertical_alignment=VERTICAL_ALIGNMENT_CENTER;column.add_child(goal)
+	var terms=UiKit.label(column,"%d вылазки · %d ◈" % [q.run_limit,q.alloy],Vector2.ZERO,Vector2(10,22),14,UiKit.MUTED);terms.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;terms.custom_minimum_size.y=22
+	var spacer=Control.new();spacer.size_flags_vertical=Control.SIZE_EXPAND_FILL;spacer.mouse_filter=Control.MOUSE_FILTER_IGNORE;column.add_child(spacer)
+	if manage:
+		var accept=UiKit.button(column,"Принять",Vector2.ZERO,Vector2(10,40),func():p.choose_telegram(index);refresh(),index==1);accept.custom_minimum_size.y=40;accept.add_theme_font_size_override("font_size",15);accept.name="Accept"
+	return tile
+func centered_label(text:String,font_size:int,color:Color)->Label:
+	var label=Label.new();Texts.set_text(label,text);label.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+	label.add_theme_font_override("font",UiKit.field_font());label.add_theme_font_size_override("font_size",font_size);label.add_theme_color_override("font_color",UiKit.text_color(color));label.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	return label
+## Context icon of an order goal: the enemy to destroy, the vehicle to ride, a token, waves or explosives.
+func order_icon(event:String)->Control:
+	var picture=TextureRect.new();picture.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;picture.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;picture.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	var enemy={"infantry":"soldier","armor":"tank","drones":"drone"}.get(event,"")
+	var art={"kills_buggy":"buggy","kills_apc":"apc","kills_tank":"tank","tokens":"token","barrel_kills":"dynamite"}.get(event,"")
+	if enemy!="":
+		var icons=preload("res://scripts/ui/enemy_type_icon.gd");var sheet=icons.atlas();var index=icons.index_for(enemy)
+		var cell=Vector2(sheet.get_width()/4.0,sheet.get_height()/4.0)
+		var region=AtlasTexture.new();region.atlas=sheet;region.region=Rect2(Vector2(index%4,int(index/4))*cell,cell);picture.texture=region
+	elif art!="":picture.texture=UiKit.trimmed(UiKit.icon_texture(art))
+	else:
+		picture.texture=UiKit.interface_icon("repeat" if event=="waves" else "quests");picture.modulate=UiKit.INK;picture.set_meta("line_icon",true)
+	return picture
+
 func orders_page():
 	quest_filter="operations";quest_page()
 func messages_page():
@@ -400,8 +449,12 @@ func render_guide():
 		var picture=Panel.new();card.add_child(picture);picture.position=Vector2(8,8);picture.size=Vector2(card_w-16,146);picture.mouse_filter=Control.MOUSE_FILTER_IGNORE
 		picture.add_theme_stylebox_override("panel",UiKit.style(Color("1f2722"),8))
 		guide_picture(picture,entry,Vector2(card_w-16,146))
-		var heading=UiKit.label(card,str(entry.title),Vector2(14,162),Vector2(card_w-28,26),17);heading.clip_text=true;heading.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS;heading.mouse_filter=Control.MOUSE_FILTER_IGNORE
-		var teaser=UiKit.label(card,guide_teaser(entry),Vector2(14,190),Vector2(card_w-28,40),13,UiKit.MUTED);teaser.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;teaser.max_lines_visible=2;teaser.mouse_filter=Control.MOUSE_FILTER_IGNORE
+		# A long title takes two lines and the teaser gives up one, so nothing is cut mid-word.
+		var heading=UiKit.label(card,str(entry.title),Vector2(14,160),Vector2(card_w-28,26),16);heading.mouse_filter=Control.MOUSE_FILTER_IGNORE
+		var teaser=UiKit.label(card,guide_teaser(entry),Vector2(14,190),Vector2(card_w-28,40),13,UiKit.MUTED);teaser.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;teaser.max_lines_visible=2;teaser.mouse_filter=Control.MOUSE_FILTER_IGNORE;teaser.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS
+		if heading.get_theme_font("font").get_string_size(heading.text,HORIZONTAL_ALIGNMENT_LEFT,-1,16).x>card_w-28:
+			heading.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;heading.size.y=42;heading.add_theme_constant_override("line_spacing",-2)
+			teaser.position.y=206;teaser.size.y=22;teaser.max_lines_visible=1
 	UiKit.reveal_list(guide_box)
 
 func guide_picture(frame:Control,entry:Dictionary,area:Vector2):
