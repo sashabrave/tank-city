@@ -263,6 +263,12 @@ func grenade_explosion(pos: Vector3,amount: float,friendly: bool,blast_radius: f
 	for cell in arena.room.walls.keys():
 		if arena.flat_distance(pos,arena.world_pos(cell))<1.15:arena.damage_wall(cell,amount)
 	if not friendly and not arena.room.boss_room and arena.flat_distance(pos,arena.world_pos(arena.room.base_cell))<1.15:damage_base(amount)
+	# Own explosives bite back a little (T-026): 1 damage to the soldier caught in the blast and 1 to the HQ.
+	if friendly:
+		var reach=blast_radius if blast_radius>0 else 1.15
+		var player=arena.room.player
+		if is_instance_valid(player) and not player.dead and arena.flat_distance(pos,player.position)<=reach:player.take_damage(1.0,player.position-pos+Vector3(.01,0,.01),"","blast")
+		if not arena.room.boss_room and arena.flat_distance(pos,arena.world_pos(arena.room.base_cell))<=reach:damage_base(1.0)
 	for wreck in arena.room.wrecks.duplicate():
 		if is_instance_valid(wreck) and not wreck.spent and arena.flat_distance(pos,wreck.position)<1.15:wreck.take_damage(amount)
 

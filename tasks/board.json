@@ -319,7 +319,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-026.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "своя граната должа наносить игроку неольшьой урон и базе",
 			"type": "bug",
 			"version": "0.7.1-pre"
