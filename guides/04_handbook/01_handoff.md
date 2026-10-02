@@ -58,7 +58,7 @@ Godot --headless --path . --export-release "macOS" build/macos/WarCats-<верс
 
 ## Состояние на 0.3.0 и известные долги
 
-- **Устаревшие тесты с известными падениями** (были до 0.3.0): command_rover, command_v20, tablet_preview (headless-кадр), hub_polish_v11, update_v04/v05/v07/v09, progression_v10, campaign_v09, build_refresh, adaptive_routes, drone_pressure, hub_waves, route_strategy, smoke, worlds_v13, headquarters (строка 8), terrain_v1 (детерминизм), run_checkpoint_v20, ui_checkpoint_v20, tablet_resume, tablet_refresh (радио), resume_fast_revision (в headless зависает на loading_veil, так же и на 0.3.2). Их нужно переписать под текущие правила.
+- **Устаревшие тесты с известными падениями** (были до 0.3.0): command_rover, command_v20, tablet_preview (headless-кадр), hub_polish_v11, update_v04/v05/v07/v09, progression_v10, campaign_v09, build_refresh, adaptive_routes, drone_pressure, hub_waves, route_strategy, smoke, worlds_v13, headquarters (строка 8), terrain_v1 (детерминизм), run_checkpoint_v20, tablet_resume, tablet_refresh (радио), resume_fast_revision (в headless зависает на loading_veil, так же и на 0.3.2). Их нужно переписать под текущие правила.
 - **Не подтверждено живой игрой:** темп экономики (до генерала ~2 ч), мета-билды (бот почти не убивает), FPS на iOS и Windows.
 - **Очередь пользователя:** замена стекла интерфейса на размытый снимок, аудит точек-уведомлений и бейдж «Новое», вес сборки (205 МБ, в основном WAV-музыка) и скорость запуска, сокращение текстов и подсказки по наведению/тапу для иконок.
 
