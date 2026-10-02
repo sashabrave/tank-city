@@ -13,7 +13,8 @@ static func build(arena):
 		# Lamps sit on the outer lip so their heads do not hang over edge cells.
 		for z in [-half+1,half-1]:preload("res://scripts/base_surroundings.gd").lamp(root,Vector3(side*(middle+.22),0,z))
 	var rng=RandomNumberGenerator.new();rng.seed=arena.run_seed+arena.room_index*6203+119
-	var count=rng.randi_range(2,3);var used=[]
+	# A clean rim: one or two small props, not a junk pile.
+	var count=rng.randi_range(1,2);var used=[]
 	for i in range(count):
 		var side=rng.randi_range(0,3)
 		while side in used:side=(side+1)%4
@@ -36,7 +37,7 @@ static func build(arena):
 ## upper sides; the near edge gets flat ones, because from the tilted camera anything tall there
 ## would cover the first row of cells. Positions, turns and sizes vary per room.
 const BIOME_SETS={"forest":["rock_0","rock_1","bush","tuft","stump","log"],"desert":["rock_flat","cactus","dune","tuft","rock_1"],
-	"marsh":["reeds","tuft","rock_flat","bush","log"],"mountains":["crystal","snow_mound","rock_0","rock_flat"],"inferno":["ash_cone","stump","log","rock_1"]}
+	"marsh":["reeds","tuft","rock_flat","bush","log"],"city":["rock_flat","tuft","rock_0"],"mountains":["crystal","snow_mound","rock_0","rock_flat"],"inferno":["ash_cone","stump","log","rock_1"]}
 const FLAT=["rock_flat","dune","snow_mound","tuft","log"]
 static func scatter(root:Node3D,arena,half:float):
 	var rng=RandomNumberGenerator.new();rng.seed=arena.run_seed+arena.room_index*6203+5011
@@ -44,7 +45,7 @@ static func scatter(root:Node3D,arena,half:float):
 	var kinds:Array=BIOME_SETS.get(str(palette.get("ambience","forest")),BIOME_SETS.forest)
 	if palette.get("vegetation","")=="frost":kinds=BIOME_SETS.mountains
 	for side in range(4):
-		var count=rng.randi_range(3,6)
+		var count=rng.randi_range(1,3)
 		for k in range(count):
 			var along=lerpf(-half+.6,half-.6,(k+rng.randf_range(.1,.9))/float(count))
 			if side==3 and absf(along)<2.4:continue  # HQ apron stays clear
@@ -59,7 +60,7 @@ static func scatter(root:Node3D,arena,half:float):
 static func cargo(root:Node3D,arena,half:float,middle:float):
 	var rng=RandomNumberGenerator.new();rng.seed=arena.run_seed+arena.room_index*6203+947
 	var spots=[]
-	for k in range(rng.randi_range(2,3)):spots.append([Vector3(lerpf(-half+2.2,half-2.2,(k+rng.randf_range(.2,.8))/3.0),0,-middle-.2),0.0])
+	for k in range(rng.randi_range(1,2)):spots.append([Vector3(lerpf(-half+2.2,half-2.2,(k+rng.randf_range(.2,.8))/3.0),0,-middle-.2),0.0])
 	for spot in spots:
 		var pile=load("res://assets/models/environment_v7/tarp_%d.glb" % rng.randi_range(0,2)).instantiate()
 		root.add_child(pile);pile.position=spot[0];pile.rotation.y=spot[1]+rng.randf_range(-.2,.2);pile.scale=Vector3.ONE*rng.randf_range(.72,.88)

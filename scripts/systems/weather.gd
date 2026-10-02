@@ -24,10 +24,11 @@ const RAIN={
 	"shower":{"count":190,"quad":Vector2(.034,.34),"fall":1.35,"slant":.9,"strength":1.0,"ripples":48,"puddles":9},
 	"downpour":{"count":300,"quad":Vector2(.038,.5),"fall":1.8,"slant":1.6,"strength":1.2,"ripples":80,"puddles":14},
 }
-static func pick_rain(context:Node)->String:
+static func pick_rain(context:Node)->String:return rain_for(int(context.room_index))
+static func rain_for(index:int)->String:
 	var forced=str(Settings.values.get("rain_style",""))
 	if forced in RAIN:return forced
-	var rng=RandomNumberGenerator.new();rng.seed=hash([Game.visual_run_seed,context.room_index,"rain_style"])
+	var rng=RandomNumberGenerator.new();rng.seed=hash([Game.visual_run_seed,index,"rain_style"])
 	var roll=rng.randf()
 	return "drizzle" if roll<.62 else "shower" if roll<.92 else "downpour"
 
@@ -39,12 +40,15 @@ static func allowed(entry:Dictionary)->Array:
 ## Weather of the context's current room, or "" outside battle.
 static func pick(context:Node)->String:
 	if context==null or not context.has_method("room_palette") or not "room_index" in context:return ""
+	return for_room(context.run_seed,int(context.room_index))
+## Weather of room `index` of a run (the route map shows the same weather the battle will have).
+static func for_room(run_seed:int,index:int)->String:
 	var choice=str(Settings.values.get("weather","random"))
 	if choice in KINDS:return choice
 	var rng=RandomNumberGenerator.new();rng.seed=hash([Game.visual_run_seed,"weather"])
 	var current="clear"
-	for room in range(int(context.room_index)+1):
-		var options=allowed(BIOMES.entry(context.run_seed,room))
+	for room in range(index+1):
+		var options=allowed(BIOMES.entry(run_seed,room))
 		var roll=rng.randf();var pick_roll=rng.randf()
 		if roll<CHANGE_CHANCE or current not in options:current=weighted(options,pick_roll)
 	return current

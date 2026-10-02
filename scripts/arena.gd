@@ -337,6 +337,8 @@ func begin_room(index: int):
 		var feel=preload("res://scripts/combat/combat_feel.gd").new();add_child(feel);feel.setup(self)
 	var old_crates=get_node_or_null("FieldCrates")
 	if old_crates:old_crates.name="FieldCratesOld";old_crates.queue_free()
+	# Containers first, so crates lean against them and never end up inside.
+	var dressing=preload("res://scripts/systems/field_dressing.gd").new();add_child(dressing);dressing.setup(self)
 	var crates=preload("res://scripts/systems/field_crates.gd").new();add_child(crates);crates.setup(self)
 	var previous=get_node_or_null("BiomeParticles")
 	if previous:previous.name="BiomeParticlesOld";previous.queue_free()

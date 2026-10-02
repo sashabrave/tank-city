@@ -134,10 +134,10 @@ func _ready():
 			var node=Node3D.new();add_child(node);node.position=pos;node.scale=Vector3.ONE*MINI_SCALE;previews[info.id]=node
 			node.set_meta("info",info)
 			if info.lane==0:room_previews.append(node)
-			var biome=LocationStyle.biome(wave_seed,stage)
 			var visited=stage<available and RoutePlan.chosen(plan,stage,route_choices).id==info.id
 			var skipped=stage<available and not visited
-			var color=LocationStyle.COLORS[biome]
+			# Tile colour = the floor of the biome this room will have.
+			var color=Color(preload("res://scripts/biome_catalog.gd").entry(wave_seed,stage).floor).darkened(.06)
 			if skipped:color=color.darkened(.28)
 			var branch=RoutePlan.node_branch(info)
 			if branch=="headquarters":MINI.depot(node)
@@ -146,7 +146,7 @@ func _ready():
 			elif info.type in RoutePlan.CHALLENGES:MINI.challenge(node,info.type,color)
 			elif stage in Campaign.BOSSES:MINI.boss(node,color);node.scale*=1.45
 			else:MINI.battle(node,posmod(wave_seed+stage*3+info.lane*7,4),color,visited,info.difficulty)
-			if branch=="" and not skipped:MINI.weather(node,MINI.weather_for(preload("res://scripts/biome_catalog.gd").entry(wave_seed,stage)))
+			if branch=="" and not skipped and not visited:MINI.live_weather(node,preload("res://scripts/systems/weather.gd").for_room(wave_seed,stage),preload("res://scripts/systems/weather.gd").rain_for(stage))
 			var caption={"vehicle":"Техника","headquarters":"Депо","legend":"Захваченный КП"}.get(branch,ChallengeRooms.TITLES.get(info.type,"%02d" % (stage+1)))
 			Visuals.label3d(node,"✓ "+caption if visited else caption,Vector3(0,.35,3.65),Color("f3eee0"),30).pixel_size=.025
 			if not visited and not skipped and branch=="":

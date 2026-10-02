@@ -251,6 +251,56 @@ static func weather(parent:Node3D,kind:String):
 			for i in range(3):
 				var ember=Visuals.box(sky,Vector3(-.4+i*.4,-1.8,0),Vector3(.12,.12,.12),Color("ff8a3d"));ember.material_override=Visuals.material(Color("ff8a3d"),true)
 				anim.add(ember,"position:y",[-1.8-i*.2,-1.3-i*.2,-.8-i*.2,-2.3])
+## Live weather above a route tile: the real weather of that room as a tiny scene — a cloud with falling
+## rain or snow, a thunderstorm (downpour) with flashes, drifting fog or blowing sand. Clear sky shows nothing.
+static func live_weather(parent:Node3D,kind:String,rain_style:String=""):
+	if kind in ["","clear"]:return
+	# Above the room plaque (the caption at the tile front); the map camera looks almost straight down, so
+	# the emitter leans so drops fall towards the camera bottom (+z) along their long side.
+	var sky=Node3D.new();sky.name="Weather";parent.add_child(sky);sky.position=Vector3(0,2.4,1.2);sky.scale=Vector3.ONE*1.25
+	var storm=kind=="rain" and rain_style=="downpour"
+	if kind in ["rain","snow"]:
+		var grey=Color("6c757c") if storm else Color("b9c2c6") if kind=="rain" else Color("f1f2ee")
+		for p in [Vector3(-.55,0,0),Vector3(0,.18,.05),Vector3(.55,-.02,0),Vector3(.2,-.05,-.3)]:
+			var puff=Visuals.box(sky,p,Vector3(.85,.42,.7),grey);puff.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var fall=CPUParticles3D.new();sky.add_child(fall);fall.name="Fall"
+	fall.emission_shape=CPUParticles3D.EMISSION_SHAPE_BOX;fall.local_coords=true
+	var drop=BoxMesh.new();var paint=StandardMaterial3D.new();paint.shading_mode=BaseMaterial3D.SHADING_MODE_UNSHADED;paint.transparency=BaseMaterial3D.TRANSPARENCY_ALPHA;drop.material=paint
+	fall.mesh=drop
+	match kind:
+		"rain":
+			drop.size=Vector3(.05,.42,.05);paint.albedo_color=Color(.55,.78,1.0,.95)
+			fall.emission_box_extents=Vector3(.9,.05,.4);fall.position.y=-.25;fall.amount=40 if storm else 22;fall.lifetime=.55
+			fall.direction=Vector3(.15 if not storm else .35,-1,0);fall.rotation.x=-.73;fall.spread=2.0;fall.gravity=Vector3.ZERO;fall.initial_velocity_min=6.0;fall.initial_velocity_max=7.5
+		"snow":
+			drop.size=Vector3(.11,.11,.11);paint.albedo_color=Color(1,1,1,1)
+			fall.emission_box_extents=Vector3(.9,.05,.4);fall.position.y=-.25;fall.amount=18;fall.lifetime=1.6
+			fall.direction=Vector3(.2,-1,0);fall.rotation.x=-.73;fall.spread=12.0;fall.gravity=Vector3.ZERO;fall.initial_velocity_min=1.4;fall.initial_velocity_max=1.9
+		"sandstorm":
+			drop.size=Vector3(.22,.035,.035);paint.albedo_color=Color(.9,.78,.55,.8)
+			fall.emission_box_extents=Vector3(.2,.9,.8);fall.position=Vector3(-1.6,-2.4,0);fall.amount=26;fall.lifetime=.8
+			fall.direction=Vector3(1,0,0);fall.spread=6.0;fall.gravity=Vector3.ZERO;fall.initial_velocity_min=3.6;fall.initial_velocity_max=4.6
+		"fog":
+			fall.queue_free()
+			var anim=animator(sky)
+			for i in range(3):
+				var band=Visuals.box(sky,Vector3(-.3+i*.3,-2.2-i*.4,i*.2),Vector3(2.2,.14,1.2),Color(.93,.94,.92,.5));band.material_override=Visuals.material(Color(.93,.94,.92,.5),true)
+				anim.add(band,"position:x",[-.3+i*.3,.1+i*.3,.45+i*.3,.1+i*.3])
+	if storm:
+		# Lightning: a bright flash and a zigzag bolt now and then.
+		var bolt=Node3D.new();bolt.name="Bolt";sky.add_child(bolt);bolt.visible=false
+		for k in range(3):
+			var piece=Visuals.box(bolt,Vector3(.1*(k%2*2-1),-.45-k*.4,0),Vector3(.07,.45,.07),Color("fff6b0"));piece.rotation.z=.45*(k%2*2-1);piece.material_override=Visuals.material(Color("fff6b0"),true)
+		var flash=OmniLight3D.new();sky.add_child(flash);flash.light_color=Color("dfe8ff");flash.omni_range=4.0;flash.light_energy=0.0
+		var tween=sky.create_tween().set_loops()
+		tween.tween_interval(1.8)
+		tween.tween_callback(func():bolt.visible=true;flash.light_energy=2.5)
+		tween.tween_interval(.09)
+		tween.tween_callback(func():bolt.visible=false;flash.light_energy=0.0)
+		tween.tween_interval(.12)
+		tween.tween_callback(func():bolt.visible=true;flash.light_energy=1.6)
+		tween.tween_interval(.06)
+		tween.tween_callback(func():bolt.visible=false;flash.light_energy=0.0)
 static func weather_for(entry:Dictionary)->String:
 	var kinds:Array=entry.get("kinds",[])
 	if "ice" in kinds:return "snow"

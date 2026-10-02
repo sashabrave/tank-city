@@ -23,7 +23,10 @@
 					"Оружие в HUD и планшете берёт одну картинку и занимает всю ячейку; название РПГ больше не превращается в «Рпг».",
 					"Новое испытание — тёмный лабиринт: видно только вокруг бойца, найди зелёный флаг до конца отсчёта. Чем больше звёзд, тем меньше обходных путей.",
 					"Лабиринт стал большим, как поле босса, а в одном из тупиков прячется сундук.",
-					"В хабе появилась доска «Развитие заставы»: по пяти направлениям видно, что уже сделано и какая цель следующая."
+					"В хабе появилась доска «Развитие заставы»: по пяти направлениям видно, что уже сделано и какая цель следующая.",
+					"Биомы идут по мирам: сначала лес и степь, потом берег и город, к генералу — город и пустыня. Новые биомы: промзона, доки, руины квартала, степи, торфяная топь.",
+					"На карте маршрута над комнатой видна её настоящая погода: дождь, снег, туман, буря или гроза с молниями.",
+					"В городе появились неразрушимые морские контейнеры, на полу — немного мусора, а край поля стал чище."
 				]
 			},
 			"en": {
@@ -46,7 +49,10 @@
 					"Weapons in the HUD and tablet use one picture and fill the whole cell; the RPG name no longer turns into «Rpg».",
 					"New challenge — the dark maze: you only see around the soldier; find the green flag before the countdown ends. More stars mean fewer detours.",
 					"The maze is now as big as a boss field, and a chest hides in one of its dead ends.",
-					"The hub has an «Outpost progress» board: five tracks show what is done and which goal is next."
+					"The hub has an «Outpost progress» board: five tracks show what is done and which goal is next.",
+					"Biomes follow the worlds: forest and steppe first, then coast and city, city and desert near the general. New biomes: industrial zone, docks, block ruins, steppes, peat bog.",
+					"The route map shows each room's real weather above it: rain, snow, fog, sandstorm or a thunderstorm with lightning.",
+					"Cities now have indestructible shipping containers, the floor has a little litter, and the field rim is cleaner."
 				]
 			}
 		},

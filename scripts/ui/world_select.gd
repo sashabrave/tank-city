@@ -55,9 +55,12 @@ func card(panel:Control,i:int,pos:Vector2)->Button:
 		var shade=ColorRect.new();art.add_child(shade);shade.size=art.size;shade.color=Color(0,0,0,.62);shade.mouse_filter=Control.MOUSE_FILTER_IGNORE
 		UiKit.icon(art,"lock",art.size*.5-Vector2(26,26),Vector2(52,52))
 	# Name and progress.
-	UiKit.label(button,Campaign.WORLDS[i+1].name if i<3 else "Бесконечный",Vector2(16,272),Vector2(CARD.x-32,32),22,UiKit.INK if unlocked else UiKit.MUTED)
+	UiKit.label(button,Campaign.WORLDS[i+1].name if i<3 else "Бесконечный",Vector2(16,268),Vector2(CARD.x-32,30),22,UiKit.INK if unlocked else UiKit.MUTED)
+	# The biomes of the world, in route order, under its name.
+	var biomes=preload("res://scripts/biome_catalog.gd").world_line(i+1) if i<3 else "все биомы вперемешку"
+	var line=UiKit.label(button,biomes,Vector2(16,296),Vector2(CARD.x-32,18),13,UiKit.MUTED);line.name="Biomes";line.clip_text=true
 	if not unlocked:
-		UiKit.label(button,"Пройди мир %d" % i if i<3 else "Пройди мир 1",Vector2(16,310),Vector2(CARD.x-32,24),15,UiKit.MUTED)
+		UiKit.label(button,"Пройди мир %d" % i if i<3 else "Пройди мир 1",Vector2(16,318),Vector2(CARD.x-32,24),15,UiKit.MUTED)
 	elif i<3:
 		var depth=clampi(int(Game.progression.counters.get("world_depth_%d" % (i+1),0)),0,Campaign.SIZES.size())
 		var pips=Control.new();button.add_child(pips);pips.position=Vector2(16,316);pips.mouse_filter=Control.MOUSE_FILTER_IGNORE
@@ -68,7 +71,7 @@ func card(panel:Control,i:int,pos:Vector2)->Button:
 		ladder_row(button,i+1)
 	else:
 		var best=int(Game.progression.counters.get("endless_cycle",0))
-		UiKit.label(button,"Лучший сектор: %d" % best if best>0 else "Сектор за сектором",Vector2(16,310),Vector2(CARD.x-32,24),15,UiKit.MUTED)
+		UiKit.label(button,"Лучший сектор: %d" % best if best>0 else "Сектор за сектором",Vector2(16,318),Vector2(CARD.x-32,24),15,UiKit.MUTED)
 		var daily=UiKit.button(button,"Забег дня",Vector2(16,CARD.y-52),Vector2(CARD.x-32,38),func():daily_selected.emit())
 		daily.add_theme_font_size_override("font_size",15);daily.tooltip_text=Texts.render("Одно поле на всех на сегодня. "+DailyRun.describe(DailyRun.best(DailyRun.today_key())))
 	if not unlocked:button.modulate=Color(1,1,1,.85)
