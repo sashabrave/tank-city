@@ -1,37 +1,96 @@
 extends Control
+## «В бой»: worlds as collectible cards. Each card shows art, a big number, the name, field progress as pips and
+## a medal once the world is cleared; locked worlds are dark with one line on how to open them. The last
+## unlocked world is preselected, so E / Enter starts right away; ←/→ switch cards. Endless keeps the daily run
+## as a small second button. Art: res://assets/ui/worlds/<id>.png when present, a drawn backdrop otherwise.
 signal selected(world:int,infinite:bool)
 signal daily_selected
 signal cancelled
+const CARD=Vector2(236,392)
+const IDS=["world_1","world_2","world_3","endless"]
+const TINTS=[Color("6d8a5a"),Color("8a7a55"),Color("6b6f82"),Color("8a5a4e")]
+var cards:Array=[]
+var current=0
+
 func _ready():
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);add_to_group("selection_scope")
 	var dim=ColorRect.new();add_child(dim);dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);dim.color=Color(0,0,0,.6)
-	var panel=UiKit.glass(self,(get_viewport_rect().size-Vector2(1060,630))*.5,Vector2(1060,630))
-	UiKit.label(panel,"Операции / в бой",Vector2(26,20),Vector2(850,45),30)
-	UiKit.button(panel,"×",Vector2(977,17),Vector2(56,46),func():cancelled.emit())
-	UiKit.button(panel,"unlock-dev",Vector2(770,22),Vector2(170,38),unlock_worlds).add_theme_font_size_override("font_size",14)
-	for i in range(4):
-		var unlocked=Campaign.unlocked(i+1) if i<3 else Campaign.infinite_unlocked()
-		var card=UiKit.panel(panel,Vector2(26+i*254,88),Vector2(244,508),Color(["d8e1cf","ccd9d5","d7cdc3","c9d1cf"][i]))
-		UiKit.label(card,"Мир %d" % (i+1) if i<3 else "Бесконечный",Vector2(15,16),Vector2(214,35),22)
-		UiKit.label(card,Campaign.WORLDS[i+1].name if i<3 else "Рубеж",Vector2(15,55),Vector2(214,40),22)
-		var badge=UiKit.panel(card,Vector2(16,108),Vector2(212,112),Color("627866") if unlocked else Color("92988e"))
-		UiKit.label(badge,"0%d" % (i+1) if i<3 else "∞",Vector2(15,15),Vector2(180,85),58,Color("ecedda"))
-		var detail=["6 полей + босс\nГенерал двора\nБагги · ПП · дробовик · винтовка","6 полей + босс\nГенерал гряды\nБТР · снайперка","6 полей + генерал\nПередышка → гигабосс\nТанк · РПГ","Секторы без конца\nСтарт под подготовку\nКаждый сектор сильнее"][i]
-		UiKit.label(card,detail,Vector2(15,240),Vector2(214,120),17).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-		if i==3:
-			# Endless card carries the daily run: one seed for everyone today, best result under the button.
-			var best=DailyRun.best(DailyRun.today_key())
-			UiKit.label(card,"Лучший сегодня" if unlocked else "🔒 Пройдите 1-й мир",Vector2(15,332),Vector2(214,24),16,UiKit.MUTED if not unlocked else UiKit.INK)
-			var note=UiKit.label(card,DailyRun.describe(best) if unlocked else "",Vector2(15,354),Vector2(214,24),13,UiKit.MUTED)
-			note.tooltip_text="Одно поле на всех на сегодня: те же враги, генералы и карточки. Сила врагов одинакова для всех."
-			var daily=UiKit.button(card,"Забег дня" if unlocked else "🔒 Закрыто",Vector2(15,386),Vector2(214,46),func():daily_selected.emit(),false)
-			daily.disabled=not unlocked;UiKit.muted_locked_button(daily)
-		else:UiKit.label(card,"Открыто" if unlocked else "🔒 Пройдите %d-й мир" % i,Vector2(15,374),Vector2(214,45),16,UiKit.MUTED)
-		var button=UiKit.button(card,"В бой" if unlocked else "🔒 Закрыто",Vector2(15,440),Vector2(214,48),func():selected.emit(i+1 if i<3 else 1,i==3),unlocked and i==0)
-		button.disabled=not unlocked;UiKit.muted_locked_button(button)
+	var size_total=Vector2(CARD.x*4+18*3+52,CARD.y+150)
+	var panel=UiKit.glass(self,(get_viewport_rect().size-size_total)*.5,size_total);panel.name="WorldPanel"
+	UiKit.label(panel,"Куда выдвигаемся",Vector2(26,20),Vector2(600,42),28)
+	UiKit.button(panel,"×",Vector2(size_total.x-72,17),Vector2(56,46),func():cancelled.emit())
+	if OS.is_debug_build():UiKit.button(panel,"unlock-dev",Vector2(size_total.x-250,22),Vector2(160,38),unlock_worlds).add_theme_font_size_override("font_size",13)
+	cards.clear()
+	for i in range(4):cards.append(card(panel,i,Vector2(26+i*(CARD.x+18),84)))
+	# The newest open world is chosen by default.
+	current=0
+	for i in range(3):
+		if Campaign.unlocked(i+1):current=i
+	focus(current)
+	UiKit.label(panel,"[E] в бой   ←/→ выбор",Vector2(26,size_total.y-44),Vector2(500,26),14,UiKit.MUTED)
 
-func _unhandled_input(event):
-	if event.is_action_pressed("pause"):get_viewport().set_input_as_handled();cancelled.emit()
+func open(i:int)->bool:return Campaign.unlocked(i+1) if i<3 else Campaign.infinite_unlocked()
+
+func card(panel:Control,i:int,pos:Vector2)->Button:
+	var unlocked=open(i)
+	var button=Button.new();button.name="World_"+IDS[i];panel.add_child(button);button.position=pos;button.size=CARD;button.focus_mode=Control.FOCUS_ALL
+	button.add_theme_stylebox_override("normal",UiKit.style(Color("1f2822"),14,Color(1,1,1,.08)))
+	button.add_theme_stylebox_override("hover",UiKit.style(Color("243029"),14,Color(1,1,1,.2)))
+	button.add_theme_stylebox_override("focus",UiKit.style(Color(0,0,0,0),14,UiKit.ORANGE))
+	button.add_theme_stylebox_override("pressed",UiKit.style(Color("2b382f"),14,UiKit.ORANGE))
+	button.pressed.connect(func():focus(i);launch())
+	button.mouse_entered.connect(func():focus(i))
+	# Art window.
+	var art=Control.new();button.add_child(art);art.position=Vector2(10,10);art.size=Vector2(CARD.x-20,250);art.mouse_filter=Control.MOUSE_FILTER_IGNORE;art.clip_contents=true
+	var path="res://assets/ui/worlds/%s.png" % IDS[i]
+	if ResourceLoader.exists(path):
+		var picture=TextureRect.new();art.add_child(picture);picture.texture=load(path);picture.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;picture.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_COVERED;picture.size=art.size;picture.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	else:
+		var backdrop=preload("res://scripts/ui/world_backdrop.gd").new();backdrop.tint=TINTS[i];backdrop.kind=i;art.add_child(backdrop);backdrop.size=art.size;backdrop.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	var number=UiKit.label(art,"0%d" % (i+1) if i<3 else "∞",Vector2(14,4),Vector2(120,80),62,Color(1,1,1,.92));number.add_theme_constant_override("outline_size",8);number.add_theme_color_override("font_outline_color",Color(0,0,0,.35))
+	if not unlocked:
+		var shade=ColorRect.new();art.add_child(shade);shade.size=art.size;shade.color=Color(0,0,0,.62);shade.mouse_filter=Control.MOUSE_FILTER_IGNORE
+		UiKit.icon(art,"lock",art.size*.5-Vector2(26,26),Vector2(52,52))
+	# Name and progress.
+	UiKit.label(button,Campaign.WORLDS[i+1].name if i<3 else "Бесконечный",Vector2(16,272),Vector2(CARD.x-32,32),22,UiKit.INK if unlocked else UiKit.MUTED)
+	if not unlocked:
+		UiKit.label(button,"Пройди мир %d" % i if i<3 else "Пройди мир 1",Vector2(16,310),Vector2(CARD.x-32,24),15,UiKit.MUTED)
+	elif i<3:
+		var depth=clampi(int(Game.progression.counters.get("world_depth_%d" % (i+1),0)),0,Campaign.SIZES.size())
+		var pips=Control.new();button.add_child(pips);pips.position=Vector2(16,316);pips.mouse_filter=Control.MOUSE_FILTER_IGNORE
+		for k in range(Campaign.SIZES.size()):
+			var pip=ColorRect.new();pips.add_child(pip);pip.position=Vector2(k*26,0);pip.size=Vector2(20,6);pip.color=UiKit.ORANGE if k<depth else Color(1,1,1,.14)
+		if i+1 in Game.progression.cleared_worlds:
+			var medal=UiKit.icon(button,"legendary",Vector2(CARD.x-56,270),Vector2(40,40));medal.tooltip_text=Texts.render("Мир пройден")
+	else:
+		var best=int(Game.progression.counters.get("endless_cycle",0))
+		UiKit.label(button,"Лучший сектор: %d" % best if best>0 else "Сектор за сектором",Vector2(16,310),Vector2(CARD.x-32,24),15,UiKit.MUTED)
+		var daily=UiKit.button(button,"Забег дня",Vector2(16,CARD.y-52),Vector2(CARD.x-32,38),func():daily_selected.emit())
+		daily.add_theme_font_size_override("font_size",15);daily.tooltip_text=Texts.render("Одно поле на всех на сегодня. "+DailyRun.describe(DailyRun.best(DailyRun.today_key())))
+	if not unlocked:button.modulate=Color(1,1,1,.85)
+	return button
+
+func focus(i:int):
+	current=clampi(i,0,cards.size()-1)
+	for k in cards.size():
+		var c:Button=cards[k];var chosen=k==current
+		c.pivot_offset=CARD*.5
+		create_tween().tween_property(c,"scale",Vector2.ONE*(1.04 if chosen else 1.0),.12)
+	if is_instance_valid(cards[current]):cards[current].grab_focus()
+
+func launch():
+	if not open(current):Game.sound("route_cancel",self);return
+	Game.sound("route_enter",self)
+	if current<3:selected.emit(current+1,false)
+	else:selected.emit(1,true)
+
+## Modal: keys are taken before the hub sees them (E would otherwise also reach the hub interaction).
+func _input(event):
+	if event.is_action_pressed("pause"):get_viewport().set_input_as_handled();cancelled.emit();return
+	if event.is_action_pressed("interact") or (event is InputEventKey and event.pressed and not event.echo and event.keycode in [KEY_ENTER,KEY_KP_ENTER]):
+		get_viewport().set_input_as_handled();launch()
+	elif event.is_action_pressed("west"):get_viewport().set_input_as_handled();focus(current-1)
+	elif event.is_action_pressed("east"):get_viewport().set_input_as_handled();focus(current+1)
 
 func unlock_worlds():
 	Game.progression.cleared_worlds=[1,2,3];Game.save_progress()
