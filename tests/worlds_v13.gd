@@ -4,7 +4,7 @@ func check(value:bool,label:String):
 	if not value:push_error("FAILED: "+label);get_tree().quit(1)
 	assert(value,label)
 func run():
-	Game.save_enabled=false;Game.sound_enabled=false;Game.reset_upgrades()
+	Game.save_enabled=false;Settings.persistence_enabled=false;Game.sound_enabled=false;Game.reset_upgrades()
 	for world in range(1,4):
 		Campaign.configure(world)
 		for seed_value in range(300):
@@ -20,7 +20,16 @@ func run():
 			for stage in Campaign.SERVICES:
 				var services=Campaign.service_options(seed_value,stage)
 				check(services.size()==2 and services[0]!=services[1],"two distinct service choices")
-				for n in plan[stage-1]:check(n.next.size()==plan[stage].size(),"service joins every lane")
+				if RoutePlan.service_roads():
+					# World 1 rows have their own roads: every lane before and after reaches some service stop.
+					for row in [plan[stage-1],plan[stage]]:
+						var covered={}
+						for option in range(services.size()):
+							for lane in RoutePlan.lane_span(option,services.size(),row.size()):covered[lane]=true
+						check(covered.size()==row.size(),"service roads cover every lane")
+				elif plan[stage].size()==plan[stage-1].size():
+					# Worlds 2–3: the rest camp sits on the roads; every lane keeps its own road through it.
+					for n in plan[stage-1]:check("%d:%d" % [stage,n.lane] in n.next,"service keeps every lane's road")
 	print("PASS graphs: 900 maps")
 	var p=Game.progression
 	check(not Campaign.unlocked(2) and not Campaign.infinite_unlocked(),"initial world locks")
@@ -44,22 +53,28 @@ func run():
 		Campaign.configure(world)
 		var arena=load("res://scenes/arena.tscn").instantiate();add_child(arena);arena.auto_pause_enabled=false;arena.set_physics_process(false)
 		arena.upgrade_offers.clear();arena.reward.prepare_upgrade_offers();check(not arena.upgrade_offers.any(func(o):return str(o.id).begins_with("hq_")),"no HQ battle cards")
+		# HQ stops offer the techs the profile has discovered and bought; give it the three starting ones.
+		Game.hq_unlocks=HQCatalog.DEFAULT_UNLOCKS.duplicate();Game.purchased_hq=HQCatalog.DEFAULT_UNLOCKS.duplicate()
 		check(arena.reward.service_offers("headquarters").size()==3,"HQ service has three start options")
 		var service=load("res://scripts/service_room.gd").new();service.arena=arena;service.branch="headquarters";add_child(service);service.claim(0);check(service.claimed,"HQ service claim");service.queue_free()
 		var tiers=load("res://scripts/progression/recipe_tiers.gd")
-		check((tiers.weight("sniper",12)>0)==(world>=2),"sniper world gate")
-		check((tiers.weight("rpg",16)>0)==(world==3),"RPG world gate")
+		# World 1 holds the content of all three worlds; locked worlds 2–3 keep their own gating.
+		check(tiers.weight("sniper",12)>0,"sniper world gate")
+		check((tiers.weight("rpg",16)>0)==(world!=2),"RPG world gate")
 		arena.begin_room(Campaign.SIZES.size()-1);check(arena.grid_size==Campaign.SIZES.back(),"boss board size")
-		arena.phase="combat";arena.boss_defeated=true;arena.room.pickups.clear();arena.flow.finish_wave()
+		# The boss waits in the spawn queue from the room start; treat it as already beaten.
+		arena.phase="combat";arena.spawn_queue.clear();arena.boss_defeated=true;arena.room.pickups.clear();arena.flow.finish_wave()
 		check(arena.phase=="result" and world in Game.progression.cleared_worlds,"world victory commits unlock")
 		arena.queue_free();await get_tree().process_frame
 	print("PASS arenas: all world finals / reward pools")
 	Campaign.configure(1,true);var first=Campaign.hp_scale(0);Campaign.cycle=4;check(Campaign.hp_scale(0)>first,"endless grows")
-	var save_path=Game.save_path;Game.save_path="/tmp/worlds_v13_profile.json";Game.save_enabled=true;Game.save_progress();Game.progression.cleared_worlds=[];Game.load_progress();Game.save_enabled=false;Game.save_path=save_path
+	var folder="/tmp/war-cats-worlds-v13-%d-%d" % [Time.get_ticks_usec(),randi()];DirAccess.make_dir_recursive_absolute(folder)
+	var save_path=Game.save_path;Game.save_path=folder+"/profile.json";Game.save_enabled=true;Game.save_progress();Game.progression.cleared_worlds=[];Game.load_progress();Game.save_enabled=false;Game.save_path=save_path
 	check(Game.progression.cleared_worlds==[1,2,3],"disk save preserves world unlocks")
 	var main=load("res://scripts/main.gd").new();add_child(main);await get_tree().process_frame;await get_tree().process_frame
 	Campaign.configure(1,true);main.start_run();main.enter_room(0);var carried=main.run_arena;carried.damage_bonus=2.5
-	main.show_map(7);check(Campaign.cycle==1 and main.current.available==0 and main.run_arena==carried and carried.damage_bonus==2.5,"endless next sector preserves build")
+	# Endless has no map: the next sector starts straight in its first room.
+	main.show_map(Campaign.SIZES.size());check(Campaign.cycle==1 and main.current==carried and carried.room_index==0 and main.run_arena==carried and carried.damage_bonus==2.5,"endless next sector preserves build")
 	main.show_hub();await get_tree().process_frame;await get_tree().process_frame
 	check(not is_instance_valid(main.run_arena),"safe hub return from map")
 	main.queue_free();await get_tree().process_frame
