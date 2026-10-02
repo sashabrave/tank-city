@@ -12,7 +12,8 @@ func run():
 	assert((Time.get_ticks_usec()-start)<20000)
 	arena.process_mode=Node.PROCESS_MODE_DISABLED
 	for a in arena.actors:a.queue_free()
-	arena.actors.clear();arena.walls.clear();arena.trenches.clear();arena.wrecks.clear();arena.generators.clear()
+	# Isolated fixture: the run seed is random, so its water and vegetation could block the test column.
+	arena.actors.clear();arena.walls.clear();arena.trenches.clear();arena.wrecks.clear();arena.generators.clear();arena.terrain.patches.clear()
 	var cell=Vector2i(5,5);var center=arena.world_pos(cell)
 	var pit=Node3D.new();arena.add_child(pit);arena.trenches[cell]=pit
 	var first=arena.spawn_actor("soldier",cell+Vector2i.LEFT,false)

@@ -4,7 +4,8 @@ func run():
 	Game.save_enabled=false;Game.sound_enabled=false;Settings.persistence_enabled=false
 	Game.apply_profile(Game.fresh_profile.duplicate(true));Settings.values.fullscreen=false;Settings.apply()
 	var arena=load("res://scenes/arena.tscn").instantiate();add_child(arena);arena.auto_pause_enabled=false;arena.set_physics_process(false)
-	arena.presentation.text_tween.kill();arena.presentation.heading.hide();arena.presentation.caption.hide();arena.phase="combat"
+	if arena.presentation.text_tween:arena.presentation.text_tween.kill()
+	arena.presentation.heading.hide();arena.presentation.caption.hide();arena.phase="combat"
 	Game.progression.tracked=["first_alloy","institute_character"];Game.progression.accepted=Game.progression.tracked.duplicate()
 	Game.progression.tracker_collapsed=false
 	arena.wave_roster.clear()
