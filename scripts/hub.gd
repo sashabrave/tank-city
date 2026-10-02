@@ -159,7 +159,7 @@ func build_ui():
 func build_dev_menu():
 	var toggle=UiKit.button(root,"Инструменты",Vector2(30,191),Vector2(345,50),func():toggle_dev_menu());toggle.name="ToolsButton"
 	toggle.icon=UiKit.interface_icon("debug");toggle.expand_icon=true;toggle.add_theme_constant_override("icon_max_width",20);toggle.add_theme_font_size_override("font_size",18)
-	var rows=[["DebugAlloyButton","+1000 сплава"],["RecipeShopButton","Магазин чертежей"],["SandboxButton","Песочница"],["DevMapButton","Дев-режим карты: выкл"]]
+	var rows=[["DebugAlloyButton","+1000 сплава"],["RecipeShopButton","Магазин чертежей"],["SandboxButton","Песочница"],["DevMapButton","Дев-режим карты: выкл"],["TasksButton","Задачи (F9) · новая — F8"]]
 	const PAD=12.0;const ROW=46.0;const GAP=8.0
 	var menu=UiKit.glass(root,Vector2(30,249),Vector2(345,PAD*2+rows.size()*ROW+(rows.size()-1)*GAP));menu.name="DevMenu";menu.hide();menu.z_index=20
 	var y=PAD
@@ -184,6 +184,7 @@ func build_dev_menu():
 	menu.get_node("DebugAlloyButton").pressed.connect(func():Game.earn(1000);refresh())
 	menu.get_node("RecipeShopButton").pressed.connect(func():toggle_dev_menu(false);show_recipe_shop())
 	menu.get_node("SandboxButton").pressed.connect(func():toggle_dev_menu(false);sandbox_requested.emit())
+	menu.get_node("TasksButton").pressed.connect(func():toggle_dev_menu(false);preload("res://scripts/ui/task_board_view.gd").open(get_tree(),"board"))
 	var dev_map:Button=menu.get_node("DevMapButton");Texts.set_text(dev_map,"Дев-режим карты: "+("вкл" if Game.dev_map else "выкл"))
 	dev_map.pressed.connect(func():Game.dev_map=not Game.dev_map;Texts.set_text(dev_map,"Дев-режим карты: "+("вкл" if Game.dev_map else "выкл")))
 func toggle_dev_menu(open=null):
