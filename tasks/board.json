@@ -397,7 +397,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-032.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "статуи плохо читаются на карте, сделай из них в блендере статуи собак генералов",
 			"type": "polish",
 			"version": "0.7.1-pre"
