@@ -244,6 +244,11 @@ static func field(arena):
 	for i in range(mini(2,candidates.size())):
 		var index=rng.randi_range(0,candidates.size()-1);var cell=candidates.pop_at(index)
 		floodlight(arena.walls[cell].node,Vector3(0,1.02,0),rng.randf()*TAU)
+	# A few fixtures stutter now and then (T-016): about a quarter of the field lamps, never all at once.
+	var flick=RandomNumberGenerator.new();flick.seed=hash([Game.visual_run_seed,arena.room_index,"flicker"])
+	for light in arena.find_children("*","Light3D",true,false):
+		var fixture=str(light.get_path()).contains("MilitaryLightStand") or str(light.get_path()).contains("Floodlight")
+		if fixture and flick.randf()<.25:preload("res://scripts/light_flicker.gd").attach(light,flick.randi())
 	# Burning drums just outside the field edge: warm story light on the flanks, never on playable cells.
 	for i in range(rng.randi_range(1,2)):
 		var side=-1 if (i+rng.randi_range(0,1))%2==0 else 1
