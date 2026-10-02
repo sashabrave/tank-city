@@ -19,6 +19,8 @@ func run():
 	Texts.document=original;Texts.rebuild();Texts.update_widget(label);assert(label.text=="Напор 55%")
 	var bad=original.duplicate(true);bad.terms.pressure.name="";assert(Texts.validate(bad)!="")
 	label.queue_free()
+	# Start from a clean tablet memory: a tab remembered by an earlier run must not replace "guide".
+	var memory=preload("res://scripts/ui/tablet_memory.gd");memory.loaded=true;memory.state={}
 	var view=load("res://scripts/ui/field_tablet.gd").new();view.tab="guide";view.can_restart=true;add_child(view)
 	await get_tree().process_frame
 	view.guide_query="напор";view.render_guide();assert(view.guide_box.get_child_count()>0)
