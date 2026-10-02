@@ -104,17 +104,22 @@ func apply_display():
 	if not full and applied_display.get("resolution")!=res:
 		applied_display.resolution=res
 		if res!="auto":
-			var parts=res.split("x");var size=Vector2i(int(parts[0]),int(parts[1]))
+			# Sizes are in points, as the system shows them; on a 2× (Retina) screen the window gets twice
+			# the pixels, otherwise «1920 × 1080» opened a half-size window (T-096).
+			var parts=res.split("x");var size=Vector2i(Vector2(int(parts[0]),int(parts[1]))*pixel_ratio())
 			DisplayServer.window_set_size(size)
 			var screen=DisplayServer.screen_get_usable_rect(DisplayServer.window_get_current_screen())
 			DisplayServer.window_set_position(screen.position+(screen.size-size)/2)
 	if applied_display.get("vsync")!=bool(values.vsync):
 		applied_display.vsync=bool(values.vsync)
 		DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_ENABLED if values.vsync else DisplayServer.VSYNC_DISABLED)
-## Window sizes that fit this display, largest first, as "W x H" keys ("1920x1080").
+## Pixels per point of the current screen (2 on Retina).
+func pixel_ratio()->float:
+	return maxf(1.0,DisplayServer.screen_get_scale(DisplayServer.window_get_current_screen())) if DisplayServer.get_name()!="headless" else 1.0
+## Window sizes in points that fit this display, largest first, as "W x H" keys ("1920x1080").
 func resolutions()->Array:
 	if DisplayServer.get_name()=="headless":return ["1920x1080","1600x900","1280x720"]
-	var screen=DisplayServer.screen_get_size(DisplayServer.window_get_current_screen())
+	var screen=Vector2i(Vector2(DisplayServer.screen_get_size(DisplayServer.window_get_current_screen()))/pixel_ratio())
 	var result=[]
 	for size in [screen,Vector2i(3840,2160),Vector2i(3456,2234),Vector2i(3024,1964),Vector2i(2880,1800),Vector2i(2560,1600),Vector2i(2560,1440),Vector2i(1920,1200),Vector2i(1920,1080),Vector2i(1680,1050),Vector2i(1600,900),Vector2i(1440,900),Vector2i(1280,800),Vector2i(1280,720)]:
 		var key="%dx%d" % [size.x,size.y]
@@ -122,9 +127,16 @@ func resolutions()->Array:
 	return result
 ## Value as the settings page should show it: a chosen-but-not-applied screen option wins.
 func shown(key:String):return pending.get(key,values.get(key))
+var before_apply:={}
 func apply_pending():
+	before_apply={}
+	for key in pending:before_apply[key]=values.get(key)
 	for key in pending:values[key]=pending[key]
 	pending.clear();apply()
+## «Оставить?» prompt timed out or was declined: the screen goes back to what worked.
+func revert_display():
+	for key in before_apply:values[key]=before_apply[key]
+	before_apply={};apply()
 func save_all():
 	apply_pending();save()
 func save():

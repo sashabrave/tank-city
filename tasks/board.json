@@ -1215,7 +1215,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-096.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "настройки графики не применяются, как их делать?",
 			"type": "bug",
 			"version": "0.7.2-pre"

@@ -89,7 +89,8 @@
 					"Иконки: сплав снова золотые слитки, жетоны — яркие серебряные монеты с лапой (на поле, в счётчике и в полёте); способности без плашек и рамок — только сама иконка",
 					"Уровень класса прибавляет +0,5 здоровья (было почти незаметно); в карточке класса текст больше не наезжает на кнопки",
 					"Иконка способности по центру кнопки; вкладки настроек помещаются и при свёрнутом меню планшета; задание «Первый трофей» засчитывает сплав, донесённый до штаба даже после выбывания; над Казармой мигает зелёная точка, когда есть что улучшить; у игры своя иконка — кот на танке",
-					"Сплав выпадает золотыми слитками трёх размеров (1, 5 и 10) в случайном наборе; в счётчик летит и при поражении высыпается одиночный слиток, в самом счётчике — стопка"
+					"Сплав выпадает золотыми слитками трёх размеров (1, 5 и 10) в случайном наборе; в счётчик летит и при поражении высыпается одиночный слиток, в самом счётчике — стопка",
+					"Настройки экрана: разрешения окна в привычных точках (на Retina окно больше не открывается вдвое меньше); после «Применить» — «Оставить эти настройки?» с откатом через 15 секунд"
 				]
 			},
 			"en": {
@@ -178,7 +179,8 @@
 					"Icons: alloy is gold bars again, tokens are bright silver paw coins (on the field, in the counter and in flight); abilities without plates or rims — just the icon",
 					"Class level adds +0.5 health (it was barely noticeable); the class card text no longer overlaps the buttons",
 					"The ability icon is centred in its button; settings tabs fit with the tablet menu collapsed; «First trophy» counts alloy that reached the HQ even after a defeat; a green dot blinks over the Barracks when there is something to upgrade; the game has its own app icon — a cat on a tank",
-					"Alloy drops as gold bars of three sizes (1, 5 and 10) in a random mix; a single bar flies to the counter and spills out on defeat, the counter keeps the stack"
+					"Alloy drops as gold bars of three sizes (1, 5 and 10) in a random mix; a single bar flies to the counter and spills out on defeat, the counter keeps the stack",
+					"Display settings: window sizes in usual points (on Retina the window no longer opens at half size); after Apply — «Keep these settings?» with a 15-second revert"
 				]
 			}
 		},

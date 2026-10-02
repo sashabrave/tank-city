@@ -288,15 +288,42 @@ func settings():
 	body.custom_minimum_size.y=maxf(350,y)
 	var waiting=not Settings.pending.is_empty()
 	UiKit.label(content,"Есть неприменённые настройки экрана." if waiting else "Экран — кнопками «Применить» и «Сохранить»; остальное меняется сразу.",Vector2(22,498),Vector2(731,28),14,UiKit.ORANGE if waiting else UiKit.MUTED)
-	var apply_button=UiKit.button(content,"Применить",Vector2(453,535),Vector2(150,36),func():Settings.apply_pending();view.refresh())
+	var apply_button=UiKit.button(content,"Применить",Vector2(453,535),Vector2(150,36),func():Settings.apply_pending();view.refresh();keep_prompt())
 	apply_button.disabled=not waiting;apply_button.add_theme_font_size_override("font_size",15)
-	UiKit.button(content,"Сохранить",Vector2(613,535),Vector2(150,36),func():Settings.save_all();view.refresh(),true).add_theme_font_size_override("font_size",15)
+	UiKit.button(content,"Сохранить",Vector2(613,535),Vector2(150,36),func():
+		var had=not Settings.pending.is_empty();Settings.save_all();view.refresh()
+		if had:keep_prompt(),true).add_theme_font_size_override("font_size",15)
 	UiKit.button(content,"Сбросить вкладку",Vector2(22,535),Vector2(220,36),func():
 		if view.settings_tab=="Управление":Settings.keys=Settings.DEFAULT_KEYS.duplicate()
 		else:
 			var group={"Графика":["graphics_preset","atmosphere","tilt_shift","ui_theme","shaders","shader_style","sun_day","sun_night","weather","soft_shadows","ambient_occlusion","glow","haze","rim_light","shiny_metal","depth_light","cinematic_light","world_lighting","light_budget"],"Экран":["fullscreen","resolution","retina","vsync","render_scale","quality","fps"],"Звук":["master","music","effects"],"Интерфейс":["input_scheme","biome_info","language","ui_motion","show_fps","ui_glass","ui_accent"]}[view.settings_tab]
 			for key in group:Settings.values[key]=Settings.DEFAULT_VALUES[key];Settings.pending.erase(key)
 		Settings.apply();Settings.save();view.waiting_key="";view.refresh()).add_theme_font_size_override("font_size",15)
+## Industry-standard safety net for screen changes: «Оставить эти настройки?» with a 15 s countdown; no answer
+## puts the old mode, size and quality back (a wrong mode can leave the screen unreadable).
+func keep_prompt():
+	if Settings.before_apply.is_empty():return
+	var layer=view.get_tree().root
+	var shade=ColorRect.new();shade.name="KeepDisplayPrompt";shade.color=Color(0,0,0,.45);shade.mouse_filter=Control.MOUSE_FILTER_STOP
+	var canvas=CanvasLayer.new();canvas.layer=125;layer.add_child(canvas);canvas.add_child(shade);shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var box=Panel.new();shade.add_child(box);box.size=Vector2(460,170);box.add_theme_stylebox_override("panel",UiKit.style(Color("242d27"),16,Color("4a5a4f")))
+	box.set_anchors_preset(Control.PRESET_CENTER);box.position=(shade.get_viewport_rect().size-box.size)*.5
+	UiKit.label(box,"Оставить эти настройки экрана?",Vector2(24,20),Vector2(412,30),20)
+	var timer_label=UiKit.label(box,"",Vector2(24,56),Vector2(412,26),15,UiKit.MUTED)
+	var left=[15.0]
+	var close=func(keep:bool):
+		if not keep:Settings.revert_display()
+		else:Settings.before_apply={};Settings.save()
+		if is_instance_valid(canvas):canvas.queue_free()
+		if is_instance_valid(view):view.refresh()
+	UiKit.button(box,"Вернуть",Vector2(24,104),Vector2(196,44),func():close.call(false))
+	var keep_button=UiKit.button(box,"Оставить",Vector2(240,104),Vector2(196,44),func():close.call(true),true);keep_button.grab_focus()
+	var tick=func():
+		left[0]-=1.0
+		if left[0]<=0:close.call(false);return
+		if is_instance_valid(timer_label):Texts.set_text(timer_label,Texts.render("Вернутся прежние через %d с") % int(left[0]))
+	Texts.set_text(timer_label,Texts.render("Вернутся прежние через %d с") % 15)
+	var t=Timer.new();t.wait_time=1.0;t.autostart=true;canvas.add_child(t);t.timeout.connect(tick)
 func setting_choice(body,entry,y):
 	UiKit.label(body,entry[1],Vector2(0,y),Vector2(380,34),18)
 	var option=OptionButton.new();body.add_child(option);option.position=Vector2(395,y);option.size=Vector2(305,36);option.add_theme_font_size_override("font_size",17)
