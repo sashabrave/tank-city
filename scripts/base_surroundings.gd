@@ -30,33 +30,83 @@ static func hub(parent:Node3D,ground:=Color("7c8176")):
 		preload("res://scripts/world_lighting.gd").floodlight(decor,Vector3(x,1.15,-2.85),PI)
 	for p in [Vector3(-4.7,0,3.8),Vector3(6.8,0,3.8)]:lamp(decor,p)
 	# Trees now come from the biome vegetation tiles (hub_outskirts.gd).
+## Route map edges: the ground runs past both screen edges; a few big pyramidal mountains stand partly off-screen,
+## and ruined apartment blocks (three panel khrushchyovka types, two brick towers) sit between them and the road.
+## Layout is random per run (wave seed), visual only.
 static func route(parent:Node3D,length:float):
 	var decor=Node3D.new();decor.name="RouteSurroundings";parent.add_child(decor)
 	Visuals.box(decor,Vector3(0,-.47,8),Vector3(9,.025,6),Color("898c80"))
-	# Edges: stepped mountains with strata and light tops, a derelict industrial belt in front of them.
-	var rng=RandomNumberGenerator.new();rng.seed=40417
+	var rng=RandomNumberGenerator.new();rng.seed=hash([int(parent.get("wave_seed")) if parent.get("wave_seed")!=null else 0,"route_edges"])
 	for side in [-1,1]:
-		for index in range(int(length/6)+3):
-			var z=10-index*6.0+rng.randf_range(-1.5,1.5)
-			mountain(decor,Vector3(side*rng.randf_range(16.0,20.5),-.5,z),rng)
-			if index%2==1:industry(decor,Vector3(side*rng.randf_range(12.2,13.4),-.45,z+rng.randf_range(-1.2,1.2)),rng)
+		# Mountains: few and big, every 12–18 units, centres beyond the visible ground so they are cut by the edge.
+		var z=12.0-rng.randf_range(0,8)
+		while z>-length-14:
+			mountain(decor,Vector3(side*rng.randf_range(24.0,31.0),-.5,z),rng)
+			z-=rng.randf_range(12.0,18.0)
+		# Ruins: one block every 7–11 units on the inner belt.
+		z=8.0-rng.randf_range(0,5)
+		while z>-length-6:
+			ruin(decor,Vector3(side*rng.randf_range(12.0,16.5),-.45,z),rng,side)
+			z-=rng.randf_range(7.0,11.0)
+		if rng.randf()<.6:industry(decor,Vector3(side*rng.randf_range(11.5,13.0),-.45,-rng.randf_range(0,length)),rng)
+## A large pyramid with 4–6 faces, a smaller shoulder peak, a dark stratum band and a snow cap.
 static func mountain(parent:Node3D,base:Vector3,rng:RandomNumberGenerator):
 	var mini=preload("res://scripts/route_miniatures.gd")
-	var rock=Color("8f9384").darkened(rng.randf_range(0,.12));var height=rng.randf_range(2.6,5.0);var radius=rng.randf_range(2.2,3.2)
-	var sides=rng.randi_range(5,7);var yaw=rng.randf()*TAU
-	var tiers=[[1.0,.42],[.7,.34],[.42,.24]]
-	var y=base.y;var offset=Vector3.ZERO
-	for t in range(tiers.size()):
-		var h=height*tiers[t][1];var r=radius*tiers[t][0]
-		var piece=mini.cylinder(parent,base+offset+Vector3(0,y-base.y,0),r,h,rock.lightened(t*.05),sides,r*.78)
-		piece.rotation.y=yaw+t*.4;piece.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		y+=h*.92;offset+=Vector3(rng.randf_range(-.3,.3),0,rng.randf_range(-.3,.3))
-	var band=mini.cylinder(parent,base+Vector3(0,height*.3,0),radius*.86,.12,rock.darkened(.22),sides,radius*.84);band.rotation.y=yaw;band.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	if height>3.6:
-		var cap=mini.cylinder(parent,base+offset+Vector3(0,y-base.y-.05,0),radius*.34,.35,Color("e6e4dc"),sides,.05);cap.rotation.y=yaw;cap.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var rock=Color("8f9384").darkened(rng.randf_range(0,.14));var height=rng.randf_range(8.0,13.0);var radius=rng.randf_range(7.0,10.5)
+	var sides=rng.randi_range(4,6);var yaw=rng.randf()*TAU
+	var peak=mini.cylinder(parent,base,radius,height,rock,sides,.08);peak.rotation.y=yaw;peak.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var shoulder_at=base+Vector3(rng.randf_range(-.6,.6)*radius,0,rng.randf_range(-.8,.8)*radius)
+	var shoulder=mini.cylinder(parent,shoulder_at,radius*.62,height*rng.randf_range(.45,.65),rock.darkened(.08),sides,.06);shoulder.rotation.y=yaw+.5;shoulder.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var band=mini.cylinder(parent,base+Vector3(0,height*.28,0),radius*.73,.18,rock.darkened(.25),sides,radius*.71);band.rotation.y=yaw;band.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var cap_h=height*.22
+	var cap=mini.cylinder(parent,base+Vector3(0,height-cap_h-.02,0),radius*cap_h/height+.05,cap_h+.04,Color("ecebe4"),sides,.06);cap.rotation.y=yaw;cap.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+static var facade_cache:={}
+static func facade(color:Color,brick:bool,burnt:float,seed_value:float)->ShaderMaterial:
+	var key="%s|%s|%.2f|%d" % [color.to_html(),brick,burnt,int(seed_value)%7]
+	if facade_cache.has(key):return facade_cache[key]
+	var material=ShaderMaterial.new();material.shader=preload("res://shaders/world/ruin_facade.gdshader")
+	material.set_shader_parameter("wall",color);material.set_shader_parameter("brick",1.0 if brick else 0.0);material.set_shader_parameter("burnt",burnt);material.set_shader_parameter("seed",float(int(seed_value)%7))
+	material.set_shader_parameter("window_grid",Vector2(.34,.3) if brick else Vector2(.42,.34))
+	facade_cache[key]=material;return material
+static func block(parent:Node3D,pos:Vector3,size:Vector3,material:Material)->MeshInstance3D:
+	var node=MeshInstance3D.new();var mesh=BoxMesh.new();mesh.size=Vector3.ONE;node.mesh=mesh;node.material_override=material
+	parent.add_child(node);node.position=pos+Vector3.UP*size.y*.5;node.scale=size;node.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	return node
+## Ruined blocks: 0–2 five-storey panel khrushchyovka (whole with a burnt corner, half collapsed in steps,
+## bare frame end), 3–4 brick towers (broken stepped top, side gouge). Rubble at the foot.
+static func ruin(parent:Node3D,pos:Vector3,rng:RandomNumberGenerator,side:float):
+	var node=Node3D.new();parent.add_child(node);node.position=pos;node.rotation.y=PI*.5+rng.randf_range(-.25,.25)+(PI if side>0 else 0.0)
+	var panel=Color("a7a79c").darkened(rng.randf_range(0,.12));var brick=Color("9a6a52").darkened(rng.randf_range(0,.15))
+	var rubble=Color("85837a");var kind=rng.randi_range(0,4);var seed_value=rng.randi()
+	match kind:
+		0:
+			# Whole block with a burnt corner that lost its top floors.
+			block(node,Vector3(-.5,0,0),Vector3(3.6,1.9,1.3),facade(panel,false,.25,seed_value))
+			block(node,Vector3(1.8,0,0),Vector3(1.0,1.35,1.3),facade(panel.darkened(.2),false,.9,seed_value))
+		1:
+			# Half collapsed: the left part keeps five floors, the right steps down.
+			block(node,Vector3(-1.4,0,0),Vector3(1.8,1.9,1.3),facade(panel,false,.25,seed_value))
+			block(node,Vector3(.3,0,0),Vector3(1.6,1.15,1.3),facade(panel,false,.5,seed_value))
+			block(node,Vector3(1.75,0,0),Vector3(1.3,.5,1.3),facade(panel,false,.7,seed_value))
+			block(node,Vector3(2.2,0,.55),Vector3(1.6,.22,.9),StandardMaterial3D.new()).material_override=Visuals.material(rubble)
+		2:
+			# Burnt shell: the end section is a bare frame of columns and slabs.
+			block(node,Vector3(-.9,0,0),Vector3(2.8,1.9,1.3),facade(panel.darkened(.15),false,.85,seed_value))
+			for x in [.8,1.35,1.9]:block(node,Vector3(x,0,-.55),Vector3(.12,1.5,.12),StandardMaterial3D.new()).material_override=Visuals.material(panel.darkened(.3))
+			for y in [.5,1.0,1.5]:block(node,Vector3(1.35,y,0),Vector3(1.3,.06,1.25),StandardMaterial3D.new()).material_override=Visuals.material(panel.darkened(.25))
+		3:
+			# Brick tower with a broken stepped top.
+			block(node,Vector3.ZERO,Vector3(1.5,3.6,1.5),facade(brick,true,.3,seed_value))
+			block(node,Vector3(-.35,3.6,0),Vector3(.8,.5,1.5),facade(brick,true,.5,seed_value))
+			block(node,Vector3(-.5,4.1,-.3),Vector3(.5,.3,.9),facade(brick.darkened(.1),true,.8,seed_value))
+		_:
+			# Brick tower with a gouged side.
+			block(node,Vector3(-.3,0,0),Vector3(.9,4.3,1.6),facade(brick,true,.35,seed_value))
+			block(node,Vector3(.55,0,0),Vector3(.8,2.2,1.6),facade(brick,true,.6,seed_value))
+			block(node,Vector3(.55,2.2,.35),Vector3(.8,.9,.9),facade(brick.darkened(.08),true,.9,seed_value))
 	for k in range(3):
-		var boulder=mini.cylinder(parent,base+Vector3(rng.randf_range(-radius,radius)*1.2,0,rng.randf_range(-radius,radius)*1.2),rng.randf_range(.25,.55),rng.randf_range(.2,.5),rock.darkened(.1),5,.12)
-		boulder.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		var bit=block(node,Vector3(rng.randf_range(-2.2,2.4),0,rng.randf_range(.7,1.3)),Vector3(rng.randf_range(.3,.7),rng.randf_range(.1,.25),rng.randf_range(.3,.6)),StandardMaterial3D.new())
+		bit.material_override=Visuals.material(rubble.darkened(rng.randf_range(0,.15)));bit.rotation.y=rng.randf()*TAU
 ## Derelict industry: a banded chimney, a broken shop wall with window gaps, or a cooling tower.
 static func industry(parent:Node3D,pos:Vector3,rng:RandomNumberGenerator):
 	var mini=preload("res://scripts/route_miniatures.gd")

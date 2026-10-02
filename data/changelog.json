@@ -30,7 +30,10 @@
 					"Лычки у полоски здоровья врага показывают его профессионализм в этом мире: одна в начале, две в середине, три в конце и у босса.",
 					"Пистолет и ПП бьют на одинаковую короткую дистанцию (9 клеток). ПП стреляет короткими очередями по 3 пули, урон в секунду прежний.",
 					"Новый экран итогов вылазки: сколько сплава собрано, сколько отнято при поражении (видно на шкале, монеты падают с верхнего счётчика) и сколько дошло до штаба. Уничтоженные враги по видам выстраиваются лесенкой, каждый шаг озвучен.",
-					"Выбор мира стал коллекцией карточек: картинка, номер, название, прогресс полей и медаль за пройденный мир, без лишнего текста. Последний открытый мир выбран сразу, E отправляет в бой, стрелки переключают."
+					"Выбор мира стал коллекцией карточек: картинка, номер, название, прогресс полей и медаль за пройденный мир, без лишнего текста. Последний открытый мир выбран сразу, E отправляет в бой, стрелки переключают.",
+					"Карта маршрута: прокрутка двумя пальцами на тачпаде Mac.",
+					"Карта маршрута заполняет весь экран: большие пирамидальные горы уходят за края, между ними руины хрущёвок и кирпичных многоэтажек разной степени разрушения. Расстановка новая в каждом забеге.",
+					"Логово генерала на карте стало большим и грозным: танк босса на железном троне из сваренных листов с шипами, кольцо штыков и огонь в жаровнях."
 				]
 			},
 			"en": {
@@ -60,7 +63,10 @@
 					"Chevrons by an enemy's health bar show its professionalism in this world: one at the start, two in the middle, three at the end and at the boss.",
 					"The pistol and the SMG share the same short range (9 tiles). The SMG fires short bursts of 3 rounds with the same damage per second.",
 					"New sortie results screen: alloy gathered, what a defeat took away (shown on the bar, coins tumble off the top counter) and what reached the base. Destroyed enemies line up by type as a staircase, every step has a sound.",
-					"World select is now a set of collectible cards: art, number, name, field progress and a medal for a cleared world, no clutter. The newest open world is preselected, E deploys, arrows switch."
+					"World select is now a set of collectible cards: art, number, name, field progress and a medal for a cleared world, no clutter. The newest open world is preselected, E deploys, arrows switch.",
+					"Route map: two-finger trackpad scrolling on Mac.",
+					"The route map fills the whole screen: big pyramid mountains run past the edges, with ruined panel blocks and brick high-rises between them in various states of damage. The layout changes every run.",
+					"The general's lair on the map is big and menacing: the boss tank on an iron throne of welded spiked plates, a ring of bayonets and burning braziers."
 				]
 			}
 		},

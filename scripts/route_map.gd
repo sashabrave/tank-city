@@ -115,7 +115,8 @@ func _ready():
 	get_node("WorldAtmosphere").anchor_to_map(-stage_z(plan.size()-1))
 	preload("res://scripts/base_surroundings.gd").route(self,-stage_z(plan.size()-1))
 	# Ground of the whole theatre (earth tone, not a road); battlefield clutter is scattered after the roads.
-	Visuals.box(self,Vector3(0,-.55,stage_z(plan.size()-1)*.5),Vector3(46,.2,-stage_z(plan.size()-1)+35),Color("8e8c7e"))
+	# Ground well past both screen edges, mountains and ruins stand on it.
+	Visuals.box(self,Vector3(0,-.55,stage_z(plan.size()-1)*.5),Vector3(150,.2,-stage_z(plan.size()-1)+60),Color("8e8c7e"))
 	for stage in range(plan.size()):
 		wave_rosters.append(PREVIEW.waves(wave_seed,stage))
 		for info in plan[stage]:
@@ -142,7 +143,7 @@ func _ready():
 			if branch=="headquarters":MINI.depot(node)
 			elif branch=="vehicle":MINI.service(node,true,Color("839c9f").darkened(.28 if skipped else 0.0))
 			elif info.type in RoutePlan.CHALLENGES:MINI.challenge(node,info.type,color)
-			elif stage in Campaign.BOSSES:MINI.boss(node,color)
+			elif stage in Campaign.BOSSES:MINI.boss(node,color);node.scale*=1.45
 			else:MINI.battle(node,posmod(wave_seed+stage*3+info.lane*7,4),color,visited,info.difficulty)
 			if branch=="" and not skipped:MINI.weather(node,MINI.weather_for(preload("res://scripts/biome_catalog.gd").entry(wave_seed,stage)))
 			var caption={"vehicle":"Техника","headquarters":"Депо"}.get(branch,ChallengeRooms.TITLES.get(info.type,"%02d" % (stage+1)))

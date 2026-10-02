@@ -246,18 +246,40 @@ static func weather_for(entry:Dictionary)->String:
 		"inferno":return "embers"
 	return ""
 ## Boss arena: scorched plate, the boss hull in the middle, crossing searchlights and red beacons.
-static func boss(parent:Node3D,color:Color):
-	base(parent,color.darkened(.35))
-	var hull=Visuals.model("boss",parent);hull.scale=Vector3.ONE*.55;hull.position=Vector3(0,.3,-.2);hull.rotation.y=PI
+## The general's lair: an iron throne. Dark plated platform ringed with bayonets, a fan of welded steel plates
+## with spikes behind the boss tank, two fire braziers, red beacons and sweeping searchlights.
+static func boss(parent:Node3D,_color:Color):
+	var iron=Color("3b3a37");var steel=Color("595a55");var rust=Color("6b4434")
+	base(parent,iron)
 	var anim=animator(parent)
+	# Throne back: plates of different heights, fanned, with spikes on top.
+	for i in range(7):
+		var k=i-3;var h=2.4+(3-absi(k))*.6
+		var plate=Visuals.box(parent,Vector3(k*.66,h*.5+.2,-2.35+absi(k)*.14),Vector3(.6,h,.18),steel.darkened(.08*(i%2)) if i!=3 else rust)
+		plate.rotation.y=k*-.12;plate.rotation.z=k*.05
+		var spike=cylinder(parent,Vector3(k*.66,h+.2,-2.35+absi(k)*.14),.13,.8,Color("8d8f88"),4,0.0);spike.rotation.z=k*.05
+	# Bayonets around the edge, leaning outwards.
+	for i in range(14):
+		var a=i*TAU/14.0;var at=Vector3(cos(a)*2.95,.25,sin(a)*2.95)
+		if at.z<-1.6 and absf(at.x)<2.2:continue
+		var blade=cylinder(parent,at,.09,1.15,Color("b5b7b0"),4,0.0)
+		blade.rotation=Vector3(sin(a)*.45,0,-cos(a)*.45)
+	# The general's tank, larger than any other piece on the map.
+	var hull=Visuals.model("boss",parent);hull.scale=Vector3.ONE*1.55;hull.position=Vector3(0,.3,.1);hull.rotation.y=PI
+	# Fire braziers: dark pots with flickering flames.
 	for side in [-1,1]:
-		var mast=cylinder(parent,Vector3(side*2.3,.3,-1.9),.07,2.2,Color("3e423d"),6)
-		var head=Node3D.new();parent.add_child(head);head.position=Vector3(side*2.3,2.5,-1.9)
+		var pot=cylinder(parent,Vector3(side*2.25,.28,1.75),.4,.5,iron,8,.5)
+		for core in [false,true]:
+			var flame=cylinder(parent,Vector3(side*2.25,.78,1.75),.38 if not core else .22,.95 if not core else .55,Color(1,.48,.12) if not core else Color(1,.86,.4),6,0.0)
+			flame.material_override=Visuals.material(Color(1,.48,.12) if not core else Color(1,.86,.4),true)
+			anim.add(flame,"scale",[Vector3(1,1,1),Vector3(.9,1.25,.9),Vector3(1.05,.85,1.05)] if not core else [Vector3(1,1.2,1),Vector3(.9,.9,.9),Vector3(1,1.1,1)])
+	for side in [-1,1]:
+		var mast=cylinder(parent,Vector3(side*2.6,.3,-1.4),.07,2.6,Color("3e423d"),6)
+		var head=Node3D.new();parent.add_child(head);head.position=Vector3(side*2.6,2.9,-1.4)
 		var beam=Visuals.box(head,Vector3(0,-.4,1.5),Vector3(.35,.05,3.0),Color(1,.9,.7,.3));beam.material_override=Visuals.material(Color(1,.9,.7,.3),true)
 		anim.add(head,"rotation:y",[side*-.5,0.0,side*.5,0.0])
-		var beacon=Visuals.box(parent,Vector3(side*2.3,2.8,-1.9),Vector3(.2,.2,.2),Color("ff4a3a"));beacon.material_override=Visuals.material(Color("ff4a3a"),true)
+		var beacon=Visuals.box(parent,Vector3(side*2.6,3.2,-1.4),Vector3(.22,.22,.22),Color("ff4a3a"));beacon.material_override=Visuals.material(Color("ff4a3a"),true)
 		anim.add(beacon,"visible",[side==1,side==-1])
-	for p in [Vector3(-1.7,.3,1.5),Vector3(1.6,.3,1.2),Vector3(-.4,.3,2.0)]:Visuals.box(parent,p+Vector3(0,.12,0),Vector3(.5,.25,.5),Color("2c2a27"))
 static func headquarters(parent:Node3D):
 	base(parent,Color("8c9c85"),true)
 	var rover=Visuals.model("base",parent);rover.scale=Vector3.ONE*1.3;rover.position=Vector3(0,.28,0);rover.rotation.y=PI*.5
