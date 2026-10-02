@@ -1161,6 +1161,16 @@
         512
       ],
       "sha256": "90d8132b4b0d319b1112884ab0928554c2e4de320ef752f4f17933e1402f0938"
+    },
+    {
+      "path": "abilities/dynamite.png",
+      "family": "abilities",
+      "source": "source/dynamite-object.png",
+      "size": [
+        512,
+        512
+      ],
+      "sha256": "eba64dedc7e0eee317887316b290547853cc26b40dcbde138c4ac6881b5f7ac8"
     }
   ]
 }

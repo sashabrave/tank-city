@@ -2515,6 +2515,22 @@
           "sha256": "89fe6b3a761a3631789e880cebfbf24005b88b60d37e9195c534f0d0fd527821"
         }
       }
+    },
+    {
+      "key": "abilities/dynamite",
+      "original": "res://assets/icons/abilities/dynamite.png",
+      "relative": "icons/abilities/dynamite.png",
+      "grid": null,
+      "variants": {
+        "gpt_image_2_5": {
+          "path": "res://assets/illustrations/gpt_image_2_5/icons/abilities/dynamite.png",
+          "size": [
+            512,
+            512
+          ],
+          "sha256": "eba64dedc7e0eee317887316b290547853cc26b40dcbde138c4ac6881b5f7ac8"
+        }
+      }
     }
   ]
 }

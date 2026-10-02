@@ -86,3 +86,7 @@
 
 ## Дополнение (после этапа 2)
 Нужна ещё одна иконка способности: `output/abilities/dynamite.png` — динамит (три красные шашки, перетянутые лентой, с искрящим фитилём) в подложке семьи «Способности». Подключить в `assets/illustrations/gpt_image_2_5/icons/abilities/dynamite.png`; временно в игре вместо неё иконка мины.
+
+### Динамит готов
+
+`output/abilities/dynamite.png`: RGBA 512×512, прозрачные поля, три красные шашки с лентой и искрящим фитилём на общей бирюзовой восьмиугольной подложке способностей. Объект создан GPT Image 2.5 через Higgsfield, Flare/high/2k, job `e7d43c54-ba0d-4232-96a0-aaed3bdee739`; подложка взята из source/masters/abilities.png без повторной генерации. Очищенный объект — source/dynamite-object.png, проверка 32/48/72 px на двух фонах — output/dynamite-check.png. Хеш добавлен в output/manifest.json. Полный промпт и оригинал этой совместной партии с мирами — ../world_cards_v1/source/generation.json и sheet-1.png. Игровой PNG не заменён: агенту подключения скопировать готовый output/abilities/dynamite.png по указанному выше пути и обновить основной manifest. Код не менялся.

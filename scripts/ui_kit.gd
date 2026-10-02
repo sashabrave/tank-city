@@ -210,7 +210,11 @@ static func icon_lookup(id:String)->Texture2D:
 		var atlas=AtlasTexture.new();atlas.atlas=load("res://assets/icons/field_v1/sections.png")
 		var cell=atlas.atlas.get_size()/3.0;var index=sections.find(id)
 		atlas.region=Rect2(Vector2(index%3,index/3)*cell,cell);return atlas
-	if id=="dynamite" and not ResourceLoader.exists("res://assets/icons/v09/dynamite.png"):id="mine"  # until the family art arrives
+	if id=="dynamite":
+		# Family art lives in the GPT set only; other sets show the mine.
+		var dynamite=Illustrations.texture("res://assets/icons/abilities/dynamite.png")
+		if dynamite:return dynamite
+		id="mine"
 	if id=="field_repair":id="vehicle_repair"
 	if id.begins_with("vehicle_") and id.trim_prefix("vehicle_") in GarageCatalog.VEHICLES:id=id.trim_prefix("vehicle_")
 	for vehicle_kind in GarageCatalog.VEHICLES:
