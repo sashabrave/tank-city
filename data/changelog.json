@@ -60,7 +60,10 @@
 					"Новые нарисованные иконки улучшений в Казарме и Штабе: здоровье, сила, скорость, напор, лечение, аптечки, удача, прочность базы, турели и страховки; у иконок способностей убрана цветная кайма.",
 					"Пресет «Кино» включает отражённый цветной свет и более глубокие тени в углах.",
 					"В тёмном лабиринте бродят зомби-солдаты: без оружия, медленно шаркают на свет бойца и кусают на 1 урона; их можно застрелить.",
-					"На доске задач появился раздел «Для меня»: решения, которые ждут автора, и готовое к проверке в игре."
+					"На доске задач появился раздел «Для меня»: решения, которые ждут автора, и готовое к проверке в игре.",
+					"Свет фонарей и фар с мягким краем, без резкой границы конуса; рисунок в пятне спокойнее, фонарь меньше трясётся на бегу",
+					"Тени у стен и блоков сплошные, огибают углы и мягко тают; мягкие тени под предметами в хабе",
+					"Вода и лужи — чистая гладь без полосок и пятен; убраны лунные конусы с неба; «Кино» в хабе работает плавнее; в углу снова FPS и номер сборки"
 				]
 			},
 			"en": {
@@ -120,7 +123,10 @@
 					"New drawn upgrade icons in the Barracks and HQ: health, strength, speed, pressure, healing, medkits, luck, base armour, turrets and insurance; the colour fringe on ability icons is gone.",
 					"The «Cinema» preset turns on bounced colour light and deeper corner shadows.",
 					"Zombie soldiers roam the dark maze: unarmed, they shamble slowly towards the soldier's light and bite for 1 damage; they can be shot.",
-					"The task board has a «For me» view: decisions waiting for the author and work ready to check in game."
+					"The task board has a «For me» view: decisions waiting for the author and work ready to check in game.",
+					"Flashlights and headlights have a soft edge with no hard cone outline; calmer beam pattern and less shake while running",
+					"Wall and block shadows are continuous, wrap corners and fade softly; soft contact shadows under hub props",
+					"Water and puddles are a clean surface without strips or blotches; sky moon cones removed; «Cinema» runs smoother in the hub; FPS and build number back in the corner"
 				]
 			}
 		},

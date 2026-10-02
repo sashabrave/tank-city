@@ -7,8 +7,10 @@ var timer=0.0
 func _ready():
 	layer=120;process_mode=Node.PROCESS_MODE_ALWAYS
 	label=Label.new();add_child(label);label.name="PerfLabel";label.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	label.position=Vector2(10,6);label.add_theme_font_size_override("font_size",13)
-	label.add_theme_color_override("font_color",Color(1,1,1,.72));label.add_theme_color_override("font_outline_color",Color(0,0,0,.8));label.add_theme_constant_override("outline_size",4)
+	# Fixed width and no wrapping: the shared theme otherwise squeezed the label to 1 px and the text vanished.
+	label.autowrap_mode=TextServer.AUTOWRAP_OFF;label.clip_text=false;label.size=Vector2(420,20);label.custom_minimum_size=Vector2(420,20)
+	label.position=Vector2(8,4);label.add_theme_font_size_override("font_size",12)
+	label.add_theme_color_override("font_color",Color(1,1,1,.5));label.add_theme_color_override("font_outline_color",Color(0,0,0,.8));label.add_theme_constant_override("outline_size",4)
 	refresh()
 func _process(delta):
 	timer-=delta

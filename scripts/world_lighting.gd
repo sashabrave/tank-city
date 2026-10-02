@@ -84,10 +84,12 @@ func apply():
 	environment.ssao_light_affect=.15
 	# T-063: «Кино» adds stronger contact shadows and bounced colour light (SSIL); other presets skip the cost.
 	var cinema=str(Settings.values.get("graphics_preset","standard"))=="cinema" and advanced and cozy
-	environment.ssil_enabled=cinema
+	# SSIL is the expensive part: a short radius, and off at night where volumetric fog already costs a lot
+	# (the hub lagged on «Кино», 0.7.2).
+	environment.ssil_enabled=cinema and not night
 	if cinema:
 		environment.ssao_intensity*=1.35;environment.ssao_radius=.9
-		environment.ssil_radius=4.0;environment.ssil_intensity=.8;environment.ssil_sharpness=.98;environment.ssil_normal_rejection=1.0
+		environment.ssil_radius=2.0;environment.ssil_intensity=.8;environment.ssil_sharpness=.98;environment.ssil_normal_rejection=1.0
 	# Glow picks only bright highlights (metal glints, gold, lamps) instead of washing the frame.
 	environment.glow_enabled=option.call("glow")
 	environment.glow_intensity=float(style.glow)
@@ -151,7 +153,6 @@ func apply():
 	else:sun.rotation_degrees=Vector3(-55,-32,0)
 	depth_light(cozy and bool(Settings.values.get("depth_light",true)),night)
 	cinematic_light(cozy and bool(Settings.values.get("cinematic_light",true)),night,Vector3(style.sun_angle) if cozy else Vector3(-55,-32,0))
-	moon_shafts(cozy and night and bool(Settings.values.get("cinematic_light",true)) and get_parent().has_method("room_palette"))
 	refresh_materials()
 	update_lamps()
 ## «Киношный свет» (T-066): a second, shadowless back light opposite the sun in a complementary colour
@@ -172,26 +173,6 @@ func cinematic_light(on:bool,night:bool,sun_angle:Vector3):
 	rim.rotation_degrees=Vector3(-rng.randf_range(16,28),sun_angle.y+180.0+rng.randf_range(-25,25),0)
 ## Night sky glow (T-067): three huge, very faint moonbeam shafts slanting down through the scene and drifting
 ## slowly, plus a soft cool sheen — cheap unshaded cones, night and «Киношный свет» only.
-func moon_shafts(on:bool):
-	var holder:Node3D=get_node_or_null("MoonShafts")
-	if not on:
-		if holder:holder.queue_free()
-		return
-	if holder:return
-	holder=Node3D.new();holder.name="MoonShafts";add_child(holder)
-	var rng=RandomNumberGenerator.new();rng.seed=hash([Game.visual_run_seed,"moon_shafts"])
-	for i in range(3):
-		var shaft=MeshInstance3D.new();var mesh=CylinderMesh.new();mesh.top_radius=.6;mesh.bottom_radius=rng.randf_range(2.2,3.4);mesh.height=22;mesh.radial_segments=12;mesh.cap_top=false;mesh.cap_bottom=false
-		shaft.mesh=mesh;shaft.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		var mat=ShaderMaterial.new();mat.shader=preload("res://shaders/world/light_cone.gdshader");mat.set_shader_parameter("tint",Color("b9d0ff"));mat.set_shader_parameter("density",.05)
-		shaft.material_override=mat;holder.add_child(shaft)
-		shaft.position=Vector3(rng.randf_range(-7,7),9,rng.randf_range(-6,6));shaft.rotation=Vector3(rng.randf_range(-.35,-.2),rng.randf()*TAU,rng.randf_range(-.2,.2))
-		shaft.set_meta("drift",Vector2(rng.randf_range(-.25,.25),rng.randf_range(-.15,.15)))
-func drift_shafts(delta):
-	var holder=get_node_or_null("MoonShafts")
-	if holder:
-		for shaft in holder.get_children():
-			var d:Vector2=shaft.get_meta("drift");shaft.position.x=wrapf(shaft.position.x+d.x*delta,-9,9);shaft.position.z=wrapf(shaft.position.z+d.y*delta,-8,8)
 ## «Глубина света» (T-062), cheap: grid AO on the floor (systems/floor_ao.gd), a slightly warmer sun and
 ## a hint of cool fill (warm light / cool shadow), a touch more contrast. AgX was tried and greyed the sand
 ## palette, so the style's filmic tonemap stays.
@@ -209,7 +190,6 @@ func depth_light(on:bool,night:=false):
 	# Softer sun shadows: the surface colour shows through instead of near-black patches.
 	sun.shadow_opacity*=.82
 func _process(delta):
-	drift_shafts(delta)
 	elapsed+=delta
 	if elapsed<.25:return
 	elapsed=0.0;update_lamps()
@@ -262,7 +242,7 @@ static func lamp(parent:Node3D,position:Vector3):
 
 ## Lamp cookie (T-058): a real torch pattern on the ground — hot centre, a brighter reflector ring and a soft,
 ## slightly uneven rim — instead of a flat disc. One procedural texture shared by every spotlight.
-static var cookie:ImageTexture
+static var cookie:ImageTexture  # v2: soft rim
 static func lamp_cookie()->ImageTexture:
 	if cookie:return cookie
 	var size=128;var image=Image.create(size,size,false,Image.FORMAT_L8)
@@ -272,14 +252,15 @@ static func lamp_cookie()->ImageTexture:
 		for x in range(size):
 			var p=Vector2(x,y)/float(size-1)*2.0-Vector2.ONE;var r=p.length()
 			var a=fposmod(atan2(p.y,p.x)/TAU,1.0)*16.0;var k=int(a)%16;var w=lerpf(wobble[k],wobble[(k+1)%16],a-floor(a))
-			var edge=1.0-smoothstep(.78+w,.98+w,r)
-			var value=edge*(.62+.38*(1.0-smoothstep(0.0,.35,r))+.18*exp(-pow((r-.62)/.06,2.0)))
+			# Soft, wide falloff to nothing at the rim (no hard cone edge) and a gentle pattern (T: softer cookie).
+			var edge=1.0-smoothstep(.35+w,1.0,r)
+			var value=edge*(.8+.2*(1.0-smoothstep(0.0,.4,r))+.07*exp(-pow((r-.55)/.08,2.0)))
 			image.set_pixel(x,y,Color(value,value,value))
 	image.generate_mipmaps();cookie=ImageTexture.create_from_image(image);return cookie
 static func beam(parent:Node3D,pos:Vector3,always=false,priority=1)->SpotLight3D:
 	var light=SpotLight3D.new();light.name="Headlight";parent.add_child(light);light.position=pos;light.rotation.x=deg_to_rad(-16)
 	light.light_projector=lamp_cookie()
-	light.light_color=Color("ffe1ad");light.light_energy=2.1;light.spot_range=3.8;light.spot_angle=31;light.spot_attenuation=1.0;light.shadow_enabled=false
+	light.light_color=Color("ffe1ad");light.light_energy=2.1;light.spot_range=3.8;light.spot_angle=34;light.spot_attenuation=1.0;light.spot_angle_attenuation=2.2;light.shadow_enabled=false
 	light.set_meta("day_energy",.65 if always else 0.0);light.set_meta("night_energy",2.1);light.set_meta("priority",priority)
 	light.add_to_group("night_lamps");light.visible=always or Settings.values.world_lighting=="night";return light
 
@@ -316,7 +297,9 @@ static func headlights(parent:Node3D,vehicle=false,always=false):
 	else:
 		# v6 infantry carry a chest lamp: the beam rides on it and follows the animation.
 		var lamp=parent.find_child("Flashlight",true,false)
-		if lamp is Node3D:beam(lamp,Vector3.ZERO,false,4)
+		if lamp is Node3D:
+			var steady=preload("res://scripts/beam_steady.gd").new();steady.name="SteadyBeam";steady.lamp=lamp;rig.add_child(steady)
+			beam(steady,Vector3.ZERO,false,4)
 		else:beam(rig,Vector3(.12,.65,-.24),false,4)
 
 ## Compact fixtures (tools/build_lights_v1.py): an armoured searchlight on a turntable for block tops, a caged

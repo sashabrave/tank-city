@@ -30,7 +30,7 @@ void fragment(){
 	float hz=noise(world.xz*5.0+vec2(0.0,.05)+vec2(TIME*.2,-TIME*.15))-h;
 	NORMAL=normalize((VIEW_MATRIX*vec4(normalize(vec3(-hx*4.0,1.0,-hz*4.0)),0.0)).xyz);
 	vec3 sky=night ? vec3(.22,.28,.4) : vec3(.72,.8,.9);
-	float sheen=.3+.5*smoothstep(-1.0,1.0,p.x*.6-p.y*.8)+.3*h;
+	float sheen=.3+.5*smoothstep(-1.0,1.0,p.x*.6-p.y*.8);
 	ALBEDO=vec3(.08,.1,.12);
 	EMISSION=sky*(.16*sheen+.22*rim+.2*ring);
 	ROUGHNESS=.04;SPECULAR=.9;

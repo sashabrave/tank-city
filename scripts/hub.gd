@@ -581,11 +581,17 @@ func bullet_hit(bullet) -> bool:
 
 
 
+## Soft contact shadows under hub props («Глубина света»), rebuilt when stations change.
+func refresh_floor_ao():
+	var old=get_node_or_null("FloorAO")
+	if old:old.name="FloorAOOld";old.queue_free()
+	preload("res://scripts/systems/floor_ao.gd").build_props(self,[avatar,training_tank,dummy,dummy_label,command_beams,get_node_or_null("HubOutskirts")])
 func update_bench_visuals():
 	if is_instance_valid(avatar) and avatar.weapon_id!=Game.selected_weapon:Visuals.equip_model(avatar,Game.selected_weapon)
 	hint_refresh=0
 	if not is_instance_valid(bench_visuals) or bench_signature!=Game.built_workshops:
 		bench_signature=Game.built_workshops.duplicate()
+		refresh_floor_ao.call_deferred()
 		build_arrows.clear();bench_dots.clear()
 		if is_instance_valid(bench_visuals):remove_child(bench_visuals);bench_visuals.queue_free()
 		bench_visuals=Node3D.new();add_child(bench_visuals)

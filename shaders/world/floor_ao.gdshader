@@ -1,20 +1,38 @@
 shader_type spatial;
-// Grid ambient occlusion: a flat strip along a wall edge that multiplies the floor colour.
-// The strip's local +Z points at the wall (floor_ao.gd): darkest right at the wall, fading to fully clear
-// well before the far edge. Inner corners overlap two strips. Multiplying keeps the surface hue; the shade
-// leans slightly cool, so contact shadows read cold but never grey or black.
+// Floor contact shadow («Глубина света»). Multiplies the floor towards a cool shade that mixes with the surface
+// colour and fades smoothly to nothing.
+// Cell mode (arena): one quad per floor cell; INSTANCE_CUSTOM.r = side walls (L1 R2 U4 D8), .g = diagonal
+// walls (LU1 RU2 LD4 RD8). Sides shade by distance to the wall edge, diagonals by distance to the corner point,
+// so strips along a wall join cell to cell and wrap round inner and outer corners (voxel-style AO).
+// Box mode (hub): one quad per standing object; INSTANCE_CUSTOM.rg = footprint half size, .ba = quad half size;
+// the shade falls off from a rounded rectangle around the footprint.
 render_mode unshaded, blend_mul, depth_draw_never, cull_disabled, shadows_disabled;
+uniform bool boxes = false;
 uniform float strength = 0.38;
 uniform float depth = 0.34;
 uniform vec3 shade : source_color = vec3(0.62, 0.64, 0.74);
-varying float to_wall;
-varying float along;
+varying vec2 p;
+varying vec4 data;
 void vertex(){
-	to_wall = clamp(VERTEX.z / depth + 0.5, 0.0, 1.0);
-	along = VERTEX.x + 0.5;
+	data = INSTANCE_CUSTOM;
+	p = boxes ? VERTEX.xz * 2.0 * data.ba : VERTEX.xz;
 }
+float bit(float mask, float b){ return mod(floor(mask / b + 0.001), 2.0); }
+float fall(float d){ float t = 1.0 - clamp(d / depth, 0.0, 1.0); t = t * t * (3.0 - 2.0 * t); return t * t * t; }
 void fragment(){
-	float t = smoothstep(0.0, 1.0, to_wall);
-	float k = t * t * t * strength * smoothstep(0.0, 0.12, along) * smoothstep(1.0, 0.88, along);
-	ALBEDO = mix(vec3(1.0), shade, k);
+	float o = 0.0;
+	if (boxes){
+		vec2 q = abs(p) - data.rg;
+		float d = length(max(q, 0.0)) + min(max(q.x, q.y), 0.0);
+		o = fall(max(d, 0.0));
+	} else {
+		float s = data.r, c = data.g;
+		float l = bit(s,1.0)*fall(p.x+.5), r = bit(s,2.0)*fall(.5-p.x), u = bit(s,4.0)*fall(p.y+.5), w = bit(s,8.0)*fall(.5-p.y);
+		float a = max(max(l, r), max(u, w));
+		float corner = max(max(bit(c,1.0)*fall(length(p-vec2(-.5,-.5))), bit(c,2.0)*fall(length(p-vec2(.5,-.5)))),
+			max(bit(c,4.0)*fall(length(p-vec2(-.5,.5))), bit(c,8.0)*fall(length(p-vec2(.5,.5)))));
+		// Inner corners deepen a little where two walls meet, without doubling.
+		o = max(a, corner) + .35 * min(max(l, r), max(u, w));
+	}
+	ALBEDO = mix(vec3(1.0), shade, clamp(o, 0.0, 1.0) * strength);
 }
