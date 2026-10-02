@@ -75,7 +75,8 @@ func spawn_room_boss():
 	var kind=entry.kind
 	var columns=arena.spawn_columns()
 	var location=Vector2i(columns[int((columns.size()-1)/2)],0)
-	if not arena.can_enter(location):return
+	# A wreck or the hero on the entry cell must not hold the commander back forever (the countdown would loop).
+	if not arena.can_enter(location):location=arena.find_free_near(location)
 	arena.room.room_boss_spawned=true
 	var elite=arena.room.commander_elite
 	var enemy=arena.spawn_actor(kind,location,false,false,WaveDirector.max_rank(arena.room.room_index),false,entry.weapon)

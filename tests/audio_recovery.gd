@@ -3,6 +3,9 @@ var failures=0
 func check(ok,message):
 	print("PASS " if ok else "FAIL ",message)
 	if not ok:failures+=1
+func playing_current(c)->bool:
+	var player=c.backgrounds[c.active]
+	return c.pending_track=="" and player.playing and player.stream!=null and player.stream.resource_path==c.track_path(c.current_track)
 func _ready():call_deferred("run")
 func run():
 	Game.save_enabled=false;Settings.persistence_enabled=false;Game.sound_enabled=true
@@ -16,8 +19,10 @@ func run():
 	check(c.backgrounds[c.active].playing and c.position_seconds()>0,"music playing and advances")
 	for context in ["map","battle","miniboss","boss","hub"]:
 		Game.music_context(context)
-		await get_tree().create_timer(.8).timeout
-		check(c.context==context and c.backgrounds[c.active].playing,"context plays: "+context)
+		# The old track fades out (~.85 s) before the new one, loaded on a thread, starts.
+		var waited=0.0
+		while not playing_current(c) and waited<8:await get_tree().create_timer(.1).timeout;waited+=.1
+		check(c.context==context and playing_current(c),"context plays: "+context)
 	get_tree().paused=true
 	var before=c.position_seconds()
 	await get_tree().create_timer(.3).timeout

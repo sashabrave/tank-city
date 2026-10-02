@@ -28,7 +28,8 @@
 					"На карте маршрута над комнатой видна её настоящая погода: дождь, снег, туман, буря или гроза с молниями.",
 					"В городе появились неразрушимые морские контейнеры, на полу — немного мусора, а край поля стал чище.",
 					"Таблица забега дня: кнопка «Топ» на карточке бесконечного режима показывает лучшие попытки всех профилей на этом компьютере.",
-					"Новая графика: оружие без плашек и смотрит вправо, восемь легендарных правил, символы игрового автомата, значки доски «Развитие заставы» и портрет майора Мурлыкина для видеосвязи."
+					"Новая графика: оружие без плашек и смотрит вправо, восемь легендарных правил, символы игрового автомата, значки доски «Развитие заставы» и портрет майора Мурлыкина для видеосвязи.",
+					"Командир больше не застревает за обломками: если место выхода занято корпусом техники или бойцом, он появляется рядом, и поле можно закончить."
 				]
 			},
 			"en": {
@@ -56,7 +57,8 @@
 					"The route map shows each room's real weather above it: rain, snow, fog, sandstorm or a thunderstorm with lightning.",
 					"Cities now have indestructible shipping containers, the floor has a little litter, and the field rim is cleaner.",
 					"Daily run table: the «Top» button on the endless card shows the best attempts of every profile on this computer.",
-					"New art: weapons without plates and facing right, eight legendary rules, slot machine symbols, outpost progress board badges and Major Murlykin's video call portrait."
+					"New art: weapons without plates and facing right, eight legendary rules, slot machine symbols, outpost progress board badges and Major Murlykin's video call portrait.",
+					"The commander no longer gets stuck behind wreckage: if the entry cell is blocked by a vehicle husk or the soldier, he appears next to it and the field can be finished."
 				]
 			}
 		},
