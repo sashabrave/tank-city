@@ -101,3 +101,8 @@ export_presets.cfg содержит macOS и iOS. Включай guides/*.md, da
 Headless: save_integrity_revision, effect_cards_revision, professionalism_revision, hq_arrival_revision, smg_burst_revision, dynamite_revision, biome_particles_revision, snow_caps_revision, route_pan_revision. Оконные: save_indicator_visual, hub_lines_visual, brick_shadow_visual, command_screen_visual, status_visuals, tablet_character_visual, run_result_visual, world_select_visual, route_look_visual, lights_v1_visual. Целевой прогон 30 проверок 1 октября 2026 прошёл, кроме перечисленных ниже.
 
 active_battle_revision зависит от загрузки машины: бюджет поиска пути задан в микросекундах на кадр, и при параллельных процессах Godot солдат не успевает дойти за 90 с. 1 октября тест падал так же и со старым кодом из коммита профессионализма; запускать в одиночку. Падали до этой сессии: reinforced_brick («Placement follows the route»), printer_revision (покупка оболочки), route_map_v8 (строка 18), language_lighting (ожидает дневную яркость солнца 0,95, стили освещения её меняют).
+
+## Сборка 0.6.0
+macOS: `Godot --headless --path . --export-release "macOS" "build/macos/War Cats <версия> b<сборка>.app"`, затем `ditto -c -k --keepParent` в zip рядом. Проверка запуска без касания настоящих сохранений: `HOME=/tmp/<папка> ".../Contents/MacOS/War Cats" -- --startup-report` — каталог данных игры уходит во временную папку. 0.6.0 b197: 353 МБ .app, 234 МБ zip, первый кадр 1,07 с на M4. Подпись ad-hoc, без нотаризации: это не релиз для магазинов.
+
+Устаревшие тесты (падают одинаково на main и после 0.6.0): hub_waves (правила волн и верстаков до 0.3), revision_v06 и update_v06 (экономика и способности до 0.3), headquarters (клавиша Q у штаба вместо 2).
