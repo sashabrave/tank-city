@@ -1,0 +1,42 @@
+{
+  "params": {
+    "model": "gpt_image_2_5",
+    "folder_id": "b6d33678-4471-43a8-bd76-4d910b162d50",
+    "use_unlim": false,
+    "quality": "high",
+    "resolution": "2k",
+    "variant": "flare",
+    "aspect_ratio": "3:2",
+    "background": "opaque",
+    "medias": [
+      {
+        "role": "image",
+        "value": "802b0c9d-7f0f-4a73-9632-a6c9c52e08c4"
+      },
+      {
+        "role": "image",
+        "value": "5853d8c9-fc71-4920-9f75-de01305ac27e"
+      }
+    ],
+    "prompt": "Refine reference 1 into the final 3x2 portrait atlas, six square panels, preserve painterly warm cozy style and exact equipment and order. Use reference 2's CHIBI proportions: oversized head/helmet 45% of total full-body height, short compact torso. Critical composition correction: zoom out a little in EACH panel, keep EVERY helmet, ear, shield edge, gun muzzle and drone at least 7% of cell width away from left/right/top cell boundaries. Heavy shield must be entirely visible left and right, not cut by left border. Knees-up crops at bottom. Keep nice broad heads, do not make them narrow. Maintain three-quarter left-facing pose and guns pointing left. Six identical ginger cats with white ear helmets, dark closed visors, white muzzle, olive soft large-patch camouflage, orange arm band, white hexagon chest badge. Recruit rifle / belt-fed machinegun / wrench and radio / shield and drum grenade launcher / hood and sniper / drone held in both paws. All backgrounds FULL BLEED to edges of square, camp/camp/workshop/camp/forest/workshop. Only 2–3 soft blurred background planes. No padding bars, no frames, no gutters, no text. Less tiny texture, smooth rounded shading, no polygon facets. Exactly 3 columns and 2 rows, aligned halfway horizontal boundary."
+  },
+  "jobs": [
+    {
+      "index": 2,
+      "job_id": "fde99cf9-2fa9-4b9c-8a2e-cc3d984e1fcc",
+      "status": "pending",
+      "adjustments": {
+        "medias[0].role": {
+          "requested": "image",
+          "used": "image_references",
+          "reason": "GPT Image 2.5 backend expects schema-key media roles"
+        },
+        "medias[1].role": {
+          "requested": "image",
+          "used": "image_references",
+          "reason": "GPT Image 2.5 backend expects schema-key media roles"
+        }
+      }
+    }
+  ]
+}

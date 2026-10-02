@@ -1,0 +1,52 @@
+{
+  "requests": [
+    {
+      "index": 0,
+      "params": {
+        "model": "gpt_image_2_5",
+        "folder_id": "b6d33678-4471-43a8-bd76-4d910b162d50",
+        "use_unlim": false,
+        "quality": "high",
+        "resolution": "2k",
+        "variant": "flare",
+        "aspect_ratio": "3:2",
+        "background": "opaque",
+        "medias": [
+          {
+            "role": "image",
+            "value": "c6c07811-a334-4c29-9554-76901024c8e6"
+          },
+          {
+            "role": "image",
+            "value": "f56df102-4c28-499f-9d4d-8e135609d630"
+          }
+        ],
+        "prompt": "War Cats v17 production atlas. EXACTLY six illustrations in a precise 3 columns x 2 rows grid of equal square cells, overall 3:2 landscape. Reference 1 (game model on cream background) is the PRIMARY guide to proportions, silhouette and left-facing three-quarter orientation. Reference 2 is ONLY the painterly soft 3D illustration style, colors and class gear guide: its elongated bodies must be replaced. Draw the SAME ginger cat identity in all six cells, same round cheeks, white double-lobed muzzle, tiny pink nose, whiskers, cream white helmet with pink-lined cat ears, CLOSED opaque charcoal visor with gentle glint, olive uniform with just a few LARGE soft camouflage patches, orange upper-arm band, white hexagon chest badge. Rounded large simple forms, smooth soft shading, subtle cloth/fur, cozy warm restrained palette, no polygon facets, no anime, no detailed clutter. Crucial CHIBI proportions: head including helmet/ears is 43–45 percent of whole figure height, helmet width about shoulder+arms width, very short stout torso, very short legs, big squat boots. NOT adult humanoid proportions. All torsos face three-quarter toward image LEFT; every gun muzzle points LEFT. Exact reading order: top left recruit holding compact assault rifle; top center gunner with distinctly belt-fed machine gun and visible short brass ammo belt; top right driver holding wrench and handheld radio, no pistol; bottom left heavy holding tall compact shield and short thick revolver-drum grenade launcher, not rifle; bottom center marksman with olive hood over helmet and long scoped sniper rifle; bottom right engineer holding small four-rotor drone with both paws. Keep identical cat facial design and body proportions across all classes. No writing, labels, logos, watermarks, frame lines, no extra characters or stray weapons. Each character and ALL equipment fully inside its own cell with generous lateral and top clearance; absolutely no overlap or fragments from neighboring cells. PORTRAITS sheet: independent softly blurred atmospheric backgrounds fill each square edge to edge, only 2–3 quiet planes: camp/camp/workshop on top row, camp/forest/workshop below. Knees-up portrait framing, oversized head dominant, ears uncut and 6 percent clear margin from upper and side cell edges. Crop the lower legs at the bottom only. Maintain all weapons inside square even long sniper barrel, hold it diagonally. Warm soft rim light, same beautiful illustrative finish as reference 2, smoother and simpler."
+      }
+    },
+    {
+      "index": 1,
+      "params": {
+        "model": "gpt_image_2_5",
+        "folder_id": "b6d33678-4471-43a8-bd76-4d910b162d50",
+        "use_unlim": false,
+        "quality": "high",
+        "resolution": "2k",
+        "variant": "flare",
+        "aspect_ratio": "3:2",
+        "background": "transparent",
+        "medias": [
+          {
+            "role": "image",
+            "value": "c6c07811-a334-4c29-9554-76901024c8e6"
+          },
+          {
+            "role": "image",
+            "value": "eb5271ce-65e0-4afe-8733-f44f928135d9"
+          }
+        ],
+        "prompt": "War Cats v17 production atlas. EXACTLY six illustrations in a precise 3 columns x 2 rows grid of equal square cells, overall 3:2 landscape. Reference 1 (game model on cream background) is the PRIMARY guide to proportions, silhouette and left-facing three-quarter orientation. Reference 2 is ONLY the painterly soft 3D illustration style, colors and class gear guide: its elongated bodies must be replaced. Draw the SAME ginger cat identity in all six cells, same round cheeks, white double-lobed muzzle, tiny pink nose, whiskers, cream white helmet with pink-lined cat ears, CLOSED opaque charcoal visor with gentle glint, olive uniform with just a few LARGE soft camouflage patches, orange upper-arm band, white hexagon chest badge. Rounded large simple forms, smooth soft shading, subtle cloth/fur, cozy warm restrained palette, no polygon facets, no anime, no detailed clutter. Crucial CHIBI proportions: head including helmet/ears is 43–45 percent of whole figure height, helmet width about shoulder+arms width, very short stout torso, very short legs, big squat boots. NOT adult humanoid proportions. All torsos face three-quarter toward image LEFT; every gun muzzle points LEFT. Exact reading order: top left recruit holding compact assault rifle; top center gunner with distinctly belt-fed machine gun and visible short brass ammo belt; top right driver holding wrench and handheld radio, no pistol; bottom left heavy holding tall compact shield and short thick revolver-drum grenade launcher, not rifle; bottom center marksman with olive hood over helmet and long scoped sniper rifle; bottom right engineer holding small four-rotor drone with both paws. Keep identical cat facial design and body proportions across all classes. No writing, labels, logos, watermarks, frame lines, no extra characters or stray weapons. Each character and ALL equipment fully inside its own cell with generous lateral and top clearance; absolutely no overlap or fragments from neighboring cells. MINIATURES sprite sheet: genuine transparent alpha background, no floor, no shadow puddles, no background haze. Six separate FULL BODY figures, complete ears and boots, equal visual height. Keep each figure and weapon centered in its own square, minimum 7 percent EMPTY margin on EVERY side of each cell. Do not stretch bodies: helmeted head must occupy almost HALF character height, torso short, legs extremely short and stocky as reference 1. Image 2 supplies smooth illustrative shading but its long legs and narrow heads are wrong; redraw anatomy. Leave clean transparent space between sprites for slicing."
+      }
+    }
+  ]
+}
