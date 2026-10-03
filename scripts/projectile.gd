@@ -37,7 +37,8 @@ func _ready():
 	build_visual.call_deferred()
 func build_visual():
 	if not is_inside_tree():return
-	var color=Color("ffcf79") if friendly else Color("ff5c40")
+	# The player's round: pale gold at night, a saturated orange by day so it stands out on light floors.
+	var color=(Color("ffcf79") if Settings.values.get("world_lighting","day")=="night" else Color("ff8a1c")) if friendly else Color("ff5c40")
 	if star_power:color=Color("fff0a0")
 	var kind="bullet"
 	if rocket_radius>0:kind="rocket";color=Color("ffb45a") if friendly else Color("ff7440")

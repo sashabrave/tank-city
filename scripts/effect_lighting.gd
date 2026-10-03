@@ -67,12 +67,14 @@ const PROJECTILES={
 static var trail_materials:={}
 static var projectile_sphere:SphereMesh
 static func trail_energy()->float:return 1.0 if Settings.values.world_lighting=="night" else .75
-## Dark inverted-hull rim around the player's rounds (T-177): pale tracers vanished on light day maps.
+## Warm inverted-hull rim around the player's rounds (T-177): pale tracers vanished on light day maps. A deep
+## amber edge, not black (author, 2026-10-03: the black outline looked wrong) — it reads as a hot rim.
 static var rim_material:StandardMaterial3D
+static var rim_outlines:=true
 static func projectile_rim()->StandardMaterial3D:
 	if rim_material==null:
 		rim_material=StandardMaterial3D.new();rim_material.shading_mode=BaseMaterial3D.SHADING_MODE_UNSHADED;rim_material.cull_mode=BaseMaterial3D.CULL_FRONT
-		rim_material.albedo_color=Color(.12,.07,.02,.8);rim_material.transparency=BaseMaterial3D.TRANSPARENCY_ALPHA
+		rim_material.albedo_color=Color(.86,.36,.05)
 	return rim_material
 static func projectile_visual(parent:Node3D,kind:String,color:Color,rim:=false)->Node3D:
 	var spec:Dictionary=PROJECTILES.get(kind,PROJECTILES.bullet)
@@ -88,7 +90,7 @@ static func projectile_visual(parent:Node3D,kind:String,color:Color,rim:=false)-
 	var trail=MeshInstance3D.new();var box=BoxMesh.new();box.size=Vector3.ONE;trail.mesh=box
 	trail.scale=Vector3(spec.width,spec.width*.6,spec.trail);trail.position.z=spec.trail*.5;trail.material_override=trail_materials[key]
 	for node in [trail,halo,core]:node.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF;root.add_child(node)
-	if rim:
+	if rim and rim_outlines:
 		var outline=MeshInstance3D.new();outline.name="Rim";outline.mesh=projectile_sphere;outline.scale=spec.core*Vector3(1.7,1.7,1.35);outline.material_override=projectile_rim()
 		outline.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF;root.add_child(outline)
 	if kind=="rocket":

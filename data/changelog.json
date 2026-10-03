@@ -169,7 +169,8 @@
 					"Экран загрузки с логотипом при запуске и перед первым боем: прикрывает подготовку графики и исчезает, как только картинка идёт ровно; заставка движка заменена логотипом игры. Размытие краёв кадра стало легче для видеокарты",
 					"Рюкзак: предметы свободно перетаскиваются в любую ячейку (перетаскиваемый предмет приподнимается с обводкой), застрахованные «Сейфом» ячейки отмечены щитом — сохраняются чертежи именно в них. Снаряжение: все характеристики героя, без полос прокрутки. Карточки патронов: понятная строка «что будет со слотом» и аккуратный список параметров. Ножки маскировочных сеток в цвет карты",
 					"Один парашют на всю игру: белое плоское крыло у бонусов, товарища и доставленной техники. Стенд «Развитие заставы» больше не мерцает",
-					"Металл стал металлом: оружие, стальные балки, фермы, ворота, стеллажи, бочки, автомат патронов и детали техники блестят, а ткань, мех и камуфляж остаются матовыми. В инструментах тестировщика — библиотека материалов с ползунками и кнопками «Сбросить» и «Сохранить»"
+					"Металл стал металлом: оружие, стальные балки, фермы, ворота, стеллажи, бочки, автомат патронов и детали техники блестят, а ткань, мех и камуфляж остаются матовыми. В инструментах тестировщика — библиотека материалов с ползунками и кнопками «Сбросить» и «Сохранить»",
+					"Пуля игрока днём — насыщенно-оранжевая с тёплым ободком (без чёрной обводки), хорошо видна на светлом полу; ночью — светло-золотая"
 				]
 			},
 			"en": {
@@ -338,7 +339,8 @@
 					"Loading screen with the logo at launch and before the first battle: it covers graphics warm-up and fades once frames run smoothly; the engine splash now shows the game logo. The edge blur is lighter on the GPU",
 					"Backpack: items drag freely to any cell (the dragged item lifts with an outline), cells insured by «Safe» show a shield and keep the blueprints in them. Gear: all hero stats, no scroll bars. Ammo cards: a clear line about the slot and a tidy list of values. Camo net legs match the map",
 					"One parachute for the whole game: a flat white wing for bonuses, the comrade and delivered vehicles. The «Outpost progress» board no longer flickers",
-					"Metal now reads as metal: weapons, steel beams, trusses, gates, racks, drums, the ammo machine and vehicle parts shine, while cloth, fur and camo stay matte. Tester tools have a material library with sliders and «Reset»/«Save»"
+					"Metal now reads as metal: weapons, steel beams, trusses, gates, racks, drums, the ammo machine and vehicle parts shine, while cloth, fur and camo stay matte. Tester tools have a material library with sliders and «Reset»/«Save»",
+					"The player's bullet by day is a saturated orange with a warm rim (no black outline), easy to see on light floors; golden at night"
 				]
 			}
 		},
