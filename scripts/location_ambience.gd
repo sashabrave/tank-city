@@ -31,6 +31,8 @@ func _ready():
 	if not miniature:
 		ground=preload("res://scripts/backdrop_ground.gd").new();ground.name="BackdropGround";add_child(ground)
 		ground.setup(palette,biome,radius,seed_value+room_index*7109)
+		if get_parent() and get_parent().has_method("room_palette"):
+			var approach=preload("res://scripts/field_approach.gd").new();approach.name="FieldApproach";add_child(approach);approach.build(get_parent(),ground,seed_value+room_index*7109)
 	var tones:Array=preload("res://scripts/backdrop_ground.gd").colors(palette,biome) if not miniature else []
 	for i in range(count):
 		var root=Node3D.new();add_child(root)

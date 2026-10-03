@@ -15,7 +15,8 @@
 					"Углы поля: прожекторов от одного до четырёх, в разных местах у угла и с разным поворотом; сами прожекторы проще. На бордюре меньше мусора, предметы стоят на нём и окрашены в цвет карты.",
 					"Карта мира: руины домов меньше, добавлены деревенские домики и арочный ангар.",
 					"Карта мира: W ведёт машину штаба вдоль дорог, под наклоном карты, а не строго вверх экрана; на дорогах прерывистая разметка, где-то свежая, где-то стёртая.",
-					"Карта мира: по краям вместо гор-пирамид — массивные ступенчатые плато с полосами пород и обломками у подножия."
+					"Карта мира: по краям вместо гор-пирамид — массивные ступенчатые плато с полосами пород и обломками у подножия.",
+					"К полю боя снизу ведёт импровизированный подъезд для машины штаба: насыпь от бордюра с мешками по краям и колеями, внизу грунтовка уходит дугой в сторону, шлагбаум и пара ежей."
 				]
 			},
 			"en": {
@@ -31,7 +32,8 @@
 					"Field corners: one to four searchlights at varying spots near the corner and turned differently; the searchlights themselves are simpler. Less clutter on the rim; props stand on it in the map colour.",
 					"World map: smaller ruined houses, plus village cottages and an arched hangar.",
 					"World map: W drives the HQ truck along the roads, tilted with the map, not straight up the screen; roads have a dashed centre line, fresh on some, worn on others.",
-					"World map: the edges have massive terraced plateaus with rock strata and fallen blocks instead of pyramid mountains."
+					"World map: the edges have massive terraced plateaus with rock strata and fallen blocks instead of pyramid mountains.",
+					"An improvised approach for the HQ truck leads up to the field from below: an earth ramp from the rim with sandbags and wheel ruts, a dirt track curving off at the foot, a barrier pole and a couple of hedgehogs."
 				]
 			}
 		},
