@@ -64,7 +64,7 @@ func enemy_aim(actor) -> Vector2i:
 	if open_shot!=Vector2i.ZERO:return open_shot
 	var seek_open_lane=not base_firing_cells(actor).is_empty()
 	if actor.assault_time>0 and not arena.boss_room:
-		if not seek_open_lane and actor.cell.x==arena.base_cell.x and actor.cell.y>=arena.grid_size-4:return Vector2i.DOWN
+		if not seek_open_lane and actor.cell.x==arena.base_cell.x and actor.cell.y>=arena.grid_size-4 and not concrete_to_base(actor.cell):return Vector2i.DOWN
 		var next=actor.cell+actor.facing
 		return actor.facing if not seek_open_lane and needs_breach(actor) and arena.walls.has(next) and arena.walls[next].hp>0 else Vector2i.ZERO
 	var weapon_range=EnemyLoadouts.profile(actor.enemy_weapon).range if actor.kind in ["soldier","shield"] else 7.0
@@ -73,7 +73,7 @@ func enemy_aim(actor) -> Vector2i:
 		var direction=arena.aligned_direction(actor.cell,wreck.cell)
 		if direction!=Vector2i.ZERO and arena.clear_line(actor.cell,wreck.cell):return direction
 	if actor.kind=="grenadier":return Vector2i.ZERO
-	if not seek_open_lane and actor.kind=="buggy" and not arena.room.boss_room and actor.cell.x==arena.room.base_cell.x and actor.cell.y>=arena.room.grid_size-4:return Vector2i.DOWN
+	if not seek_open_lane and actor.kind=="buggy" and not arena.room.boss_room and actor.cell.x==arena.room.base_cell.x and actor.cell.y>=arena.room.grid_size-4 and not concrete_to_base(actor.cell):return Vector2i.DOWN
 	for turret in arena.room.actors:
 		if not is_instance_valid(turret) or not turret.allied or turret.dead or arena.flat_distance(actor.position,turret.position)>weapon_range:continue
 		var aim=arena.aligned_direction(actor.cell,turret.cell)
@@ -89,16 +89,20 @@ func enemy_aim(actor) -> Vector2i:
 		if dir!=Vector2i.ZERO and delta.length()<=CombatMods.engage_range(arena,weapon_range) and arena.clear_shot(actor.position,end,width):return dir
 	# Shoot toward the base, including through its destructible cover.
 	if not seek_open_lane and not arena.room.boss_room and actor.cell.x == arena.room.base_cell.x and actor.cell.y >= arena.room.grid_size-4:
-		var p = actor.cell+Vector2i.DOWN
-		while p.y<arena.room.base_cell.y:
-			if arena.room.walls.has(p) and arena.room.walls[p].hp<0: return Vector2i.ZERO
-			p += Vector2i.DOWN
-		return Vector2i.DOWN
+		return Vector2i.ZERO if concrete_to_base(actor.cell) else Vector2i.DOWN
 	var next = actor.cell+actor.facing
 	if not seek_open_lane and needs_breach(actor) and arena.room.walls.has(next) and arena.room.walls[next].hp>0:
 		if not actor.uses_quarter_steps() or not arena.can_stand(actor.position+Vector3(actor.facing.x,0,actor.facing.y)*.5,actor,true):return actor.facing
 	return Vector2i.ZERO
 
+## T-002: indestructible cover (concrete, its half-blocks and L-corners) between a cell straight above the HQ
+## and the HQ: shooting down would only hit the concrete, so the unit moves on and looks for a real lane.
+func concrete_to_base(cell:Vector2i)->bool:
+	var p=cell+Vector2i.DOWN
+	while p.y<arena.room.base_cell.y:
+		if arena.room.walls.has(p) and arena.room.walls[p].hp<0:return true
+		p+=Vector2i.DOWN
+	return false
 func needs_breach(actor)->bool:
 	var state:Dictionary=actor.get_meta("quarter_search" if actor.uses_quarter_steps() else "cell_search",{})
 	return state.get("done",false) and state.get("path",[]).is_empty()
@@ -266,12 +270,20 @@ func frontier_pop(heap:Array)->Vector2i:
 	return point
 
 func drone_step(actor):
+	# Kamikaze (T-027): a drone that touches the soldier blows up on him instead of driving past.
+	var player=arena.room.player
+	if is_instance_valid(player) and not player.dead and arena.flat_distance(actor.position,player.position)<.75:
+		actor.dead=true
+		if actor.wave_slot>=0 and actor.wave_slot<arena.room.wave_roster.size():arena.room.wave_roster[actor.wave_slot].state="dead"
+		arena.room.actors.erase(actor);arena.explosion(actor.position,3.0*(1.55 if actor.rank==3 else 1.3 if actor.rank==2 else 1.0)*actor.strength_scale);actor.queue_free();return
 	if actor.moving:return
 	var side=actor.flank
 	var wall_cell=Vector2i(arena.room.base_cell.x+side,arena.room.grid_size-1)
 	var drop_cell=Vector2i(arena.room.base_cell.x+side*(2 if arena.room.walls.has(wall_cell) else 1),arena.room.grid_size-1)
 	if actor.cell==drop_cell:
 		var bomb=load("res://scenes/bomb.tscn").instantiate();bomb.arena=arena;bomb.damage=3.0*(1.55 if actor.rank==3 else 1.3 if actor.rank==2 else 1.0)*actor.strength_scale;bomb.position=actor.position
+		# T-071: the drone itself becomes the bomb — it digs in instead of dropping a separate shell.
+		if is_instance_valid(actor.model):bomb.drone_model=actor.model
 		arena.add_child(bomb);arena.room.bombs.append(bomb)
 		if actor.wave_slot>=0 and actor.wave_slot<arena.room.wave_roster.size():arena.room.wave_roster[actor.wave_slot].state="dead"
 		actor.dead=true;arena.room.actors.erase(actor);actor.queue_free()

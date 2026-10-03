@@ -81,7 +81,23 @@ func path_line(a:Vector3,b:Vector3):
 		points.append(a*u*u*u+(a+Vector3(0,0,bend))*3*u*u*t+(b-Vector3(0,0,bend))*3*u*t*t+b*t*t*t)
 	road.add_child(ribbon(points,2.05,-.43,Color("8f8a74")))
 	road.add_child(ribbon(points,1.45,-.41,Color("6b6e5c")))
+	markings(road,points,hash(key))
 	road_paths.append({"a":a,"b":b,"points":points,"node":road})
+## Dashed centre line with random wear (0.8): some roads fresh, some faded, single dashes missing.
+func markings(road:Node3D,points:Array,seed_value:int):
+	var rng=RandomNumberGenerator.new();rng.seed=seed_value
+	var wear=rng.randf_range(0.0,.7)
+	var paint=Color("e7dcb4").lerp(Color("6b6e5c"),.5).lerp(Color("6b6e5c"),wear*.6)  # half the contrast of fresh paint (author)
+	var travelled=0.0;var next_dash=rng.randf_range(.2,.6)
+	for i in range(points.size()-1):
+		var a:Vector3=points[i];var b:Vector3=points[i+1];var length=a.distance_to(b)
+		while next_dash<travelled+length:
+			var t=(next_dash-travelled)/length;var at=a.lerp(b,t);var dir=(b-a).normalized()
+			if rng.randf()>wear*.55:
+				var dash=Visuals.box(road,at+Vector3(0,-.395,0),Vector3(.08,.012,.42*rng.randf_range(.6,1.0)),paint.lerp(Color("6b6e5c"),rng.randf()*wear*.5))
+				dash.rotation.y=atan2(dir.x,dir.z);dash.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			next_dash+=.85
+		travelled+=length
 func ribbon(points:Array,width:float,height:float,color:Color)->MeshInstance3D:
 	var surface=SurfaceTool.new();surface.begin(Mesh.PRIMITIVE_TRIANGLES)
 	var left=[];var right=[]
@@ -137,7 +153,7 @@ func _ready():
 			var visited=stage<available and RoutePlan.chosen(plan,stage,route_choices).id==info.id
 			var skipped=stage<available and not visited
 			# Tile colour = the floor of the biome this room will have.
-			var color=Color(preload("res://scripts/biome_catalog.gd").entry(wave_seed,stage).floor).darkened(.06)
+			var color=Color(preload("res://scripts/biome_catalog.gd").entry(wave_seed,stage,int(info.lane)).floor).darkened(.06)
 			if skipped:color=color.darkened(.28)
 			var branch=RoutePlan.node_branch(info)
 			if branch=="headquarters":MINI.depot(node)
@@ -146,7 +162,7 @@ func _ready():
 			elif info.type in RoutePlan.CHALLENGES:MINI.challenge(node,info.type,color)
 			elif stage in Campaign.BOSSES:MINI.boss(node,color);node.scale*=1.45
 			else:MINI.battle(node,posmod(wave_seed+stage*3+info.lane*7,4),color,visited,info.difficulty)
-			if branch=="" and not skipped and not visited:MINI.live_weather(node,preload("res://scripts/systems/weather.gd").for_room(wave_seed,stage),preload("res://scripts/systems/weather.gd").rain_for(stage))
+			if branch=="" and not skipped and not visited:MINI.live_weather(node,preload("res://scripts/systems/weather.gd").for_room(wave_seed,stage,route_choices.merged({stage:info.id},true)),preload("res://scripts/systems/weather.gd").rain_for(stage))
 			var caption={"vehicle":"Техника","headquarters":"Депо","legend":"Захваченный КП"}.get(branch,ChallengeRooms.TITLES.get(info.type,"%02d" % (stage+1)))
 			Visuals.label3d(node,"✓ "+caption if visited else caption,Vector3(0,.35,3.65),Color("f3eee0"),30).pixel_size=.025
 			if not visited and not skipped and branch=="":
@@ -174,6 +190,8 @@ func _ready():
 	Visuals.ring(player_marker,Color("f3b95f"),2.0/1.5)
 	player_marker.position=current_point()+Vector3(0,.17,2)*MINI_SCALE
 	foreground_hangar=preload("res://scripts/route_foreground.gd").new();add_child(foreground_hangar)
+	# Past the boss: the pass with a checkpoint and the burning war beyond (T-007).
+	var pass_scene=preload("res://scripts/route_pass.gd").new();add_child(pass_scene);pass_scene.build(stage_z(plan.size()-1))
 	scatter_battlefield()
 	for info in plan[0]:path_line(START_POINT,previews[info.id].position)
 	start_pad=Node3D.new();start_pad.name="StartPad";add_child(start_pad);start_pad.position=START_POINT;start_pad.scale=Vector3.ONE*MINI_SCALE
@@ -200,7 +218,7 @@ func build_ui():
 	# One quiet plate: world, a one-line legend and the controls. Two small buttons top right.
 	var size=get_viewport().get_visible_rect().size
 	var plate=UiKit.glass(root,Vector2(20,18),Vector2(560,96),Color("242d27d8"));plate.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	UiKit.label(plate,"Бесконечный · сектор %d" % (Campaign.cycle+1) if Campaign.endless else "Мир %d · %s" % [Campaign.world,Campaign.WORLDS[Campaign.world].name],Vector2(16,8),Vector2(530,36),24)
+	UiKit.accent(UiKit.label(plate,"Бесконечный · сектор %d" % (Campaign.cycle+1) if Campaign.endless else "Мир %d · %s" % [Campaign.world,BattleNames.current()],Vector2(16,8),Vector2(530,36),24))
 	var hint="Сначала заедь на передышку" if needs_service else "★ средняя · ★★ сложная · редкие чертежи"
 	UiKit.label(plate,hint,Vector2(16,44),Vector2(530,22),15,UiKit.MUTED)
 	UiKit.label(plate,"WASD — ехать · E — войти · колесо, перетаскивание — обзор",Vector2(16,66),Vector2(530,22),15,UiKit.MUTED)
@@ -224,7 +242,7 @@ func confirm_service():
 	if travelling or not needs_service or pending_service not in fork_positions:return
 	var branch=pending_service;travelling=true;close_dialog();service_requested.emit(branch,available)
 func move_camera():
-	scroll=clampf(scroll,0,-stage_z(plan.size()-1))
+	scroll=clampf(scroll,0,-stage_z(plan.size()-1)+11.0)  # a look past the boss at the pass (T-007)
 	for id in previews:
 		previews[id].visible=absf(previews[id].position.z+scroll)<30
 	for node in service_nodes:node.visible=absf(node.position.z+scroll)<30
@@ -505,7 +523,8 @@ func drive(delta):
 	if travelling or is_instance_valid(modal) or showing_pause:
 		update_card();return
 	var input=Input.get_vector("west","east","north","south")
-	var wish=Vector3(input.x,0,input.y).rotated(Vector3.UP,deg_to_rad(10))*DRIVE_SPEED
+	# W drives along the map axis, i.e. parallel to the roads (on screen a little tilted with the map), 0.8.
+	var wish=Vector3(input.x,0,input.y)*DRIVE_SPEED
 	drive_velocity=drive_velocity.move_toward(wish,delta*(22.0 if wish.length()>.1 else 16.0))
 	var hero=player_marker.get_node_or_null("CurrentHero")
 	if wish.length()>.1 and get_viewport().gui_get_focus_owner()!=null:get_viewport().gui_release_focus()  # WASD drives, not menus

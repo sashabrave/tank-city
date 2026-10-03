@@ -1,9 +1,12 @@
 extends RefCounted
+## Seconds a landed field bonus stays before it disappears (T-046).
+const BONUS_LIFETIME=25.0
 ## Reward system. Owns rules; Arena remains the scene coordinator.
 var arena
+var thieves
 
 func _init(context):
-	arena=context
+	arena=context;thieves=preload("res://scripts/systems/bonus_thieves.gd").new(context)
 
 func drop_pickup(_cell: Vector2i,kind: String):
 	var candidates: Array[Vector2i]=[]
@@ -19,6 +22,9 @@ func drop_pickup(_cell: Vector2i,kind: String):
 	var cell=candidates[arena.run.combat_rng.randi_range(0,candidates.size()-1)]
 	if kind=="vehicle" and arena.unlocked_vehicle()=="":kind="repair" if "repair" in Game.bonus_unlocks else "heart"
 	if kind=="turret" and arena.room.room_index<2:kind="repair" if "repair" in Game.bonus_unlocks else "heart"
+	place_pickup(cell,kind)
+## A field bonus on a given cell, parachuting down for `fall` seconds (also used when a thief drops one, T-072).
+func place_pickup(cell:Vector2i,kind:String,fall:=1.1):
 	var node=Node3D.new();arena.add_child(node);node.position=arena.world_pos(cell)
 	var visual=arena.LOOT.visual(node,kind)
 	var info=arena.LOOT.BONUSES[kind]
@@ -28,7 +34,7 @@ func drop_pickup(_cell: Vector2i,kind: String):
 		var pulse=node.create_tween().set_loops();pulse.tween_property(ring,"scale",Vector3.ONE*1.18,.6);pulse.tween_property(ring,"scale",Vector3.ONE,.6)
 	# Arrival: it floats down under a small parachute, the canopy folds on landing with a puff of dust.
 	var chute=parachute(visual,Color(info.color))
-	arena.room.pickups.append({"node":node,"visual":visual,"kind":kind,"land_at":arena.run.elapsed+1.1,"chute":chute})
+	arena.room.pickups.append({"node":node,"visual":visual,"kind":kind,"land_at":arena.run.elapsed+fall,"chute":chute})
 
 ## Ram-air wing over a falling bonus: five cloth cells along an arch (round cells read as semicircles
 ## from the front), matte khaki/olive, only the centre cell hints at the bonus colour. Visual only.
@@ -49,9 +55,25 @@ func parachute(visual:Node3D,tint:Color)->Node3D:
 			var line=Visuals.box(chute,(top+bottom)*.5,Vector3(.01,.01,top.distance_to(bottom)),Color("8d8f7c"))
 			line.look_at_from_position(line.position,top,Vector3.UP)
 	return chute
+## An army sack with dropped backpack items (T-113): it stays until the soldier walks over it with room to spare.
+func place_sack(cell:Vector2i,content:Dictionary):
+	var node=Node3D.new();arena.add_child(node);node.position=arena.world_pos(cell)+Vector3(randf_range(-.2,.2),0,randf_range(-.2,.2))
+	var visual=Node3D.new();node.add_child(visual)
+	var olive=Color("6b6a45")
+	Visuals.box(visual,Vector3(0,.16,0),Vector3(.36,.32,.28),olive)
+	Visuals.box(visual,Vector3(0,.34,0),Vector3(.22,.06,.18),olive.darkened(.25))
+	Visuals.box(visual,Vector3(0,.2,.145),Vector3(.06,.3,.02),Color("3e3a2a"))
+	Visuals.ring(node,Color("cfd3a0"),.38)
+	arena.room.pickups.append({"node":node,"visual":visual,"kind":"sack","content":content,"blocked":true})
+	Game.sound("debris",arena)
 func collect_pickup(pickup: Dictionary):
+	if pickup.kind=="sack":
+		if Backpack.pick_sack(arena,pickup.content):
+			arena.room.pickups.erase(pickup);preload("res://scripts/battle_stage.gd").vanish(pickup.node);Game.sound("pickup",arena);arena.toast(Texts.render("Мешок подобран"))
+		else:pickup["blocked"]=true
+		return
 	if pickup.kind=="recipe":
-		if arena.run.pending_recipes.size()>=Game.backpack_slots:
+		if Backpack.full(arena.run):
 			arena.room.recipe_offer=pickup;pickup["blocked"]=true;arena.pause_battle();return
 		arena.run.pending_recipes.append(pickup.recipe);arena.toast("В рюкзаке: "+Game.recipe_name(pickup.recipe))
 		arena.room.pickups.erase(pickup);preload("res://scripts/battle_stage.gd").vanish(pickup.node);Game.sound("pickup",arena);return
@@ -60,10 +82,16 @@ func collect_pickup(pickup: Dictionary):
 		"star":
 			arena.room.star_time=6+effective_bonus_level("star")*1.5;detail="Неуязвимость и мощный огонь · %d с" % int(arena.room.star_time)
 		"heart":
-			var healed=minf(float(pickup.get("hq_heal",Game.heal_amount()*bonus_strength("heart")))*arena.run.healing_multiplier,arena.run.soldier_max_hp-arena.run.soldier_hp)
+			# Full health (T-115): the aid kit goes into the backpack for later, if there is a free cell.
+			var amount=float(pickup.get("hq_heal",Game.heal_amount()*bonus_strength("heart")))
+			if arena.run.soldier_hp>=arena.run.soldier_max_hp-.01 and is_instance_valid(arena.room.player) and arena.room.player.kind=="soldier" and not Backpack.full(arena.run):
+				arena.run.supplies.append({"type":"medkit","heal":amount})
+				arena.room.pickups.erase(pickup);preload("res://scripts/battle_stage.gd").vanish(pickup.node);Game.sound("pickup",arena)
+				arena.toast(Texts.render("Аптечка в рюкзаке · H — использовать"));Backpack.refresh(arena);return
+			var healed=minf(amount*arena.run.healing_multiplier,arena.run.soldier_max_hp-arena.run.soldier_hp)
 			arena.run.soldier_hp+=healed;detail="+%s здоровья" % str(snappedf(healed,.1))
 			if is_instance_valid(arena.room.player) and arena.room.player.kind=="soldier":arena.room.player.hp=arena.run.soldier_hp;arena.room.player.refresh_health()
-		"pressure":arena.room.pressure_time=8+effective_bonus_level("pressure")*2;detail="Напор ×2 · %d с" % int(arena.room.pressure_time)
+		"pressure":arena.room.pressure_time=8+effective_bonus_level("pressure")*2;detail="Ярость · напор ×2 · %d с" % int(arena.room.pressure_time)
 		"freeze":arena.room.freeze_time=3+effective_bonus_level("freeze");detail="Враги заморожены · %d с" % int(arena.room.freeze_time)
 		"turret":
 			arena.install_turret();detail="Турель у базы"
@@ -171,6 +199,9 @@ func drop_recipe(cell: Vector2i,_recipe: Dictionary):
 	Visuals.label3d(node,"Сундук "+EncounterRules.STARS[2 if arena.room.boss_room else arena.room.difficulty]+" · E",Vector3(0,1.4,0),Color("fff0ac"),40)
 	preload("res://scripts/interaction_prompt.gd").attach(node,arena,"Сундук",Vector3.ZERO,1.65)
 	arena.room.pickups.append({"kind":"recipe_draft","elite":elite,"final":arena.room.boss_room,"offers":[],"node":node,"visual":visual})
+	# Arrival: the chest drops in with a bounce and the camera leans in a little (T-022).
+	visual.scale=Vector3.ONE*.2;var arrive=node.create_tween();arrive.tween_property(visual,"scale",Vector3.ONE*1.08,.22).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT);arrive.tween_property(visual,"scale",Vector3.ONE*.95,.12)
+	var feel=arena.get_node_or_null("CombatFeel");if feel:feel.punch_in()
 	arena.toast("Трофей командира · подойди и нажми E")
 func nearest_recipe() -> Dictionary:
 	if not is_instance_valid(arena.room.player):return {}
@@ -179,6 +210,11 @@ func nearest_recipe() -> Dictionary:
 	return {}
 func open_recipe_draft(pickup: Dictionary):
 	Game.sound("chest_open",arena)
+	# Opening: the chest jumps, the lid side flashes and a burst of light rises (T-022); runs under the pause.
+	if is_instance_valid(pickup.get("visual")):
+		var v:Node3D=pickup.visual;var pop=v.create_tween();pop.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+		pop.tween_property(v,"scale",Vector3(1.15,.8,1.15),.08);pop.tween_property(v,"scale",Vector3(.9,1.25,.9),.12);pop.tween_property(v,"scale",Vector3.ONE*.95,.18)
+		arena.burst(pickup.node.position+Vector3.UP*.6,Color("ffd56a"),.6)
 	if pickup.offers.is_empty():pickup.offers=chest_offers(pickup.get("elite",true))
 	arena.room.draft_pickup=pickup;arena.room.previous_phase=arena.phase;arena.phase="paused";Game.reset_input();arena.hud.show_recipe_draft()
 func reroll_recipe_draft():
@@ -191,7 +227,7 @@ func choose_recipe_card(index: int):
 	elif offer.category=="secret":apply_secret(offer)
 	elif offer.category=="documents":Game.earn(int(offer.amount)*Game.DOC_ALLOY);arena.run.earned+=int(offer.amount)*Game.DOC_ALLOY
 	elif offer.category=="upgrade":apply_trophy_upgrade(offer.id,offer.tier)
-	elif arena.run.pending_recipes.size()>=Game.backpack_slots:
+	elif Backpack.full(arena.run):
 		arena.room.recipe_offer=arena.room.draft_pickup;arena.room.recipe_offer.recipe=offer;arena.hud.show_pause();return
 	else:arena.run.pending_recipes.append(offer)
 	consume_chest(arena.room.draft_pickup);arena.room.draft_pickup={};arena.room.recipe_offer={};Game.sound("pickup",arena)
@@ -205,7 +241,7 @@ func discard_recipe(index: int):
 	if arena.phase!="paused" or index<0 or index>=arena.run.pending_recipes.size():return
 	arena.run.pending_recipes.remove_at(index);arena.hud.show_pause()
 func take_offered_recipe():
-	if arena.phase!="paused" or arena.room.recipe_offer.is_empty() or arena.run.pending_recipes.size()>=Game.backpack_slots:return
+	if arena.phase!="paused" or arena.room.recipe_offer.is_empty() or Backpack.full(arena.run):return
 	arena.run.pending_recipes.append(arena.room.recipe_offer.recipe);consume_chest(arena.room.recipe_offer);arena.room.recipe_offer={};arena.room.draft_pickup={}
 	if is_instance_valid(arena.replay):arena.replay.call_deferred("next")
 	else:arena.hud.show_pause()
@@ -215,11 +251,12 @@ func reroll_cards() -> bool:
 
 func collect_nearby_pickups(delta):
 	if not is_instance_valid(arena.room.player):return
+	thieves.tick(delta)
 	for pickup in arena.room.pickups.duplicate():
 		if arena.flat_distance(arena.room.player.position,pickup.node.position)>1.35:pickup["blocked"]=false
 		if arena.run.elapsed<float(pickup.get("land_at",0.0)):continue
 		if pickup.kind not in ["recipe_draft","cache"] and arena.flat_distance(arena.room.player.position,pickup.node.position)<1.1 and arena.clear_shot(arena.room.player.position,pickup.node.position,.05) and not pickup.get("blocked",false):collect_pickup(pickup)
-	for pickup in arena.room.pickups:
+	for pickup in arena.room.pickups.duplicate():
 		if pickup.kind=="recipe_draft":continue  # chests stand still on the ground
 		var falling=float(pickup.get("land_at",0.0))-arena.run.elapsed
 		if falling>0:
@@ -227,12 +264,19 @@ func collect_nearby_pickups(delta):
 		if is_instance_valid(pickup.get("chute")):
 			pickup.chute.queue_free();pickup.erase("chute");arena.burst(pickup.node.position+Vector3.UP*.2,Color("d8cfb4"),.45);Game.sound("delivery_land",arena)
 		pickup.visual.rotation.y+=delta;pickup.visual.position.y=.45+sin(arena.run.elapsed*3)*.07
+		# T-046: a field bonus does not lie forever — it blinks for its last 5 seconds and is gone after 25.
+		if pickup.kind!="cache" and pickup.has("land_at"):
+			var left=float(pickup.land_at)+BONUS_LIFETIME-arena.run.elapsed
+			if left<5.0:pickup.node.visible=fposmod(arena.run.elapsed*(3.0 if left>2.0 else 7.0),1.0)<.6
+			if left<=0:
+				arena.room.pickups.erase(pickup);arena.burst(pickup.node.position+Vector3.UP*.3,Color("d8cfb4"),.35);pickup.node.queue_free()
 func chest_offers(_elite:bool=true)->Array:
 	var difficulty=2 if arena.room.boss_room else arena.room.difficulty
 	# Chest cards come from the same registry and rarity roll as wave offers, never below the room difficulty.
 	var result=[{"category":"alloy","id":"alloy","amount":EncounterRules.chest_alloy(arena.room.room_index,difficulty),"tier":0}]
 	for offer in RunUpgrades.roll_offers(arena,2):result.append({"category":"upgrade","id":offer.id,"tier":maxi(int(offer.tier),difficulty)})
-	var recipe=EncounterRules.recipe(difficulty,arena.run.combat_rng,arena.run.pending_recipes,Campaign.progress_index(arena.room_index))
+	var recipe=EncounterRules.guaranteed(Campaign.progress_index(arena.room_index),arena.run.pending_recipes)
+	if recipe.is_empty():recipe=EncounterRules.recipe(difficulty,arena.run.combat_rng,arena.run.pending_recipes,Campaign.progress_index(arena.room_index))
 	if not recipe.is_empty():result[0]=recipe
 	return result
 
@@ -250,8 +294,8 @@ func apply_secret(offer):
 			else:arena.run.intercept_chance=minf(.95,arena.run.intercept_chance+.2)
 func consume_chest(chest):
 	if chest not in arena.room.pickups:return
-	# Documents now drop from the final boss, independently of chest selection.
 	arena.room.pickups.erase(chest);preload("res://scripts/battle_stage.gd").vanish(chest.node,.2,.2)
+	arena.flow.release_flag()
 func bonus_strength(id:String)->float:return Game.bonus_power(id)+arena.run.run_bonus_levels.get(id,0)*.1
 
 func effective_bonus_level(id:String)->int:return Game.bonus_level(id)+int(arena.run.run_bonus_levels.get(id,0))
@@ -397,6 +441,7 @@ func safe_drop_position(pos:Vector3)->Vector3:
 func kill_series(actor):
 	var run=arena.run
 	run.series=run.series+1 if arena.elapsed-run.series_at<=KILL_SERIES_WINDOW else 1
+	run.best_series=maxi(run.best_series,run.series)
 	run.series_at=arena.elapsed
 	if run.series<2:return
 	var label=Visuals.label3d(arena,"×%d" % run.series,actor.position+Vector3(0,2.2,0),Color("ffd26b"),44+mini(run.series,6)*4)

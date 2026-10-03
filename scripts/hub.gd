@@ -39,11 +39,16 @@ var training_barriers:Array=[]
 ## Outdoor yard to the right of the hangar, through the gap between the racks (row y=0): the parking spot
 ## and a fenced range with the dummy. Vehicles can drive out there too; the camera slides to follow.
 const YARD_PARK=Vector3(11,0,-2)
-const YARD_DUMMY=Vector3(16,0,-2)
+## T-010: the range is a long lane — fire from the marked spot, the target stands far away behind sandbags.
+const YARD_DUMMY=Vector3(21,0,-2)
+const FIRING_SPOT=Vector3(15,0,-2)
+const YARD_EAST=22
+## Motor pool terminal next to the parking bay (T-014).
+const GARAGE_TERMINAL=Vector3(11,0,-3)
 ## Rectangular test track in the south of the yard (centre, half extents) and the guard booth cell.
-const TRACK_CENTER=Vector3(13.9,0,1.9)
+const TRACK_CENTER=Vector3(16.3,0,1.9)
 ## Half extents of the rectangular track.
-const TRACK_RADII=Vector2(3.1,1.35)
+const TRACK_RADII=Vector2(5.3,1.35)
 const BOOTH_CELL=Vector2i(10,3)
 var camera_base:=Vector3.INF
 var camera_tilt:Node
@@ -72,6 +77,8 @@ var room_index=int(Time.get_ticks_usec()/7)%15
 func room_palette()->Dictionary:return preload("res://scripts/biome_catalog.gd").entry(run_seed,room_index)
 var command_screen:ShaderMaterial
 var command_beams:Node3D
+var roadmap_alert:Label3D
+var barracks_dot:Label3D
 var hq_bench_pos=Vector3(-2,0,3)
 var weapon_bench_pos=Vector3(0,0,3)
 
@@ -79,7 +86,7 @@ func _ready():
 	add_to_group("profile_hub")
 	PerfOverlay.show_build=true;tree_exiting.connect(func():PerfOverlay.show_build=false)
 	add_to_group("notification_context")
-	Visuals.setup_world(self,11.8,Vector3(0,0,0))
+	Visuals.setup_world(self,11.2,Vector3(0,0,0))
 	preload("res://scripts/base_surroundings.gd").hub(self,Color(room_palette().floor).darkened(.12))
 	var outskirts=preload("res://scripts/hub_outskirts.gd").new();outskirts.hub=self;add_child(outskirts)
 	Visuals.box(self,Vector3(1,-.4,.5),Vector3(13.3,.6,8.3),Color("8b9585"))
@@ -87,6 +94,8 @@ func _ready():
 	for x in range(-5,8):
 		for z in range(-3,5):positions.append(Vector3(x,0,z))
 	Visuals.tiled_floor(self,positions)
+	# Hangar reflections for metal (T-065): captured once after the hub is built.
+	(func():preload("res://scripts/world_lighting.gd").reflection_probe(self,Vector3(16,6,10),Vector3(1,0,.5))).call_deferred()
 	var gate=Visuals.model("gate",self,Vector3(5,0,-2))
 	gate.scale=Vector3(1.4,1.4,1.4)
 	Visuals.box(self,Vector3(5,.03,-2),Vector3(2.6,.03,1.7),Color("d29849"))
@@ -96,6 +105,8 @@ func _ready():
 	Visuals.model("hq_supplies",self,Vector3(5.15,0,-5.7))
 	printer_model=Visuals.model("printer",self,printer_pos)
 	Visuals.label3d(self,"Казарма",printer_pos+Vector3(0,1.95,0),Color("dcf6ec"),24)
+	# T-093: a green dot blinks over the Barracks while something there can be bought or upgraded.
+	barracks_dot=Visuals.label3d(self,"●",printer_pos+Vector3(0,2.35,0),UiKit.NOTICE.ready,48);barracks_dot.outline_size=0;barracks_dot.no_depth_test=true;barracks_dot.name="BarracksDot"
 	Visuals.model("crate",self,Vector3(-2,0,-2))
 	Visuals.model("supply_stack",self,Vector3(-1,0,-2.4))
 	displayed_vehicle=Game.garage.starting_vehicle()
@@ -133,7 +144,10 @@ func _ready():
 	hub_skills=preload("res://scripts/ui/hub_skills.gd").new();hub_skills.hub=self;root.add_child(hub_skills)
 	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Казарма",printer_pos,1.4)
 	preload("res://scripts/interaction_prompt.gd").attach(self,self,"В бой",Vector3(5,0,-2),2.2)
-	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Стоянка",YARD_PARK,1.65,func():return "garage" in Game.built_workshops and not mounted)
+	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Стоянка",GARAGE_TERMINAL,1.2,func():return "garage" in Game.built_workshops and not mounted)
+	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Сесть",YARD_PARK,1.65,func():return "garage" in Game.built_workshops and not mounted and training_tank.visible)
+	var terminal=Visuals.box(self,GARAGE_TERMINAL+Vector3(0,.55,0),Vector3(.45,1.1,.3),Color("5b6650"));terminal.name="GarageTerminal"
+	var screen=Visuals.box(self,GARAGE_TERMINAL+Vector3(0,.82,.16),Vector3(.34,.26,.02),Color("7fd0ff"));screen.material_override=Visuals.material(Color("7fd0ff"),true)
 	preload("res://scripts/printer_intro.gd").play(self)
 
 func build_ui():
@@ -179,7 +193,7 @@ func build_dev_menu():
 	build.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT);build.offset_left=-408;build.offset_right=-332;build.offset_top=-112;build.offset_bottom=-36
 	# Thumb-zone actions share the ability tiles' height (76) and top line.
 	root.get_node("StartButton").offset_top=-112;root.get_node("StartButton").offset_bottom=-36
-	build.icon=UiKit.interface_icon("build");build.expand_icon=true;build.add_theme_constant_override("icon_max_width",34);build.icon_alignment=HORIZONTAL_ALIGNMENT_CENTER
+	build.icon=load("res://assets/ui/construction/crane.png");build.expand_icon=true;build.add_theme_constant_override("icon_max_width",52);build.icon_alignment=HORIZONTAL_ALIGNMENT_CENTER
 	build.pressed.connect(show_build_menu)
 	menu.get_node("DebugAlloyButton").pressed.connect(func():Game.earn(1000);refresh())
 	menu.get_node("RecipeShopButton").pressed.connect(func():toggle_dev_menu(false);show_recipe_shop())
@@ -232,12 +246,15 @@ func _physics_process(delta):
 	hint_clock+=delta;hint_refresh-=delta
 	if hint_refresh<=0:
 		for id in bench_dots:bench_dots[id].visible=bench_available(id)
+		if is_instance_valid(barracks_dot):
+			barracks_dot.visible=not preload("res://scripts/ui/station_notices.gd").actionable("fighter").is_empty()
 		var build:Button=root.get_node("BuildButton")
 		var badge=build.get_node_or_null("Badge")
 		if badge==null:badge=UiKit.badge(build,"news")
 		badge.visible=Game.research_unlocks.any(func(id):return id in Game.BUILD_COST.keys() and preload("res://scripts/ui/build_catalog.gd").has_news(id))
 		hint_refresh=.3
 		refresh_command_alert()
+		if is_instance_valid(roadmap_alert):roadmap_alert.visible=not preload("res://scripts/ui/stations/roadmap_station.gd").new().unseen_done().is_empty()
 		var targets=Game.progression.build_targets()
 		for id in build_arrows:
 			if is_instance_valid(build_arrows[id]):build_arrows[id].visible=id not in Game.built_workshops and (id in Game.research_unlocks or id in targets)
@@ -249,6 +266,8 @@ func _physics_process(delta):
 		command_alert.scale=Vector3(2.0-squash,squash,1.0)
 		var pulse=.5+.5*sin(hint_clock*TAU/1.2)
 		command_alert.get_node("Halo").modulate.a=.2+.3*pulse;command_alert.get_node("Glow").light_energy=.9+1.1*pulse
+	if is_instance_valid(barracks_dot) and barracks_dot.visible:barracks_dot.modulate.a=.45+.55*(.5+.5*sin(hint_clock*5.0))
+	if is_instance_valid(roadmap_alert) and roadmap_alert.visible:roadmap_alert.position.y=2.05+absf(sin(hint_clock*3.0))*.12
 	for arrow in build_arrows.values():
 		if is_instance_valid(arrow):arrow.position.y=1.9+(1-cos(hint_clock*TAU/4.8))*.18
 	if is_instance_valid(build_menu):
@@ -281,7 +300,7 @@ func _physics_process(delta):
 	board_button.disabled=moving or (not near_station and not near_weapon and not near_bonus and not mounted and avatar.position.distance_to(training_tank.position)>1.65)
 	if not mounted and avatar.position.distance_to(printer_pos)<1.4:Texts.set_text(board_button,"Боец [E]");board_button.disabled=moving
 	if not mounted and avatar.position.distance_to(command_pos)<1.65:Texts.set_text(board_button,"Управление [E]");board_button.disabled=moving
-	if not mounted and "garage" in Game.built_workshops and avatar.position.distance_to(YARD_PARK)<1.65:Texts.set_text(board_button,"Стоянка [E]");board_button.disabled=moving
+	if not mounted and "garage" in Game.built_workshops and (avatar.position.distance_to(GARAGE_TERMINAL)<1.2 or (not training_tank.visible and avatar.position.distance_to(YARD_PARK)<1.65)):Texts.set_text(board_button,"Стоянка [E]");board_button.disabled=moving
 	if nearest_locked()!="":Texts.set_text(board_button,"Построить [E]");board_button.disabled=moving
 	if not mounted and avatar.position.distance_to(hq_bench_pos)<1.2:Texts.set_text(board_button,"Технологии [E]");board_button.disabled=moving
 	if not mounted and avatar.position.distance_to(recycling_pos)<1.3:Texts.set_text(board_button,"Продать [E]");board_button.disabled=moving
@@ -293,7 +312,8 @@ func _physics_process(delta):
 ## Uniform locker on the old bonus-bench spot by the back wall.
 const WARDROBE_POS=Vector3(-3,0,-1)
 ## «Развитие заставы»: the meta roadmap board by the back wall.
-const ROADMAP_POS=Vector3(1,0,-2)
+## One cell forward of the back wall so the truss does not hide it (T-088).
+const ROADMAP_POS=Vector3(1,0,-1)
 func build_roadmap():
 	var board=Node3D.new();board.name="Roadmap";add_child(board);board.position=ROADMAP_POS
 	var wood=Color("6d5a40");var cork=Color("b89a6a")
@@ -308,6 +328,8 @@ func build_roadmap():
 			var color=Color("e8dcc0") if i<2-row%2 else Color("f2a33a") if i==2-row%2 else Color("9c8f74")
 			Visuals.box(board,Vector3(-.45+i*.3,y,.07),Vector3(.18,.14,.01),color)
 	Visuals.label3d(board,"Развитие заставы",Vector3(0,2.0,0),Color("dcf6ec"),22)
+	# A reached goal not seen yet: an orange «!» hops over the board until the station is opened.
+	roadmap_alert=Visuals.label3d(board,"!",Vector3(.62,2.05,0),UiKit.ORANGE,64);roadmap_alert.outline_size=12;roadmap_alert.name="RoadmapAlert"
 	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Развитие заставы",ROADMAP_POS,1.3,func():return not mounted)
 func build_wardrobe():
 	var locker=Node3D.new();locker.name="Wardrobe";add_child(locker);locker.position=WARDROBE_POS
@@ -342,7 +364,7 @@ func refresh_uniform():
 func build_yard():
 	var yard=Node3D.new();yard.name="Yard";add_child(yard)
 	# A concrete apron flush with the hangar floor (top at y=0), standing on the outside ground.
-	Visuals.box(yard,Vector3(13.6,-.42,0),Vector3(8.4,.84,7.4),Color("8d9186"))
+	Visuals.box(yard,Vector3(16.1,-.42,0),Vector3(13.4,.84,7.4),Color("8d9186"))
 	passage(yard)
 	range_pen(yard)
 	test_track(yard)
@@ -353,20 +375,27 @@ func build_yard():
 	Visuals.box(parking_sign,Vector3(0,1.15,0),Vector3(.6,.45,.05),Color("2f3b33"))
 	var icon=Sprite3D.new();icon.texture=load("res://assets/icons/v1/vehicle.png");  # world sign: plain sprite, not the UI pin
 	icon.pixel_size=.4/maxf(1.0,float(icon.texture.get_width()));icon.position=Vector3(0,1.15,.035);parking_sign.add_child(icon)
-## Fenced range in the north-east corner, open on the west side so vehicles can drive in.
+## Range lane (T-010) along row -2: a painted firing spot at the west end, dashed lane edges, and the target far
+## east inside a U of sandbags with a backstop wall. Open on the west so vehicles can drive up to the spot.
 func range_pen(yard:Node3D):
-	var post=Color("5b5f57");var rail=Color("9aa093")
-	for x in [14.5,15.5,16.5,17.4]:Visuals.box(yard,Vector3(x,.45,-3.35),Vector3(.1,.9,.1),post)
-	for z in [-2.35,-1.2]:Visuals.box(yard,Vector3(17.4,.45,z),Vector3(.1,.9,.1),post)
-	for y in [.35,.75]:
-		Visuals.box(yard,Vector3(15.95,y,-3.35),Vector3(2.95,.05,.05),rail)
-		Visuals.box(yard,Vector3(17.4,y,-2.28),Vector3(.05,.05,2.15),rail)
-	sandbag_row(yard,Vector3(16,0,-2.85),5)
-	var board=Visuals.box(yard,Vector3(17.0,.9,-2.9),Vector3(.7,.7,.06),Color("e8e2d0"))
-	for r in [.26,.16,.07]:
-		var ring=MeshInstance3D.new();var disc=CylinderMesh.new();disc.top_radius=r;disc.bottom_radius=r;disc.height=.02;ring.mesh=disc;ring.rotation.x=PI*.5
-		ring.position=Vector3(17.0,.9,-2.86+(.3-r)*.02);ring.material_override=Visuals.material(Color("cf613f") if r!=.16 else Color("e8e2d0"));yard.add_child(ring)
-	preload("res://scripts/base_surroundings.gd").lamp(yard,Vector3(17.6,0,-.6))
+	var paint=Color("e8e2d0");var bag=Color("b8a47c")
+	# Firing spot: a mat with a chevron and a stencil line across the lane.
+	Visuals.box(yard,FIRING_SPOT+Vector3(0,.013,0),Vector3(.9,.012,.9),Color("4f5a45"))
+	Visuals.box(yard,FIRING_SPOT+Vector3(.5,.016,0),Vector3(.06,.012,.9),Color("e5b34f"))
+	for k in [-1,1]:var chev=Visuals.box(yard,FIRING_SPOT+Vector3(-.05,.018,k*.14),Vector3(.32,.012,.07),Color("e5b34f"));chev.rotation.y=k*.6
+	# Dashed lane edges from the spot to the target.
+	for i in range(int(YARD_DUMMY.x-FIRING_SPOT.x)*2):
+		for z in [-.55,.55]:Visuals.box(yard,Vector3(FIRING_SPOT.x+.8+i*.5,.013,YARD_DUMMY.z+z),Vector3(.25,.01,.05),paint)
+	# Sandbag U around the target and a timber backstop behind it.
+	for z in [-1.0,1.0]:
+		for i in range(3):sandbag_row(yard,Vector3(YARD_DUMMY.x-.6+i*.5,0,YARD_DUMMY.z+z*.75),1)
+	for i in range(3):sandbag_row(yard,Vector3(YARD_DUMMY.x+.75,0,YARD_DUMMY.z-.5+i*.5),1)
+	Visuals.box(yard,Vector3(YARD_DUMMY.x+1.1,.75,YARD_DUMMY.z),Vector3(.2,1.5,2.2),Color("6d5a40"))
+	var board=Visuals.box(yard,Vector3(YARD_DUMMY.x+.95,1.0,YARD_DUMMY.z),Vector3(.06,.75,.75),Color("e8e2d0"));board.rotation.y=PI*.5
+	for r in [.28,.17,.07]:
+		var ring=MeshInstance3D.new();var disc=CylinderMesh.new();disc.top_radius=r;disc.bottom_radius=r;disc.height=.02;ring.mesh=disc;ring.rotation.z=PI*.5
+		ring.position=Vector3(YARD_DUMMY.x+.91-(.3-r)*.02,1.0,YARD_DUMMY.z);ring.material_override=Visuals.material(Color("cf613f") if r!=.17 else Color("e8e2d0"));yard.add_child(ring)
+	preload("res://scripts/base_surroundings.gd").lamp(yard,Vector3(YARD_EAST+.6,0,-.6))
 ## Rectangular test track with rounded corners: asphalt, red-white kerbs, a chequered start line, cones,
 ## a ramp and tyre stacks on the infield. Decoration only; soldier and vehicles drive over it.
 func track_point(t:float)->Vector3:
@@ -432,8 +461,8 @@ func passage(yard:Node3D):
 ## flag at the entrance, a container on the ground behind the range.
 func yard_dressing(yard:Node3D):
 	var block=Color("a2a596")
-	for x in [11.0,12.3,13.6,14.9,16.2]:Visuals.box(yard,Vector3(x,.25,3.55),Vector3(1.1,.5,.35),block)
-	for z in [.2,1.5,2.8]:Visuals.box(yard,Vector3(17.65,.25,z),Vector3(.35,.5,1.1),block)
+	for x in [11.0,12.3,13.6,14.9,16.2,17.5,18.8,20.1,21.4]:Visuals.box(yard,Vector3(x,.25,3.55),Vector3(1.1,.5,.35),block)
+	for z in [.2,1.5,2.8]:Visuals.box(yard,Vector3(YARD_EAST+.65,.25,z),Vector3(.35,.5,1.1),block)
 	for dx in [-.55,.55]:Visuals.box(yard,YARD_PARK+Vector3(dx,.012,0),Vector3(.06,.012,1.5),Color("e8e2d0"))
 	Visuals.box(yard,YARD_PARK+Vector3(0,.012,.72),Vector3(1.16,.012,.06),Color("e8e2d0"))
 	var booth=Node3D.new();yard.add_child(booth);booth.position=Vector3(BOOTH_CELL.x,0,BOOTH_CELL.y)
@@ -441,8 +470,9 @@ func yard_dressing(yard:Node3D):
 	Visuals.box(booth,Vector3(0,1.46,0),Vector3(1.05,.1,.95),Color("454a33"))
 	var window=Visuals.box(booth,Vector3(.46,.95,0),Vector3(.02,.35,.5),Color("9fd4ff"));window.material_override=Visuals.material(Color("9fd4ff"),true)
 	var flag=Node3D.new();yard.add_child(flag);flag.position=Vector3(10.2,0,-3.1);flag.scale=Vector3.ONE*.55;ExitFlag.build(flag)
-	var container=Visuals.box(self,Vector3(19.4,-.72+.65,-1.6),Vector3(1.3,1.3,2.8),Color("7a4a33"))
-	for i in range(6):Visuals.box(self,Vector3(18.73,-.72+.65,-2.8+i*.48),Vector3(.02,1.2,.08),Color("5f3a28"))
+	# The old container now stands outside the apron, behind the range backstop.
+	var container=Visuals.box(self,Vector3(YARD_EAST+2.2,-.72+.65,-1.6),Vector3(1.3,1.3,2.8),Color("7a4a33"))
+	for i in range(6):Visuals.box(self,Vector3(YARD_EAST+1.53,-.72+.65,-2.8+i*.48),Vector3(.02,1.2,.08),Color("5f3a28"))
 func sandbag_row(parent:Node3D,center:Vector3,count:int):
 	for i in range(count):Visuals.box(parent,center+Vector3((i-(count-1)*.5)*.46,.14+(i%2)*.02,0),Vector3(.44,.26,.3),Color("b8a47c"))
 ## The camera slides right while the soldier or the parked vehicle is out in the yard.
@@ -451,7 +481,7 @@ func follow_yard(delta:float):
 	if not is_instance_valid(camera) or not is_instance_valid(avatar):return
 	if camera_base==Vector3.INF:camera_base=camera.position
 	var who=training_tank if mounted else avatar
-	var shift=clampf((who.position.x-6.0)*1.1,0.0,10.0)
+	var shift=clampf((who.position.x-6.0)*1.45,0.0,16.5)
 	# A few degrees of diorama tilt toward the cursor or a drag; eases back on its own.
 	if camera_tilt==null:camera_tilt=preload("res://scripts/camera_tilt.gd").new();camera_tilt.name="CameraTilt";add_child(camera_tilt)
 	camera_tilt.enabled=phase=="combat" and not is_instance_valid(build_menu)
@@ -467,13 +497,14 @@ func hub_free(p: Vector2i) -> bool:
 	if p in training_barriers or p in [Vector2i(-2,3),Vector2i(3,3),Vector2i(6,3)]:return false
 	if p.x>7:
 		if "yard" not in Game.built_workshops:return false
-		# Yard: the rack gap (x 8-9 only on row 0), then open concrete x 10-17, y -3..3 except the dummy and booth.
+		# Yard: the rack gap (x 8-9 only on row 0), then open concrete x 10..YARD_EAST, y -3..3 except the target pen and booth.
 		if p.x<=9:return p.y==0
-		return p.x<=17 and p.y>=-3 and p.y<=3 and p!=Vector2i(roundi(YARD_DUMMY.x),roundi(YARD_DUMMY.z)) and p!=BOOTH_CELL
+		var d=Vector2i(roundi(YARD_DUMMY.x),roundi(YARD_DUMMY.z))
+		return p.x<=YARD_EAST and p.y>=-3 and p.y<=3 and p not in [d,d+Vector2i(0,-1),d+Vector2i(0,1),d+Vector2i(1,0)] and p!=BOOTH_CELL and p!=Vector2i(roundi(GARAGE_TERMINAL.x),roundi(GARAGE_TERMINAL.z))
 	if p.x< -4 or p.y< -2 or p.y>4:return false
 	# Command centre (left edge), crates by the back wall, the range pad and the arsenal spot. The retired
 	# workbench cells (character at 0,-1 and bonuses at -3,-1) are walkable floor now.
-	if p in [Vector2i(-4,0),Vector2i(-4,1),Vector2i(-4,2),Vector2i(0,3),Vector2i(-2,-2),Vector2i(-1,-2),Vector2i(-3,-1),Vector2i(1,-2)]:return false
+	if p in [Vector2i(-4,0),Vector2i(-4,1),Vector2i(-4,2),Vector2i(0,3),Vector2i(-2,-2),Vector2i(-1,-2),Vector2i(-3,-1),Vector2i(1,-1)]:return false
 	if not mounted and training_tank.visible and Vector2i(roundi(training_tank.position.x),roundi(training_tank.position.z))==p:return false
 	return true
 
@@ -487,7 +518,9 @@ func interact():
 	if not mounted and avatar.position.distance_to(printer_pos)<1.4:open_station("fighter");return
 	if not mounted and avatar.position.distance_to(WARDROBE_POS)<1.3:open_station("wardrobe");return
 	if not mounted and avatar.position.distance_to(ROADMAP_POS)<1.3:open_station("roadmap");return
-	if not mounted and "garage" in Game.built_workshops and avatar.position.distance_to(YARD_PARK)<1.65:open_station("garage");return
+	# T-014: with a vehicle parked, E boards it; the motor pool station opens from its terminal beside the bay.
+	if not mounted and "garage" in Game.built_workshops and avatar.position.distance_to(GARAGE_TERMINAL)<1.2:open_station("garage");return
+	if not mounted and "garage" in Game.built_workshops and not training_tank.visible and avatar.position.distance_to(YARD_PARK)<1.65:open_station("garage");return
 	var locked=nearest_locked()
 	if locked!="":build_tab=1 if locked in ["garage","range"] else 0;show_build_menu();return
 	if not mounted and "yard" not in Game.built_workshops and avatar.position.distance_to(Vector3(7,0,0))<1.3:show_build_menu();return
@@ -552,7 +585,7 @@ func bullet_hit(bullet) -> bool:
 		create_tween().tween_property(dummy,"scale",Vector3.ONE,.18)
 		return true
 	# The built yard extends the hub east to the range pen: shots there must reach the dummy.
-	if pos.x< -3 or pos.x>(17.5 if "yard" in Game.built_workshops else 8.0) or pos.z< -3 or pos.z>4:return true
+	if pos.x< -3 or pos.x>(YARD_EAST+1.5 if "yard" in Game.built_workshops else 8.0) or pos.z< -3 or pos.z>4:return true
 	var p=Vector2i(roundi(pos.x),roundi(pos.z))
 	return p in [Vector2i(-2,-2),Vector2i(-1,-2),Vector2i(0,-1)] or p.y== -3
 
@@ -560,18 +593,26 @@ func bullet_hit(bullet) -> bool:
 
 
 
+## Soft contact shadows under hub props («Глубина света»), rebuilt when stations change.
+func refresh_floor_ao():
+	var old=get_node_or_null("FloorAO")
+	if old:old.name="FloorAOOld";old.queue_free()
+	preload("res://scripts/systems/floor_ao.gd").build_props(self,[avatar,training_tank,dummy,dummy_label,command_beams,get_node_or_null("HubOutskirts")])
 func update_bench_visuals():
 	if is_instance_valid(avatar) and avatar.weapon_id!=Game.selected_weapon:Visuals.equip_model(avatar,Game.selected_weapon)
 	hint_refresh=0
 	if not is_instance_valid(bench_visuals) or bench_signature!=Game.built_workshops:
 		bench_signature=Game.built_workshops.duplicate()
+		refresh_floor_ao.call_deferred()
 		build_arrows.clear();bench_dots.clear()
 		if is_instance_valid(bench_visuals):remove_child(bench_visuals);bench_visuals.queue_free()
 		bench_visuals=Node3D.new();add_child(bench_visuals)
 		for id in Game.BUILD_COST:
 			var pos={"headquarters":hq_bench_pos,"character":Vector3(0,0,-1),"weapons":weapon_bench_pos,"bonuses":bonus_bench_pos,"garage":YARD_PARK,"range":YARD_DUMMY}[id]
 			if id not in Game.built_workshops:
-				var arrow=Visuals.label3d(bench_visuals,"▼",pos+Vector3.UP*1.5,UiKit.NOTICE.goal,38);arrow.modulate.a=.82;arrow.outline_size=6
+				# A soft round marker instead of a sharp triangle (T-052): a light disc with a small chevron.
+				var arrow=Visuals.label3d(bench_visuals,"⌄",pos+Vector3.UP*1.55,Color("fff3c8"),64);arrow.modulate.a=.95;arrow.outline_size=0
+				var disc=Visuals.label3d(arrow,"●",Vector3(0,.02,-.01),UiKit.NOTICE.goal,96);disc.modulate.a=.55;disc.outline_size=0;disc.no_depth_test=true
 				arrow.no_depth_test=true;arrow.visible=id in Game.research_unlocks or id in Game.progression.build_targets();build_arrows[id]=arrow
 			if id not in ["garage","range"]:
 				preload("res://scripts/interaction_prompt.gd").attach(bench_visuals,self,Game.RESEARCH[id].name if id in Game.built_workshops else "🔒 Построить · "+Game.RESEARCH[id].name,pos,1.25)
@@ -605,6 +646,9 @@ func open_station(kind:String):
 	var screen=preload("res://scripts/ui/station_screen.gd").new();screen.name="Station_"+kind;screen.provider=load(STATIONS[kind][1]).new();screen.station_kind=kind
 	build_menu=screen;root.add_child(screen);screen.closed.connect(close_station);screen.changed.connect(refresh)
 	if kind=="wardrobe":screen.changed.connect(refresh_uniform)
+	if kind=="roadmap":
+		screen.provider.mark_seen()
+		if is_instance_valid(roadmap_alert):roadmap_alert.hide()
 
 func nearest_locked() -> String:
 	if mounted:return ""
@@ -690,11 +734,16 @@ func present_call():
 	if not is_inside_tree() or is_queued_for_deletion():return
 	var VideoCall=preload("res://scripts/ui/video_call.gd")
 	var call=VideoCall.due(self)
-	if call=="" or phase!="combat":present_unlock();return
+	if call=="" or phase!="combat" or Engine.get_meta("hub_calls_off",false):present_unlock();return
 	# The call rings in the corner; the player answers when ready, nothing is blocked meanwhile.
 	if root.has_node("IncomingCall"):return
+	# The call opens as a dialog (T-120) and holds the hub until «Взять» or «Позже».
+	phase="ringing";dpad.enabled=false;fire_pad.enabled=false
 	var ring=preload("res://scripts/ui/incoming_call.gd").new();ring.call_id=call;root.add_child(ring)
-	ring.answered.connect(func():open_call(call))
+	ring.answered.connect(func():
+		if phase=="ringing":phase="combat"
+		open_call(call))
+	ring.postponed.connect(func():phase="combat";dpad.enabled=true;fire_pad.enabled=true;Game.reset_input();present_unlock())
 	present_unlock()
 func open_call(call:String):
 	# Answered while an unlock card is open: the call starts right after it.

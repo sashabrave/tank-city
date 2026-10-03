@@ -30,6 +30,8 @@ var selected_class="recruit"
 var class_unlocks:Array=["recruit"]
 var ability_slots=1
 var class_second_slots:Array=[]
+## Meta stage 3: which of the two «1» abilities each class carries (class id → ability id), switchable in the hub.
+var class_choices:Dictionary={}
 var gadget=""
 var class_first_slots:Array=[]
 var purchased_gadgets:Array=[]
@@ -62,6 +64,8 @@ var ability_unlocks: Array=["barrier","shield"]
 var selected_ability="barrier"
 var branch_unlocks: Array=["health"]
 var weapon_unlocks: Array=["pistol"]
+## Weapons with the second ammo slot bought in the Arsenal (scripts/combat/ammo.gd).
+var ammo_slot_weapons:Array=[]
 var selected_weapon="pistol"
 var backpack_slots=1
 var reroll_level=0
@@ -205,9 +209,9 @@ func reset_upgrades() -> int:
 	new_recipes.clear();duplicate_recipes.clear()
 	hq_unlocks=HQCatalog.DEFAULT_UNLOCKS.duplicate();hq_modules=[];hq_active="";hq_levels.clear();hq_slots=1;pressure_level=0
 	progression=preload("res://scripts/progression/base_progression.gd").new()
-	class_first_slots.clear();purchased_gadgets.clear();purchased_hq.clear();class_second_slots.clear();gadget="";superboss_defeated=false;cores=0;selected_class="recruit";class_unlocks=["recruit"];class_levels.clear();specializations.clear();ability_slots=1;equipped_abilities=["barrier"];rescue_level=0;shield_capacity_level=0
+	class_first_slots.clear();purchased_gadgets.clear();purchased_hq.clear();class_second_slots.clear();class_choices.clear();gadget="";superboss_defeated=false;cores=0;selected_class="recruit";class_unlocks=["recruit"];class_levels.clear();specializations.clear();ability_slots=1;equipped_abilities=["barrier"];rescue_level=0;shield_capacity_level=0
 	selected_weapon="pistol";backpack_slots=1;reroll_level=0;camp_level=0;research_unlocks.clear();built_workshops.clear()
-	ability_unlocks=["barrier","shield"];selected_ability="barrier";branch_unlocks=["health"];weapon_unlocks=["pistol"];bonus_unlocks=["heart"];bonus_levels.clear()
+	ability_unlocks=["barrier","shield"];selected_ability="barrier";branch_unlocks=["health"];weapon_unlocks=["pistol"];ammo_slot_weapons=[];bonus_unlocks=["heart"];bonus_levels.clear()
 	health_level=0;damage_level=0;luck_level=0;turret_level=0;rarity_level=0;base_level=0;heal_level=0;mobility_level=0;recovery_level=0;credits=0
 	stat_levels.clear();skins_owned.clear();skin="woodland";player_model=PlayerModels.DEFAULT
 	set_all_recipes(false)
@@ -218,7 +222,7 @@ func earn(amount: int):
 	save_progress()
 
 func serialize_progress()->Dictionary:
-	return {"skins":skins_owned.duplicate(),"skin":skin,"player_model":player_model,"stat_levels":stat_levels.duplicate(),"run_checkpoint":run_checkpoint,"duplicate_recipes":duplicate_recipes,"garage":garage.serialize(),"notifications":notification_history,"class_first_slots":class_first_slots,"purchased_gadgets":purchased_gadgets,"purchased_hq":purchased_hq,"class_second_slots":class_second_slots,"gadget":gadget,"pressure_level":pressure_level,"headquarters":{"slots":hq_slots,"unlocks":hq_unlocks,"modules":hq_modules,"active":hq_active,"levels":hq_levels},"progression":progression.serialize(),"version":ProfileSchema.VERSION,"camp_level":camp_level,"selected_weapon":selected_weapon,"backpack_slots":backpack_slots,"reroll_level":reroll_level,"research":research_unlocks,"built":built_workshops,"credits":credits,"health":health_level,"damage":damage_level,"luck":luck_level,"turret":turret_level,"rarity":rarity_level,"base":base_level,"heal":heal_level,"mobility":mobility_level,"recovery":recovery_level,"v09":{"class_levels":class_levels,"specializations":specializations,"cores":cores,"class":selected_class,"classes":class_unlocks,"superboss_defeated":superboss_defeated,"slots":ability_slots,"equipped":equipped_abilities,"rescue":rescue_level,"shield_capacity":shield_capacity_level},"abilities":ability_unlocks,"selected_ability":selected_ability,"branch_unlocks":branch_unlocks,"weapon_unlocks":weapon_unlocks,"bonus_unlocks":bonus_unlocks,"bonus_levels":bonus_levels}
+	return {"skins":skins_owned.duplicate(),"skin":skin,"player_model":player_model,"stat_levels":stat_levels.duplicate(),"run_checkpoint":run_checkpoint,"duplicate_recipes":duplicate_recipes,"garage":garage.serialize(),"notifications":notification_history,"class_first_slots":class_first_slots,"purchased_gadgets":purchased_gadgets,"purchased_hq":purchased_hq,"class_second_slots":class_second_slots,"class_choices":class_choices,"gadget":gadget,"pressure_level":pressure_level,"headquarters":{"slots":hq_slots,"unlocks":hq_unlocks,"modules":hq_modules,"active":hq_active,"levels":hq_levels},"progression":progression.serialize(),"version":ProfileSchema.VERSION,"camp_level":camp_level,"selected_weapon":selected_weapon,"backpack_slots":backpack_slots,"reroll_level":reroll_level,"research":research_unlocks,"built":built_workshops,"credits":credits,"health":health_level,"damage":damage_level,"luck":luck_level,"turret":turret_level,"rarity":rarity_level,"base":base_level,"heal":heal_level,"mobility":mobility_level,"recovery":recovery_level,"v09":{"class_levels":class_levels,"specializations":specializations,"cores":cores,"class":selected_class,"classes":class_unlocks,"superboss_defeated":superboss_defeated,"slots":ability_slots,"equipped":equipped_abilities,"rescue":rescue_level,"shield_capacity":shield_capacity_level},"abilities":ability_unlocks,"selected_ability":selected_ability,"branch_unlocks":branch_unlocks,"weapon_unlocks":weapon_unlocks,"ammo_slot_weapons":ammo_slot_weapons,"bonus_unlocks":bonus_unlocks,"bonus_levels":bonus_levels}
 
 func save_progress()->bool:
 	if not save_enabled or not profiles.selected:return true
@@ -281,6 +285,11 @@ func apply_profile(data:Dictionary):
 		var extra=data.get("v09",{})
 		class_levels=extra.get("class_levels",{});specializations=extra.get("specializations",{})
 		class_second_slots=data.get("class_second_slots",[]);gadget=str(data.get("gadget","barrier"))
+		class_choices={}
+		var choices=data.get("class_choices",{})
+		if choices is Dictionary:
+			for id in choices:
+				if str(choices[id]) in CLASS_CHOICES.get(str(id),[]):class_choices[str(id)]=str(choices[id])
 		if gadget not in ["barrier","mine","laser","airstrike"]:gadget=""
 		cores=maxi(0,int(extra.get("cores",0)))
 		selected_class=extra.get("class","recruit");class_unlocks=extra.get("classes",["recruit"])
@@ -312,9 +321,18 @@ func apply_profile(data:Dictionary):
 		if not PlayerModels.valid(player_model):player_model=PlayerModels.DEFAULT
 		stat_levels={}
 		var saved_stats=data.get("stat_levels",{})
+		# Meta stage 4: «Выучка» is gone. Alloy spent on it and on the old 2500 second-ability slot comes back once.
+		var refund=0
 		if saved_stats is Dictionary:
 			for key in saved_stats:
-				if typeof(saved_stats[key]) in [TYPE_INT,TYPE_FLOAT]:stat_levels[str(key)]=clampi(int(saved_stats[key]),0,MAX_LEVEL)
+				var def=StatRegistry.get_def(str(key))
+				if def==null or not typeof(saved_stats[key]) in [TYPE_INT,TYPE_FLOAT]:continue
+				for step in range(clampi(int(saved_stats[key]),0,def.max_level)):refund+=def.cost_base+def.cost_step*step
+		refund+=2500*data.get("class_second_slots",[]).size() if data.get("class_second_slots",[]) is Array else 0
+		class_second_slots=[]
+		if refund>0:
+			credits+=refund
+			notification_history.append({"text":"Выучка убрана, вторая способность теперь открывается на 3 уровне класса: возвращено %d ◈." % refund,"sender":"Оперштаб","time":Time.get_unix_time_from_system(),"read":false,"category":"important"})
 		base_level=clampi(int(data.get("base",0)),0,MAX_LEVEL)
 		heal_level=clampi(int(data.get("heal",0)),0,MAX_LEVEL)
 		mobility_level=maxi(0,int(data.get("mobility",0)))
@@ -334,6 +352,7 @@ func apply_profile(data:Dictionary):
 			if id!="heart" and id in data.get("bonus_unlocks",[]):bonus_unlocks.append(id)
 			bonus_levels[id]=clampi(int(data.get("bonus_levels",{}).get(id,0)),0,3)
 
+		ammo_slot_weapons=data.get("ammo_slot_weapons",[]).filter(func(id):return str(id) in weapon_unlocks).map(func(id):return str(id))
 		selected_weapon=str(data.get("selected_weapon","pistol"));selected_weapon="sniper" if selected_weapon=="heavy" else selected_weapon
 		if selected_weapon not in weapon_unlocks:selected_weapon="pistol"
 		backpack_slots=clampi(int(data.get("backpack_slots",1)),1,6);reroll_level=clampi(int(data.get("reroll_level",0)),0,5)
@@ -413,7 +432,7 @@ func roll_recipe(rng: RandomNumberGenerator,pending: Array,ground: Array=[],stag
 			for i in range(GarageCatalog.weight(id,stage) if category=="garage" else TIERS.weight(id,stage)):options.append({"id":id,"category":category})
 	return {} if options.is_empty() else options[rng.randi_range(0,options.size()-1)]
 func discover_recipe(rng: RandomNumberGenerator,pending: Array) -> String:
-	if pending.size()>=backpack_slots:return "Рюкзак полон"
+	if pending.size()>=Backpack.capacity():return "Рюкзак полон"
 	var recipe=roll_recipe(rng,pending)
 	if recipe.is_empty():return ""
 	pending.append(recipe);return "Чертёж · "+recipe_name(recipe)
@@ -426,7 +445,7 @@ func bank_recipes(pending: Array):
 	pending.clear();save_progress()
 func bag_cost() -> int:return ceili(72*pow(2,backpack_slots-1))
 func upgrade_backpack() -> bool:
-	if backpack_slots>=6 or credits<bag_cost():return false
+	if backpack_slots>=Backpack.MAX_BOUGHT or credits<bag_cost():return false
 	credits-=bag_cost();backpack_slots+=1;save_progress();return true
 func reroll_cost() -> int:return roundi(96*pow(1.7,reroll_level))
 func upgrade_rerolls() -> bool:
@@ -575,25 +594,39 @@ func buy_insurance()->bool:
 	if progression.insurance>=Balance.CONFIG.economy.insurance_cap or credits<insurance_cost():return false
 	credits-=insurance_cost();progression.insurance+=1;save_progress();return true
 func weapon_level(id:String)->int:return int(progression.weapon_levels.get(id,0))
-func weapon_factor(id:String)->float:return 1.0+weapon_level(id)*.015
+func weapon_factor(id:String)->float:return 1.0+weapon_level(id)*.04  # 0.8: +4% per level (was 1.5%, a weak mid-game buy)
 func weapon_upgrade_cost(id:String)->int:return roundi(350*pow(1.65,weapon_level(id)))
 func upgrade_weapon(id:String)->bool:
 	if "weapons" not in built_workshops or id not in weapon_unlocks or weapon_level(id)>=Balance.CONFIG.economy.weapon_level_cap or credits<weapon_upgrade_cost(id):return false
 	credits-=weapon_upgrade_cost(id);progression.weapon_levels[id]=weapon_level(id)+1;save_progress();return true
 
-const CLASS_SECOND={"recruit":"comrade","gunner":"gas","driver":"ally_drone","marksman":"grenade","engineer":"field_repair","heavy":"comrade"}
+## Meta stage 3 (guides/01_design/08_meta_proposal.md): every class has its own Q (CLASS_SKILLS) and picks
+## one of two abilities for slot «1». No Q repeats between classes; the gadget (F) and HQ support stay shared.
+const CLASS_CHOICES={"recruit":["comrade","mine"],"heavy":["barrier","gas"],"gunner":["gas","mine"],"marksman":["airstrike","laser"],"engineer":["field_repair","barrier"],"driver":["field_repair","barrier"]}
+func class_second(id:String=selected_class)->String:
+	var options:Array=CLASS_CHOICES.get(id,[])
+	if options.is_empty():return ""
+	var chosen=str(class_choices.get(id,""))
+	return chosen if chosen in options else str(options[0])
+func choose_class_second(id:String,ability:String)->bool:
+	if ability not in CLASS_CHOICES.get(id,[]) or class_second(id)==ability:return false
+	class_choices[id]=ability;save_progress();return true
 func class_loadout()->Array:
-	var result=[class_skill()] if selected_class in class_first_slots else []
-	if selected_class in class_second_slots:result.append(CLASS_SECOND[selected_class])
+	# Meta stage 4: an owned class always has its Q; the second ability opens at class level 3.
+	if selected_class not in class_unlocks:return []
+	var result=[class_skill()]
+	if ClassCatalog.level(selected_class)>=3:result.append(class_second())
 	return result
-func hero_loadout()->Array:return class_loadout()+([gadget] if gadget!="" and gadget in purchased_gadgets and ability_available(gadget) else [])
+## The gadget (F) is left out when the class already carries the same ability in slot «1».
+func hero_loadout()->Array:
+	var result=class_loadout()
+	if gadget!="" and gadget in purchased_gadgets and ability_available(gadget) and gadget not in result:result.append(gadget)
+	return result
 func ability_action(index:int)->String:return "ability" if index>=class_loadout().size() else "class_ability" if index==0 else "skill_1"
-func buy_class_slot(id:String)->bool:
-	if id not in class_first_slots or id not in class_unlocks or id in class_second_slots or int(class_levels.get(id,0))<5 or credits<2500:return false
-	credits-=2500;class_second_slots.append(id);save_progress();return true
 
 func ability_available(id:String)->bool:
-	if id in CLASS_SKILLS.values() or id in CLASS_SECOND.values():return id in class_loadout() and selected_class in class_unlocks
+	if id in class_loadout():return selected_class in class_unlocks
+	if id in CLASS_SKILLS.values() or id in ["comrade","gas","field_repair"]:return false  # class-only abilities
 	return id in ability_unlocks
 
 func hq_loadout()->Array:return ([hq_active] if hq_active!="" else [])+hq_modules
@@ -626,9 +659,6 @@ func upgrade_hq(id:String)->bool:
 func class_health_bonus()->float:return 0.0
 func class_pressure_bonus()->float:return 0.0
 
-func buy_first_class_skill(id:String)->bool:
-	if id not in class_unlocks or id in class_first_slots or credits<30:return false
-	credits-=30;class_first_slots.append(id);save_progress();return true
 func gadget_cost(id:String)->int:return 35 if id=="barrier" else 100 if id=="mine" else 240
 func hq_purchase_cost(id:String)->int:return 60 if id=="hq_medbay" else 90+HQCatalog.DATA[id].rarity*120
 

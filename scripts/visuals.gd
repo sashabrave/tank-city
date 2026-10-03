@@ -108,6 +108,9 @@ static func setup_world(parent: Node3D, camera_size: float, target: Vector3) -> 
 	parent.add_child(cam)
 	cam.projection = Camera3D.PROJECTION_ORTHOGONAL
 	cam.size = camera_size
+	# The default far plane (4000) spread the sun's shadow splits so thin that walls cast no shadow on the
+	# field and daylight read flat. Everything we draw is within ~60 m of the camera.
+	cam.far = 150
 	cam.position = target + Vector3(0,19,14).rotated(Vector3.UP,deg_to_rad(10))
 	cam.look_at(target)
 	cam.current = true
@@ -208,6 +211,8 @@ static func tint_model(node: Node, tint: Color):
 	# Local overrides keep the shared palette and actor colors unchanged.
 	var mat=material(tint)
 	for mesh in node.find_children("*","MeshInstance3D",true,false):
+		# Light cones and floor shadows keep their own shaders (a tinted cone drew a black wedge, T-085).
+		if mesh.name in ["SoftCone","ContactShadow"]:continue
 		mesh.material_override=mat
 
 static func cozy_model(kind:String,parent:Node3D,pos:Vector3)->Node3D:
@@ -286,10 +291,11 @@ static func cozy_material(mat:StandardMaterial3D):
 	if Settings.values.get("rim_light",true) and mat.shading_mode!=BaseMaterial3D.SHADING_MODE_UNSHADED:
 		mat.rim_enabled=true;mat.rim=.4;mat.rim_tint=.55
 	if "steel" in title or "metal" in title:
-		mat.metallic=.92 if shiny else .9;mat.roughness=.3 if shiny else .48;mat.roughness_texture=metal_roughness();mat.roughness_texture_channel=BaseMaterial3D.TEXTURE_CHANNEL_RED
+		# T-005: smoother steel catches sun glints and the contrasting reflection sky.
+		mat.metallic=.96 if shiny else .9;mat.roughness=.18 if shiny else .48;mat.roughness_texture=metal_roughness();mat.roughness_texture_channel=BaseMaterial3D.TEXTURE_CHANNEL_RED
 	elif shiny and ("graphite" in title or "frames" in title):
 		# Weapon bodies and frames: blued gunmetal instead of flat plastic.
-		mat.metallic=.7;mat.roughness=.4
+		mat.metallic=.88;mat.roughness=.24
 	elif "rubber" in title or "dark" in title or "graphite" in title:
 		mat.roughness=.85
 	elif title.begins_with("env7_"):pass

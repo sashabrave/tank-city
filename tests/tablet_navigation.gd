@@ -27,7 +27,7 @@ func run():
 		if view.nav_collapsed!=collapsed:view.toggle_navigation()
 		await get_tree().create_timer(.25).timeout
 		var feed=view.content.find_child("QuestFeed",true,false);assert(feed!=null)
-		var scroll=feed.get_parent();assert(scroll.position.x+scroll.size.x<=view.content.size.x+.5 and scroll.size.x>view.content.size.x*.9)
+		var scroll=feed.get_parent();assert(scroll.position.x+scroll.size.x<=view.content.size.x+.5 and scroll.size.x>view.content.size.x*.6)  # feed next to the vertical filter tabs
 		if DisplayServer.get_name()!="headless":RenderingServer.force_draw();get_viewport().get_texture().get_image().save_png("/tmp/quest-feed-"+str(collapsed)+".png")
 	Game.notifications.post("Задание выполнено\nПроверка неподвижности текста", "Командование", "important")
 	view.tab="notifications";view.refresh();await get_tree().process_frame;await get_tree().process_frame

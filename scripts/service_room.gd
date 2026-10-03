@@ -5,6 +5,11 @@ var arena
 var index=2
 var branch="vehicle"
 var vehicle="buggy"
+var locker:Node3D
+var vendor:Node3D
+## Price to take the mechanic's parked vehicle into the next field (T-011).
+const VEHICLE_PRICES={"buggy":60,"apc":110,"tank":180}
+const PARKED=Vector3(2.2,0,-1.2)
 var avatar: Node3D
 var cell=Vector2i(0,3)
 var destination=Vector3(0,0,3)
@@ -19,10 +24,12 @@ var offers: Array=[]
 var medkits: Array=[]
 var facing=Vector2i.UP
 var dressing
+var walker
+var vehicle_prompt
 func _ready():
 	add_to_group("notification_context")
 	vehicle=current_vehicle()
-	Visuals.setup_world(self,12,Vector3.ZERO)
+	Visuals.setup_world(self,11.4,Vector3.ZERO)
 	var positions=[]
 	for x in range(-4,5):
 		for z in range(-3,5):positions.append(Vector3(x,0,z))
@@ -32,6 +39,9 @@ func _ready():
 	if branch=="vehicle":
 		Visuals.model("workbench",self,Vector3(0,0,-1))
 		Visuals.model(vehicle,self,Vector3(2.2,.16,-1.2))
+		# T-011: when the soldier is on foot, the parked vehicle can be taken into the next field for alloy.
+		if not (is_instance_valid(arena.player) and arena.player.kind in GarageCatalog.VEHICLES) and arena.pending_vehicle=="":
+			Visuals.label3d(self,"%s · %d ◈ · E" % [GarageCatalog.VEHICLES.get(vehicle,{}).get("name",vehicle),VEHICLE_PRICES.get(vehicle,80)],Vector3(2.2,1.7,-.4),Color("ffe2a8"),24).name="TakeVehicleLabel"
 		Visuals.label3d(self,"Механик · E",Vector3(0,2,-1),Color("fff0ce"),28)
 	elif branch=="headquarters":
 		Visuals.model("base",self,Vector3(0,0,-1))
@@ -44,6 +54,7 @@ func _ready():
 		var kit=Node3D.new();add_child(kit);kit.position=Vector3([-2.4,-.8,.8,2.4][i],0,2)
 		arena.LOOT.visual(kit,"heart");Visuals.label3d(kit,"Аптечка",Vector3(0,1.1,0),Color("f6c5bc"),25);medkits.append(kit)
 	avatar=Visuals.model("soldier",self,destination,"cat",true)
+	walker=preload("res://scripts/room_walker.gd").new(avatar)
 	var canvas=CanvasLayer.new();add_child(canvas);root=Control.new();canvas.add_child(root);root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);root.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	var heading_plate=UiKit.glass(root,Vector2(25,25),Vector2(590,120),Color("242d27ed"));heading_plate.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	UiKit.accent(UiKit.label(root,{"vehicle":"Полевой механик","ability":"Подготовка бойца","headquarters":"Мастерская штаба"}[branch],Vector2(40,30),Vector2(800,60),32))
@@ -54,7 +65,13 @@ func _ready():
 	continue_button=UiKit.button(root,"В следующий бой →" if Campaign.endless else "На карту →",Vector2(size.x-330,size.y-90),Vector2(290,60),func():completed.emit(index),true);continue_button.disabled=true
 	UiKit.button(root,"Вернуться в хаб",Vector2(40,165),Vector2(250,48),func():hub_requested.emit())
 	preload("res://scripts/interaction_prompt.gd").attach(self,self,{"vehicle":"Механик","ability":"Инструктор","headquarters":"Штаб"}[branch],Vector3(0,0,-1),1.8,func():return not claimed)
+	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Выход на карту",Vector3(dressing.EXIT_CELL.x,0,dressing.EXIT_CELL.y),1.3,func():return claimed)
+	if has_node("TakeVehicleLabel"):
+		var vehicle_name=GarageCatalog.VEHICLES.get(vehicle,{}).get("name",vehicle)
+		vehicle_prompt=preload("res://scripts/interaction_prompt.gd").attach(self,self,Texts.render("Купить")+" %s · %d" % [Texts.render(vehicle_name),VEHICLE_PRICES.get(vehicle,80)],PARKED,1.6,func():return has_node("TakeVehicleLabel"))
 	offers=arena.reward.service_offers(branch)
+	locker=preload("res://scripts/weapon_locker.gd").place(self,arena,Vector3(-3.4,0,0.5))
+	vendor=preload("res://scripts/ammo_vendor.gd").place(self,arena,Vector3(-3.4,0,2.4))
 ## The mechanic works on the player's vehicle: the one driven now, the one waiting for the next room, or the starting one.
 func current_vehicle()->String:
 	if is_instance_valid(arena.player) and arena.player.kind in GarageCatalog.VEHICLES:return arena.player.kind
@@ -64,28 +81,40 @@ func current_vehicle()->String:
 	var start=Game.garage.starting_vehicle()
 	return start if start in GarageCatalog.VEHICLES else "buggy"
 func _physics_process(delta):
+	# Same as the hub: the on-screen pad only for touch play.
+	if is_instance_valid(dpad):dpad.visible=InputScheme.touch()
 	if not is_instance_valid(modal):collect_medkits()
 	if is_instance_valid(modal):
 		if Input.is_action_just_pressed("pause"):close_cards()
 		return
 	if Input.is_action_just_pressed("pause"):preload("res://scripts/ui/pause_tablet.gd").open(self,Callable(),func():hub_requested.emit());return
-	if moving:
-		avatar.position=avatar.position.move_toward(destination,3.8*delta)
-		if avatar.position.distance_to(destination)<.01:moving=false
-	else:
-		var dir=Game.direction()
-		if dir!=Vector2i.ZERO:
-			var next=cell+dir;facing=dir;avatar.rotation.y=atan2(-float(dir.x),-float(dir.y))
-			var exit=next==dressing.EXIT_CELL and claimed
-			if exit or (next.x>=-3 and next.x<=3 and next.y>=-2 and next.y<=4 and next not in [Vector2i(0,-1),Vector2i(2,-1)]):
-				cell=next;destination=Vector3(cell.x,0,cell.y);moving=true
-	if claimed and not moving and cell==dressing.EXIT_CELL:completed.emit(index);set_physics_process(false);return
+	# The kit model walks only when told (T-045): idle while standing, walk cycle while moving.
+	if "preview_moving" in avatar:avatar.preview_moving=moving;avatar.preview_speed=3.4
+	walker.step(delta,Game.direction(),stand);moving=walker.moving;cell=walker.cell();facing=walker.facing
 	interact_button.disabled=claimed or avatar.position.distance_to(Vector3(0,0,-1))>1.8
 	if Game.wants_interact():interact()
+## Floor the hero may stand on: the room, minus the bench and the parked vehicle; the exit opens once claimed.
+func stand(p:Vector3)->bool:
+	var c=Vector2i(roundi(p.x),roundi(p.z))
+	if claimed and absf(p.z-dressing.EXIT_CELL.y)<.3 and p.x>=2.75 and p.x<=dressing.EXIT_CELL.x+.01:return true
+	return p.x>=-3.01 and p.x<=3.01 and p.z>=-2.01 and p.z<=4.01 and c not in [Vector2i(0,-1),Vector2i(2,-1)]
+func at_exit()->bool:return claimed and avatar.position.distance_to(Vector3(dressing.EXIT_CELL.x,0,dressing.EXIT_CELL.y))<1.3
 func interact():
+	if is_instance_valid(modal):return
+	# The ammo machine and the weapon locker work before and after the choice.
+	if is_instance_valid(vendor) and vendor.near(avatar):
+		Game.reset_input();dpad.clear();dpad.enabled=false
+		vendor.open(root,func():Game.reset_input();dpad.clear();dpad.enabled=true;modal=null);modal=vendor.modal;return
+	if is_instance_valid(locker) and locker.near(avatar):
+		Game.reset_input();dpad.clear();dpad.enabled=false
+		locker.open(root,func():Game.reset_input();dpad.clear();dpad.enabled=true);modal=locker.modal;return
+	# The parked vehicle can be bought before and after the upgrade choice (T-119).
+	if near_vehicle():open_vehicle_offer();return
+	# Leave only from the exit zone (T-083): a stray E elsewhere does nothing.
 	if claimed:
-		completed.emit(index);return
-	if is_instance_valid(modal) or avatar.position.distance_to(Vector3(0,0,-1))>1.8:return
+		if at_exit():completed.emit(index);set_physics_process(false)
+		return
+	if avatar.position.distance_to(Vector3(0,0,-1))>1.8:return
 	Game.reset_input();dpad.clear();dpad.enabled=false
 	if branch=="ability":
 		var salute=Visuals.box(avatar,Vector3(.27,.85,-.1),Vector3(.12,.38,.12),Color("a4ad85"));salute.rotation.z=-.8
@@ -148,3 +177,33 @@ func collect_medkits():
 func skip_choice():
 	if claimed:return
 	claimed=true;close_cards();continue_button.disabled=false;interact_button.disabled=true;dressing.set_open(true)
+
+func near_vehicle()->bool:return branch=="vehicle" and has_node("TakeVehicleLabel") and avatar.position.distance_to(PARKED)<1.6
+## Purchase window (T-119): the vehicle, what it gives, the price; «Купить» or «Отмена»; then a clear
+## «Техника доставлена» with where it waits.
+func open_vehicle_offer():
+	var price=int(VEHICLE_PRICES.get(vehicle,80));var info=GarageCatalog.VEHICLES.get(vehicle,{})
+	Game.reset_input();dpad.clear();dpad.enabled=false
+	modal=Control.new();modal.name="VehicleOffer";root.add_child(modal);modal.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);modal.add_to_group("selection_scope")
+	var shade=ColorRect.new();modal.add_child(shade);shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);shade.color=Color(0,0,0,.5)
+	var size=Vector2(560,300);var panel=UiKit.glass(modal,((root.get_viewport_rect().size-size)*.5).round(),size)
+	var close=func():
+		if is_instance_valid(modal):modal.queue_free()
+		modal=null;Game.reset_input();dpad.clear();dpad.enabled=true
+	var picture=UiKit.icon(panel,vehicle,Vector2(24,24),Vector2(150,110))
+	UiKit.label(panel,str(info.get("name",vehicle)),Vector2(190,24),Vector2(346,34),24)
+	var text=UiKit.label(panel,"Техника ждёт на старте следующего поля: садишься в неё сразу. Броня и урон — как у твоей машины в гараже.",Vector2(190,62),Vector2(346,80),14,UiKit.MUTED);text.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	var cost=UiKit.label(panel,"%d ◈" % price,Vector2(24,150),Vector2(150,30),22,UiKit.ORANGE if Game.credits>=price else Color("ff8a7a"));cost.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+	if Game.credits<price:UiKit.label(panel,Texts.render("Не хватает %d ◈") % (price-Game.credits),Vector2(190,150),Vector2(346,30),15,Color("ff8a7a"))
+	UiKit.button(panel,"Отмена",Vector2(24,size.y-70),Vector2(250,48),close)
+	var buy=UiKit.button(panel,"Купить · %d ◈" % price,Vector2(size.x-274,size.y-70),Vector2(250,48),func():
+		if Game.credits<price:return
+		Game.credits-=price;Game.save_progress();arena.pending_vehicle=vehicle;Game.sound("weapon_equip",self)
+		get_node("TakeVehicleLabel").name="BoughtVehicleLabel";get_node("BoughtVehicleLabel").queue_free()
+		Visuals.label3d(self,"Доставлено · ждёт на старте поля",Vector3(2.2,1.7,-.4),Color("bdf0b0"),24)
+		for child in panel.get_children():child.queue_free()
+		UiKit.icon(panel,vehicle,Vector2(24,24),Vector2(150,110))
+		UiKit.label(panel,"Техника доставлена",Vector2(190,28),Vector2(346,34),24,Color("bdf0b0"))
+		var done=UiKit.label(panel,"%s ждёт тебя на старте следующего поля." % str(info.get("name",vehicle)),Vector2(190,68),Vector2(346,60),15,UiKit.INK);done.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+		var ok=UiKit.button(panel,"Отлично",Vector2(size.x-274,size.y-70),Vector2(250,48),close,true);ok.grab_focus(),true)
+	buy.disabled=Game.credits<price;buy.grab_focus()

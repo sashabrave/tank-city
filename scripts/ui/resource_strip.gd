@@ -12,17 +12,22 @@ var pickup_flights:Array=[]
 var previous=Vector2i(-1,-1)
 var pending=Vector2i.ZERO
 var delay=0.0
+## Token part of the strip fades in and out (T-090): 0 hidden … 1 shown; the strip width follows it.
+var token_shown=0.0
+var token_last=0
+## Set while the defeat screen drops the run tokens: the counter falls to zero and the part folds away.
+var tokens_lost=false
 func _ready():
 	Game.profile_changed.connect(func():previous=Vector2i(Game.credits,Game.cores);pending=Vector2i.ZERO;delay=0)
 	layer=90;process_mode=Node.PROCESS_MODE_ALWAYS
 	get_tree().node_added.connect(decorate_currency)
 	panel=UiKit.panel(self,Vector2.ZERO,Vector2(212,38),Color("e4e9dc"));panel.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	label=UiKit.label(panel,"",Vector2(41,3),Vector2(70,32),17)
+	label=UiKit.label(panel,"",Vector2(46,3),Vector2(70,32),17)
 	pickup_targets["alloy"]=UiKit.icon(panel,"alloy",Vector2(10,4),Vector2(30,30))
 	document_icon=UiKit.icon(panel,"documents",Vector2(114,4),Vector2(30,30))
 	pickup_targets["documents"]=pickup_targets["alloy"]
 	documents=UiKit.label(panel,"",Vector2(147,3),Vector2(60,32),17)
-	token_icon=UiKit.icon(panel,"token",Vector2(0,5),Vector2(28,28));token_icon.modulate=UiKit.INK;token_icon.name="TokenIcon"
+	token_icon=UiKit.icon(panel,"token",Vector2(0,5),Vector2(28,28));token_icon.name="TokenIcon"
 	pickup_targets["tokens"]=token_icon
 	# Hover (mouse) or tap (touch) explains each currency.
 	for pair in [[pickup_targets["alloy"],"Сплав — покупки и прокачка. При выбывании теряется часть добытого за вылазку."],[token_icon,"Жетоны — валюта торговца. Сгорают после вылазки."]]:
@@ -49,14 +54,23 @@ func _process(_delta):
 	label.size.x=maxf(35,font.get_string_size(label.text,HORIZONTAL_ALIGNMENT_LEFT,-1,17).x+8)
 	# Documents were merged into alloy in 0.7; the strip keeps alloy and run tokens only.
 	document_icon.visible=false;documents.visible=false
-	panel.size.x=label.position.x+label.size.x+10
+	# T-031: a little air between each icon and its number; the strip grows smoothly when tokens appear.
+	var target=label.position.x+label.size.x+12
 	var run_value=run_tokens()
-	token_icon.visible=run_value>=0;tokens.visible=run_value>=0
-	if run_value>=0:
-		Texts.set_text(tokens,str(run_value));tokens.vertical_alignment=VERTICAL_ALIGNMENT_CENTER
-		token_icon.position.x=panel.size.x+4;tokens.position.x=token_icon.position.x+32
+	var wanted=1.0 if run_value>=0 and not tokens_lost else 0.0
+	if run_value>=0:token_last=run_value
+	if tokens_lost:token_last=0
+	token_shown=move_toward(token_shown,wanted,_delta*4.0)
+	token_icon.visible=token_shown>0.01;tokens.visible=token_shown>0.01
+	if token_shown>0.01:
+		Texts.set_text(tokens,str(token_last));tokens.vertical_alignment=VERTICAL_ALIGNMENT_CENTER
+		token_icon.position.x=target+6;tokens.position.x=token_icon.position.x+36
 		tokens.size.x=maxf(24,font.get_string_size(tokens.text,HORIZONTAL_ALIGNMENT_LEFT,-1,17).x+8)
-		panel.size.x=tokens.position.x+tokens.size.x+10
+		var ease_shown=token_shown*token_shown*(3.0-2.0*token_shown)
+		token_icon.modulate.a=ease_shown;tokens.modulate.a=ease_shown
+		target+=(tokens.position.x+tokens.size.x+12-target)*ease_shown
+	if run_value<0:tokens_lost=false
+	panel.size.x=lerpf(panel.size.x,target,minf(1.0,_delta*14.0)) if absf(panel.size.x-target)>.5 else target
 	panel.position.x=(get_viewport().get_visible_rect().size.x-panel.size.x)*.5
 
 func change(amount:int,documents:bool):
@@ -83,7 +97,9 @@ func fly_pickup(kind:String,from:Vector2):
 	if not pickup_targets.has(key):return
 	pickup_flights=pickup_flights.filter(is_instance_valid)
 	if pickup_flights.size()>=32:pickup_flights.pop_front().queue_free()
-	var icon=UiKit.icon(self,key,from-Vector2(15,15),Vector2(30,30))
+	# The flying icon is the same picture as its counter (tokens used the generic «tokens» art, T-089).
+	# One bar flies for alloy (T-105); the counter itself keeps the stack.
+	var icon=UiKit.icon(self,"token" if key=="tokens" else "alloy_single" if key=="alloy" else key,from-Vector2(15,15),Vector2(30,30))
 	icon.mouse_filter=Control.MOUSE_FILTER_IGNORE;pickup_flights.append(icon)
 	var destination:Control=pickup_targets[key]
 	var tween=create_tween().set_pause_mode(Tween.TWEEN_PAUSE_BOUND)

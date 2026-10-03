@@ -3,6 +3,7 @@
 """Мини-доска задач War Cats (tasks/board.json).
 
   python3 tools/board.py sync            — забрать входящие из собранной игры (задачи, переносы, скриншоты)
+  python3 tools/board.py me              — что требует участия автора (решить / проверить)
   python3 tools/board.py list [статус]   — показать доску (backlog/doing/review/done), важное сверху
   python3 tools/board.py add "Название" [--note ...] [--type bug|idea|polish|question] [--priority 1|2|3] [--version 0.7.2]
   python3 tools/board.py move T-012 doing
@@ -84,7 +85,13 @@ def move(tid, status):
 
 if __name__ == "__main__":
     a = sys.argv[1:]
-    if not a or a[0] == "list": show(a[1] if len(a) > 1 else None)
+    if a and a[0] == "me":
+        board = load()
+        dec = [t for t in board["tasks"] if t.get("type") == "question" and t.get("status") != "done"]
+        chk = [t for t in board["tasks"] if t.get("status") == "review"]
+        print("\n## Решить · %d" % len(dec)); [print("  %s  %s" % (t["id"], t["title"])) for t in dec]
+        print("\n## Проверить в игре · %d" % len(chk)); [print("  %s  %s" % (t["id"], t["title"])) for t in chk]
+    elif not a or a[0] == "list": show(a[1] if len(a) > 1 else None)
     elif a[0] == "sync": sync()
     elif a[0] == "add": add(a[1:])
     elif a[0] == "move": move(a[1], a[2])

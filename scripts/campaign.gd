@@ -16,7 +16,7 @@ static var challenge=0
 const CHALLENGE_REWARD=[1.0,1.25,1.5,2.0]
 ## Professionalism added per ladder step (see Professionalism.skill); no upper bound, so later steps or
 ## a late-game ladder can keep raising it (the derived behaviours are clamped by Professionalism.LIMITS).
-const CHALLENGE_SKILL=.2
+const CHALLENGE_SKILL=.3  # 0.8 pacing: challenge II lands near hour 4, not hour 3
 static func challenge_level()->int:return 0 if endless else challenge
 ## Highest ladder step a world offers: none until the world is cleared, then one past the best cleared step.
 static func challenge_open(id:int)->int:
@@ -62,7 +62,7 @@ static func active_cap(index:int)->int:
 static func title(index:int)->String:
 	if daily:return "Забег дня · сектор %d · поле %d" % [cycle+1,index+1]
 	if endless:return "Бесконечный · сектор %d · поле %d" % [cycle+1,index+1]
-	return "%s · %s" % [WORLDS[world].name,"Гигабосс" if is_final(index) else "Генерал" if index in BOSSES else "поле %d / %d" % [index+1,6]]
+	return "%s · %s" % [BattleNames.current(),"Гигабосс" if is_final(index) else "Генерал" if index in BOSSES else "поле %d / %d" % [index+1,6]]
 static func unlocked(id:int)->bool:return id==1 or id-1 in Game.progression.cleared_worlds
 static func infinite_unlocked()->bool:return 1 in Game.progression.cleared_worlds
 static func service_options(seed_value:int,index:int)->Array:
@@ -75,4 +75,4 @@ static func service_options(seed_value:int,index:int)->Array:
 ## World 1 and endless hold all content of the three worlds; locked worlds 2–3 keep their original gating.
 static func recipe_world()->int:return 3 if world==1 else world
 static func unified_content()->bool:return world==1 and not endless
-static func weapon_world(id:String)->int:return 3 if id=="rpg" else 2 if id=="sniper" else 1
+static func weapon_world(id:String)->int:return 3 if id=="rpg" else 2 if id in ["sniper","grenade_launcher"] else 1

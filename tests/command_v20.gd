@@ -33,9 +33,8 @@ func run_test():
 	p.abandon_telegram();assert(p.order_wait==1 and p.telegram.is_empty() and p.telegram_options.is_empty())
 	p.order_wait=0;p.prepare_telegrams();p.abandon_telegram();assert(p.order_wait==1)
 	command.tab="fighter";command.refresh()
-	var portrait=command.find_child("ClassPortrait",true,false)
-	assert(portrait is TextureRect and portrait.texture is AtlasTexture and portrait.size.x<=110 and portrait.size.y<=116)
-	await shot("/tmp/tank-v20-class-portrait.png")
+	# Meta stage 2: the tab is the sortie report; outside a run it shows the last sortie or a hint.
+	assert(command.content.find_children("*","Label",true,false).any(func(l):return l.text in ["Отчёт появится после первой вылазки","Последняя вылазка","Последняя вылазка · провал"]))
 	command.queue_free();hub.queue_free();await get_tree().process_frame
-	print("PASS command: direct telegram choice/decline, red/yellow priority/readiness/read state, slow alerts/build arrows, generated class portrait")
+	print("PASS command: direct telegram choice/decline, red/yellow priority/readiness/read state, slow alerts/build arrows")
 	get_tree().quit()

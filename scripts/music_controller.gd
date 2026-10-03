@@ -5,21 +5,18 @@ var TRACKS={
 	"map":["break_dust_road","break_tailwind","break_landmark"],
 	"battle":["break_azimuth","break_morse","break_nomad","break_dry_ice","break_kaleidoscope","break_square","break_mercury"],
 	"miniboss":["break_highway","break_breakthrough","break_vice"],
-	"boss":["break_storm","break_millstones","break_tsunami"],
-	# Earlier chip tracks: kept playable from the radio, not picked automatically.
-	"archive":["battle_signal","battle_mosaic","battle_patrol","battle_current","chill_background_loop","battle_variation_1","battle_variation_2","battle_muted_pulse","camp_lantern","camp_waltz","hub_evening_dial","hub_map_ambient_loop","hub_variation_1","hub_variation_2","hub_expedition_1","hub_expedition_2","route_compass","route_clouds","route_soft_beacon","map_expedition_1","map_expedition_2","map_expedition_3","map_expedition_4","commander_clock","commander_flank","miniboss_1","miniboss_2","boss_vector","boss_redoubt","boss_tense_1","boss_tense_2","boss_background_loop"]}
+	"boss":["break_storm","break_millstones","break_tsunami"]}
 const PLAYLISTS=["hub","map","battle","miniboss","boss"]
 const FANFARES=["greeting","start","victory","defeat"]
 const FANFARE_NAMES={"greeting":"Приветствие","start":"Начало боя","victory":"Победа","defeat":"Поражение"}
-const OLD_FANFARES=["hub_map_greeting","battle_greeting","wave_victory","boss_victory","expedition_greeting_1","expedition_greeting_2","expedition_greeting_3","expedition_greeting_4","expedition_greeting_5"]
 ## Chance that a context plays its theme version instead of a track from the shared pool.
 const THEME_CHANCE=.7
 var themes:Dictionary={}
 var hub_theme=""  # held for the whole game session
 var battle_theme=""  # picked again for every battle
-const GREETINGS=["expedition_greeting_1","expedition_greeting_2","expedition_greeting_3","expedition_greeting_4","expedition_greeting_5"]
-const NAMES={"boss_background_loop":"Осада","hub_map_ambient_loop":"Тихий лагерь","hub_variation_1":"У костра","hub_variation_2":"Утро","hub_expedition_1":"Передышка","hub_expedition_2":"Письма","chill_background_loop":"На рубеже","battle_variation_1":"Дозор","battle_variation_2":"Искры","map_expedition_1":"Тропа","map_expedition_2":"Перевал","map_expedition_3":"Дальний путь","map_expedition_4":"Горизонт","miniboss_1":"Командир","miniboss_2":"Манёвр","boss_tense_1":"Цитадель","boss_tense_2":"Последний рубеж"}
-const CONTEXT_NAMES={"hub":"Хаб","map":"Карта","battle":"Бой","miniboss":"Командир","boss":"Босс","archive":"Архив"}
+const CONTEXT_NAMES={"hub":"Хаб","map":"Карта","battle":"Бой","miniboss":"Командир","boss":"Босс"}
+## Radio name of the whole rotation: 12 sub-themes plus the shared single tracks.
+const MAIN_THEME="Главная тема"
 var backgrounds:Array[AudioStreamPlayer]=[]
 var active=0
 var paused=false
@@ -82,13 +79,16 @@ func pool(group:String)->Array:
 	for id in eligible(group):
 		if id not in result:result.append(id)
 	return result
-## Day themes (folk) or night themes; "auto" follows the world time of day setting.
-func mood()->String:
-	var value=str(Settings.values.get("music_mood","auto"))
+## Radio station from the sound settings: main (all sub-themes), night (calmer half),
+## day (more energetic half) or auto (follows the world time of day setting).
+const STATIONS={"main":"Главная тема","night":"Ночная тема","day":"Дневная тема"}
+func station()->String:
+	var value=str(Settings.values.get("music_mood","main"))
 	if value=="auto":return "night" if str(Settings.values.get("world_lighting","day"))=="night" else "day"
-	return value
+	return value if value in STATIONS else "main"
 func mood_themes()->Array:
-	var wanted=mood()
+	var wanted=station()
+	if wanted=="main":return themes.keys()
 	var result=themes.keys().filter(func(id):return str(themes[id].get("mood","day"))==wanted)
 	return result if not result.is_empty() else themes.keys()
 func pick_hub_theme():
@@ -121,12 +121,12 @@ func change(next:String,refresh:bool=false):
 	play_track(track)
 	if changed and next=="hub":celebrate("hub_map_greeting",1)
 	elif new_fight:celebrate("battle_greeting",1)
-## Tracks are large WAV files: they load on a background thread and start once ready, so a context
+## Tracks are OGG files: they load on a background thread and start once ready, so a context
 ## change never blocks the frame. The loaded resource is shared; looping is always disabled on it.
 var pending_track=""
 ## Set by radio skips: a quick switch (short fade out, no pause) instead of the context fade through silence.
 var quick_switch=false
-static func track_path(track:String)->String:return "res://assets/audio/music/"+track+".wav"
+static func track_path(track:String)->String:return "res://assets/audio/music/"+track+".ogg"
 func play_track(track:String):
 	current_track=track;last_tracks[context]=track
 	var path=track_path(track)
@@ -153,7 +153,8 @@ func start_track(track:String,stream:AudioStream):
 	if is_instance_valid(fade):fade.kill()
 	var old=backgrounds[active];active=1-active;var player=backgrounds[active]
 	player.stop();player.stream=stream
-	if player.stream is AudioStreamWAV:
+	if player.stream is AudioStreamOggVorbis:player.stream.loop=false
+	elif player.stream is AudioStreamWAV:
 		player.stream.loop_mode=AudioStreamWAV.LOOP_DISABLED;player.stream.loop_begin=0;player.stream.loop_end=roundi(player.stream.get_length()*player.stream.mix_rate)
 	player.volume_db=-60
 	# Fade through silence: the old track eases out, a short breath, then the new one eases in.
@@ -179,23 +180,32 @@ func skip(direction:int):
 	if shuffle and direction>0:index=ids.find(choose_variant(context,ids))
 	manual_tracks[context]=ids[index]
 	quick_switch=true;play_track(ids[index])
-func title()->String:return catalog.get(current_track,{}).get("title",NAMES.get(current_track,"Музыка"))
+func title()->String:return catalog.get(current_track,{}).get("title","Музыка")
 func subtitle()->String:
 	if context not in TRACKS:return "Нет подборки"
+	var theme=theme_of(current_track)
+	if theme!="":return "%s · %s · %s" % [STATIONS[station()],themes[theme].title,CONTEXT_NAMES.get(track_group(theme,current_track),"")]
+	for group in TRACKS:
+		if current_track in TRACKS[group]:return "%s · отдельный трек · %s" % [STATIONS[station()],CONTEXT_NAMES[group]]
+	return STATIONS[station()]
+## Sub-theme a track belongs to, or "" for a shared single track.
+func theme_of(id:String)->String:
 	for theme in themes:
-		if current_track in theme_tracks(theme):return "Тема «%s» · %s" % [themes[theme].title,CONTEXT_NAMES.get(track_group(theme,current_track),"")]
-	var group=catalog.get(current_track,{}).get("context",context)
-	if current_track not in TRACKS.get(group,[]):
-		for candidate in TRACKS:
-			if current_track in TRACKS[candidate]:group=candidate;break
-	return "%s · %d / %d" % [CONTEXT_NAMES[group],TRACKS[group].find(current_track)+1,TRACKS[group].size()]
+		if id in theme_tracks(theme):return theme
+	return ""
+## Shared single tracks in context order, for the radio list.
+func single_tracks()->Array:
+	var result=[]
+	for group in PLAYLISTS:
+		for id in TRACKS.get(group,[]):result.append([id,group])
+	return result
 ## Old event ids map onto the fanfares of the current theme.
 func fanfare_for(id:String)->String:
 	var kind={"hub_map_greeting":"greeting","battle_greeting":"start","commander":"start","wave_victory":"victory","boss_victory":"victory","defeat":"defeat"}.get(id,"")
 	if kind=="":return id
 	var theme=hub_theme if kind=="greeting" or (kind=="victory" and context in ["hub","map"]) else battle_theme
 	var variants=themes.get(theme,{}).get(kind,[])
-	if variants.is_empty():return choose_variant("greeting",GREETINGS) if id in ["hub_map_greeting","battle_greeting"] else ("" if id=="defeat" else id)
+	if variants.is_empty():return ""
 	return choose_variant("fanfare_"+kind,variants)
 func theme_tracks(theme:String)->Array:
 	var entry=themes.get(theme,{})
@@ -209,13 +219,13 @@ func track_group(theme:String,id:String)->String:
 	return ""
 func preview_fanfare(id:String):
 	if not Game.sound_enabled:return
-	stinger.stop();stinger_priority=1;stinger.stream=load("res://assets/audio/music/"+id+".wav");stinger.play()
+	stinger.stop();stinger_priority=1;stinger.stream=load("res://assets/audio/music/"+id+".ogg");stinger.play()
 func celebrate(id:String,priority:int):
 	if not Game.sound_enabled:return
 	if stinger.playing and priority<stinger_priority:return
 	id=fanfare_for(id)
 	if id=="":return
-	stinger.stop();stinger_priority=priority;stinger.stream=load("res://assets/audio/music/"+id+".wav");stinger.play()
+	stinger.stop();stinger_priority=priority;stinger.stream=load("res://assets/audio/music/"+id+".ogg");stinger.play()
 func _process(delta):
 	poll_pending()
 	if not Game.sound_enabled:
@@ -247,10 +257,10 @@ func track_finished():
 
 func refresh_library():
 	for filename in DirAccess.get_files_at("res://assets/audio/music"):
-		# Exported packs list imported audio as *.wav.import.
+		# Exported packs list imported audio as *.ogg.import (music is OGG Vorbis since 0.7.2, T-070).
 		filename=filename.trim_suffix(".import")
-		if not filename.ends_with(".wav"):continue
-		var id=filename.trim_suffix(".wav")
+		if not filename.ends_with(".ogg"):continue
+		var id=filename.trim_suffix(".ogg")
 		if "greeting" in id or "victory" in id or "defeat" in id or id.begins_with("folk_") or id.begins_with("night_") or id.begins_with("disco_") or id.begins_with("anthem_"):continue
 		var known=false
 		for theme in themes:
@@ -259,7 +269,7 @@ func refresh_library():
 			if id in TRACKS[group]:known=true
 		if known:continue
 		var group=""
-		for prefix in [["hub","hub"],["camp","hub"],["map","map"],["route","map"],["battle","battle"],["miniboss","miniboss"],["commander","miniboss"],["boss","boss"]]:
+		for prefix in [["break_hub","hub"],["break_map","map"],["break_battle","battle"],["break_miniboss","miniboss"],["break_boss","boss"]]:
 			if id.begins_with(prefix[0]):group=prefix[1];break
 		if group!="":TRACKS[group].append(id)
 func eligible(group:String)->Array:return TRACKS.get(group,[]).filter(func(id):return int(ratings.get(id,0))>=0)
@@ -268,7 +278,7 @@ func rate(id:String,value:int):
 	var file=FileAccess.open(preferences_path,FileAccess.WRITE)
 	if file:file.store_string(JSON.stringify(ratings))
 	track_changed.emit()
-## Durations come from a generated index, so the radio never loads WAVs just to show a length.
+## Durations come from a generated index, so the radio never loads tracks just to show a length.
 var lengths:Dictionary={}
 func track_length(id:String)->float:
 	if lengths.is_empty() and FileAccess.file_exists("res://assets/audio/music/durations.json"):

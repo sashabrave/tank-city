@@ -1,0 +1,111 @@
+{
+  "blend": "/Users/sashabrave/Desktop/tank-roguelite-claude/art_requests/merchant_point_v1/PR_RouteMerchant_master.blend",
+  "mode": "material",
+  "engine": "cycles",
+  "bbox_min": [
+    -3.1500000953674316,
+    -3.1500000953674316,
+    0.0
+  ],
+  "bbox_max": [
+    3.1500000953674316,
+    3.1500000953674316,
+    3.629999876022339
+  ],
+  "size_xyz": [
+    6.300000190734863,
+    6.300000190734863,
+    3.629999876022339
+  ],
+  "objects": [
+    "Tile_Plinth",
+    "Tile_Top",
+    "Counter_Body",
+    "Counter_Plank0",
+    "Counter_Plank1",
+    "Counter_Plank2",
+    "Counter_Leg",
+    "Counter_Leg.001",
+    "Counter_Leg.002",
+    "Counter_Leg.003",
+    "Counter_Top",
+    "Post",
+    "Post_Cap",
+    "Post.001",
+    "Post_Cap.001",
+    "Post.002",
+    "Post_Cap.002",
+    "Post.003",
+    "Post_Cap.003",
+    "Awning_Stripe0",
+    "Awning_Scallop0",
+    "Awning_Stripe1",
+    "Awning_Scallop1",
+    "Awning_Stripe2",
+    "Awning_Scallop2",
+    "Awning_Stripe3",
+    "Awning_Scallop3",
+    "Awning_Stripe4",
+    "Awning_Scallop4",
+    "Awning_Bar",
+    "Lantern_Pole",
+    "Lantern_Arm",
+    "Lantern_Cap",
+    "Lantern_Glass",
+    "Lantern_Base",
+    "Lantern_Hook",
+    "Goods_Tray",
+    "Goods_Orange0",
+    "Goods_Orange1",
+    "Goods_Orange2",
+    "Goods_Orange3",
+    "Goods_Tin0",
+    "Goods_Tin1",
+    "Goods_Box",
+    "Goods_Jar",
+    "Goods_JarLid",
+    "Goods_Bottle",
+    "Goods_Cork",
+    "Prop_Crate",
+    "Prop_CrateCorner0",
+    "Prop_CrateCorner1",
+    "Prop_CrateCorner2",
+    "Prop_CrateCorner3",
+    "Prop_AmmoBox",
+    "Prop_AmmoHandle",
+    "Prop_Barrel",
+    "Prop_BarrelRing0",
+    "Prop_BarrelRing1",
+    "Prop_PineTrunk",
+    "Prop_PineTier0",
+    "Prop_PineTier1",
+    "Prop_PineTier2",
+    "Prop_Rock",
+    "Prop_SignPost",
+    "Prop_SignBoard"
+  ],
+  "renders": {
+    "threequarter": {
+      "file": "review/03_forms_b/material_threequarter.png",
+      "az_el_lens": [
+        35,
+        15,
+        50
+      ],
+      "distance": 15.231290303959474
+    },
+    "ref": {
+      "file": "review/03_forms_b/material_ref.png",
+      "az_el_lens": [
+        -35.0,
+        35.0,
+        50.0
+      ],
+      "distance": 15.689036027431406
+    },
+    "gameplay": {
+      "file": "review/03_forms_b/material_gameplay_110px.png",
+      "subject_px": 110
+    }
+  }
+}

@@ -67,7 +67,7 @@ func refresh():
 	for child in get_children():remove_child(child);child.queue_free()
 	var dim=ColorRect.new();add_child(dim);dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);dim.color=Color(0,0,0,.38)
 	panel=UiKit.glass(self,Vector2.ZERO,Vector2(1060,690),Color("283b33"));fit_panel()
-	UiKit.label(panel,"Командный центр" if manage else "Полевой планшет",Vector2(82,18),Vector2(840,40),27,Color("e8ecdc"))
+	UiKit.accent(UiKit.label(panel,"Командный центр" if manage else "Полевой планшет",Vector2(82,18),Vector2(840,40),26,Color("e8ecdc")))
 	var close_button=UiKit.button(panel,"",Vector2(981,17),Vector2(52,44),func():closed.emit())
 	close_button.icon=UiKit.interface_icon("close");close_button.tooltip_text="Закрыть планшет";close_button.expand_icon=true;close_button.add_theme_constant_override("icon_max_width",20)
 	var toggle=UiKit.button(panel,"",Vector2(22,18),Vector2(44,40),toggle_navigation)
@@ -76,9 +76,10 @@ func refresh():
 	var p=Game.progression
 	if tab in ["active","tracked","completed","orders"]:
 		quest_filter={"completed":"completed","orders":"operations"}.get(tab,"all");tab="quests"
-	var tabs=[["inventory","Снаряжение"],["fighter","Боец"],["quests","Задачи · %d" % p.quests("available" if manage else "active").size()],["notifications","Лента · %d" % Game.notifications.unread()],["music","Радио"],["settings","Настройки"],["guide","Энциклопедия"],["about","Об игре"],["tech","Тех. информация"]]
+	var tabs=[["inventory","Снаряжение"],["fighter","Вылазка"],["quests","Задачи"],["notifications","Связь"],["music","Радио"],["settings","Настройки"],["guide","Энциклопедия"],["about","Об игре"],["tech","Тех. информация"]]
 	# Command centre: quests first, then a compact summary; loadout, radio and settings stay in the field tablet.
 	if manage:tabs=[tabs[2],["base","Сводка"],tabs[3],["guide","Энциклопедия"],["tech","Тех. информация"]]
+	tab_order=tabs.map(func(t):return t[0])
 	for i in range(tabs.size()):
 		var key=tabs[i][0]
 		var b=sidebar_button(tabs[i][1],key,80+i*(44 if manage or can_quit() else 48),40,func():tab=key;mark_section(key);refresh())
@@ -100,7 +101,7 @@ func refresh():
 		_:quest_page()
 
 	# Pages built from content.size (quests) already know the collapsed width; scaling them again pushed cards out.
-	if nav_collapsed and tab in ["inventory","fighter","settings","base","about"]:expand_layout(content,932.0/775.0)
+	if nav_collapsed and tab in ["fighter","settings","base","about"]:expand_layout(content,932.0/775.0)
 	if tab=="music":
 		for child in content.get_children():
 			if child is PanelContainer:child.size.x=content.size.x-44
@@ -175,29 +176,45 @@ func list_button(box:VBoxContainer,text:String,callback:Callable,height=65):
 func quest_page():
 	var p=Game.progression
 	if manage:p.prepare_telegrams()
-	UiKit.label(content,"Задачи",Vector2(UiKit.PAGE_PADDING,20),Vector2(700,28),UiKit.PAGE_TITLE_SIZE)
-	# One feed, no sender tabs: what needs you is on top, taken work sinks, finished orders go to the bottom.
-	var full=content.size.x-UiKit.PAGE_PADDING*2
+	UiKit.accent(UiKit.label(content,"Задачи",Vector2(UiKit.PAGE_PADDING,20),Vector2(700,28),UiKit.PAGE_TITLE_SIZE))
+	# T-057: vertical filter tabs on the left — main story/institute, operations, done — each with a dot when it
+	# holds something new or ready. Inside a tab: what needs you on top, taken work below.
+	var tabs_w=170.0;var gap=16.0
+	var full=content.size.x-UiKit.PAGE_PADDING*2-tabs_w-gap
 	quest_bubble_width=full-56-14
-	quest_filter="all"
+	if quest_filter not in ["main","operations","completed"]:quest_filter="main"
+	var Qc=preload("res://scripts/progression/quest_catalog.gd")
 	var quests=p.quests("available" if manage else "active")
-	var finished=p.quests("completed").slice(-8)
-	var feed_top=UiKit.PAGE_CONTENT_TOP
-	var box=scroller(Vector2(UiKit.PAGE_PADDING,feed_top),Vector2(full,content.size.y-feed_top-16));box.name="QuestFeed";box.add_theme_constant_override("separation",12)
+	var is_ops=func(q):return Qc.sender(q)=="operations"
+	var news_of=func(q):
+		var order=str(q.id).begins_with("order_");var count=p.count(q)
+		return p.operations_news() if order else ("quest:"+q.id not in p.seen or (count>=q.goal and "ready:"+q.id not in p.seen))
 	var incoming=p.telegram.is_empty() and not p.telegram_options.is_empty() and p.order_wait==0
-	if incoming:telegram_offer_card(box)
-	if quests.is_empty() and finished.is_empty() and not incoming:list_button(box,"Нет заданий",func():pass)
-	# Rank: ready to hand in 4, new 3, offer not taken yet 2, in progress 1; finished entries follow at the bottom.
-	var ranked=quests.map(func(q):
-		var order=str(q.id).begins_with("order_");var count=p.count(q);var taken=q.id in p.accepted or order
-		var news=p.operations_news() if order else ("quest:"+q.id not in p.seen or (count>=q.goal and "ready:"+q.id not in p.seen))
-		var ready=count>=q.goal
-		return {"q":q,"count":count,"news":news,"ready":ready,"done":false,"rank":4 if ready else 3 if news else 2 if not taken else 1})
-	ranked.sort_custom(func(a,b):return a.rank>b.rank)
-	for q in finished:ranked.append({"q":q,"count":int(q.goal),"news":false,"ready":false,"done":true,"rank":0})
+	var counts={"main":quests.filter(func(q):return not is_ops.call(q) and news_of.call(q)).size(),"operations":quests.filter(func(q):return is_ops.call(q) and news_of.call(q)).size()+(1 if incoming else 0),"completed":0}
+	var feed_top=UiKit.PAGE_CONTENT_TOP
+	for i in range(3):
+		var key=["main","operations","completed"][i]
+		var t=UiKit.button(content,["Основные","Оперштаб","Выполнено"][i],Vector2(UiKit.PAGE_PADDING,feed_top+i*52),Vector2(tabs_w,44),func():quest_filter=key;refresh(),key==quest_filter)
+		t.name="QuestTab_"+key;t.alignment=HORIZONTAL_ALIGNMENT_LEFT;t.add_theme_font_size_override("font_size",16)
+		if counts[key]>0:UiKit.badge(t,"news",counts[key],"trailing")
+	var box=scroller(Vector2(UiKit.PAGE_PADDING+tabs_w+gap,feed_top),Vector2(full,content.size.y-feed_top-16));box.name="QuestFeed";box.add_theme_constant_override("separation",12)
+	var shown=[]
+	if quest_filter=="completed":shown=p.quests("completed").slice(-20);shown.reverse()
+	else:shown=quests.filter(func(q):return is_ops.call(q)==(quest_filter=="operations"))
+	# A new telegram offer needs an answer: it sits on top of both open tabs.
+	if quest_filter!="completed" and incoming:telegram_offer_card(box);p.viewed_updates["operations"]=p.operations_signature()
+	if shown.is_empty() and not (quest_filter!="completed" and incoming):list_button(box,"Нет заданий",func():pass)
+	# Rank: ready to hand in 4, new 3, offer not taken yet 2, in progress 1.
+	var done=quest_filter=="completed"
+	var ranked=shown.map(func(q):
+		var order=str(q.id).begins_with("order_");var count=int(q.goal) if done else p.count(q);var taken=q.id in p.accepted or order
+		var news=false if done else news_of.call(q)
+		var ready=not done and count>=q.goal
+		return {"q":q,"count":count,"news":news,"ready":ready,"done":done,"rank":0 if done else 4 if ready else 3 if news else 2 if not taken else 1})
+	if not done:ranked.sort_custom(func(a,b):return a.rank>b.rank)
 	for i in range(ranked.size()):
 		var card=quest_message(ranked[i].q,ranked[i].count,ranked[i].news,ranked[i].ready,ranked[i].done);box.add_child(card)
-		if ranked[i].done:card.modulate.a=.55
+		if ranked[i].done:card.modulate.a=.7
 		if ranked[i].news:UiKit.arrive(card,i)
 		else:UiKit.reveal(card,i)
 	p.view_quest_updates(quest_filter)
@@ -211,7 +228,7 @@ func quest_message(q:Dictionary,count:int,news:bool,ready:bool,done:bool)->Contr
 	var height=(206 if not actions else (296 if order and taken else 250))
 	var row=Control.new();row.name="Quest_"+str(q.id);row.custom_minimum_size=Vector2(0,height)
 	var avatar=Panel.new();row.add_child(avatar);avatar.position=Vector2(0,4);avatar.size=Vector2(46,46);avatar.add_theme_stylebox_override("panel",UiKit.style(Color(sender.color),23))
-	var glyph=UiKit.icon(avatar,sender.icon,Vector2(11,11),Vector2(24,24));glyph.texture=UiKit.interface_icon(sender.icon)
+	sender_avatar(avatar,sender)
 	var bubble=Panel.new();row.add_child(bubble);bubble.name="Bubble";bubble.position=Vector2(56,0);bubble.size=Vector2(bw,height)
 	var tint=Color("eee4bf") if ready else Color("cfddbf") if news else Color("dce3d5")
 	var style=UiKit.style(tint,12);style.corner_radius_top_left=3;bubble.add_theme_stylebox_override("panel",style)
@@ -228,8 +245,18 @@ func quest_message(q:Dictionary,count:int,news:bool,ready:bool,done:bool)->Contr
 	if order:reward+=" · осталось вылазок: %d" % q.get("runs_left",0)
 	UiKit.label(bubble,reward,Vector2(14,158),Vector2(bw-28,24),15,UiKit.MUTED)
 	if not done and taken:
-		var eye=UiKit.button(bubble,"" if q.id in p.tracked else "+",Vector2(bw-51,8),Vector2(38,32),func():p.toggle_track(q.id);refresh());eye.tooltip_text="Не отслеживать" if q.id in p.tracked else "Отслеживать"
-		if q.id in p.tracked:eye.add_child(preload("res://scripts/ui/tracked_eye.gd").new())
+		# T-028: a pin that is orange while tracked and grey otherwise; toggling only recolours it (no page rebuild,
+		# so the message never blinks out).
+		var pin=UiKit.button(bubble,"",Vector2(bw-51,8),Vector2(38,32),func():pass);pin.name="TrackPin"
+		pin.icon=UiKit.interface_icon("pin");pin.expand_icon=true;pin.add_theme_constant_override("icon_max_width",18);pin.icon_alignment=HORIZONTAL_ALIGNMENT_CENTER
+		for state in ["normal","hover","pressed","focus"]:
+			var tight=pin.get_theme_stylebox(state).duplicate();tight.content_margin_left=4;tight.content_margin_right=4;tight.content_margin_top=4;tight.content_margin_bottom=4;pin.add_theme_stylebox_override(state,tight)
+		var paint=func():
+			var on=q.id in p.tracked
+			pin.add_theme_color_override("icon_normal_color",UiKit.ORANGE if on else Color(1,1,1,.35));pin.add_theme_color_override("icon_hover_color",UiKit.ORANGE if on else Color(1,1,1,.7))
+			pin.tooltip_text=Texts.localized("Не отслеживать" if on else "Отслеживать")
+		paint.call()
+		pin.pressed.connect(func():p.toggle_track(q.id);paint.call())
 	if actions and taken:
 		var claim=UiKit.button(bubble,"Забрать награду",Vector2(14,196),Vector2(bw-28,40),func():
 			UiKit.leave(row,func():
@@ -250,7 +277,7 @@ func telegram_offer_card(box:VBoxContainer):
 	var height=92+ORDER_TILE_HEIGHT+(62 if manage else 40)
 	var row=Control.new();row.name="TelegramOffer";box.add_child(row);row.custom_minimum_size=Vector2(0,height)
 	var avatar=Panel.new();row.add_child(avatar);avatar.position=Vector2(0,4);avatar.size=Vector2(46,46);avatar.add_theme_stylebox_override("panel",UiKit.style(Color(sender.color),23))
-	var glyph=UiKit.icon(avatar,sender.icon,Vector2(11,11),Vector2(24,24));glyph.texture=UiKit.interface_icon(sender.icon)
+	sender_avatar(avatar,sender)
 	var bubble=Panel.new();row.add_child(bubble);bubble.name="Bubble"
 	bubble.anchor_right=1.0;bubble.anchor_bottom=1.0;bubble.offset_left=56;bubble.offset_right=-14
 	var style=UiKit.style(Color("eee4bf"),12);style.corner_radius_top_left=3;bubble.add_theme_stylebox_override("panel",style)
@@ -309,14 +336,31 @@ func order_icon(event:String)->Control:
 
 func orders_page():
 	quest_filter="operations";quest_page()
+## «Связь» (T-034, T-048): history of video calls first — any call can be replayed — then messages without
+## the quest echoes (quests live in «Задачи»), then the technical log. Only real news lights the tab.
+static func quest_echo(entry:Dictionary)->bool:
+	var text=str(entry.get("text","")).to_lower()
+	return text.begins_with("новое задание") or text.begins_with("новый приказ") or text.begins_with("поступила телеграмма") or "задание выполнено" in text
 func messages_page():
-	UiKit.label(content,"Лента",Vector2(UiKit.PAGE_PADDING,20),Vector2(720,28),UiKit.PAGE_TITLE_SIZE)
-	for button in UiKit.tab_row(content,Vector2(22,68),content.size.x-44,[["important","Важные"],["technical","Технические"]],message_tab,func(key):message_tab=key;refresh()):button.add_theme_font_size_override("font_size",16)
-	UiKit.label(content,"Задания, развитие и открытия" if message_tab=="important" else "Боевые реплики · без всплывающих уведомлений",Vector2(22,106+UiKit.TAB_CONTENT_GAP),Vector2(720,26),14,UiKit.MUTED)
+	UiKit.accent(UiKit.label(content,"Связь",Vector2(UiKit.PAGE_PADDING,20),Vector2(720,28),UiKit.PAGE_TITLE_SIZE))
+	if message_tab not in ["calls","important","technical"]:message_tab="calls"
+	for button in UiKit.tab_row(content,Vector2(22,68),content.size.x-44,[["calls","История"],["important","Сообщения"],["technical","Технические"]],message_tab,func(key):message_tab=key;refresh()):button.add_theme_font_size_override("font_size",16)
+	var hint={"calls":"Звонки майора — их можно пересмотреть","important":"Развитие, открытия и важные события","technical":"Боевые реплики · без всплывающих уведомлений"}[message_tab]
+	UiKit.label(content,hint,Vector2(22,106+UiKit.TAB_CONTENT_GAP),Vector2(720,26),14,UiKit.MUTED)
 	var box=scroller(Vector2(22,164),Vector2(content.size.x-44,335))
+	if message_tab=="calls":
+		var Call=preload("res://scripts/ui/video_call.gd")
+		for id in Call.ORDER:
+			if "call_"+id not in Game.progression.seen:continue
+			var first=str(Call.CALLS[id][0][1])
+			var b=list_button(box,first if first.length()<70 else first.substr(0,68)+"…",func():
+				var view=Call.new();view.id=id;view.replay=true;get_tree().root.add_child(view),56)
+			b.icon=UiKit.interface_icon("call");b.expand_icon=true;b.add_theme_constant_override("icon_max_width",20)
+		if box.get_child_count()==0:UiKit.label(box,"Звонков ещё не было",Vector2.ZERO,Vector2(500,40),16,UiKit.MUTED)
+		UiKit.reveal_list(box);return
 	for i in range(Game.notification_history.size()-1,-1,-1):
 		var entry=Game.notification_history[i]
-		if Game.notifications.category(entry)!=message_tab:continue
+		if Game.notifications.category(entry)!=message_tab or quest_echo(entry):continue
 		var card=preload("res://scripts/ui/message_card.gd").new();card.entry=entry;box.add_child(card);card.read_requested.connect(func():entry.read=true;Game.save_progress();refresh())
 	if box.get_child_count()==0:UiKit.label(box,"Пока нет сообщений",Vector2.ZERO,Vector2(500,40),16,UiKit.MUTED)
 	UiKit.reveal_list(box)
@@ -325,8 +369,8 @@ func base_page():preload("res://scripts/ui/base_dashboard.gd").render(self)
 func inventory_page():preload("res://scripts/ui/tablet_pages.gd").new(self).inventory()
 
 func about_page():
-	UiKit.label(content,"Об игре",Vector2(UiKit.PAGE_PADDING,20),Vector2(720,28),UiKit.PAGE_TITLE_SIZE)
-	for button in UiKit.tab_row(content,Vector2(22,68),content.size.x-44,[["info","Об игре"],["changelog","Изменения"]],about_tab,func(key):about_tab=key;refresh()):
+	UiKit.accent(UiKit.label(content,"Об игре",Vector2(UiKit.PAGE_PADDING,20),Vector2(720,28),UiKit.PAGE_TITLE_SIZE))
+	for button in UiKit.tab_row(content,Vector2(22,68),775.0-44,[["info","Об игре"],["changelog","Изменения"]],about_tab,func(key):about_tab=key;refresh()):
 		button.add_theme_font_size_override("font_size",16);button.name="AboutTab_"+button.name.trim_prefix("Tab_")
 	if about_tab=="changelog":changelog_page();return
 	UiKit.label(content,"War Cats",Vector2(22,130),Vector2(720,54),36)
@@ -398,7 +442,7 @@ func guide_page():
 	UiKit.label(content,"Энциклопедия",Vector2(22,18),Vector2(220,36),24)
 	var search=LineEdit.new();search.name="GuideSearch";content.add_child(search)
 	var search_x=250.0;var search_w=width-search_x-22-(190 if Texts.dev_enabled() else 0)
-	search.position=Vector2(search_x,16);search.size=Vector2(search_w,42);search.placeholder_text=Texts.localized("Поиск по статьям…");search.clear_button_enabled=true;Texts.set_text(search,guide_query);search.right_icon=UiKit.interface_icon("search")
+	search.position=Vector2(search_x,16);search.size=Vector2(search_w,42);search.placeholder_text=Texts.localized("Поиск по статьям…");search.clear_button_enabled=true;Texts.set_text(search,guide_query);var lens=UiKit.icon(search,"search",Vector2(search_w-34,11),Vector2(20,20));lens.texture=UiKit.interface_icon("search");lens.modulate=search.get_theme_color("font_placeholder_color");lens.visible=search.text=="";search.text_changed.connect(func(value):lens.visible=value=="")  # fixed 20 px (SVG rasterised at 3x); the clear button takes its place
 	search.add_theme_font_size_override("font_size",17);search.add_theme_color_override("font_color",UiKit.INK)
 	search.add_theme_stylebox_override("normal",UiKit.style(Color("1d2621"),8))
 	search.add_theme_stylebox_override("focus",UiKit.style(Color("1d2621"),8,UiKit.ORANGE))
@@ -486,9 +530,18 @@ func guide_article(width:float):
 	var text=Label.new();column.add_child(text);Texts.set_text(text,entry.text);text.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;text.add_theme_font_size_override("font_size",18);text.add_theme_color_override("font_color",UiKit.INK)
 	if dev_edit and not entry.get("auto",false):UiKit.button(column,"Редактировать",Vector2.ZERO,Vector2(0,36),func():preload("res://scripts/ui/encyclopedia_editor.gd").open(self,entry.id))
 
+var tab_order:Array=[]
 func _input(event):
 	if is_instance_valid(quit_confirm) and event.is_action_pressed("pause") and not event.is_echo():
 		cancel_quit();get_viewport().set_input_as_handled();return
+	# W / S (the movement keys, not the arrows) walk through the tablet tabs.
+	if waiting_key=="" and event is InputEventKey and event.pressed and not event.echo and not tab_order.is_empty():
+		var focus=get_viewport().gui_get_focus_owner()
+		if not (focus is LineEdit or focus is TextEdit) and get_tree().get_nodes_in_group("selection_scope").back()==self:
+			var step=-1 if event.physical_keycode==Settings.keys.get("north",KEY_W) else 1 if event.physical_keycode==Settings.keys.get("south",KEY_S) else 0
+			if step!=0:
+				var at=maxi(0,tab_order.find(tab));var next=tab_order[posmod(at+step,tab_order.size())]
+				tab=next;mark_section(next);refresh();get_viewport().set_input_as_handled();return
 	if waiting_key=="" or not event is InputEventKey or not event.pressed or event.echo:return
 	if event.physical_keycode==KEY_ESCAPE:waiting_key="";refresh();get_viewport().set_input_as_handled();return
 	if event.physical_keycode<=0:return
@@ -503,13 +556,17 @@ func signature(key:String)->String:
 		if key=="inventory":value+=str([arena.weapon,arena.pending_recipes,arena.abilities.slots,arena.headquarters.loadout()])
 		if key=="fighter":value+=str(arena.run.upgrade_history)
 	return value
+## Equipment and fighter news only make sense inside a run (a new card, a picked-up blueprint): in the hub the
+## player changes them himself. A run keeps its own "viewed" mark, so returning to the hub never lights them (T-033).
+func viewed_key(key:String)->String:return key+"@run" if key in ["inventory","fighter"] and is_instance_valid(arena) else key
 func section_new(key:String)->bool:
 	if key=="notifications":return Game.notifications.unread()>0
+	if key in ["inventory","fighter"] and not is_instance_valid(arena):return false
 	var value=signature(key)
-	return value!="" and str(Game.progression.viewed_updates.get(key,""))!=value
+	return value!="" and str(Game.progression.viewed_updates.get(viewed_key(key),""))!=value
 func mark_section(key:String):
 	Game.progression.view_section(key)
-	Game.progression.viewed_updates[key]=signature(key);Game.save_progress()
+	Game.progression.viewed_updates[viewed_key(key)]=signature(key);Game.save_progress()
 
 func expand_layout(parent:Node,factor:float):
 	for child in parent.get_children():
@@ -550,3 +607,8 @@ func fit_panel():
 	# Phones and tablets: grow to fill the screen (text stays readable); desktop keeps 1:1 at most.
 	var factor=minf(fit,1.35) if InputScheme.touch() else minf(1.0,fit)
 	panel.scale=Vector2.ONE*factor;panel.position=(available-panel.size*factor)*.5
+## Sender avatar: the drawn emblem (data/icon_kit.json «sender/<icon>») over the coloured circle, else the line glyph.
+func sender_avatar(avatar:Panel,sender:Dictionary):
+	var drawn=IconKit.symbol("sender/"+str(sender.icon))
+	var glyph=UiKit.icon(avatar,sender.icon,Vector2(5,5) if drawn else Vector2(11,11),Vector2(36,36) if drawn else Vector2(24,24))
+	glyph.texture=drawn if drawn else UiKit.interface_icon(sender.icon)

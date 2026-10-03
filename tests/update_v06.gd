@@ -67,7 +67,7 @@ func run():
 	# The grenade is thrown 5 cells ahead of the hero and bounces; radius from combat.tres.
 	var p=arena.player;var ahead=p.position+Vector3(p.facing.x,0,p.facing.y)*5
 	check(arena.abilities.cast() and arena.grenades.back().target==ahead and is_equal_approx(arena.grenades.back().blast_radius,Balance.CONFIG.combat.grenade_radius),"grenade lands five cells ahead with the tuned radius")
-	var hp=arena.player.hp;arena.grenade_explosion(arena.player.position,4,true,2.5);check(arena.player.hp==hp,"ability grenade never damages player")
+	var hp=arena.player.hp;arena.player.invulnerable=0;arena.grenade_explosion(arena.player.position,4,true,2.5);check(is_equal_approx(arena.player.hp,hp-1.0),"own grenade bites the soldier for 1, not its full damage (T-026)")
 	# The mechanic upgrades the player's vehicle: here the APC waiting for the next room.
 	arena.pending_vehicle="apc"
 	var service=load("res://scripts/service_room.gd").new();service.arena=arena;service.branch="vehicle";service.index=4;add_child(service)

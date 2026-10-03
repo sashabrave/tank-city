@@ -37,6 +37,11 @@ const STATUS={
 	"goal":["Следующая цель",Color("f2a33a"),Color("4a3f28"),Color("c98a33")],
 	"later":["Позже",Color("6c736b"),Color("30352f"),Color("3f463f")],
 }
+## Something on tab `key` can be bought or upgraded right now (status() reads the current tab, so it is swapped).
+func affordable_in(key:String)->bool:
+	var saved=tab;tab=key
+	var found=provider.items(key).any(func(item):return status(item) in ["buy","upgrade"])
+	tab=saved;return found
 func status(item:Dictionary)->String:
 	if item.has("status"):return str(item.status)
 	var state=str(item.get("state","owned"))
@@ -98,7 +103,7 @@ func build():
 	panel=UiKit.glass(self,Vector2.ZERO,Vector2(1120,650),Color("242d27"));panel.name="StationPanel";fit()
 	UiKit.accent(UiKit.label(panel,provider.title(),Vector2(28,16),Vector2(600,40),28))
 	UiKit.label(panel,provider.subtitle(),Vector2(28,54),Vector2(700,24),15,UiKit.MUTED)
-	var alloy=UiKit.label(panel,"%d ◈" % Game.credits,Vector2(880,22),Vector2(150,30),18);alloy.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT;alloy.name="Alloy"
+	# The global currency strip at the top already shows alloy; the station window keeps no second counter (T-030).
 	var close=UiKit.button(panel,"",Vector2(1046,16),Vector2(52,44),func():closed.emit());close.icon=UiKit.interface_icon("close");close.expand_icon=true;close.add_theme_constant_override("icon_max_width",20);close.name="Close"
 	var tabs=provider.tabs()
 	for i in range(tabs.size()):
@@ -108,12 +113,18 @@ func build():
 		for state in ["normal","hover","pressed","disabled"]:
 			var tight=b.get_theme_stylebox(state).duplicate();tight.content_margin_left=14;tight.content_margin_right=10;b.add_theme_stylebox_override(state,tight)
 		b.expand_icon=true;b.add_theme_constant_override("icon_max_width",22);b.add_theme_constant_override("h_separation",10);b.alignment=HORIZONTAL_ALIGNMENT_LEFT;b.add_theme_font_size_override("font_size",16)
+		# T-052: a tab with something affordable right now carries a «ready» dot, as everywhere else.
+		if key!=tab and affordable_in(key):UiKit.badge(b,"ready",0,"trailing")
 	var scroll=ScrollContainer.new();panel.add_child(scroll);scroll.position=Vector2(232,96);scroll.size=Vector2(530,532);scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
 	var items=provider.items(tab)
 	if selected=="" and not items.is_empty():selected=items[0].id
 	var grouped=items.any(func(item):return item.has("group"))
 	var column=VBoxContainer.new();column.name="Items";scroll.add_child(column);column.add_theme_constant_override("separation",8)
 	var current_group=null;grid=null
+	# The roadmap is a path (T-124): vertical milestones on one line instead of a grid.
+	if provider.has_method("path_layout") and provider.path_layout():
+		milestones(column,items)
+		items=[]
 	for item in items:
 		if grouped and item.get("group")!=current_group:
 			current_group=item.get("group")
@@ -128,6 +139,45 @@ func build():
 		animate_cards=false
 	detail_box=UiKit.panel(panel,Vector2(778,96),Vector2(320,532),Color("2c352e"));detail_box.name="Detail"
 	render_detail()
+## Vertical milestones: a line through round nodes — done (filled, ✓), the next goal (orange, glowing) and
+## later steps (hollow, picture in grey and dimmed). A tap selects the step for the detail panel.
+func milestones(column:VBoxContainer,items:Array):
+	const ROW=96.0;const NODE=26.0;const X=24.0
+	var holder=Control.new();holder.name="Path";column.add_child(holder);holder.custom_minimum_size=Vector2(510,ROW*items.size()+8)
+	for i in range(items.size()):
+		var item=items[i];var status=str(item.get("status","later"));var y=i*ROW
+		if i<items.size()-1:
+			var segment=ColorRect.new();holder.add_child(segment);segment.mouse_filter=Control.MOUSE_FILTER_IGNORE
+			var node_top=(ROW-12-NODE)*.5
+			segment.position=Vector2(X+NODE*.5-2,y+node_top+NODE+2);segment.size=Vector2(4,ROW-NODE-4)
+			segment.color=Color("8fe895") if status=="done" else Color(1,1,1,.12)
+		var row=Button.new();holder.add_child(row);row.name="Item_"+str(item.id);row.position=Vector2(X+NODE+18,y);row.size=Vector2(510-X-NODE-26,ROW-12);row.focus_mode=Control.FOCUS_NONE
+		var chosen=str(item.id)==selected
+		var style=UiKit.style(Color("584a2c") if status=="goal" else Color(1,1,1,.04) if status=="done" else Color(0,0,0,.12),12,UiKit.ORANGE if chosen else Color(1,1,1,.1));style.set_border_width_all(2 if chosen else 1)
+		for state in ["normal","hover","pressed","focus"]:row.add_theme_stylebox_override(state,style)
+		var id=str(item.id)
+		row.pressed.connect(func():selected=id;notice="";build())
+		var node=Panel.new();holder.add_child(node);node.mouse_filter=Control.MOUSE_FILTER_IGNORE;node.position=Vector2(X,y+(ROW-12-NODE)*.5);node.size=Vector2(NODE,NODE)
+		var fill=Color("8fe895") if status=="done" else UiKit.ORANGE if status=="goal" else Color.TRANSPARENT
+		var ring=UiKit.style(fill,13,Color("8fe895") if status=="done" else UiKit.ORANGE if status=="goal" else Color(1,1,1,.3));ring.set_border_width_all(2)
+		node.add_theme_stylebox_override("panel",ring)
+		if status=="done":
+			var tick=UiKit.label(node,"✓",Vector2.ZERO,Vector2(NODE,NODE),15,Color("1b211d"));tick.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;tick.vertical_alignment=VERTICAL_ALIGNMENT_CENTER
+		if status=="goal":
+			var pulse=node.create_tween().set_loops();pulse.tween_property(node,"scale",Vector2.ONE*1.18,.6);pulse.tween_property(node,"scale",Vector2.ONE,.6);node.pivot_offset=node.size*.5
+		var art=TextureRect.new();row.add_child(art);art.mouse_filter=Control.MOUSE_FILTER_IGNORE;art.position=Vector2(10,8);art.size=Vector2(ROW-28,ROW-28)
+		art.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;art.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		art.texture=item.get("texture",UiKit.icon_texture(str(item.get("icon",""))))
+		if status=="later":
+			var grey=ShaderMaterial.new();grey.shader=GREY;art.material=grey;art.self_modulate=Color(.75,.75,.75,.45);art.set_meta("kit_layer",true)
+		var title=UiKit.label(row,str(item.title),Vector2(ROW,10),Vector2(row.size.x-ROW-10,26),18,UiKit.INK if status!="later" else UiKit.MUTED);title.clip_text=true
+		UiKit.label(row,str(item.get("caption","")),Vector2(ROW,40),Vector2(row.size.x-ROW-10,22),13,Color("8fe895") if status=="done" else UiKit.ORANGE if status=="goal" else Color(UiKit.MUTED,.7))
+static var GREY:Shader:
+	get:
+		if _grey==null:
+			_grey=Shader.new();_grey.code="shader_type canvas_item;\nvoid fragment(){vec4 c=texture(TEXTURE,UV);float l=dot(c.rgb,vec3(.299,.587,.114));COLOR=vec4(vec3(l),c.a)*COLOR;}"
+		return _grey
+static var _grey:Shader
 func card(item:Dictionary):
 	var b=Button.new();grid.add_child(b);b.name="Item_"+str(item.id);b.custom_minimum_size=Vector2(166,150);b.focus_mode=Control.FOCUS_NONE
 	var state=str(item.get("state","owned"))
@@ -159,21 +209,29 @@ func render_detail():
 	var content=Control.new();detail_box.add_child(content);content.size=detail_box.size
 	var picture=UiKit.icon(content,str(info.get("icon",selected)),Vector2(16,16),Vector2(72,72))
 	if info.has("texture"):picture.texture=info.texture
-	var heading=UiKit.label(content,str(info.get("title","")),Vector2(100,18),Vector2(206,64),21);heading.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	var heading=UiKit.label(content,str(info.get("title","")),Vector2(100,18),Vector2(206,64),20);UiKit.accent(heading);heading.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	var current=provider.items(tab).filter(func(i):return str(i.id)==selected)
 	if not current.is_empty():status_chip(content,status(current[0]),Vector2(16,96))
-	var y=126.0
-	if str(info.get("text",""))!="":
-		var text=UiKit.label(content,str(info.text),Vector2(16,y),Vector2(288,96),15,UiKit.MUTED);text.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;y+=104
-	for row in info.get("rows",[]):
-		UiKit.label(content,str(row[0]),Vector2(16,y),Vector2(150,24),15)
-		var value="%s → %s" % [str(row[1]),str(row[2])] if str(row[1])!=str(row[2]) else str(row[1])
-		var cell=UiKit.label(content,value,Vector2(160,y),Vector2(144,24),15,UiKit.ORANGE if str(row[1])!=str(row[2]) else UiKit.INK);cell.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
-		y+=28
-	for line in info.get("lines",[]):
-		var l=UiKit.label(content,str(line),Vector2(16,y),Vector2(288,24),14,UiKit.MUTED);l.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;y+=26
 	var actions:Array=info.get("actions",[])
 	var bottom=detail_box.size.y-16-(34 if notice!="" else 0)
+	# Text, rows and lines scroll in the space above the buttons: long cards overlapped them (T-098 shot).
+	var area_top=126.0;var area_bottom=bottom-actions.size()*52-6
+	var scroll=ScrollContainer.new();scroll.name="DetailScroll";content.add_child(scroll);scroll.position=Vector2(0,area_top);scroll.size=Vector2(content.size.x,maxf(40,area_bottom-area_top))
+	scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
+	var body=Control.new();scroll.add_child(body);body.custom_minimum_size=Vector2(content.size.x-12,0)
+	var y=0.0
+	if str(info.get("text",""))!="":
+		var text=UiKit.label(body,str(info.text),Vector2(16,y),Vector2(288,96),15,UiKit.MUTED);text.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+		# Height follows the text: a fixed 96 px left a hole under short descriptions and hid the lines below.
+		text.size.y=wrapped_height(text,288,15);y+=text.size.y+10
+	for row in info.get("rows",[]):
+		UiKit.label(body,str(row[0]),Vector2(16,y),Vector2(150,24),15)
+		var value="%s → %s" % [str(row[1]),str(row[2])] if str(row[1])!=str(row[2]) else str(row[1])
+		var cell=UiKit.label(body,value,Vector2(160,y),Vector2(144,24),15,UiKit.ORANGE if str(row[1])!=str(row[2]) else UiKit.INK);cell.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
+		y+=28
+	for line in info.get("lines",[]):
+		var l=UiKit.label(body,str(line),Vector2(16,y),Vector2(288,24),14,UiKit.MUTED);l.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;l.size.y=maxf(24,wrapped_height(l,288,14));y+=l.size.y+2
+	body.custom_minimum_size.y=y
 	for i in range(actions.size()-1,-1,-1):
 		var action=actions[i];bottom-=48
 		var b=UiKit.button(content,str(action.text),Vector2(16,bottom),Vector2(288,44),func():perform(str(action.id)),action.get("primary",false) and action.get("enabled",true))
@@ -181,6 +239,10 @@ func render_detail():
 		bottom-=4
 	if notice!="":UiKit.label(content,notice,Vector2(16,detail_box.size.y-44),Vector2(288,28),15,Color("8fe895")).name="Notice"
 	UiKit.reveal(content,0,Vector2(18,0),.22)
+## Height of a wrapped label at its width, from the label's own shaping (theme font, rendered text).
+static func wrapped_height(label:Label,_width:float,_font_size:int)->float:
+	label.text_overrun_behavior=TextServer.OVERRUN_NO_TRIMMING;label.max_lines_visible=-1
+	return label.get_line_count()*(label.get_line_height()+label.get_theme_constant("line_spacing"))+4
 func perform(action:String):
 	var message=str(provider.act(tab,selected,action))
 	if message=="":return

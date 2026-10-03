@@ -1,4 +1,7 @@
 extends RefCounted
+## Commander multipliers by room difficulty (0 simple, 1 ★, 2 ★★).
+const COMMANDER_HP=[6.0,8.0,10.0]
+const COMMANDER_DAMAGE=[1.25,1.35,1.5]
 ## Boss system. Owns rules; Arena remains the scene coordinator.
 var arena
 
@@ -82,7 +85,8 @@ func spawn_room_boss():
 	var enemy=arena.spawn_actor(kind,location,false,false,WaveDirector.max_rank(arena.room.room_index),false,entry.weapon)
 	enemy.elite=true;enemy.commander_elite=elite;arena.room.commander=enemy
 	var difficulty=arena.room.difficulty
-	enemy.max_hp*=[3.0,4.0,5.0][difficulty];enemy.hp=enemy.max_hp;enemy.damage*=[1.0,1.1,1.2][difficulty]
+	# Room commanders (T-043): about twice as tough as before and noticeably more dangerous.
+	enemy.max_hp*=COMMANDER_HP[difficulty];enemy.hp=enemy.max_hp;enemy.damage*=COMMANDER_DAMAGE[difficulty];enemy.fire_interval*=.85
 	arena.room.commander_help_timer=8.0 if elite else 12.0
 	arena.room.commander_help_pool=WaveDirector.build(arena.run.run_seed,arena.room.room_index,2,arena.room.difficulty,arena.room.route_node_id)
 	arena.room.commander_help_pool.sort_custom(func(a,b):return WaveDirector.rank_cost(a.kind,a.rank)>WaveDirector.rank_cost(b.kind,b.rank))

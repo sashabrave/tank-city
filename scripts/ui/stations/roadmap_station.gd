@@ -6,6 +6,16 @@ func title()->String:return "Развитие заставы"
 func subtitle()->String:return "Что уже сделано и куда идти дальше"
 func tabs()->Array:return [["story","Поход","quests"],["ladder","Испытания","rare"],["base","Застава","build"],["army","Бойцы и техника","fighter"],["arsenal","Арсенал","damage"]]
 func counter(key:String)->int:return int(Game.progression.counters.get(key,0))
+## Reached goals the player has not looked at yet (T-088): the hub board lights up until the station is opened.
+func unseen_done()->Array:
+	var result=[]
+	for tab in tabs():
+		for step in steps(tab[0]):
+			if step[2] and "roadmap:"+str(step[0]) not in Game.progression.seen:result.append(step[0])
+	return result
+func mark_seen():
+	for id in unseen_done():Game.progression.seen.append("roadmap:"+str(id))
+	Game.save_progress()
 func steps(tab:String)->Array:
 	var p=Game.progression
 	match tab:
@@ -28,7 +38,7 @@ func steps(tab:String)->Array:
 			["headquarters","Штаб","headquarters" in Game.built_workshops,"Чертёж Штаба выпадает с командиров."],
 			["garage","Стоянка","garage" in Game.built_workshops,"Чертёж Стоянки — во второй половине пути."],
 			["range","Полигон","range" in Game.built_workshops,"Стройка во дворе, когда откроется Стоянка."],
-			["level3","Уровень базы 3",p.level>=3,"Опыт за задания поднимает уровень базы в командном центре."]]
+			["all_built","Все постройки",["weapons","headquarters","garage","range"].all(func(id):return id in Game.built_workshops),"Арсенал, Штаб, Стоянка и Полигон стоят в хабе."]]
 		"army":
 			var classes=ClassCatalog.ROSTER.filter(func(id):return id in Game.CLASSES)
 			var opened=classes.filter(func(id):return id in Game.class_unlocks).size()
@@ -66,3 +76,5 @@ func detail(tab:String,id:String)->Dictionary:
 		return {"title":step[1],"icon":item.icon,"text":("Готово. " if step[2] else "")+step[3],"actions":[]}
 	return {"title":"","text":"","actions":[]}
 func act(_tab:String,_id:String,_action:String)->String:return ""
+## The station screen draws these steps as a vertical path (T-124).
+func path_layout()->bool:return true

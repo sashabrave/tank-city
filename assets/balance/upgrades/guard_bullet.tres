@@ -6,6 +6,7 @@
 script = ExtResource("1")
 id = "guard_bullet"
 title = "Бронежилет"
+detail = "Входящие пули наносят бойцу меньше урона."
 category = "Герой"
 family = "survival"
 icon = "health"

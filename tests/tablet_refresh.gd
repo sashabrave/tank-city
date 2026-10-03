@@ -12,8 +12,8 @@ func run():
 		view.tab=tab;view.refresh();await get_tree().process_frame
 		if DisplayServer.get_name()!="headless":
 			await get_tree().create_timer(.2).timeout;RenderingServer.force_draw();get_viewport().get_texture().get_image().save_png("/tmp/refresh-"+tab+".png")
-	view.music_folder="favorites";view.refresh();assert(view.music_folder=="favorites")
-	c.change("battle",true);assert(view.music_folder=="favorites" and (c.current_track in c.TRACKS.battle or c.current_track==c.theme_track("battle")))
+	view.music_folder="singles";view.refresh();assert(view.music_folder=="singles")
+	c.change("battle",true);assert(view.music_folder=="singles" and (c.current_track in c.TRACKS.battle or c.current_track==c.theme_track("battle")))
 	Game.sound_enabled=true;c.play_track(track);await get_tree().create_timer(.1).timeout;c.seek(5)
 	assert(absf(c.position_seconds()-5)<.3)
 	var audio=Game.audio();assert(audio.banks.has("ui_hover") and audio.banks.has("ui_denied"));Game.sound_enabled=false

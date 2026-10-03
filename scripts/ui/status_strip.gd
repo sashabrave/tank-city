@@ -29,8 +29,9 @@ func _ready():
 func _process(delta):
 	if not is_instance_valid(arena) or arena.run==null:return
 	var shown=arena.phase in ["combat","countdown"]
-	for id in entries():
-		var entry=entries()[id]
+	var all=entries()
+	for id in all:
+		var entry=all[id]
 		var left=float(entry[1].call()) if shown else 0.0
 		var active=left>0 or left<0
 		if active and not chips.has(id):add_chip(id,entry[0])

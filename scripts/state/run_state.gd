@@ -62,6 +62,13 @@ var luck=0
 var safe_slots=0
 
 var behavior_cards:Array=[]
+## Ammo slots of the weapon (scripts/combat/ammo.gd): loaded types and the active one.
+var ammo_slots:Array=[{"type":"standard","rarity":0,"stats":{},"damage":0.0,"twist":false}]
+var ammo_active:=0
+## Ammo items carried in the backpack (replaced or found), swapped in the gear screen.
+var ammo_bag:Array=[]
+## Supplies carried in the backpack (T-115): aid kits picked up at full health {type:"medkit", heal}.
+var supplies:Array=[]
 var last_player_shot=-10.0
 var dash_until=0.0
 var dash_ready_at=0.0
@@ -75,4 +82,9 @@ var mercy_used=false
 var dry_offers=0
 ## Kill series: kills within KILL_SERIES_WINDOW seconds of each other.
 var series=0
+## Run report («Вылазка», meta stage 2): best single hit, longest kill series, vehicles taken, damage taken.
+var best_hit:=0.0
+var best_series:=0
+var captured:=0
+var damage_taken:=0.0
 var series_at=-10.0

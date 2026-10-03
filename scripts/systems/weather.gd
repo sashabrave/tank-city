@@ -17,6 +17,12 @@ var arena
 var kind="clear"
 var batches:Array[MultiMeshInstance3D]=[]
 var rain_style=""
+## Thunderstorm during any rain (T-074): a flash of cold light over the field now and then, thunder a moment
+## later. Own visual RNG; heavier rain flashes more often.
+const STORM_GAPS={"drizzle":Vector2(16,30),"shower":Vector2(9,18),"downpour":Vector2(5,11)}
+var storm_light:DirectionalLight3D
+var storm_rng:=RandomNumberGenerator.new()
+var storm_wait=0.0
 ## Three rains, chosen per room from the visual seed: count, streak size, fall speed, wind slant,
 ## opacity, ripples and glossy puddles. All visual.
 const RAIN={
@@ -40,15 +46,15 @@ static func allowed(entry:Dictionary)->Array:
 ## Weather of the context's current room, or "" outside battle.
 static func pick(context:Node)->String:
 	if context==null or not context.has_method("room_palette") or not "room_index" in context:return ""
-	return for_room(context.run_seed,int(context.room_index))
+	return for_room(context.run_seed,int(context.room_index),context.run.route_choices if "run" in context and context.run else {})
 ## Weather of room `index` of a run (the route map shows the same weather the battle will have).
-static func for_room(run_seed:int,index:int)->String:
+static func for_room(run_seed:int,index:int,choices:Dictionary={})->String:
 	var choice=str(Settings.values.get("weather","random"))
 	if choice in KINDS:return choice
 	var rng=RandomNumberGenerator.new();rng.seed=hash([Game.visual_run_seed,"weather"])
 	var current="clear"
 	for room in range(index+1):
-		var options=allowed(BIOMES.entry(run_seed,room))
+		var options=allowed(BIOMES.entry(run_seed,room,BIOMES.chosen_lane(run_seed,room,choices)))
 		var roll=rng.randf();var pick_roll=rng.randf()
 		if roll<CHANGE_CHANCE or current not in options:current=weighted(options,pick_roll)
 	return current
@@ -84,10 +90,14 @@ func build():
 	match kind:
 		"rain":
 			rain_style=pick_rain(arena);var style=RAIN[rain_style]
-			var streaks=batch(0,style.count,size,style.quad)
+			# Rain covers the whole view, not just the field: a wider area with proportionally more streaks.
+			var streaks=batch(0,int(style.count*2.4),size+14.0,style.quad)
 			for key in ["fall","slant","strength"]:streaks.material_override.set_shader_parameter(key,style[key])
 			batch(4,style.ripples,size,Vector2(.3,.3)).material_override.set_shader_parameter("strength",style.strength)
 			puddles(style.puddles)
+			storm_rng.seed=hash([Game.visual_run_seed,arena.room_index,"storm"]);storm_wait=storm_rng.randf_range(2.5,6.0)
+			storm_light=DirectionalLight3D.new();storm_light.name="StormFlash";storm_light.light_color=Color("dce6ff");storm_light.light_energy=0.0
+			storm_light.shadow_enabled=false;storm_light.rotation_degrees=Vector3(-62,storm_rng.randf_range(0,360),0);add_child(storm_light)
 		"snow":
 			batch(1,200,size,Vector2(.07,.07))
 		"fog":
@@ -97,6 +107,8 @@ func build():
 	if kind in ["snow","sandstorm"]:preload("res://scripts/systems/block_decor.gd").drifts(arena,kind)
 
 func clear():
+	if is_instance_valid(storm_light):storm_light.queue_free()
+	storm_light=null
 	for batch_node in batches:batch_node.queue_free()
 	batches.clear()
 	if not is_inside_tree() or not is_instance_valid(arena):return
@@ -142,3 +154,17 @@ func apply():
 	if pick(arena)!=kind:clear();build()
 	var night=Settings.values.get("world_lighting","day")=="night"
 	for batch_node in batches:batch_node.material_override.set_shader_parameter("night",night)  # puddles read it too
+func _process(delta):
+	if not is_instance_valid(storm_light) or not is_instance_valid(arena) or arena.get("phase") not in ["combat","countdown"]:return
+	storm_wait-=delta
+	if storm_wait>0.0:return
+	var gap:Vector2=STORM_GAPS.get(rain_style,STORM_GAPS.shower);storm_wait=storm_rng.randf_range(gap.x,gap.y)
+	var night=Settings.values.get("world_lighting","day")=="night"
+	var peak=(2.6 if night else 1.6)*storm_rng.randf_range(.75,1.1)
+	# Two or three uneven strokes, like a real flash.
+	var tween=create_tween()
+	for i in range(storm_rng.randi_range(2,3)):
+		tween.tween_property(storm_light,"light_energy",peak*(1.0 if i==0 else storm_rng.randf_range(.45,.8)),.04)
+		tween.tween_property(storm_light,"light_energy",peak*.12,storm_rng.randf_range(.06,.12))
+	tween.tween_property(storm_light,"light_energy",0.0,.35)
+	get_tree().create_timer(storm_rng.randf_range(.35,1.6)).timeout.connect(func():if is_inside_tree():Game.sound("weather_thunder",self))

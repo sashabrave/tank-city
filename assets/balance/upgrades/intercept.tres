@@ -5,7 +5,7 @@
 [resource]
 script = ExtResource("1")
 id = "intercept"
-title = "Напор"
+title = "Стабилизатор"
 category = "Герой"
 icon = "intercept"
 family = "fire"
@@ -13,4 +13,4 @@ tags = PackedStringArray("infantry", "pressure")
 weight = 10
 modifiers = Array[Dictionary]([{"stat": "intercept_chance", "op": "add", "value": 0.1}])
 preview = "intercept"
-detail = "{{pressure.description}}"
+detail = "Напор: шанс, что твоя пуля собьёт вражеский снаряд в полёте."

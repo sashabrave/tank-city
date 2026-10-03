@@ -5,6 +5,15 @@ extends RefCounted
 ## the first frame, only models, section transforms and labels move. Own RNG, no combat randomness.
 const WALL=preload("res://scripts/section_wall.gd")
 const ARRIVE=.85
+## Up the field approach (0.8): a longer drive along the track and the ramp.
+const ARRIVE_RAMP=2.3
+## Down the approach and away along the other track (0.8).
+const LEAVE_RAMP=1.8
+## Pause between the arrival beats: HQ stops, soldier hops out, wall rises.
+const BEAT=.25
+## Soldier hop out of the HQ and the run round the barrier to the start cell (0.8).
+const HOP=.4
+const RUN=.75
 const STEP_OUT=.3
 const BRICKS_AT=.5
 ## Defence wall assembly pace: 1.2 = 20% slower than before.
@@ -20,6 +29,9 @@ static func stop(arena):
 	for t in arena.get_meta("stage_tweens",[]):
 		if t is Tween and t.is_valid():t.kill()
 	arena.set_meta("stage_tweens",[])
+	# A cut-short intro must not leave the soldier hidden.
+	var actor=arena.get("player")
+	if is_instance_valid(actor) and actor.has_meta("stage_hidden"):actor.remove_meta("stage_hidden")
 
 ## Side the HQ arrives from. It follows the final yaw chosen when the room was built (MobileHQ.orientation), so
 ## the vehicle drives in already heading the way it will stand: facing +X it comes from -X and vice versa.
@@ -44,6 +56,17 @@ static func intro(arena):
 	var hq:Node3D=arena.base_model
 	if not is_instance_valid(hq):return
 	var rest=hq.position;var yaw=hq.rotation.y;var s=side(arena)
+	var approach=arena.find_child("FieldApproach",true,false)
+	if approach and approach.has_meta("track_right"):
+		# 0.8: the camera stays on the field (no swoop after the HQ). The HQ drives in; the soldier hops out to
+		# the cell left of the HQ, the wall starts building from there, he runs round the outside of the barrier
+		# to the start cell — and the fight begins the moment he stops (the countdown is set to this sequence).
+		ramp_arrival(arena,hq,approach,rest,yaw)
+		var land=Vector2i(maxi(0,arena.base_cell.x-2),arena.base_cell.y)
+		hop_and_run(arena,rest,land,ARRIVE_RAMP+BEAT)
+		build_bricks(arena,ARRIVE_RAMP+BEAT+HOP-BRICKS_AT,land)
+		arena.countdown=ARRIVE_RAMP+BEAT+HOP+RUN
+		return
 	if is_instance_valid(arena.presentation):arena.presentation.swoop_in(s)
 	# The curve ends level with the rest point, so its last tangent is the final heading: no turn on the spot.
 	var start=rest+Vector3(s*5.5,0,3.2);var bend=rest+Vector3(s*4.2,0,0)
@@ -67,30 +90,134 @@ static func intro(arena):
 	step_out(arena,rest)
 	build_bricks(arena)
 
+## 0.8: the HQ comes along the dirt track, up the trapezoid apron and over the rim to its post. Height and
+## pitch follow the surface (FieldApproach.path_height); it jolts a little at the ramp foot and on the rim lip.
+static func ramp_arrival(arena,hq:Node3D,approach,rest:Vector3,yaw:float):
+	var curve=approach_curve(approach,side(arena),rest,Vector3(sin(yaw),0,cos(yaw)),true)
+	var length=curve.get_baked_length()
+	for node in [arena.base_label,arena.base_bar]:
+		if is_instance_valid(node):node.visible=false
+	var bumps=[approach.front,approach.front+approach.LENGTH]
+	var drive=func(t:float):
+		if not is_instance_valid(hq):return
+		var d=t*length;var p=curve.sample_baked(d,true);var ahead=curve.sample_baked(minf(length,d+.9),true)
+		var h=approach.path_height(p) if p.z>rest.z+.01 else rest.y
+		var h_ahead=approach.path_height(ahead) if ahead.z>rest.z+.01 else rest.y
+		var jolt=0.0
+		for z in bumps:jolt+=exp(-pow((p.z-z)/.18,2.0))
+		hq.position=Vector3(p.x,h+jolt*.05*absf(sin(t*90.0)),p.z) if t<1.0 else rest
+		var flat=Vector2(ahead.x-p.x,ahead.z-p.z)
+		var heading=atan2(flat.x,flat.y) if flat.length()>.001 else yaw
+		# Steering: the nose looks ~a wheelbase ahead along the path and turns toward it gradually, like a car.
+		var target=lerp_angle(heading,yaw,smoothstep(.97,1.0,t))
+		hq.rotation.y=target if t<.01 or t>=1.0 else lerp_angle(hq.rotation.y,target,.22)
+		hq.rotation.x=0.0 if t>=1.0 else -atan2(h_ahead-h,maxf(.05,flat.length()))+jolt*.05*sin(t*120.0)
+	var tween=stage_tween(arena)
+	tween.tween_method(drive,0.0,1.0,ARRIVE_RAMP).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	tween.tween_callback(func():
+		if not is_instance_valid(hq):return
+		hq.position=rest;hq.rotation=Vector3(0,yaw,0)
+		arena.burst(rest,Color("d8cfb4"),.5)
+		for node in [arena.base_label,arena.base_bar]:
+			if is_instance_valid(node):node.visible=true;pop(node))
+## Path between the HQ post and the field approach on one side: off-screen along that side's track, up its
+## lane over the rim, then a quarter turn into the post along the final heading (arriving) — or the same
+## way back out (leaving). Flat curve; heights come from FieldApproach.path_height.
+static func approach_curve(approach,s:float,rest:Vector3,forward:Vector3,arriving:bool)->Curve3D:
+	var track:Array=approach.get_meta("track_left" if s<0 else "track_right")
+	var points:Array=[]
+	for i in range(track.size()-1,0,-4):points.append(Vector3(track[i].x,0,track[i].z))
+	var lane=approach.lane(s)
+	points.append(Vector3(lane,0,approach.front+approach.LENGTH));points.append(Vector3(lane,0,approach.front+.1))
+	points.append(Vector3(rest.x,0,rest.z))
+	if not arriving:points.reverse()
+	var curve=Curve3D.new()
+	for p in points:curve.add_point(p)
+	for i in range(1,curve.point_count-1):
+		var tangent=(curve.get_point_position(i+1)-curve.get_point_position(i-1))*.25
+		curve.set_point_in(i,-tangent);curve.set_point_out(i,tangent)
+	# Over the rim straight up/down the board; at the post the path runs along the HQ heading.
+	var top=curve.point_count-2 if arriving else 1
+	var up=Vector3(0,0,-1.4) if arriving else Vector3(0,0,1.4)
+	curve.set_point_in(top,-up*.7);curve.set_point_out(top,up)
+	if arriving:curve.set_point_in(curve.point_count-1,-forward*1.4)
+	else:curve.set_point_out(0,forward*1.4)
+	return curve
+## 0.8: the soldier hops out of the HQ onto `land` (next to the wall start), then runs in an arc round the
+## outside of the barrier to his start cell. Model-only animation; the actor stands on the start cell.
+static func hop_and_run(arena,from:Vector3,land:Vector2i,arrive:float):
+	var actor=arena.player
+	if not is_instance_valid(actor) or not is_instance_valid(actor.model):return
+	var model:Node3D=actor.model;var home=model.position;var turn=model.rotation.y
+	model.visible=false;set_marks(actor,false);actor.set_meta("stage_hidden",true)
+	var to_local=func(p:Vector3)->Vector3:return home+(p-actor.position)
+	# The selection ring and the health bar travel with the soldier from the hop on (author).
+	var marks:Array=actor.get_children().filter(func(c):return c!=model and (c is MeshInstance3D or c is Sprite3D or c is Label3D))
+	var mark_home:Array=marks.map(func(c):return c.position)
+	var follow=func():
+		if not is_instance_valid(model):return
+		var shift=model.position-home;shift.y=0.0
+		for i in range(marks.size()):
+			if is_instance_valid(marks[i]):marks[i].position=mark_home[i]+shift
+	var start=to_local.call(from);var landing=to_local.call(arena.world_pos(land))
+	# Outside the barrier: up past the wall's corner, then across to the start cell.
+	var corner=to_local.call(arena.world_pos(Vector2i(land.x,actor.cell.y)))+Vector3(-.35,0,-.35)
+	var tween=stage_tween(arena,actor);tween.tween_interval(arrive)
+	tween.tween_callback(func():
+		if not is_instance_valid(model):return
+		if is_instance_valid(actor):actor.remove_meta("stage_hidden")
+		model.visible=true;model.position=start;model.scale=Vector3.ONE*.75
+		set_marks(actor,true);follow.call())
+	var hop=func(t:float):
+		if is_instance_valid(model):model.position=start.lerp(landing,t)+Vector3.UP*sin(t*PI)*.75;follow.call()
+	tween.tween_method(hop,0.0,1.0,HOP).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tween.parallel().tween_property(model,"scale",Vector3.ONE,HOP*.8)
+	tween.tween_callback(func():if is_instance_valid(actor):arena.burst(actor.position+(landing-home),Color("d8cfb4"),.25))
+	var run=func(t:float):
+		if not is_instance_valid(model):return
+		var p=bezier(landing,corner,home,t);var ahead=bezier(landing,corner,home,minf(1.0,t+.05))-p
+		model.position=p+Vector3.UP*absf(sin(t*PI*5.0))*.06
+		model.rotation.y=atan2(ahead.x,ahead.z) if t<.97 and ahead.length()>.001 else turn
+		follow.call()
+	tween.tween_method(run,0.0,1.0,RUN).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tween.tween_callback(func():
+		if is_instance_valid(model):model.position=home;model.rotation.y=turn
+		for i in range(marks.size()):
+			if is_instance_valid(marks[i]):marks[i].position=mark_home[i])
 ## The soldier (or his vehicle) leaves the HQ and takes the start cell.
-static func step_out(arena,from:Vector3):
+static func step_out(arena,from:Vector3,arrive:=ARRIVE):
 	var actor=arena.player
 	if not is_instance_valid(actor) or not is_instance_valid(actor.model):return
 	var model:Node3D=actor.model;var home=model.position
-	model.visible=false;set_marks(actor,false)
-	var tween=stage_tween(arena,actor);tween.tween_interval(ARRIVE-.08)
+	model.visible=false;set_marks(actor,false);actor.set_meta("stage_hidden",true)
+	var tween=stage_tween(arena,actor);tween.tween_interval(arrive-.08)
 	tween.tween_callback(func():
 		if not is_instance_valid(model):return
+		if is_instance_valid(actor):actor.remove_meta("stage_hidden")
 		model.visible=true;model.position=home+(from-actor.position);model.scale=Vector3.ONE*.7
 		set_marks(actor,true))
-	tween.tween_property(model,"position",home,STEP_OUT).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	tween.parallel().tween_property(model,"scale",Vector3.ONE,STEP_OUT*.8)
+	# 0.8: a clear hop out of the HQ — up in an arc, a squash on landing.
+	var start=home+(from-actor.position)
+	var hop=func(t:float):
+		if is_instance_valid(model):model.position=start.lerp(home,t)+Vector3.UP*sin(t*PI)*.75
+	tween.tween_method(hop,0.0,1.0,STEP_OUT*1.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tween.parallel().tween_property(model,"scale",Vector3.ONE,STEP_OUT*.9)
+	tween.tween_property(model,"scale",Vector3(1.15,.82,1.15),.06)
+	tween.tween_property(model,"scale",Vector3.ONE,.14).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_callback(func():if is_instance_valid(actor) and actor.arena:actor.arena.burst(actor.position,Color("d8cfb4"),.25))
 
 ## Staircase build: nearest cell first, inside a cell the sections rise diagonally; each drops in
 ## from a little above with a short overshoot. A damaged section is never redrawn.
-static func build_bricks(arena):
+static func build_bricks(arena,later:=0.0,origin:=Vector2i(-1,-1)):
 	var cells=fort_walls(arena)
+	# The wall grows from where the soldier landed (0.8), nearest cells first.
+	if origin.x>=0:cells.sort_custom(func(a,b):return a.distance_squared_to(origin)<b.distance_squared_to(origin))
 	for k in range(cells.size()):
 		var wall=arena.walls[cells[k]];var batch:MultiMesh=wall.section_batch
 		for i in range(16):
 			if wall.sections[i]<=0:continue
 			batch.set_instance_transform(i,Transform3D(Basis.IDENTITY.scaled(Vector3.ZERO),Vector3.ZERO))
-			var delay=BRICKS_AT+(k*.045+((i%4)+int(i/4))*.018)*BRICK_PACE
+			var delay=later+BRICKS_AT+(k*.045+((i%4)+int(i/4))*.018)*BRICK_PACE
 			var grow=func(p:float):
 				if not is_instance_valid(arena) or not arena.walls.has(cells[k]) or arena.walls[cells[k]]!=wall or wall.sections[i]<=0:return
 				var t=WALL.section_transform(i,true)
@@ -108,14 +235,18 @@ static func outro(arena,done:Callable):
 	var rest=hq.position;var s=side(arena)
 	var actor=arena.player
 	if is_instance_valid(actor) and is_instance_valid(actor.model):
-		var model:Node3D=actor.model;set_marks(actor,false)
+		var model:Node3D=actor.model;set_marks(actor,false);actor.set_meta("stage_hidden",true)
 		var board=stage_tween(arena,actor)
 		board.tween_property(model,"position",model.position+(rest-actor.position),STEP_OUT).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 		board.parallel().tween_property(model,"scale",Vector3.ONE*.6,STEP_OUT)
 		board.tween_callback(func():if is_instance_valid(model):model.visible=false)
 	for node in [arena.base_label,arena.base_bar]:
 		if is_instance_valid(node):node.visible=false
-	if is_instance_valid(arena.presentation):arena.presentation.swoop_out(s,hq)
+	var approach=arena.find_child("FieldApproach",true,false)
+	if not (approach and approach.has_meta("track_right")) and is_instance_valid(arena.presentation):arena.presentation.swoop_out(s,hq)
+	if approach and approach.has_meta("track_right"):
+		ramp_departure(arena,hq,approach,rest,hq.rotation.y,s,done)
+		return
 	# Pull out straight ahead (the HQ faces -s), then curve away toward the camera side.
 	var finish=rest+Vector3(-s*6.0,0,3.6);var bend=rest+Vector3(-s*3.0,0,0)
 	var fort=fort_walls(arena);var knocked={}
@@ -133,6 +264,32 @@ static func outro(arena,done:Callable):
 	tween.tween_method(drive,0.0,1.0,.95).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 	tween.tween_callback(done)
 
+## 0.8: the HQ pulls out ahead, turns down the lane on its side of the approach and leaves along that track
+## in a wide arc, knocking over defence bricks in its way; surface heights and jolts as on arrival.
+static func ramp_departure(arena,hq:Node3D,approach,rest:Vector3,yaw:float,s:float,done:Callable):
+	var forward=Vector3(sin(yaw),0,cos(yaw))
+	var curve=approach_curve(approach,signf(forward.x) if absf(forward.x)>.1 else -s,rest,forward,false)
+	var length=curve.get_baked_length();var bumps=[approach.front,approach.front+approach.LENGTH]
+	var fort=fort_walls(arena);var knocked={}
+	var drive=func(t:float):
+		if not is_instance_valid(hq):return
+		var d=t*length;var p=curve.sample_baked(d,true);var ahead=curve.sample_baked(minf(length,d+.9),true)
+		var h=approach.path_height(p) if p.z>rest.z+.01 else rest.y
+		var h_ahead=approach.path_height(ahead) if ahead.z>rest.z+.01 else rest.y
+		var jolt=0.0
+		for z in bumps:jolt+=exp(-pow((p.z-z)/.18,2.0))
+		hq.position=Vector3(p.x,h+jolt*.05*absf(sin(t*90.0)),p.z)
+		var flat=Vector2(ahead.x-p.x,ahead.z-p.z)
+		if flat.length()>.001:hq.rotation.y=lerp_angle(hq.rotation.y,atan2(flat.x,flat.y),.3)
+		hq.rotation.x=-atan2(h_ahead-h,maxf(.05,flat.length()))+jolt*.05*sin(t*120.0)
+		for cell in fort:
+			if knocked.has(cell) or not arena.walls.has(cell):continue
+			var center=arena.world_pos(cell)
+			if Vector3(p.x,center.y,p.z).distance_to(center)>1.35:continue
+			knocked[cell]=true;scatter(arena,cell,(center-Vector3(p.x,center.y,p.z)).normalized())
+	var tween=stage_tween(arena);tween.tween_interval(STEP_OUT)
+	tween.tween_method(drive,0.0,1.0,LEAVE_RAMP).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+	tween.tween_callback(done)
 ## Bricks hit by the departing HQ: sections vanish into flying debris; the room is over, so only visuals change.
 static func scatter(arena,cell:Vector2i,direction:Vector3):
 	var wall=arena.walls[cell];var alive=[]

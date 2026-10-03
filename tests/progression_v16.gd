@@ -24,11 +24,9 @@ func run():
 				if field in [1,2]:assert(commander in ["buggy","apc"],"Light vehicle commanders")
 				if field==3:assert(commander in ["grenadier","tank"],"Heavy tier reveal")
 	print("PASS tank pacing: 3 worlds, 100 seeds each")
-	assert(Game.hero_loadout().is_empty() and Game.hq_loadout().is_empty(),"No free starting abilities")
-	Game.credits=30;assert(Game.buy_first_class_skill(Game.selected_class))
-	assert(Game.class_loadout().size()==1)
-	Game.class_levels[Game.selected_class]=5;Game.credits=2500
-	assert(Game.buy_class_slot(Game.selected_class));assert(Game.class_loadout().size()==2)
+	# Meta stage 4: the class Q is free, the second ability opens at class level 3.
+	assert(Game.class_loadout()==[Game.class_skill()] and Game.hq_loadout().is_empty(),"Only the class Q at start")
+	Game.class_levels[Game.selected_class]=3;assert(Game.class_loadout().size()==2)
 	assert(Game.hero_loadout().size()<=3 and Game.hq_loadout().size()<=1)
 	assert(Game.ability_action(0)=="class_ability" and Game.ability_action(1)=="skill_1" and Game.ability_action(2)=="ability")
 	assert(Game.upgrade_cap("health")>10000)
@@ -40,14 +38,12 @@ func run():
 	for def in UpgradeRegistry.all():
 		var card=reward.upgrade_card({"id":def.id,"tier":0});assert(not card.title.is_empty(),"Card has a title: "+def.id)
 	arena.run.range_multiplier=1.12;assert(arena.run.range_multiplier>1)
-	var gallery=load("res://scripts/ui/class_gallery.gd").new();add_child(gallery)
-	await get_tree().process_frame
-	gallery.queue_free();arena.queue_free()
+	arena.queue_free()
 	# Fresh temporary folder: the profile, its backup and temp files never touch real saves or older runs.
 	var dir=OS.get_temp_dir().path_join("warcats_v16_%d" % Time.get_ticks_usec());DirAccess.make_dir_recursive_absolute(dir)
 	var old_path=Game.save_path;Game.save_path=dir.path_join("profile.json");Game.save_enabled=true
-	Game.health_level=45;Game.save_progress();Game.health_level=0;Game.class_first_slots=[];Game.load_progress()
-	assert(Game.health_level==45 and Game.selected_class in Game.class_first_slots,"Save preserves uncapped levels and purchases")
+	Game.health_level=45;Game.class_choices[Game.selected_class]=Game.CLASS_CHOICES[Game.selected_class][1];Game.save_progress();Game.health_level=0;Game.class_choices={};Game.load_progress()
+	assert(Game.health_level==45 and Game.class_second()==Game.CLASS_CHOICES[Game.selected_class][1],"Save preserves uncapped levels and the class choice")
 	Game.save_enabled=false;Game.save_path=old_path
 	for file in DirAccess.get_files_at(dir):DirAccess.remove_absolute(dir.path_join(file))
 	DirAccess.remove_absolute(dir)

@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="UpgradeDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrades/upgrade_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "ap"
+title = "Бронебойные патроны"
+category = "Оружие"
+family = "ammo"
+icon = "pierce"
+tags = PackedStringArray("ammo")
+weight = 7
+max_stacks = 0
+detail = "Пуля пробивает врагов насквозь и сильнее бьёт по технике. Значения зависят от редкости."

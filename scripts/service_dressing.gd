@@ -20,6 +20,9 @@ func _ready():
 	lighting()
 	shell()
 	exit_gate()
+	mood()
+	silhouettes(self,rng)
+	hanging_lamps()
 	match branch:
 		"vehicle":mechanic()
 		"ability":instructor()
@@ -44,6 +47,45 @@ func lighting():
 	rim.light_color=Color("7fb4ff");rim.light_energy=3.2;rim.spot_range=9.0;rim.spot_angle=34;rim.shadow_enabled=false
 	var fill=OmniLight3D.new();add_child(fill);fill.position=Vector3(-2,2.2,3);fill.light_color=Color("c9d6d1");fill.light_energy=.6;fill.omni_range=7;fill.shadow_enabled=false
 
+## T-009: each visit gets its own light mood — warm workshop, cold neon night or a low sunset through the doors.
+const MOODS=[["ffcf8a","2e2a24","9a8f80"],["7fd6ff","1f262e","6f8fa8"],["ff9a5c","2d2420","b08a78"]]
+func mood():
+	var m=MOODS[rng.randi_range(0,MOODS.size()-1)]
+	for child in get_parent().get_children():
+		if child is WorldEnvironment:
+			child.environment.background_color=Color(m[1]);child.environment.ambient_light_color=Color(m[2])
+	var wash=SpotLight3D.new();add_child(wash);wash.name="MoodWash";wash.position=Vector3(rng.randf_range(-3,3),5.5,4.5);wash.look_at_from_position(wash.position,Vector3(0,0,-1))
+	wash.light_color=Color(m[0]);wash.light_energy=2.4;wash.spot_range=12;wash.spot_angle=50;wash.shadow_enabled=true
+## Big, dim, low-contrast shapes beyond the floor: hangar gantries, stacked containers, a crane, tanks under
+## covers — they hint at a larger base without competing with the room. Shared with the merchant stop.
+static func silhouettes(parent:Node3D,rng:RandomNumberGenerator,tint:=Color("3a403e")):
+	var kinds=["gantry","stack","crane","covered"]
+	for i in range(7):
+		var side=-1.0 if i%2==0 else 1.0
+		var x=side*rng.randf_range(7.5,11.5);var z=rng.randf_range(-7.0,5.0)
+		if i>=5:x=rng.randf_range(-6,6);z=-rng.randf_range(7.0,10.0)
+		var shade=tint.darkened(rng.randf_range(0,.18))
+		match kinds[rng.randi_range(0,kinds.size()-1)]:
+			"gantry":
+				for k in [-1.0,1.0]:Visuals.box(parent,Vector3(x+k*1.4,2.2,z),Vector3(.35,4.4,.35),shade)
+				Visuals.box(parent,Vector3(x,4.4,z),Vector3(3.4,.4,.5),shade)
+			"stack":
+				for k in range(rng.randi_range(2,3)):Visuals.box(parent,Vector3(x,.7+k*1.4,z),Vector3(2.8,1.3,1.2),shade.lightened(k*.03))
+			"crane":
+				Visuals.box(parent,Vector3(x,3.2,z),Vector3(.4,6.4,.4),shade);var jib=Visuals.box(parent,Vector3(x+side*1.6,6.2,z),Vector3(3.6,.3,.3),shade);jib.rotation.y=rng.randf_range(-.3,.3)  # points away from the room
+			"covered":
+				Visuals.box(parent,Vector3(x,.6,z),Vector3(2.4,1.2,1.5),shade);Visuals.box(parent,Vector3(x,1.25,z),Vector3(2.5,.12,1.6),shade.lightened(.05))
+## Two pendant lamps over the room (light and soft cones only, fixtures out of frame); one stutters now and then.
+func hanging_lamps():
+	for i in range(2):
+		var at=Vector3(-1.8+i*3.6,3.6,rng.randf_range(-.5,1.5))
+		# The lamp bodies hung between the camera and the vehicle bay and hid the car (T-083): only their light
+		# and soft cone stay, as if the fixtures are above the frame.
+		var lamp=SpotLight3D.new();add_child(lamp);lamp.position=at+Vector3(0,-.15,0);lamp.rotation_degrees=Vector3(-90,0,0)
+		lamp.light_color=Color("ffe1ad");lamp.light_energy=2.2;lamp.spot_range=5.0;lamp.spot_angle=40;lamp.shadow_enabled=i==0
+
+		preload("res://scripts/world_lighting.gd").add_cone(lamp);lamp.get_node("SoftCone").material_override.set_shader_parameter("density",.012)
+		if i==1:preload("res://scripts/light_flicker.gd").attach(lamp,rng.randi())
 func shell():
 	# Back wall of ribbed panels, a low left wall and a hazard band around the station.
 	for i in range(10):

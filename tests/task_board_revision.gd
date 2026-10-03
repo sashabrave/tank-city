@@ -39,6 +39,10 @@ func run():
 	check(view!=null and get_tree().paused,"board opens and pauses the game")
 	check(view.find_child("Column_backlog",true,false)!=null and view.find_child("Task_T-001",true,false)!=null,"columns and cards render")
 	await shot("/tmp/r13-board-columns.png")
+	view.find_child("View_me",true,false).pressed.emit();await get_tree().process_frame
+	check(view.find_child("Me_decide",true,false)!=null and view.find_child("Me_check",true,false)!=null,"«Для меня» shows decisions and checks")
+	await shot("/tmp/r13-board-me.png")
+	view.view="board";view.build();await get_tree().process_frame
 	view.find_child("AddTask",true,false).pressed.emit();await get_tree().process_frame
 	view.title_edit.text="Новая из формы";view.save();await get_tree().process_frame
 	check(B.column("backlog").any(func(t):return t.title=="Новая из формы") and view.mode=="board","quick form adds to the backlog")

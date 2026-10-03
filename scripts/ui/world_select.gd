@@ -57,7 +57,7 @@ func card(panel:Control,i:int,pos:Vector2)->Button:
 	# Name and progress.
 	UiKit.label(button,Campaign.WORLDS[i+1].name if i<3 else "Бесконечный",Vector2(16,268),Vector2(CARD.x-32,30),22,UiKit.INK if unlocked else UiKit.MUTED)
 	# The biomes of the world, in route order, under its name.
-	var biomes=preload("res://scripts/biome_catalog.gd").world_line(i+1) if i<3 else "все биомы вперемешку"
+	var biomes="все биомы, от леса до пепелища" if i==0 else preload("res://scripts/biome_catalog.gd").world_line(i+1) if i<3 else "все биомы вперемешку"
 	var line=UiKit.label(button,biomes,Vector2(14,296),Vector2(CARD.x-26,18),12,UiKit.MUTED);line.name="Biomes";line.clip_text=true
 	if not unlocked:
 		UiKit.label(button,"Пройди мир %d" % i if i<3 else "Пройди мир 1",Vector2(16,318),Vector2(CARD.x-32,24),15,UiKit.MUTED)
@@ -76,6 +76,9 @@ func card(panel:Control,i:int,pos:Vector2)->Button:
 		var board=UiKit.button(button,"Топ",Vector2(CARD.x-74,CARD.y-52),Vector2(58,38),func():show_board());board.name="DailyBoard"
 		board.add_theme_font_size_override("font_size",15);board.tooltip_text=Texts.localized("Таблица дня")
 		daily.add_theme_font_size_override("font_size",15);daily.tooltip_text=Texts.render("Одно поле на всех на сегодня. "+DailyRun.describe(DailyRun.best(DailyRun.today_key())))
+	# Worlds 2 and 3 are not built yet (author, 2 Oct): world 1 carries every biome for now.
+	if i in [1,2]:
+		var wip=UiKit.label(button,"В разработке",Vector2(16,346),Vector2(CARD.x-32,24),15,UiKit.ORANGE);wip.name="InDevelopment"
 	if not unlocked:button.modulate=Color(1,1,1,.85)
 	return button
 
@@ -85,6 +88,14 @@ func focus(i:int):
 		var c:Button=cards[k];var chosen=k==current
 		c.pivot_offset=CARD*.5
 		create_tween().tween_property(c,"scale",Vector2.ONE*(1.04 if chosen else 1.0),.12)
+		# The chosen world is framed from the first frame (T-018), not only after a key press.
+		if not c.has_meta("base_style"):c.set_meta("base_style",c.get_theme_stylebox("normal"))
+		var base:StyleBox=c.get_meta("base_style")
+		if chosen and base is StyleBoxFlat:
+			var framed:StyleBoxFlat=base.duplicate();framed.border_color=UiKit.ORANGE;framed.set_border_width_all(3)
+			for key in ["normal","hover","focus"]:c.add_theme_stylebox_override(key,framed)
+		elif base:
+			for key in ["normal","hover","focus"]:c.add_theme_stylebox_override(key,base)
 	if is_instance_valid(cards[current]):cards[current].grab_focus()
 
 func launch():

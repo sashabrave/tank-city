@@ -6,6 +6,7 @@ func check(value:bool,message:String):
 	else:errors+=1;push_error("FAIL: "+message)
 func _ready():call_deferred("run")
 func run():
+	Engine.set_meta("hub_calls_off",false)
 	Game.save_enabled=false;Settings.persistence_enabled=false;Game.sound_enabled=false
 	var Call=preload("res://scripts/ui/video_call.gd")
 	var p=Game.progression;p.seen=p.seen.filter(func(s):return not str(s).begins_with("call_"))
@@ -14,6 +15,8 @@ func run():
 	var built=Game.built_workshops.duplicate();Game.built_workshops.erase("garage")
 	check(Call.due(null)=="intro","intro comes first")
 	var view=Call.new();view.id="intro";add_child(view);await get_tree().process_frame
+	view.advance();check(view.step==0,"a stray key right after opening does not skip the first line")
+	view.clock=1.0
 	for i in range(40):
 		if not is_instance_valid(view):break
 		view.advance();view.advance()

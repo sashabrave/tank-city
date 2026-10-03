@@ -43,13 +43,15 @@ func render(value:String)->String:
 ## listed abbreviations («т. д.», «мин.», «etc.») keep theirs; rich text (guides, dialogues) is untouched.
 static var abbreviation:RegEx
 func tidy(node:Node,value:String)->String:
-	if not (node is Label or node is Button) or not "." in value:return value
+	if not (node is Label or node is Button):return value
+	if not "." in value:return value.to_upper() if node.has_meta("accent_caps") else value
 	if abbreviation==null:abbreviation=RegEx.new();abbreviation.compile("(?i)(?:^|[\\s(])(?:т\\.\\s?[дп]|др|см|мин|сек|макс|шт|etc|e\\.g|i\\.e|vs)\\.$")
 	var lines=value.split("\n")
 	for i in range(lines.size()):
 		var line:String=lines[i].strip_edges(false,true)
 		if line.ends_with(".") and not line.ends_with("..") and abbreviation.search(line)==null:lines[i]=line.left(-1)
-	return "\n".join(lines)
+	var tidy_text="\n".join(lines)
+	return tidy_text.to_upper() if node.has_meta("accent_caps") else tidy_text
 # Dynamic labels are formatted before assignment, so layout never sees a temporary case/language.
 func set_text(node:Node,value:String):
 	if node is LineEdit or node is TextEdit:

@@ -5,7 +5,7 @@
 [resource]
 script = ExtResource("1")
 id = "field_repair"
-title = "Полевой ремонт"
+title = "Ремонт на ходу"
 category = "Тактика"
 family = "logistics"
 icon = "repair"

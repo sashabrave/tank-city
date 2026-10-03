@@ -24,6 +24,9 @@ func run():
 	check(hits.any(func(h):return is_equal_approx(h,crit_hit)) and hits.has(1.0) and is_equal_approx(crit_hit,2.2),"crit doubles damage (+overflow) and stays below certainty")
 	check(CombatMods.crit_chance(arena)<=CombatMods.CAPS.crit_chance,"crit chance is capped")
 	run.crit_chance=0.0;run.crit_damage=1.5;Game.luck_level=0
+	# Effects work only through the loaded ammo (T-109): load a zero-roll item, the run stat does the rest.
+	var load_ammo=func(type:String):Ammo.ensure(run,arena.weapon);run.ammo_slots[0]={"type":type,"rarity":0,"stats":{},"damage":0.0,"twist":false};run.ammo_active=0
+	load_ammo.call("shock")
 	run.shock_bonus=.5
 	check(is_equal_approx(CombatMods.outgoing(arena,bullet_from(player,1.0),tank),1.5),"electric rounds hit machines harder")
 	check(is_equal_approx(CombatMods.outgoing(arena,bullet_from(player,1.0),enemy),1.0),"electric rounds do not boost infantry")
@@ -36,17 +39,18 @@ func run():
 	check(is_equal_approx(CombatMods.engage_range(arena,10.0),9.0),"stealth shortens enemy engage range")
 	run.stealth=0.0
 	# Statuses
+	load_ammo.call("burn")
 	run.burn_chance=1.0
 	for i in range(20):
 		if enemy.burn_time<=0:CombatMods.outgoing(arena,bullet_from(player,2.0),enemy)
 	check(enemy.burn_time>0 and enemy.burn_dps>0,"incendiary rounds ignite")
 	var before=enemy.hp;CombatMods.tick_burn(enemy,.6)
 	check(enemy.hp<before,"burning deals damage over time")
-	run.burn_chance=0.0;run.stun_chance=1.0
+	run.burn_chance=0.0;run.stun_chance=1.0;load_ammo.call("stun")
 	for i in range(20):
 		if enemy.stun_time<=0:CombatMods.outgoing(arena,bullet_from(player,1.0),enemy)
 	check(enemy.stun_time>0,"concussion stuns")
-	run.stun_chance=0.0
+	run.stun_chance=0.0;load_ammo.call("standard")
 	# Incoming: dodge cap and protection by source
 	run.dodge=1.0;var dodged=0
 	for i in range(400):
@@ -96,11 +100,12 @@ func run():
 	var keys=preload("res://scripts/profile/run_checkpoint.gd").keys()
 	check(StatRegistry.all().all(func(d):return d.run_field in keys),"checkpoint saves every registry stat")
 	check(preload("res://scripts/ui/stat_snapshot.gd").registry(arena).size()==StatRegistry.all().size(),"dossier lists every registry stat")
-	Game.stat_levels={"dodge":2,"future_stat":4}
+	# Meta stage 4: «Выучка» is gone — old station levels are refunded on load and no longer apply.
+	Game.stat_levels={"dodge":2,"future_stat":4};var credits_before=Game.credits
 	var saved=Game.serialize_progress();Game.apply_profile(saved)
-	check(int(Game.stat_levels.get("dodge",0))==2 and int(Game.stat_levels.get("future_stat",0))==4,"station levels persist, unknown ids are kept")
+	check(Game.stat_levels.is_empty() and Game.credits>credits_before,"old station levels are refunded")
 	var fresh=preload("res://scripts/state/run_state.gd").new();StatRegistry.apply_meta(fresh)
-	check(is_equal_approx(fresh.dodge,StatRegistry.get_def("dodge").step*2),"station levels apply at run start")
+	check(is_equal_approx(fresh.dodge,0.0),"no station levels at run start")
 	# Backpack safe: the first slots always survive a death, the rest roll the HQ insurance
 	var carried=[{"id":"a"},{"id":"b"},{"id":"c"}]
 	var kept=preload("res://scripts/recipe_extraction.gd").survivors(carried,false,0,arena.run.combat_rng,2)

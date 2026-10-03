@@ -6,6 +6,7 @@
 script = ExtResource("1")
 id = "health"
 title = "Здоровье"
+detail = "Больше максимального здоровья бойца."
 category = "Герой"
 icon = "health"
 family = "survival"

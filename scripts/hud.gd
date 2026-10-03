@@ -9,6 +9,10 @@ var armor_meter: Control
 var wave_label: Label
 var enemy_label: Label
 var stage_pips:Control
+var star_mark:Label
+## Ammo cells in the weapon panel (scripts/combat/ammo.gd): the loaded types, the active one framed.
+var ammo_row:HBoxContainer
+var ammo_signature:=""
 var wave_pips:Control
 var credits: Label
 var tip: Label
@@ -54,6 +58,8 @@ func _ready():
 	status_strip=preload("res://scripts/ui/status_strip.gd").new();status_strip.name="StatusStrip";status_strip.arena=arena;root.add_child(status_strip)
 	left_info=root.get_node("WeaponPanel");weapon_icon=left_info.get_node("WeaponIcon");vehicle_label=left_info.get_node("WeaponName");intercept_label=left_info.get_node("WeaponStats");armor_meter=left_info.get_node("VehicleHealth")
 	right_info=root.get_node("RoomPanel");wave_label=right_info.get_node("StageLabel");enemy_label=right_info.get_node("WaveLabel");right_info.get_node("EnemyRoster").arena=arena
+	star_mark=Label.new();right_info.add_child(star_mark);star_mark.name="StarMark";star_mark.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	star_mark.add_theme_font_size_override("font_size",15);star_mark.add_theme_color_override("font_color",Color("f1eedb"))
 	stage_pips=preload("res://scripts/ui/pip_strip.gd").new();right_info.add_child(stage_pips);wave_pips=preload("res://scripts/ui/pip_strip.gd").new();right_info.add_child(wave_pips)
 	pause_button=root.get_node("PauseButton");pause_button.pressed.connect(func():arena.pause_battle())
 	pause_button.text="";pause_button.icon=UiKit.interface_icon("pause");pause_button.expand_icon=true;pause_button.icon_alignment=HORIZONTAL_ALIGNMENT_CENTER;pause_button.add_theme_constant_override("icon_max_width",22)
@@ -100,6 +106,9 @@ func _ready():
 	biome_panel=UiKit.panel(root,Vector2(20,320),Vector2(235,78))
 	biome_label=UiKit.label(biome_panel,"",Vector2(12,8),Vector2(211,62),13)
 	biome_label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	# Every top-level HUD panel is frosted glass, like the rest of the interface (T-042).
+	for child in root.get_children():
+		if child is Panel:UiKit.glassify(child)
 	_layout()
 
 func _layout():
@@ -129,20 +138,32 @@ func _process(_delta):
 	if get_viewport().get_visible_rect().size!=last_size:_layout()
 	health.set_health(data.hero_hp,data.hero_max);base_health.visible=not data.boss_room;base_health.set_health(data.base_hp,data.base_max)
 	dpad.visible=InputScheme.touch();fire_pad.visible=InputScheme.touch();biome_panel.visible=Settings.values.biome_info
-	Texts.set_text(biome_label,arena.BIOMES.caption(arena.run_seed,arena.room_index))
+	Texts.set_text(biome_label,arena.BIOMES.caption(arena.run_seed,arena.room_index,arena.room_lane()))
 	# Progress reads as pips: fields of the route and waves of the room; words only where they add meaning.
 	var plain=not arena.sandbox and not data.boss_room and not Campaign.endless
+	# The arena's difficulty stars sit right after the title (T-023), before the stage pips.
+	var stars=EncounterRules.STARS[clampi(arena.room.difficulty,0,2)] if not arena.sandbox and not data.boss_room else ""
 	Texts.set_text(wave_label,"Песочница" if arena.sandbox else "Босс мира" if data.boss_room else "Поле" if plain else "Поле %d" % data.stage)
-	stage_pips.visible=plain;stage_pips.set_state(6,data.stage-1,data.stage-1);stage_pips.position=Vector2(wave_label.position.x+text_width(wave_label)+12,wave_label.position.y+wave_label.size.y*.5-3)
+	# Stars are a smaller mark after the title; the pips take whatever width is left in the panel (T-078).
+	star_mark.visible=stars!="";star_mark.text=stars
+	star_mark.position=Vector2(wave_label.position.x+text_width(wave_label)+6,wave_label.position.y+wave_label.size.y*.5-star_mark.size.y*.5)
+	var after_title=(star_mark.position.x+star_mark.get_minimum_size().x if star_mark.visible else wave_label.position.x+text_width(wave_label))+12
+	stage_pips.visible=plain;stage_pips.set_state(6,data.stage-1,data.stage-1,-1,right_info.size.x-20-after_title)
+	stage_pips.position=Vector2(after_title,wave_label.position.y+wave_label.size.y*.5-stage_pips.size.y*.5)
 	var waves=not arena.sandbox and not arena.challenges.active() and not data.boss_room
 	wave_pips.visible=waves
 	if arena.sandbox and not arena.challenges.active():Texts.set_text(enemy_label,"F2 — админ")
 	elif arena.challenges.active():Texts.set_text(enemy_label,arena.challenges.status())
 	elif data.boss_room:Texts.set_text(enemy_label,BossCatalog.encounter(arena.run_seed,arena.room_index).name)
 	else:
-		Texts.set_text(enemy_label,"Волна");wave_pips.set_state(3,data.wave-1,data.wave-1)
-		wave_pips.position=Vector2(enemy_label.position.x+text_width(enemy_label)+12,enemy_label.position.y+enemy_label.size.y*.5-3)
+		Texts.set_text(enemy_label,"Волна")
+		var wave_x=enemy_label.position.x+text_width(enemy_label)+12
+		# The commander comes after the last wave: a big dot at the end; waves count as done while he is out.
+		var fighting_commander=data.commander>0
+		wave_pips.set_state(3,3 if fighting_commander else data.wave-1,-1 if fighting_commander else data.wave-1,data.commander,right_info.size.x-20-wave_x)
+		wave_pips.position=Vector2(wave_x,enemy_label.position.y+enemy_label.size.y*.5-wave_pips.size.y*.5)
 	tip.hide();Texts.set_text(star_label,"★ Звезда · %.1f с" % data.star);star_label.visible=data.star>0
+	refresh_ammo()
 	ability_button.hide()
 	for i in range(skill_buttons.size()):
 		var button=skill_buttons[i];var skill=data.skills[i]
@@ -214,7 +235,7 @@ func modal_base(kicker: String,heading: String,subtitle: String,height=410) -> P
 func choice_screen(scene:String,kicker:String,heading:String,subtitle:String)->Panel:
 	close_modal();modal=load("res://scenes/ui/"+scene+".tscn").instantiate();root.add_child(modal);modal.add_to_group("selection_scope")
 	var panel=modal.get_node("Panel")
-	panel.get_node("Kicker").text=kicker;panel.get_node("Heading").text=heading;panel.get_node("Subtitle").text=""
+	panel.get_node("Kicker").text=kicker;panel.get_node("Heading").text=heading;UiKit.accent(panel.get_node("Heading"));panel.get_node("Subtitle").text=""
 	return panel
 
 func show_upgrades():
@@ -329,3 +350,30 @@ func show_final_preparation():
 	var panel=modal_base("Генерал повержен","Впереди — Цитадель","Выбери комнату усиления на карте, затем брось вызов гигабоссу.",335)
 	UiKit.button(panel,"В хаб с наградами",Vector2(30,215),Vector2(410,65),func():arena.leave())
 	UiKit.button(panel,"К последней подготовке",Vector2(465,215),Vector2(445,65),func():arena.depart_room(),true)
+
+## Ammo cells: one per slot, colour of the ammo type, the active one framed; with two slots a tap (or R / RS)
+## switches. Rebuilt only when the loaded set changes.
+func refresh_ammo():
+	if arena==null or arena.run==null or not is_instance_valid(left_info):return
+	Ammo.ensure(arena.run,arena.weapon)
+	var run=arena.run
+	var signature=str(run.ammo_slots)+str(run.ammo_active)
+	if signature==ammo_signature and is_instance_valid(ammo_row):return
+	ammo_signature=signature
+	if is_instance_valid(ammo_row):ammo_row.queue_free()
+	ammo_row=HBoxContainer.new();ammo_row.name="AmmoRow";left_info.add_child(ammo_row);ammo_row.add_theme_constant_override("separation",5)
+	ammo_row.mouse_filter=Control.MOUSE_FILTER_PASS
+	# Under the weapon name, next to the picture: round cells, then the active ammo's name in its colour.
+	ammo_row.position=Vector2(vehicle_label.position.x,vehicle_label.position.y+28)
+	for i in range(run.ammo_slots.size()):
+		var slot=run.ammo_slots[i];var type=str(slot.type) if slot is Dictionary else str(slot);var on=i==run.ammo_active;var color=Color(Ammo.COLORS.get(type,"cfd3c8"))
+		var cell=Panel.new();ammo_row.add_child(cell);cell.custom_minimum_size=Vector2(18,18);cell.size_flags_vertical=Control.SIZE_SHRINK_CENTER
+		var style=UiKit.style(color if on else Color(color,.28),9,Color.WHITE if on else Color(color,.6));style.set_border_width_all(2 if on else 1)
+		cell.add_theme_stylebox_override("panel",style)
+		cell.tooltip_text=Texts.render("Патроны")+": "+Texts.render(Ammo.NAMES.get(type,type))+(" · "+Texts.render("активные") if on else "")+(" · R" if run.ammo_slots.size()>1 else "")
+		if slot is Dictionary and type!=Ammo.STANDARD:cell.tooltip_text+="\n"+Ammo.describe(slot)
+		cell.gui_input.connect(func(event):
+			var tap=(event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT and event.pressed) or (event is InputEventScreenTouch and event.pressed)
+			if tap and Ammo.switch(arena):refresh_ammo())
+	var name_label=Label.new();ammo_row.add_child(name_label);Texts.set_text(name_label,Ammo.NAMES.get(Ammo.active(run),""))
+	name_label.add_theme_font_size_override("font_size",12);name_label.add_theme_color_override("font_color",Color(Ammo.COLORS.get(Ammo.active(run),"cfd3c8")))

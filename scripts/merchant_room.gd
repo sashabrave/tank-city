@@ -10,10 +10,13 @@ const SLOT_PRICE=2
 const SLOT_TABLE=[["empty",40],["tokens",20],["heal",10],["card0",18],["card1",9],["card2",3]]
 var arena
 var index=2
+var locker:Node3D
+var vendor:Node3D
 var avatar:Node3D
 var cell=Vector2i(0,3)
 var destination=Vector3(0,0,3)
 var moving=false
+var walker
 var facing=Vector2i.UP
 var root:Control
 var dpad:Control
@@ -28,7 +31,7 @@ const COUNTER=Vector3(0,0,-1)
 const SLOT_SPOT=Vector3(2.5,0,-1.3)
 func _ready():
 	add_to_group("notification_context")
-	Visuals.setup_world(self,12,Vector3.ZERO)
+	Visuals.setup_world(self,11.4,Vector3.ZERO)
 	var positions=[]
 	for x in range(-4,5):
 		for z in range(-3,5):positions.append(Vector3(x,0,z))
@@ -36,7 +39,10 @@ func _ready():
 	Visuals.box(self,Vector3(0,-.4,.5),Vector3(9.3,.6,8.3),Color("7d7462"))
 	build_stall()
 	build_slot_machine()
+	var shapes_rng=RandomNumberGenerator.new();shapes_rng.seed=Game.visual_run_seed+index*31
+	preload("res://scripts/service_dressing.gd").silhouettes(self,shapes_rng,Color("b7ae9c"))
 	avatar=Visuals.model("soldier",self,destination,"cat",true)
+	walker=preload("res://scripts/room_walker.gd").new(avatar)
 	var canvas=CanvasLayer.new();add_child(canvas);root=Control.new();canvas.add_child(root);root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);root.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	var heading=UiKit.glass(root,Vector2(25,25),Vector2(590,120),Color("242d27ed"));heading.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	UiKit.accent(UiKit.label(root,"Торговец",Vector2(40,30),Vector2(800,60),32))
@@ -49,6 +55,8 @@ func _ready():
 	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Торговец",COUNTER,1.8,func():return true)
 	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Автомат · %d жетона" % SLOT_PRICE,SLOT_SPOT,1.9,func():return true)
 	stock=roll_stock()
+	locker=preload("res://scripts/weapon_locker.gd").place(self,arena,Vector3(-3.4,0,0.5))
+	vendor=preload("res://scripts/ammo_vendor.gd").place(self,arena,Vector3(-3.4,0,2.4))
 func build_stall():
 	var wood=Color("8a6a48");var cloth=Color("c9793f")
 	Visuals.box(self,COUNTER+Vector3(0,.45,0),Vector3(2.6,.9,.9),wood)
@@ -89,24 +97,27 @@ func roll_stock()->Array:
 	return result
 
 func _physics_process(delta):
+	# Same as the hub: the on-screen pad only for touch play.
+	if is_instance_valid(dpad):dpad.visible=InputScheme.touch()
 	if is_instance_valid(modal):
 		if Input.is_action_just_pressed("pause"):close_shop()
 		return
 	if Input.is_action_just_pressed("pause"):preload("res://scripts/ui/pause_tablet.gd").open(self,Callable(),func():hub_requested.emit());return
-	if moving:
-		avatar.position=avatar.position.move_toward(destination,3.8*delta)
-		if avatar.position.distance_to(destination)<.01:moving=false
-	else:
-		var dir=Game.direction()
-		if dir!=Vector2i.ZERO:
-			var next=cell+dir;facing=dir;avatar.rotation.y=atan2(-float(dir.x),-float(dir.y))
-			if next.x>=-3 and next.x<=3 and next.y>=0 and next.y<=4:
-				cell=next;destination=Vector3(cell.x,0,cell.y);moving=true
+	# The kit model walks only when told (T-045): idle while standing, walk cycle while moving.
+	if "preview_moving" in avatar:avatar.preview_moving=moving;avatar.preview_speed=3.4
+	walker.step(delta,Game.direction(),func(p:Vector3):return p.x>=-3.01 and p.x<=3.01 and p.z>=-.01 and p.z<=4.01)
+	moving=walker.moving;cell=walker.cell();facing=walker.facing
 	interact_button.disabled=avatar.position.distance_to(COUNTER)>2.2 and not near_slot()
 	if Game.wants_interact():interact()
 func near_slot()->bool:return avatar.position.distance_to(SLOT_SPOT)<1.9 and avatar.position.distance_to(SLOT_SPOT)<avatar.position.distance_to(COUNTER)
 func interact():
 	if is_instance_valid(modal):return
+	if is_instance_valid(vendor) and vendor.near(avatar):
+		Game.reset_input();dpad.clear();dpad.enabled=false
+		vendor.open(root,func():Game.reset_input();dpad.clear();dpad.enabled=true;modal=null);modal=vendor.modal;return
+	if is_instance_valid(locker) and locker.near(avatar):
+		Game.reset_input();dpad.clear();dpad.enabled=false
+		locker.open(root,func():Game.reset_input();dpad.clear();dpad.enabled=true);modal=locker.modal;return
 	if near_slot():pull_lever();return
 	if avatar.position.distance_to(COUNTER)>2.2:return
 	Game.reset_input();dpad.clear();dpad.enabled=false
@@ -117,7 +128,7 @@ func open_shop():
 	var size=get_viewport().get_visible_rect().size;var width=minf(900,size.x-40);var height=minf(620,size.y-40)
 	var panel=UiKit.glass(modal,(size-Vector2(width,height))*.5,Vector2(width,height))
 	UiKit.accent(UiKit.label(panel,"Торговец",Vector2(25,18),Vector2(width-260,40),28))
-	var wallet=UiKit.icon(panel,"token",Vector2(width-265,24),Vector2(28,28));wallet.modulate=UiKit.INK
+	var wallet=UiKit.icon(panel,"token",Vector2(width-265,24),Vector2(28,28))
 	var count=UiKit.label(panel,"Жетоны: %d" % arena.run.tokens,Vector2(width-230,20),Vector2(160,36),20);count.name="Wallet"
 	var close=UiKit.button(panel,"",Vector2(width-62,18),Vector2(44,40),close_shop);close.icon=UiKit.interface_icon("close");close.expand_icon=true;close.add_theme_constant_override("icon_max_width",18)
 	if status_text!="":UiKit.label(panel,status_text,Vector2(25,62),Vector2(width-50,30),17,UiKit.MUTED).name="Status"
@@ -151,7 +162,7 @@ func available(entry:Dictionary)->bool:
 	match entry.kind:
 		"heal":return arena.run.soldier_hp<arena.run.soldier_max_hp
 		"repair":return is_instance_valid(arena.room.player) and arena.room.player.hp<arena.room.player.max_hp
-		"blueprint":return arena.run.pending_recipes.size()<Game.backpack_slots
+		"blueprint":return not Backpack.full(arena.run)
 	return true
 func purchase(i:int)->bool:
 	if i<0 or i>=stock.size():return false

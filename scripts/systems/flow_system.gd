@@ -55,7 +55,7 @@ func finish_wave():
 				arena.phase="paused";depart_room()
 			else:
 				Game.progression.complete_world(Campaign.world)
-				finish_run(true,"Мир %d завершён · %s" % [Campaign.world,Campaign.WORLDS[Campaign.world].name])
+				finish_run(true,"Мир %d · %s — победа" % [Campaign.world,BattleNames.current()])
 		return
 	if arena.room.wave==2 and not arena.room.room_boss_spawned:
 		arena.room.commander_countdown=true;arena.countdown=3.0;arena.phase="countdown"
@@ -80,6 +80,12 @@ func finish_wave():
 			arena.toast("Передышка · +%s здоровья" % UiKit.number(patched))
 		var reward=roundi((Balance.CONFIG.economy.clear_reward+Campaign.progress_index(arena.room.room_index)*Balance.CONFIG.economy.clear_reward_per_room)*Campaign.reward_multiplier())
 		Game.earn(reward);arena.run.earned+=reward
+		# An unopened commander or boss chest holds the exit back (T-044): the flag rises once the chest is
+		# opened and a choice is made (taken or declined), so the reward is never left behind by accident.
+		if not Campaign.endless and arena.room.pickups.any(func(p):return p.get("kind","")=="recipe_draft"):
+			arena.room.set_meta("pending_flag","Награда · +%d ◈" % reward)
+			arena.toast("Сначала открой сундук — потом выход")
+			return
 		place_flag("Награда · +%d ◈" % reward)
 		arena.toast("Маршрут открыт")
 		if Campaign.endless:open_flag()
@@ -124,6 +130,11 @@ func pause_battle():
 		arena.phase=arena.room.previous_phase;arena.hud.close_modal()
 
 ## Exit flag in front of the HQ; the room is left through it.
+## Places the exit held back by an unopened chest, once no chest is left on the field.
+func release_flag():
+	if not arena.room.has_meta("pending_flag") or arena.room.pickups.any(func(p):return p.get("kind","")=="recipe_draft"):return
+	var caption=str(arena.room.get_meta("pending_flag"));arena.room.remove_meta("pending_flag")
+	place_flag(caption);arena.toast("Маршрут открыт")
 func place_flag(caption:String):
 	arena.room.flag=Node3D.new();arena.add_child(arena.room.flag);arena.room.flag.position=arena.world_pos(Vector2i(arena.room.base_cell.x,arena.room.grid_size-3))
 	ExitFlag.build(arena.room.flag)

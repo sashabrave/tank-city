@@ -22,6 +22,9 @@ func spawn_bullet(owner_actor,pos: Vector3,dir: Vector2i,damage: float,friendly:
 	bullet.player_shot=owner_actor.player_owned
 	if friendly and owner_actor.player_owned and arena.run!=null:
 		bullet.pierce_left=int(arena.run.pierce)
+		# Бронебойные патроны: the bullet goes through more enemies (soldier's weapon only).
+		var ammo=Ammo.effective(arena)
+		if owner_actor.kind=="soldier" and ammo.type=="ap":bullet.pierce_left+=int(ammo.stats.get("pierce",1))+(1 if ammo.get("twist",false) else 0)
 		# Выдержка: a volley after 1.5 s of silence is marked; every pellet of it keeps the bonus.
 		var run=arena.run
 		if "opening_shot" in run.behavior_cards and run.elapsed-run.last_player_shot>=1.5:run.opening_until=run.elapsed+.05
@@ -97,16 +100,22 @@ func bullet_hit(bullet) -> bool:
 			actor.resource_blast=Vector3.ZERO
 			var amount=actor.max_hp if bullet.star_power else bullet.damage
 			if not bullet.star_power and CombatMods.player_bullet(bullet):amount=CombatMods.outgoing(arena,bullet,actor)
+			arena.set_meta("attacker",attacker_of(bullet))
 			actor.take_damage(amount,Vector3.ZERO,bullet.vehicle_credit,CombatMods.bullet_source(bullet) if actor.player_owned else "")
+			arena.set_meta("attacker","")
 			if CombatMods.player_bullet(bullet) and not actor.player_owned:arena.effects.emit("enemy_hit",{"target":actor,"bullet":bullet,"damage":amount})
 			var feel=arena.get_node_or_null("CombatFeel")
 			if feel and not actor.player_owned:feel.impact(actor,actor.position)
 			if not pierce_on(bullet):return true
 	if not arena.room.boss_room and not bullet.friendly and cell==arena.room.base_cell:
-		damage_base(bullet.damage)
+		arena.set_meta("attacker",attacker_of(bullet));damage_base(bullet.damage);arena.set_meta("attacker","")
 		return true
 	return false
 
+## The enemy kind behind a bullet, for the defeat screen (T-086).
+func attacker_of(bullet)->String:
+	var owner=bullet.get("owner_actor")
+	return str(owner.kind) if is_instance_valid(owner) and not owner.player_owned else ""
 func damage_base(amount: float):
 	if arena.room.boss_room or arena.phase != "combat" or arena.headquarters.shield_time>0: return
 	if is_instance_valid(arena.base_model):
@@ -115,6 +124,7 @@ func damage_base(amount: float):
 	arena.headquarters.hit_delay=6.0
 	arena.floating_number(arena.world_pos(arena.room.base_cell),-minf(arena.room.base_hp,amount))
 	arena.room.base_hp=maxf(0,arena.room.base_hp-amount)
+	if amount>0:arena.set_meta("base_hit_by",str(arena.get_meta("attacker","")) if str(arena.get_meta("attacker",""))!="" else "blast")
 	if is_instance_valid(arena.room.base_bar):arena.room.base_bar.set_health(arena.room.base_hp,arena.room.base_max_hp)
 	arena.burst(arena.world_pos(arena.room.base_cell)+Vector3.UP*.5,Color("e97437"),.8)
 	Game.sound("base_hit",arena)
@@ -263,6 +273,12 @@ func grenade_explosion(pos: Vector3,amount: float,friendly: bool,blast_radius: f
 	for cell in arena.room.walls.keys():
 		if arena.flat_distance(pos,arena.world_pos(cell))<1.15:arena.damage_wall(cell,amount)
 	if not friendly and not arena.room.boss_room and arena.flat_distance(pos,arena.world_pos(arena.room.base_cell))<1.15:damage_base(amount)
+	# Own explosives bite back a little (T-026): 1 damage to the soldier caught in the blast and 1 to the HQ.
+	if friendly:
+		var reach=blast_radius if blast_radius>0 else 1.15
+		var player=arena.room.player
+		if is_instance_valid(player) and not player.dead and arena.flat_distance(pos,player.position)<=reach:player.take_damage(1.0,player.position-pos+Vector3(.01,0,.01),"","blast")
+		if not arena.room.boss_room and arena.flat_distance(pos,arena.world_pos(arena.room.base_cell))<=reach:damage_base(1.0)
 	for wreck in arena.room.wrecks.duplicate():
 		if is_instance_valid(wreck) and not wreck.spent and arena.flat_distance(pos,wreck.position)<1.15:wreck.take_damage(amount)
 
@@ -298,14 +314,33 @@ func volley(actor,data:Dictionary):
 func rocket_impact(bullet):
 	if not bullet.friendly and not arena.room.boss_room and arena.flat_distance(bullet.position,arena.world_pos(arena.room.base_cell))<=bullet.rocket_radius:damage_base(bullet.damage)
 	arena.burst(bullet.position,Color("e8b957"),bullet.rocket_radius);Game.sound("boom",arena)
+	# The player's charges carry the loaded ammo (T-114): every enemy in the blast takes the hit with its
+	# effects (fire, EMP, cryo, crit); cluster scatters bomblets, napalm leaves a burning patch.
+	var player_charge=CombatMods.player_bullet(bullet) and not bullet.star_power
 	for enemy in arena.room.actors.duplicate():
 		if is_instance_valid(enemy) and not enemy.dead and (enemy.player_owned or enemy.allied)!=bullet.friendly and enemy!=bullet.owner_actor and arena.flat_distance(bullet.position,enemy.position)<=bullet.rocket_radius:
-			enemy.take_damage(enemy.max_hp if bullet.star_power else bullet.damage,Vector3.ZERO,bullet.vehicle_credit,"blast")
+			var amount=enemy.max_hp if bullet.star_power else (CombatMods.outgoing(arena,bullet,enemy) if player_charge else bullet.damage)
+			enemy.take_damage(amount,Vector3.ZERO,bullet.vehicle_credit,"blast")
+	if player_charge:charge_effects(bullet)
 	for cell in arena.room.walls.keys():
 		if arena.flat_distance(bullet.position,arena.world_pos(cell))<=bullet.rocket_radius:
 			if bullet.star_power:arena.room.walls[cell].node.queue_free();arena.room.walls.erase(cell);arena.navigation.invalidate(cell)
 			else:arena.damage_wall(cell,bullet.damage)
 
+func charge_effects(bullet):
+	var ammo=Ammo.effective(arena);var stats:Dictionary=ammo.stats;var at=bullet.position;at.y=0
+	match str(ammo.type):
+		"cluster":
+			var count=int(stats.get("bomblets",3));var reach=1.6+(.6 if ammo.get("twist",false) else 0.0)
+			for i in range(count):
+				var angle=TAU*i/count+arena.run.combat_rng.randf_range(-.3,.3);var spot=at+Vector3(cos(angle),0,sin(angle))*arena.run.combat_rng.randf_range(.6,reach)
+				var hit=bullet.damage*float(stats.get("bomblet_damage",.3))
+				arena.get_tree().create_timer(.18+i*.07,false).timeout.connect(func():
+					if is_instance_valid(arena) and arena.phase=="combat":grenade_explosion(spot,hit,true,.6))
+		"napalm":
+			var patch=preload("res://scripts/combat/napalm_patch.gd").new();patch.arena=arena;patch.position=at
+			patch.radius=float(stats.get("fire_radius",.8));patch.seconds=float(stats.get("fire_time",2.5));patch.damage=bullet.damage*.6
+			arena.add_child(patch)
 ## Captured hull: beacon, pointer and one short hint while the soldier is on foot.
 const TROPHY_HINTS={"buggy":"Трофейный багги: подойди и займи","apc":"Трофейный БТР: подойди и займи","tank":"Трофейный танк: подойди и займи"}
 func mark_trophy(wreck):

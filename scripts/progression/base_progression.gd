@@ -19,6 +19,8 @@ var xp=0
 var insurance=0
 var weapon_levels:Dictionary={}
 var counters:Dictionary={}
+## Summary of the last finished sortie for the «Вылазка» tab outside a run.
+var last_run:Dictionary={}
 var daily:Dictionary={}  # DailyRun records by UTC date
 var claimed:Array=[]
 ## Progress of accepted action quests, counted only after the quest was taken (id → value).
@@ -28,8 +30,9 @@ var telegram:Dictionary={}
 var telegram_options:Array=[]
 var telegram_result="Выбери приказ на следующую вылазку"
 func serialize()->Dictionary:
-	return {"accepted":accepted,"viewed_updates":viewed_updates,"worlds":cleared_worlds,"tracked":tracked,"collapsed":tracker_collapsed,"completed_orders":completed_orders,"order_wait":order_wait,"order_serial":order_serial,"sortie_active":sortie_active,"combat_entered":combat_entered,"sortie_counts":sortie_counts,"recent_sorties":recent_sorties,"seen":seen,"level":level,"xp":xp,"insurance":insurance,"weapons":weapon_levels,"counters":counters,"daily":daily,"claimed":claimed,"quest_progress":quest_progress,"boss_classes":boss_classes,"telegram":telegram,"telegram_options":telegram_options,"telegram_result":telegram_result}
+	return {"accepted":accepted,"viewed_updates":viewed_updates,"worlds":cleared_worlds,"tracked":tracked,"collapsed":tracker_collapsed,"completed_orders":completed_orders,"order_wait":order_wait,"order_serial":order_serial,"sortie_active":sortie_active,"combat_entered":combat_entered,"sortie_counts":sortie_counts,"recent_sorties":recent_sorties,"seen":seen,"level":level,"xp":xp,"insurance":insurance,"weapons":weapon_levels,"counters":counters,"daily":daily,"claimed":claimed,"quest_progress":quest_progress,"boss_classes":boss_classes,"telegram":telegram,"telegram_options":telegram_options,"telegram_result":telegram_result,"last_run":last_run}
 func restore(data:Dictionary):
+	last_run=data.get("last_run",{}) if data.get("last_run",{}) is Dictionary else {}
 	cleared_worlds=data.get("worlds",[]).map(func(value):return int(value));tracked=data.get("tracked",["first_alloy","institute_character"]);tracker_collapsed=data.get("collapsed",false)
 	accepted=data.get("accepted",tracked.duplicate());viewed_updates=data.get("viewed_updates",{})
 	completed_orders=data.get("completed_orders",[]);order_wait=data.get("order_wait",0);order_serial=data.get("order_serial",0)
@@ -210,7 +213,10 @@ func view_quest_updates(filter:String):
 	if filter in ["all","operations"]:viewed_updates["operations"]=operations_signature()
 	for q in quests("available"):
 		if str(q.id).begins_with("order_"):continue
-		if filter=="operations" or filter=="completed":continue
+		if filter=="completed":continue
+		# "main" (story + institute) and "operations" (briefings) mark only their own messages as seen.
+		if filter=="main" and q in QUESTS.BRIEFINGS:continue
+		if filter=="operations" and q not in QUESTS.BRIEFINGS:continue
 		if filter=="general" and q in QUESTS.INSTITUTE:continue
 		if filter=="institute" and q not in QUESTS.INSTITUTE:continue
 		for id in ["quest:"+q.id,"ready:"+q.id]:

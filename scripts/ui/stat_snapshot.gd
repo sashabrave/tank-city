@@ -42,7 +42,7 @@ static func registry_row(def,arena=null)->Dictionary:
 static func add_bars(parent:Control,pos:Vector2,width:float,rows:Array,row_height:float=48,adaptive:bool=false):
 	var bars=preload("res://scripts/ui/comparison_bars.gd").new();bars.rows=rows;bars.row_height=row_height;bars.adaptive_columns=adaptive;parent.add_child(bars);bars.position=pos;bars.size=Vector2(width,0);bars.reflow();return bars
 static func status(arena=null)->Array:
-	var result=["Уровень персонажа: %d · Уровень класса: %d" % [Game.character_level(),Game.class_level()],"Постоянный бонус урона: %s%% · Ячеек рюкзака: %d" % [UiKit.number(Game.damage_level*5),Game.backpack_slots],"Потеря сплава при выбывании: %s%%" % UiKit.number(Game.death_loss_fraction()*100)]
+	var result=["Уровень персонажа: %d · Уровень класса: %d" % [Game.character_level(),Game.class_level()],"Постоянный бонус урона: %s%% · Ячеек рюкзака: %d" % [UiKit.number(Game.damage_level*5),Backpack.capacity()],"Потеря сплава при выбывании: %s%%" % UiKit.number(Game.death_loss_fraction()*100)]
 	if not is_instance_valid(arena):return result
 	result.append("Здоровье: %s / %s · Прочность штаба: %s" % [UiKit.number(arena.soldier_hp),UiKit.number(arena.soldier_max_hp),UiKit.number(arena.base_hp)])
 	result.append("Перебросов: %d · Уничтожено врагов: %d · Сплава за вылазку: %d" % [arena.run.rerolls_left,arena.run.kills,arena.run.earned])

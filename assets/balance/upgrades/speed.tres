@@ -6,6 +6,7 @@
 script = ExtResource("1")
 id = "speed"
 title = "Передвижение"
+detail = "Боец бегает быстрее."
 category = "Герой"
 icon = "speed"
 family = "recon"

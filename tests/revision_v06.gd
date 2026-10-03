@@ -52,7 +52,7 @@ func run():
 	arena.room_index=0;arena.spawn_room_boss();var elite=arena.actors.filter(func(a):return a.elite)[0]
 	var peer=arena.spawn_actor(elite.kind,Vector2i(3,1),false,false,elite.rank)
 	check(elite.footprint==1 and elite.model.scale==peer.model.scale and elite.speed==peer.speed,"miniboss retains ordinary size and movement")
-	check(is_equal_approx(elite.max_hp,peer.max_hp*[3.0,4.0,5.0][arena.room.difficulty]),"commander health scales from type by difficulty")
+	check(is_equal_approx(elite.max_hp,peer.max_hp*preload("res://scripts/systems/boss_system.gd").COMMANDER_HP[arena.room.difficulty]),"commander health scales from type by difficulty")
 	var valid=true
 	for room in range(6):
 		for wave in range(3):

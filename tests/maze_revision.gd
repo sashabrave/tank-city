@@ -28,7 +28,18 @@ func run():
 	var goal=arena.challenges.goal_flag
 	check(is_instance_valid(goal),"green flag placed")
 	check(is_instance_valid(arena.challenges.darkness),"darkness covers the field")
-	check(arena.room.spawn_queue.is_empty() and arena.enemy_count()==0,"no enemies in the maze")
+	check(arena.room.spawn_queue.is_empty() and arena.enemy_count()==arena.challenges.zombies.size() and arena.challenges.zombies.size()>=2,"only shambling zombies in the maze (%d)" % arena.challenges.zombies.size())
+	# Zombies follow the corridors, so progress is measured along the maze, not in a straight line.
+	var z=arena.challenges.zombies[0];var field=arena.challenges.maze_distances(arena.grid_pos(arena.room.player.position))
+	var gap=int(field.get(arena.grid_pos(z.position),999))
+	z.process_mode=Node.PROCESS_MODE_ALWAYS
+	for i in range(40):arena.challenges.tick_zombies(.05)
+	var now=int(field.get(arena.grid_pos(z.position),999))
+	check(now<gap,"a zombie shambles towards the soldier along the maze (%d → %d)" % [gap,now])
+	arena.room.player.invulnerable=0.0;z.set_meta("bite_pause",0.0)
+	z.position=arena.room.player.position+Vector3(.3,0,0);var hp=arena.room.player.hp;arena.challenges.tick_zombies(.05)
+	check(arena.room.player.hp<hp,"an adjacent zombie bites")
+	arena.room.player.hp=hp;z.take_damage(5.0);check(z.dead,"zombies can be killed")
 	check(arena.grid_size==Campaign.SIZES.max(),"maze field is as big as the boss arena (%d)" % arena.grid_size)
 	check(arena.room.pickups.any(func(p):return p.kind=="recipe_draft" and not p.elite),"a small chest waits in a dead end")
 	# Walking route from the soldier to the flag through the real board (walls and terrain).

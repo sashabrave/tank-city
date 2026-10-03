@@ -28,6 +28,9 @@ var parachute_left=0.0
 var parachute:Node3D
 var force_field:MeshInstance3D
 var stun_time=0.0
+## Cryo ammo: share of speed lost while slow_time runs.
+var slow_time=0.0
+var slow_factor=0.0
 ## Gas sleep (catnip cloud): works like a stun, reads as «Z z z» instead of stars.
 var sleep_time=0.0
 var shield_phase="ready"
@@ -200,11 +203,13 @@ func _physics_process(delta):
 	if arena.phase!="combat" and not (player_owned and arena.phase=="countdown"):return
 	if is_instance_valid(force_field):force_field.visible=arena.boss.shield_active()
 	stun_time=maxf(0,stun_time-delta)
+	slow_time=maxf(0,slow_time-delta)
+	if slow_time<=0:slow_factor=0.0
 	sleep_time=maxf(0,sleep_time-delta)
 	if not player_owned and not allied:CombatMods.tick_burn(self,delta)
 	if dead:return
 	if not player_owned and not allied and (stun_time>0 or arena.freeze_time>0):return
-	if player_owned:
+	if player_owned and not has_meta("stage_hidden"):
 		model.visible=arena.abilities.cloak_time<=0 or fmod(arena.abilities.cloak_time,.25)<.15
 	if not player_owned and not allied:
 		arena.enemy.attention_tick(self,delta)
@@ -235,7 +240,8 @@ func _physics_process(delta):
 	if enemy_weapon=="rpg" and not player_owned and arena.enemy.rpg_step(self,delta):return
 	movement_pause=maxf(0,movement_pause-delta)
 	invulnerable = maxf(0,invulnerable-delta)
-	if player_owned:
+	# While BattleStage hides the soldier (before the hop-out, after boarding) visibility is left alone.
+	if player_owned and not has_meta("stage_hidden"):
 		model.visible=arena.star_time<=0 or fmod(arena.elapsed,.18)<.12
 		for mesh in model.find_children("*","GeometryInstance3D",true,false):mesh.transparency=.65 if arena.abilities.cloak_time>0 else 0.0
 	if turn_left > 0:
@@ -245,7 +251,7 @@ func _physics_process(delta):
 	if not moving:arena.terrain.begin_slide(self)
 	if moving:
 		var target=quarter_destination if uses_quarter_steps() or terrain_sliding else arena.actor_world_pos(self,destination)
-		var next_position=position.move_toward(target,(minf(speed,Balance.speed_cap()) if player_owned else speed)*arena.terrain.speed_factor(self)*delta)
+		var next_position=position.move_toward(target,(minf(speed,Balance.speed_cap()) if player_owned else speed*(1.0-slow_factor))*arena.terrain.speed_factor(self)*delta)
 		if arena.can_stand(next_position,self):position=next_position
 		else:moving=false
 		if position.distance_to(quarter_destination if uses_quarter_steps() or terrain_sliding else arena.actor_world_pos(self,destination)) < .005:
@@ -297,7 +303,7 @@ func _physics_process(delta):
 			if aim!=Vector2i.ZERO:set_facing(aim)
 			if Input.is_action_just_pressed("hide_trench"):hidden_in_trench=not hidden_in_trench
 			model.position.y=-.85 if hidden_in_trench else -.42
-			if Game.wants_fire() and not hidden_in_trench and arena.phase=="combat":shoot()
+			if Game.wants_fire() and not hidden_in_trench and arena.phase in ["combat","countdown"]:shoot()
 			if Game.wants_interact():arena.interact()
 			return
 		var dir = Game.direction()
@@ -305,7 +311,7 @@ func _physics_process(delta):
 			set_facing(dir)
 			# Finish only the current quarter-step; turning never stalls locomotion.
 			if not moving:try_move(dir)
-		if Game.wants_fire() and arena.phase=="combat": shoot()
+		if Game.wants_fire() and arena.phase in ["combat","countdown"]: shoot()
 		if Game.wants_interact(): arena.interact()
 	else:
 		var lined_up=arena.enemy_aim(self)
@@ -396,7 +402,7 @@ func take_damage(amount: float,blast:Vector3=Vector3.ZERO,vehicle_credit:String=
 		hp=1.0;arena.soldier_hp=hp;invulnerable=2.0;refresh_health();return
 	if player_owned and kind=="soldier" and arena.run!=null and not arena.run.mercy_used and hp>1.0 and hp-amount<=0 and not arena.sandbox:
 		# Once per run a lethal hit leaves 1 HP and a moment to escape.
-		arena.run.mercy_used=true;amount=hp-1.0
+		arena.run.mercy_used=true;amount=hp-1.0;arena.run.damage_taken+=amount
 		arena.burst(position+Vector3.UP*.5,Color("fff2c4"),.7);Game.sound("shield_restore",self)
 		arena.toast("На волоске! Второго шанса в этой вылазке не будет")
 		arena.floating_number(position,-amount);hp=1.0;arena.soldier_hp=hp;invulnerable=1.6;refresh_health()
@@ -405,10 +411,15 @@ func take_damage(amount: float,blast:Vector3=Vector3.ZERO,vehicle_credit:String=
 		var feel=arena.get_node_or_null("CombatFeel")
 		if feel:feel.shake(.3);feel.hit_stop(.04)
 		return
+	if not player_owned and arena.get("reward")!=null:amount=arena.reward.thieves.incoming(self,amount)
 	arena.floating_number(position,-minf(hp,amount))
 	if amount>0:preload("res://scripts/status_fx.gd").of(self).hit()
 	hp = maxf(0,hp-amount)
+	if player_owned and amount>0:
+		var by=str(arena.get_meta("attacker",""))
+		arena.set_meta("hero_hit_by",by if by!="" else {"blast":"blast","melee":"zombie"}.get(source,"blast" if blast.length()>.01 else ""))
 	if player_owned:
+		if arena.run!=null:arena.run.damage_taken+=amount
 		invulnerable = .65
 		if kind == "soldier": arena.soldier_hp = maxf(0,hp)
 		Game.sound("player_hurt",self)
@@ -435,10 +446,21 @@ func update_shield(delta: float):
 	match shield_phase:
 		"ready":
 			if is_instance_valid(arena.player) and arena.flat_distance(position,arena.player.position)<7:
-				shield_phase="raising";shield_time=.55;shield_visual.basis=shield_rest*Basis(Vector3.RIGHT,.25)
-		"raising":shield_phase="active";shield_time=1.1;shield_visual.basis=shield_rest
-		"active":shield_phase="cooldown";shield_time=2.2;shield_visual.basis=shield_rest*Basis(Vector3.RIGHT,.5)
+				# T-054/T-055: turn to the soldier first, then plant the shield in front in one readable motion.
+				var to=arena.player.position-position
+				set_facing(Vector2i(signi(roundi(to.x)),0) if absf(to.x)>absf(to.z) else Vector2i(0,signi(roundi(to.z))))
+				shield_phase="raising";shield_time=.55;shield_pose(Vector3(0,.0,-.12),shield_rest,.5)
+		"raising":shield_phase="active";shield_time=1.1;shield_pose(Vector3(0,-.04,-.2),shield_rest,.12)
+		"active":shield_phase="cooldown";shield_time=2.2;shield_pose(Vector3.ZERO,shield_rest*Basis(Vector3.RIGHT,.5),.35)
 		"cooldown":shield_phase="ready";shield_time=0
+## Smoothly moves the shield panel to a pose (offset from its rest position, rotation) instead of snapping.
+var shield_origin=Vector3.INF
+func shield_pose(offset:Vector3,basis:Basis,time:float):
+	if not is_instance_valid(shield_visual):return
+	if shield_origin==Vector3.INF:shield_origin=shield_visual.position
+	var tween=shield_visual.create_tween().set_parallel(true).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(shield_visual,"position",shield_origin+offset,time)
+	tween.tween_property(shield_visual,"basis",basis,time)
 
 func blocks_shot(travel: Vector3) -> bool:
 	return kind=="shield" and shield_phase=="active" and travel.normalized().dot(Vector3(facing.x,0,facing.y))<-.7

@@ -139,7 +139,7 @@ def build(family, variant):
                 t.blob((x, y, h * .7), .33 * scale * PUFF, NEEDLES, squash=.62)
                 t.blob((x - .05, y + .03, h * .9), .15 * scale * PUFF, TIPS, squash=.8)
         elif family == "palm":
-            h = 1.02 * scale
+            h = 1.2 * scale
             lean = rng.uniform(-.1, .1)
             seg = 4
             for k in range(seg):  # segmented trunk with little rings
@@ -147,15 +147,24 @@ def build(family, variant):
                 t.trunk(a, b, (.072 - k * .007) * PUFF, (.062 - k * .007) * PUFF)
             top = Vector((x + lean, y, h))
             t.blob(top, .07 * PUFF, BARK, squash=.9, seg=6, rings=3)
-            fronds = 6 + int(shape * 3)
+            # Feather fronds (T-039): an arched, drooping spine with pairs of narrow leaflets that taper to the
+            # tip, so the crown reads as separate leaves instead of a vase. Length and droop vary per frond.
+            fronds = 7 + int(shape * 3)
             for j in range(fronds):
-                a = j * math.tau / fronds + rng.uniform(-.15, .15)
+                a = j * math.tau / fronds + rng.uniform(-.2, .2)
                 d = Vector((math.cos(a), math.sin(a), 0)); side = Vector((-math.sin(a), math.cos(a), 0))
-                mid = top + d * .2 + Vector((0, 0, .07)); end = top + d * .42 + Vector((0, 0, -.12))
-                w = .09 * PUFF
-                t.face([top, mid + side * w, mid - side * w], PALM)
-                t.face([mid + side * w, end, mid], PALM); t.face([mid, end, mid - side * w], TIPS)
-                t.face([mid - side * w, mid + side * w, top], PALM)
+                length = rng.uniform(.33, .44); lift = rng.uniform(.08, .15); droop = rng.uniform(.2, .32)
+                steps = 6
+                spine = [top + d * (length * k / steps) + Vector((0, 0, lift * math.sin(math.pi * .8 * k / steps) - droop * (k / steps) ** 2)) for k in range(steps + 1)]
+                for k in range(steps):
+                    p0, p1 = spine[k], spine[k + 1]
+                    w = (.11 * (1 - k / steps) + .025) * PUFF
+                    tip = p1 + Vector((0, 0, -.03))
+                    mat = PALM if k % 2 == 0 else TIPS
+                    t.face([p0, p0 + side * w * .35, p1 + side * w + Vector((0, 0, -.05))], mat)
+                    t.face([p0, p1 - side * w + Vector((0, 0, -.05)), p0 - side * w * .35], mat)
+                    t.face([p0, p1 + side * w + Vector((0, 0, -.05)), tip], mat)
+                    t.face([p0, tip, p1 - side * w + Vector((0, 0, -.05))], mat)
         elif family == "charred":
             h = 1.15 * scale
             if shape > .75: h *= .45  # broken stump

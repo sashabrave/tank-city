@@ -25,7 +25,9 @@ const MOMENTS={
 }
 const DAY_MOMENTS=["dawn","morning","noon","golden","sunset"]
 const NIGHT_MOMENTS=["dusk","moon","predawn"]
-const MIN_DAY_ELEVATION=34.0
+## Below this sun height, shadows fade towards LOW_SUN_SHADOW opacity so long stripes do not cover the field.
+const LOW_SUN=30.0
+const LOW_SUN_SHADOW=.55
 ## Battle-only moment; hub and route map keep the style sun. Deterministic per run and room,
 ## seeded from the visual seed so gameplay RNG is never touched.
 static func moment(context:Node,night:bool)->Dictionary:
@@ -43,9 +45,8 @@ static func moment(context:Node,night:bool)->Dictionary:
 	var entry:Dictionary=MOMENTS[choice].duplicate()
 	var span:Vector2=entry.elevation
 	var elevation=rng.randf_range(span.x,span.y)
-	# Readability: a low sun stretched blurred shadows 3–4 cells across the field and read as stripes.
-	# The colour keeps the dawn/sunset mood; the shadow length stays about one cell or less.
-	if not night:elevation=maxf(elevation,MIN_DAY_ELEVATION+(elevation-span.x)*.4)
+	# Realistic height for every moment (T-006): dawn and sunset are low. Long low shadows stay readable
+	# because apply() makes them lighter the lower the sun is (shadow_opacity), not shorter.
 	# Avoid the sun straight behind the camera (yaw ~10°): it flattens every shadow.
 	var yaw=wrapf(10.0+rng.randf_range(35,325),-180,180)
 	entry.id=choice;entry.angle=Vector3(-elevation,yaw,0)
@@ -81,6 +82,14 @@ func apply():
 	environment.ssao_intensity=float(style.ssao)
 	environment.ssao_detail=.6
 	environment.ssao_light_affect=.15
+	# T-063: «Кино» adds stronger contact shadows and bounced colour light (SSIL); other presets skip the cost.
+	var cinema=str(Settings.values.get("graphics_preset","standard"))=="cinema" and advanced and cozy
+	# SSIL is the expensive part: a short radius, and off at night where volumetric fog already costs a lot
+	# (the hub lagged on «Кино», 0.7.2).
+	environment.ssil_enabled=cinema and not night
+	if cinema:
+		environment.ssao_intensity*=1.35;environment.ssao_radius=.9
+		environment.ssil_radius=2.0;environment.ssil_intensity=.8;environment.ssil_sharpness=.98;environment.ssil_normal_rejection=1.0
 	# Glow picks only bright highlights (metal glints, gold, lamps) instead of washing the frame.
 	environment.glow_enabled=option.call("glow")
 	environment.glow_intensity=float(style.glow)
@@ -102,11 +111,22 @@ func apply():
 		sky_material.ground_horizon_color=Color(style.ground) if bright else Color("a1a394")
 		sky_material.ground_bottom_color=Color(style.ground).darkened(.25) if bright else Color("44483d")
 		sky_material.energy_multiplier=(.45 if night else 1.0)
+		# Metal needs contrast to read as metal: a deeper zenith and a bright warm horizon give its edges a
+		# light-to-dark sweep instead of one flat grey (only the reflection sky; the background colour stays).
+		if bright and not night:
+			sky_material.sky_top_color=Color(style.sky_top).darkened(.28)
+			sky_material.sky_horizon_color=Color(style.sky_horizon).lightened(.12)
+			sky_material.sky_curve=.06
 	var soft=option.call("soft_shadows")
 	# Softness is a filter blur, not an angular sun size: PCSS (angular distance) samples the penumbra
 	# with noise that reads as grain on small geometry like brick courses.
 	sun.light_angular_distance=0.0
-	sun.shadow_blur=clampf(1.0+float(style.softness)*.5,1.0,4.0) if soft else 1.0
+	# The orthographic field falls into the far (coarse) shadow split, and the high-quality soft filter with a
+	# blur of 2+ smeared the sun shadows to nothing: walls cast no shadow and daylight read flat. Low filter
+	# quality (project setting) and a small blur keep a soft but visible edge.
+	sun.shadow_blur=clampf(1.0+float(style.softness)*.08,1.0,1.6) if soft else 1.0
+	# Moonlight shadows read as blurry as the day ones.
+	if soft and night:sun.shadow_blur=clampf(sun.shadow_blur*1.8,2.0,5.0)
 	sun.shadow_opacity=float(style.shadow) if cozy else 1.0
 	sun.light_specular=float(style.specular) if cozy else .5
 	var time:Dictionary=moment(get_parent(),night) if cozy else {}
@@ -126,6 +146,8 @@ func apply():
 		environment.adjustment_saturation=float(style.saturation)*float(weather.saturation)
 	if cozy:
 		sun.rotation_degrees=style.sun_angle
+		var height=-float(Vector3(style.sun_angle).x)
+		if not night and height<LOW_SUN:sun.shadow_opacity*=lerpf(LOW_SUN_SHADOW,1.0,clampf((height-12.0)/(LOW_SUN-12.0),0.0,1.0))
 		sun.light_color=Color(style.sun) if not night or not time.is_empty() else Color("9ab7e0")
 		sun.light_energy=float(style.sun_energy) if not night or not time.is_empty() else .3
 		# Fill light is a style colour (lilac-blue shadows); the bright sky is used only for reflections.
@@ -134,8 +156,65 @@ func apply():
 			environment.ambient_light_color=Color(style.fill)
 		environment.ambient_light_energy=(.34*float(time.get("ambient",1.0))) if night else float(style.ambient)
 	else:sun.rotation_degrees=Vector3(-55,-32,0)
+	depth_light(cozy and bool(Settings.values.get("depth_light",true)),night)
+	cinematic_light(cozy and bool(Settings.values.get("cinematic_light",true)),night,Vector3(style.sun_angle) if cozy else Vector3(-55,-32,0))
 	refresh_materials()
 	update_lamps()
+## «Киношный свет» (T-066): a second, shadowless back light opposite the sun in a complementary colour
+## (warm key / cool rim, or the reverse at night). It outlines every model so it reads in volume. The recipe
+## is picked per room from the visual seed, so each field gets its own mood; hub and route map use room 0.
+const CINE_DAY=[["8fb8ff",.5],["c7a0ff",.45],["a8e0ff",.4],["ffb3c8",.38]]
+const CINE_NIGHT=[["ff9f6b",.32],["7fe0d0",.28],["c7a0ff",.3]]
+func cinematic_light(on:bool,night:bool,sun_angle:Vector3):
+	var rim:DirectionalLight3D=get_node_or_null("CineRim")
+	if rim==null:
+		rim=DirectionalLight3D.new();rim.name="CineRim";rim.shadow_enabled=false;rim.light_specular=.7;add_child(rim)
+	rim.visible=on
+	if not on:return
+	var room=int(get_parent().get("room_index")) if get_parent().get("room_index")!=null else 0
+	var rng=RandomNumberGenerator.new();rng.seed=hash([Game.visual_run_seed,room,"cine"])
+	var recipe=(CINE_NIGHT if night else CINE_DAY)[rng.randi_range(0,(CINE_NIGHT if night else CINE_DAY).size()-1)]
+	rim.light_color=Color(recipe[0]);rim.light_energy=float(recipe[1])
+	rim.rotation_degrees=Vector3(-rng.randf_range(16,28),sun_angle.y+180.0+rng.randf_range(-25,25),0)
+## Night sky glow (T-067): three huge, very faint moonbeam shafts slanting down through the scene and drifting
+## slowly, plus a soft cool sheen — cheap unshaded cones, night and «Киношный свет» only.
+## «Глубина света» (T-062), cheap: grid AO on the floor (systems/floor_ao.gd), a slightly warmer sun and
+## a hint of cool fill (warm light / cool shadow), a touch more contrast. AgX was tried and greyed the sand
+## palette, so the style's filmic tonemap stays.
+func depth_light(on:bool,night:=false):
+	if not on:return
+	if night:
+		# Night recipe, tuned like the day one: silver-blue moonlight that shapes the forms, a deep blue fill
+		# so shadows stay coloured (never black or brown), slightly muted colour, warm lamps glowing against it.
+		environment.adjustment_contrast*=1.08;environment.adjustment_saturation*=.92
+		sun.light_color=sun.light_color.lerp(Color("b4c8ff"),.5);sun.light_energy*=1.25
+		environment.ambient_light_color=environment.ambient_light_color.lerp(Color("5f74b0"),.35)
+		sun.shadow_opacity=minf(1.0,sun.shadow_opacity)*.8
+		environment.glow_intensity*=1.3
+		# Soft dark night (0.8): with real sun shadows back, the moon and fill lit sand like daytime. Moon and
+		# fill go down so searchlights and lamps make the bright patches; light floors darken a bit more.
+		var k=0.0
+		if get_parent().has_method("room_palette"):k=clampf((Color(get_parent().room_palette().floor).get_luminance()-.45)/.25,0.0,1.0)
+		sun.light_energy*=.42-.1*k;environment.ambient_light_energy*=.48-.1*k
+		environment.tonemap_exposure*=.94-.12*k
+		return
+	environment.adjustment_contrast*=1.08;environment.adjustment_saturation*=1.05
+	sun.light_color=sun.light_color.lerp(Color("ffd6a8"),.15);sun.light_energy*=1.06
+	# Light floors (sand, pale concrete) washed out in daylight and read flat: the lighter the floor, the lower
+	# the exposure and fill and the firmer the contrast and sun shadows. Mid and dark biomes stay as they are.
+	if get_parent().has_method("room_palette"):
+		var lum=Color(get_parent().room_palette().floor).get_luminance()
+		var k=clampf((lum-.56)/.14,0.0,1.0)
+		environment.tonemap_exposure*=1.0-.13*k;environment.ambient_light_energy*=1.0-.18*k
+		environment.adjustment_contrast*=1.0+.07*k;sun.shadow_opacity=minf(1.0,sun.shadow_opacity*(1.0+.12*k))
+		# Golden hour on sand turned the whole frame yellow: the sun gets a little more neutral and softer there.
+		sun.light_color=sun.light_color.lerp(Color("fff1df"),.35*k);sun.light_energy*=1.0-.1*k
+		environment.adjustment_saturation*=1.0-.14*k
+	# Volume (0.7.2): a cooler, weaker fill against the warm sun reads the sides and cast shadows of walls;
+	# the shadows stay coloured, never near-black.
+	environment.ambient_light_color=environment.ambient_light_color.lerp(Color("9db0d8"),.22)
+	environment.ambient_light_energy*=.86;sun.light_energy*=1.05
+	sun.shadow_opacity*=.92
 func _process(delta):
 	elapsed+=delta
 	if elapsed<.25:return
@@ -167,13 +246,17 @@ func update_lamps():
 		if light.get_meta("occluded_beam",false) and board.has_method("wall_contacts"):
 			var forward=-light.global_basis.z.normalized()
 			if not board.wall_contacts(light.global_position,forward,.04).is_empty():light.visible=false
-		light.shadow_enabled=light.visible and (light.get_meta("occluded_beam",false) or (cozy and i<3))
+		light.shadow_enabled=light.visible and not light.get_meta("no_shadow",false) and (light.get_meta("occluded_beam",false) or (cozy and i<3))
 		light.light_volumetric_fog_energy=1.5 if cozy else 0.0
-		light.shadow_blur=1.5 if cozy and Settings.values.get("soft_shadows",true) else 1.0
-		if light is SpotLight3D and not light.get_meta("occluded_beam",false):
+		# Lamp shadows at night were crisp next to the soft day ones; a wider filter blurs them the same way.
+		light.shadow_blur=(3.2 if night else 1.5) if cozy and Settings.values.get("soft_shadows",true) else 1.0
+		if light is SpotLight3D:
 			if not light.has_node("SoftCone"):add_cone(light)
-			var cone=light.get_node("SoftCone");cone.visible=light.visible
-			cone.material_override.set_shader_parameter("density",.012 if night else .0035)
+			# A faint beam is always visible; night and fog make it denser (T-058).
+			var foggy=preload("res://scripts/systems/weather.gd").pick(get_parent()) in ["fog","rain","sandstorm"]
+			# Long-range mast lights get no visible cone: from above it would veil the whole field.
+			var cone=light.get_node("SoftCone");cone.visible=light.visible and cozy and light.spot_range<=5.0
+			cone.material_override.set_shader_parameter("density",(.02 if night else .006)*(1.6 if foggy else 1.0))
 	var pickups=get_tree().get_nodes_in_group("pickup_lights").filter(func(n):return get_parent().is_ancestor_of(n))
 	if camera:pickups.sort_custom(func(a,b):return a.global_position.distance_squared_to(camera.global_position)<b.global_position.distance_squared_to(camera.global_position))
 	for i in range(pickups.size()):
@@ -186,7 +269,8 @@ static func lamp(parent:Node3D,position:Vector3):
 
 static func beam(parent:Node3D,pos:Vector3,always=false,priority=1)->SpotLight3D:
 	var light=SpotLight3D.new();light.name="Headlight";parent.add_child(light);light.position=pos;light.rotation.x=deg_to_rad(-16)
-	light.light_color=Color("ffe1ad");light.light_energy=2.1;light.spot_range=3.8;light.spot_angle=31;light.spot_attenuation=1.0;light.shadow_enabled=false
+	# No projector texture: in Godot 4.7 a runtime cookie switched the light off entirely (hub went dark, 0.7.2).
+	light.light_color=Color("ffe1ad");light.light_energy=2.1;light.spot_range=3.8;light.spot_angle=34;light.spot_attenuation=1.0;light.shadow_enabled=false
 	light.set_meta("day_energy",.65 if always else 0.0);light.set_meta("night_energy",2.1);light.set_meta("priority",priority)
 	light.add_to_group("night_lamps");light.visible=always or Settings.values.world_lighting=="night";return light
 
@@ -223,8 +307,12 @@ static func headlights(parent:Node3D,vehicle=false,always=false):
 	else:
 		# v6 infantry carry a chest lamp: the beam rides on it and follows the animation.
 		var lamp=parent.find_child("Flashlight",true,false)
-		if lamp is Node3D:beam(lamp,Vector3.ZERO,false,4)
-		else:beam(rig,Vector3(.12,.65,-.24),false,4)
+		if lamp is Node3D:
+			var steady=preload("res://scripts/beam_steady.gd").new();steady.name="SteadyBeam";steady.lamp=lamp;rig.add_child(steady)
+			beam(steady,Vector3.ZERO,false,4).set_meta("no_shadow",true)
+		else:beam(rig,Vector3(.12,.65,-.24),false,4).set_meta("no_shadow",true)
+		# A chest lamp casts no shadows: its own soldier's weapon flickered across the beam while running.
+		preload("res://scripts/systems/floor_ao.gd").contact_shadow(parent)
 
 ## Compact fixtures (tools/build_lights_v1.py): an armoured searchlight on a turntable for block tops, a caged
 ## bulkhead lamp on a bracket for walls (`wall` true). The spotlight sits in the modelled lens.
@@ -237,13 +325,19 @@ static func field(arena):
 	var rng=RandomNumberGenerator.new();rng.seed=arena.run_seed+arena.room_index*3907+711
 	var candidates=arena.walls.keys().filter(func(c):return arena.walls[c].hp<0 and not arena.walls[c].has("half_side") and c.y>1 and c.y<arena.grid_size-2)
 	# Fixtures sit on existing solid cover; no new collision or pathfinding cells.
-	var count=mini(candidates.size(),rng.randi_range(2,4))
+	# Fewer, deliberate pools of light (T-065): overlapping lamps read as noise from above.
+	var count=mini(candidates.size(),rng.randi_range(1,3))
 	for i in range(count):
 		var index=rng.randi_range(0,candidates.size()-1);var cell=candidates.pop_at(index)
 		preload("res://scripts/base_surroundings.gd").lamp(arena.walls[cell].node,Vector3(0,1.0,0))
-	for i in range(mini(2,candidates.size())):
+	for i in range(mini(rng.randi_range(0,1),candidates.size())):
 		var index=rng.randi_range(0,candidates.size()-1);var cell=candidates.pop_at(index)
 		floodlight(arena.walls[cell].node,Vector3(0,1.02,0),rng.randf()*TAU)
+	# A few fixtures stutter now and then (T-016): about a quarter of the field lamps, never all at once.
+	var flick=RandomNumberGenerator.new();flick.seed=hash([Game.visual_run_seed,arena.room_index,"flicker"])
+	for light in arena.find_children("*","Light3D",true,false):
+		var fixture=str(light.get_path()).contains("MilitaryLightStand") or str(light.get_path()).contains("Floodlight")
+		if fixture and flick.randf()<.25:preload("res://scripts/light_flicker.gd").attach(light,flick.randi())
 	# Burning drums just outside the field edge: warm story light on the flanks, never on playable cells.
 	for i in range(rng.randi_range(1,2)):
 		var side=-1 if (i+rng.randi_range(0,1))%2==0 else 1
@@ -251,6 +345,15 @@ static func field(arena):
 		var drum=preload("res://scripts/fire_barrel.gd").new();drum.intensity=.5;drum.tint=Color(arena.room_palette().wall).darkened(.62).lerp(Color("3a2c24"),.3);arena.add_child(drum)
 		drum.position=arena.world_pos(Vector2i(-1 if side<0 else arena.grid_size,row))+Vector3(side*.35,0,0)
 
+## One reflection probe over a whole field or the hub (T-065/T-005): captured once when the room is built,
+## so metal and water reflect the real scene instead of an empty sky. Costs only at room load.
+static func reflection_probe(parent:Node3D,extent:Vector3,center:=Vector3.ZERO):
+	var old=parent.get_node_or_null("SceneReflection")
+	if old:old.name="SceneReflectionOld";old.queue_free()
+	if not bool(Settings.values.get("shiny_metal",true)) or not bool(Settings.values.get("shaders",true)):return
+	var probe=ReflectionProbe.new();probe.name="SceneReflection";parent.add_child(probe)
+	probe.position=center+Vector3(0,1.6,0);probe.size=extent;probe.box_projection=true;probe.update_mode=ReflectionProbe.UPDATE_ONCE
+	probe.intensity=.8;probe.max_distance=extent.length();probe.enable_shadows=false
 static func add_cone(light:SpotLight3D):
 	var cone=MeshInstance3D.new();cone.name="SoftCone";cone.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	var mesh=CylinderMesh.new();mesh.top_radius=.018;mesh.bottom_radius=tan(deg_to_rad(light.spot_angle))*light.spot_range*.68;mesh.height=light.spot_range*.8;mesh.radial_segments=16;mesh.rings=1;mesh.cap_top=false;mesh.cap_bottom=false

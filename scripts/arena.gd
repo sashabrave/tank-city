@@ -43,7 +43,9 @@ const ROOM_WAVES = [
 ]
 const BIOMES=preload("res://scripts/biome_catalog.gd")
 var navigation=preload("res://scripts/systems/navigation_cache.gd").new(self)
-func room_palette()->Dictionary:return BIOMES.ENTRIES[sandbox_biome] if sandbox and sandbox_biome>=0 else BIOMES.entry(run_seed,room_index)
+func room_palette()->Dictionary:return BIOMES.ENTRIES[sandbox_biome] if sandbox and sandbox_biome>=0 else BIOMES.entry(run_seed,room_index,room_lane())
+## Lane of the route node this room was entered from: each node of a stage has its own biome and name.
+func room_lane()->int:return BIOMES.chosen_lane(run_seed,room_index,run.route_choices if run else {})
 
 var grid_size:
 	get:return room.grid_size
@@ -309,6 +311,7 @@ func begin_room(index: int):
 	for child in get_children():
 		if child==presentation or child==hud or child==camera or child is WorldEnvironment or child is DirectionalLight3D or child.name in ["WorldLighting","WorldAtmosphere","SandboxAdmin"]:continue
 		remove_child(child);child.queue_free()
+	if room.has_meta("pending_flag"):room.remove_meta("pending_flag")
 	room.commander_countdown=false;room_cleared=false;room_boss_spawned=false;reward_claimed=false;flag=null;flag_armed=true;upgrade_offers.clear();trenches.clear()
 	room.resource_drops.clear();actors.clear();wrecks.clear();walls.clear();pickups.clear();nets.clear();projectiles.clear();bombs.clear();grenades.clear()
 	twin_boss=index in Campaign.BOSSES and BossCatalog.encounter(run_seed,index).count==2
@@ -340,6 +343,8 @@ func begin_room(index: int):
 	# Containers first, so crates lean against them and never end up inside.
 	var dressing=preload("res://scripts/systems/field_dressing.gd").new();add_child(dressing);dressing.setup(self)
 	var crates=preload("res://scripts/systems/field_crates.gd").new();add_child(crates);crates.setup(self)
+	preload("res://scripts/systems/floor_ao.gd").build_for(self)
+	preload("res://scripts/world_lighting.gd").reflection_probe(self,Vector3(grid_size+4,6,grid_size+4))
 	var previous=get_node_or_null("BiomeParticles")
 	if previous:previous.name="BiomeParticlesOld";previous.queue_free()
 	var drifting=preload("res://scripts/systems/biome_particles.gd").new();add_child(drifting);drifting.setup(self,weather)
@@ -347,11 +352,10 @@ func begin_room(index: int):
 	get_node("WorldAtmosphere").battle_clouds(grid_size,Game.visual_run_seed+index*131)
 	get_node("WorldAtmosphere").apply()
 	var ambience=load("res://scripts/location_ambience.gd").new()
-	ambience.seed_value=Game.visual_run_seed;ambience.room_index=index;ambience.biome=room_palette().ambience;ambience.radius=grid_size*.5;add_child(ambience)
+	ambience.seed_value=Game.visual_run_seed;ambience.room_index=index;ambience.biome=room_palette().ambience;ambience.radius=grid_size*.5;ambience.palette=room_palette();add_child(ambience)
 	player=spawn_actor(carried_kind,Vector2i(base_cell.x,grid_size-2 if boss_room else grid_size-3),true,false,1,false,"",carried_origin,carried_zone)
 	player.salvaged=carried_salvaged
-	# A short spawn grace covers the arrival; the soldier shimmers and the HUD shows the chip.
-	player.invulnerable=2.4
+	# No spawn grace since 0.8 (author: not needed for play, extra noise); the countdown covers the arrival.
 	if carried_kind!="soldier" and carried_armor>0:player.hp=minf(carried_armor,player.max_hp);player.refresh_health()
 	toast("Атакуй босса. При включении щита уничтожь светящийся генератор." if Campaign.is_final(room_index) else "Бой с генералом. Когда включится щит, уничтожь светящийся генератор на фланге." if boss_room else "")
 	preload("res://scripts/effect_warmup.gd").run(self)
@@ -466,6 +470,7 @@ func can_enter(cell: Vector2i,actor=null) -> bool:
 func spawn_actor(kind: String, cell: Vector2i, owned: bool, allied=false,rank: int=1,surprise:bool=false,loadout:String="",vehicle_origin:String="owned",vehicle_zone:int=1):
 	var actor = load("res://scenes/"+kind+".tscn").instantiate()
 	actor.vehicle_origin=vehicle_origin;actor.vehicle_zone=vehicle_zone
+	if owned and vehicle_origin=="captured" and run!=null:run.captured+=1
 	actor.rank=rank;actor.surprise_spawn=surprise;actor.enemy_weapon=loadout
 	if not owned and not allied:actor.chevrons=Professionalism.tier(room_index)
 	actor.arena = self
@@ -527,6 +532,14 @@ func _physics_process(delta):
 		if countdown <= 0:
 			phase = "combat"
 			if room.commander_countdown:room.commander_countdown=false;spawn_room_boss()
+		# The pause between waves is not a freeze (T-020, T-053): time runs, so bonuses keep falling, and the
+		# soldier can shoot and use abilities while the next wave gets ready.
+		elapsed+=delta
+		abilities.tick(delta)
+		for slot in range(abilities.slots.size()):
+			if Input.is_action_just_pressed(Game.ability_action(slot)):abilities.cast_slot(slot)
+		if Input.is_action_just_pressed("ammo_switch") and Ammo.switch(self):hud.refresh_ammo()
+		if Input.is_action_just_pressed("use_medkit"):Backpack.use_medkit(self)
 		collect_nearby_pickups(delta)
 		return
 	if phase != "combat": return
@@ -535,6 +548,8 @@ func _physics_process(delta):
 	abilities.tick(delta)
 	headquarters.tick(delta)
 	if Input.is_action_just_pressed("hq_ability"):headquarters.cast()
+	if Input.is_action_just_pressed("ammo_switch") and Ammo.switch(self):hud.refresh_ammo()
+	if Input.is_action_just_pressed("use_medkit"):Backpack.use_medkit(self)
 	for slot in range(abilities.slots.size()):
 		if Input.is_action_just_pressed(Game.ability_action(slot)):abilities.cast_slot(slot)
 	elapsed += delta

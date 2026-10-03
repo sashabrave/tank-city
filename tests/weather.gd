@@ -17,7 +17,7 @@ func _ready():
 		var count=0
 		for child in arena.get_children():
 			if child.get_script()==load("res://scripts/location_ambience.gd"):
-				count+=1;assert(child.biome==arena.room_palette().ambience);assert(child.get_child_count()==9)
+				count+=1;assert(child.biome==arena.room_palette().ambience);assert(child.get_child_count()>=9)  # silhouettes, ground, approach, cloud layer
 		assert(count==1)
 	print("WEATHER: 50 seeded routes, monotonic cloud limits, seven room transitions passed")
 	arena.queue_free();await get_tree().process_frame;get_tree().quit()

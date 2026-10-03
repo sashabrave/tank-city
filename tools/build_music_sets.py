@@ -343,7 +343,7 @@ if __name__ == '__main__':
 		if only and id not in only:
 			continue
 		prefix = PREFIX[th['mood']]
-		entry = {'title': th['title'], 'mood': th['mood']}
+		entry = {'title': th['title'], 'mood': 'night' if id == 'beacons' else 'day'}  # station by energy, not genre
 		reel = []
 		gap = np.zeros((R // 2, 2))
 		for mode in MODES:

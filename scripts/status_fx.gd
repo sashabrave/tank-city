@@ -91,10 +91,18 @@ func _process(delta):
 func apply(next:String):
 	current=next
 	if meshes.is_empty() or not is_instance_valid(meshes[0]):
-		meshes=actor.model.find_children("*","GeometryInstance3D",true,false) if is_instance_valid(actor.model) else []
+		meshes=actor.model.find_children("*","GeometryInstance3D",true,false).filter(func(m):return not lighting_part(m)) if is_instance_valid(actor.model) else []
 	for mesh in meshes:
 		if is_instance_valid(mesh):mesh.material_overlay=overlay(next) if next!="" else null
 
+## Light cones, lamp lenses, the headlight rig and the contact shadow keep their own look: a hit tints only the
+## body (an overlay on the floor shadow flashed the whole cell, T-091).
+func lighting_part(mesh:Node)->bool:
+	var node=mesh
+	while node!=null and node!=actor:
+		if node.name in ["SoftCone","HeadlightRig","Flashlight","Floodlight","ContactShadow","SteadyBeam"] or node is Light3D:return true
+		node=node.get_parent()
+	return false
 func show_marker(next:String):
 	marker=next
 	for node in [stars,ice,flames,sleep]:

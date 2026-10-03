@@ -9,7 +9,11 @@ func run():
 	Game.save_enabled=false;Settings.persistence_enabled=false;Game.sound_enabled=false;Game.reset_upgrades()
 	Game.equipped_abilities=["barrier","grenade","gas"];Game.ability_slots=3
 	var arena=load("res://scenes/arena.tscn").instantiate();add_child(arena);arena.auto_pause_enabled=false;arena.set_physics_process(false);arena.player.set_physics_process(false);arena.phase="combat"
+	arena.abilities.slots=["barrier","grenade","gas"];arena.abilities.select("barrier")  # the class Q is free since meta stage 4
 	check(arena.abilities.interval()==33 and arena.abilities.barrier_count()==1,"barrier baseline")
+	# Face a cell inside the field (a random seed may put the soldier with his back to the edge).
+	for d in [Vector2i.UP,Vector2i.LEFT,Vector2i.RIGHT,Vector2i.DOWN]:
+		if arena.inside(arena.player.cell+d) and not arena.room.trenches.has(arena.player.cell+d) and not arena.terrain.movement_blocked_at_cell(arena.player.cell+d):arena.player.facing=d;break
 	var front=arena.player.cell+arena.player.facing
 	if arena.walls.has(front):arena.walls[front].node.queue_free();arena.walls.erase(front)
 	check(arena.abilities.cast(),"barrier casts")
@@ -56,7 +60,7 @@ func run():
 	check(arena.twin_boss and arena.spawn_queue==["boss","boss"] and arena.player.footprint==1,"twin wave only bosses have footprint")
 	var boss1=arena.spawn_actor("boss",Vector2i(3,1),false);boss1.set_physics_process(false)
 	var boss2=arena.spawn_actor("boss",Vector2i(14,1),false);boss2.set_physics_process(false)
-	check(boss1.footprint==2 and boss1.max_hp+boss2.max_hp==700,"twins total health and footprint")
+	check(boss1.footprint==2 and is_equal_approx(boss1.max_hp+boss2.max_hp,Balance.CONFIG.campaign.world_boss_health[0]),"twins total health and footprint")
 	arena.spawn_queue.clear();arena.room.generator_order.clear();arena.phase="combat";boss1.take_damage(9999);check(not arena.boss_defeated,"first twin is not victory")
 	boss2.take_damage(9999);check(arena.boss_defeated and arena.phase!="result","victory waits for chest")
 	chest=arena.pickups.back();check(chest.kind=="recipe_draft" and chest.final,"boss drops final chest")

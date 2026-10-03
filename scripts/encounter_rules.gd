@@ -30,6 +30,15 @@ static func recipe_pool(level:int,pending:Array,stage:int,include_owned:bool=fal
 			if Campaign.unified_content() and tier>Game.TIERS.unlocked(stage):continue
 			options.append({"category":category,"id":id})
 	return options
+## 0.8 (author): key buildings come on a fixed beat of world 1 — the HQ blueprint in the commander chest at the
+## end of the first segment (field 2), the Garage in the middle segment (field 4) — whatever the node's
+## stars, until owned. Everything else stays random.
+const GUARANTEED={1:"headquarters",3:"garage"}
+static func guaranteed(stage:int,pending:Array)->Dictionary:
+	if Campaign.endless or Campaign.world!=1 or not GUARANTEED.has(stage):return {}
+	var id=str(GUARANTEED[stage])
+	if id in Game.recipe_owned("research") or id in Game.RETIRED_BUILDINGS or pending.any(func(r):return r.id==id and r.category=="research"):return {}
+	return {"category":"research","id":id}
 static func recipe(level:int,rng:RandomNumberGenerator,pending:Array,stage:int)->Dictionary:
 	var options=recipe_pool(level,pending,stage)
 	# The common path supplies construction prerequisites before optional gear.

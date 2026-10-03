@@ -13,6 +13,12 @@ func setup(context):
 	arena=context;name="CombatFeel";rng.seed=hash([context.run_seed,"combat_feel"]);process_mode=Node.PROCESS_MODE_ALWAYS
 func enabled()->bool:return bool(Settings.values.get("ui_motion",true))
 ## Trauma-style shake: strength 0..1 adds up, decays fast, offset is trauma² so small hits stay subtle.
+## A short camera push towards the field when a reward appears (T-022): zoom in ~5% and settle back.
+func punch_in(amount:=.05):
+	if not enabled() or not is_instance_valid(arena.camera):return
+	var base=float(arena.grid_size)+5.0
+	var tween=create_tween();tween.tween_property(arena.camera,"size",base*(1.0-amount),.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(arena.camera,"size",base,.55).set_trans(Tween.TRANS_SINE)
 func shake(strength:float):
 	if enabled():trauma=minf(1.0,trauma+strength)
 ## Short freeze of the whole fight (Engine.time_scale), measured in real time.

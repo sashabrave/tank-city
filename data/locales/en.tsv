@@ -2588,3 +2588,303 @@ F8 — новая задача из любого места игры · Esc — 
 Вопрос ко мне	Question for me
 Задачи (F9) · новая — F8	Tasks (F9) · new — F8
 Казна вражеского штаба: одно из трёх легендарных правил.\nДействует до конца вылазки.	Enemy HQ war chest: one of three legendary rules.\nLasts until the end of the run.
+Сначала открой сундук — потом выход	Open the chest first, then the exit
+Графика	Graphics
+Пресет графики	Graphics preset
+Экономно	Economy
+Стандарт	Standard
+Кино	Cinema
+Экономно — для слабых устройств; Кино — весь свет, тени и эффекты.	Economy is for weak devices; Cinema turns on every light, shadow and effect.
+Киношный свет	Cinematic light
+Глубина света	Light depth
+Сесть	Board
+Горение жжёт сильнее: больше урона огнём каждую секунду.	Burning hits harder: more fire damage every second.
+Подожжённые враги горят дольше.	Set-alight enemies burn for longer.
+Чаще критические попадания: такая пуля бьёт вдвое сильнее.	More critical hits: such a bullet hits twice as hard.
+Критические попадания бьют ещё сильнее.	Critical hits deal even more damage.
+Больше урона от всего: пуль бойца, техники и взрывов.	More damage from everything: the soldier's bullets, vehicles and explosions.
+Способности бойца (граната, щит, дрон и другие) перезаряжаются быстрее.	The soldier's abilities (grenade, shield, drone and others) recharge faster.
+Способности бойца сильнее: граната бьёт больнее, щит держит дольше, дрон стреляет мощнее.	The soldier's abilities are stronger: the grenade hits harder, the shield lasts longer, the drone shoots harder.
+Боец стреляет чаще: меньше пауза между выстрелами.	The soldier fires more often: a shorter pause between shots.
+Шанс увернуться от пули, а при маскировке враги теряют бойца из виду.	A chance to dodge a bullet, and while cloaked enemies lose track of the soldier.
+Входящие пули наносят бойцу меньше урона.	Incoming bullets deal less damage to the soldier.
+Аптечки и передышки лечат сильнее.	Medkits and breathers heal more.
+Больше максимального здоровья бойца.	More maximum health for the soldier.
+Напор: шанс, что твоя пуля собьёт вражеский снаряд в полёте.	Pressure: a chance that your bullet knocks an enemy shot out of the air.
+Пули летят дальше: можно бить врагов издалека.	Bullets fly farther: you can hit enemies from afar.
+Боец бегает быстрее.	The soldier runs faster.
+Оглушённые враги приходят в себя дольше.	Stunned enemies take longer to recover.
+Больше урона у текущего оружия.	More damage for the current weapon.
+Текущее оружие стреляет чаще.	The current weapon fires more often.
+Текущее оружие чаще сбивает вражеские снаряды (напор).	The current weapon knocks down enemy shots more often (pressure).
+Быстрые способности	Quick abilities
+Рюкзак · %d / %d	Backpack · %d / %d
+Основные	Main
+Выполнено	Done
+Связь	Comms
+История	History
+Звонки майора — их можно пересмотреть	The major's calls — you can replay them
+Развитие, открытия и важные события	Progress, unlocks and key events
+Звонков ещё не было	No calls yet
+Оружейный шкаф	Weapon locker
+Сменить оружие до конца вылазки · %d ◈	Swap the weapon for the rest of the sortie · %d ◈
+Оружие · E	Weapons · E
+  · в руках	  · in hand
+Ждёт на старте поля	Waiting at the field start
+За всё время	All time
+Время в игре	Time played
+Вылазок	Sorties
+Выбываний	Knockouts
+Дронов сбито	Drones downed
+Миров пройдено	Worlds cleared
+Врагов взорвано бочками	Enemies blown up by barrels
+Легендарных правил	Legendary rules
+Задания сданы	Tasks handed in
+%d ч %02d мин	%d h %02d min
+Вся доска	Whole board
+Для меня · %d	For me · %d
+Решить	Decide
+Проверить в игре	Check in game
+Пусто	Empty
+фризы	hitches
+Разрешение окна	Window size
+Как сейчас	As now
+Размер окна в режиме «Окно». В полном экране игра занимает весь дисплей.	Window size in windowed mode. In fullscreen the game fills the whole display.
+Retina · полная чёткость	Retina · full sharpness
+Без галочки мир рисуется в стандартном разрешении — в два раза меньше по каждой стороне на Retina-экране. Быстрее, но мягче.	Unchecked, the world renders at standard resolution — half per side on a Retina screen. Faster but softer.
+Есть неприменённые настройки экрана.	There are unapplied screen settings.
+Экран — кнопками «Применить» и «Сохранить»; остальное меняется сразу.	Screen options take effect with Apply and Save; everything else changes at once.
+Применить	Apply
+Бонус отбит!	Bonus won back!
+Враг	The enemy
+отъелся аптечкой	stuffed itself with the medkit
+подлатался ремкомплектом	patched itself up
+натянул бронежилет	pulled on body armour
+разогнал затвор	souped up its bolt
+прикрутил турельный приклад	bolted on a turret stock
+покрылся льдом	iced itself over
+нацепил кирпичную каску	put on a brick helmet
+нашёл педаль газа	found the gas pedal
+стал звездой	became a star
+Положить трубку	Hang up
+Уже взято: %d	Already taken: %d
+Купить	Buy
+Выход на карту	Exit to the map
+Техника доставлена	Vehicle delivered
+Техника доставлена — ждёт на старте поля	Vehicle delivered — waiting at the field start
+Базу добил	The base was finished by
+Бойца сразил	The soldier fell to
+Ячейка закрыта — расширяется в хабе	Locked slot — expand it in the hub
+стрелок	rifleman
+щитовик	shield trooper
+гранатомётчик	grenadier
+снайпер	sniper
+рпгшник	RPG trooper
+багги	buggy
+танк	tank
+генерал	general
+дрон-минёр	mine drone
+летающий дрон	flying drone
+зомби	zombie
+взрыв	explosion
++0,5 HP, урон +0,2%, скорость +0,1% за уровень	+0.5 HP, damage +0.2%, speed +0.1% per level
+Принеси в хаб 30 сплава. Считается всё, что дошло до штаба, — даже после выбывания.	Bring 30 alloy to the hub. Everything that reaches the HQ counts — even after a defeat.
+Оставить эти настройки экрана?	Keep these display settings?
+Вернутся прежние через %d с	Reverting in %d s
+Вернуть	Revert
+Оставить	Keep
+Патроны	Ammo
+Обычные	Standard
+Контузящие	Concussive
+ЭМИ	EMP
+активные	active
+Заменит	Replaces
+Зарядит	Loads
+Сменить патроны	Switch ammo
+Второй слот патронов · %d ◈	Second ammo slot · %d ◈
+Второй слот патронов открыт	Second ammo slot unlocked
+Слоты патронов: %d%s	Ammo slots: %d%s
+ · R — сменить патроны в бою	 · R — switch ammo in battle
+Криогенные	Cryo
+Разрывные патроны	Explosive ammo
+Бронебойные патроны	Armour-piercing ammo
+Патроны-рикошет	Ricochet ammo
+Криогенные патроны	Cryo ammo
+Шанс поджога	Ignite chance
+Сила огня	Fire power
+Шанс оглушения	Stun chance
+Урон по технике	Damage to vehicles
+Шанс замкнуть технику	Short-circuit chance
+Радиус взрыва	Blast radius
+Урон взрыва	Blast damage
+Урон по броне	Armour damage
+Отскоков	Bounces
+Урон отскока	Bounce damage
+Замедление	Slow
+Шанс заморозить	Freeze chance
+урон пули	bullet damage
+Горящие враги поджигают соседей	Burning enemies ignite their neighbours
+Каждый крит оглушает	Every crit stuns
+Разряд перескакивает на соседнюю технику	The charge jumps to nearby vehicles
+Убитый враг тоже взрывается	A killed enemy explodes too
+Ещё +1 пробитие	+1 more pierce
+Ещё +1 отскок	+1 more bounce
+Замёрзший враг разлетается осколками	A frozen enemy shatters into shards
+Улучшит	Upgrades
+Обычные	Common
+Редкие	Rare
+Эпические	Epic
+Легендарные	Legendary
+Нет в каталоге	Not in the catalogue
+Где:	Where:
+неизвестно	unknown
+Файл:	File:
+картинка собрана в коде	picture built in code
+Что здесь должно быть нарисовано?	What should be drawn here?
+Копировать id	Copy id
+На доску задач	To the task board
+Патронный автомат	Ammo machine
+Патроны · %d жетона · E	Ammo · %d tokens · E
+В рюкзак	To backpack
+Зарядить	Load
+Свободный слот	Free slot
+Контузящие патроны	Concussive ammo
+ЭМИ патроны	EMP ammo
+Рикошет патроны	Ricochet ammo
+Мешок подобран	Sack picked up
+Патроны заряжены	Ammo loaded
+Патроны сняты в рюкзак	Ammo moved to the backpack
+Выброшено мешком рядом с бойцом	Dropped as a sack next to the soldier
+Выбросить можно только в бою	You can only drop things in battle
+Чертёж донеси до хаба, чтобы открыть	Bring the blueprint to the hub to unlock it
+Эти патроны не подходят к оружию	This ammo does not fit the weapon
+Перетащи сюда, чтобы выбросить мешком на поле	Drag here to drop it as a sack on the field
+Снять	Unequip
+Выбросить	Drop
+Боеприпасы	Ammo
+Ячейка закрыта — «Казарма» → Рюкзак	Locked cell — «Barracks» → Backpack
+Второй слот патронов — «Арсенал», для этого оружия	Second ammo slot — «Arsenal», for this weapon
+Нажми на ячейку — описание; ещё раз — надеть или снять. Перетаскивай между ячейками, правый клик — выбросить.	Tap a cell for details; tap again to equip or unequip. Drag between cells, right click to drop.
+Ячейки рюкзака для чертежей и патронов в вылазке.	Backpack cells for blueprints and ammo during a sortie.
+Чертёж — донеси до хаба, чтобы открыть	Blueprint — bring it to the hub to unlock
+Техника ждёт на старте следующего поля: садишься в неё сразу. Броня и урон — как у твоей машины в гараже.	The vehicle waits at the start of the next field: you get in right away. Armour and damage are those of your garage vehicle.
+Доставлено · ждёт на старте поля	Delivered · waiting at the field start
+%s ждёт тебя на старте следующего поля.	%s waits for you at the start of the next field.
+Отлично	Great
+Вы попали под обстрел!	You are under fire!
+Продержись %d с · уходи из красных меток	Hold out %d s · leave the red markers
+Стрелять и применять способности можно — главное, не стой в красных метках	You can shoot and use abilities — just don't stand in the red markers
+Поле под артобстрелом. Продержись, пока не выйдет время: уходи из красных меток. Стрелять и применять способности можно.	The field is under artillery fire. Hold out until the time runs out: leave the red markers. You can shoot and use abilities.
+Продержись на поле под артобстрелом.	Hold out on a field under artillery fire.
+Входящий вызов	Incoming call
+Главная когтебаза на связи. Есть новости для заставы.	Main Clawbase on the line. There is news for the outpost.
+Кассетные	Cluster
+Напалм	Napalm
+Кассетные заряды	Cluster charges
+Кассетные патроны	Cluster charges
+Напалм патроны	Napalm charges
+Суббоеприпасов	Bomblets
+Урон суббоеприпаса	Bomblet damage
+Горит	Burns for
+Радиус пожара	Fire radius
+Суббоеприпасы разлетаются шире	Bomblets spread wider
+Граната взрывается радиусом 1,1 клетки · заряды	The grenade explodes in a 1.1-cell radius · charges
+Электропушка	Tesla cannon
+Набросок: стреляет зарядами-молниями, которые перескакивают между врагами и замыкают технику. Носит заряды, как гранатомёт и РПГ.	Draft: fires lightning charges that jump between enemies and short-circuit vehicles. Uses charges, like the grenade launcher and the RPG.
+Аптечка в рюкзаке · H — использовать	Aid kit in the backpack · H to use
+В рюкзаке нет аптечек	No aid kits in the backpack
+Здоровье и так полное	Health is already full
+Аптечка: +%s здоровья	Aid kit: +%s health
+Аптечка из рюкзака	Aid kit from the backpack
++%s здоровья · ещё нажатие или H — вылечиться	+%s health · tap again or H to heal
+Вылечиться	Heal
+В Казарме открой «Общие улучшения» и купи здоровье.	In the Barracks open «General upgrades» and buy health.
+Сплав донёс — уже польза. В Казарме он превращается в здоровье и урон.	You brought alloy back — that already helps. In the Barracks it turns into health and damage.
+Пробой	Pierce
+Пуля взрывается при попадании и задевает врагов рядом. Значения зависят от редкости.	The bullet explodes on hit and catches nearby enemies. Values depend on rarity.
+Пуля пробивает врагов насквозь и сильнее бьёт по технике. Значения зависят от редкости.	The bullet passes through enemies and hits vehicles harder. Values depend on rarity.
+Пуля отскакивает в ближайшего врага. Значения зависят от редкости.	The bullet bounces into the nearest enemy. Values depend on rarity.
+Попадание замедляет врага, иногда замораживает. Значения зависят от редкости.	A hit slows the enemy and sometimes freezes it. Values depend on rarity.
+Взрыв разбрасывает суббоеприпасы вокруг. Только для гранатомёта и РПГ. Значения зависят от редкости.	The blast scatters bomblets around. Grenade launcher and RPG only. Values depend on rarity.
+На месте взрыва остаётся горящее пятно, поджигающее врагов. Только для гранатомёта и РПГ. Значения зависят от редкости.	The blast leaves a burning patch that sets enemies on fire. Grenade launcher and RPG only. Values depend on rarity.
+Временно удваивает шанс сбить вражеский снаряд (напор)	Temporarily doubles the chance to shoot down enemy projectiles (pressure)
+Ярость · напор ×2 · %d с	Fury · pressure ×2 · %d s
+Ремонт на ходу	Repair on the move
+Скрытность	Stealth
+Рюкзак и перебросы	Backpack and rerolls
+Все постройки	All buildings
+Арсенал, Штаб, Стоянка и Полигон стоят в хабе.	The Arsenal, HQ, Parking and Range stand in the hub.
+Вылазка	Sortie
+Сейчас в поле	In the field now
+Последняя вылазка	Last sortie
+Последняя вылазка · провал	Last sortie · failed
+Лучшие моменты	Best moments
+Сильнейший удар	Strongest hit
+Лучшая серия	Best streak
+Угнано техники	Vehicles captured
+Получено урона	Damage taken
+Ур. +%d	Lv. +%d
+Без усилений	No upgrades
+Карточки появятся после первого поля	Cards appear after the first field
+Рекорды	Records
+Глубже всего	Deepest
+поле %d	field %d
+Больше всего врагов	Most enemies
+Отчёт появится после первой вылазки	The report appears after your first sortie
+%d из %d	%d of %d
+Слот 1: взять «%s»	Slot 1: take «%s»
+Слот 1 · %s	Slot 1 · %s
+1 · %s%s (или %s)	1 · %s%s (or %s)
+Вторая способность	Second ability
+Перк класса	Class perk
+Q сильнее	Stronger Q
+Мастерство	Mastery
+Ур. 5 · перк: %s	Lv. 5 · perk: %s
+Ур. 5 · перк: %s (закрыто)	Lv. 5 · perk: %s (locked)
+Ур. 10 · мастерство: %s	Lv. 10 · mastery: %s
+Ур. 10 · мастерство: %s (закрыто)	Lv. 10 · mastery: %s (locked)
+Шанс крита +5%	Crit chance +5%
+Урон крита +25%	Crit damage +25%
+Дробовик ×1,1 урона	Shotgun ×1.1 damage
+Здоровье +2	Health +2
+Поджог +25%	Ignite +25%
+Защита от взрывов +15%	Blast protection +15%
+Снайперская винтовка ×1,15 урона	Sniper rifle ×1.15 damage
+Скрытность +8%	Stealth +8%
+Перезарядка способностей −10%	Ability cooldown −10%
+Полевой ремонт +30%	Field repair +30%
+Классы, улучшения, снабжение — на все вылазки.	Classes, upgrades, supply — for every sortie.
+1 · %s (или %s)%s	1 · %s (or %s)%s
+ · с 3 уровня	 · from level 3
+ · сильнее	 · stronger
+Уровень %d%s · %d ◈	Level %d%s · %d ◈
+Выучка убрана, вторая способность теперь открывается на 3 уровне класса: возвращено %d ◈.	Training is gone and the second ability now opens at class level 3: %d ◈ refunded.
+все биомы, от леса до пепелища	every biome, from forest to ashland
+Редкость патронов	Ammo rarity
+Зарядить (в оружие сейчас: %s)	Load (weapon in hand: %s)
+ · не подходит	 · does not fit
+Патроны в рюкзак	Ammo into the backpack
+Аптечка в рюкзак	Medkit into the backpack
+Мешок рядом	Sack nearby
+Очистить рюкзак	Empty the backpack
+Способность в слот	Ability into slot
+Слот Q	Slot Q
+Слот 1	Slot 1
+Слот F	Slot F
+Сила способности +1	Ability power +1
+Сила: +%d	Power: +%d
+Уровень класса (%s · %d)	Class level (%s · %d)
+Уровень %d	Level %d
+Уровень класса %d · перки — с нового забега	Class level %d · perks from the next run
+Главная тема	Main theme
+Отдельные треки	Single tracks
+%d подтем и %d отдельных треков играют вперемешку. Нажми тему, чтобы открыть её.	%d sub-themes and %d single tracks play shuffled. Tap a theme to open it.
+%s · %s · %s	%s · %s · %s
+%s · отдельный трек · %s	%s · single track · %s
+Ночная тема	Night theme
+Дневная тема	Day theme
+Главная	Main
+Ночная	Night
+Дневная	Day
+Главная — все 12 подтем. Ночная — шесть спокойных, дневная — шесть энергичных. Авто — по времени суток мира: ночью ночная, днём дневная. Меняется при следующем переходе.	Main — all 12 sub-themes. Night — the six calmer ones, day — the six more energetic. Auto follows the world time of day: night theme at night, day theme by day. Applies on the next transition.
+Станция: %s — %d подтем и %d треков. Сменить: настройки → звук.	Station: %s — %d sub-themes and %d tracks. Change it in settings → sound.

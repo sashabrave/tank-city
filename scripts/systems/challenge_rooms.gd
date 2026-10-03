@@ -4,12 +4,19 @@ extends RefCounted
 ## cache — a chest in the centre; leaving is allowed at once, opening it calls a veteran ambush,
 ## surviving it drops a reward chest whose value follows the room difficulty.
 ## hold — stand in the zone while enemies keep coming; progress grows only while no enemy is inside.
-## survive — weapons are out of ammo; dodge artillery markers until the timer ends.
+## survive — the field is under artillery fire; dodge the markers until the timer ends (shooting and abilities
+## work, T-118).
 ## maze — a dark concrete maze: only the soldier's surroundings are lit; reach the green flag before the timer.
 ## When time runs out the lights come on and the exit opens without a reward.
 const TITLES={"cache":"Тайник","hold":"Удержание","survive":"Выживание","maze":"Тёмный лабиринт"}
 const MAZE_SECONDS=[45,40,35]
 const MAZE_REACH=.9
+## Maze zombies: slow, unarmed soldiers shambling towards the soldier through the corridors; a bite deals 1.
+const ZOMBIES=[2,2,3]
+const ZOMBIE_SPEED=.9
+const ZOMBIE_BITE=1.0
+const ZOMBIE_BITE_PAUSE=1.3
+var zombies:Array=[]
 const AMBUSH_SIZE=[4,6,8]
 const HOLD_SECONDS=[30,40,50]
 const HOLD_RADIUS=1.6
@@ -37,7 +44,7 @@ func _init(context):
 func active()->bool:return arena.room.mode!="battle"
 ## Rooms that finish by their own rule, not by an empty wave queue.
 func blocks_waves()->bool:return arena.room.mode in ["hold","survive","maze"] and not rewarded and not timed_out
-func weapons_locked()->bool:return arena.room.mode=="survive" and not rewarded
+func weapons_locked()->bool:return false
 ## Room change: forget props of the previous challenge (their nodes are freed with the room).
 func reset():
 	opened=false;rewarded=false;chest={};zone=null;shells.clear();timed_out=false;goal_flag=null
@@ -148,10 +155,62 @@ func start_maze():
 	var glow=OmniLight3D.new();goal_flag.add_child(glow);glow.position=Vector3(0,1.6,0);glow.light_color=Color("7dffa0");glow.light_energy=1.2;glow.omni_range=2.6
 	var stash=ChallengeLayouts.maze_chest(arena.room.grid_size,arena.run_seed+arena.room.room_index*977,arena.room.difficulty)
 	if stash.x>=0:arena.reward.drop_recipe(stash,{"elite":false})
+	spawn_zombies()
 	darkness=preload("res://scripts/ui/maze_darkness.gd").new();darkness.arena=arena;arena.add_child(darkness)
 	if is_instance_valid(arena.presentation):arena.presentation.announce("Тёмный лабиринт","Найди зелёный флаг до конца отсчёта",.8)
 	arena.toast("Темно. Видно только вокруг бойца — ищи зелёный флаг")
+## Zombies stand in far corridors (not on the path's first cells, not at the flag or the chest).
+func spawn_zombies():
+	zombies.clear()
+	var plan=ChallengeLayouts.maze_plan(arena.room.grid_size,arena.run_seed+arena.room.room_index*977,arena.room.difficulty)
+	var start=arena.grid_pos(arena.room.player.position) if is_instance_valid(arena.room.player) else plan.entry
+	var dist=maze_distances(start)
+	var spots=dist.keys().filter(func(c):return dist[c]>=7 and c!=plan.goal and c!=plan.chest and plan.open.has(c))
+	var rng=arena.run.combat_rng
+	for i in range(ZOMBIES[clampi(arena.room.difficulty,0,2)]):
+		if spots.is_empty():break
+		var cell:Vector2i=spots.pop_at(rng.randi_range(0,spots.size()-1))
+		var z=arena.spawn_actor("soldier",cell,false)
+		z.set_physics_process(false);z.set_meta("zombie",true);z.max_hp=2.0;z.hp=2.0;z.refresh_health()
+		z.set_meta("bite_pause",0.0);z.set_meta("phase",rng.randf()*TAU)
+		if is_instance_valid(z.model):
+			Visuals.tint_model(z.model,Color("7f9a6a"))
+			for gun in z.model.find_children("Weapon*","Node3D",true,false):gun.visible=false
+		zombies.append(z)
+func maze_distances(from:Vector2i)->Dictionary:
+	var dist={from:0};var queue=[from]
+	while not queue.is_empty():
+		var at:Vector2i=queue.pop_front()
+		for d in [Vector2i.RIGHT,Vector2i.LEFT,Vector2i.UP,Vector2i.DOWN]:
+			var to=at+d
+			if dist.has(to) or not arena.inside(to) or arena.walls.has(to):continue
+			dist[to]=dist[at]+1;queue.append(to)
+	return dist
+## Each zombie steps down the distance field towards the soldier, wobbling; adjacent ones bite now and then.
+func tick_zombies(delta:float):
+	var player=arena.room.player
+	if not is_instance_valid(player) or player.dead:return
+	zombies=zombies.filter(func(z):return is_instance_valid(z) and not z.dead)
+	if zombies.is_empty():return
+	var field=maze_distances(arena.grid_pos(player.position))
+	for z in zombies:
+		var pause=maxf(0.0,float(z.get_meta("bite_pause"))-delta);z.set_meta("bite_pause",pause)
+		if arena.flat_distance(z.position,player.position)<.7:
+			z.moving=false
+			if pause<=0:player.take_damage(ZOMBIE_BITE,player.position-z.position+Vector3(.01,0,.01),"","melee");z.set_meta("bite_pause",ZOMBIE_BITE_PAUSE);Game.sound("hit_body",z)
+			continue
+		var here=arena.grid_pos(z.position);var best=here
+		for d in [Vector2i.RIGHT,Vector2i.LEFT,Vector2i.UP,Vector2i.DOWN]:
+			if field.has(here+d) and int(field[here+d])<int(field.get(best,999)):best=here+d
+		var target=arena.world_pos(best) if best!=here else player.position
+		var step=(target-z.position);step.y=0
+		if step.length()>.02:
+			z.position+=step.normalized()*minf(step.length(),ZOMBIE_SPEED*delta);z.cell=arena.grid_pos(z.position);z.moving=true
+			z.rotation.y=atan2(-step.x,-step.z)
+		var t=arena.run.elapsed*3.2+float(z.get_meta("phase"))
+		if is_instance_valid(z.model):z.model.rotation.z=sin(t)*.14;z.model.rotation.x=.12
 func tick_maze(delta:float):
+	tick_zombies(delta)
 	if rewarded or timed_out:return
 	progress=minf(goal,progress+delta)
 	var player=arena.room.player
@@ -171,8 +230,8 @@ func tick_maze(delta:float):
 		if is_instance_valid(arena.presentation):arena.presentation.announce("Свет включили","Время вышло · награды нет",.8)
 func start_survive():
 	goal=SURVIVE_SECONDS[clampi(arena.room.difficulty,0,2)]
-	if is_instance_valid(arena.presentation):arena.presentation.announce("Патроны кончились","Уклоняйся от обстрела",.8)
-	arena.toast("Выживание: оружие не стреляет — уходи из красных меток")
+	if is_instance_valid(arena.presentation):arena.presentation.announce("Вы попали под обстрел!","Продержись %d с · уходи из красных меток" % int(goal),1.6)
+	arena.toast("Стрелять и применять способности можно — главное, не стой в красных метках")
 func tick_survive(delta:float):
 	if rewarded:return
 	progress=minf(goal,progress+delta)

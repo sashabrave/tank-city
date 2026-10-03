@@ -6,6 +6,7 @@
 script = ExtResource("1")
 id = "damage"
 title = "Сила атаки"
+detail = "Больше урона от всего: пуль бойца, техники и взрывов."
 category = "Герой"
 icon = "damage"
 family = "fire"

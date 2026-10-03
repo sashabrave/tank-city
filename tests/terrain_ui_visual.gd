@@ -42,7 +42,6 @@ func run():
 	load("res://scripts/ui/build_menu.gd").show(hub);await shot("construction");hub.close_station()
 	hub.open_station("fighter");await shot("fighter-station");hub.close_station()
 	hub.queue_free();await get_tree().process_frame
-	var classes=load("res://scripts/ui/class_gallery.gd").new();add_child(classes);await shot("classes");classes.queue_free();await get_tree().process_frame
 	hub.open_station("hq");await shot("headquarters");hub.close_station();await get_tree().process_frame
 	Settings.open();await shot("standalone-settings");Settings.close()
 	print("TERRAIN UI VISUAL failures ",errors);get_tree().quit(1 if errors else 0)

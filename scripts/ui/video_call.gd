@@ -22,7 +22,7 @@ const CALLS={
 		[MAJOR,"У генерала щит на 60% и 30%. Разбей генератор на фланге."],
 	],
 	"first_haul":[
-		[MAJOR,"Сплав донёс — уже польза. В принтере он превращается в здоровье и урон."],
+		[MAJOR,"Сплав донёс — уже польза. В Казарме он превращается в здоровье и урон."],
 		[SOLDIER,"То есть можно не геройствовать, а просто носить?"],
 		[MAJOR,"Носить и не умирать. Это и есть геройство."],
 	],
@@ -54,6 +54,10 @@ const CALLS={
 	],
 }
 var id="intro"
+## Story order of the calls (also the order of the «Связь → История» list).
+const ORDER=["intro","first_death","first_haul","tasks","merchant","challenge","headquarters","garage","legend","general","general_down","ladder"]
+## Replayed from «Связь»: no ring, no notification, no "seen" bookkeeping.
+var replay=false
 var step=0
 var panel:Panel
 var portrait:TextureRect
@@ -71,8 +75,7 @@ static func due(hub)->String:
 	var p=Game.progression
 	var c=func(key:String)->int:return int(p.counters.get(key,0))
 	# Story order: the first unseen call whose moment has come rings next, one per hub visit.
-	var order=["intro","first_death","first_haul","tasks","merchant","challenge","headquarters","garage","legend","general","general_down","ladder"]
-	for call in order:
+	for call in ORDER:
 		if "call_"+call in p.seen:continue
 		var ready=false
 		match call:
@@ -109,12 +112,12 @@ func _ready():
 	status=UiKit.label(panel,"Видеосвязь · Главная когтебаза",Vector2.ZERO,Vector2.ZERO,14,UiKit.MUTED)
 	caller=UiKit.label(panel,"",Vector2.ZERO,Vector2.ZERO,20)
 	line_label=UiKit.label(panel,"",Vector2.ZERO,Vector2.ZERO,20);line_label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;line_label.vertical_alignment=VERTICAL_ALIGNMENT_TOP
-	skip_button=UiKit.button(panel,"Пропустить",Vector2.ZERO,Vector2.ZERO,finish)
+	skip_button=UiKit.button(panel,"Положить трубку",Vector2.ZERO,Vector2.ZERO,finish)
 	next_button=UiKit.button(panel,"Дальше",Vector2.ZERO,Vector2.ZERO,advance,true);next_button.focus_mode=Control.FOCUS_ALL
 	resized.connect(layout);layout();show_step()
 	Game.sound("telegram_accept",self)
-	Game.notifications.post("Видеосвязь: "+MAJOR)
-	next_button.grab_focus()
+	if not replay:Game.notifications.post("Видеосвязь: "+MAJOR)
+	# No button is focused on open: a stray Space/Enter/E from the game must not skip the first line (T-048).
 
 func layout():
 	const PAD=24.0
@@ -154,6 +157,7 @@ func show_step():
 	reveal=create_tween();reveal.tween_property(line_label,"visible_ratio",1.0,clampf(line_label.text.length()*.018,.25,1.2))
 
 func advance():
+	if clock<.6:return
 	if line_label.visible_ratio<1.0:
 		if reveal:reveal.kill()
 		line_label.visible_ratio=1.0;return

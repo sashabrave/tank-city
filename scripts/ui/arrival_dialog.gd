@@ -28,7 +28,7 @@ func _ready():
 	for caption in ["Ещё","Продолжить"]:
 		var button=UiKit.button(panel,caption,Vector2.ZERO,Vector2.ZERO,more if caption=="Ещё" else dismiss,caption=="Продолжить");button.focus_mode=Control.FOCUS_ALL;answers.append(button)
 	resized.connect(layout);layout()
-	answers[-1].grab_focus()
+	answers[-1].set_meta("default_choice",true);answers[-1].grab_focus()
 ## Stories season the tips: every second line is a story, never the same line twice in a row.
 func next_line()->String:
 	var pool=Lines.STORIES if shown%2==1 else Lines.TIPS

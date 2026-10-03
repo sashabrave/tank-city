@@ -1349,5 +1349,26 @@
       "call_ring_02.wav"
     ],
     "loop": false
+  },
+  "ability_denied": {
+    "files": [
+      "ability_denied_01.wav",
+      "ability_denied_02.wav"
+    ],
+    "loop": false
+  },
+  "collect_token": {
+    "files": [
+      "collect_token_01.wav",
+      "collect_token_02.wav"
+    ],
+    "loop": false
+  },
+  "weather_thunder": {
+    "files": [
+      "weather_thunder_01.wav",
+      "weather_thunder_02.wav"
+    ],
+    "loop": false
   }
 }

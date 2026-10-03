@@ -6,6 +6,7 @@
 script = ExtResource("1")
 id = "fire"
 title = "Темп огня"
+detail = "Боец стреляет чаще: меньше пауза между выстрелами."
 category = "Герой"
 icon = "fire"
 family = "fire"

@@ -24,7 +24,7 @@ func mark_all(kind:String=""):
 	for item in Game.notification_history:
 		if kind=="" or category(item)==kind:item.read=true
 	Game.save_progress()
-func unread()->int:return Game.notification_history.filter(func(e):return not e.read and category(e)=="important").size()
+func unread()->int:return Game.notification_history.filter(func(e):return not e.read and category(e)=="important" and not preload("res://scripts/ui/field_tablet.gd").quest_echo(e)).size()
 func _process(delta):
 	elapsed+=delta
 	if dirty and elapsed>1:Game.save_progress();dirty=false;elapsed=0

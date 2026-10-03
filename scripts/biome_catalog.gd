@@ -26,9 +26,11 @@ const ENTRIES=[
 ## Families: one look and set of hazards each; colour variants are entries of the same family.
 const FAMILIES={"forest":"лес","coast":"берег","steppe":"степь","desert":"пустыня","urban":"город","marsh":"болото","frost":"мороз","ash":"пепелище"}
 ## Biomes by world and part of the route (early stages 0–1, middle 2–3, late 4+): calm, readable ground first,
-## hazards (ice, deep water, ash) later. Within a part the family and its colour variant are seeded.
+## hazards (ice, deep water, ash) later. World 1 carries every family (author, 2 Oct): it is the whole game for now.
+## Each route node gets its own biome: the stage's families are shuffled per run and dealt to its lanes, so the
+## rooms you choose between differ; the colour variant is seeded per node too.
 const WORLD_FAMILIES={
-	1:[["forest","steppe"],["coast","urban"],["urban","desert"]],
+	1:[["forest","steppe","coast","urban"],["coast","urban","desert","marsh","steppe","forest"],["desert","marsh","frost","ash","urban"]],
 	2:[["desert","steppe"],["marsh","urban"],["frost","urban"]],
 	3:[["urban","frost"],["ash","frost"],["ash","urban"]],
 }
@@ -37,17 +39,29 @@ static func part(room:int)->int:return 0 if room<=1 else 1 if room<=3 else 2
 static func families(room:int)->Array:
 	if Campaign.endless or not WORLD_FAMILIES.has(Campaign.world):return ENDLESS_FAMILIES
 	return WORLD_FAMILIES[Campaign.world][part(room)]
-static func index(seed_value:int,room:int)->int:
+## lane: the route node's lane in its stage (RoutePlan node "lane"); -1 means lane 0.
+static func index(seed_value:int,room:int,lane:int=-1)->int:
 	var rng=RandomNumberGenerator.new();rng.seed=hash([seed_value,room,Campaign.world,Campaign.cycle,"biome"])
-	var pool=families(room);var family=pool[rng.randi_range(0,pool.size()-1)]
+	var pool=families(room).duplicate()
+	for i in range(pool.size()-1,0,-1):
+		var j=rng.randi_range(0,i);var keep=pool[i];pool[i]=pool[j];pool[j]=keep
+	var family=pool[maxi(lane,0)%pool.size()]
 	var variants=[]
 	for i in range(ENTRIES.size()):
 		if ENTRIES[i].family==family:variants.append(i)
-	return variants[rng.randi_range(0,variants.size()-1)]
-static func entry(seed_value:int,room:int)->Dictionary:return ENTRIES[index(seed_value,room)]
-static func caption(seed_value:int,room:int)->String:
-	var b=entry(seed_value,room)
-	return "%s · %s\n%s" % [FAMILIES[b.family].capitalize(),b.name,b.info+" + растительность"]
+	var pick=RandomNumberGenerator.new();pick.seed=hash([seed_value,room,maxi(lane,0),Campaign.world,Campaign.cycle,"variant"])
+	return variants[pick.randi_range(0,variants.size()-1)]
+## The lane of the node chosen at `room` (route choices of the run), for callers that know only the room.
+static func chosen_lane(seed_value:int,room:int,choices:Dictionary)->int:
+	if choices.is_empty():return 0
+	var plan=RoutePlan.build(seed_value)
+	if room<0 or room>=plan.size():return 0
+	return int(RoutePlan.chosen(plan,room,choices).get("lane",0))
+static func entry(seed_value:int,room:int,lane:int=-1)->Dictionary:return ENTRIES[index(seed_value,room,lane)]
+## Room plate: the room's own name («Засада у Красного поля»), then the biome.
+static func caption(seed_value:int,room:int,lane:int=-1)->String:
+	var b=entry(seed_value,room,lane)
+	return "%s\n%s · %s" % [BattleNames.room(seed_value,room,lane,str(b.family)),FAMILIES[b.family].capitalize(),b.name]
 ## «лес, степь, берег…» — every family a world can show, in route order (world card subtitle).
 static func world_line(world:int)->String:
 	if not WORLD_FAMILIES.has(world):return ""

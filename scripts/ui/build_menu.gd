@@ -5,7 +5,7 @@ static func show(hub):
 	var root=Control.new();hub.build_menu=root;hub.root.add_child(root);root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);root.add_to_group("selection_scope")
 	var shade=ColorRect.new();root.add_child(shade);shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);shade.color=Color(0,0,0,.5)
 	var panel=UiKit.glass(root,(root.get_viewport_rect().size-Vector2(1060,690))*.5,Vector2(1060,690))
-	UiKit.label(panel,"Строительство",Vector2(24,18),Vector2(750,40),UiKit.PAGE_TITLE_SIZE)
+	UiKit.accent(UiKit.label(panel,"Строительство",Vector2(24,18),Vector2(750,40),UiKit.PAGE_TITLE_SIZE))
 	UiKit.button(panel,"×",Vector2(984,18),Vector2(50,42),hub.close_station)
 	UiKit.label(panel,"Развивай базу между вылазками · %d ◈" % Game.credits,Vector2(24,65),Vector2(980,28),16,UiKit.MUTED)
 	# Stations and the range; the backpack and rerolls moved to «Казарма» → Снаряжение.
@@ -16,16 +16,15 @@ static func show(hub):
 		for id in Catalog.IDS:
 			var card=Panel.new();grid.add_child(card);card.custom_minimum_size=Vector2(485,302);card.size_flags_horizontal=Control.SIZE_EXPAND_FILL;card.add_theme_stylebox_override("panel",UiKit.style(Color("30382f"),12))
 			var built=id in Game.built_workshops;var known=Game.building_known(id);var blocker=Game.building_blocker(id)
-			var art=Catalog.preview(card,id,Vector2(10,12),Vector2(185,160) if id!="yard" else Vector2(185,110));UiKit.locked_preview(art,not known or blocker!="")
-			if id=="yard":art.modulate=Color("b9c3ae");art.position=Vector2(45,40);art.size=Vector2(110,100)
-			UiKit.label(card,Catalog.INFO[id][0],Vector2(204,20),Vector2(267,56),21).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-			UiKit.label(card,"Построено" if built else "Нужна площадка" if blocker!="" else ("Можно построить" if Game.credits>=Game.building_cost(id) else "Нужно ещё %d ◈" % (Game.building_cost(id)-Game.credits)) if known else "Нужен чертёж",Vector2(204,87),Vector2(266,28),15,UiKit.MUTED)
-			var desc=UiKit.label(card,Catalog.INFO[id][1],Vector2(16,174),Vector2(451,64),15);desc.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+			var art=Catalog.preview(card,id,Vector2(20,16),Vector2(170,150));UiKit.locked_preview(art,not known or blocker!="")
+			UiKit.label(card,Catalog.INFO[id][0],Vector2(206,22),Vector2(260,56),21).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+			UiKit.label(card,"Построено" if built else "Нужна площадка" if blocker!="" else ("Можно построить" if Game.credits>=Game.building_cost(id) else "Нужно ещё %d ◈" % (Game.building_cost(id)-Game.credits)) if known else "Нужен чертёж",Vector2(206,84),Vector2(260,28),15,UiKit.MUTED)
+			var desc=UiKit.label(card,Catalog.INFO[id][1],Vector2(20,178),Vector2(445,64),15);desc.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 			if Catalog.has_news(id):
 				var dot=Catalog.dot(card,Vector2(455,12))
 				card.mouse_entered.connect(func():Catalog.mark(id);dot.hide())
 			var title=("К полигону" if id=="range" else "Открыть" if id!="yard" else "Куплено") if built else ("Сначала купи площадку" if blocker!="" else ("Купить · %d ◈" if id=="yard" else "Построить · %d ◈") % Game.building_cost(id)) if known else "Найди чертёж в вылазке"
-			var button=UiKit.button(card,title,Vector2(16,249),Vector2(453,38),func():
+			var button=UiKit.button(card,title,Vector2(20,249),Vector2(445,38),func():
 				Catalog.mark(id)
 				if built and id!="yard":hub.close_station();Catalog.open_bench(hub,id)
 				elif Game.build_workshop(id):hub.update_bench_visuals();show(hub))
@@ -36,8 +35,8 @@ static func show(hub):
 		for id in ["bag","reroll"]:
 			var card=Panel.new();grid.add_child(card);card.custom_minimum_size=Vector2(485,300);card.add_theme_stylebox_override("panel",UiKit.style(Color("30382f"),12))
 			UiKit.icon(card,"inventory" if id=="bag" else "repeat",Vector2(185,20),Vector2(110,100))
-			UiKit.label(card,"Рюкзак · %d / 6" % Game.backpack_slots if id=="bag" else "Перебросы · %d / 5" % Game.reroll_level,Vector2(18,134),Vector2(450,35),22)
+			UiKit.label(card,"Рюкзак · %d / %d" % [Backpack.capacity(),Backpack.CELLS] if id=="bag" else "Перебросы · %d / 5" % Game.reroll_level,Vector2(18,134),Vector2(450,35),22)
 			UiKit.label(card,"Больше места для чертежей. Ресурсы не занимают ячейки." if id=="bag" else "Повторный выбор карточек. Запас восстанавливается в начале вылазки.",Vector2(18,177),Vector2(450,64),15).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-			var price=Game.bag_cost() if id=="bag" else Game.reroll_cost();var full=Game.backpack_slots>=6 if id=="bag" else Game.reroll_level>=5;var known=id=="bag" or "reroll" in Game.research_unlocks
+			var price=Game.bag_cost() if id=="bag" else Game.reroll_cost();var full=Game.backpack_slots>=Backpack.MAX_BOUGHT if id=="bag" else Game.reroll_level>=5;var known=id=="bag" or "reroll" in Game.research_unlocks
 			var button=UiKit.button(card,"Максимум" if full else "Нужен чертёж" if not known else "+1 · %d ◈" % price,Vector2(18,249),Vector2(450,38),func():Game.upgrade_backpack() if id=="bag" else Game.upgrade_rerolls();Catalog.mark(id);show(hub));button.disabled=full or not known or Game.credits<price
 	UiKit.label(panel,"Чертёж открывает постройку. Строительство и улучшения сохраняются после вылазки.",Vector2(24,646),Vector2(1005,28),14,UiKit.MUTED)

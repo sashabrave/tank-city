@@ -50,7 +50,8 @@ func run():
 	arena.room.surprise_timer=1000
 	arena._physics_process(.016)
 	check(arena.phase=="upgrade","Final kill ends wave without waiting for drone cooldown")
-	check(arena.enemy_count()==0 and arena.bombs.is_empty(),"Residual ordnance clears only after final enemy")
+	# Planted drone bombs are no longer swept away at the end of a wave (T-040/T-041): they go off on their own.
+	check(arena.enemy_count()==0,"No live enemies after the final kill")
 	check(arena.base_hp==hp and Game.credits==credits,"Cleanup has no damage or fabricated kill reward")
 	var battle=RoutePlan.build(arena.run_seed)[1].filter(func(n):return n.type=="battle")[0];arena.run.route_choices[1]=battle.id
 	arena.begin_room(1);check(arena.room.surprise_timer>=15 and arena.room.surprise_timer<=30,"New room resets first delay")

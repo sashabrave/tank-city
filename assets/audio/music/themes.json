@@ -26,7 +26,7 @@
       "folk_halt_defeat_2",
       "folk_halt_defeat_3"
     ],
-    "mood": "day"
+    "mood": "night"
   },
   "fireflies": {
     "title": "Светлячки",
@@ -55,7 +55,7 @@
       "folk_fireflies_defeat_2",
       "folk_fireflies_defeat_3"
     ],
-    "mood": "day"
+    "mood": "night"
   },
   "crooked_path": {
     "title": "Кривая тропа",
@@ -262,7 +262,7 @@
   },
   "belfry": {
     "title": "Колокольня",
-    "mood": "night",
+    "mood": "day",
     "battle": "anthem_belfry_battle",
     "hub": "anthem_belfry_hub",
     "map": "anthem_belfry_map",
@@ -291,7 +291,7 @@
   },
   "outskirts": {
     "title": "Окраина",
-    "mood": "night",
+    "mood": "day",
     "battle": "anthem_outskirts_battle",
     "hub": "anthem_outskirts_hub",
     "map": "anthem_outskirts_map",

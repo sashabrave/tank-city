@@ -12,6 +12,8 @@ func items(tab:String)->Array:
 				var owned=id in Game.weapon_unlocks;var level=Game.weapon_level(id)
 				var state="locked" if not owned else "active" if id==Game.selected_weapon else "max" if level>=Balance.CONFIG.economy.weapon_level_cap else "owned"
 				result.append({"id":id,"title":Game.LOOT.WEAPONS[id].name,"icon":Game.LOOT.WEAPONS[id].icon,"caption":"Нужен чертёж" if not owned else ("В бою · " if id==Game.selected_weapon else "")+"ур. %d / %d" % [level,Balance.CONFIG.economy.weapon_level_cap],"state":state})
+			# T-114: the electric cannon is planned for charges; shown as «В разработке».
+			result.append({"id":"concept_tesla","title":"Электропушка","icon":"shock","caption":"В разработке","soon":true,"group":"В разработке"})
 		"bonuses":
 			for id in Game.LOOT.BONUSES:
 				var owned=id in Game.bonus_unlocks;var level=Game.bonus_level(id)
@@ -22,6 +24,7 @@ func items(tab:String)->Array:
 				result.append({"id":id,"title":AbilityCatalog.DATA[id].name,"icon":"abilities/"+id,"caption":"Нужен чертёж" if not known else "Выбран" if Game.gadget==id else "Куплен" if bought else "%d ◈" % Game.gadget_cost(id),"state":"locked" if not known else "active" if Game.gadget==id else "owned" if bought else "ready"})
 	return result
 func detail(tab:String,id:String)->Dictionary:
+	if id=="concept_tesla":return {"title":"Электропушка","icon":"shock","text":"Набросок: стреляет зарядами-молниями, которые перескакивают между врагами и замыкают технику. Носит заряды, как гранатомёт и РПГ.","lines":["Появится в следующих обновлениях"],"actions":[]}
 	match tab:
 		"weapons":
 			var info=Game.LOOT.WEAPONS[id];var owned=id in Game.weapon_unlocks;var level=Game.weapon_level(id);var cap=Balance.CONFIG.economy.weapon_level_cap
@@ -29,7 +32,10 @@ func detail(tab:String,id:String)->Dictionary:
 			var actions=[]
 			if owned and id!=Game.selected_weapon:actions.append({"id":"take","text":"Взять в бой","primary":true})
 			if owned:actions.append({"id":"level","text":"Максимум" if level>=cap else "Уровень %d · %d ◈" % [level+1,Game.weapon_upgrade_cost(id)],"enabled":level<cap and Game.credits>=Game.weapon_upgrade_cost(id)})
-			return {"title":info.name,"icon":info.icon,"text":info.role if owned else "Найди чертёж в вылазке и донеси до хаба.","rows":[["Уровень",level,mini(level+1,cap)],["Урон",UiKit.number(info.damage*factor),UiKit.number(info.damage*next)],["Выстрелов в с",UiKit.number(info.get("burst",1)/info.interval),UiKit.number(info.get("burst",1)/info.interval)],["Дальность",UiKit.number(info.range),UiKit.number(info.range)]],"actions":actions}
+			# Second ammo slot (T-109): expensive, per weapon; two loaded ammo types switched with R in battle.
+			var slots=Ammo.capacity(id)
+			if owned and slots<2:actions.append({"id":"ammo_slot","text":"Второй слот патронов · %d ◈" % Ammo.SLOT_PRICE,"enabled":Game.credits>=Ammo.SLOT_PRICE})
+			return {"title":info.name,"icon":info.icon,"text":info.role if owned else "Найди чертёж в вылазке и донеси до хаба.","lines":["Слоты патронов: %d%s" % [slots," · R — сменить патроны в бою" if slots>1 else ""]] if owned else [],"rows":[["Уровень",level,mini(level+1,cap)],["Урон",UiKit.number(info.damage*factor),UiKit.number(info.damage*next)],["Выстрелов в с",UiKit.number(info.get("burst",1)/info.interval),UiKit.number(info.get("burst",1)/info.interval)],["Дальность",UiKit.number(info.range),UiKit.number(info.range)]],"actions":actions}
 		"bonuses":
 			var info=Game.LOOT.BONUSES[id];var owned=id in Game.bonus_unlocks;var level=Game.bonus_level(id);var cap=Balance.CONFIG.economy.bonus_level_cap
 			return {"title":info.name,"icon":id,"text":info.effect if owned else "Найди чертёж бонуса в сундуке.","rows":[["Уровень",level,mini(level+1,cap)],["Сила","×"+UiKit.number(Game.bonus_power(id)),"×"+UiKit.number(1.0+mini(level+1,cap)*.1)]],"actions":[{"id":"level","text":"Максимум" if level>=cap else "Улучшить · %d ◈" % Game.bonus_cost(id),"enabled":owned and level<cap and Game.credits>=Game.bonus_cost(id),"primary":true}] if owned else []}
@@ -42,6 +48,9 @@ func act(tab:String,id:String,action:String)->String:
 	match [tab,action]:
 		["weapons","take"]:return "Оружие взято в бой" if Game.equip_weapon(id) else ""
 		["weapons","level"]:return "Оружие улучшено" if Game.upgrade_weapon(id) else ""
+		["weapons","ammo_slot"]:
+			if id in Game.ammo_slot_weapons or Game.credits<Ammo.SLOT_PRICE:return ""
+			Game.credits-=Ammo.SLOT_PRICE;Game.ammo_slot_weapons.append(id);Game.save_progress();return "Второй слот патронов открыт"
 		["bonuses","level"]:return "Бонус улучшен" if Game.upgrade_bonus(id) else ""
 		["gadgets","equip"]:return "Гаджет выбран" if Game.unlock_or_equip_ability(id) else ""
 	return ""

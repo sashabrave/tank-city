@@ -33,7 +33,8 @@ void fragment() { ALBEDO = tint.rgb; }
 func setup(terrain,tint:Color):
 	var forest=preload("res://scripts/systems/vegetation_ambience.gd").new();forest.name="ForestAmbience";add_child(forest);forest.setup(terrain,tint)
 	var shader=Shader.new();shader.code=EFFECT_SHADER
-	for kind in ["water","ice","sand"]:
+	# Water draws only its own clean shader (0.7.2): no animated strips on top.
+	for kind in ["ice","sand"]:
 		var positions=[];var phases=[]
 		var rng=RandomNumberGenerator.new();rng.seed=terrain.arena.run_seed+terrain.arena.room_index*41+kind.hash()
 		for p in terrain.patches:

@@ -3,7 +3,7 @@ static func build(hub)->Control:
 	var root=Control.new();root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);root.add_to_group("selection_scope")
 	var dim=ColorRect.new();root.add_child(dim);dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);dim.color=Color(0,0,0,.5)
 	var panel=UiKit.glass(root,(hub.get_viewport().get_visible_rect().size-Vector2(650,460))*.5,Vector2(650,460))
-	UiKit.label(panel,"Утилизация чертежей",Vector2(22,15),Vector2(610,38),24)
+	UiKit.accent(UiKit.label(panel,"Утилизация чертежей",Vector2(22,15),Vector2(610,38),24))
 	UiKit.label(panel,"Только доставленные повторы. Открытые технологии сохранятся.",Vector2(22,59),Vector2(610,45),16).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	var scroll=ScrollContainer.new();panel.add_child(scroll);scroll.position=Vector2(22,113);scroll.size=Vector2(606,238)
 	var box=VBoxContainer.new();scroll.add_child(box);box.size_flags_horizontal=Control.SIZE_EXPAND_FILL;box.add_theme_constant_override("separation",7)

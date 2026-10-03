@@ -46,6 +46,15 @@ static func glass(parent: Node,pos: Vector2,dimensions: Vector2,color=Color("242
 	else:s.bg_color=Color(color,.94)
 	return widget
 
+## Turn an existing panel (scene or code) into frosted glass, the same look as glass() (T-042).
+static func glassify(widget:Panel,color=Color("242d27")):
+	var s=style(Color(color,1.0),18,Color(1,1,1,.16));s.set_corner_radius_all(18);s.border_color=Color(1,1,1,.16)
+	widget.add_theme_stylebox_override("panel",s)
+	if Settings.values.get("ui_glass",true):
+		var material=ShaderMaterial.new();material.shader=preload("res://shaders/ui/glass.gdshader");widget.material=material
+		widget.resized.connect(func():material.set_shader_parameter("panel_height",maxf(widget.size.y,1.0)))
+		material.set_shader_parameter("panel_height",maxf(widget.size.y,1.0))
+	else:s.bg_color=Color(color,.94)
 ## Notification markers (design system). One meaning per colour, the same in 2D and in the world:
 ## news — something new not yet seen; ready — an action is affordable now; goal — where to go next.
 const NOTICE={"news":Color("ff6b57"),"ready":Color("8fe895"),"goal":Color("f1cf55")}
@@ -54,7 +63,8 @@ static func badge(parent:Control,kind:="news",count:=0,place:="corner")->Panel:
 	var old=parent.get_node_or_null("Badge")
 	if old:old.get_parent().remove_child(old);old.queue_free()
 	var dot=Panel.new();dot.name="Badge";parent.add_child(dot);dot.mouse_filter=Control.MOUSE_FILTER_IGNORE;dot.z_index=1
-	var s=StyleBoxFlat.new();s.bg_color=NOTICE.get(kind,NOTICE.news);s.set_corner_radius_all(10);s.set_border_width_all(2);s.border_color=Color("1b211d")
+	# Plain dot, no outline (T-087).
+	var s=StyleBoxFlat.new();s.bg_color=NOTICE.get(kind,NOTICE.news);s.set_corner_radius_all(10);s.anti_aliasing=true
 	dot.add_theme_stylebox_override("panel",s)
 	dot.size=Vector2(12,12)
 	if count>0:
@@ -114,7 +124,9 @@ static var trim_cache:Dictionary={}
 static func trimmed(texture:Texture2D)->Texture2D:
 	if texture==null or texture is AtlasTexture or texture.resource_path=="" or texture.resource_path.ends_with(".svg"):return texture
 	var key=texture.resource_path
-	if trim_cache.has(key):return trim_cache[key]
+	if trim_cache.has(key):
+		var cached:Texture2D=trim_cache[key]
+		return cached
 	var image=texture.get_image()
 	if image==null or image.is_compressed():trim_cache[key]=texture;return texture
 	var used=image.get_used_rect()
@@ -192,9 +204,17 @@ static var icon_cache:Dictionary={}
 ## Memoised: several call sites refresh icons every frame; disk lookups happen once per id and set.
 static func icon_texture(id:String)->Texture2D:
 	var key=Illustrations.current()+"|"+id
-	if not icon_cache.has(key):icon_cache[key]=icon_lookup(id)
+	if not icon_cache.has(key):
+		# Drawn symbols (data/icon_kit.json) first; everything else goes through the old lookup.
+		var texture=IconKit.symbol(id) if IconKit.has(id) else icon_lookup(id)
+		icon_cache[key]=texture
 	return icon_cache[key]
 static func icon_lookup(id:String)->Texture2D:
+	# Legendary rules keep their own golden pictures; a bare id (encyclopedia) finds them too.
+	if id.begins_with("legend_"):id="upgrades/"+id
+	# Station upgrade art (T-056): drawn GPT icons for the hub stations' general rows.
+	if id.begins_with("upgrade/") and ResourceLoader.exists("res://assets/ui/upgrade_icons/"+id.get_slice("/",1)+".png"):return load("res://assets/ui/upgrade_icons/"+id.get_slice("/",1)+".png")
+	if id.begins_with("building/") and ResourceLoader.exists("res://assets/ui/buildings/"+id.get_slice("/",1)+".png"):return load("res://assets/ui/buildings/"+id.get_slice("/",1)+".png")
 	if "/" in id:
 		if id.get_slice("/",0) in ART_GROUPS:
 			var art=Illustrations.texture("res://assets/icons/"+id+".png")
@@ -258,8 +278,9 @@ static func muted_locked_button(button:Button):
 	button.add_theme_color_override("icon_disabled_color",Color(1,1,1,.25))
 
 ## Typography (design system): Inter SemiBold for all interface text, Inter Bold for emphasis inside
-## rich text, Rubik Dirt only as a rare accent (5–10% of the text: hub call to action, screen titles,
-## run results). Minimal punctuation: no full stop after labels, buttons and single-sentence hints.
+## rich text, Rubik 720 in capitals for headings (about 10–15% of the text: hub call to action, page and
+## screen titles, modal titles, card names, phase announcements, run results). Minimal punctuation: no
+## full stop after labels, buttons and single-sentence hints.
 const FONT_BASE=preload("res://assets/ui/fonts/inter_semibold.tres")
 const FONT_REGULAR=preload("res://assets/ui/fonts/inter_regular.tres")
 const FONT_BOLD=preload("res://assets/ui/fonts/inter_bold.tres")
@@ -267,9 +288,12 @@ const FONT_ACCENT=preload("res://assets/ui/fonts/accent.tres")
 static func field_font()->Font:return FONT_BASE
 static func bold_font()->Font:return FONT_BOLD
 static func accent_font()->Font:return FONT_ACCENT
-## Switches a label or button to the accent face.
+## Switches a label or button to the heading face. Headings are set in capitals by Texts (after
+## translation and sentence case), so re-rendered and translated text stays in capitals too.
 static func accent(control:Control,font_size:=0)->Control:
 	control.add_theme_font_override("font",FONT_ACCENT)
+	control.set_meta("accent_caps",true)
+	if control.has_meta("text_source") and not control is RichTextLabel:Texts.set_text(control,str(control.get_meta("text_source")))
 	if control is RichTextLabel:control.add_theme_font_override("normal_font",FONT_ACCENT)
 	if font_size>0:control.add_theme_font_size_override("normal_font_size" if control is RichTextLabel else "font_size",font_size)
 	return control

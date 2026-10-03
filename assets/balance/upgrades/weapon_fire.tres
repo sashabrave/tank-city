@@ -6,6 +6,7 @@
 script = ExtResource("1")
 id = "weapon_fire"
 title = "Скорострельность"
+detail = "Текущее оружие стреляет чаще."
 category = "Оружие"
 icon = "weapon_fire"
 family = "fire"

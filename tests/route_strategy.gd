@@ -34,9 +34,9 @@ func run():
 	var presentation=arena.presentation
 	if presentation.swoop_tween:presentation.swoop_tween.kill()
 	presentation.swoop_weight=0;presentation._process(10)
-	check(arena.phase=="countdown" and arena.camera.size>arena.grid_size+5,"countdown camera pulled out")
+	check(arena.phase=="countdown" and arena.camera.size>(arena.grid_size+5)*presentation.NORMAL.zoom,"countdown camera pulled out")
 	arena.phase="combat";presentation._process(10)
-	check(is_equal_approx(arena.camera.size,arena.grid_size+5),"combat camera returns to normal")
+	check(is_equal_approx(arena.camera.size,(arena.grid_size+5)*presentation.NORMAL.zoom),"combat camera returns to normal")
 	# A regular battle field late in world 1 (challenge and service nodes have no commander).
 	var field=5;arena.run.route_choices[field]=RoutePlan.build(42)[field].filter(func(n):return n.type=="battle")[0].id
 	for difficulty in range(3):
@@ -87,9 +87,9 @@ func run():
 	await get_tree().create_timer(.3).timeout
 	check(map_events.size()==1,"map exit fires exactly once after camera transition")
 	arena.begin_room(Campaign.BOSSES[0])
-	check(arena.presentation.heading.text=="Бой с генералом","final stage title")
+	check(arena.presentation.heading.text.to_lower()=="бой с генералом","final stage title")
 	arena.begin_room(0);arena.start_wave(1)
-	check(arena.presentation.heading.text=="Волна 2","second wave title")
+	check(arena.presentation.heading.text.to_lower()=="волна 2","second wave title")
 	arena.phase="paused";var size_before=arena.camera.size;arena.presentation._process(1)
 	check(arena.camera.size==size_before,"paused camera stays still")
 	var plan=RoutePlan.build(42);var stage=0

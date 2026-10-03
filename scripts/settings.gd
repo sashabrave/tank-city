@@ -1,10 +1,10 @@
 extends Node
 signal changed
 const PATH="user://settings.cfg"
-const DEFAULT_KEYS={"north":KEY_W,"south":KEY_S,"west":KEY_A,"east":KEY_D,"fire":KEY_SPACE,"interact":KEY_E,"hide_trench":KEY_C,"ability":KEY_F,"skill_1":KEY_1,"skill_2":KEY_NONE,"hq_ability":KEY_2,"class_ability":KEY_Q}
-const DEFAULT_VALUES={"fullscreen":false,"vsync":true,"quality":1,"fps":60,"master":1.0,"music":0.8,"effects":0.8,"music_mood":"auto","screen_controls":true,"biome_info":true,"language":"ru","ui_theme":"dark","shaders":true,"world_lighting":"day","light_budget":10,"atmosphere":true,"tilt_shift":true,"shader_style":"pastel","soft_shadows":true,"ambient_occlusion":true,"glow":true,"haze":true,"rim_light":true,"shiny_metal":true,"sun_day":"random","sun_night":"random","weather":"random","ui_motion":true,"show_fps":true,"ui_glass":true,"ui_accent":"apricot","illustration_set":"gpt_image_2_5","input_scheme":"auto","render_scale":"auto"}
+const DEFAULT_KEYS={"north":KEY_W,"south":KEY_S,"west":KEY_A,"east":KEY_D,"fire":KEY_SPACE,"interact":KEY_E,"hide_trench":KEY_C,"ability":KEY_F,"skill_1":KEY_1,"skill_2":KEY_NONE,"hq_ability":KEY_2,"class_ability":KEY_Q,"ammo_switch":KEY_R,"use_medkit":KEY_H}
+const DEFAULT_VALUES={"fullscreen":false,"vsync":true,"quality":1,"fps":60,"master":1.0,"music":0.8,"music_mood":"main","effects":0.8,"screen_controls":true,"biome_info":true,"language":"ru","ui_theme":"dark","shaders":true,"world_lighting":"day","light_budget":10,"atmosphere":true,"tilt_shift":true,"shader_style":"pastel","soft_shadows":true,"ambient_occlusion":true,"glow":true,"haze":true,"rim_light":true,"shiny_metal":true,"depth_light":true,"cinematic_light":true,"graphics_preset":"standard","sun_day":"random","sun_night":"random","weather":"random","ui_motion":true,"show_fps":true,"ui_glass":true,"ui_accent":"apricot","illustration_set":"gpt_image_2_5","input_scheme":"auto","render_scale":"auto","resolution":"auto","retina":true}
 const SHADER_STYLES=["pastel","cozy","golden","overcast"]
-const SHADER_OPTIONS=["soft_shadows","ambient_occlusion","glow","haze","rim_light","shiny_metal"]
+const SHADER_OPTIONS=["soft_shadows","ambient_occlusion","glow","haze","rim_light","shiny_metal","depth_light","cinematic_light"]
 var values=DEFAULT_VALUES.duplicate()
 var keys=DEFAULT_KEYS.duplicate()
 var menu: CanvasLayer
@@ -13,6 +13,11 @@ var waiting=""
 var was_paused=false
 var tab=0
 var persistence_enabled=true
+## Screen settings wait for «Применить» / «Сохранить» (standard video options): chosen values sit in pending.
+const DISPLAY_KEYS=["fullscreen","resolution","retina","vsync","render_scale","quality","fps"]
+var pending:={}
+## What the window was last set to, so other settings never touch fullscreen or the window size.
+var applied_display:={}
 func _ready():
 	process_mode=Node.PROCESS_MODE_ALWAYS
 	var config=ConfigFile.new()
@@ -30,7 +35,7 @@ func _ready():
 	apply()
 func apply():
 	if values.get("ui_theme","dark") not in ["dark","light"]:values.ui_theme="dark"
-	if int(values.light_budget) not in [6,10,14]:values.light_budget=10
+	if int(values.light_budget) not in [6,10,12,14]:values.light_budget=10
 	if values.language not in ["ru","en"]:values.language="ru"
 	if values.world_lighting not in ["day","night"]:values.world_lighting="day"
 	if values.get("shader_style","") not in SHADER_STYLES:values.shader_style="pastel"
@@ -44,9 +49,9 @@ func apply():
 	if str(values.get("input_scheme","")) not in ["auto","keyboard","gamepad","touch"]:values.input_scheme="auto"
 	if str(values.get("render_scale","")) not in RENDER_SCALES:values.render_scale="auto"
 	if str(values.get("ui_accent","")) not in ["apricot","coral","mint","lemon","sky","lavender"]:values.ui_accent="apricot"
-	if DisplayServer.get_name()!="headless":
-		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN if values.fullscreen else DisplayServer.WINDOW_MODE_WINDOWED)
-		DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_ENABLED if values.vsync else DisplayServer.VSYNC_DISABLED)
+	if str(values.get("resolution","auto"))!="auto" and str(values.resolution) not in resolutions():values.resolution="auto"
+	values.retina=bool(values.get("retina",true))
+	if DisplayServer.get_name()!="headless":apply_display()
 	Engine.max_fps=int(values.fps)
 	get_viewport().msaa_3d=[Viewport.MSAA_DISABLED,Viewport.MSAA_2X,Viewport.MSAA_4X][values.quality]
 	apply_render_scale()
@@ -77,22 +82,82 @@ const RENDER_SCALES=["auto","100","75","50"]
 const AUTO_3D_PIXELS=2400000.0
 func render_scale()->float:
 	var mode=str(values.get("render_scale","auto"))
-	if mode!="auto":return float(mode)/100.0
+	# Retina off: the 3D world renders at standard density — half the pixels per side on a 2× display.
+	var density=1.0 if bool(values.get("retina",true)) or DisplayServer.get_name()=="headless" else 1.0/maxf(1.0,DisplayServer.screen_get_scale())
+	if mode!="auto":return float(mode)/100.0*density
 	var size=Vector2(DisplayServer.window_get_size()) if DisplayServer.get_name()!="headless" else Vector2(1280,720)
-	return clampf(sqrt(AUTO_3D_PIXELS/maxf(1.0,size.x*size.y)),.5,1.0)
+	return clampf(sqrt(AUTO_3D_PIXELS/maxf(1.0,size.x*size.y)),.5,1.0)*density
 func apply_render_scale():
 	var viewport=get_viewport();var scale=render_scale()
 	viewport.scaling_3d_mode=Viewport.SCALING_3D_MODE_FSR if scale<.99 else Viewport.SCALING_3D_MODE_BILINEAR
 	viewport.scaling_3d_scale=scale if scale<.99 else 1.0
 	viewport.fsr_sharpness=.6  # 0 is the sharpest; .35 rang around thin rain streaks
+## Window mode, size and VSync change only when their own values change (or the window mode drifted from the
+## value, e.g. after the system shortcut), so switching any other option keeps fullscreen and the resolution.
+func apply_display():
+	var full=bool(values.fullscreen);var mode=DisplayServer.window_get_mode()
+	var is_full=mode in [DisplayServer.WINDOW_MODE_FULLSCREEN,DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN]
+	if applied_display.get("fullscreen")!=full:
+		if full!=is_full:DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN if full else DisplayServer.WINDOW_MODE_WINDOWED)
+		applied_display.fullscreen=full;applied_display.erase("resolution")
+	var res=str(values.get("resolution","auto"))
+	if not full and applied_display.get("resolution")!=res:
+		applied_display.resolution=res
+		if res!="auto":
+			# Sizes are in points, as the system shows them; on a 2× (Retina) screen the window gets twice
+			# the pixels, otherwise «1920 × 1080» opened a half-size window (T-096).
+			var parts=res.split("x");var size=Vector2i(Vector2(int(parts[0]),int(parts[1]))*pixel_ratio())
+			DisplayServer.window_set_size(size)
+			var screen=DisplayServer.screen_get_usable_rect(DisplayServer.window_get_current_screen())
+			DisplayServer.window_set_position(screen.position+(screen.size-size)/2)
+	if applied_display.get("vsync")!=bool(values.vsync):
+		applied_display.vsync=bool(values.vsync)
+		DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_ENABLED if values.vsync else DisplayServer.VSYNC_DISABLED)
+## Pixels per point of the current screen (2 on Retina).
+func pixel_ratio()->float:
+	return maxf(1.0,DisplayServer.screen_get_scale(DisplayServer.window_get_current_screen())) if DisplayServer.get_name()!="headless" else 1.0
+## Window sizes in points that fit this display, largest first, as "W x H" keys ("1920x1080").
+func resolutions()->Array:
+	if DisplayServer.get_name()=="headless":return ["1920x1080","1600x900","1280x720"]
+	var screen=Vector2i(Vector2(DisplayServer.screen_get_size(DisplayServer.window_get_current_screen()))/pixel_ratio())
+	var result=[]
+	for size in [screen,Vector2i(3840,2160),Vector2i(3456,2234),Vector2i(3024,1964),Vector2i(2880,1800),Vector2i(2560,1600),Vector2i(2560,1440),Vector2i(1920,1200),Vector2i(1920,1080),Vector2i(1680,1050),Vector2i(1600,900),Vector2i(1440,900),Vector2i(1280,800),Vector2i(1280,720)]:
+		var key="%dx%d" % [size.x,size.y]
+		if size.x<=screen.x and size.y<=screen.y and key not in result:result.append(key)
+	return result
+## Value as the settings page should show it: a chosen-but-not-applied screen option wins.
+func shown(key:String):return pending.get(key,values.get(key))
+var before_apply:={}
+func apply_pending():
+	before_apply={}
+	for key in pending:before_apply[key]=values.get(key)
+	for key in pending:values[key]=pending[key]
+	pending.clear();apply()
+## «Оставить?» prompt timed out or was declined: the screen goes back to what worked.
+func revert_display():
+	for key in before_apply:values[key]=before_apply[key]
+	before_apply={};apply()
+func save_all():
+	apply_pending();save()
 func save():
 	if not persistence_enabled:return
 	var config=ConfigFile.new()
 	for key in values:config.set_value("settings",key,values[key])
 	for action in keys:config.set_value("keys",action,keys[action])
 	config.save(PATH)
+## Graphics presets (T-049): one choice sets every lighting/effect switch; each can still be changed alone.
+const GRAPHICS_PRESETS={
+	"eco":{"shaders":true,"soft_shadows":false,"ambient_occlusion":false,"glow":false,"haze":false,"rim_light":false,"shiny_metal":false,"depth_light":true,"cinematic_light":false,"atmosphere":false,"tilt_shift":false,"light_budget":6,"render_scale":"75"},
+	"standard":{"shaders":true,"soft_shadows":true,"ambient_occlusion":true,"glow":true,"haze":true,"rim_light":true,"shiny_metal":true,"depth_light":true,"cinematic_light":true,"atmosphere":true,"tilt_shift":true,"light_budget":10,"render_scale":"auto"},
+	"cinema":{"shaders":true,"soft_shadows":true,"ambient_occlusion":true,"glow":true,"haze":true,"rim_light":true,"shiny_metal":true,"depth_light":true,"cinematic_light":true,"atmosphere":true,"tilt_shift":true,"light_budget":12,"render_scale":"100"},
+}
 func change(key,value):
 	var before=Illustrations.current()
+	if key=="graphics_preset" and GRAPHICS_PRESETS.has(value):values.merge(GRAPHICS_PRESETS[value],true)
+	if key in DISPLAY_KEYS:
+		if values.get(key)==value:pending.erase(key)
+		else:pending[key]=value
+		changed.emit();return
 	values[key]=value;apply();save()
 	# Illustration set: swap pictures already on screen, rebuild cached handbook images, redraw wave icons.
 	if key=="illustration_set" and before!=Illustrations.current():
@@ -106,7 +171,7 @@ func open():
 	menu=CanvasLayer.new();menu.layer=100;add_child(menu)
 	var shade=ColorRect.new();shade.color=Color(0,0,0,.45);shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);menu.add_child(shade)
 	var panel=UiKit.panel(menu,(get_viewport().get_visible_rect().size-Vector2(900,696))/2,Vector2(900,696));panel.add_to_group("selection_scope")
-	UiKit.label(panel,"Настройки",Vector2(30,22),Vector2(700,45),UiKit.PAGE_TITLE_SIZE)
+	UiKit.accent(UiKit.label(panel,"Настройки",Vector2(30,22),Vector2(700,45),UiKit.PAGE_TITLE_SIZE))
 	UiKit.button(panel,"×",Vector2(815,18),Vector2(55,48),close)
 	for i in range(4):UiKit.button(panel,["Видео","Звук","Управление","Интерфейс"][i],Vector2(30+i*213,85),Vector2(201,48),func():tab=i;draw())
 	content=Control.new();panel.add_child(content);content.position=Vector2(30,133+UiKit.TAB_CONTENT_GAP)
@@ -139,7 +204,7 @@ func draw():
 			var slider=HSlider.new();content.add_child(slider);slider.position=Vector2(355,i*95+8);slider.size=Vector2(370,35);slider.min_value=0;slider.max_value=100;slider.value=values[key]*100
 			slider.value_changed.connect(func(value):change(key,value/100.0);Texts.set_text(label,str(roundi(value))+"%"))
 			i+=1
-		choice("Музыкальная тема","music_mood",["Авто","День","Ночь"],["auto","day","night"],i*95)
+		choice("Музыкальная тема","music_mood",["Главная","Ночная","Дневная","Авто"],["main","night","day","auto"],i*95)
 	elif tab==3:
 		choice("Язык / Language","language",["Русский","English"],["ru","en"],0)
 	else:

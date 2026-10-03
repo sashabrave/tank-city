@@ -16,12 +16,13 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 
 config/name="War Cats"
 config/description="War Cats: защити штаб, угони технику, собери билд."
-config/version="0.7.1"
+config/version="0.8.0"
 run/main_scene="res://scenes/main.tscn"
 config/use_custom_user_dir=true
 config/custom_user_dir_name="Godot/app_userdata/Рубеж - 13"
 config/features=PackedStringArray("4.7", "Forward Plus")
-config/build="253"
+config/build="410"
+config/icon="res://assets/branding/app_icon.png"
 
 [audio]
 
@@ -42,6 +43,7 @@ PerfOverlay="*res://scripts/ui/perf_overlay.gd"
 InputScheme="*res://scripts/input_scheme.gd"
 TouchHints="*res://scripts/ui/touch_hints.gd"
 TaskHotkeys="*res://scripts/tools/task_hotkeys.gd"
+IconInspector="*res://scripts/tools/icon_inspector.gd"
 
 [display]
 
@@ -63,7 +65,7 @@ theme/custom="res://assets/ui/field_theme.tres"
 
 renderer/rendering_method.mobile="gl_compatibility"
 textures/vram_compression/import_etc2_astc=true
-lights_and_shadows/directional_shadow/soft_shadow_filter_quality=3
+lights_and_shadows/directional_shadow/soft_shadow_filter_quality=1
 lights_and_shadows/directional_shadow/soft_shadow_filter_quality.mobile=1
 lights_and_shadows/positional_shadow/soft_shadow_filter_quality.mobile=1
 environment/defaults/default_clear_color=Color(0.73, 0.75, 0.71, 1)

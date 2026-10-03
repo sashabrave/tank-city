@@ -5,7 +5,7 @@
 [resource]
 script = ExtResource("1")
 id = "stealth"
-title = "Маскировка"
+title = "Скрытность"
 icon = "range"
 family = "recon"
 order = 0

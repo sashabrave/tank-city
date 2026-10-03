@@ -3,9 +3,9 @@ extends RefCounted
 ## "requires" counter reaches "threshold". Rewards: alloy and documents ("docs"); "xp" is kept for old saves.
 ## Senders shown in the tablet feed: Штаб усов (story), Институт (hub), Оперштаб (briefings and orders).
 const STORY=[
-{"id":"first_alloy","text":"Первый трофей","event":"extracted","goal":30,"alloy":30,"docs":0,"xp":25,"hint":"Подбери 30 сплава и вернись в хаб. Добровольный выход сохраняет добычу."},
+{"id":"first_alloy","text":"Первый трофей","event":"extracted","goal":30,"alloy":30,"docs":0,"xp":25,"hint":"Принеси в хаб 30 сплава. Считается всё, что дошло до штаба, — даже после выбывания."},
 {"id":"bench","text":"Плацдарм","event":"world_depth_1","goal":1,"alloy":40,"docs":0,"xp":35,"hint":"Зачисти первое поле Пограничья: три волны и командира."},
-{"id":"health","text":"Подготовка бойца","event":"health_level","goal":1,"alloy":45,"docs":0,"xp":40,"hint":"В принтере открой «Общие улучшения» и купи здоровье."},
+{"id":"health","text":"Подготовка бойца","event":"health_level","goal":1,"alloy":45,"docs":0,"xp":40,"hint":"В Казарме открой «Общие улучшения» и купи здоровье."},
 {"id":"rooms3","text":"Разведка двора","event":"world_depth_1","goal":3,"alloy":70,"docs":0,"xp":65,"hint":"Доберись до третьего поля и зачисти его. Сложные точки ★★ дальше по пути."},
 {"id":"first_challenge","text":"Особое задание","event":"challenge_any","goal":1,"alloy":60,"docs":1,"xp":50,"hint":"На карте есть особые точки: тайник, удержание, выживание, тёмный лабиринт. Пройди любую."},
 {"id":"first_trade","text":"Сделка на марше","event":"merchant_buy","goal":1,"alloy":50,"docs":0,"xp":40,"hint":"Собери жетоны с врагов и купи что-нибудь у торговца в сервисном ряду."},
@@ -37,7 +37,7 @@ const BRIEFINGS=[
 {"id":"challenge_hold","text":"Точка удержана","event":"challenge_hold","goal":1,"alloy":80,"docs":1,"xp":60,"requires":"world_depth_1","threshold":1,"hint":"Пройди удержание: стой в зоне, пока шкала не заполнится."},
 {"id":"garage_build","text":"Стоянка","event":"build_garage","goal":1,"alloy":70,"docs":0,"xp":65,"requires":"world_depth_1","threshold":2,"hint":"Найди чертёж Стоянки и построй её — в «Строительстве» или в Штабе → Постройки."},
 {"id":"tokens","text":"Коллекционер жетонов","event":"tokens","goal":25,"alloy":80,"docs":0,"xp":60,"requires":"merchant_buy","threshold":1,"hint":"Собери 25 жетонов. Их чаще носят техника и ветераны, командир — всегда."},
-{"id":"challenge_survive","text":"Под огнём","event":"challenge_survive","goal":1,"alloy":80,"docs":1,"xp":60,"requires":"world_depth_1","threshold":1,"hint":"Пройди выживание без патронов под артобстрелом."},
+{"id":"challenge_survive","text":"Под огнём","event":"challenge_survive","goal":1,"alloy":80,"docs":1,"xp":60,"requires":"world_depth_1","threshold":1,"hint":"Продержись на поле под артобстрелом."},
 {"id":"challenge_maze","text":"Свет в конце","event":"challenge_maze","goal":1,"alloy":80,"docs":1,"xp":60,"requires":"world_depth_1","threshold":2,"hint":"Пройди тёмный лабиринт: дойди до зелёного флага, пока не включили свет."},
 {"id":"garage_buggy","text":"Личный багги","event":"own_buggy","goal":1,"alloy":100,"docs":0,"xp":90,"requires":"build_garage","threshold":1,"hint":"Добудь чертёж багги и купи машину на стоянке."},
 {"id":"slot_machine","text":"Азартный рядовой","event":"slot_play","goal":5,"alloy":60,"docs":0,"xp":40,"requires":"merchant_buy","threshold":1,"hint":"Сыграй пять раз на игровом автомате торговца."},

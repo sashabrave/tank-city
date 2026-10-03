@@ -15,4 +15,4 @@ max_stacks = 1
 min_tier = 3
 modifiers = Array[Dictionary]([{"stat": "dodge", "op": "add", "value": 0.1}, {"stat": "stealth", "op": "add", "value": 0.1}])
 preview = "dodge"
-detail = "И маскировка."
+detail = "Шанс увернуться от пули, а при маскировке враги теряют бойца из виду."

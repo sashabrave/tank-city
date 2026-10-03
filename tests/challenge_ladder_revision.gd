@@ -16,7 +16,7 @@ func run():
 	Game.progression.counters["challenge_w1"]=1;check(Campaign.challenge_open(1)==2,"clearing I opens II")
 	Campaign.configure(1);var base_skill=Professionalism.skill(0);var base_size=WaveDirector.wave_size(0,0)
 	Campaign.challenge=2
-	check(is_equal_approx(Professionalism.skill(0),base_skill+.4),"each step adds professionalism")
+	check(is_equal_approx(Professionalism.skill(0),base_skill+2*Campaign.CHALLENGE_SKILL),"each step adds professionalism")
 	check(is_equal_approx(Campaign.reward_multiplier(),1.5),"step II pays +50%")
 	Campaign.challenge=3;check(WaveDirector.wave_size(0,0)==base_size+1,"step III adds one enemy per wave")
 	Game.progression.complete_world(1);check(int(Game.progression.counters.challenge_w1)==3,"clearing at III records it")

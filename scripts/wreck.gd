@@ -100,6 +100,9 @@ func become_husk():
 		if is_instance_valid(node):node.hide()
 	for child in get_children():
 		if child is MeshInstance3D and child!=model:child.hide()  # the colored ring
+	# A dead husk has no headlights: the beams and their soft cones go first, otherwise the charred tint painted
+	# the cone into a black wedge across the field (T-085).
+	for light in model.find_children("*","Light3D",true,false):light.queue_free()  # cones are their children
 	Visuals.tint_model(model,Color("2c2724"))
 	for i in range(2):
 		var flame=MeshInstance3D.new();var cone=CylinderMesh.new();cone.top_radius=0.0;cone.bottom_radius=.11;cone.height=.3;cone.radial_segments=6;flame.mesh=cone

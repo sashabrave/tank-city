@@ -55,11 +55,13 @@ func shape_map_walls():
 			if style.shape>=0:shape_wall(cell,style.shape)
 		elif rng.randf()<.28:shape_wall(cell,rng.randi_range(0,3))
 	place_statue()
-## Rare landmark: in 20% of rooms one whole indestructible block becomes the cat generals' statue.
-## Own RNG from the run seed and room: never touches combat randomness.
+## Rare landmark: in 20% of built-up rooms one whole indestructible block becomes a statue of a chubby dog
+## general on a pedestal (2 cells tall, sabre / binoculars / flag; tools/art/build_dog_statues.py). Never in
+## purely natural biomes. Own RNG from the run seed and room: never touches combat randomness.
+const STATUE_FAMILIES=["urban","desert","ash"]
 func place_statue():
 	var rng=RandomNumberGenerator.new();rng.seed=arena.run.run_seed+arena.room.room_index*1907+52711
-	if rng.randf()>=.2:return
+	if rng.randf()>=.2 or str(arena.room_palette().get("family","")) not in STATUE_FAMILIES:return
 	var candidates=[]
 	for cell in arena.room.walls:
 		var wall=arena.room.walls[cell]
@@ -68,7 +70,10 @@ func place_statue():
 	candidates.sort()
 	var cell=candidates[rng.randi_range(0,candidates.size()-1)]
 	var wall=arena.room.walls[cell]
-	wall.node.queue_free();wall.node=Visuals.model("concrete_statue",arena,arena.world_pos(cell));wall["style_kind"]="concrete_statue"
+	wall.node.queue_free();wall["style_kind"]="concrete_statue"
+	var statue=load("res://assets/models/concrete_v1/statue_dog_%d.glb" % rng.randi_range(0,2)).instantiate()
+	var holder=Node3D.new();arena.add_child(holder);holder.position=arena.world_pos(cell);holder.add_child(statue)
+	holder.rotation.y=PI*.5*rng.randi_range(0,3)+PI;wall.node=holder
 
 func damage_wall(cell: Vector2i, amount: float,impact:Vector3=Vector3.ZERO,direction:Vector3=Vector3.ZERO,width:float=1.0):
 	if not arena.room.walls.has(cell) or arena.room.walls[cell].hp<0: return
@@ -98,6 +103,7 @@ func damage_wall(cell: Vector2i, amount: float,impact:Vector3=Vector3.ZERO,direc
 		Game.sound("debris",arena)
 		var barrel=arena.room.walls[cell].get("barrel",false)
 		arena.room.walls[cell].node.queue_free();arena.room.walls.erase(cell)
+		var ao=arena.get_node_or_null("FloorAO");if ao:ao.call_deferred("rebuild")
 		if barrel:explode_barrel(cell)
 
 func shred_net(cell: Vector2i):

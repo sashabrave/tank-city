@@ -2,7 +2,7 @@ extends RefCounted
 ## Plain values only: the HUD cannot mutate actors or run state through this snapshot.
 static func capture(arena)->Dictionary:
 	var run=arena.run;var room=arena.room;var ability=arena.abilities
-	var data={"phase":arena.phase,"bosses":[],"skills":[],"hero_hp":run.soldier_hp,"hero_max":run.soldier_max_hp,"base_hp":room.base_hp,"base_max":room.base_max_hp,"boss_room":room.boss_room,"stage":room.room_index+1,"wave":room.wave+1,"twins":room.twin_boss,"tip":arena.toast_text if arena.toast_time>0 else "","star":room.star_time,"countdown":maxi(1,ceili(room.countdown)),"player":{},"interact_text":"Занять  [E]","interact_disabled":true}
+	var data={"phase":arena.phase,"bosses":[],"skills":[],"hero_hp":run.soldier_hp,"hero_max":run.soldier_max_hp,"base_hp":room.base_hp,"base_max":room.base_max_hp,"boss_room":room.boss_room,"stage":room.room_index+1,"wave":room.wave+1,"commander":(2 if room.room_boss_spawned and not (is_instance_valid(room.commander) and not room.commander.dead) else 1 if room.commander_countdown or room.room_boss_spawned else 0),"twins":room.twin_boss,"tip":arena.toast_text if arena.toast_time>0 else "","star":room.star_time,"countdown":maxi(1,ceili(room.countdown)),"player":{},"interact_text":"Занять  [E]","interact_disabled":true}
 	for actor in room.actors:
 		if is_instance_valid(actor) and (actor.kind=="boss" or actor.elite) and not actor.dead:
 			data.bosses.append({"hp":actor.hp,"max_hp":actor.max_hp,"title":(BossCatalog.encounter(arena.run_seed,room.room_index).name if actor.kind=="boss" else "★ Элитный командир" if actor.commander_elite else "☆ Командир")+" · %d / %d" % [actor.hp,actor.max_hp]})

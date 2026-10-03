@@ -19,12 +19,24 @@ func run():
 		Game.touch_direction=Vector2i.RIGHT;await get_tree().physics_frame;await get_tree().physics_frame;Game.touch_direction=Vector2i.ZERO
 		check(room.cell!=room.dressing.EXIT_CELL,branch+": gate blocks before the choice")
 		room.skip_choice();check(room.dressing.open,branch+": gate opens after the choice")
+		# T-083: leaving takes E in the exit zone; E anywhere else does nothing.
+		room.avatar.position=Vector3(0,0,3);room.interact()
+		check(not done[0],branch+": E away from the exit keeps the room")
+		room.avatar.position=Vector3(room.dressing.EXIT_CELL.x-1,0,room.dressing.EXIT_CELL.y)
 		Game.touch_direction=Vector2i.RIGHT
-		for i in range(60):
-			await get_tree().physics_frame
-			if done[0]:break
+		for i in range(30):await get_tree().physics_frame
 		Game.touch_direction=Vector2i.ZERO
-		check(done[0],branch+": walking through the gate completes the room")
+		check(room.avatar.position.x>room.dressing.EXIT_CELL.x-.6,branch+": the hero walks into the open gate")
+		room.interact()
+		check(done[0],branch+": E at the gate completes the room")
+		if branch=="vehicle" and room.has_node("TakeVehicleLabel"):
+			# T-119: after the choice the parked vehicle can still be bought, through a purchase window.
+			Game.credits=500;var was_done=done[0]
+			room.avatar.position=room.PARKED+Vector3(-.9,0,.6);room.interact()
+			check(is_instance_valid(room.modal) and room.modal.name=="VehicleOffer","E at the parked vehicle opens the purchase window")
+			for b in room.modal.find_children("*","Button",true,false):
+				if b.text.contains("Купить"):b.pressed.emit()
+			check(arena.pending_vehicle==room.vehicle and Game.credits==500-int(room.VEHICLE_PRICES[room.vehicle]),"buying delivers the vehicle to the next field")
 		room.queue_free();await get_tree().process_frame
 	arena.queue_free()
 	print("SERVICE ROOM: %d failures" % errors);get_tree().quit(1 if errors else 0)
