@@ -4,6 +4,7 @@ extends RefCounted
 ## Right: fields, time, kills, and killed enemies by type rising one by one as a staircase. Every step clicks.
 ## Visual only: no game RNG, the numbers come from the finished run.
 const ICON=preload("res://scripts/ui/enemy_type_icon.gd")
+const GEAR=preload("res://scripts/ui/gear_page.gd")
 const STEP=.2
 
 const KILLERS={"soldier":"стрелок","shield":"щитовик","grenadier":"гранатомётчик","sniper":"снайпер","rpg_soldier":"рпгшник","buggy":"багги","apc":"БТР","tank":"танк","boss":"генерал","drone":"дрон-минёр","flyer":"летающий дрон","mortar":"миномёт","zombie":"зомби","blast":"взрыв"}
@@ -60,31 +61,54 @@ static func show(hud,arena,won:bool,reason:String):
 	count_up(total,kept,"%d",total_at,.7)
 	pop(panel,total,total_at+.7)
 	y+=64
-	# Blueprints: saved bright, lost greyed with a red mark.
+	# The equipped cells (2026-10-03): the gun in hand and the loaded ammo stay on the field when the run ends —
+	# the next sortie starts with the hub's gun and standard ammo. One line each, its icon falls like a coin.
+	var losses=equipped_losses(arena.run)
+	if not losses.is_empty():
+		UiKit.label(panel,"Потеряно",Vector2(left.x,y+6),Vector2(column,24),15,UiKit.MUTED);y+=32
+	for gone_item in losses:
+		var line_at=at.call(.2)
+		var row=ledger(panel,Vector2(left.x,y),column,gone_item.what,gone_item.name,Color("ff9b84"),line_at)
+		row.name="LostEquip_"+gone_item.what
+		row.size.x-=36
+		var mark=UiKit.icon(row.get_parent(),gone_item.icon,Vector2(column-30,1),Vector2(28,28));mark.name="LostIcon"
+		heavy_fall(hud,mark,line_at+.5)
+		y+=32
+	# The whole backpack (one inventory with the gear screen): blueprints kept bright; lost blueprints char and
+	# drop; guns, ammo and aid kits never reach the hub and fall out of their cells, heavier than the coins.
 	var saved=arena.pending_recipes if won else arena.get_meta("saved_recipes",[])
 	var gone=arena.get_meta("lost_recipes",[])
-	# The backpack is always shown (T-051): kept blueprints bright, empty slots dim; lost ones fall off the bottom.
-	UiKit.label(panel,"Рюкзак · %d / %d" % [saved.size(),Backpack.capacity()],Vector2(left.x,y+6),Vector2(column,24),15,UiKit.MUTED)
-	# The whole backpack (T-086): all MAX_SLOTS cells, the ones not bought yet shown locked.
+	var items=[]
+	for pair in [["weapon",arena.run.weapon_bag],["ammo",arena.run.ammo_bag],["supply",arena.run.supplies]]:
+		for item in pair[1]:items.append([pair[0],item])
+	UiKit.label(panel,"Рюкзак · %d / %d" % [saved.size()+gone.size()+items.size(),Backpack.capacity()],Vector2(left.x,y+6),Vector2(column,24),15,UiKit.MUTED)
 	var side=minf(72.0,floorf((column-8.0*(MAX_SLOTS-1))/MAX_SLOTS));var pitch=side+8.0
-	for slot in range(saved.size(),MAX_SLOTS):
+	var shown=saved.size()+gone.size()+items.size()
+	for slot in range(mini(shown,MAX_SLOTS),MAX_SLOTS):
 		var empty=UiKit.panel(panel,Vector2(left.x+slot*pitch,y+34),Vector2(side,side),Color("262b27"));empty.modulate.a=.45
 		if slot>=Backpack.capacity():
 			lock_mark(empty,side);empty.tooltip_text=Texts.render("Ячейка закрыта — расширяется в хабе")
 	var x=left.x
-	for entry in saved.map(func(r):return [r,true])+gone.map(func(r):return [r,false]):
+	for entry in saved.map(func(r):return ["recipe",r,true])+gone.map(func(r):return ["recipe",r,false])+items.map(func(e):return [e[0],e[1],false]):
 		if x+side>left.x+column+1:break
-		var cell=UiKit.panel(panel,Vector2(x,y+34),Vector2(side,side),Color("2f3b33") if entry[1] else Color("262b27"));cell.modulate.a=0
-		cell.tooltip_text=Texts.render(Game.recipe_name(entry[0])+("" if entry[1] else " · потерян"))
-		var art=UiKit.icon(cell,str(entry[0].get("id","")),Vector2(side*.14,side*.11),Vector2(side*.72,side*.72));UiKit.locked_preview(art,not entry[1])
-		if not entry[1]:
-			UiKit.label(cell,"✕",Vector2(side-20,0),Vector2(20,20),14,Color("ff6b57"))
-			# A lost blueprint chars and drops off the bottom of the screen.
-			var burn=cell.create_tween();burn.tween_interval(at.call(0.0)+.6)
-			burn.tween_property(cell,"modulate",Color(1,.45,.25,1),.25)
-			burn.parallel().tween_property(cell,"rotation",.35,.6)
-			burn.tween_property(cell,"position:y",panel.size.y+120,.7).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-		reveal(cell,at.call(.12),"ui_confirm" if entry[1] else "debris",hud)
+		var cell=UiKit.panel(panel,Vector2(x,y+34),Vector2(side,side),Color("2f3b33") if entry[2] else Color("262b27"));cell.modulate.a=0
+		var icon_key=GEAR.icon_key(entry[0],entry[1])
+		cell.tooltip_text=Texts.render(GEAR.item_name(entry[0],entry[1]))+("" if entry[2] else " · "+Texts.render("потерян"))
+		var art=UiKit.icon(cell,icon_key,Vector2(side*.14,side*.11),Vector2(side*.72,side*.72));art.name="Art"
+		var appear=at.call(.12)
+		reveal(cell,appear,"ui_confirm" if entry[2] else "debris",hud)
+		if entry[0]=="recipe":
+			UiKit.locked_preview(art,not entry[2])
+			if not entry[2]:
+				UiKit.label(cell,"✕",Vector2(side-20,0),Vector2(20,20),14,Color("ff6b57"))
+				# A lost blueprint chars and drops off the bottom of the screen.
+				var burn=cell.create_tween();burn.tween_interval(appear+.6)
+				burn.tween_property(cell,"modulate",Color(1,.45,.25,1),.25)
+				burn.parallel().tween_property(cell,"rotation",.35,.6)
+				burn.tween_property(cell,"position:y",panel.size.y+120,.7).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+		else:
+			# Run gear: the picture leaves its cell and falls; the cell stays empty.
+			heavy_fall(hud,art,appear+.55)
 		x+=pitch
 	# — Summary —
 	clock[0]=.15
@@ -189,3 +213,35 @@ static func drop_coins(hud,lost:int):
 	var minus=UiKit.label(layer,"−%d" % lost,origin+Vector2(-10,26),Vector2(120,30),22,Color("ff6b57"));minus.name="AlloyLoss";minus.z_index=120
 	var fade=minus.create_tween();fade.tween_property(minus,"position:y",minus.position.y+18,.9);fade.parallel().tween_property(minus,"modulate:a",0.0,.9).set_delay(.6);fade.tween_callback(minus.queue_free)
 	drop_pile(layer,origin,"alloy_single",pieces(lost,14),24.0)
+
+## What the end of a run takes from the equipped cells: a gun that is not the hub's plain one and loaded special
+## ammo. [{what, name, icon}] — «Оружие» / «Боеприпасы».
+static func equipped_losses(run)->Array:
+	var result=[]
+	if run==null:return result
+	var gun=str(run.weapon)
+	if LootCatalog.is_gun(gun) and (gun!=Game.selected_weapon or int(run.weapon_rarity)>0 or not run.weapon_stats.is_empty()):
+		result.append({"what":"Оружие","name":GEAR.item_name("weapon",{"id":gun,"rarity":run.weapon_rarity}),"icon":gun})
+	for slot in run.ammo_slots:
+		if slot is Dictionary and str(slot.get("type",Ammo.STANDARD))!=Ammo.STANDARD:
+			result.append({"what":"Боеприпасы","name":Texts.render(Ammo.NAMES.get(str(slot.type),"")),"icon":GEAR.icon_key("ammo",slot)})
+	return result
+## A lost item falls like the resource coins, only heavier and smoother: a small lift, then a long eased drop
+## with a slow sway and little spin, off the bottom of the screen. Visual RNG only.
+static func heavy_fall(hud,node:Control,delay:float):
+	if not is_instance_valid(node):return
+	var layer:Control=hud.root;var screen=layer.get_viewport_rect().size
+	var rng=RandomNumberGenerator.new();rng.randomize()
+	var t=node.create_tween();t.tween_interval(delay)
+	t.tween_callback(func():
+		if not is_instance_valid(node):return
+		var start=node.get_global_rect().position;var size=node.size
+		node.get_parent().remove_child(node);layer.add_child(node);node.z_index=119;node.position=start;node.size=size;node.pivot_offset=size*.5;node.modulate.a=1.0
+		Game.sound("debris",hud)
+		var time=rng.randf_range(1.5,1.8);var drift=rng.randf_range(-50,50);var spin=rng.randf_range(-.45,.45)
+		var lift=node.create_tween();lift.tween_property(node,"position:y",start.y-16,.22).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		var fall=lift.chain().set_parallel(true)
+		fall.tween_property(node,"position:y",screen.y+size.y+40,time).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+		fall.tween_property(node,"position:x",start.x+drift,time).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+		fall.tween_property(node,"rotation",spin,time).set_trans(Tween.TRANS_SINE)
+		fall.chain().tween_callback(node.queue_free))

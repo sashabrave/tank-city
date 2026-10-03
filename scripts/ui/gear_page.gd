@@ -25,6 +25,24 @@ var C:=92.0
 var left_w:=300.0
 var right_x:=324.0
 
+## The picture and the name of a backpack item, shared with the run result screen.
+static func icon_key(kind:String,item:Dictionary)->String:
+	match kind:
+		"weapon":return str(item.get("id","pistol"))
+		"supply":return "heart"
+		"ammo":
+			var type=str(item.get("type",Ammo.STANDARD))
+			return "ammo/"+type if IconKit.has("ammo/"+type) else Ammo.ART.get(type,"stats/damage")
+	var sheet=ITEM.blueprint_key(item)
+	return sheet if IconKit.has(sheet) else str(item.get("id",""))
+static func item_name(kind:String,item:Dictionary)->String:
+	match kind:
+		"weapon":
+			var tier=clampi(int(item.get("rarity",0)),0,3)
+			return Texts.render(Game.LOOT.WEAPONS[str(item.get("id","pistol"))].name)+(" · "+Texts.render(LootCatalog.RARITY_NAMES[tier]) if tier>0 else "")
+		"supply":return Texts.render("Аптечка")
+		"ammo":return Texts.render(Ammo.NAMES.get(str(item.get("type","")),"")+" боеприпасы")
+	return Texts.render(Game.recipe_name(item))
 func _init(tablet):view=tablet;arena=tablet.arena if "arena" in tablet else null
 func run()->Object:return arena.run if is_instance_valid(arena) else null
 

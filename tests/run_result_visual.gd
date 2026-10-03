@@ -21,6 +21,9 @@ func run():
 		arena.run.kills_by={"rifle":8,"smg":5,"shield":4,"grenade_launcher":3,"buggy":2,"commander":1}
 		if not won:arena.run.tokens=4;arena.run.lost_alloy=55;arena.base_hp=0;arena.set_meta("base_hit_by","tank");Game.backpack_slots=2
 		arena.room.room_index=3
+		# Run gear (2026-10-03): a rare gun in hand, loaded fire ammo, a spare gun and an ammo box in the backpack.
+		arena.run.weapon="shotgun";arena.run.weapon_rarity=2;Ammo.ensure(arena.run,"shotgun");arena.run.ammo_slots[0]=Ammo.roll("burn",1,3)
+		arena.run.weapon_bag=[{"id":"smg","rarity":1}];arena.run.ammo_bag=[Ammo.roll("cryo",2,4)]
 		arena.hud.show_result(won,"Поле 4 · Тихий двор" if won else "Штаб уничтожен")
 		var panel=arena.hud.modal.find_child("RunResult",true,false)
 		check(panel!=null,"result screen opens (%s)" % ("won" if won else "lost"))
@@ -34,5 +37,7 @@ func run():
 		var total:Label=panel.find_child("KeptTotal",true,false)
 		check(total.text==str(184-(0 if won else 55)),"total shows what reaches the base: "+total.text)
 		if not won:check(panel.find_child("LossValue",true,false)!=null,"loss line shown on defeat")
+		check(panel.find_child("LostEquip_Оружие",true,false)!=null and panel.find_child("LostEquip_Боеприпасы",true,false)!=null,"lines name the lost gun in hand and the loaded ammo")
+		check(panel.find_child("LostIcon",true,false)==null,"their icons have fallen off the screen")
 		arena.queue_free();await settle(3)
 	print("RUN RESULT: %d failures" % failures);get_tree().quit(1 if failures else 0)
