@@ -91,7 +91,7 @@ func active(chain:Array)->Dictionary:
 	if chain==QUESTS.STORY and "another_class" in claimed:
 		var target=3
 		while "another_class_"+str(target) in claimed:target+=1
-		if target<=Game.CLASSES.size():return {"id":"another_class_"+str(target),"text":"Победи гигабосса новым классом","event":"boss_classes","goal":target,"alloy":500+100*(target-2),"xp":400}
+		if target<=Game.CLASSES.size():return {"id":"another_class_"+str(target),"text":"Победи босса мира новым классом","event":"boss_classes","goal":target,"alloy":500+100*(target-2),"xp":400}
 	return {}
 func claim(quest:Dictionary)->bool:
 	if quest.is_empty() or quest.id not in accepted or quest.id in claimed or count(quest)<quest.goal:return false

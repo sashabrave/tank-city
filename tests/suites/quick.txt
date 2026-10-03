@@ -22,3 +22,4 @@ trench_regression
 combat_terrain_revision
 biomes_revision
 card_table_visual
+meta_integrity_revision
