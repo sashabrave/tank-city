@@ -38,7 +38,7 @@ func steps(tab:String)->Array:
 			["headquarters","Штаб","headquarters" in Game.built_workshops,"Чертёж Штаба выпадает с командиров."],
 			["garage","Стоянка","garage" in Game.built_workshops,"Чертёж Стоянки — во второй половине пути."],
 			["range","Полигон","range" in Game.built_workshops,"Стройка во дворе, когда откроется Стоянка."],
-			["level3","Уровень базы 3",p.level>=3,"Опыт за задания поднимает уровень базы в командном центре."]]
+			["all_built","Все постройки",["weapons","headquarters","garage","range"].all(func(id):return id in Game.built_workshops),"Арсенал, Штаб, Стоянка и Полигон стоят в хабе."]]
 		"army":
 			var classes=ClassCatalog.ROSTER.filter(func(id):return id in Game.CLASSES)
 			var opened=classes.filter(func(id):return id in Game.class_unlocks).size()

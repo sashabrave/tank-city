@@ -5,7 +5,7 @@ const GENERAL=[["health","Здоровье","+2 HP за уровень"],["damag
 const SUPPLY=[["heal","Сила лечения","upgrade/heal"],["supplies","Аптечки в передышках","upgrade/supplies"],["luck","Удача","upgrade/luck"]]
 func title()->String:return "Казарма"
 func subtitle()->String:return "Классы, выучка, снабжение — на все вылазки."
-func tabs()->Array:return [["shells","Классы","fighter"],["general","Общие улучшения","health"],["training","Выучка","rare"],["supply","Снабжение","heart"],["kit","Снаряжение","inventory"]]
+func tabs()->Array:return [["shells","Классы","fighter"],["general","Общие улучшения","health"],["training","Выучка","rare"],["supply","Снабжение","heart"],["kit","Рюкзак и перебросы","inventory"]]
 func items(tab:String)->Array:
 	var result=[]
 	match tab:

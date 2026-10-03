@@ -2807,3 +2807,10 @@ Retina · полная чёткость	Retina · full sharpness
 Попадание замедляет врага, иногда замораживает. Значения зависят от редкости.	A hit slows the enemy and sometimes freezes it. Values depend on rarity.
 Взрыв разбрасывает суббоеприпасы вокруг. Только для гранатомёта и РПГ. Значения зависят от редкости.	The blast scatters bomblets around. Grenade launcher and RPG only. Values depend on rarity.
 На месте взрыва остаётся горящее пятно, поджигающее врагов. Только для гранатомёта и РПГ. Значения зависят от редкости.	The blast leaves a burning patch that sets enemies on fire. Grenade launcher and RPG only. Values depend on rarity.
+Временно удваивает шанс сбить вражеский снаряд (напор)	Temporarily doubles the chance to shoot down enemy projectiles (pressure)
+Ярость · напор ×2 · %d с	Fury · pressure ×2 · %d s
+Ремонт на ходу	Repair on the move
+Скрытность	Stealth
+Рюкзак и перебросы	Backpack and rerolls
+Все постройки	All buildings
+Арсенал, Штаб, Стоянка и Полигон стоят в хабе.	The Arsenal, HQ, Parking and Range stand in the hub.

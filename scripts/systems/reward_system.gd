@@ -91,7 +91,7 @@ func collect_pickup(pickup: Dictionary):
 			var healed=minf(amount*arena.run.healing_multiplier,arena.run.soldier_max_hp-arena.run.soldier_hp)
 			arena.run.soldier_hp+=healed;detail="+%s здоровья" % str(snappedf(healed,.1))
 			if is_instance_valid(arena.room.player) and arena.room.player.kind=="soldier":arena.room.player.hp=arena.run.soldier_hp;arena.room.player.refresh_health()
-		"pressure":arena.room.pressure_time=8+effective_bonus_level("pressure")*2;detail="Напор ×2 · %d с" % int(arena.room.pressure_time)
+		"pressure":arena.room.pressure_time=8+effective_bonus_level("pressure")*2;detail="Ярость · напор ×2 · %d с" % int(arena.room.pressure_time)
 		"freeze":arena.room.freeze_time=3+effective_bonus_level("freeze");detail="Враги заморожены · %d с" % int(arena.room.freeze_time)
 		"turret":
 			arena.install_turret();detail="Турель у базы"
