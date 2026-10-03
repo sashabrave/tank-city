@@ -118,18 +118,7 @@ func build_left()->float:
 # ── Right: loadout and backpack ────────────────────────────────────────────────────────────────────────────
 func build_right()->float:
 	var y=0.0
-	section("Способности",0,y,2);section("Гаджет",2,y,1);section("Штаб",3,y,1)
-	y+=LABEL+UNDER_LABEL
-	var abilities=Game.class_loadout()
-	for i in range(2):
-		var id=abilities[i] if i<abilities.size() else ""
-		var info=AbilityCatalog.DATA.get(id,{})
-		fixed_cell("ability:%d" % i,col(i),y,Vector2(C,C),"abilities/"+id if id!="" else "",info.get("name","Второй навык класса"),info.get("description","Открывается в «Казарме»: уровень класса 5, затем 2500 сплава."),id=="",["Q","1"][i])
-	var gadget=AbilityCatalog.DATA.get(Game.gadget,{})
-	fixed_cell("gadget",col(2),y,Vector2(C,C),"abilities/"+Game.gadget if Game.gadget!="" else "",gadget.get("name","Гаджет"),gadget.get("description","Выбирается в «Арсенале» → Гаджеты."),Game.gadget=="","F")
-	var hq=Game.hq_loadout();var module=hq[0] if not hq.is_empty() else ""
-	fixed_cell("hq",col(3),y,Vector2(C,C),module,HQCatalog.DATA.get(module,{}).get("name","Поддержка штаба"),HQCatalog.DATA.get(module,{}).get("description","Выбери модуль в «Штабе» → Технологии."),module=="","2")
-	y+=C+SECTION
+	y=ability_block(y)
 	y=loadout_block(y)
 	y=backpack_block(y)+GAP
 	# Discard zone: drag anything here; it lands on the field as an army sack.
@@ -146,6 +135,22 @@ func build_right()->float:
 	info.add_theme_stylebox_override("panel",UiKit.style(Color(1,1,1,.03),12,Color(1,1,1,.1)))
 	fill_info(info)
 	return y+INFO_H
+
+## Abilities, gadget and HQ support — pinned cells, the same on the gear screen and the run result.
+func ability_block(y:float)->float:
+	section("Способности",0,y,2);section("Гаджет",2,y,1);section("Штаб",3,y,1)
+	y+=LABEL+UNDER_LABEL
+	var abilities=Game.class_loadout()
+	for i in range(2):
+		var id=abilities[i] if i<abilities.size() else ""
+		var info=AbilityCatalog.DATA.get(id,{})
+		fixed_cell("ability:%d" % i,col(i),y,Vector2(C,C),"abilities/"+id if id!="" else "",info.get("name","Второй навык класса"),info.get("description","Открывается в «Казарме»: уровень класса 5, затем 2500 сплава."),id=="",["Q","1"][i])
+	var gadget=AbilityCatalog.DATA.get(Game.gadget,{})
+	fixed_cell("gadget",col(2),y,Vector2(C,C),"abilities/"+Game.gadget if Game.gadget!="" else "",gadget.get("name","Гаджет"),gadget.get("description","Выбирается в «Арсенале» → Гаджеты."),Game.gadget=="","F")
+	var hq=Game.hq_loadout();var module=hq[0] if not hq.is_empty() else ""
+	fixed_cell("hq",col(3),y,Vector2(C,C),module,HQCatalog.DATA.get(module,{}).get("name","Поддержка штаба"),HQCatalog.DATA.get(module,{}).get("description","Выбери модуль в «Штабе» → Технологии."),module=="","2")
+	y+=C+SECTION
+	return y
 
 ## The equipped weapon and the ammo slots — one block for the gear screen and the run result (2026-10-03).
 func loadout_block(y:float)->float:
@@ -198,7 +203,7 @@ func backpack_block(y:float,entries:Array=[])->float:
 func freeze():
 	for key in cells:
 		var cell:GearCell=cells[key]
-		cell.draggable=false;cell.on_drop=Callable();cell.on_activate=Callable();cell.on_discard=Callable()
+		cell.draggable=false;cell.on_drop=Callable();cell.on_activate=Callable();cell.on_discard=Callable();cell.focus_mode=Control.FOCUS_NONE;cell.release_focus()
 		for link in cell.pressed.get_connections():cell.pressed.disconnect(link.callable)
 
 func section(text:String,column:int,y:float,span:int):

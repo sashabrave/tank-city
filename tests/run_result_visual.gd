@@ -41,10 +41,11 @@ func run():
 		var inventory=panel.find_child("ResultInventory",true,false)
 		var cells=inventory.get_children().filter(func(c):return c is GearCell)
 		var keys=cells.map(func(c):return c.key)
-		check("weapon" in keys and "slot:0" in keys and "bag:7" in keys and cells.size()==1+2+Backpack.CELLS,"the result shows the gear screen's weapon, ammo slots and backpack cells")
+		check("weapon" in keys and "slot:0" in keys and "bag:7" in keys and cells.size()==4+1+2+Backpack.CELLS and "ability:0" in keys,"the result shows the gear screen's abilities, weapon, ammo slots and backpack cells")
 		var bag0=cells.filter(func(c):return c.key=="bag:0")[0];var bag4=cells.filter(func(c):return c.key=="bag:4")[0]
 		check(absf(bag0.size.x-minf(preload("res://scripts/ui/gear_page.gd").cell_size(),bag0.size.x))<.5 and bag4.position.y>bag0.position.y,"same cell size, two rows of four")
 		check(cells.filter(func(c):return c.key in ["weapon","slot:0","bag:0","bag:1"] and c.get_meta("lost",false)).size()==4,"the gun in hand, the loaded ammo and the backpack gear fell out")
+		check(cells.filter(func(c):return c.key.begins_with("ability") or c.key in ["gadget","hq"]).all(func(c):return not c.get_meta("lost",false)),"abilities, gadget and HQ stay pinned")
 		check(inventory.position.y+bag4.position.y+bag4.size.y<=panel.size.y,"the inventory fits inside the panel")
 		arena.queue_free();await settle(3)
 	print("RUN RESULT: %d failures" % failures);get_tree().quit(1 if failures else 0)

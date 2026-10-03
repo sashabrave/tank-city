@@ -23,7 +23,10 @@ static func show(hud,arena,won:bool,reason:String):
 	# Twice the old gap between the two middle columns (T-051).
 	# The inventory stands where the gear screen keeps it — top right, the same cells; loot, summary and the kill
 	# staircase line up on the left around it (author, 2026-10-03).
-	var width=panel.size.x;var side=minf(GEAR.cell_size(),floorf((width*.45-3*GEAR.GAP)/4.0))
+	# The inventory column is about 4 cells + 150 px of labels tall, plus the heading and «В хаб»: a low window
+	# gets smaller cells rather than a cut panel.
+	var screen_h=hud.get_viewport().get_visible_rect().size.y
+	var width=panel.size.x;var side=minf(minf(GEAR.cell_size(),floorf((width*.45-3*GEAR.GAP)/4.0)),floorf((screen_h-420)/4.0))
 	var inv_w=4*side+3*GEAR.GAP;var inv_x=width-30-inv_w
 	var left=Vector2(30,150);var column=inv_x-30-48;var right=left
 	var earned=int(arena.earned);var lost=int(arena.run.lost_alloy);var kept=maxi(0,earned-lost)
@@ -77,11 +80,14 @@ static func show(hud,arena,won:bool,reason:String):
 	var grid=Control.new();grid.name="ResultInventory";panel.add_child(grid);grid.position=Vector2(inv_x,left.y);grid.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	var page=GEAR.new({"arena":arena});page.body=grid;page.right_x=0.0
 	page.C=side
-	var bottom=page.loadout_block(0.0)
+	var bottom=page.ability_block(0.0)
+	bottom=page.loadout_block(bottom)
 	bottom=page.backpack_block(bottom,entries)
 	page.freeze()
 	var lost_keys=[]
-	if not equipped_losses(arena.run).filter(func(l):return l.what=="Оружие").is_empty():lost_keys.append("weapon")
+	# The gun in hand always falls out (the next sortie hands out the hub's one); abilities, gadget, HQ support
+	# and the plain rounds are pinned — they are not run items.
+	if LootCatalog.is_gun(str(arena.run.weapon)):lost_keys.append("weapon")
 	for i in range(arena.run.ammo_slots.size()):
 		var slot=arena.run.ammo_slots[i]
 		if slot is Dictionary and str(slot.get("type",Ammo.STANDARD))!=Ammo.STANDARD:lost_keys.append("slot:%d" % i)
@@ -98,18 +104,9 @@ static func show(hud,arena,won:bool,reason:String):
 		cell.modulate.a=0;reveal(cell,appear,"debris" if falls else "ui_confirm",hud)
 		if not falls:continue
 		if key.begins_with("bag:") and entries[int(key.get_slice(":",1))].kind=="recipe":
-			UiKit.label(cell,"✕",Vector2(page.C-20,0),Vector2(20,20),14,Color("ff6b57"))
-			var burn=cell.create_tween();burn.tween_interval(appear+.6);burn.tween_property(cell,"modulate",Color(1,.45,.25,1),.25)
-		# The picture leaves its cell and falls; the cell turns back into an empty one.
-		cell.get_node("Art").name="Falling"
-		heavy_fall(hud,cell.get_node("Falling"),appear+.55)
-		var empty_style=UiKit.style(Color(1,1,1,.04),12,Color(1,1,1,.16));empty_style.set_border_width_all(1)
-		var clear=cell.create_tween();clear.tween_interval(appear+.55)
-		clear.tween_callback(func():
-			for state in ["normal","hover","pressed","focus"]:cell.add_theme_stylebox_override(state,empty_style)
-			cell.modulate=Color.WHITE;cell.set_meta("lost",true)
-			for child in cell.get_children():
-				if child is Label:child.queue_free())
+			# A lost blueprint chars first, then falls out like the rest.
+			var burn=cell.create_tween();burn.tween_interval(appear+.4);burn.tween_property(cell,"modulate",Color(1,.55,.35,1),.25)
+		fall_out(hud,cell,appear+.75)
 	clock[0]=resume
 	var inv_bottom=left.y+bottom
 	# — Summary — under the loot in the same column.
@@ -145,7 +142,8 @@ static func show(hud,arena,won:bool,reason:String):
 	# The panel fits both columns (centred again); «В хаб» sits under the inventory.
 	var screen=hud.get_viewport().get_visible_rect().size
 	panel.size.y=minf(maxf(left_bottom+24,inv_bottom+24+52+24),screen.y-20);panel.position.y=(screen.y-panel.size.y)*.5
-	UiKit.button(panel,"В хаб",Vector2(inv_x,panel.size.y-76),Vector2(inv_w,52),func():arena.leave(),true).name="ToHub"
+	var to_hub=UiKit.button(panel,"В хаб",Vector2(inv_x,panel.size.y-76),Vector2(inv_w,52),func():arena.leave(),true)
+	to_hub.name="ToHub";to_hub.set_meta("default_choice",true)
 
 ## One "title …… value" line that fades in at `delay`.
 const MAX_SLOTS=Backpack.CELLS
@@ -221,35 +219,27 @@ static func drop_coins(hud,lost:int):
 	var fade=minus.create_tween();fade.tween_property(minus,"position:y",minus.position.y+18,.9);fade.parallel().tween_property(minus,"modulate:a",0.0,.9).set_delay(.6);fade.tween_callback(minus.queue_free)
 	drop_pile(layer,origin,"alloy_single",pieces(lost,14),24.0)
 
-## What the end of a run takes from the equipped cells: a gun that is not the hub's plain one and loaded special
-## ammo. [{what, name, icon}] — «Оружие» / «Боеприпасы».
-static func equipped_losses(run)->Array:
-	var result=[]
-	if run==null:return result
-	var gun=str(run.weapon)
-	if LootCatalog.is_gun(gun) and (gun!=Game.selected_weapon or int(run.weapon_rarity)>0 or not run.weapon_stats.is_empty()):
-		result.append({"what":"Оружие","name":GEAR.item_name("weapon",{"id":gun,"rarity":run.weapon_rarity}),"icon":gun})
-	for slot in run.ammo_slots:
-		if slot is Dictionary and str(slot.get("type",Ammo.STANDARD))!=Ammo.STANDARD:
-			result.append({"what":"Боеприпасы","name":Texts.render(Ammo.NAMES.get(str(slot.type),"")),"icon":GEAR.icon_key("ammo",slot)})
-	return result
-## A lost item falls like the resource coins, only heavier and smoother: a small lift, then a long eased drop
-## with a slow sway and little spin, off the bottom of the screen. Visual RNG only.
-static func heavy_fall(hud,node:Control,delay:float):
-	if not is_instance_valid(node):return
+## A card leaves its cell and falls (2026-10-03): the same lifted card as a drag (GearCell.lifted — the cell's
+## frame and picture on a soft shadow) comes off, rises a little, then drops off the bottom of the screen with a
+## slow sway — like the resource coins, only heavier and smoother. The cell is left empty. Visual RNG only.
+static func fall_out(hud,cell:GearCell,delay:float):
 	var layer:Control=hud.root;var screen=layer.get_viewport_rect().size
 	var rng=RandomNumberGenerator.new();rng.randomize()
-	var t=node.create_tween();t.tween_interval(delay)
+	var t=cell.create_tween();t.tween_interval(delay)
 	t.tween_callback(func():
-		if not is_instance_valid(node):return
-		# The HUD root may be scaled (interface size): place the picture in the layer's own coordinates.
-		var start=layer.get_global_transform().affine_inverse()*node.global_position;var size=node.size
-		node.get_parent().remove_child(node);layer.add_child(node);node.z_index=119;node.position=start;node.size=size;node.pivot_offset=size*.5;node.modulate.a=1.0
+		if not is_instance_valid(cell):return
+		var card=cell.lifted();layer.add_child(card);card.z_index=119
+		# The HUD root may be scaled (interface size): place the card in the layer's own coordinates.
+		var start=layer.get_global_transform().affine_inverse()*cell.global_position
+		card.position=start;card.pivot_offset=card.size*.5
+		cell.empty_out();cell.set_meta("lost",true)
 		Game.sound("debris",hud)
-		var time=rng.randf_range(1.5,1.8);var drift=rng.randf_range(-50,50);var spin=rng.randf_range(-.45,.45)
-		var lift=node.create_tween();lift.tween_property(node,"position:y",start.y-16,.22).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		var time=rng.randf_range(1.5,1.8);var drift=rng.randf_range(-60,60);var spin=rng.randf_range(-.35,.35)
+		var lift=card.create_tween().set_parallel(true)
+		lift.tween_property(card,"position:y",start.y-14,.24).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		lift.tween_property(card,"scale",Vector2.ONE*1.05,.24).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 		var fall=lift.chain().set_parallel(true)
-		fall.tween_property(node,"position:y",screen.y+size.y+40,time).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
-		fall.tween_property(node,"position:x",start.x+drift,time).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-		fall.tween_property(node,"rotation",spin,time).set_trans(Tween.TRANS_SINE)
-		fall.chain().tween_callback(node.queue_free))
+		fall.tween_property(card,"position:y",screen.y+card.size.y+60,time).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+		fall.tween_property(card,"position:x",start.x+drift,time).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+		fall.tween_property(card,"rotation",spin,time).set_trans(Tween.TRANS_SINE)
+		fall.chain().tween_callback(card.queue_free))

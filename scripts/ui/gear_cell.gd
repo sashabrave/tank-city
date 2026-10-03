@@ -42,16 +42,28 @@ func _cell_input(event:InputEvent):
 func _get_drag_data(_at:Vector2):
 	if not draggable:return null
 	var holder=Control.new()
-	var lifted=Panel.new();holder.add_child(lifted);lifted.size=size;lifted.position=-size*.5+Vector2(0,-8)
-	var frame=get_theme_stylebox("normal").duplicate() if get_theme_stylebox("normal") is StyleBoxFlat else StyleBoxFlat.new()
-	# No extra outline (author, 2026-10-03): the cell as it is, lifted on a soft shadow.
-	frame.shadow_color=Color(0,0,0,.45);frame.shadow_size=14;frame.shadow_offset=Vector2(0,10)
-	lifted.add_theme_stylebox_override("panel",frame)
-	for child in get_children():
-		if child is TextureRect or child is Label:lifted.add_child(child.duplicate())
+	var card=lifted();holder.add_child(card);card.position=-size*.5+Vector2(0,-8)
 	set_drag_preview(holder)
 	modulate.a=.35
 	return {"gear_key":key}
+## The item as an object (2026-10-03): the cell's frame and picture lifted on a soft shadow. The drag preview and
+## the run result's falling card are this same object — a card either the player carries or that falls out.
+func lifted()->Panel:
+	var card=Panel.new();card.name="LiftedCard";card.size=size;card.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	var frame=get_theme_stylebox("normal").duplicate() if get_theme_stylebox("normal") is StyleBoxFlat else StyleBoxFlat.new()
+	# No extra outline (author, 2026-10-03): the cell as it is, lifted on a soft shadow.
+	frame.shadow_color=Color(0,0,0,.45);frame.shadow_size=14;frame.shadow_offset=Vector2(0,10)
+	card.add_theme_stylebox_override("panel",frame)
+	for child in get_children():
+		if child is TextureRect or child is Label:card.add_child(child.duplicate())
+	return card
+## Back to an empty cell once its card has left (drop elsewhere, falling out on the result screen).
+func empty_out():
+	var style=UiKit.style(Color(1,1,1,.04),12,Color(1,1,1,.16));style.set_border_width_all(1)
+	for state in ["normal","hover","pressed","focus"]:add_theme_stylebox_override(state,style)
+	for child in get_children():
+		if child is TextureRect or child is Label:child.queue_free()
+	info={};tooltip_text="";modulate=Color.WHITE
 func _notification(what):
 	if what==NOTIFICATION_DRAG_END:modulate.a=1.0
 func _can_drop_data(_at:Vector2,data)->bool:return data is Dictionary and data.has("gear_key") and data.gear_key!=key and on_drop.is_valid()
