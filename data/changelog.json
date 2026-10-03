@@ -9,7 +9,8 @@
 					"В настройках звука выбор станции: главная тема (все 12 подтем), ночная (шесть спокойных), дневная (шесть энергичных) или авто — по времени суток мира.",
 					"Радио стало проще: слева главная тема, подтемы и отдельные треки, справа их треки; видно, что играет и из какой подтемы.",
 					"Удалены старые чиповые треки, архив и неудачные черновики — игра стала легче.",
-					"Ночь стала по-настоящему тёмной и мягкой: луна и заполняющий свет слабее, особенно на светлом песке; прожекторы на мачтах светят узкими яркими пятнами; силуэты за краем поля темнее неба, ночные облака не светятся."
+					"Ночь стала по-настоящему тёмной и мягкой: луна и заполняющий свет слабее, особенно на светлом песке; прожекторы на мачтах светят узкими яркими пятнами; силуэты за краем поля темнее неба, ночные облака не светятся.",
+					"Силуэты по бокам поля стали объёмными: светотень, мягкий контурный свет, размер до двух раз больше; они заполняют пустые края экрана и уходят за них."
 				]
 			},
 			"en": {
@@ -19,7 +20,8 @@
 					"Sound settings now pick a station: main theme (all 12 sub-themes), night (the six calmer), day (the six more energetic) or auto, following the world time of day.",
 					"The radio is simpler: main theme, sub-themes and single tracks on the left, their tracks on the right; you can see what is playing and from which sub-theme.",
 					"Old chip tracks, the archive and rejected drafts are removed, so the game is lighter.",
-					"Night is truly dark and soft now: the moon and fill light are weaker, especially on light sand; mast searchlights cast narrow bright pools; silhouettes beyond the field are darker than the sky, night clouds no longer glow."
+					"Night is truly dark and soft now: the moon and fill light are weaker, especially on light sand; mast searchlights cast narrow bright pools; silhouettes beyond the field are darker than the sky, night clouds no longer glow.",
+					"Silhouettes beside the field are volumetric now: light and shade, a soft rim light, up to twice the size; they fill the empty screen sides and run past them."
 				]
 			}
 		},

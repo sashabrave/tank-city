@@ -12,18 +12,27 @@ func update_lighting():
 	for material in backdrop_materials:
 		var color:Color=material.get_meta("day_color")
 		var night=Settings.values.world_lighting=="night"
-		# At night the silhouettes must read darker than the sky behind them (author, 0.8): unlit, near-black blue.
-		material.shading_mode=BaseMaterial3D.SHADING_MODE_UNSHADED if night else BaseMaterial3D.SHADING_MODE_PER_PIXEL
-		material.albedo_color=color.darkened(.9).lerp(Color("080b14"),.6) if night else color
+		# Volumetric silhouettes (0.8): lit faces and half-shadows from the scene light, a soft rim and a faint
+		# inner glow. At night they stay darker than the sky behind them.
+		material.albedo_color=color.darkened(.8).lerp(Color("0c1220"),.45) if night else color.darkened(.3)
+		material.rim=.9 if night else .35;material.rim_tint=.2
+		material.emission=(Color("2a3a5c") if night else color.lightened(.25));material.emission_energy_multiplier=.2 if night else .08
 var weather=preload("res://assets/weather/default.tres")
 func _ready():
 	Settings.changed.connect(update_lighting)
 	var rng=RandomNumberGenerator.new();rng.seed=seed_value+room_index*7109
-	for i in range(8 if miniature else 8):
+	# Battle: 7 per side spread past both ends so the empty left and right are filled; up to twice as big at
+	# random, the outer ones are cut by the screen edge. Miniatures (route map) keep the old small set.
+	var count=8 if miniature else 14
+	for i in range(count):
 		var root=Node3D.new();add_child(root)
 		var side=-1 if i%2==0 else 1
-		root.position=Vector3(side*(radius+rng.randf_range(2,5)), -.7,lerpf(-radius,radius,floorf(i/2.0)/3.0)+rng.randf_range(-1,1))
-		var scale_value=rng.randf_range(1.5,3.2) if not miniature else rng.randf_range(.65,1.2)
+		var row=floorf(i/2.0)/(count/2.0-1.0)
+		var depth=radius*(1.0 if miniature else 1.5)
+		var scale_value=rng.randf_range(1.5,3.2)*(rng.randf_range(1.0,2.0)) if not miniature else rng.randf_range(.65,1.2)
+		# A bigger shape stands further out, so its foot never covers the field border.
+		var gap=rng.randf_range(2,5) if miniature else 2.0+scale_value*1.05+rng.randf_range(0,2.5)
+		root.position=Vector3(side*(radius+gap), -.7,lerpf(-depth,depth,row)+rng.randf_range(-1,1))
 		root.scale=Vector3.ONE*scale_value
 		make_shape(root,rng)
 		silhouettes.append({"node":root,"phase":rng.randf()*TAU,"scale":scale_value})
@@ -38,7 +47,7 @@ func _ready():
 		cloud_material.set_shader_parameter("seed_offset",rng.randf()*6)
 func mesh(parent,shape,pos,scale_value=Vector3.ONE):
 	var node=MeshInstance3D.new();node.mesh=shape;node.position=pos;node.scale=scale_value
-	var mat=StandardMaterial3D.new();mat.shading_mode=BaseMaterial3D.SHADING_MODE_UNSHADED
+	var mat=StandardMaterial3D.new();mat.roughness=.9;mat.rim_enabled=true;mat.emission_enabled=true
 	mat.albedo_color=Color("bec3b8").lerp(LocationStyle.COLORS[biome],.27 if not miniature else .55)
 	mat.set_meta("day_color",mat.albedo_color);backdrop_materials.append(mat);update_lighting()
 	node.material_override=mat;node.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF;parent.add_child(node)
