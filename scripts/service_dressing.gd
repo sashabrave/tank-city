@@ -13,10 +13,17 @@ var arrows:Array=[]
 var flicker:Array=[]
 var clock=0.0
 var open=false
+## Daylight room around the stop model (service_room.gd ROOM_MODELS) instead of the hangar.
+var street=false
 
 func _ready():
 	name="ServiceDressing"
 	rng.seed=hash(branch)+Game.visual_run_seed
+	if street:
+		# The stop model brings its own dressing: daylight like the merchant, only the exit gate is added.
+		exit_gate()
+		silhouettes(self,rng,Color("b7ae9c"))
+		return
 	lighting()
 	shell()
 	exit_gate()

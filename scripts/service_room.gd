@@ -29,26 +29,38 @@ var dressing
 var walker
 var vehicle_prompt
 var combat:Node3D
+## The rooms are their route stops seen up close (author, 3 Oct), like the merchant: the stop's parts, bigger and
+## more detailed, in daylight on a sand floor. Without the model file the old hangar dressing stays.
+const ROOM_MODELS={"vehicle":"res://assets/models/route/mechanic_room.glb","ability":"res://assets/models/route/training_room.glb","headquarters":"res://assets/models/route/workshop_room.glb"}
+var street=false
 func _ready():
 	add_to_group("notification_context")
 	vehicle=current_vehicle()
 	Visuals.setup_world(self,11.4,Vector3.ZERO)
+	street=ResourceLoader.exists(ROOM_MODELS[branch])
 	var positions=[]
 	for x in range(-4,5):
-		for z in range(-3,5):positions.append(Vector3(x,0,z))
-	Visuals.tiled_floor(self,positions,Color("7d8784"))
-	Visuals.box(self,Vector3(0,-.4,.5),Vector3(9.3,.6,8.3),Color("4e5856"))
-	dressing=preload("res://scripts/service_dressing.gd").new();dressing.branch=branch;dressing.vehicle=vehicle;add_child(dressing)
+		for z in range(-4 if street else -3,5):positions.append(Vector3(x,0,z))
+	Visuals.tiled_floor(self,positions,Color("98917f") if street else Color("7d8784"))
+	if street:Visuals.box(self,Vector3(0,-.4,0),Vector3(9.3,.6,9.3),Color("7d7462"))
+	else:Visuals.box(self,Vector3(0,-.4,.5),Vector3(9.3,.6,8.3),Color("4e5856"))
+	dressing=preload("res://scripts/service_dressing.gd").new();dressing.branch=branch;dressing.vehicle=vehicle;dressing.street=street;add_child(dressing)
+	if street:
+		var stop:Node3D=load(ROOM_MODELS[branch]).instantiate();stop.name="StopModel";add_child(stop)
+		preload("res://scripts/route_miniatures.gd").library_surfaces(stop)
 	if branch=="vehicle":
-		Visuals.model("workbench",self,Vector3(0,0,-1))
+		if not street:Visuals.model("workbench",self,Vector3(0,0,-1))
 		Visuals.model(vehicle,self,Vector3(2.2,.16,-1.2))
 		# T-011: when the soldier is on foot, the parked vehicle can be taken into the next field for alloy.
 		if not (is_instance_valid(arena.player) and arena.player.kind in GarageCatalog.VEHICLES) and arena.pending_vehicle=="":
 			Visuals.label3d(self,"%s · %d ◈ · E" % [GarageCatalog.VEHICLES.get(vehicle,{}).get("name",vehicle),VEHICLE_PRICES.get(vehicle,80)],Vector3(2.2,1.7,-.4),Color("ffe2a8"),24).name="TakeVehicleLabel"
 		Visuals.label3d(self,"Механик · E",Vector3(0,2,-1),Color("fff0ce"),28)
 	elif branch=="headquarters":
-		Visuals.model("base",self,Vector3(0,0,-1))
+		# Street room: the HQ stands on the ramp under the canopy, its nose just behind the main spot.
+		Visuals.model("base",self,Vector3(0,.18,-2.6) if street else Vector3(0,0,-1))
 		Visuals.label3d(self,"Штаб · E",Vector3(0,2.6,-1),Color("fff0ce"),28)
+	elif street:
+		Visuals.label3d(self,"Инструктор · E",Vector3(0,2.3,-1),Color("fff0ce"),28)
 	else:
 		Visuals.box(self,Vector3(0,.35,-1),Vector3(1.4,.7,1.4),Color("717d79"))
 		var statue=Visuals.model("soldier",self,Vector3(0,.7,-1));statue.scale=Vector3.ONE*1.5;Visuals.tint_model(statue,Color("738982"))
