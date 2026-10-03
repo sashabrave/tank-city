@@ -140,6 +140,7 @@ static func pick_sack(arena,content:Dictionary)->bool:
 	run.pending_recipes.append_array(content.recipes);run.ammo_bag.append_array(content.ammo);run.supplies.append_array(content.get("supplies",[]));run.weapon_bag.append_array(content.get("weapons",[]))
 	refresh(arena);return true
 static func refresh(arena):
+	if arena.has_method("ensure_armed") and arena.ensure_armed():RunUpgrades.refresh_player(arena)
 	if is_instance_valid(arena.hud):arena.hud.refresh_ammo()
 ## Uses the first aid kit from the backpack (H, a tap in the gear screen). Does nothing at full health.
 static func use_medkit(arena,index:=0)->bool:

@@ -292,6 +292,12 @@ func discard(key:String):
 		if is_instance_valid(arena):arena.toast(Texts.render("Выбросить можно только в бою"))
 		return
 	var ok=false
+	# The gun in hand and the plain rounds are what you fight with (author, 2026-10-03): never thrown away.
+	if key=="weapon":arena.toast(Texts.render("Нельзя выбросить последнее оружие — нечем будет воевать"));Game.sound("ui_denied",arena);return
+	if key.begins_with("slot:"):
+		var slot=r.ammo_slots[int(key.get_slice(":",1))] if int(key.get_slice(":",1))<r.ammo_slots.size() else null
+		if not slot is Dictionary or str(slot.get("type",Ammo.STANDARD))==Ammo.STANDARD:
+			arena.toast(Texts.render("Нельзя выбросить последние патроны — нечем будет воевать"));Game.sound("ui_denied",arena);return
 	if key.begins_with("bag:"):
 		var e=entry(key)
 		ok=e!=null and Backpack.drop(arena,e.kind,e.index)

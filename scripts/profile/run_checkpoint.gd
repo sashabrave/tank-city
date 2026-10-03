@@ -49,7 +49,7 @@ static func upgrade(data:Dictionary)->Dictionary:
 	if run.get("weapon_mods") is Dictionary:
 		for id in Game.LOOT.WEAPONS:
 			if not run.weapon_mods.get(id) is Dictionary:run.weapon_mods[id]={"damage":0.0,"interval":1.0,"intercept":0.0}
-	if run.get("weapon") not in Game.LOOT.WEAPONS:run.weapon=Game.LOOT.WEAPONS.keys()[0]
+	if run.get("weapon") not in Game.LOOT.WEAPONS:run.weapon=Game.selected_weapon if Game.selected_weapon in Game.LOOT.WEAPONS else Game.LOOT.WEAPONS.keys()[0]
 	if run.get("vehicle_mods") is Dictionary:
 		for id in ["buggy","apc","tank"]:
 			if not run.vehicle_mods.get(id) is Dictionary:run.vehicle_mods[id]=defaults.vehicle_mods[id].duplicate()

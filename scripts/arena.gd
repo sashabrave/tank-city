@@ -286,8 +286,20 @@ func _ready():
 	if defer_room:return
 	begin_room(int(resume_checkpoint.index) if not resume_checkpoint.is_empty() else 0)
 
+## Never into a fight unarmed (author, 2026-10-03): no gun in hand → the one chosen at the HQ is issued, and
+## the ammo slots always hold at least the plain rounds. Says so when it had to step in.
+func ensure_armed()->bool:
+	if run==null:return false
+	var fixed=false
+	if str(run.weapon) not in LOOT.WEAPONS:
+		run.weapon=Game.selected_weapon if Game.selected_weapon in LOOT.WEAPONS else "pistol";fixed=true
+		toast(Texts.render("Нет оружия в руках — выдано из штаба: %s") % Texts.render(LOOT.WEAPONS[run.weapon].name))
+	if run.ammo_slots.is_empty():fixed=true;toast(Texts.render("Нет патронов в слоте — заряжены обычные"))
+	Ammo.ensure(run,str(run.weapon))
+	return fixed
 func begin_room(index: int):
 	Game.progression.combat_entered=true
+	ensure_armed()
 	if Campaign.daily:combat_rng.seed=DailyRun.room_seed(run_seed,Campaign.cycle,index)
 	effects.emit("room_start",{"index":index})
 	Game.music_context("boss" if index in Campaign.BOSSES else "battle",true)

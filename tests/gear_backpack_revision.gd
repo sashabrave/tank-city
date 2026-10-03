@@ -128,6 +128,18 @@ func run():
 	for card in get_tree().get_nodes_in_group("drop_prompts"):
 		if card.pickup==dropped:card.stash()
 	check(Backpack.used(r)==before-1 and dropped not in arena.room.pickups,"«C» puts it back into the backpack")
+	# Last weapon / last rounds (2026-10-03): never thrown away; a run without a gun gets the HQ's choice.
+	var gun_before=str(r.weapon)
+	page.discard("weapon")
+	check(str(r.weapon)==gun_before,"the gun in hand cannot be thrown away")
+	var std_slot=-1
+	for i in range(r.ammo_slots.size()):
+		if str(r.ammo_slots[i].type)==Ammo.STANDARD:std_slot=i
+	if std_slot>=0:
+		var count=arena.room.pickups.size();page.discard("slot:%d" % std_slot)
+		check(arena.room.pickups.size()==count and str(r.ammo_slots[std_slot].type)==Ammo.STANDARD,"the plain rounds cannot be thrown away")
+	r.weapon="";check(arena.ensure_armed() and str(r.weapon)==Game.selected_weapon,"no gun in hand: the HQ issues the chosen one")
+	r.weapon=gun_before;Ammo.ensure(r,gun_before)
 	# Wrong class: charges-only ammo cannot go into a pistol (RPG ammo doesn't exist yet: fire fits both).
 	check(not Ammo.fits("explosive","rpg") and Ammo.fits("burn","rpg"),"ammo class rules")
 	# Outside battle nothing can be dropped.
