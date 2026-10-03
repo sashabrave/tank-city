@@ -463,15 +463,39 @@
 | supply.png | headquarters/hq_supply | Техснабжение |
 | tesla.png | headquarters/hq_tesla | Катушка Теслы |
 
-## Чертежи (6)
+## Чертежи (30)
 
 Где: Чертежи в рюкзаке (планшет → Снаряжение): один планшет, силуэт — категория
 
 | Файл | id | Название |
 |---|---|---|
 | bp_ability.png | blueprint/ability | Чертёж способности |
+| bp_ability_r0.png | blueprint/ability/0 | 0 |
+| bp_ability_r1.png | blueprint/ability/1 | 1 |
+| bp_ability_r2.png | blueprint/ability/2 | 2 |
+| bp_ability_r3.png | blueprint/ability/3 | 3 |
 | bp_bonus.png | blueprint/bonus | Чертёж бонуса |
+| bp_bonus_r0.png | blueprint/bonus/0 | 0 |
+| bp_bonus_r1.png | blueprint/bonus/1 | 1 |
+| bp_bonus_r2.png | blueprint/bonus/2 | 2 |
+| bp_bonus_r3.png | blueprint/bonus/3 | 3 |
 | bp_building.png | blueprint/research | Чертёж постройки |
+| bp_building_r0.png | blueprint/research/0 | 0 |
+| bp_building_r1.png | blueprint/research/1 | 1 |
+| bp_building_r2.png | blueprint/research/2 | 2 |
+| bp_building_r3.png | blueprint/research/3 | 3 |
 | bp_hq.png | blueprint/hq | Чертёж штаба |
+| bp_hq_r0.png | blueprint/hq/0 | 0 |
+| bp_hq_r1.png | blueprint/hq/1 | 1 |
+| bp_hq_r2.png | blueprint/hq/2 | 2 |
+| bp_hq_r3.png | blueprint/hq/3 | 3 |
 | bp_vehicle.png | blueprint/garage | Чертёж техники |
+| bp_vehicle_r0.png | blueprint/garage/0 | 0 |
+| bp_vehicle_r1.png | blueprint/garage/1 | 1 |
+| bp_vehicle_r2.png | blueprint/garage/2 | 2 |
+| bp_vehicle_r3.png | blueprint/garage/3 | 3 |
 | bp_weapon.png | blueprint/weapon | Чертёж оружия |
+| bp_weapon_r0.png | blueprint/weapon/0 | 0 |
+| bp_weapon_r1.png | blueprint/weapon/1 | 1 |
+| bp_weapon_r2.png | blueprint/weapon/2 | 2 |
+| bp_weapon_r3.png | blueprint/weapon/3 | 3 |

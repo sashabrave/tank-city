@@ -3480,6 +3480,54 @@
 			"note": "Символ «bp_ability»"
 		},
 		{
+			"path": "res://assets/ui/icon_kit/symbols/bp_ability_r0.png",
+			"group": "Чертежи",
+			"context": "Чертежи в рюкзаке (планшет → Снаряжение): один планшет, силуэт — категория",
+			"ids": [
+				"blueprint/ability/0"
+			],
+			"names": [
+				"0"
+			],
+			"note": "Символ «bp_ability_r0»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/bp_ability_r1.png",
+			"group": "Чертежи",
+			"context": "Чертежи в рюкзаке (планшет → Снаряжение): один планшет, силуэт — категория",
+			"ids": [
+				"blueprint/ability/1"
+			],
+			"names": [
+				"1"
+			],
+			"note": "Символ «bp_ability_r1»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/bp_ability_r2.png",
+			"group": "Чертежи",
+			"context": "Чертежи в рюкзаке (планшет → Снаряжение): один планшет, силуэт — категория",
+			"ids": [
+				"blueprint/ability/2"
+			],
+			"names": [
+				"2"
+			],
+			"note": "Символ «bp_ability_r2»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/bp_ability_r3.png",
+			"group": "Чертежи",
+			"context": "Чертежи в рюкзаке (планшет → Снаряжение): один планшет, силуэт — категория",
+			"ids": [
+				"blueprint/ability/3"
+			],
+			"names": [
+				"3"
+			],
+			"note": "Символ «bp_ability_r3»"
+		},
+		{
 			"path": "res://assets/ui/icon_kit/symbols/bp_bonus.png",
 			"group": "Чертежи",
 			"context": "Чертежи в рюкзаке (планшет → Снаряжение): один планшет, силуэт — категория",
@@ -3490,6 +3538,54 @@
 				"Чертёж бонуса"
 			],
 			"note": "Символ «bp_bonus»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/bp_bonus_r0.png",
+			"group": "Чертежи",
+			"context": "Чертежи в рюкзаке (планшет → Снаряжение): один планшет, силуэт — категория",
+			"ids": [
+				"blueprint/bonus/0"
+			],
+			"names": [
+				"0"
+			],
+			"note": "Символ «bp_bonus_r0»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/bp_bonus_r1.png",
+			"group": "Чертежи",
+			"context": "Чертежи в рюкзаке (планшет → Снаряжение): один планшет, силуэт — категория",
+			"ids": [
+				"blueprint/bonus/1"
+			],
+			"names": [
+				"1"
+			],
+			"note": "Символ «bp_bonus_r1»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/bp_bonus_r2.png",
+			"group": "Чертежи",
+			"context": "Чертежи в рюкзаке (планшет → Снаряжение): один планшет, силуэт — категория",
+			"ids": [
+				"blueprint/bonus/2"
+			],
+			"names": [
+				"2"
+			],
+			"note": "Символ «bp_bonus_r2»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/bp_bonus_r3.png",
+			"group": "Чертежи",
+			"context": "Чертежи в рюкзаке (планшет → Снаряжение): один планшет, силуэт — категория",
+			"ids": [
+				"blueprint/bonus/3"
+			],
+			"names": [
+				"3"
+			],
+			"note": "Символ «bp_bonus_r3»"
 		},
 		{
 			"path": "res://assets/ui/icon_kit/symbols/bp_building.png",
@@ -3504,6 +3600,54 @@
 			"note": "Символ «bp_building»"
 		},
 		{
+			"path": "res://assets/ui/icon_kit/symbols/bp_building_r0.png",
+			"group": "Чертежи",
+			"context": "Чертежи в рюкзаке (планшет → Снаряжение): один планшет, силуэт — категория",
+			"ids": [
+				"blueprint/research/0"
+			],
+			"names": [
+				"0"
+			],
+			"note": "Символ «bp_building_r0»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/bp_building_r1.png",
+			"group": "Чертежи",
+			"context": "Чертежи в рюкзаке (планшет → Снаряжение): один планшет, силуэт — категория",
+			"ids": [
+				"blueprint/research/1"
+			],
+			"names": [
+				"1"
+			],
+			"note": "Символ «bp_building_r1»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/bp_building_r2.png",
+			"group": "Чертежи",
+			"context": "Чертежи в рюкзаке (планшет → Снаряжение): один планшет, силуэт — категория",
+			"ids": [
+				"blueprint/research/2"
+			],
+			"names": [
+				"2"
+			],
+			"note": "Символ «bp_building_r2»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/bp_building_r3.png",
+			"group": "Чертежи",
+			"context": "Чертежи в рюкзаке (планшет → Снаряжение): один планшет, силуэт — категория",
+			"ids": [
+				"blueprint/research/3"
+			],
+			"names": [
+				"3"
+			],
+			"note": "Символ «bp_building_r3»"
+		},
+		{
 			"path": "res://assets/ui/icon_kit/symbols/bp_hq.png",
 			"group": "Чертежи",
 			"context": "Чертежи в рюкзаке (планшет → Снаряжение): один планшет, силуэт — категория",
@@ -3514,6 +3658,54 @@
 				"Чертёж штаба"
 			],
 			"note": "Символ «bp_hq»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/bp_hq_r0.png",
+			"group": "Чертежи",
+			"context": "Чертежи в рюкзаке (планшет → Снаряжение): один планшет, силуэт — категория",
+			"ids": [
+				"blueprint/hq/0"
+			],
+			"names": [
+				"0"
+			],
+			"note": "Символ «bp_hq_r0»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/bp_hq_r1.png",
+			"group": "Чертежи",
+			"context": "Чертежи в рюкзаке (планшет → Снаряжение): один планшет, силуэт — категория",
+			"ids": [
+				"blueprint/hq/1"
+			],
+			"names": [
+				"1"
+			],
+			"note": "Символ «bp_hq_r1»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/bp_hq_r2.png",
+			"group": "Чертежи",
+			"context": "Чертежи в рюкзаке (планшет → Снаряжение): один планшет, силуэт — категория",
+			"ids": [
+				"blueprint/hq/2"
+			],
+			"names": [
+				"2"
+			],
+			"note": "Символ «bp_hq_r2»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/bp_hq_r3.png",
+			"group": "Чертежи",
+			"context": "Чертежи в рюкзаке (планшет → Снаряжение): один планшет, силуэт — категория",
+			"ids": [
+				"blueprint/hq/3"
+			],
+			"names": [
+				"3"
+			],
+			"note": "Символ «bp_hq_r3»"
 		},
 		{
 			"path": "res://assets/ui/icon_kit/symbols/bp_vehicle.png",
@@ -3528,6 +3720,54 @@
 			"note": "Символ «bp_vehicle»"
 		},
 		{
+			"path": "res://assets/ui/icon_kit/symbols/bp_vehicle_r0.png",
+			"group": "Чертежи",
+			"context": "Чертежи в рюкзаке (планшет → Снаряжение): один планшет, силуэт — категория",
+			"ids": [
+				"blueprint/garage/0"
+			],
+			"names": [
+				"0"
+			],
+			"note": "Символ «bp_vehicle_r0»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/bp_vehicle_r1.png",
+			"group": "Чертежи",
+			"context": "Чертежи в рюкзаке (планшет → Снаряжение): один планшет, силуэт — категория",
+			"ids": [
+				"blueprint/garage/1"
+			],
+			"names": [
+				"1"
+			],
+			"note": "Символ «bp_vehicle_r1»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/bp_vehicle_r2.png",
+			"group": "Чертежи",
+			"context": "Чертежи в рюкзаке (планшет → Снаряжение): один планшет, силуэт — категория",
+			"ids": [
+				"blueprint/garage/2"
+			],
+			"names": [
+				"2"
+			],
+			"note": "Символ «bp_vehicle_r2»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/bp_vehicle_r3.png",
+			"group": "Чертежи",
+			"context": "Чертежи в рюкзаке (планшет → Снаряжение): один планшет, силуэт — категория",
+			"ids": [
+				"blueprint/garage/3"
+			],
+			"names": [
+				"3"
+			],
+			"note": "Символ «bp_vehicle_r3»"
+		},
+		{
 			"path": "res://assets/ui/icon_kit/symbols/bp_weapon.png",
 			"group": "Чертежи",
 			"context": "Чертежи в рюкзаке (планшет → Снаряжение): один планшет, силуэт — категория",
@@ -3538,6 +3778,54 @@
 				"Чертёж оружия"
 			],
 			"note": "Символ «bp_weapon»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/bp_weapon_r0.png",
+			"group": "Чертежи",
+			"context": "Чертежи в рюкзаке (планшет → Снаряжение): один планшет, силуэт — категория",
+			"ids": [
+				"blueprint/weapon/0"
+			],
+			"names": [
+				"0"
+			],
+			"note": "Символ «bp_weapon_r0»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/bp_weapon_r1.png",
+			"group": "Чертежи",
+			"context": "Чертежи в рюкзаке (планшет → Снаряжение): один планшет, силуэт — категория",
+			"ids": [
+				"blueprint/weapon/1"
+			],
+			"names": [
+				"1"
+			],
+			"note": "Символ «bp_weapon_r1»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/bp_weapon_r2.png",
+			"group": "Чертежи",
+			"context": "Чертежи в рюкзаке (планшет → Снаряжение): один планшет, силуэт — категория",
+			"ids": [
+				"blueprint/weapon/2"
+			],
+			"names": [
+				"2"
+			],
+			"note": "Символ «bp_weapon_r2»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/bp_weapon_r3.png",
+			"group": "Чертежи",
+			"context": "Чертежи в рюкзаке (планшет → Снаряжение): один планшет, силуэт — категория",
+			"ids": [
+				"blueprint/weapon/3"
+			],
+			"names": [
+				"3"
+			],
+			"note": "Символ «bp_weapon_r3»"
 		}
 	]
 }
