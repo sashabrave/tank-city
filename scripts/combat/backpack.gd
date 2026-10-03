@@ -112,15 +112,17 @@ static func equip(arena,bag_index:int,slot:=-1)->bool:
 	if old is Dictionary and item.has("cell"):old["cell"]=item.cell
 	run.ammo_bag.remove_at(bag_index)
 	run.ammo_slots[slot]=item;run.ammo_active=slot
-	if old is Dictionary and old.type!=Ammo.STANDARD:run.ammo_bag.insert(mini(bag_index,run.ammo_bag.size()),old)
+	# Every loaded item is an item, plain rounds too (author, T-197): the replaced one goes to the backpack
+	# (the swap always has room — the new one just left it). An empty slot gives nothing back.
+	if old is Dictionary and old.type!=Ammo.EMPTY:run.ammo_bag.insert(mini(bag_index,run.ammo_bag.size()),old)
 	refresh(arena);return true
 ## A loaded special ammo → the backpack; the slot falls back to standard. Needs a free cell.
 static func unequip(arena,slot:int)->bool:
 	var run=arena.run
 	if slot<0 or slot>=run.ammo_slots.size():return false
 	var item=run.ammo_slots[slot]
-	if not item is Dictionary or item.type==Ammo.STANDARD or full(run):return false
-	run.ammo_bag.append(item);run.ammo_slots[slot]=Ammo.standard()
+	if not item is Dictionary or item.type==Ammo.EMPTY or full(run):return false
+	run.ammo_bag.append(item);run.ammo_slots[slot]=Ammo.empty()
 	refresh(arena);return true
 ## Can a drop happen right now: only in a battle with a soldier on the field.
 static func can_drop(arena)->bool:
@@ -144,8 +146,8 @@ static func drop(arena,kind:String,index:int)->bool:
 			content["weapons"]=[run.weapon_bag[index]];run.weapon_bag.remove_at(index)
 		"slot":
 			var item=run.ammo_slots[index] if index>=0 and index<run.ammo_slots.size() else null
-			if not item is Dictionary or item.type==Ammo.STANDARD:return false
-			content.ammo.append(item);run.ammo_slots[index]=Ammo.standard()
+			if not item is Dictionary or item.type==Ammo.EMPTY:return false
+			content.ammo.append(item);run.ammo_slots[index]=Ammo.empty()
 		_:return false
 	arena.reward.place_sack(arena.grid_pos(arena.room.player.position),content)
 	refresh(arena);return true

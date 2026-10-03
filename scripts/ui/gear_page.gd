@@ -235,7 +235,10 @@ func fixed_cell(key:String,x:float,y:float,size:Vector2,icon_id:String,title:Str
 ## A cell holding an ammo item, a blueprint or nothing.
 func item_cell(key:String,x:float,y:float,entry,locked:bool)->GearCell:
 	var cell=base_cell(key,x,y,Vector2(C,C),locked)
-	if locked or entry==null:return cell
+	if locked or entry==null or Ammo.is_empty_slot(entry):
+		# An unloaded slot (T-197): an empty cell that waits for ammo.
+		if Ammo.is_empty_slot(entry):cell.tooltip_text=Texts.render("Пусто — перетащи сюда боеприпасы")
+		return cell
 	var is_slot=key.begins_with("slot:")
 	var ammo:Dictionary=entry if is_slot else (entry.item if entry.kind=="ammo" else {})
 	if is_slot or entry.kind=="ammo":
@@ -247,7 +250,8 @@ func item_cell(key:String,x:float,y:float,entry,locked:bool)->GearCell:
 		var key_art="ammo/"+type if IconKit.has("ammo/"+type) else {"standard":"stats/damage","burn":"upgrades/burn","stun":"upgrades/stun","shock":"upgrades/shock"}.get(type,Ammo.ART.get(type,"stats/damage"))
 		art(cell,UiKit.trimmed(UiKit.icon_texture(key_art)),.1 if key_art.begins_with("ammo/") else .18)
 		var name_label=UiKit.label(cell,Texts.render(Ammo.NAMES.get(type,type)),Vector2(4,C-20),Vector2(C-8,18),11 if C>=100 else 9,color);name_label.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;name_label.clip_text=true
-		cell.item_kind="ammo";cell.draggable=type!=Ammo.STANDARD
+		# Plain rounds are an item too (T-197): they can be taken out, dropped or moved.
+		cell.item_kind="ammo";cell.draggable=true
 		cell.info=ITEM.of("ammo",ammo,arena,is_slot)
 		cell.tooltip_text=Texts.render(Ammo.NAMES.get(type,type)+" боеприпасы")+("\n"+Ammo.describe(ammo) if type!=Ammo.STANDARD else "")
 		if is_slot and run()!=null and int(key.get_slice(":",1))==run().ammo_active and run().ammo_slots.size()>1:
@@ -353,12 +357,11 @@ func discard(key:String):
 		if is_instance_valid(arena):arena.toast(Texts.render("Выбросить можно только в бою"))
 		return
 	var ok=false
-	# The gun in hand and the plain rounds are what you fight with (author, 2026-10-03): never thrown away.
+	# The gun in hand is not thrown away from its cell (put it into the backpack first); any loaded ammo can go.
 	if key=="weapon":arena.toast(Texts.render("Нельзя выбросить последнее оружие — нечем будет воевать"));Game.sound("ui_denied",arena);return
 	if key.begins_with("slot:"):
 		var slot=r.ammo_slots[int(key.get_slice(":",1))] if int(key.get_slice(":",1))<r.ammo_slots.size() else null
-		if not slot is Dictionary or str(slot.get("type",Ammo.STANDARD))==Ammo.STANDARD:
-			arena.toast(Texts.render("Нельзя выбросить последние боеприпасы — нечем будет воевать"));Game.sound("ui_denied",arena);return
+		if not slot is Dictionary or Ammo.is_empty_slot(slot):return
 	if key.begins_with("bag:"):
 		var e=entry(key)
 		ok=e!=null and Backpack.drop(arena,e.kind,e.index)

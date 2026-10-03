@@ -308,6 +308,10 @@ func fire_weapon(actor):
 	# Empty hands (2026-10-03): Space scratches with the paws instead of a shot.
 	if weapon_id==LootCatalog.PAWS:
 		Melee.strike(arena,actor,actor.damage*arena.effects.modify("shot_damage",1.0,{"actor":actor}),true);return
+	# No rounds loaded (T-197): the gun hits with its butt; a reminder now and then.
+	if Ammo.dry(arena.run):
+		if arena.toast_time<=0:arena.toast(Texts.render("Нет боеприпасов — удар прикладом. Заряди в «Снаряжении»"))
+		Melee.strike(arena,actor,Melee.damage(arena)*Melee.BUTT,false);return
 	volley(actor,data)
 	# Bursts (SMG): the rest of the pull follows on pausable timers in the facing of that moment.
 	for k in range(1,int(data.get("burst",1))):

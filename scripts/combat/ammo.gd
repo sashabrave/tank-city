@@ -8,9 +8,11 @@ extends RefCounted
 ## Weapons share two ammo classes: bullets (pistol, SMG, rifle, shotgun, sniper) and charges (RPG, grenade
 ## launcher); a type lists the classes it fits.
 const STANDARD="standard"
+## An unloaded slot (T-197): the plain rounds were taken out; the gun hits with its butt until something is loaded.
+const EMPTY="empty"
 const TYPES=["burn","stun","shock","explosive","ap","ricochet","cryo","cluster","napalm"]
-const NAMES={"standard":"Обычные","burn":"Зажигательные","stun":"Контузящие","shock":"ЭМИ","explosive":"Разрывные","ap":"Бронебойные","ricochet":"Рикошет","cryo":"Криогенные","cluster":"Кассетные","napalm":"Напалм"}
-const COLORS={"standard":"cfd3c8","burn":"ff8a3d","stun":"f1cf55","shock":"86daec","explosive":"ff5a4a","ap":"b7c2cc","ricochet":"c9a5ff","cryo":"9fe6ff","cluster":"ffcf5a","napalm":"ff6a1a"}
+const NAMES={"empty":"Пусто","standard":"Обычные","burn":"Зажигательные","stun":"Контузящие","shock":"ЭМИ","explosive":"Разрывные","ap":"Бронебойные","ricochet":"Рикошет","cryo":"Криогенные","cluster":"Кассетные","napalm":"Напалм"}
+const COLORS={"empty":"6f7468","standard":"cfd3c8","burn":"ff8a3d","stun":"f1cf55","shock":"86daec","explosive":"ff5a4a","ap":"b7c2cc","ricochet":"c9a5ff","cryo":"9fe6ff","cluster":"ffcf5a","napalm":"ff6a1a"}
 const CLASSES={"bullets":["pistol","smg","rifle","shotgun","sniper"],"charges":["rpg","grenade_launcher"]}
 const FITS={"burn":["bullets","charges"],"stun":["bullets"],"shock":["bullets","charges"],"explosive":["bullets"],"ap":["bullets"],"ricochet":["bullets"],"cryo":["bullets","charges"],"cluster":["charges"],"napalm":["charges"]}
 ## Rolled values per type: [key, label, min, max, unit]. «%» values are stored as shares (0.2 = 20 %).
@@ -41,6 +43,10 @@ static func weapon_class(weapon:String)->String:
 	return "bullets"
 static func fits(type:String,weapon:String)->bool:return type==STANDARD or weapon_class(weapon) in FITS.get(type,[])
 static func standard()->Dictionary:return {"type":STANDARD,"rarity":0,"stats":{},"damage":0.0,"twist":false}
+static func empty()->Dictionary:return {"type":EMPTY,"rarity":0,"stats":{},"damage":0.0,"twist":false}
+static func is_empty_slot(slot)->bool:return slot is Dictionary and str(slot.get("type",""))==EMPTY
+## The active slot holds nothing: the gun has no rounds to fire.
+static func dry(run)->bool:return active(run)==EMPTY
 
 ## A rolled ammo item. Deterministic for a card: the same seed gives the same item on the card and on pick.
 static func roll(type:String,rarity:int,seed:int)->Dictionary:
@@ -90,12 +96,14 @@ static func stat(run,type:String,key:String)->float:
 ## Which slot a new item goes to: a standard slot first, otherwise the active one.
 static func target_slot(run)->int:
 	for i in range(run.ammo_slots.size()):
+		if is_empty_slot(run.ammo_slots[i]):return i
+	for i in range(run.ammo_slots.size()):
 		if run.ammo_slots[i] is Dictionary and run.ammo_slots[i].type==STANDARD:return i
 	return clampi(run.ammo_active,0,run.ammo_slots.size()-1)
 ## The item a new one would push out ({} when a standard slot takes it).
 static func replacing(run,_type:String="")->Dictionary:
 	var slot=run.ammo_slots[target_slot(run)]
-	return {} if not slot is Dictionary or slot.type==STANDARD else slot
+	return {} if not slot is Dictionary or slot.type in [STANDARD,EMPTY] else slot
 static func load_item(run,new_item:Dictionary)->Dictionary:
 	var at=target_slot(run)
 	# The same type already loaded is upgraded in place (the old item goes to the bag).
@@ -103,7 +111,8 @@ static func load_item(run,new_item:Dictionary)->Dictionary:
 		if run.ammo_slots[i] is Dictionary and run.ammo_slots[i].type==new_item.type:at=i
 	var old=run.ammo_slots[at]
 	run.ammo_slots[at]=new_item;run.ammo_active=at
-	return old if old is Dictionary and old.type!=STANDARD else {}
+	# Plain rounds are an item too (author): whatever was loaded comes out — an empty slot gives nothing.
+	return old if old is Dictionary and old.type!=EMPTY else {}
 static func switch(arena)->bool:
 	var run=arena.run
 	if run==null or run.ammo_slots.size()<2:return false

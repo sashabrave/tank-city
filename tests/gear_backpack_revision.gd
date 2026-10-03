@@ -31,7 +31,8 @@ func run():
 	# A second tap closes the menu; a double tap (on_activate) uses the item (2026-10-03).
 	cell(view,"bag:0").pressed.emit();check(GP.selected=="","second tap closes the action menu")
 	cell(view,"bag:0").on_activate.call("bag:0");await get_tree().process_frame
-	check(Ammo.active(r)=="burn" and r.ammo_bag.size()==1,"double tap loads the ammo; standard does not go to the bag")
+	check(Ammo.active(r)=="burn" and r.ammo_bag.size()==2 and r.ammo_bag.any(func(a):return a.type=="standard"),"double tap loads the ammo; the plain rounds go to the bag")
+	r.ammo_bag=r.ammo_bag.filter(func(a):return a.type!="standard")
 	# Equip another: the loaded one swaps back into the bag.
 	GP.selected="";view.refresh();await get_tree().process_frame
 	# Items keep their cells now (T-196): the cryo box is still in cell 1.
@@ -40,7 +41,7 @@ func run():
 	# Tap-tap on the slot unloads it.
 	GP.selected="";view.refresh();await get_tree().process_frame
 	cell(view,"slot:0").on_activate.call("slot:0");await get_tree().process_frame
-	check(Ammo.active(r)=="standard" and r.ammo_bag.size()==2,"double tap on the slot unloads to the backpack")
+	check(Ammo.is_empty_slot(r.ammo_slots[0]) and r.ammo_bag.size()==2,"double tap on the slot unloads to the backpack; the slot is empty")
 	# Drag: bag → slot and slot → bag.
 	var page=gear(view);page.body=Control.new()
 	var cryo_cell=-1
@@ -50,7 +51,7 @@ func run():
 	page.move("bag:%d" % cryo_cell,"slot:0")
 	check(Ammo.active(r)=="cryo","drag from the backpack onto the slot loads")
 	page.move("slot:0","bag:3")
-	check(Ammo.active(r)=="standard" and r.ammo_bag.size()==2,"drag from the slot into the backpack unloads")
+	check(Ammo.is_empty_slot(r.ammo_slots[0]) and r.ammo_bag.size()==2,"drag from the slot into the backpack unloads")
 	# T-168: dragging inside the backpack swaps items of the same kind.
 	var first_type="";var second_type=""
 	for c in range(Backpack.CELLS):
@@ -144,12 +145,14 @@ func run():
 	var gun_before=str(r.weapon)
 	page.discard("weapon")
 	check(str(r.weapon)==gun_before,"the gun in hand cannot be thrown away")
+	# Plain rounds are an item too (T-197): dropped, the slot is empty and Space strikes with the butt.
 	var std_slot=-1
 	for i in range(r.ammo_slots.size()):
 		if str(r.ammo_slots[i].type)==Ammo.STANDARD:std_slot=i
 	if std_slot>=0:
-		var count=arena.room.pickups.size();page.discard("slot:%d" % std_slot)
-		check(arena.room.pickups.size()==count and str(r.ammo_slots[std_slot].type)==Ammo.STANDARD,"the plain rounds cannot be thrown away")
+		page.discard("slot:%d" % std_slot)
+		check(Ammo.is_empty_slot(r.ammo_slots[std_slot]),"the plain rounds can be thrown away: the slot is empty")
+		r.ammo_slots[std_slot]=Ammo.standard()
 	r.weapon="";check(arena.ensure_armed() and str(r.weapon)==Game.selected_weapon,"no gun in hand: the HQ issues the chosen one")
 	r.weapon=gun_before;Ammo.ensure(r,gun_before)
 	# Empty hands and the tablet (2026-10-03): the tablet closes; Space and V scratch with the paws; the paws

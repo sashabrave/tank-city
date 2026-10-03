@@ -76,7 +76,10 @@ func use():
 		"weapon":
 			var old={"id":str(run.weapon),"rarity":int(run.weapon_rarity),"stats":run.weapon_stats.duplicate()}
 			run.weapon=str(it.id);run.weapon_rarity=int(it.get("rarity",0));run.weapon_stats=it.get("stats",{}).duplicate();Ammo.ensure(run,run.weapon);RunUpgrades.refresh_player(arena)
-			replace({"recipes":[],"ammo":[],"weapons":[old]});Game.sound("weapon_equip",arena);arena.toast(Texts.render("Оружие в руках"))
+			# Bare paws are not an item (T-201): with empty hands nothing is left lying here.
+			if LootCatalog.is_gun(str(old.id)):replace({"recipes":[],"ammo":[],"weapons":[old]})
+			else:remove()
+			Game.sound("weapon_equip",arena);arena.toast(Texts.render("Оружие в руках"))
 		"ammo":
 			Ammo.ensure(run,str(arena.weapon))
 			if not Ammo.fits(str(it.type),str(arena.weapon)):arena.toast(Texts.render("Эти боеприпасы не подходят к оружию"));return
@@ -97,5 +100,6 @@ func remove():
 	arena.room.pickups.erase(pickup);preload("res://scripts/battle_stage.gd").vanish(pickup.node)
 ## The item swaps with what was in hand: the old one now lies here.
 func replace(content:Dictionary):
+	content["weapons"]=content.get("weapons",[]).filter(func(w):return LootCatalog.is_gun(str(w.get("id",""))))
 	var at=arena.grid_pos(pickup.node.position)
 	remove();arena.reward.place_sack(at,content)
