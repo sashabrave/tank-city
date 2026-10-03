@@ -37,7 +37,7 @@ const BRIEFINGS=[
 {"id":"challenge_hold","text":"Точка удержана","event":"challenge_hold","goal":1,"alloy":80,"docs":1,"xp":60,"requires":"world_depth_1","threshold":1,"hint":"Пройди удержание: стой в зоне, пока шкала не заполнится."},
 {"id":"garage_build","text":"Стоянка","event":"build_garage","goal":1,"alloy":70,"docs":0,"xp":65,"requires":"world_depth_1","threshold":2,"hint":"Найди чертёж Стоянки и построй её — в «Строительстве» или в Штабе → Постройки."},
 {"id":"tokens","text":"Коллекционер жетонов","event":"tokens","goal":25,"alloy":80,"docs":0,"xp":60,"requires":"merchant_buy","threshold":1,"hint":"Собери 25 жетонов. Их чаще носят техника и ветераны, командир — всегда."},
-{"id":"challenge_survive","text":"Под огнём","event":"challenge_survive","goal":1,"alloy":80,"docs":1,"xp":60,"requires":"world_depth_1","threshold":1,"hint":"Пройди выживание без патронов под артобстрелом."},
+{"id":"challenge_survive","text":"Под огнём","event":"challenge_survive","goal":1,"alloy":80,"docs":1,"xp":60,"requires":"world_depth_1","threshold":1,"hint":"Продержись на поле под артобстрелом."},
 {"id":"challenge_maze","text":"Свет в конце","event":"challenge_maze","goal":1,"alloy":80,"docs":1,"xp":60,"requires":"world_depth_1","threshold":2,"hint":"Пройди тёмный лабиринт: дойди до зелёного флага, пока не включили свет."},
 {"id":"garage_buggy","text":"Личный багги","event":"own_buggy","goal":1,"alloy":100,"docs":0,"xp":90,"requires":"build_garage","threshold":1,"hint":"Добудь чертёж багги и купи машину на стоянке."},
 {"id":"slot_machine","text":"Азартный рядовой","event":"slot_play","goal":5,"alloy":60,"docs":0,"xp":40,"requires":"merchant_buy","threshold":1,"hint":"Сыграй пять раз на игровом автомате торговца."},

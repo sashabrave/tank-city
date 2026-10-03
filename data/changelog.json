@@ -97,7 +97,8 @@
 					"Контурные заглушки заменены рисованными иконками: категории наград в углу карточек, аватары Штаба усов, Института и Оперштаба в ленте заданий, легендарные правила в энциклопедии.",
 					"Патронный автомат у торговца и в комнатах улучшения: за жетоны выдаёт случайные патроны под твоё оружие, редкость зависит от удачи; их можно сразу зарядить или убрать в рюкзак",
 					"Новая вкладка «Снаряжение»: кукла бойца с состояниями, способности, оружие, слоты патронов и рюкзак на одной сетке; патроны надеваются и снимаются нажатием, двойным нажатием или перетаскиванием, выброшенное ложится мешком на поле и подбирается обратно; рюкзак на старте — 4 ячейки; Tab открывает планшет, W/S листают вкладки; исправлено окно «Оставить эти настройки?» — оно не работало при открытом планшете",
-					"Покупка машины у механика: окно с ценой и описанием, работает и после выбора улучшения, затем «Техника доставлена»"
+					"Покупка машины у механика: окно с ценой и описанием, работает и после выбора улучшения, затем «Техника доставлена»",
+					"Выживание начинается с «Вы попали под обстрел!»: стрелять и применять способности теперь можно, главное — уходить из красных меток"
 				]
 			},
 			"en": {
@@ -194,7 +195,8 @@
 					"Outline placeholders replaced with drawn icons: reward categories in the card corner, avatars of the Whisker HQ, the Institute and Operations in the quest feed, legendary rules in the encyclopedia.",
 					"An ammo machine at the merchant and in upgrade rooms: tokens buy random ammo for your weapon, rarity depends on luck; load it right away or keep it in the backpack",
 					"New «Gear» tab: the fighter doll with states, abilities, weapon, ammo slots and backpack on one grid; ammo is equipped and removed by tap, double tap or drag, dropped items lie on the field as a sack and can be picked up again; the backpack starts with 4 cells; Tab opens the tablet, W/S switch tabs; fixed the «Keep these settings?» prompt — it did not work while the tablet was open",
-					"Buying a vehicle at the mechanic: a window with price and description, works after the upgrade choice too, then «Vehicle delivered»"
+					"Buying a vehicle at the mechanic: a window with price and description, works after the upgrade choice too, then «Vehicle delivered»",
+					"Survival starts with «You are under fire!»: you can now shoot and use abilities, just leave the red markers"
 				]
 			}
 		},

@@ -1495,7 +1495,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-118.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "режим выжиания надо начать с соощения типа",
 			"type": "bug",
 			"version": "0.7.2-pre"

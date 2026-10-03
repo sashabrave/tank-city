@@ -45,9 +45,9 @@ func run():
 	check(rooms.status().ends_with("готово"),"status shows completion")
 	arena.queue_free();await settle()
 	arena=room("survive");await settle();rooms=arena.challenges
-	check(arena.room.mode=="survive" and rooms.weapons_locked(),"survive: weapons locked")
+	check(arena.room.mode=="survive" and not rooms.weapons_locked(),"survive: shooting allowed under fire (T-118)")
 	arena.phase="combat";arena.player.fire_cooldown=0
-	check(not arena.player.shoot(),"soldier cannot fire")
+	check(arena.player.shoot(),"soldier can fire under the barrage")
 	rooms.tick(.8);rooms.tick(.8);check(rooms.shells.size()>=1,"artillery marks the field")
 	var shell=rooms.shells[0];shell.node.position=arena.player.position;var hp=arena.player.hp;arena.player.invulnerable=0
 	rooms.explode_shell(shell)

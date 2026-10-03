@@ -4,7 +4,8 @@ extends RefCounted
 ## cache — a chest in the centre; leaving is allowed at once, opening it calls a veteran ambush,
 ## surviving it drops a reward chest whose value follows the room difficulty.
 ## hold — stand in the zone while enemies keep coming; progress grows only while no enemy is inside.
-## survive — weapons are out of ammo; dodge artillery markers until the timer ends.
+## survive — the field is under artillery fire; dodge the markers until the timer ends (shooting and abilities
+## work, T-118).
 ## maze — a dark concrete maze: only the soldier's surroundings are lit; reach the green flag before the timer.
 ## When time runs out the lights come on and the exit opens without a reward.
 const TITLES={"cache":"Тайник","hold":"Удержание","survive":"Выживание","maze":"Тёмный лабиринт"}
@@ -43,7 +44,7 @@ func _init(context):
 func active()->bool:return arena.room.mode!="battle"
 ## Rooms that finish by their own rule, not by an empty wave queue.
 func blocks_waves()->bool:return arena.room.mode in ["hold","survive","maze"] and not rewarded and not timed_out
-func weapons_locked()->bool:return arena.room.mode=="survive" and not rewarded
+func weapons_locked()->bool:return false
 ## Room change: forget props of the previous challenge (their nodes are freed with the room).
 func reset():
 	opened=false;rewarded=false;chest={};zone=null;shells.clear();timed_out=false;goal_flag=null
@@ -229,8 +230,8 @@ func tick_maze(delta:float):
 		if is_instance_valid(arena.presentation):arena.presentation.announce("Свет включили","Время вышло · награды нет",.8)
 func start_survive():
 	goal=SURVIVE_SECONDS[clampi(arena.room.difficulty,0,2)]
-	if is_instance_valid(arena.presentation):arena.presentation.announce("Патроны кончились","Уклоняйся от обстрела",.8)
-	arena.toast("Выживание: оружие не стреляет — уходи из красных меток")
+	if is_instance_valid(arena.presentation):arena.presentation.announce("Вы попали под обстрел!","Продержись %d с · уходи из красных меток" % int(goal),1.6)
+	arena.toast("Стрелять и применять способности можно — главное, не стой в красных метках")
 func tick_survive(delta:float):
 	if rewarded:return
 	progress=minf(goal,progress+delta)
