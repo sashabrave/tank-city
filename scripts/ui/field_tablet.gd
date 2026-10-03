@@ -50,7 +50,8 @@ func _ready():
 	for key in REMEMBERED:
 		if saved.has(key):set(key,saved[key])
 	page_scrolls=saved.get("scrolls",{}).duplicate(true)
-	if tab=="":tab=saved.get("manage_tab" if manage else "tab","quests" if manage else "inventory")
+	# The field tablet always opens on «Снаряжение» (author, 0.8.0); the command centre keeps its last tab.
+	if tab=="":tab=saved.get("manage_tab","quests") if manage else "inventory"
 	if tab=="base" and not manage:tab="inventory"
 	if manage and tab not in ["quests","base","notifications","guide","tech"]:tab="quests"
 	memory_ready=true

@@ -18,7 +18,10 @@ func run():
 	check(view.guide_box.get_parent().scroll_vertical==scroll,"encyclopedia position survives tab switch")
 	view.queue_free();await settle()
 	view=preload("res://scripts/ui/field_tablet.gd").new();add_child(view);await settle()
-	check(view.tab=="guide" and view.guide_box.get_parent().scroll_vertical==scroll and view.settings_tab=="Звук","tablet remembers tab, scroll, settings on reopen")
+	# 0.8.0: the field tablet always opens on «Снаряжение»; scroll and sub-tabs are still remembered.
+	check(view.tab=="inventory" and view.settings_tab=="Звук","tablet opens on equipment, remembers settings sub-tab")
+	view.tab="guide";view.refresh();await settle()
+	check(view.guide_box.get_parent().scroll_vertical==scroll,"encyclopedia scroll survives reopening")
 	view.tab="tech";view.refresh();await settle()
 	var reader=view.content.get_child(0);var path=reader.documents.back().path;reader.open_document(path);await settle();reader.body.get_v_scroll_bar().value=120;await settle()
 	var doc_scroll=reader.body.get_v_scroll_bar().value
