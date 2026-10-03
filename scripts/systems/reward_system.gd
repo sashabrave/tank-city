@@ -36,25 +36,8 @@ func place_pickup(cell:Vector2i,kind:String,fall:=1.1):
 	var chute=parachute(visual,Color(info.color))
 	arena.room.pickups.append({"node":node,"visual":visual,"kind":kind,"land_at":arena.run.elapsed+fall,"chute":chute})
 
-## Ram-air wing over a falling bonus: five cloth cells along an arch (round cells read as semicircles
-## from the front), matte khaki/olive, only the centre cell hints at the bonus colour. Visual only.
-func parachute(visual:Node3D,tint:Color)->Node3D:
-	var chute=Node3D.new();chute.name="Chute";visual.add_child(chute)
-	var cell=CapsuleMesh.new();cell.radius=.095;cell.height=.44;cell.radial_segments=12;cell.rings=2
-	var cloth=[Color("a8a07c"),Color("7d8660")]
-	for i in range(5):
-		var t=(i-2)/2.0
-		# Each cell hangs on its own pivot: bank along the arch, then the tube lies front-to-back.
-		var pivot=Node3D.new();chute.add_child(pivot);pivot.position=Vector3(t*.36,1.0-t*t*.13,0);pivot.rotation.z=-t*.42
-		var piece=MeshInstance3D.new();piece.mesh=cell;piece.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		piece.rotation.x=PI*.5;piece.scale=Vector3(1,1,.6);pivot.add_child(piece)
-		var mat=StandardMaterial3D.new();mat.albedo_color=cloth[i%2];mat.roughness=1.0;mat.metallic_specular=.1;piece.material_override=mat
-	for side in [-1,1]:
-		for z in [-.16,.16]:
-			var top=Vector3(side*.46,.84,z);var bottom=Vector3(0,.3,0)
-			var line=Visuals.box(chute,(top+bottom)*.5,Vector3(.01,.01,top.distance_to(bottom)),Color("8d8f7c"))
-			line.look_at_from_position(line.position,top,Vector3.UP)
-	return chute
+## The one parachute of the game (Visuals.parachute) over a falling bonus.
+func parachute(visual:Node3D,_tint:Color)->Node3D:return Visuals.parachute(visual)
 ## An army sack with dropped backpack items (T-113): it stays until the soldier walks over it with room to spare.
 func place_sack(cell:Vector2i,content:Dictionary):
 	var node=Node3D.new();arena.add_child(node);node.position=arena.world_pos(cell)+Vector3(randf_range(-.2,.2),0,randf_range(-.2,.2))

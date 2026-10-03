@@ -319,16 +319,18 @@ const ROADMAP_POS=Vector3(1,0,-1)
 func build_roadmap():
 	var board=Node3D.new();board.name="Roadmap";add_child(board);board.position=ROADMAP_POS
 	var wood=Color("6d5a40");var cork=Color("b89a6a")
-	for x in [-.6,.6]:Visuals.box(board,Vector3(x,.75,0),Vector3(.1,1.5,.1),wood.darkened(.25))
+	# Layers never share a face (z-fighting on the board, 2026-10-03): posts behind the frame, the frame behind
+	# the cork, the red lines and the cards each a few millimetres further forward.
+	for x in [-.6,.6]:Visuals.box(board,Vector3(x,.75,-.09),Vector3(.1,1.5,.1),wood.darkened(.25))
 	Visuals.box(board,Vector3(0,1.25,.02),Vector3(1.4,.95,.06),cork)
-	Visuals.box(board,Vector3(0,1.25,-.01),Vector3(1.5,1.05,.04),wood)
+	Visuals.box(board,Vector3(0,1.25,-.02),Vector3(1.5,1.05,.04),wood)
 	# Track lines with pinned cards: done cards are pale, the next goal is orange.
 	for row in range(3):
 		var y=1.55-row*.28
-		Visuals.box(board,Vector3(0,y,.06),Vector3(1.2,.02,.01),Color("8a3a2a"))
+		Visuals.box(board,Vector3(0,y,.062),Vector3(1.2,.02,.01),Color("8a3a2a"))
 		for i in range(4):
 			var color=Color("e8dcc0") if i<2-row%2 else Color("f2a33a") if i==2-row%2 else Color("9c8f74")
-			Visuals.box(board,Vector3(-.45+i*.3,y,.07),Vector3(.18,.14,.01),color)
+			Visuals.box(board,Vector3(-.45+i*.3,y,.082),Vector3(.18,.14,.01),color)
 	Visuals.label3d(board,"Развитие заставы",Vector3(0,2.0,0),Color("dcf6ec"),22)
 	# A reached goal not seen yet: an orange «!» hops over the board until the station is opened.
 	roadmap_alert=Visuals.label3d(board,"!",Vector3(.62,2.05,0),UiKit.ORANGE,64);roadmap_alert.outline_size=12;roadmap_alert.name="RoadmapAlert"

@@ -61,8 +61,7 @@ func summon_comrade(factor:float,utility:float):
 	buddy.max_hp=maxf(1,arena.run.soldier_max_hp*factor);buddy.hp=buddy.max_hp;buddy.speed=3.8*.8*(1+utility*.1);buddy.damage=data.damage*(1+Game.damage_level*.05+arena.run.damage_bonus*.3)*factor;buddy.fire_interval=data.interval
 	buddy.parachute_left=maxf(1,3-utility*.3);buddy.model.position.y=5;Visuals.equip_model(buddy.model,buddy.companion_weapon)
 	buddy.parachute=Node3D.new();buddy.model.add_child(buddy.parachute)
-	var canopy=MeshInstance3D.new();var dome=SphereMesh.new();dome.radius=.9;dome.height=1.8;canopy.mesh=dome;canopy.scale.y=.3;canopy.position.y=2;canopy.material_override=Visuals.material(Color("dddcc1"));buddy.parachute.add_child(canopy)
-	for side in [-1,1]:Visuals.box(buddy.parachute,Vector3(side*.45,1.5,0),Vector3(.025,1.2,.025),Color("b1b59c"))
+	Visuals.parachute(buddy.parachute,1.7,.95)
 	Visuals.label3d(buddy,"Товарищ",Vector3(0,1.8,0),Color("a6eeb4"),22);buddy.refresh_health()
 func comrade_step(buddy,delta):
 	if buddy.parachute_left>0:

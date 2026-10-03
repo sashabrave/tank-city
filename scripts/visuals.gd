@@ -326,3 +326,24 @@ static func metal_roughness()->ImageTexture:
 		for x in range(128):
 			var value=clampf(line+rng.randf_range(-.025,.025),0,1);image.set_pixel(x,y,Color(value,value,value))
 	image.generate_mipmaps();brushed_roughness=ImageTexture.create_from_image(image);return brushed_roughness
+## The one parachute of the game (author, 2026-10-03): bonuses, the comrade and delivered vehicles all come
+## down under this flat ram-air wing. `size` scales it; `top` is the height of the load's top, where the
+## lines meet. Five cloth cells along an arch (round cells read as semicircles from the front), matte
+## white. Visual only.
+static func parachute(visual:Node3D,size:=1.0,top:=.3)->Node3D:
+	var chute=Node3D.new();chute.name="Chute";visual.add_child(chute);chute.scale=Vector3.ONE*size;chute.position.y=top-.3*size
+	var cell=CapsuleMesh.new();cell.radius=.095;cell.height=.44;cell.radial_segments=12;cell.rings=2
+	var cloth=[Color("f4f2ea"),Color("e2e0d6")]  # white silk, two close shades (author, 2026-10-03)
+	for i in range(5):
+		var t=(i-2)/2.0
+		# Each cell hangs on its own pivot: bank along the arch, then the tube lies front-to-back.
+		var pivot=Node3D.new();chute.add_child(pivot);pivot.position=Vector3(t*.36,1.0-t*t*.13,0);pivot.rotation.z=-t*.42
+		var piece=MeshInstance3D.new();piece.mesh=cell;piece.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		piece.rotation.x=PI*.5;piece.scale=Vector3(1,1,.6);pivot.add_child(piece)
+		var mat=StandardMaterial3D.new();mat.albedo_color=cloth[i%2];mat.roughness=1.0;mat.metallic_specular=.1;piece.material_override=mat
+	for side in [-1,1]:
+		for z in [-.16,.16]:
+			var anchor=Vector3(side*.46,.84,z);var bottom=Vector3(0,.3,0)
+			var line=Visuals.box(chute,(anchor+bottom)*.5,Vector3(.01,.01,anchor.distance_to(bottom)),Color("c9c8bf"))
+			line.look_at_from_position(line.position,anchor,Vector3.UP)
+	return chute

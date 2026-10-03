@@ -131,9 +131,7 @@ func take_damage(amount: float):
 func start_delivery(duration: float):
 	boardable=false;delivery_duration=duration;delivery_left=duration;position.y=6
 	canopy=Node3D.new();add_child(canopy)
-	var dome=MeshInstance3D.new();var mesh=SphereMesh.new();mesh.radius=1.1;mesh.height=2.2;dome.mesh=mesh
-	canopy.add_child(dome);dome.position=Vector3(0,2.8,0);dome.scale=Vector3(1,.38,.85);dome.material_override=Visuals.material(Color("d9d7bd"))
-	for side in [-1,1]:Visuals.box(canopy,Vector3(side*.6,1.9,0),Vector3(.025,1.8,.025),Color.WHITE)
+	Visuals.parachute(canopy,2.8,1.0)
 	refresh_label()
 
 func tick_repair(delta:float):
