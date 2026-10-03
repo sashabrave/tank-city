@@ -135,9 +135,11 @@ func layout():
 	var buttons=48.0
 	line_label.position=Vector2(x,PAD+54);line_label.size=Vector2(body,height-PAD*2-54-buttons-10)
 	# Main action on the right, the secondary one to its left.
-	var button_width=minf(200,(body-12)*.5)
-	next_button.size=Vector2(button_width,buttons);next_button.position=Vector2(width-PAD-button_width,height-PAD-buttons)
-	skip_button.size=Vector2(button_width,buttons);skip_button.position=Vector2(next_button.position.x-12-button_width,next_button.position.y)
+	# T-149: each button as wide as its text needs (they overlapped when «Положить трубку» outgrew 200 px).
+	var need=func(b:Button)->float:return b.get_theme_font("font").get_string_size(b.text,HORIZONTAL_ALIGNMENT_LEFT,-1,b.get_theme_font_size("font_size")).x+48
+	var next_w=clampf(need.call(next_button),160,(body-16)*.5);var skip_w=clampf(need.call(skip_button),160,(body-16)*.5)
+	next_button.size=Vector2(next_w,buttons);next_button.position=Vector2(width-PAD-next_w,height-PAD-buttons)
+	skip_button.size=Vector2(skip_w,buttons);skip_button.position=Vector2(next_button.position.x-16-skip_w,next_button.position.y)
 	line_label.add_theme_font_size_override("font_size",20 if width>=700 else 17)
 
 func show_step():

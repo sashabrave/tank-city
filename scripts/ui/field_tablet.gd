@@ -179,7 +179,8 @@ func quest_page():
 	UiKit.accent(UiKit.label(content,"Задачи",Vector2(UiKit.PAGE_PADDING,20),Vector2(700,28),UiKit.PAGE_TITLE_SIZE))
 	# T-057: vertical filter tabs on the left — main story/institute, operations, done — each with a dot when it
 	# holds something new or ready. Inside a tab: what needs you on top, taken work below.
-	var tabs_w=170.0;var gap=16.0
+	# T-150: the three quest tabs are a horizontal row above the feed; the feed takes the full width.
+	var tabs_w=0.0;var gap=0.0
 	var full=content.size.x-UiKit.PAGE_PADDING*2-tabs_w-gap
 	quest_bubble_width=full-56-14
 	if quest_filter not in ["main","operations","completed"]:quest_filter="main"
@@ -194,10 +195,11 @@ func quest_page():
 	var feed_top=UiKit.PAGE_CONTENT_TOP
 	for i in range(3):
 		var key=["main","operations","completed"][i]
-		var t=UiKit.button(content,["Основные","Оперштаб","Выполнено"][i],Vector2(UiKit.PAGE_PADDING,feed_top+i*52),Vector2(tabs_w,44),func():quest_filter=key;refresh(),key==quest_filter)
-		t.name="QuestTab_"+key;t.alignment=HORIZONTAL_ALIGNMENT_LEFT;t.add_theme_font_size_override("font_size",16)
+		var tab_w=minf(200.0,(full-20)/3.0)
+		var t=UiKit.button(content,["Основные","Оперштаб","Выполнено"][i],Vector2(UiKit.PAGE_PADDING+i*(tab_w+10),feed_top),Vector2(tab_w,44),func():quest_filter=key;refresh(),key==quest_filter)
+		t.name="QuestTab_"+key;t.add_theme_font_size_override("font_size",16)
 		if counts[key]>0:UiKit.badge(t,"news",counts[key],"trailing")
-	var box=scroller(Vector2(UiKit.PAGE_PADDING+tabs_w+gap,feed_top),Vector2(full,content.size.y-feed_top-16));box.name="QuestFeed";box.add_theme_constant_override("separation",12)
+	var box=scroller(Vector2(UiKit.PAGE_PADDING,feed_top+58),Vector2(full,content.size.y-feed_top-58-16));box.name="QuestFeed";box.add_theme_constant_override("separation",12)
 	var shown=[]
 	if quest_filter=="completed":shown=p.quests("completed").slice(-20);shown.reverse()
 	else:shown=quests.filter(func(q):return is_ops.call(q)==(quest_filter=="operations"))

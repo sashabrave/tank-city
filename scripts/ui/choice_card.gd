@@ -130,6 +130,12 @@ static func table(card:Panel,data:Dictionary,width:float,accent:Color):
 		var text="[center]%s" % name
 		if row.size()>=4:text+="   [color=#8d9589][s]%s[/s][/color]  →  [b][color=#f1eedb]%s[/color][/b]" % [Texts.render(str(row[2])),Texts.render(str(row[3]))]
 		compare.text=text+"[/center]"
+		# T-151: a long name with «old → new» shrinks to fit the card instead of running past its edge.
+		var plain=name+("   %s  →  %s" % [Texts.render(str(row[2])),Texts.render(str(row[3]))] if row.size()>=4 else "")
+		var needed=UiKit.bold_font().get_string_size(plain,HORIZONTAL_ALIGNMENT_LEFT,-1,15).x
+		if needed>width-36:
+			var size=maxi(11,floori(15.0*(width-36)/needed))
+			compare.add_theme_font_size_override("normal_font_size",size);compare.add_theme_font_size_override("bold_font_size",size)
 		y+=step
 	# Ammo cards (T-127): a strip «old ammo → new ammo» with their icons instead of words.
 	if data.has("swap"):
