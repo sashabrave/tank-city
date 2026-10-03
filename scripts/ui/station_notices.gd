@@ -1,9 +1,9 @@
 extends RefCounted
-## Seen-aware notices for hub stations.
-## A station dot means "something you can buy or upgrade appeared since your last visit" — opening the
-## station clears it until a new affordable item shows up. A card gets a «Новое» chip when the item was
-## unlocked and never selected. On the first run of this system everything already in the profile counts
-## as seen, so an old profile is not flooded with badges.
+## Seen-aware notices for hub stations. One rule everywhere (author, 0.8.0): an item is NEW when it is unlocked
+## and was never selected, or it just became affordable and was not selected since. Its card carries the
+## «Новое» chip; a tab dot and the hub station dot are lit while ANY item of that tab / station is new, and go
+## out as soon as the last one is selected. On the first run of this system everything already in the profile
+## counts as seen, so an old profile is not flooded with badges.
 const STATIONS={"fighter":"res://scripts/ui/stations/fighter_station.gd","arsenal":"res://scripts/ui/stations/arsenal_station.gd","hq":"res://scripts/ui/stations/hq_station.gd","garage":"res://scripts/ui/stations/garage_station.gd","wardrobe":"res://scripts/ui/stations/wardrobe_station.gd"}
 ## World benches in the hub → the station they open.
 const BENCHES={"character":"fighter","weapons":"arsenal","bonuses":"arsenal","headquarters":"hq"}
@@ -44,21 +44,36 @@ static func is_new(kind:String,tab:String,id:String)->bool:
 	return seen_key(kind,tab+":"+id) not in Game.progression.seen
 
 static func mark_item_seen(kind:String,tab:String,id:String):
-	var key=seen_key(kind,tab+":"+id)
-	if key not in Game.progression.seen:Game.progression.seen.append(key);Game.save_progress()
+	var key=seen_key(kind,tab+":"+id);var changed=false
+	if key not in Game.progression.seen:Game.progression.seen.append(key);changed=true
+	var viewed:Array=viewed_affordable(kind)
+	if tab+":"+id in actionable(kind) and tab+":"+id not in viewed:viewed.append(tab+":"+id);changed=true
+	if changed:Game.save_progress()
 
-static func has_dot(kind:String)->bool:
+## Affordable items already selected. Items that stopped being affordable drop out, so they turn new again
+## when the player can afford them once more.
+static func viewed_affordable(kind:String)->Array:
+	var now=actionable(kind)
+	var viewed:Array=Game.progression.viewed_updates.get("station:"+kind,[]).filter(func(id):return id in now)
+	Game.progression.viewed_updates["station:"+kind]=viewed
+	return viewed
+static func item_new(kind:String,full_id:String,status:String)->bool:
 	ensure_baseline()
-	var viewed:Array=Game.progression.viewed_updates.get("station:"+kind,[])
-	for id in actionable(kind):
-		if id not in viewed:return true
-	for id in unlocked(kind):
-		if seen_key(kind,id) not in Game.progression.seen:return true
-	return false
-
-static func mark_viewed(kind:String):
+	if status in ["locked","soon","done","goal","later"]:return false
+	if seen_key(kind,full_id) not in Game.progression.seen:return true
+	return status in ["buy","upgrade"] and full_id not in viewed_affordable(kind)
+static func tab_new(kind:String,tab:String)->bool:
+	return scan(kind).any(func(i):return i.tab==tab and item_new(kind,i.id,i.status))
+## Every item of a station as viewed (profile migrations, tests).
+static func mark_all_seen(kind:String):
+	for i in scan(kind):
+		if i.status in ["locked","soon"]:continue  # a still-closed item becomes news when it opens
+		var key=seen_key(kind,i.id)
+		if key not in Game.progression.seen:Game.progression.seen.append(key)
 	Game.progression.viewed_updates["station:"+kind]=actionable(kind)
 	Game.save_progress()
+static func has_dot(kind:String)->bool:
+	return scan(kind).any(func(i):return item_new(kind,i.id,i.status))
 
 ## First run: whatever the profile already has is not news.
 static func ensure_baseline():

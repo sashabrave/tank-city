@@ -14,7 +14,7 @@ func run():
 	Game.save_path=dir.path_join("profile.json");Game.profiles.selected=true;Game.save_blocked=false;Game.save_enabled=true
 	var N=preload("res://scripts/ui/station_notices.gd")
 	Game.credits=100000;Game.cores=50
-	for kind in N.STATIONS:N.mark_viewed(kind)
+	for kind in N.STATIONS:N.mark_all_seen(kind)
 	check(Game.progression.viewed_updates.get("station:fighter") is Array,"stations keep their seen lists")
 	check(Game.save_progress(),"save succeeds after visiting every station")
 	check(Game.save_error=="","no save error is shown")

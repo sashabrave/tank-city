@@ -552,9 +552,7 @@ func launch():
 	start_requested.emit()
 
 func close_station():
-	# Leaving a station marks what was affordable there as seen: its bench dot waits for something new.
-	if is_instance_valid(build_menu) and str(build_menu.get("station_kind") if "station_kind" in build_menu else "")!="":
-		preload("res://scripts/ui/station_notices.gd").mark_viewed(build_menu.station_kind)
+	# Dots follow the items (0.8.0): leaving a station does not clear them, selecting the last new item does.
 	if is_instance_valid(build_menu):build_menu.get_parent().remove_child(build_menu);build_menu.queue_free();build_menu=null
 	phase="combat";Game.reset_input();dpad.clear();fire_pad.clear();dpad.enabled=true;fire_pad.enabled=true;start_button.disabled=false
 	call_deferred("present_unlock")

@@ -114,10 +114,14 @@ func build():
 			var tight=b.get_theme_stylebox(state).duplicate();tight.content_margin_left=14;tight.content_margin_right=10;b.add_theme_stylebox_override(state,tight)
 		b.expand_icon=true;b.add_theme_constant_override("icon_max_width",22);b.add_theme_constant_override("h_separation",10);b.alignment=HORIZONTAL_ALIGNMENT_LEFT;b.add_theme_font_size_override("font_size",16)
 		# T-052: a tab with something affordable right now carries a «ready» dot, as everywhere else.
-		if key!=tab and affordable_in(key):UiKit.badge(b,"ready",0,"trailing")
+		# One rule (0.8.0): a station tab is lit while any of its items is new; plain screens keep «affordable».
+		var lit=preload("res://scripts/ui/station_notices.gd").tab_new(station_kind,key) if station_kind not in ["","roadmap"] else affordable_in(key)
+		if key!=tab and lit:UiKit.badge(b,"ready",0,"trailing")
 	var scroll=ScrollContainer.new();panel.add_child(scroll);scroll.position=Vector2(232,96);scroll.size=Vector2(530,532);scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
 	var items=provider.items(tab)
 	if selected=="" and not items.is_empty():selected=items[0].id
+	# The item shown in the detail panel counts as viewed: its «Новое» goes out (and with the last one, the dots).
+	if selected!="" and station_kind not in ["","roadmap"]:preload("res://scripts/ui/station_notices.gd").mark_item_seen(station_kind,tab,str(selected))
 	var grouped=items.any(func(item):return item.has("group"))
 	var column=VBoxContainer.new();column.name="Items";scroll.add_child(column);column.add_theme_constant_override("separation",8)
 	var current_group=null;grid=null
@@ -196,7 +200,7 @@ func card(item:Dictionary):
 	if kind in ["soon","locked"]:picture.modulate.a=.55 if kind=="soon" else .8
 	status_chip(b,kind,Vector2(6,6))
 	# The roadmap shows progress, not unlocks: no «Новое» badges there.
-	if station_kind not in ["","roadmap"] and kind not in ["locked","soon","done","goal","later"] and preload("res://scripts/ui/station_notices.gd").is_new(station_kind,tab,str(item.id)):
+	if station_kind not in ["","roadmap"] and kind not in ["locked","soon","done","goal","later"] and preload("res://scripts/ui/station_notices.gd").item_new(station_kind,tab+":"+str(item.id),kind):
 		var fresh=status_chip(b,"new",Vector2(0,6));fresh.name="New"
 		fresh.position.x=b.custom_minimum_size.x-fresh.get_combined_minimum_size().x-6
 	var title=UiKit.label(b,str(item.title),Vector2(8,76),Vector2(150,26),15);title.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;title.clip_text=true
