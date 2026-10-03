@@ -125,6 +125,8 @@ func _ready():
 	dummy.visible="range" in Game.built_workshops
 	build_yard()
 	build_wardrobe()
+	# T-174: the number on the back wall (boss wins count it down).
+	var counter=preload("res://scripts/wall_counter.gd").new();add_child(counter);counter.position=Vector3(-1.0,1.95,-3.0)
 	build_roadmap()
 	dummy_label=Visuals.label3d(dummy,"",Vector3(0,1.7,0),Color("f7d891"),26)
 	Game.progression.prepare_telegrams()

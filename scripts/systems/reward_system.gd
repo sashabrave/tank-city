@@ -361,6 +361,7 @@ func award_kill(actor):
 		if not arena.room.actors.any(func(a):return is_instance_valid(a) and not a.dead and a.kind=="boss") and arena.room.spawn_queue.is_empty():
 			preload("res://scripts/resource_drop.gd").spawn(arena,actor.position,(Campaign.world if not Campaign.endless else 1)*Game.DOC_ALLOY,"alloy",actor.resource_blast)
 		Game.progression.event("boss_"+str(Campaign.progress_index(arena.room_index)))
+		Game.progression.event("boss_wins")  # the HQ wall number (T-174)
 		if (Campaign.is_final(arena.room_index) or (Campaign.unified_content() and arena.room_index in Campaign.BOSSES)) and Game.selected_class not in Game.progression.boss_classes:
 			Game.progression.boss_classes.append(Game.selected_class);Game.progression.event("boss_classes",Game.progression.boss_classes.size(),true)
 	Game.save_progress()
