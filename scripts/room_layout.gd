@@ -26,6 +26,8 @@ static func plan(run_seed:int,index:int,merchant:bool)->Dictionary:
 ## Places the weapon crate, the vending machine and the fortune spot; returns them as {crate, machine, fortune}.
 ## Every placed node answers near(avatar) and use(room_root, done) so a room only loops over them.
 static func furnish(room:Node3D,arena,index:int,merchant:bool)->Dictionary:
+	# Every room starts like a battle: no gun or rounds anywhere — the hub's ones are issued (arena.ensure_armed).
+	if is_instance_valid(arena) and arena.has_method("ensure_armed") and arena.ensure_armed(true):RunUpgrades.refresh_player(arena)
 	var layout=plan(int(arena.run_seed),index,merchant)
 	var nodes={"crate":preload("res://scripts/weapon_locker.gd").place(room,arena,WEAPON_CRATE)}
 	nodes.machine=place_machine(room,arena,str(layout.machine),MACHINE)

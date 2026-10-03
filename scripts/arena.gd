@@ -288,18 +288,28 @@ func _ready():
 
 ## Never into a fight unarmed (author, 2026-10-03): no gun in hand → the one chosen at the HQ is issued, and
 ## the ammo slots always hold at least the plain rounds. Says so when it had to step in.
-func ensure_armed()->bool:
+## Entering a battle or a room (at_start, author 2026-10-03): with no gun anywhere — neither in hand nor in the
+## backpack — the HQ issues the hub's choice (Arsenal); with no rounds anywhere — no loaded slot and nothing
+## that fits in the backpack — plain rounds are loaded. Empty hands with a gun in the backpack are the
+## player's choice: the paws stay, a reminder says so. Mid-battle (inventory changes) only broken data is fixed.
+func ensure_armed(at_start:=false)->bool:
 	if run==null:return false
 	var fixed=false
-	if str(run.weapon) not in LOOT.WEAPONS:
-		run.weapon=Game.selected_weapon if Game.selected_weapon in LOOT.WEAPONS else "pistol";fixed=true
-		toast(Texts.render("Нет оружия в руках — выдано из штаба: %s") % Texts.render(LOOT.WEAPONS[run.weapon].name))
+	var spare_gun=run.weapon_bag.any(func(w):return LootCatalog.is_gun(str(w.get("id",""))))
+	if str(run.weapon) not in LOOT.WEAPONS or (at_start and not LootCatalog.is_gun(str(run.weapon)) and not spare_gun):
+		run.weapon=Game.selected_weapon if LootCatalog.is_gun(Game.selected_weapon) else "pistol";run.weapon_rarity=0;run.weapon_stats={};fixed=true
+		toast(Texts.render("Нет оружия — выдано из штаба: %s") % Texts.render(LOOT.WEAPONS[run.weapon].name))
+	elif at_start and not LootCatalog.is_gun(str(run.weapon)):
+		toast(Texts.render("Руки пусты — бьёшь лапой. Возьми оружие в «Снаряжении»"))
 	if run.ammo_slots.is_empty():fixed=true;toast(Texts.render("Нет боеприпасов в слоте — заряжены обычные"))
 	Ammo.ensure(run,str(run.weapon))
+	if at_start and LootCatalog.is_gun(str(run.weapon)) and run.ammo_slots.all(func(s):return Ammo.is_empty_slot(s)) and not run.ammo_bag.any(func(a):return Ammo.fits(str(a.get("type","")),str(run.weapon))):
+		run.ammo_slots[clampi(run.ammo_active,0,run.ammo_slots.size()-1)]=Ammo.standard();fixed=true
+		toast(Texts.render("Нет боеприпасов — заряжены обычные"))
 	return fixed
 func begin_room(index: int):
 	Game.progression.combat_entered=true
-	ensure_armed()
+	ensure_armed(true)
 	if Campaign.daily:combat_rng.seed=DailyRun.room_seed(run_seed,Campaign.cycle,index)
 	effects.emit("room_start",{"index":index})
 	Game.music_context("boss" if index in Campaign.BOSSES else "battle",true)

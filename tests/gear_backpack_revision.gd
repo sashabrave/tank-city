@@ -154,6 +154,19 @@ func run():
 		check(Ammo.is_empty_slot(r.ammo_slots[std_slot]),"the plain rounds can be thrown away: the slot is empty")
 		r.ammo_slots[std_slot]=Ammo.standard()
 	r.weapon="";check(arena.ensure_armed() and str(r.weapon)==Game.selected_weapon,"no gun in hand: the HQ issues the chosen one")
+	# Entering a battle or a room (author, 2026-10-03): no gun anywhere → the hub's one; a gun in the backpack →
+	# the paws stay (the player's choice); no rounds anywhere → plain ones.
+	var keep_gun=str(r.weapon);var keep_bag=r.weapon_bag.duplicate(true)
+	r.weapon="paws";r.weapon_bag.clear()
+	check(arena.ensure_armed(true) and str(r.weapon)==Game.selected_weapon,"battle start without any gun: the hub's one is issued")
+	r.weapon="paws";r.weapon_bag=[{"id":"smg"}]
+	arena.ensure_armed(true);check(str(r.weapon)=="paws","a gun in the backpack: empty hands stay the player's choice")
+	r.weapon=keep_gun;r.weapon_bag=keep_bag;Ammo.ensure(r,keep_gun)
+	var keep_slots=r.ammo_slots.duplicate(true);var keep_ammo=r.ammo_bag.duplicate(true)
+	for i in range(r.ammo_slots.size()):r.ammo_slots[i]=Ammo.empty()
+	r.ammo_bag.clear()
+	check(arena.ensure_armed(true) and not Ammo.dry(r),"battle start without any rounds: plain ones are loaded")
+	r.ammo_slots=keep_slots;r.ammo_bag=keep_ammo
 	r.weapon=gun_before;Ammo.ensure(r,gun_before)
 	# Empty hands and the tablet (2026-10-03): the tablet closes; Space and V scratch with the paws; the paws
 	# deal the bare-hand damage grown by «Сила»; the model holds nothing.
