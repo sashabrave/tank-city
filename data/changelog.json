@@ -100,7 +100,8 @@
 					"Покупка машины у механика: окно с ценой и описанием, работает и после выбора улучшения, затем «Техника доставлена»",
 					"Выживание начинается с «Вы попали под обстрел!»: стрелять и применять способности теперь можно, главное — уходить из красных меток",
 					"Иконка здоровья базы — миниатюра нашей машины-штаба",
-					"Звонок майора теперь большое окно с его портретом: «Взять» или «Позже» (тогда трубка звонит в углу)"
+					"Звонок майора теперь большое окно с его портретом: «Взять» или «Позже» (тогда трубка звонит в углу)",
+					"Иконка «Напор»: золотая пуля разбивает серебряную (вместо ракеты)"
 				]
 			},
 			"en": {
@@ -200,7 +201,8 @@
 					"Buying a vehicle at the mechanic: a window with price and description, works after the upgrade choice too, then «Vehicle delivered»",
 					"Survival starts with «You are under fire!»: you can now shoot and use abilities, just leave the red markers",
 					"The base health icon is a miniature of our HQ vehicle",
-					"The major's call is now a big window with his portrait: «Answer» or «Later» (then the handset rings in the corner)"
+					"The major's call is now a big window with his portrait: «Answer» or «Later» (then the handset rings in the corner)",
+					"«Pressure» icon: a golden bullet smashes a silver one (instead of a rocket)"
 				]
 			}
 		},

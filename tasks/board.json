@@ -1560,7 +1560,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-123.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "Арт: Напор",
 			"type": "polish",
 			"version": "0.7.2-pre"
