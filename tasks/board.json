@@ -1521,7 +1521,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-120.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "вызов незаметный, сделай его диалоговым окном похожихм по структурке на стартовый диалог, только больше, большой фото звонящено и кнопка взять",
 			"type": "polish",
 			"version": "0.7.2-pre"

@@ -737,8 +737,13 @@ func present_call():
 	if call=="" or phase!="combat":present_unlock();return
 	# The call rings in the corner; the player answers when ready, nothing is blocked meanwhile.
 	if root.has_node("IncomingCall"):return
+	# The call opens as a dialog (T-120) and holds the hub until «Взять» or «Позже».
+	phase="ringing";dpad.enabled=false;fire_pad.enabled=false
 	var ring=preload("res://scripts/ui/incoming_call.gd").new();ring.call_id=call;root.add_child(ring)
-	ring.answered.connect(func():open_call(call))
+	ring.answered.connect(func():
+		if phase=="ringing":phase="combat"
+		open_call(call))
+	ring.postponed.connect(func():phase="combat";dpad.enabled=true;fire_pad.enabled=true;Game.reset_input();present_unlock())
 	present_unlock()
 func open_call(call:String):
 	# Answered while an unlock card is open: the call starts right after it.

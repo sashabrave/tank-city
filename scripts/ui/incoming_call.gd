@@ -1,7 +1,10 @@
 extends Control
-## Incoming video call: a round handset button in the top-right corner that pulses and buzzes softly
-## until the player answers. It never blocks movement; a click, tap or Enter opens the call.
+## Incoming video call (T-120): first a big dialog like the greeting — a large photo of the caller, his name,
+## «Взять» and «Позже»; «Позже» shrinks it to the round handset in the top-right corner that keeps ringing
+## until answered (a click, tap or Enter opens the call).
 signal answered
+signal postponed
+var dialog:Control
 const SIDE=72.0
 const RING_EVERY=2.2
 const LOUD_RINGS=3
@@ -26,6 +29,30 @@ func _ready():
 	caption.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT;caption.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	caption.add_theme_color_override("font_outline_color",Color(0,0,0,.6));caption.add_theme_constant_override("outline_size",4)
 	resized.connect(layout);layout()
+	button.hide();caption.hide();open_dialog()
+func open_dialog():
+	dialog=Control.new();dialog.name="CallDialog";add_child(dialog);dialog.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);dialog.mouse_filter=Control.MOUSE_FILTER_STOP;dialog.add_to_group("selection_scope")
+	var shade=ColorRect.new();dialog.add_child(shade);shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);shade.color=Color(0,0,0,.35);shade.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	var screen=get_viewport_rect().size;var w=minf(760,screen.x-40);var h=minf(380,screen.y-40)
+	var box=UiKit.glass(dialog,((screen-Vector2(w,h))*Vector2(.5,.6)).round(),Vector2(w,h));box.name="CallBox"
+	var side=h-48
+	var frame=Panel.new();box.add_child(frame);frame.position=Vector2(24,24);frame.size=Vector2(side,side);frame.add_theme_stylebox_override("panel",UiKit.style(Color("141b17"),12,Color("3f5a4a")))
+	var photo=TextureRect.new();frame.add_child(photo);photo.position=Vector2(8,8);photo.size=frame.size-Vector2(16,16);photo.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;photo.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_COVERED;photo.clip_contents=true
+	photo.texture=load("res://assets/portraits/major.png") if ResourceLoader.exists("res://assets/portraits/major.png") else preload("res://scripts/ui/class_gallery.gd").texture("heavy")
+	var x=24+side+28;var body=w-x-24
+	UiKit.label(box,"Входящий вызов",Vector2(x,34),Vector2(body,24),16,UiKit.MUTED)
+	UiKit.label(box,preload("res://scripts/ui/video_call.gd").MAJOR,Vector2(x,62),Vector2(body,40),30,UiKit.ORANGE)
+	var line=UiKit.label(box,"Главная когтебаза на связи. Есть новости для заставы.",Vector2(x,112),Vector2(body,70),17);line.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	var later=UiKit.button(box,"Позже",Vector2(x,h-24-56),Vector2((body-12)*.4,56),postpone)
+	var take=UiKit.button(box,"Взять",Vector2(x+(body-12)*.4+12,h-24-56),Vector2((body-12)*.6,56),answer,true)
+	take.icon=UiKit.interface_icon("call");take.expand_icon=true;take.add_theme_constant_override("icon_max_width",22);take.add_theme_font_size_override("font_size",20)
+	take.focus_mode=Control.FOCUS_ALL;take.grab_focus.call_deferred()
+	box.pivot_offset=box.size*.5;box.scale=Vector2.ONE*.94;box.modulate.a=0
+	var pop=box.create_tween().set_parallel(true);pop.tween_property(box,"scale",Vector2.ONE,.22).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT);pop.tween_property(box,"modulate:a",1.0,.18)
+## «Позже»: the dialog folds into the corner handset, which keeps ringing.
+func postpone():
+	if is_instance_valid(dialog):dialog.queue_free()
+	dialog=null;button.show();caption.show();postponed.emit()
 func layout():
 	button.position=Vector2(size.x-SIDE-28,104)
 	caption.position=Vector2(button.position.x+SIDE-caption.size.x,button.position.y+SIDE+6)
@@ -41,6 +68,7 @@ func _process(delta):
 	button.rotation=sin(clock*70)*.09 if buzzing else 0.0
 	button.scale=Vector2.ONE*(1.0+.05*sin(clock*4))
 func _unhandled_input(event):
+	if is_instance_valid(dialog):return
 	# Enter only: Space fires in the hub range.
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode in [KEY_ENTER,KEY_KP_ENTER]:
 		get_viewport().set_input_as_handled();answer()

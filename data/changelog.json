@@ -99,7 +99,8 @@
 					"Новая вкладка «Снаряжение»: кукла бойца с состояниями, способности, оружие, слоты патронов и рюкзак на одной сетке; патроны надеваются и снимаются нажатием, двойным нажатием или перетаскиванием, выброшенное ложится мешком на поле и подбирается обратно; рюкзак на старте — 4 ячейки; Tab открывает планшет, W/S листают вкладки; исправлено окно «Оставить эти настройки?» — оно не работало при открытом планшете",
 					"Покупка машины у механика: окно с ценой и описанием, работает и после выбора улучшения, затем «Техника доставлена»",
 					"Выживание начинается с «Вы попали под обстрел!»: стрелять и применять способности теперь можно, главное — уходить из красных меток",
-					"Иконка здоровья базы — миниатюра нашей машины-штаба"
+					"Иконка здоровья базы — миниатюра нашей машины-штаба",
+					"Звонок майора теперь большое окно с его портретом: «Взять» или «Позже» (тогда трубка звонит в углу)"
 				]
 			},
 			"en": {
@@ -198,7 +199,8 @@
 					"New «Gear» tab: the fighter doll with states, abilities, weapon, ammo slots and backpack on one grid; ammo is equipped and removed by tap, double tap or drag, dropped items lie on the field as a sack and can be picked up again; the backpack starts with 4 cells; Tab opens the tablet, W/S switch tabs; fixed the «Keep these settings?» prompt — it did not work while the tablet was open",
 					"Buying a vehicle at the mechanic: a window with price and description, works after the upgrade choice too, then «Vehicle delivered»",
 					"Survival starts with «You are under fire!»: you can now shoot and use abilities, just leave the red markers",
-					"The base health icon is a miniature of our HQ vehicle"
+					"The base health icon is a miniature of our HQ vehicle",
+					"The major's call is now a big window with his portrait: «Answer» or «Later» (then the handset rings in the corner)"
 				]
 			}
 		},
