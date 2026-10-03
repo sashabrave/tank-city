@@ -143,7 +143,9 @@
 					"Казарма → «Классы» переделана: классы вкладками сверху; шкала уровня с вехами (3 — слот 1, 5 — перк, 7 — Q сильнее, 10 — мастерство) и одна кнопка уровня; характеристики и перки; внизу две ячейки способностей (Q есть сразу, слот 1 меняется тапом, бесплатно) и кнопка «Взять класс». Кукла в планшете по центру.",
 					"Во время заезда штаба и выхода бойца управление отключено: боец выпрыгивает, обегает стену и встаёт на клетку — тогда начинается бой.",
 					"Интерфейс: кнопки видеозвонка больше не слипаются, вкладки задач горизонтальные, длинная строка «было → стало» на карточке усиления ужимается и не вылезает за край.",
-					"Полевой планшет всегда открывается на вкладке «Снаряжение»."
+					"Полевой планшет всегда открывается на вкладке «Снаряжение».",
+					"Потеря сплава при выбывании каждый раз немного разная: ±10% от уровня страховки (на станции написано «≈»).",
+					"Выпавшие при гибели жетоны и сплав соответствуют потере: один жетон — один жетон, большие суммы падают кусками разного номинала и размера, каждый раз по-разному."
 				]
 			},
 			"en": {
@@ -286,7 +288,9 @@
 					"Barracks → «Classes» redone: classes as tabs on top; a level track with milestones (3 — slot 1, 5 — perk, 7 — stronger Q, 10 — mastery) and one level button; stats and perks; at the bottom two ability cells (Q from the start, slot 1 swaps by a tap, free) and a «Take class» button. The tablet doll is centred.",
 					"Controls are off while the HQ drives in and the soldier hops out: he jumps, runs round the wall and takes his cell — then the fight begins.",
 					"Interface: video call buttons no longer stick together, quest tabs are horizontal, a long «before → after» line on an upgrade card shrinks instead of running past the edge.",
-					"The field tablet always opens on the Equipment tab."
+					"The field tablet always opens on the Equipment tab.",
+					"Alloy lost when knocked out varies a little each time: ±10% around the insurance level (the station shows «≈»).",
+					"Tokens and alloy that fall on death match the loss: one token is one token, big amounts fall in pieces of different value and size, different every time."
 				]
 			}
 		},

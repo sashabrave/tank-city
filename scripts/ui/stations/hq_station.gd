@@ -41,7 +41,7 @@ func detail(tab:String,id:String)->Dictionary:
 		"insurance":
 			if id=="alloy":
 				var cap=Balance.CONFIG.economy.insurance_cap;var n=Game.progression.insurance
-				return {"title":"Страховка сплава","icon":"upgrade/insurance_alloy","text":"Меньше потерь добытого сплава при выбывании.","rows":[["Потеря при выбывании","%d%%" % roundi(Game.death_loss_fraction()*100),"%d%%" % roundi(Game.death_loss_fraction(mini(n+1,cap))*100)]],"actions":[{"id":"buy","text":"Максимум" if n>=cap else "Улучшить · %d ◈" % Game.insurance_cost(),"enabled":n<cap and Game.credits>=Game.insurance_cost(),"primary":true}]}
+				return {"title":"Страховка сплава","icon":"upgrade/insurance_alloy","text":"Меньше потерь добытого сплава при выбывании.","rows":[["Потеря при выбывании","≈%d%%" % roundi(Game.death_loss_fraction()*100),"≈%d%%" % roundi(Game.death_loss_fraction(mini(n+1,cap))*100)]],"lines":["Каждый раз разброс ±10% от этого значения."],"actions":[{"id":"buy","text":"Максимум" if n>=cap else "Улучшить · %d ◈" % Game.insurance_cost(),"enabled":n<cap and Game.credits>=Game.insurance_cost(),"primary":true}]}
 			var known="rescue" in Game.research_unlocks;var price=Game.special_cost("rescue")
 			return {"title":"Страховка чертежей","icon":"upgrade/insurance_blueprint","text":"Шанс сохранить чертежи из рюкзака при выбывании." if known else "Нужен чертёж страховки.","rows":[["Шанс","%d%%" % (Game.rescue_level*6),"%d%%" % (mini(Game.rescue_level+1,10)*6)]],"actions":[{"id":"buy","text":"Максимум" if price<0 and known else "Улучшить · %d ◈" % price,"enabled":known and price>=0 and Game.credits>=price,"primary":true}]}
 		"build":

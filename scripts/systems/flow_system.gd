@@ -108,7 +108,9 @@ func finish_run(won: bool,reason: String):
 	if not won:
 		arena.run.lost_run=true
 		if not arena.sandbox:Game.progression.event("deaths")
-		var loss=mini(Game.credits,roundi(arena.run.earned*Game.death_loss_fraction()))
+		# 0.8.0 (author): the share lost varies ±10% around the insurance level each time (run RNG, reproducible).
+		var share=Game.death_loss_fraction()*arena.run.combat_rng.randf_range(.9,1.1)
+		var loss=mini(Game.credits,roundi(arena.run.earned*share))
 		arena.run.lost_alloy=loss;Game.credits-=loss;Game.save_progress()
 		var carried=arena.run.pending_recipes.duplicate(true)
 		arena.run.pending_recipes=preload("res://scripts/recipe_extraction.gd").survivors(arena.run.pending_recipes,false,Game.rescue_level,arena.run.combat_rng,int(arena.run.safe_slots))

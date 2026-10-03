@@ -2913,3 +2913,13 @@ Q · есть сразу	Q · from the start
 Взять класс	Take class
 Открыть и взять	Unlock and take
 Закрыто · 	Locked · 
+ · забери %d ◈	 · claim %d ◈
+ · награда %d ◈	 · reward %d ◈
+Забрать %d ◈	Claim %d ◈
+Награда получена: %d ◈.	Reward claimed: %d ◈.
+Награда: %d ◈.	Reward: %d ◈.
+Получено %d ◈	Received %d ◈
+ Награда получена: %d сплава.	 Reward claimed: %d alloy.
+ Награда: %d сплава.	 Reward: %d alloy.
+Каждый раз разброс ±10% от этого значения.	It varies by ±10% of this value each time.
+Потеря сплава при выбывании: примерно %s%% (±10%%)	Alloy lost when knocked out: about %s%% (±10%%)

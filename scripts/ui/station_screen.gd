@@ -250,10 +250,11 @@ func render_detail():
 		bottom-=4
 	if notice!="":UiKit.label(content,notice,Vector2(16,detail_box.size.y-44),Vector2(288,28),15,Color("8fe895")).name="Notice"
 	UiKit.reveal(content,0,Vector2(18,0),.22)
-## Height of a wrapped label at its width, from the label's own shaping (theme font, rendered text).
-static func wrapped_height(label:Label,_width:float,_font_size:int)->float:
+## Height of a wrapped label at its width (measured from the font: get_line_count() is 1 before layout).
+static func wrapped_height(label:Label,width:float,font_size:int)->float:
 	label.text_overrun_behavior=TextServer.OVERRUN_NO_TRIMMING;label.max_lines_visible=-1
-	return label.get_line_count()*(label.get_line_height()+label.get_theme_constant("line_spacing"))+4
+	var font=label.get_theme_font("font");var text=Texts.render(label.text)
+	return ceilf(font.get_multiline_string_size(text,HORIZONTAL_ALIGNMENT_LEFT,width-4,font_size).y)+6
 func perform(action:String):
 	var message=str(provider.act(tab,selected,action))
 	if message=="":return

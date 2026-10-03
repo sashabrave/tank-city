@@ -254,7 +254,9 @@ func _physics_process(delta):
 		badge.visible=Game.research_unlocks.any(func(id):return id in Game.BUILD_COST.keys() and preload("res://scripts/ui/build_catalog.gd").has_news(id))
 		hint_refresh=.3
 		refresh_command_alert()
-		if is_instance_valid(roadmap_alert):roadmap_alert.visible=not preload("res://scripts/ui/stations/roadmap_station.gd").new().unseen_done().is_empty()
+		if is_instance_valid(roadmap_alert):
+			var roadmap=preload("res://scripts/ui/stations/roadmap_station.gd").new()
+			roadmap_alert.visible=not roadmap.unseen_done().is_empty() or not roadmap.unclaimed().is_empty()  # T-148: alloy waiting
 		var targets=Game.progression.build_targets()
 		for id in build_arrows:
 			if is_instance_valid(build_arrows[id]):build_arrows[id].visible=id not in Game.built_workshops and (id in Game.research_unlocks or id in targets)

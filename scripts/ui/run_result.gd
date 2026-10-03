@@ -150,29 +150,42 @@ static func pop(panel:Control,node:Control,delay:float):
 ## Lost alloy: coins drop from the top resource counter, tumble and fall off the bottom of the screen,
 ## with a red «−N» under the counter.
 ## Run tokens burn on defeat (T-090): token coins fall out of their counter, which folds away.
+## What falls matches what was lost (0.8.0): the amount is split into random pieces of 1, 5 and 10 (no more
+## than `cap` pieces), and a bigger piece is a bigger icon. One token lost — one token falls. Visual RNG only.
+static func pieces(total:int,cap:int)->Array:
+	var rng=RandomNumberGenerator.new();rng.randomize()
+	var result=[];var left=total
+	while left>0:
+		var options=[1]
+		if left>=5:options.append(5)
+		if left>=10:options.append(10)
+		# Prefer big pieces when many are left, so the pile stays under the cap.
+		var value=options.back() if left/float(options.back())>cap-result.size()-1 else options[rng.randi_range(0,options.size()-1)]
+		result.append(value);left-=value
+	result.shuffle()
+	return result.slice(0,cap+4)  # a huge loss still falls as a readable handful of big pieces
+static func drop_pile(layer:Control,origin:Vector2,icon:String,values:Array,base:float):
+	var screen=layer.get_viewport_rect().size
+	var rng=RandomNumberGenerator.new();rng.randomize()
+	for i in range(values.size()):
+		var side=base*(1.0 if values[i]==1 else 1.35 if values[i]==5 else 1.7)
+		var coin=TextureRect.new();layer.add_child(coin);coin.texture=UiKit.icon_texture(icon);coin.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;coin.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		coin.size=Vector2(side,side);coin.pivot_offset=coin.size*.5;coin.position=origin+Vector2(rng.randf_range(-14,24),rng.randf_range(-2,6));coin.z_index=119;coin.mouse_filter=Control.MOUSE_FILTER_IGNORE
+		var time=rng.randf_range(.95,1.25);var delay=i*.06+rng.randf_range(0,.05)
+		var fall=coin.create_tween().set_parallel(true)
+		fall.tween_property(coin,"position",coin.position+Vector2(rng.randf_range(-90,90),screen.y+60),time).set_delay(delay).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+		fall.tween_property(coin,"rotation",rng.randf_range(-1.6,1.6)*TAU,time).set_delay(delay)
+		fall.chain().tween_callback(coin.queue_free)
 static func drop_tokens(hud,count:int):
 	if count<=0:return
 	var layer:Control=hud.root;var screen=layer.get_viewport_rect().size
 	var icon=ResourceStrip.token_icon
 	var origin=icon.get_global_rect().position if is_instance_valid(icon) and icon.visible else Vector2(screen.x*.5+40,10)
 	ResourceStrip.tokens_lost=true
-	for i in range(clampi(count+2,3,10)):
-		var coin=TextureRect.new();layer.add_child(coin);coin.texture=UiKit.icon_texture("token");coin.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;coin.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		coin.size=Vector2(24,24);coin.pivot_offset=coin.size*.5;coin.position=origin+Vector2(i*5%20,4);coin.z_index=119;coin.mouse_filter=Control.MOUSE_FILTER_IGNORE
-		var fall=coin.create_tween().set_parallel(true)
-		fall.tween_property(coin,"position",coin.position+Vector2((float(i%5)-2.0)*38.0,screen.y+60),1.0+i*.05).set_delay(i*.06).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-		fall.tween_property(coin,"rotation",(1.0 if i%2==0 else -1.0)*TAU*1.2,1.0+i*.05).set_delay(i*.06)
-		fall.chain().tween_callback(coin.queue_free)
+	drop_pile(layer,origin,"token",pieces(count,10),22.0)
 static func drop_coins(hud,lost:int):
 	var layer:Control=hud.root;var screen=layer.get_viewport_rect().size
 	var origin=Vector2(screen.x*.5-60,34)
 	var minus=UiKit.label(layer,"−%d" % lost,origin+Vector2(-10,26),Vector2(120,30),22,Color("ff6b57"));minus.name="AlloyLoss";minus.z_index=120
 	var fade=minus.create_tween();fade.tween_property(minus,"position:y",minus.position.y+18,.9);fade.parallel().tween_property(minus,"modulate:a",0.0,.9).set_delay(.6);fade.tween_callback(minus.queue_free)
-	for i in range(clampi(lost/8+3,3,14)):
-		var coin=TextureRect.new();layer.add_child(coin);coin.texture=UiKit.icon_texture("alloy_single");coin.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;coin.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		coin.size=Vector2(26,26);coin.pivot_offset=coin.size*.5;coin.position=origin+Vector2(i*7%40,0);coin.z_index=119;coin.mouse_filter=Control.MOUSE_FILTER_IGNORE
-		var drift=(float(i%5)-2.0)*45.0
-		var fall=coin.create_tween().set_parallel(true)
-		fall.tween_property(coin,"position",coin.position+Vector2(drift,screen.y+60),1.1+i*.04).set_delay(i*.05).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-		fall.tween_property(coin,"rotation",(1.0 if i%2==0 else -1.0)*TAU*1.5,1.1+i*.04).set_delay(i*.05)
-		fall.chain().tween_callback(coin.queue_free)
+	drop_pile(layer,origin,"alloy_single",pieces(lost,14),24.0)
