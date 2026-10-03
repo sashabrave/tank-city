@@ -5,7 +5,7 @@ static func show(hub):
 	var root=Control.new();hub.build_menu=root;hub.root.add_child(root);root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);root.add_to_group("selection_scope")
 	var shade=ColorRect.new();root.add_child(shade);shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);shade.color=Color(0,0,0,.5)
 	var panel=UiKit.glass(root,(root.get_viewport_rect().size-Vector2(1060,690))*.5,Vector2(1060,690))
-	UiKit.label(panel,"Строительство",Vector2(24,18),Vector2(750,40),UiKit.PAGE_TITLE_SIZE)
+	UiKit.accent(UiKit.label(panel,"Строительство",Vector2(24,18),Vector2(750,40),UiKit.PAGE_TITLE_SIZE))
 	UiKit.button(panel,"×",Vector2(984,18),Vector2(50,42),hub.close_station)
 	UiKit.label(panel,"Развивай базу между вылазками · %d ◈" % Game.credits,Vector2(24,65),Vector2(980,28),16,UiKit.MUTED)
 	# Stations and the range; the backpack and rerolls moved to «Казарма» → Снаряжение.

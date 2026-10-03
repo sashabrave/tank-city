@@ -35,7 +35,7 @@ static func configure(card:Panel,data:Dictionary,choose:Callable):
 	frame.position=Vector2(208,12);frame.size=Vector2(62,62);frame.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	var frame_style=UiKit.style(Color("232c29").lerp(data.color,.19),12,data.color.darkened(.12))
 	frame_style.set_border_width_all(2);frame.add_theme_stylebox_override("panel",frame_style)
-	card.get_node("Title").text=data.title
+	card.get_node("Title").text=data.title;UiKit.accent(card.get_node("Title"))
 	var old=card.get_node_or_null("NumericDescription")
 	if old:old.get_parent().remove_child(old);old.queue_free()
 	card.get_node("Description").show()

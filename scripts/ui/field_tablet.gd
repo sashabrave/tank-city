@@ -67,7 +67,7 @@ func refresh():
 	for child in get_children():remove_child(child);child.queue_free()
 	var dim=ColorRect.new();add_child(dim);dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);dim.color=Color(0,0,0,.38)
 	panel=UiKit.glass(self,Vector2.ZERO,Vector2(1060,690),Color("283b33"));fit_panel()
-	UiKit.label(panel,"Командный центр" if manage else "Полевой планшет",Vector2(82,18),Vector2(840,40),27,Color("e8ecdc"))
+	UiKit.accent(UiKit.label(panel,"Командный центр" if manage else "Полевой планшет",Vector2(82,18),Vector2(840,40),26,Color("e8ecdc")))
 	var close_button=UiKit.button(panel,"",Vector2(981,17),Vector2(52,44),func():closed.emit())
 	close_button.icon=UiKit.interface_icon("close");close_button.tooltip_text="Закрыть планшет";close_button.expand_icon=true;close_button.add_theme_constant_override("icon_max_width",20)
 	var toggle=UiKit.button(panel,"",Vector2(22,18),Vector2(44,40),toggle_navigation)
@@ -176,7 +176,7 @@ func list_button(box:VBoxContainer,text:String,callback:Callable,height=65):
 func quest_page():
 	var p=Game.progression
 	if manage:p.prepare_telegrams()
-	UiKit.label(content,"Задачи",Vector2(UiKit.PAGE_PADDING,20),Vector2(700,28),UiKit.PAGE_TITLE_SIZE)
+	UiKit.accent(UiKit.label(content,"Задачи",Vector2(UiKit.PAGE_PADDING,20),Vector2(700,28),UiKit.PAGE_TITLE_SIZE))
 	# T-057: vertical filter tabs on the left — main story/institute, operations, done — each with a dot when it
 	# holds something new or ready. Inside a tab: what needs you on top, taken work below.
 	var tabs_w=170.0;var gap=16.0
@@ -342,7 +342,7 @@ static func quest_echo(entry:Dictionary)->bool:
 	var text=str(entry.get("text","")).to_lower()
 	return text.begins_with("новое задание") or text.begins_with("новый приказ") or text.begins_with("поступила телеграмма") or "задание выполнено" in text
 func messages_page():
-	UiKit.label(content,"Связь",Vector2(UiKit.PAGE_PADDING,20),Vector2(720,28),UiKit.PAGE_TITLE_SIZE)
+	UiKit.accent(UiKit.label(content,"Связь",Vector2(UiKit.PAGE_PADDING,20),Vector2(720,28),UiKit.PAGE_TITLE_SIZE))
 	if message_tab not in ["calls","important","technical"]:message_tab="calls"
 	for button in UiKit.tab_row(content,Vector2(22,68),content.size.x-44,[["calls","История"],["important","Сообщения"],["technical","Технические"]],message_tab,func(key):message_tab=key;refresh()):button.add_theme_font_size_override("font_size",16)
 	var hint={"calls":"Звонки майора — их можно пересмотреть","important":"Развитие, открытия и важные события","technical":"Боевые реплики · без всплывающих уведомлений"}[message_tab]
@@ -369,7 +369,7 @@ func base_page():preload("res://scripts/ui/base_dashboard.gd").render(self)
 func inventory_page():preload("res://scripts/ui/tablet_pages.gd").new(self).inventory()
 
 func about_page():
-	UiKit.label(content,"Об игре",Vector2(UiKit.PAGE_PADDING,20),Vector2(720,28),UiKit.PAGE_TITLE_SIZE)
+	UiKit.accent(UiKit.label(content,"Об игре",Vector2(UiKit.PAGE_PADDING,20),Vector2(720,28),UiKit.PAGE_TITLE_SIZE))
 	for button in UiKit.tab_row(content,Vector2(22,68),775.0-44,[["info","Об игре"],["changelog","Изменения"]],about_tab,func(key):about_tab=key;refresh()):
 		button.add_theme_font_size_override("font_size",16);button.name="AboutTab_"+button.name.trim_prefix("Tab_")
 	if about_tab=="changelog":changelog_page();return

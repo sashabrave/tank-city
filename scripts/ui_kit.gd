@@ -278,8 +278,9 @@ static func muted_locked_button(button:Button):
 	button.add_theme_color_override("icon_disabled_color",Color(1,1,1,.25))
 
 ## Typography (design system): Inter SemiBold for all interface text, Inter Bold for emphasis inside
-## rich text, Rubik Dirt only as a rare accent (5–10% of the text: hub call to action, screen titles,
-## run results). Minimal punctuation: no full stop after labels, buttons and single-sentence hints.
+## rich text, Rubik 720 in capitals for headings (about 10–15% of the text: hub call to action, page and
+## screen titles, modal titles, card names, phase announcements, run results). Minimal punctuation: no
+## full stop after labels, buttons and single-sentence hints.
 const FONT_BASE=preload("res://assets/ui/fonts/inter_semibold.tres")
 const FONT_REGULAR=preload("res://assets/ui/fonts/inter_regular.tres")
 const FONT_BOLD=preload("res://assets/ui/fonts/inter_bold.tres")
@@ -287,9 +288,12 @@ const FONT_ACCENT=preload("res://assets/ui/fonts/accent.tres")
 static func field_font()->Font:return FONT_BASE
 static func bold_font()->Font:return FONT_BOLD
 static func accent_font()->Font:return FONT_ACCENT
-## Switches a label or button to the accent face.
+## Switches a label or button to the heading face. Headings are set in capitals by Texts (after
+## translation and sentence case), so re-rendered and translated text stays in capitals too.
 static func accent(control:Control,font_size:=0)->Control:
 	control.add_theme_font_override("font",FONT_ACCENT)
+	control.set_meta("accent_caps",true)
+	if control.has_meta("text_source") and not control is RichTextLabel:Texts.set_text(control,str(control.get_meta("text_source")))
 	if control is RichTextLabel:control.add_theme_font_override("normal_font",FONT_ACCENT)
 	if font_size>0:control.add_theme_font_size_override("normal_font_size" if control is RichTextLabel else "font_size",font_size)
 	return control

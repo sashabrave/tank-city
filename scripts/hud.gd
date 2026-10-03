@@ -235,7 +235,7 @@ func modal_base(kicker: String,heading: String,subtitle: String,height=410) -> P
 func choice_screen(scene:String,kicker:String,heading:String,subtitle:String)->Panel:
 	close_modal();modal=load("res://scenes/ui/"+scene+".tscn").instantiate();root.add_child(modal);modal.add_to_group("selection_scope")
 	var panel=modal.get_node("Panel")
-	panel.get_node("Kicker").text=kicker;panel.get_node("Heading").text=heading;panel.get_node("Subtitle").text=""
+	panel.get_node("Kicker").text=kicker;panel.get_node("Heading").text=heading;UiKit.accent(panel.get_node("Heading"));panel.get_node("Subtitle").text=""
 	return panel
 
 func show_upgrades():

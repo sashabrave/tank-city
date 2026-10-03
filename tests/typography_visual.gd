@@ -84,6 +84,8 @@ func run():
 		var arena=load("res://scenes/arena.tscn").instantiate();arena.run_seed=41;add_child(arena);arena.auto_pause_enabled=false
 		await settle(30);arena.set_physics_process(false)
 		await capture("battle-hud",arena)
+		arena.presentation.announce("Волна 2","Пехота с фланга",2.0);await capture("phase-steps",arena,.12)
+		await capture("phase-title",arena,.6)
 		arena.phase="upgrade";arena.upgrade_offers=[{"id":"last_stand","tier":1},{"id":"opening_shot","tier":1},{"id":"exit_dash","tier":1}]
 		arena.hud._show_upgrades_now();await capture("upgrade-cards",arena)
 		arena.hud.close_modal();arena.phase="combat"

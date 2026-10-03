@@ -171,7 +171,7 @@ func open():
 	menu=CanvasLayer.new();menu.layer=100;add_child(menu)
 	var shade=ColorRect.new();shade.color=Color(0,0,0,.45);shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);menu.add_child(shade)
 	var panel=UiKit.panel(menu,(get_viewport().get_visible_rect().size-Vector2(900,696))/2,Vector2(900,696));panel.add_to_group("selection_scope")
-	UiKit.label(panel,"Настройки",Vector2(30,22),Vector2(700,45),UiKit.PAGE_TITLE_SIZE)
+	UiKit.accent(UiKit.label(panel,"Настройки",Vector2(30,22),Vector2(700,45),UiKit.PAGE_TITLE_SIZE))
 	UiKit.button(panel,"×",Vector2(815,18),Vector2(55,48),close)
 	for i in range(4):UiKit.button(panel,["Видео","Звук","Управление","Интерфейс"][i],Vector2(30+i*213,85),Vector2(201,48),func():tab=i;draw())
 	content=Control.new();panel.add_child(content);content.position=Vector2(30,133+UiKit.TAB_CONTENT_GAP)

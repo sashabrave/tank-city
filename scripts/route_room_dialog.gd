@@ -4,7 +4,7 @@ static func build(route,info:Dictionary)->Control:
 	var dim=ColorRect.new();modal.add_child(dim);dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);dim.color=Color(0,0,0,.48)
 	var size=route.get_viewport().get_visible_rect().size
 	var panel=UiKit.glass(modal,(size-Vector2(680,460))*.5,Vector2(680,460))
-	UiKit.label(panel,"Этап %d · разведданные" % (info.stage+1),Vector2(28,20),Vector2(630,35),25)
+	UiKit.accent(UiKit.label(panel,"Этап %d · разведданные" % (info.stage+1),Vector2(28,20),Vector2(630,35),24))
 	var banner=UiKit.panel(panel,Vector2(28,65),Vector2(624,58),Color("91a298"))
 	UiKit.label(banner,"Поле боя / "+Campaign.title(info.stage),Vector2(16,12),Vector2(595,35),19,Color("eef0e2"))
 	var rosters=route.node_rosters[info.id];var total=0;var income=0

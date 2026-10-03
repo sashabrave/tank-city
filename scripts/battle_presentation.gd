@@ -3,6 +3,10 @@ extends CanvasLayer
 var arena
 var heading:Label
 var caption:Label
+var words:HBoxContainer
+## Phase titles appear in steps, word after word (the hub chat rhythm), each rising into place.
+const WORD_STEP=.07
+const WORD_RISE=26.0
 var text_tween:Tween
 var pulse=0.0
 var last_phase=""
@@ -28,23 +32,51 @@ func _ready():
 	caption=Label.new();caption.set_meta("keep_theme_colors",true);add_child(caption);caption.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;caption.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	caption.add_theme_color_override("font_color",Color.WHITE)
 	caption.add_theme_color_override("font_shadow_color",Color(0,0,0,.7));caption.add_theme_constant_override("shadow_offset_y",2)
+	# The heading keeps its text (tests, localisation) but is drawn word by word by the Words row below.
+	heading.add_theme_color_override("font_color",Color(1,1,1,0));heading.add_theme_color_override("font_shadow_color",Color(0,0,0,0))
+	words=HBoxContainer.new();words.name="Words";heading.add_child(words);words.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	words.alignment=BoxContainer.ALIGNMENT_CENTER;words.mouse_filter=Control.MOUSE_FILTER_IGNORE;words.set_meta("text_editor",true)
 	layout();get_viewport().size_changed.connect(layout);heading.modulate.a=0;caption.modulate.a=0
 func layout():
 	if not is_inside_tree():return
 	var size=get_viewport().get_visible_rect().size
 	heading.size=Vector2(size.x*.88,140);heading.pivot_offset=heading.size*.5
-	heading.position=Vector2(size.x*.06,size.y*.25);heading.scale=Vector2(.72,1.18)
-	heading.add_theme_font_size_override("font_size",clampi(roundi(size.x*.036),34,84))
+	heading.position=Vector2(size.x*.06,size.y*.25)
+	heading.add_theme_font_size_override("font_size",clampi(roundi(size.x*.032),32,76))
+	words.add_theme_constant_override("separation",roundi(heading.get_theme_font_size("font_size")*.32))
+	for slot in words.get_children():
+		var word:Label=slot.get_child(0);word.add_theme_font_size_override("font_size",heading.get_theme_font_size("font_size"));slot.custom_minimum_size=word.get_combined_minimum_size()
 	caption.size=Vector2(size.x*.9,50);caption.position=Vector2(size.x*.05,size.y*.25+115)
 	caption.add_theme_font_size_override("font_size",clampi(roundi(size.x*.014),18,38))
 func announce(title:String,subtitle:String="",hold:float=.7):
 	if text_tween and text_tween.is_valid():text_tween.kill()
 	Texts.set_text(heading,title);Texts.set_text(caption,subtitle);heading.modulate.a=0;caption.modulate.a=0
+	var steps=build_words(heading.text)
 	text_tween=create_tween().set_parallel(true)
-	text_tween.tween_property(heading,"modulate:a",1.0,.16);text_tween.tween_property(caption,"modulate:a",1.0,.16)
-	text_tween.chain().tween_interval(hold)
+	text_tween.tween_property(heading,"modulate:a",1.0,.12)
+	for i in range(steps.size()):
+		var word:Label=steps[i];var delay=i*WORD_STEP
+		text_tween.tween_property(word,"modulate:a",1.0,.16).set_delay(delay)
+		text_tween.tween_property(word,"position:y",0.0,.26).set_delay(delay).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	text_tween.tween_property(caption,"modulate:a",1.0,.2).set_delay(steps.size()*WORD_STEP)
+	# The steps take longer than the old 0.16 s fade; the hold gives that time back, so the whole announcement
+	# (and the reward window waiting for it) keeps its length.
+	var reveal=maxf(.2+steps.size()*WORD_STEP,(steps.size()-1)*WORD_STEP+.26) if not steps.is_empty() else .2
+	text_tween.chain().tween_interval(maxf(.15,hold-(reveal-.16)))
 	text_tween.chain().tween_property(heading,"modulate:a",0.0,.3)
 	text_tween.parallel().tween_property(caption,"modulate:a",0.0,.3)
+## Splits the rendered heading into word slots; each word starts lower and transparent.
+func build_words(text:String)->Array:
+	for slot in words.get_children():words.remove_child(slot);slot.queue_free()
+	var result=[];var font_size=heading.get_theme_font_size("font_size")
+	for part in text.split(" ",false):
+		var slot=Control.new();slot.mouse_filter=Control.MOUSE_FILTER_IGNORE;words.add_child(slot)
+		var word=Label.new();slot.add_child(word);word.text=part;word.mouse_filter=Control.MOUSE_FILTER_IGNORE
+		word.add_theme_font_override("font",UiKit.accent_font());word.add_theme_font_size_override("font_size",font_size)
+		word.add_theme_color_override("font_color",Color.WHITE);word.add_theme_color_override("font_shadow_color",Color(0,0,0,.4));word.add_theme_constant_override("shadow_offset_y",3)
+		slot.custom_minimum_size=word.get_combined_minimum_size()
+		word.position.y=WORD_RISE;word.modulate.a=0;result.append(word)
+	return result
 func fade_in():
 	var shade=ColorRect.new();add_child(shade);shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);shade.color=Color.BLACK;shade.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	var tween=create_tween();tween.tween_property(shade,"color:a",0.0,.5);tween.tween_callback(shade.queue_free)

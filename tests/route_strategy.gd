@@ -87,9 +87,9 @@ func run():
 	await get_tree().create_timer(.3).timeout
 	check(map_events.size()==1,"map exit fires exactly once after camera transition")
 	arena.begin_room(Campaign.BOSSES[0])
-	check(arena.presentation.heading.text=="Бой с генералом","final stage title")
+	check(arena.presentation.heading.text.to_lower()=="бой с генералом","final stage title")
 	arena.begin_room(0);arena.start_wave(1)
-	check(arena.presentation.heading.text=="Волна 2","second wave title")
+	check(arena.presentation.heading.text.to_lower()=="волна 2","second wave title")
 	arena.phase="paused";var size_before=arena.camera.size;arena.presentation._process(1)
 	check(arena.camera.size==size_before,"paused camera stays still")
 	var plan=RoutePlan.build(42);var stage=0

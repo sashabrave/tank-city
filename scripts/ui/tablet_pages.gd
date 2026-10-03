@@ -5,7 +5,7 @@ var arena
 var content
 func _init(owner):view=owner;arena=owner.arena;content=owner.content
 func page(title:String,height:float=720)->Control:
-	UiKit.label(content,title,Vector2(UiKit.PAGE_PADDING,20),Vector2(727,28),UiKit.PAGE_TITLE_SIZE)
+	UiKit.accent(UiKit.label(content,title,Vector2(UiKit.PAGE_PADDING,20),Vector2(727,28),UiKit.PAGE_TITLE_SIZE))
 	var box=view.scroller(Vector2(UiKit.PAGE_PADDING,UiKit.PAGE_CONTENT_TOP),Vector2(727,505))
 	var body=Control.new();box.add_child(body);body.custom_minimum_size=Vector2(705,height);return body
 func details(title:String,body:String,action:Callable=Callable()):
@@ -187,7 +187,7 @@ func radio():
 			button.pressed.connect(func():c.rate(id,value);view.refresh())
 	if rows.is_empty():UiKit.label(box,"Здесь пока нет композиций",Vector2.ZERO,Vector2(450,40),15,UiKit.MUTED)
 func settings():
-	UiKit.label(content,"Настройки",Vector2(UiKit.PAGE_PADDING,20),Vector2(727,28),UiKit.PAGE_TITLE_SIZE)
+	UiKit.accent(UiKit.label(content,"Настройки",Vector2(UiKit.PAGE_PADDING,20),Vector2(727,28),UiKit.PAGE_TITLE_SIZE))
 	var tabs=["Графика","Экран","Звук","Управление","Интерфейс"]
 	if view.settings_tab=="Видео":view.settings_tab="Графика"
 	# Same full-width tab row as the quest filters: equal sizes, the active tab only changes colour. Built at the

@@ -2,13 +2,13 @@
 
 importer="font_data_dynamic"
 type="FontFile"
-uid="uid://bfjyk4335f1i1"
-path="res://.godot/imported/RubikDirt-Regular.ttf-9dfaf1611e635f883ae9cc27b7106625.fontdata"
+uid="uid://hvggm5kifdbl"
+path="res://.godot/imported/Rubik.ttf-dd823a89773b021ea57a561d07694502.fontdata"
 
 [deps]
 
-source_file="res://assets/fonts/RubikDirt-Regular.ttf"
-dest_files=["res://.godot/imported/RubikDirt-Regular.ttf-9dfaf1611e635f883ae9cc27b7106625.fontdata"]
+source_file="res://assets/fonts/Rubik.ttf"
+dest_files=["res://.godot/imported/Rubik.ttf-dd823a89773b021ea57a561d07694502.fontdata"]
 
 [params]
 

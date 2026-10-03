@@ -25,7 +25,7 @@ static func show(hud,arena,won:bool,reason:String):
 	var clock=[.15]
 	var at=func(step:float=STEP)->float:clock[0]+=step;return clock[0]
 	# — Loot —
-	UiKit.label(panel,"Добыча",left,Vector2(column,26),UiKit.SECTION_SIZE,UiKit.MUTED)
+	UiKit.accent(UiKit.label(panel,"Добыча",left,Vector2(column,26),UiKit.SECTION_SIZE,UiKit.MUTED))
 	var gathered=ledger(panel,left+Vector2(0,36),column,"Собрано за вылазку","+%d" % earned,UiKit.INK,at.call())
 	count_up(gathered,earned,"+%d",clock[0])
 	var bar_y=left.y+76
@@ -88,7 +88,7 @@ static func show(hud,arena,won:bool,reason:String):
 		x+=pitch
 	# — Summary —
 	clock[0]=.15
-	UiKit.label(panel,"Сводка",right,Vector2(column,26),UiKit.SECTION_SIZE,UiKit.MUTED)
+	UiKit.accent(UiKit.label(panel,"Сводка",right,Vector2(column,26),UiKit.SECTION_SIZE,UiKit.MUTED))
 	var fields=mini(arena.room_index+(1 if won else 0),Campaign.SIZES.size())
 	var best=int(Game.progression.counters.get("best_kills",0));var record=arena.kills>best and arena.kills>0
 	if record:Game.progression.event("best_kills",arena.kills,true)

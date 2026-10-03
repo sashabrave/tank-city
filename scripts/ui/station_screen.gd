@@ -209,7 +209,7 @@ func render_detail():
 	var content=Control.new();detail_box.add_child(content);content.size=detail_box.size
 	var picture=UiKit.icon(content,str(info.get("icon",selected)),Vector2(16,16),Vector2(72,72))
 	if info.has("texture"):picture.texture=info.texture
-	var heading=UiKit.label(content,str(info.get("title","")),Vector2(100,18),Vector2(206,64),21);heading.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	var heading=UiKit.label(content,str(info.get("title","")),Vector2(100,18),Vector2(206,64),20);UiKit.accent(heading);heading.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	var current=provider.items(tab).filter(func(i):return str(i.id)==selected)
 	if not current.is_empty():status_chip(content,status(current[0]),Vector2(16,96))
 	var actions:Array=info.get("actions",[])
