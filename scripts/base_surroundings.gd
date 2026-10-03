@@ -2,7 +2,7 @@ extends RefCounted
 ## Sparse visual-only scenery, outside the authored gameplay grid.
 ## Light stands (tools/build_lights_v1.py): a tall lattice mast on the ground, a field tripod on block tops.
 ## One spotlight per stand sits in the modelled lamp heads (Godot -Z is the lamp side).
-const STANDS={"light_mast":{"anchor":Vector3(0,2.62,-.2),"tilt":-50.0,"range":8.0,"angle":45.0},"light_tripod":{"anchor":Vector3(0,1.5,-.16),"tilt":-47.0,"range":6.0,"angle":43.0}}
+const STANDS={"light_mast":{"anchor":Vector3(0,2.62,-.2),"tilt":-50.0,"range":8.0,"angle":31.0},"light_tripod":{"anchor":Vector3(0,1.5,-.16),"tilt":-47.0,"range":6.0,"angle":30.0}}
 static func lamp(parent:Node3D,pos:Vector3):
 	var rig=Node3D.new();rig.name="MilitaryLightStand";parent.add_child(rig);rig.position=pos
 	rig.rotation.y=atan2(rig.global_position.x,rig.global_position.z)
@@ -10,7 +10,9 @@ static func lamp(parent:Node3D,pos:Vector3):
 	Visuals.model(kind,rig)
 	var spec=STANDS[kind]
 	var light=preload("res://scripts/world_lighting.gd").beam(rig,spec.anchor,true,1)
-	light.rotation.x=deg_to_rad(spec.tilt);light.spot_range=spec.range;light.spot_angle=spec.angle;light.set_meta("day_energy",.15);light.set_meta("night_energy",1.35)
+	light.rotation.x=deg_to_rad(spec.tilt);light.spot_range=spec.range;light.spot_angle=spec.angle;light.set_meta("day_energy",.15);light.set_meta("night_energy",1.9)
+	# Night pools (0.8): a narrower, brighter cone that falls off with distance lights a patch, not the field.
+	light.spot_attenuation=1.6;light.spot_angle_attenuation=1.4
 static func tree(parent:Node3D,pos:Vector3,height:float):
 	Visuals.box(parent,pos+Vector3.UP*height*.23,Vector3(height*.08,height*.46,height*.08),Color("665641"))
 	for i in range(3):

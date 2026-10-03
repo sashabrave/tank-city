@@ -38,8 +38,9 @@ func apply():
 	for batch in batches:batch.visible=Settings.values.get("atmosphere",true)
 	for cloud in clouds:
 		cloud.visible=Settings.values.get("atmosphere",true)
-		cloud.material_override.set_shader_parameter("light_color",Color("aab6d2") if night else Color("fffdf8"))
-		cloud.material_override.set_shader_parameter("shade_color",Color("4d5878") if night else Color("cbc8dd"))
+		# Night clouds are dim shapes, not glowing blobs (0.8 dark night).
+		cloud.material_override.set_shader_parameter("light_color",Color("39425a") if night else Color("fffdf8"))
+		cloud.material_override.set_shader_parameter("shade_color",Color("1b2133") if night else Color("cbc8dd"))
 	var cozy=Settings.values.get("shaders",true)
 	tilt.visible=cozy
 	tilt.get_child(0).visible=Settings.values.get("tilt_shift",true)

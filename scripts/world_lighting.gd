@@ -191,6 +191,12 @@ func depth_light(on:bool,night:=false):
 		environment.ambient_light_color=environment.ambient_light_color.lerp(Color("5f74b0"),.35)
 		sun.shadow_opacity=minf(1.0,sun.shadow_opacity)*.8
 		environment.glow_intensity*=1.3
+		# Soft dark night (0.8): with real sun shadows back, the moon and fill lit sand like daytime. Moon and
+		# fill go down so searchlights and lamps make the bright patches; light floors darken a bit more.
+		var k=0.0
+		if get_parent().has_method("room_palette"):k=clampf((Color(get_parent().room_palette().floor).get_luminance()-.45)/.25,0.0,1.0)
+		sun.light_energy*=.42-.1*k;environment.ambient_light_energy*=.48-.1*k
+		environment.tonemap_exposure*=.94-.12*k
 		return
 	environment.adjustment_contrast*=1.08;environment.adjustment_saturation*=1.05
 	sun.light_color=sun.light_color.lerp(Color("ffd6a8"),.15);sun.light_energy*=1.06

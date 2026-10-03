@@ -11,7 +11,10 @@ var backdrop_materials:Array=[]
 func update_lighting():
 	for material in backdrop_materials:
 		var color:Color=material.get_meta("day_color")
-		material.albedo_color=color.darkened(.79).lerp(Color("203044"),.3) if Settings.values.world_lighting=="night" else color
+		var night=Settings.values.world_lighting=="night"
+		# At night the silhouettes must read darker than the sky behind them (author, 0.8): unlit, near-black blue.
+		material.shading_mode=BaseMaterial3D.SHADING_MODE_UNSHADED if night else BaseMaterial3D.SHADING_MODE_PER_PIXEL
+		material.albedo_color=color.darkened(.9).lerp(Color("080b14"),.6) if night else color
 var weather=preload("res://assets/weather/default.tres")
 func _ready():
 	Settings.changed.connect(update_lighting)
