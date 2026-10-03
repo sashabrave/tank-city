@@ -81,32 +81,39 @@ func comrade_step(buddy,delta):
 	buddy.brain_cooldown-=delta
 	if buddy.brain_cooldown>0:return
 	buddy.brain_cooldown=.2
-	var goal=arena.room.player.cell;var target=null;var best=INF
-	if buddy.kind=="soldier":
+	# T-167: the comrade fights every enemy it can reach, not only the nearest one (it used to stand still when
+	# that one was diagonal or behind water), and walks to any cell with a clear line on some enemy.
+	var reach=float(arena.LOOT.WEAPONS[buddy.companion_weapon].range) if buddy.kind=="soldier" and buddy.get("companion_weapon")!=null and arena.LOOT.WEAPONS.has(buddy.companion_weapon) else 7.0
+	var enemies=arena.room.actors.filter(func(e):return is_instance_valid(e) and not e.dead and not e.player_owned and not e.allied)
+	var target=null;var best=INF;var shot=Vector2i.ZERO
+	for enemy in enemies:
+		var direction=arena.aligned_direction(buddy.cell,enemy.cell);var d=arena.flat_distance(buddy.position,enemy.position)
+		if direction!=Vector2i.ZERO and d<=reach and d<best and arena.clear_line(buddy.cell,enemy.cell):best=d;target=enemy;shot=direction
+	if target!=null:
+		buddy.facing=shot;buddy.model.rotation.y=buddy.angle_for(shot)
+		if buddy.fire_cooldown<=0:
+			buddy.fire_cooldown=buddy.fire_interval
+			if buddy.kind=="soldier":fire_comrade_weapon(buddy)
+			else:arena.spawn_bullet(buddy,buddy.position,shot,buddy.damage,true)
+		return
+	# No shot: with nobody to fight, board a nearby wreck or stay by the player.
+	var goal=arena.room.player.cell
+	if enemies.is_empty() and buddy.kind=="soldier":
 		for wreck in arena.room.wrecks.duplicate():
 			if not is_instance_valid(wreck) or wreck.spent or not wreck.boardable or wreck.unstable:continue
 			var d=arena.flat_distance(buddy.position,wreck.position)
 			if d<1.6:
 				var vehicle=arena.spawn_actor(wreck.kind,buddy.cell,false,true);vehicle.companion=true;vehicle.companion_factor=buddy.companion_factor;vehicle.damage*=1+buddy.companion_factor;vehicle.hp=minf(vehicle.max_hp,maxf(1,wreck.armor if not wreck.unstable else vehicle.max_hp*.6));vehicle.refresh_health()
 				wreck.spent=true;arena.room.wrecks.erase(wreck);wreck.queue_free();arena.room.actors.erase(buddy);buddy.queue_free();return
-			if d<8:goal=wreck.cell;best=-1
-	for enemy in arena.room.actors:
-		if not is_instance_valid(enemy) or enemy.dead or enemy.player_owned or enemy.allied:continue
-		var d=arena.flat_distance(buddy.position,enemy.position)
-		if d<best:best=d;target=enemy;goal=enemy.cell
-	if target!=null:
-		var direction=arena.aligned_direction(buddy.cell,target.cell)
-		if direction!=Vector2i.ZERO and arena.clear_line(buddy.cell,target.cell):
-			buddy.facing=direction;buddy.model.rotation.y=buddy.angle_for(direction)
-			if buddy.fire_cooldown<=0:
-				buddy.fire_cooldown=buddy.fire_interval
-				if buddy.kind=="soldier":fire_comrade_weapon(buddy)
-				else:arena.spawn_bullet(buddy,buddy.position,direction,buddy.damage,true)
-			return
+			if d<8:goal=wreck.cell
+	var firing_cell=func(cell:Vector2i)->bool:
+		for enemy in enemies:
+			if arena.aligned_direction(cell,enemy.cell)!=Vector2i.ZERO and arena.flat_distance(arena.world_pos(cell),enemy.position)<=reach and arena.clear_line(cell,enemy.cell):return true
+		return false
 	var queue=[buddy.cell];var came={buddy.cell:buddy.cell};var head=0;var destination=buddy.cell
-	while head<queue.size():
+	while head<queue.size() and head<600:
 		var cell=queue[head];head+=1
-		if (cell-goal).length()<=1.1:destination=cell;break
+		if cell!=buddy.cell and (firing_cell.call(cell) if not enemies.is_empty() else (cell-goal).length()<=1.1):destination=cell;break
 		for direction in arena.DIRS:
 			var next=cell+direction
 			if came.has(next) or not arena.can_enter(next,buddy):continue

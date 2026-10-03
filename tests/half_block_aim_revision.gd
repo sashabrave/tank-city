@@ -18,4 +18,17 @@ func run():
 	check(arena.enemy.enemy_aim(enemy)!=Vector2i.DOWN,"no firing down into a concrete half-block")
 	arena.walls[cover].node.queue_free();arena.walls.erase(cover);arena.add_wall(cover,4)
 	check(arena.enemy.concrete_to_base(spot)==false,"brick in between still counts as breachable")
+	# T-183: a brick half-block of the map in the HQ column is not pounded either; the HQ ring stays breachable.
+	arena.walls[cover].node.queue_free();arena.walls.erase(cover);arena.add_wall(cover,4);arena.board.shape_wall(cover,0)
+	check(arena.enemy.concrete_to_base(spot) and arena.enemy.enemy_aim(enemy)!=Vector2i.DOWN,"no firing down into a brick half-block of the map")
+	var ring=base+Vector2i(0,-1)
+	arena.walls[cover].node.queue_free();arena.walls.erase(cover)
+	if not arena.walls.has(ring):arena.add_wall(ring,4)
+	arena.walls[ring].erase("half_side");arena.board.shape_wall(ring,2)
+	check(not arena.enemy.concrete_to_base(spot),"the HQ's own brick ring stays breachable")
+	# T-169: an assaulting unit shoots a player who stands in its line.
+	arena.player.position=arena.world_pos(spot+Vector2i(2,0));arena.player.cell=spot+Vector2i(2,0)
+	for c in [spot+Vector2i(1,0),spot+Vector2i(2,0)]:
+		if arena.walls.has(c):arena.walls[c].node.queue_free();arena.walls.erase(c)
+	check(arena.enemy.enemy_aim(enemy)==Vector2i.RIGHT,"assault still answers a lined-up player")
 	print("HALF BLOCK AIM: %d failures" % failures);get_tree().quit(1 if failures else 0)

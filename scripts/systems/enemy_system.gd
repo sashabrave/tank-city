@@ -63,11 +63,14 @@ func enemy_aim(actor) -> Vector2i:
 	var open_shot=base_aim(actor)
 	if open_shot!=Vector2i.ZERO:return open_shot
 	var seek_open_lane=not base_firing_cells(actor).is_empty()
+	var weapon_range=EnemyLoadouts.profile(actor.enemy_weapon).range if actor.kind in ["soldier","shield"] else 7.0
 	if actor.assault_time>0 and not arena.boss_room:
+		# T-169: an assaulting unit still answers a player standing in its line of fire.
+		var answer=player_shot(actor,weapon_range) if actor.kind!="grenadier" else Vector2i.ZERO
+		if answer!=Vector2i.ZERO:return answer
 		if not seek_open_lane and actor.cell.x==arena.base_cell.x and actor.cell.y>=arena.grid_size-4 and not concrete_to_base(actor.cell):return Vector2i.DOWN
 		var next=actor.cell+actor.facing
 		return actor.facing if not seek_open_lane and needs_breach(actor) and arena.walls.has(next) and arena.walls[next].hp>0 else Vector2i.ZERO
-	var weapon_range=EnemyLoadouts.profile(actor.enemy_weapon).range if actor.kind in ["soldier","shield"] else 7.0
 	for wreck in arena.room.wrecks:
 		if not is_instance_valid(wreck) or wreck.spent or wreck.unstable or wreck.husk or wreck.delivery_left>0 or arena.flat_distance(actor.position,wreck.position)>minf(5,weapon_range):continue
 		var direction=arena.aligned_direction(actor.cell,wreck.cell)
@@ -78,15 +81,8 @@ func enemy_aim(actor) -> Vector2i:
 		if not is_instance_valid(turret) or not turret.allied or turret.dead or arena.flat_distance(actor.position,turret.position)>weapon_range:continue
 		var aim=arena.aligned_direction(actor.cell,turret.cell)
 		if aim!=Vector2i.ZERO and arena.clear_line(actor.cell,turret.cell):return aim
-	if arena.abilities.cloak_time<=0 and is_instance_valid(arena.room.player) and not arena.room.player.dead and not arena.room.nets.has(arena.grid_pos(arena.room.player.position)):
-		var target=arena.player.position;var delta=target-actor.position
-		var dir=Vector2i.ZERO
-		if absf(delta.x)<.26:dir=Vector2i(0,signi(roundi(delta.z)))
-		elif absf(delta.z)<.26:dir=Vector2i(signi(roundi(delta.x)),0)
-		var width=1.0 if actor.kind in ["buggy","apc","tank","boss"] else .5
-		# Water, vegetation, sand and ice never obstruct a shot; only wall geometry does.
-		var end=actor.position+Vector3(dir.x,0,dir.y)*delta.length()
-		if dir!=Vector2i.ZERO and delta.length()<=CombatMods.engage_range(arena,weapon_range) and arena.clear_shot(actor.position,end,width):return dir
+	var at_player=player_shot(actor,weapon_range)
+	if at_player!=Vector2i.ZERO:return at_player
 	# Shoot toward the base, including through its destructible cover.
 	if not seek_open_lane and not arena.room.boss_room and actor.cell.x == arena.room.base_cell.x and actor.cell.y >= arena.room.grid_size-4:
 		return Vector2i.ZERO if concrete_to_base(actor.cell) else Vector2i.DOWN
@@ -95,12 +91,29 @@ func enemy_aim(actor) -> Vector2i:
 		if not actor.uses_quarter_steps() or not arena.can_stand(actor.position+Vector3(actor.facing.x,0,actor.facing.y)*.5,actor,true):return actor.facing
 	return Vector2i.ZERO
 
+## Direction to shoot the player when they stand in line and in range with a clear shot, else ZERO.
+func player_shot(actor,weapon_range:float)->Vector2i:
+	if arena.abilities.cloak_time>0 or not is_instance_valid(arena.room.player) or arena.room.player.dead or arena.room.nets.has(arena.grid_pos(arena.room.player.position)):return Vector2i.ZERO
+	var target=arena.player.position;var delta=target-actor.position
+	var dir=Vector2i.ZERO
+	if absf(delta.x)<.26:dir=Vector2i(0,signi(roundi(delta.z)))
+	elif absf(delta.z)<.26:dir=Vector2i(signi(roundi(delta.x)),0)
+	var width=1.0 if actor.kind in ["buggy","apc","tank","boss"] else .5
+	# Water, vegetation, sand and ice never obstruct a shot; only wall geometry does.
+	var end=actor.position+Vector3(dir.x,0,dir.y)*delta.length()
+	if dir!=Vector2i.ZERO and delta.length()<=CombatMods.engage_range(arena,weapon_range) and arena.clear_shot(actor.position,end,width):return dir
+	return Vector2i.ZERO
 ## T-002: indestructible cover (concrete, its half-blocks and L-corners) between a cell straight above the HQ
 ## and the HQ: shooting down would only hit the concrete, so the unit moves on and looks for a real lane.
 func concrete_to_base(cell:Vector2i)->bool:
 	var p=cell+Vector2i.DOWN
 	while p.y<arena.room.base_cell.y:
-		if arena.room.walls.has(p) and arena.room.walls[p].hp<0:return true
+		var wall=arena.room.walls.get(p)
+		if wall!=null and wall.hp<0:return true
+		# T-183: a half-block of the map (not the HQ's own ring) only eats the shots — the unit moves on and
+		# finds a lane instead of pounding it. The HQ ring stays breachable by design.
+		var ring=p.y>=arena.room.grid_size-2 and absi(p.x-arena.room.base_cell.x)<=1
+		if wall!=null and wall.has("half_side") and not ring:return true
 		p+=Vector2i.DOWN
 	return false
 func needs_breach(actor)->bool:
@@ -145,7 +158,7 @@ func path_direction(actor) -> Vector2i:
 	while not state.queue.is_empty() and expanded<96:
 		if Time.get_ticks_usec()-began+path_budget_usec>=2000 or Time.get_ticks_usec()-began>=450:break
 		var p:Vector2i=frontier_pop(state.queue);expanded+=1
-		if (waypoint!=Vector2i(-1,-1) and p==waypoint) or (waypoint==Vector2i(-1,-1) and ((not arena.boss_room and p.x==arena.base_cell.x and p.y>=arena.grid_size-4 and p!=arena.base_cell) or (arena.boss_room and is_instance_valid(arena.player) and arena.aligned_direction(p,arena.player.cell)!=Vector2i.ZERO and arena.clear_line(p,arena.player.cell)))):
+		if (waypoint!=Vector2i(-1,-1) and p==waypoint) or (waypoint==Vector2i(-1,-1) and ((not arena.boss_room and p.x==arena.base_cell.x and p.y>=arena.grid_size-4 and p!=arena.base_cell and not concrete_to_base(p)) or (arena.boss_room and is_instance_valid(arena.player) and arena.aligned_direction(p,arena.player.cell)!=Vector2i.ZERO and arena.clear_line(p,arena.player.cell)))):
 			goal=p;state.done=true;break
 		for dir in arena.DIRS:
 			var next:Vector2i=p+dir
@@ -217,7 +230,7 @@ func quarter_path_direction(actor)->Vector2i:
 		var p:Vector2i=frontier_pop(state.queue);expanded+=1
 		var pos=Vector3(p.x*.25,actor.position.y,p.y*.25);var cell=arena.grid_pos(pos)
 		var at_waypoint=cell==waypoint and (not arena.trenches.has(cell) or pos.is_equal_approx(arena.world_pos(cell)))
-		if (waypoint!=Vector2i(-1,-1) and at_waypoint) or (waypoint==Vector2i(-1,-1) and ((not arena.boss_room and cell.x==arena.base_cell.x and cell.y>=arena.grid_size-4 and cell!=arena.base_cell) or (arena.boss_room and is_instance_valid(arena.player) and arena.aligned_direction(cell,arena.player.cell)!=Vector2i.ZERO and arena.clear_line(cell,arena.player.cell)))):
+		if (waypoint!=Vector2i(-1,-1) and at_waypoint) or (waypoint==Vector2i(-1,-1) and ((not arena.boss_room and cell.x==arena.base_cell.x and cell.y>=arena.grid_size-4 and cell!=arena.base_cell and not concrete_to_base(cell)) or (arena.boss_room and is_instance_valid(arena.player) and arena.aligned_direction(cell,arena.player.cell)!=Vector2i.ZERO and arena.clear_line(cell,arena.player.cell)))):
 			goal=p;state.done=true;break
 		for dir in arena.DIRS:
 			var next=p+dir
@@ -418,7 +431,9 @@ func attention_tick(actor,delta:float):
 	actor.assault_time=maxf(0,actor.assault_time-delta);actor.trench_return_delay=maxf(0,actor.trench_return_delay-delta)
 	actor.attention_timer-=delta
 	if actor.cell.y>actor.deepest_row:actor.deepest_row=actor.cell.y;actor.idle_progress_time=0
-	else:actor.idle_progress_time+=delta
+	# T-169: no "stall" time during an assault — it used to reach 6 s by the end and start the next assault at
+	# once, so a stuck unit stayed in assault (and silent) forever.
+	elif actor.assault_time<=0:actor.idle_progress_time+=delta
 	if actor.assault_time>0:actor.movement_pause=0;return
 	var stalled=actor.idle_progress_time>=6 and actor.cell.y<arena.grid_size-4
 	if not stalled and actor.attention_timer>0:return

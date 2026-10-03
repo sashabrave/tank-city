@@ -2113,7 +2113,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-167.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "способнсость товарищ - он стоит на месте и ничего не делает",
 			"type": "bug",
 			"version": "0.8.0"
@@ -2139,7 +2139,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-169.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "враг завис",
 			"type": "bug",
 			"version": "0.8.0"
@@ -2321,7 +2321,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-183.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "вот тут не перестали стрелять в полублок перед базой враги",
 			"type": "bug",
 			"version": "0.8.0"

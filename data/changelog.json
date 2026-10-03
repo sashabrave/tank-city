@@ -157,7 +157,8 @@
 					"«Сводка» в командном центре: что выросло с прошлого просмотра, плавно растёт зелёным с «+N»",
 					"Видеозвонок: зелёная вибрирующая кнопка «Взять», окно разговора плавно вырастает из окна вызова, портрет майора крупнее и вровень с кнопками, окна подстраиваются под экран",
 					"Комнаты между полями: можно стрелять и применять способности, как в хабе и бою; у механика пять разных карточек транспорта (новые — скорострельность и капремонт); если способностей ещё нет, инструктор даёт сплав; сундук объясняет, что за карточки",
-					"Бронебойные патроны пробивают поднятый щит щитовика с шансом 30–55% (зависит от редкости); карточка контузии называется «Контузящие патроны», а в планшете шанс оглушения считается вместе с патронами; свои пули днём обведены тёмным контуром и видны на светлых картах; при смене дня и ночи в настройках отражения и трассеры перерисовываются"
+					"Бронебойные патроны пробивают поднятый щит щитовика с шансом 30–55% (зависит от редкости); карточка контузии называется «Контузящие патроны», а в планшете шанс оглушения считается вместе с патронами; свои пули днём обведены тёмным контуром и видны на светлых картах; при смене дня и ночи в настройках отражения и трассеры перерисовываются",
+					"Бой: товарищ стреляет по любому врагу на линии огня и сам ищет позицию; враги не долбят полублоки на поле перед штабом, а ищут проход; враг в штурме отвечает игроку и не застревает в вечном штурме"
 				]
 			},
 			"en": {
@@ -314,7 +315,8 @@
 					"Command centre summary: what grew since the last look rises smoothly in green with «+N»",
 					"Video call: a green buzzing «Answer» button, the conversation window grows smoothly out of the call window, the major's portrait is larger and level with the buttons, windows adapt to the screen",
 					"Rooms between fields: shoot and use abilities like in the hub and battle; the mechanic has five different vehicle cards (new: fire rate and overhaul); with no abilities yet the instructor gives alloy; the chest explains its cards",
-					"Armor-piercing rounds break through a raised riot shield with a 30–55% chance (by rarity); the stun card is now «Stun rounds», and the tablet counts the loaded ammo's stun chance; your bullets get a dark rim and stay visible on light day maps; switching day/night in settings redraws reflections and tracers"
+					"Armor-piercing rounds break through a raised riot shield with a 30–55% chance (by rarity); the stun card is now «Stun rounds», and the tablet counts the loaded ammo's stun chance; your bullets get a dark rim and stay visible on light day maps; switching day/night in settings redraws reflections and tracers",
+					"Battle: the comrade fires at any enemy in its line and finds a firing spot; enemies stop pounding map half-blocks in front of the HQ and look for a lane; an assaulting enemy fires back at the player and no longer gets stuck in an endless assault"
 				]
 			}
 		},
