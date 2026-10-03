@@ -9,13 +9,13 @@ const BASE_EXTRA=3
 const MAX_BOUGHT=5
 
 static func capacity()->int:return mini(CELLS,Game.backpack_slots+BASE_EXTRA)
-static func used(run)->int:return run.pending_recipes.size()+run.ammo_bag.size() if run!=null else 0
+static func used(run)->int:return run.pending_recipes.size()+run.ammo_bag.size()+run.supplies.size() if run!=null else 0
 static func free_cells(run)->int:return capacity()-used(run)
 static func full(run)->bool:return free_cells(run)<=0
 ## Items in cell order: blueprints, then ammo. Each entry {kind:"recipe"|"ammo", item}.
 static func items(run)->Array:
 	if run==null:return []
-	return run.pending_recipes.map(func(r):return {"kind":"recipe","item":r})+run.ammo_bag.map(func(a):return {"kind":"ammo","item":a})
+	return run.pending_recipes.map(func(r):return {"kind":"recipe","item":r})+run.ammo_bag.map(func(a):return {"kind":"ammo","item":a})+run.supplies.map(func(x):return {"kind":"supply","item":x})
 
 ## Bag ammo → the active slot (or a given one); the slot's special ammo comes back to the bag. Standard ammo
 ## is not an item and simply disappears from the slot.
@@ -55,6 +55,9 @@ static func drop(arena,kind:String,index:int)->bool:
 		"ammo":
 			if index<0 or index>=run.ammo_bag.size():return false
 			content.ammo.append(run.ammo_bag[index]);run.ammo_bag.remove_at(index)
+		"supply":
+			if index<0 or index>=run.supplies.size():return false
+			content["supplies"]=[run.supplies[index]];run.supplies.remove_at(index)
 		"slot":
 			var item=run.ammo_slots[index] if index>=0 and index<run.ammo_slots.size() else null
 			if not item is Dictionary or item.type==Ammo.STANDARD:return false
@@ -64,9 +67,26 @@ static func drop(arena,kind:String,index:int)->bool:
 	refresh(arena);return true
 ## Picks a sack up when everything fits; otherwise it stays and says so.
 static func pick_sack(arena,content:Dictionary)->bool:
-	var run=arena.run;var count=content.recipes.size()+content.ammo.size()
+	var run=arena.run;var count=content.recipes.size()+content.ammo.size()+content.get("supplies",[]).size()
 	if free_cells(run)<count:arena.toast(Texts.render("Рюкзак полон"));return false
-	run.pending_recipes.append_array(content.recipes);run.ammo_bag.append_array(content.ammo)
+	run.pending_recipes.append_array(content.recipes);run.ammo_bag.append_array(content.ammo);run.supplies.append_array(content.get("supplies",[]))
 	refresh(arena);return true
 static func refresh(arena):
 	if is_instance_valid(arena.hud):arena.hud.refresh_ammo()
+## Uses the first aid kit from the backpack (H, a tap in the gear screen). Does nothing at full health.
+static func use_medkit(arena,index:=0)->bool:
+	var run=arena.run
+	var kits=[]
+	for i in range(run.supplies.size()):
+		if str(run.supplies[i].get("type",""))=="medkit":kits.append(i)
+	if kits.is_empty():arena.toast(Texts.render("В рюкзаке нет аптечек"));return false
+	if run.soldier_hp>=run.soldier_max_hp-.01:arena.toast(Texts.render("Здоровье и так полное"));return false
+	var at=index if index in kits else kits[0]
+	var kit=run.supplies[at];run.supplies.remove_at(at)
+	var healed=minf(float(kit.get("heal",1.0))*run.healing_multiplier,run.soldier_max_hp-run.soldier_hp)
+	run.soldier_hp+=healed
+	var player=arena.room.player
+	if is_instance_valid(player) and player.kind=="soldier":player.hp=run.soldier_hp;player.refresh_health();arena.burst(player.position+Vector3.UP*.5,Color("ff6b6b"),.6)
+	Game.sound("heal",arena);arena.toast(Texts.render("Аптечка: +%s здоровья") % str(snappedf(healed,.1)))
+	refresh(arena);return true
+static func medkits(run)->int:return run.supplies.filter(func(x):return str(x.get("type",""))=="medkit").size() if run!=null else 0

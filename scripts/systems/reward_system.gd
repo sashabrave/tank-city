@@ -82,7 +82,13 @@ func collect_pickup(pickup: Dictionary):
 		"star":
 			arena.room.star_time=6+effective_bonus_level("star")*1.5;detail="Неуязвимость и мощный огонь · %d с" % int(arena.room.star_time)
 		"heart":
-			var healed=minf(float(pickup.get("hq_heal",Game.heal_amount()*bonus_strength("heart")))*arena.run.healing_multiplier,arena.run.soldier_max_hp-arena.run.soldier_hp)
+			# Full health (T-115): the aid kit goes into the backpack for later, if there is a free cell.
+			var amount=float(pickup.get("hq_heal",Game.heal_amount()*bonus_strength("heart")))
+			if arena.run.soldier_hp>=arena.run.soldier_max_hp-.01 and is_instance_valid(arena.room.player) and arena.room.player.kind=="soldier" and not Backpack.full(arena.run):
+				arena.run.supplies.append({"type":"medkit","heal":amount})
+				arena.room.pickups.erase(pickup);preload("res://scripts/battle_stage.gd").vanish(pickup.node);Game.sound("pickup",arena)
+				arena.toast(Texts.render("Аптечка в рюкзаке · H — использовать"));Backpack.refresh(arena);return
+			var healed=minf(amount*arena.run.healing_multiplier,arena.run.soldier_max_hp-arena.run.soldier_hp)
 			arena.run.soldier_hp+=healed;detail="+%s здоровья" % str(snappedf(healed,.1))
 			if is_instance_valid(arena.room.player) and arena.room.player.kind=="soldier":arena.room.player.hp=arena.run.soldier_hp;arena.room.player.refresh_health()
 		"pressure":arena.room.pressure_time=8+effective_bonus_level("pressure")*2;detail="Напор ×2 · %d с" % int(arena.room.pressure_time)

@@ -131,11 +131,30 @@ static func table(card:Panel,data:Dictionary,width:float,accent:Color):
 		if row.size()>=4:text+="   [color=#8d9589][s]%s[/s][/color]  →  [b][color=#f1eedb]%s[/color][/b]" % [Texts.render(str(row[2])),Texts.render(str(row[3]))]
 		compare.text=text+"[/center]"
 		y+=step
+	# Ammo cards (T-127): a strip «old ammo → new ammo» with their icons instead of words.
+	if data.has("swap"):
+		swap_strip(card,data.swap,y,width);y+=40
+		if data.swap.has("rest"):data=data.duplicate();data.short=data.swap.rest
+		else:return
 	var short=str(data.get("short","")).trim_suffix(".")
 	if short!="":
 		var note=UiKit.label(card,short,Vector2(22,y),Vector2(width-44,maxf(44,card.size.y-y-16)),14,UiKit.MUTED);note.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;note.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;note.vertical_alignment=VERTICAL_ALIGNMENT_TOP;note.name="ShortNote"
 		note.add_theme_constant_override("line_spacing",2)
 	card.tooltip_text=Texts.render(str(data.get("detail","")))
+## «old → new» strip: small framed icons of both ammo and an arrow; «Зарядит» shows an empty slot on the left.
+static func swap_strip(card:Panel,swap:Dictionary,y:float,width:float):
+	var strip=HBoxContainer.new();strip.name="SwapStrip";card.add_child(strip);strip.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	strip.add_theme_constant_override("separation",8);strip.alignment=BoxContainer.ALIGNMENT_CENTER;strip.position=Vector2(12,y);strip.size=Vector2(width-24,32)
+	for part in [swap.get("from",{}),{"arrow":true},swap.get("to",{})]:
+		if part.get("arrow",false):
+			var arrow=Label.new();strip.add_child(arrow);arrow.text="→";arrow.add_theme_font_size_override("font_size",18);arrow.add_theme_color_override("font_color",UiKit.ORANGE);continue
+		var box=Panel.new();strip.add_child(box);box.custom_minimum_size=Vector2(30,30);box.mouse_filter=Control.MOUSE_FILTER_IGNORE
+		var color=Color(str(part.get("color","6f7a70")))
+		box.add_theme_stylebox_override("panel",UiKit.style(Color(color,.18),7,Color(color,.8)))
+		var tex=part.get("texture") as Texture2D
+		if tex:
+			var art=TextureRect.new();box.add_child(art);art.texture=tex;art.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;art.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;art.position=Vector2(3,3);art.size=Vector2(24,24);art.mouse_filter=Control.MOUSE_FILTER_IGNORE
+		var name=Label.new();strip.add_child(name);name.text=Texts.render(str(part.get("name","—")));name.add_theme_font_size_override("font_size",13);name.add_theme_color_override("font_color",color.lightened(.3))
 ## Vertical balance: the block from the icon to the last line sits in the middle of the space under the chip.
 static func balance(card:Panel):
 	var parts:Array=[card.get_node("Icon"),card.get_node("Title")]

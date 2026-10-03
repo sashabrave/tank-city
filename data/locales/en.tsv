@@ -2792,3 +2792,8 @@ Retina · полная чёткость	Retina · full sharpness
 Граната взрывается радиусом 1,1 клетки · заряды	The grenade explodes in a 1.1-cell radius · charges
 Электропушка	Tesla cannon
 Набросок: стреляет зарядами-молниями, которые перескакивают между врагами и замыкают технику. Носит заряды, как гранатомёт и РПГ.	Draft: fires lightning charges that jump between enemies and short-circuit vehicles. Uses charges, like the grenade launcher and the RPG.
+Аптечка в рюкзаке · H — использовать	Aid kit in the backpack · H to use
+В рюкзаке нет аптечек	No aid kits in the backpack
+Здоровье и так полное	Health is already full
+Аптечка: +%s здоровья	Aid kit: +%s health
+Аптечка из рюкзака	Aid kit from the backpack

@@ -133,6 +133,8 @@ static func compare_rows(new_item:Dictionary,old:Dictionary)->Array:
 	for spec in STATS.get(new_item.type,[]):
 		var key=spec[0];var value=float(new_item.stats.get(key,0.0))
 		var before=float(old.stats.get(key,0.0)) if old.get("type","")==new_item.type else 0.0
+		# A rolled 0 (e.g. no short-circuit chance on a common EMP) is noise on the card (T-127).
+		if is_zero_approx(value) and is_zero_approx(before):continue
 		var arrow="↑ " if value>before+.0001 else "↓ " if value<before-.0001 else "= "
 		rows.append([arrow+value_text(spec,value),Texts.render(spec[1]).to_lower(),value_text(spec,before) if old.get("type","")==new_item.type else "—",value_text(spec,value)])
 	return rows
@@ -142,3 +144,15 @@ static func describe(new_item:Dictionary)->String:
 	if float(new_item.get("damage",0.0))>0:parts.append(Texts.render("урон пули")+" +%d%%" % roundi(new_item.damage*100))
 	if new_item.get("twist",false):parts.append(Texts.render(TWISTS.get(new_item.type,"")))
 	return " · ".join(parts)
+## Card strip data «old → new» (T-127): {from:{name,color,texture}, to:{…}, rest}. Same type: rarity names.
+static func swap_data(old:Dictionary,new_item:Dictionary,rest:String)->Dictionary:
+	var part=func(item:Dictionary)->Dictionary:
+		if item.is_empty():return {"name":"Свободный слот","color":"6f7a70"}
+		var type=str(item.type)
+		var key="ammo/"+type if IconKit.has("ammo/"+type) else {"standard":"stats/damage","burn":"upgrades/burn","stun":"upgrades/stun","shock":"upgrades/shock"}.get(type,ART.get(type,"stats/damage"))
+		var label=NAMES.get(type,type)
+		if not old.is_empty() and old.get("type","")==new_item.get("type",""):label=RARITY_NAMES[clampi(int(item.get("rarity",0)),0,3)]
+		return {"name":label,"color":COLORS.get(type,"cfd3c8"),"texture":UiKit.trimmed(UiKit.icon_texture(key))}
+	var result={"from":part.call(old),"to":part.call(new_item)}
+	if rest!="":result["rest"]=rest
+	return result

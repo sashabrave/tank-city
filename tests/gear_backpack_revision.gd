@@ -68,6 +68,16 @@ func run():
 	view._input(press)
 	check(view.tab!=first,"S moves to the next tab (%s → %s)" % [first,view.tab])
 	check(InputMap.action_get_events("pause").any(func(e):return e is InputEventKey and e.physical_keycode==KEY_TAB),"Tab opens and closes the tablet")
+	# Aid kits (T-115): at full health a heart goes into the backpack; H heals from it later.
 	get_tree().paused=false
+	r.supplies.clear();while Backpack.full(r) and not r.ammo_bag.is_empty():r.ammo_bag.pop_back()
+	r.soldier_hp=r.soldier_max_hp;arena.player.hp=r.soldier_hp
+	arena.reward.place_pickup(arena.grid_pos(arena.player.position),"heart",0.0)
+	var heart=arena.room.pickups.filter(func(p):return p.kind=="heart")[0]
+	arena.reward.collect_pickup(heart)
+	check(Backpack.medkits(r)==1,"full health: the aid kit goes into the backpack")
+	check(not Backpack.use_medkit(arena),"no use at full health")
+	r.soldier_hp=1.0;arena.player.hp=1.0
+	check(Backpack.use_medkit(arena) and r.soldier_hp>1.0 and Backpack.medkits(r)==0,"H heals from the backpack")
 	print("GEAR: %d failures" % failures)
 	get_tree().quit(1 if failures else 0)

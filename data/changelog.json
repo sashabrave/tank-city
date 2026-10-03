@@ -103,7 +103,8 @@
 					"Звонок майора теперь большое окно с его портретом: «Взять» или «Позже» (тогда трубка звонит в углу)",
 					"Иконка «Напор»: золотая пуля разбивает серебряную (вместо ракеты)",
 					"«Развитие заставы» стал путём: вертикальная линия с вехами — пройденное зелёным с галочкой, следующая цель оранжевым, остальное серым",
-					"Гранатомёт — новое оружие (чертёж в мире 2); гранатомёт и РПГ носят заряды: огонь, ЭМИ и крио действуют на всех во взрыве; новые заряды — кассетные и напалм; электропушка «в разработке» в Арсенале"
+					"Гранатомёт — новое оружие (чертёж в мире 2); гранатомёт и РПГ носят заряды: огонь, ЭМИ и крио действуют на всех во взрыве; новые заряды — кассетные и напалм; электропушка «в разработке» в Арсенале",
+					"Аптечки: подобранная при полном здоровье уходит в рюкзак, H — вылечиться из рюкзака"
 				]
 			},
 			"en": {
@@ -206,7 +207,8 @@
 					"The major's call is now a big window with his portrait: «Answer» or «Later» (then the handset rings in the corner)",
 					"«Pressure» icon: a golden bullet smashes a silver one (instead of a rocket)",
 					"«Outpost progress» became a path: a vertical line of milestones — done in green with a tick, the next goal in orange, the rest greyed out",
-					"The grenade launcher — a new weapon (blueprint in world 2); the grenade launcher and the RPG use charges: fire, EMP and cryo affect everyone in the blast; new charges — cluster and napalm; the tesla cannon is «in development» in the Arsenal"
+					"The grenade launcher — a new weapon (blueprint in world 2); the grenade launcher and the RPG use charges: fire, EMP and cryo affect everyone in the blast; new charges — cluster and napalm; the tesla cannon is «in development» in the Arsenal",
+					"Aid kits: one picked up at full health goes to the backpack, H heals from it"
 				]
 			}
 		},
