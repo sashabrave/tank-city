@@ -118,7 +118,8 @@
 					"Дневной свет объёмнее: тени от стен, ящиков и заборов снова видны (камера обрезала дальность теней), заполняющий свет чуть холоднее и слабее. Камера на 5% ближе в бою, хабе и комнатах; клетки поля всегда на экране. Облака у краёв больше не размываются в светлые пятна сверху и снизу экрана.",
 					"Песочница: новая вкладка «Снаряжение» — любые патроны любой редкости, рюкзак, аптечки, мешок, любая способность в любой слот и уровни класса для проверки вех.",
 					"Заголовки теперь набраны чистым Rubik, жирным и заглавными буквами, вместо «грязного» Rubik Dirt. Ими подписаны страницы планшета, станции, окна выбора, карточки усилений, этапы маршрута и итоги вылазки.",
-					"Смена фаз в бою («Волна 2», «Бой с генералом», «Командир») появляется ступеньками: слово за словом, каждое поднимается на место — как реплики в чате хаба."
+					"Смена фаз в бою («Волна 2», «Бой с генералом», «Командир») появляется ступеньками: слово за словом, каждое поднимается на место — как реплики в чате хаба.",
+					"Иконка игры крупнее: кот в каске и ствол танка во весь кадр, читается даже в маленьком размере."
 				]
 			},
 			"en": {
@@ -236,7 +237,8 @@
 					"Daylight has more volume: walls, crates and fences cast visible shadows again (the camera cut the shadow range), the fill light is a bit cooler and weaker. The camera is 5% closer in battle, the hub and rooms; field cells always stay on screen. Edge clouds no longer smear into light blobs at the top and bottom of the screen.",
 					"Sandbox: new Equipment tab — any ammo of any rarity, backpack, medkits, a sack, any ability in any slot and class levels to check milestones.",
 					"Headings now use clean bold Rubik in capitals instead of the rough Rubik Dirt: tablet pages, stations, choice windows, upgrade cards, route stages and sortie results.",
-					"Battle phase titles («Wave 2», «General fight», «Commander») appear in steps, word after word rising into place, like lines in the hub chat."
+					"Battle phase titles («Wave 2», «General fight», «Commander») appear in steps, word after word rising into place, like lines in the hub chat.",
+					"The game icon is bolder: the helmeted cat and the tank barrel fill the frame, readable even when small."
 				]
 			}
 		},
