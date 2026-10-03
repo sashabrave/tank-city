@@ -1482,7 +1482,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-117.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "иконка базы здоровья должна быть миниатюрой нашей машины штаба",
 			"type": "bug",
 			"version": "0.7.2-pre"
