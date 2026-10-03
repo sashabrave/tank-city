@@ -606,7 +606,7 @@ def mats():
     mk("pine", "M_Pine", (0.42, 0.56, 0.34), 0.8)
     mk("rock", "M_Rock", (0.74, 0.72, 0.75), 0.9)
     mk("amber", "M_Amber", (1.0, 0.62, 0.15), 0.4)
-    mk("bag", "M_Sandbag", (0.80, 0.70, 0.52), 0.9)
+    mk("bag", "M_Sandbag", (0.42, 0.32, 0.18), 0.9)   # linear: reads as warm sand-bag beige in game
     mk("board", "M_Chalkboard", (0.20, 0.27, 0.24), 0.8)
     mk("white", "M_Chalk", (0.92, 0.92, 0.88), 0.8)
     mk("cream", "M_Cream", (0.93, 0.82, 0.62), 0.7)
@@ -616,6 +616,7 @@ def mats():
     mk("red", "M_RedPaint", (0.82, 0.22, 0.16), 0.5)
     mk("concrete", "M_Concrete", (0.38, 0.38, 0.40), 0.8)
     mk("gold", "M_Gold", (1.0, 0.76, 0.25), 0.2, 1.0)
+    mk("bunker", "M_BunkerConcrete", (0.09, 0.09, 0.10), 0.8)   # linear value: reads as dark grey in game
     glow = material("M_Glow", (1.0, 0.85, 0.45, 1), 0.3)
     b = glow.node_tree.nodes.get("Principled BSDF")
     if b:

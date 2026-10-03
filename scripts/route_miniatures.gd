@@ -389,7 +389,7 @@ const STOP_SURFACES={"metalpolished":"steel","tin":"steel","irondark":"gunmetal"
 	"olive":"paint","olivedark":"paint","truckolive":"paint","truckolivedark":"paint","signolive":"paint","plankolive":"paint",
 	"orangepaint":"paint","yellowpaint":"paint","redpaint":"paint","amber":"paint","cream":"paint","jar":"paint",
 	"wood":"wood","wooddark":"wood","canvas":"fabric","sandbag":"fabric","canvasorange":"fabric","canvascream":"fabric",
-	"tyre":"rubber","black":"rubber","glass":"glass","bottle":"glass","concrete":"concrete","rock":"concrete"}
+	"tyre":"rubber","black":"rubber","glass":"glass","bottle":"glass","concrete":"concrete","bunkerconcrete":"concrete","rock":"concrete"}
 static func library_surfaces(model:Node):
 	for mesh in model.find_children("*","MeshInstance3D",true,false):
 		for i in mesh.get_surface_override_material_count():
