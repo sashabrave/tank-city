@@ -16,13 +16,14 @@ func run():
 	var c=Game.music_controller;c.context="battle";c.pick_battle_theme()
 	var layer=CanvasLayer.new();layer.layer=110;add_child(layer)
 	var tablet=load("res://scripts/ui/field_tablet.gd").new();tablet.tab="music";layer.add_child(tablet)
-	for folder in ["all","theme:"+c.battle_theme,"archive"]:
+	for folder in ["main","theme:"+c.battle_theme,"singles"]:
 		tablet.music_folder=folder;tablet.refresh()
 		await shot(out+"/radio-"+folder.replace(":","-")+".png")
 		var titles=[]
 		for node in tablet.find_children("*","Button",true,false):titles.append(node.text)
 		if folder.begins_with("theme:"):
-			check(titles.filter(func(t):return t.begins_with("♪")).size()==12,"theme folder lists 12 fanfares")
-		elif folder=="archive":check("Позывной" in titles and "Мозаика" in titles,"archive lists old favourites")
-		else:check("Азимут" in titles and "Квартет" in titles,"all tracks lists themes and shared pools")
+			check("Бой" in titles and "Босс" in titles and titles.filter(func(t):return t.begins_with("♪")).is_empty(),"theme folder lists its five tracks, no fanfares")
+		elif folder=="singles":check("Азимут" in titles and "Квартет" in titles,"single tracks listed")
+		else:check("Главная тема" in titles and "Полустанок" in titles and "Маяки" in titles,"main theme lists all sub-themes")
+	check(not tablet.find_children("*","Button",true,false).any(func(b):return b.text in ["♥","−","Архив","Избранное"]),"no ratings, favourites or archive")
 	get_tree().quit(failures)

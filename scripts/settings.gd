@@ -2,7 +2,7 @@ extends Node
 signal changed
 const PATH="user://settings.cfg"
 const DEFAULT_KEYS={"north":KEY_W,"south":KEY_S,"west":KEY_A,"east":KEY_D,"fire":KEY_SPACE,"interact":KEY_E,"hide_trench":KEY_C,"ability":KEY_F,"skill_1":KEY_1,"skill_2":KEY_NONE,"hq_ability":KEY_2,"class_ability":KEY_Q,"ammo_switch":KEY_R,"use_medkit":KEY_H}
-const DEFAULT_VALUES={"fullscreen":false,"vsync":true,"quality":1,"fps":60,"master":1.0,"music":0.8,"effects":0.8,"music_mood":"auto","screen_controls":true,"biome_info":true,"language":"ru","ui_theme":"dark","shaders":true,"world_lighting":"day","light_budget":10,"atmosphere":true,"tilt_shift":true,"shader_style":"pastel","soft_shadows":true,"ambient_occlusion":true,"glow":true,"haze":true,"rim_light":true,"shiny_metal":true,"depth_light":true,"cinematic_light":true,"graphics_preset":"standard","sun_day":"random","sun_night":"random","weather":"random","ui_motion":true,"show_fps":true,"ui_glass":true,"ui_accent":"apricot","illustration_set":"gpt_image_2_5","input_scheme":"auto","render_scale":"auto","resolution":"auto","retina":true}
+const DEFAULT_VALUES={"fullscreen":false,"vsync":true,"quality":1,"fps":60,"master":1.0,"music":0.8,"music_mood":"main","effects":0.8,"screen_controls":true,"biome_info":true,"language":"ru","ui_theme":"dark","shaders":true,"world_lighting":"day","light_budget":10,"atmosphere":true,"tilt_shift":true,"shader_style":"pastel","soft_shadows":true,"ambient_occlusion":true,"glow":true,"haze":true,"rim_light":true,"shiny_metal":true,"depth_light":true,"cinematic_light":true,"graphics_preset":"standard","sun_day":"random","sun_night":"random","weather":"random","ui_motion":true,"show_fps":true,"ui_glass":true,"ui_accent":"apricot","illustration_set":"gpt_image_2_5","input_scheme":"auto","render_scale":"auto","resolution":"auto","retina":true}
 const SHADER_STYLES=["pastel","cozy","golden","overcast"]
 const SHADER_OPTIONS=["soft_shadows","ambient_occlusion","glow","haze","rim_light","shiny_metal","depth_light","cinematic_light"]
 var values=DEFAULT_VALUES.duplicate()
@@ -204,7 +204,7 @@ func draw():
 			var slider=HSlider.new();content.add_child(slider);slider.position=Vector2(355,i*95+8);slider.size=Vector2(370,35);slider.min_value=0;slider.max_value=100;slider.value=values[key]*100
 			slider.value_changed.connect(func(value):change(key,value/100.0);Texts.set_text(label,str(roundi(value))+"%"))
 			i+=1
-		choice("Музыкальная тема","music_mood",["Авто","День","Ночь"],["auto","day","night"],i*95)
+		choice("Музыкальная тема","music_mood",["Главная","Ночная","Дневная","Авто"],["main","night","day","auto"],i*95)
 	elif tab==3:
 		choice("Язык / Language","language",["Русский","English"],["ru","en"],0)
 	else:

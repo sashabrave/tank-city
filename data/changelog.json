@@ -2,6 +2,29 @@
 	"entries": [
 		{
 			"date": "2026-10-02",
+			"ru": {
+				"title": "Порядок в музыке",
+				"items": [
+					"Вся музыка собрана в «Главную тему»: 12 подтем со своими фанфарами и 19 отдельных треков играют вперемешку.",
+					"В настройках звука выбор станции: главная тема (все 12 подтем), ночная (шесть спокойных), дневная (шесть энергичных) или авто — по времени суток мира.",
+					"Радио стало проще: слева главная тема, подтемы и отдельные треки, справа их треки; видно, что играет и из какой подтемы.",
+					"Удалены старые чиповые треки, архив и неудачные черновики — игра стала легче.",
+					"Иконка игры крупнее: кот в каске и ствол танка во весь кадр, читается даже в маленьком размере."
+				]
+			},
+			"en": {
+				"title": "Music tidy-up",
+				"items": [
+					"All music forms one Main theme: 12 sub-themes with their own fanfares and 19 single tracks play shuffled.",
+					"Sound settings now pick a station: main theme (all 12 sub-themes), night (the six calmer), day (the six more energetic) or auto, following the world time of day.",
+					"The radio is simpler: main theme, sub-themes and single tracks on the left, their tracks on the right; you can see what is playing and from which sub-theme.",
+					"Old chip tracks, the archive and rejected drafts are removed, so the game is lighter.",
+					"The game icon is bolder: the helmeted cat and the tank barrel fill the frame, readable even when small."
+				]
+			}
+		},
+		{
+			"date": "2026-10-02",
 			"version": "0.7.2",
 			"ru": {
 				"title": "Ночная полировка",

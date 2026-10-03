@@ -15,10 +15,11 @@ func run():
 		for id in music.TRACKS[context]:
 			var stream=load("res://assets/audio/music/"+id+".ogg")
 			check(stream is AudioStreamOggVorbis and stream.get_length()>25,"valid loop "+id)
-	for id in music.TRACKS.archive:check(load("res://assets/audio/music/"+id+".ogg") is AudioStreamOggVorbis,"archive track "+id)
-	music.change("archive");check(music.context!="archive","archive is never an automatic context")
-	for id in music.GREETINGS:
-		var stream=load("res://assets/audio/music/"+id+".ogg");check(stream.get_length()>2 and stream.get_length()<5,"short greeting")
+	check(not music.TRACKS.has("archive"),"no archive playlist")
+	for theme in music.themes:
+		for kind in music.FANFARES:
+			for id in music.themes[theme][kind]:
+				var stream=load("res://assets/audio/music/"+id+".ogg");check(stream.get_length()>2 and stream.get_length()<6,"short fanfare "+id)
 	music.change("battle");music.finish_loading();var first=music.backgrounds[music.active].stream.resource_path
 	var count=music.selections.battle;music.change("battle");check(music.selections.battle==count,"same context stays playing")
 	music.change("battle",true);check(music.selections.battle==count+1,"next room refreshes track")

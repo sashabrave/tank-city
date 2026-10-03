@@ -110,82 +110,55 @@ func radio():
 	var player=preload("res://scenes/ui/music_mini_player.tscn").instantiate();content.add_child(player);player.position=Vector2(22,68);player.size=Vector2(731,105)
 	var c=Game.music_controller
 	if not is_instance_valid(c):return
-	# Classic two-pane browser: folder tree on the left, track table on the right.
-	var folders=[["all","Все композиции",0],["favorites","Избранное",0],["","Темы",0]]
-	for theme in c.themes:folders.append(["theme:"+theme,c.themes[theme].title,1])
-	folders.append(["","Общие подборки",0])
-	for group in c.PLAYLISTS:folders.append([group,c.CONTEXT_NAMES[group],1])
-	folders.append(["archive","Архив",0])
-	var ids_all=folders.map(func(f):return f[0])
-	if view.music_folder not in ids_all or view.music_folder=="":
-		view.music_folder="all";c.browser_folder="all";view.music_scroll=0;c.browser_scroll=0
-	var tree=view.scroller(Vector2(22,186),Vector2(200,370));tree.add_theme_constant_override("separation",2)
-	for f in folders:
-		var id:String=f[0];var depth:int=f[2]
-		if id=="":
-			var header=UiKit.label(tree,f[1],Vector2.ZERO,Vector2(190,26),13,UiKit.MUTED);header.custom_minimum_size=Vector2(190,26);continue
-		var node=Button.new();tree.add_child(node);Texts.set_text(node,f[1]);node.alignment=HORIZONTAL_ALIGNMENT_LEFT;node.custom_minimum_size=Vector2(0,34);node.clip_text=true;node.add_theme_font_size_override("font_size",14)
-		var margin=StyleBoxFlat.new();margin.content_margin_left=10+depth*16;margin.bg_color=Color("584a2c") if view.music_folder==id else Color(0,0,0,0);margin.corner_radius_top_left=5;margin.corner_radius_bottom_left=5;margin.corner_radius_top_right=5;margin.corner_radius_bottom_right=5;node.add_theme_stylebox_override("normal",margin)
-		var hover=margin.duplicate();hover.bg_color=Color("3d4a3f");node.add_theme_stylebox_override("hover",hover)
-		if id.begins_with("theme:"):
-			var theme=id.trim_prefix("theme:")
-			var marks=[]
-			if theme==c.hub_theme:marks.append("хаб")
-			if theme==c.battle_theme:marks.append("бой")
-			if not marks.is_empty():node.tooltip_text="Активная тема";node.add_theme_color_override("font_color",UiKit.ORANGE)
+	# Minimal two-pane radio: playlists on the left, tracks on the right, the playing one highlighted.
+	var lists=[["main",c.MAIN_THEME]]
+	for theme in c.themes:lists.append(["theme:"+theme,c.themes[theme].title])
+	lists.append(["singles","Отдельные треки"])
+	var ids=lists.map(func(l):return l[0])
+	if view.music_folder not in ids:view.music_folder="main";c.browser_folder="main";view.music_scroll=0;c.browser_scroll=0
+	var playing_theme=c.theme_of(c.current_track)
+	var playing_list="theme:"+playing_theme if playing_theme!="" else "singles"
+	var left=view.scroller(Vector2(22,186),Vector2(200,370));left.add_theme_constant_override("separation",2)
+	for entry in lists:
+		var id:String=entry[0]
+		var node=Button.new();left.add_child(node);Texts.set_text(node,entry[1]);node.alignment=HORIZONTAL_ALIGNMENT_LEFT;node.custom_minimum_size=Vector2(0,34);node.clip_text=true;node.add_theme_font_size_override("font_size",14)
+		var box=StyleBoxFlat.new();box.content_margin_left=10 if id=="main" else 22;box.bg_color=Color("584a2c") if view.music_folder==id else Color(0,0,0,0)
+		for corner in ["corner_radius_top_left","corner_radius_top_right","corner_radius_bottom_left","corner_radius_bottom_right"]:box.set(corner,5)
+		node.add_theme_stylebox_override("normal",box);var hover=box.duplicate();hover.bg_color=Color("3d4a3f");node.add_theme_stylebox_override("hover",hover)
+		if id==playing_list or (id=="main" and c.current_track!=""):node.add_theme_color_override("font_color",UiKit.ORANGE)
 		node.pressed.connect(func():view.music_folder=id;c.browser_folder=id;view.music_scroll=0;c.browser_scroll=0;view.refresh())
-	# Track table
-	var left=238;var width=content.size.x-left-22
-	var status="Тема хаба и карты: %s · тема боя: %s" % [c.themes.get(c.hub_theme,{}).get("title","—"),c.themes.get(c.battle_theme,{}).get("title","—")]
-	UiKit.label(content,status,Vector2(left,184),Vector2(width,22),13,UiKit.MUTED)
-	var head=HBoxContainer.new();content.add_child(head);head.position=Vector2(left,208);head.size=Vector2(width,24)
-	for col in [["Название",0],["Раздел",120],["Время",54],["",82]]:
-		var l=Label.new();head.add_child(l);Texts.set_text(l,col[0]);l.add_theme_font_size_override("font_size",13);l.add_theme_color_override("font_color",UiKit.MUTED)
-		if col[1]==0:l.size_flags_horizontal=Control.SIZE_EXPAND_FILL
-		else:l.custom_minimum_size.x=col[1]
-	var box=view.scroller(Vector2(left,234),Vector2(width,322));box.add_theme_constant_override("separation",3)
+	var x0=238;var width=content.size.x-x0-22
+	var box=view.scroller(Vector2(x0,186),Vector2(width,370));box.add_theme_constant_override("separation",3)
 	var scroll=box.get_parent();scroll.get_v_scroll_bar().value_changed.connect(func(value):view.music_scroll=int(value);c.browser_scroll=int(value));scroll.set_deferred("scroll_vertical",view.music_scroll)
-	var rows:Array=[] # [id, section, fanfare]
 	var folder:String=view.music_folder
+	if folder=="main":
+		var on_air=c.mood_themes()
+		var note=UiKit.label(box,"Станция: %s — %d подтем и %d треков. Сменить: настройки → звук." % [c.STATIONS[c.station()],on_air.size(),c.single_tracks().size()],Vector2.ZERO,Vector2(width,40),14,UiKit.MUTED)
+		note.custom_minimum_size=Vector2(width,40);note.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;note.clip_text=false
+		for theme in c.themes:
+			var id="theme:"+theme
+			var row=Button.new();box.add_child(row);Texts.set_text(row,c.themes[theme].title);row.alignment=HORIZONTAL_ALIGNMENT_LEFT;row.custom_minimum_size=Vector2(0,40);row.add_theme_font_size_override("font_size",15)
+			row.add_theme_stylebox_override("normal",UiKit.style(Color("584a2c") if theme==playing_theme else Color("303a31"),5))
+			if theme not in on_air:row.modulate.a=.45  # not on the current station
+			row.pressed.connect(func():view.music_folder=id;c.browser_folder=id;view.music_scroll=0;c.browser_scroll=0;view.refresh())
+		return
+	var rows=[]
 	if folder.begins_with("theme:"):
 		var theme=folder.trim_prefix("theme:")
 		for group in ["battle","hub","map","miniboss","boss"]:
-			if c.themes[theme].has(group):rows.append([c.themes[theme][group],c.CONTEXT_NAMES[group],false])
-		for kind in c.FANFARES:
-			for i in range(c.themes[theme].get(kind,[]).size()):rows.append([c.themes[theme][kind][i],c.FANFARE_NAMES[kind]+" "+str(i+1),true])
-	elif folder=="archive":
-		for id in c.TRACKS.archive:rows.append([id,c.CONTEXT_NAMES.get(c.catalog.get(id,{}).get("context",""),"Архив"),false])
-		for id in c.OLD_FANFARES:rows.append([id,"Фанфара",true])
+			if c.themes[theme].has(group):rows.append([c.themes[theme][group],c.CONTEXT_NAMES[group]])
 	else:
-		var seen=[]
-		var sources=[]
-		for theme in c.themes:
-			for group in ["battle","hub","map","miniboss","boss"]:
-				if c.themes[theme].has(group):sources.append([c.themes[theme][group],c.CONTEXT_NAMES[group],group])
-		for group in c.PLAYLISTS:
-			for id in c.TRACKS[group]:sources.append([id,c.CONTEXT_NAMES[group],group])
-		for src in sources:
-			if src[0] in seen:continue
-			if folder=="favorites" and int(c.ratings.get(src[0],0))!=1:continue
-			if folder in c.PLAYLISTS and (src[2]!=folder or src[0] not in c.TRACKS[folder]):continue
-			seen.append(src[0]);rows.append([src[0],src[1],false])
+		for pair in c.single_tracks():rows.append([pair[0],c.CONTEXT_NAMES[pair[1]]])
 	for entry in rows:
-		var id:String=entry[0];var fanfare:bool=entry[2]
-		var row=HBoxContainer.new();box.add_child(row);row.add_theme_constant_override("separation",4)
-		var title=c.catalog.get(id,{}).get("title",c.NAMES.get(id,entry[1] if fanfare else id.replace("_"," ")))
-		if fanfare:title=("♪ "+entry[1]) if id not in c.OLD_FANFARES else id.replace("_"," ")
-		var playing=c.current_track==id or (fanfare and c.stinger.playing and c.stinger.stream!=null and c.stinger.stream.resource_path.ends_with(id+".ogg"))
-		var track=Button.new();row.add_child(track);Texts.set_text(track,title);track.custom_minimum_size=Vector2(0,36);track.size_flags_horizontal=Control.SIZE_EXPAND_FILL;track.clip_text=true;track.alignment=HORIZONTAL_ALIGNMENT_LEFT;track.add_theme_font_size_override("font_size",14);track.add_theme_stylebox_override("normal",UiKit.style(Color("584a2c") if playing else Color("303a31"),5))
-		track.tooltip_text=title
-		if fanfare:track.pressed.connect(func():c.preview_fanfare(id);view.refresh())
-		else:track.pressed.connect(func():c.paused=false;c.play_track(id);view.refresh())
-		var section=Label.new();row.add_child(section);Texts.set_text(section,"" if fanfare and id not in c.OLD_FANFARES else entry[1]);section.custom_minimum_size.x=120;section.clip_text=true;section.add_theme_font_size_override("font_size",12);section.add_theme_color_override("font_color",UiKit.MUTED)
-		var seconds=int(c.track_length(id));var time=Label.new();row.add_child(time);Texts.set_text(time,"%d:%02d" % [seconds/60,seconds%60]);time.custom_minimum_size.x=54;time.add_theme_font_size_override("font_size",12);time.add_theme_color_override("font_color",UiKit.MUTED)
-		for value in [1,-1]:
-			var button=Button.new();row.add_child(button);Texts.set_text(button,"♥" if value==1 else "−");button.custom_minimum_size=Vector2(38,34);button.tooltip_text="Избранное" if value==1 else "Исключить из случайного выбора";button.modulate=UiKit.ORANGE if int(c.ratings.get(id,0))==value else Color.WHITE
-			button.disabled=fanfare;if fanfare:button.modulate.a=0
-			button.pressed.connect(func():c.rate(id,value);view.refresh())
-	if rows.is_empty():UiKit.label(box,"Здесь пока нет композиций",Vector2.ZERO,Vector2(450,40),15,UiKit.MUTED)
+		var id:String=entry[0]
+		var row=HBoxContainer.new();box.add_child(row);row.add_theme_constant_override("separation",6)
+		var label=c.catalog.get(id,{}).get("title",id) if folder=="singles" else entry[1]
+		var track=Button.new();row.add_child(track);Texts.set_text(track,("▶ " if c.current_track==id else "")+label);track.custom_minimum_size=Vector2(0,40);track.size_flags_horizontal=Control.SIZE_EXPAND_FILL;track.clip_text=true;track.alignment=HORIZONTAL_ALIGNMENT_LEFT;track.add_theme_font_size_override("font_size",15)
+		track.add_theme_stylebox_override("normal",UiKit.style(Color("584a2c") if c.current_track==id else Color("303a31"),5))
+		track.pressed.connect(func():c.paused=false;c.quick_switch=true;c.play_track(id);view.refresh())
+		if folder=="singles":
+			var section=Label.new();row.add_child(section);Texts.set_text(section,entry[1]);section.custom_minimum_size.x=100;section.add_theme_font_size_override("font_size",12);section.add_theme_color_override("font_color",UiKit.MUTED)
+		var seconds=int(c.track_length(id));var time=Label.new();row.add_child(time);Texts.set_text(time,"%d:%02d" % [seconds/60,seconds%60]);time.custom_minimum_size.x=50;time.add_theme_font_size_override("font_size",12);time.add_theme_color_override("font_color",UiKit.MUTED)
 func settings():
 	UiKit.accent(UiKit.label(content,"Настройки",Vector2(UiKit.PAGE_PADDING,20),Vector2(727,28),UiKit.PAGE_TITLE_SIZE))
 	var tabs=["Графика","Экран","Звук","Управление","Интерфейс"]
@@ -241,7 +214,7 @@ func settings():
 			var value_label=UiKit.label(body,str(roundi(slider.value))+"%",Vector2(625,y),Vector2(75,34),17)
 			slider.value_changed.connect(func(value):Settings.change(entry[0],value/100.0);Texts.set_text(value_label,str(roundi(value))+"%"))
 			UiKit.label(body,entry[2],Vector2(0,y+41),Vector2(700,30),14,UiKit.MUTED);y+=96
-		setting_choice(body,["music_mood","Музыкальная тема",["Авто","День","Ночь"],["auto","day","night"],"Авто следует времени суток: днём фолк-темы, ночью спокойные ночные. Сменится при следующем переходе."],y);y+=96
+		setting_choice(body,["music_mood","Музыкальная тема",["Главная","Ночная","Дневная","Авто"],["main","night","day","auto"],"Главная — все 12 подтем. Ночная — шесть спокойных, дневная — шесть энергичных. Авто — по времени суток мира: ночью ночная, днём дневная. Меняется при следующем переходе."],y);y+=96
 	elif view.settings_tab=="Интерфейс":
 		setting_choice(body,["input_scheme","Схема управления",["Авто","Клавиатура","Геймпад","Тач"],["auto","keyboard","gamepad","touch"],"Авто — по последнему устройству: касание экрана показывает экранные кнопки, клавиша или геймпад их прячут."],0)
 		setting_choice(body,["biome_info","Подпись биома",["Скрыта","Показана"],[false,true],"Номер, название и покрытия карты под характеристиками оружия."],96)

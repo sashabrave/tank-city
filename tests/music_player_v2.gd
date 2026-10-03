@@ -22,7 +22,7 @@ func run():
 	var c=Game.music_controller
 	for context in c.TRACKS:
 		for track in c.TRACKS[context]:check(ResourceLoader.exists("res://assets/audio/music/"+track+".ogg"),"track exists "+track)
-	check(c.TRACKS.archive.has("battle_signal") and not c.TRACKS.battle.has("battle_signal"),"old tracks live in the archive")
+	check(not c.TRACKS.has("archive"),"archive removed")
 	c.shuffle=false  # arrows walk the list in order
 	for context in c.PLAYLISTS:
 		c.change(context)
@@ -46,13 +46,21 @@ func run():
 		check(c.fanfare_for("battle_greeting") in c.themes[c.battle_theme].start,"battle start fanfare follows battle theme")
 		check(c.fanfare_for("defeat") in c.themes[c.battle_theme].defeat,"defeat fanfare follows battle theme")
 	check(seen.size()>=2,"battle theme changes between fights")
+	# Main theme: all twelve sub-themes rotate together, whatever the time of day.
+	Settings.values.music_mood="main"
+	var used={}
+	for i in range(40):
+		c.change("map");c.change("battle");used[c.battle_theme]=true
+	check(used.size()>=8,"battle themes come from all twelve sub-themes")
+	check(c.subtitle().begins_with("Главная тема"),"radio subtitle names the station")
+	# Stations: night = calmer half, day = energetic half, auto follows world lighting.
 	for wanted in ["night","day"]:
 		Settings.values.music_mood=wanted
-		c.change("hub");c.change("map");c.change("battle")
-		check(c.themes[c.battle_theme].mood==wanted and c.themes[c.hub_theme].mood==wanted,"music theme setting "+wanted)
-	Settings.values.music_mood="auto";Settings.values.world_lighting="night"
-	check(c.mood()=="night","auto follows night lighting")
-	Settings.values.world_lighting="day";check(c.mood()=="day","auto follows day lighting")
+		for i in range(6):c.change("hub");c.change("map");c.change("battle")
+		check(c.themes[c.battle_theme].mood==wanted and c.themes[c.hub_theme].mood==wanted and c.mood_themes().size()==6,"station "+wanted)
+	Settings.values.music_mood="auto";Settings.values.world_lighting="night";check(c.station()=="night","auto follows night lighting")
+	Settings.values.world_lighting="day";check(c.station()=="day","auto follows day lighting")
+	Settings.values.music_mood="main";check(c.mood_themes().size()==12,"main station plays all twelve")
 	var fight=c.battle_theme;c.change("miniboss");check(c.battle_theme==fight,"commander keeps the fight theme")
 	check(c.current_track in c.pool("miniboss"),"commander track from theme or pool")
 	c.change("hub");check(c.fanfare_for("hub_map_greeting") in c.themes[c.hub_theme].greeting,"greeting follows hub theme")

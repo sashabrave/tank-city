@@ -2876,3 +2876,15 @@ Q сильнее	Stronger Q
 Уровень класса (%s · %d)	Class level (%s · %d)
 Уровень %d	Level %d
 Уровень класса %d · перки — с нового забега	Class level %d · perks from the next run
+Главная тема	Main theme
+Отдельные треки	Single tracks
+%d подтем и %d отдельных треков играют вперемешку. Нажми тему, чтобы открыть её.	%d sub-themes and %d single tracks play shuffled. Tap a theme to open it.
+%s · %s · %s	%s · %s · %s
+%s · отдельный трек · %s	%s · single track · %s
+Ночная тема	Night theme
+Дневная тема	Day theme
+Главная	Main
+Ночная	Night
+Дневная	Day
+Главная — все 12 подтем. Ночная — шесть спокойных, дневная — шесть энергичных. Авто — по времени суток мира: ночью ночная, днём дневная. Меняется при следующем переходе.	Main — all 12 sub-themes. Night — the six calmer ones, day — the six more energetic. Auto follows the world time of day: night theme at night, day theme by day. Applies on the next transition.
+Станция: %s — %d подтем и %d треков. Сменить: настройки → звук.	Station: %s — %d sub-themes and %d tracks. Change it in settings → sound.

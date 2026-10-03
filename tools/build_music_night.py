@@ -242,7 +242,7 @@ if __name__ == '__main__':
 	for id, th in THEMES.items():
 		if only and id not in only:
 			continue
-		entry = {'title': th['title'], 'mood': 'night'}
+		entry = {'title': th['title'], 'mood': 'night'}  # all three are in the calmer half
 		reel = []
 		gap = np.zeros((R // 2, 2))
 		for mode in MODES:
