@@ -245,4 +245,5 @@ static func card(arena,offer:Dictionary)->Dictionary:
 		detail=Ammo.describe(item)+"\n"+def.detail
 	var art="upgrades/"+def.id
 	if def.id in Ammo.ART:art=Ammo.ART[def.id]
+	if def.id in Ammo.TYPES and IconKit.has("ammo/"+def.id):art="ammo/"+def.id
 	return {"rows":rows,"short":short,"category":FAMILIES.get(def.family,def.category),"title":def.title,"detail":detail,"icon":def.icon if def.icon!="" else def.id,"art_key":art if def.id in Ammo.TYPES else "upgrades/"+def.id,"heading":TIER_NAMES[tier],"color":Color(arena.LOOT.RARITY_COLORS[tier]),"disabled":false,"button":"Выбрать","family":def.family,"tier":tier,"stacks":stacks(arena,def.id)}

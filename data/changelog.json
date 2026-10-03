@@ -104,7 +104,8 @@
 					"Иконка «Напор»: золотая пуля разбивает серебряную (вместо ракеты)",
 					"«Развитие заставы» стал путём: вертикальная линия с вехами — пройденное зелёным с галочкой, следующая цель оранжевым, остальное серым",
 					"Гранатомёт — новое оружие (чертёж в мире 2); гранатомёт и РПГ носят заряды: огонь, ЭМИ и крио действуют на всех во взрыве; новые заряды — кассетные и напалм; электропушка «в разработке» в Арсенале",
-					"Аптечки: подобранная при полном здоровье уходит в рюкзак, H — вылечиться из рюкзака"
+					"Аптечки: подобранная при полном здоровье уходит в рюкзак, H — вылечиться из рюкзака",
+					"Патроны и чертежи в рюкзаке нарисованы сериями: у патронов пачка с эмблемой эффекта и патрон рядом, от картонной пачки обычных до инеевой жести криогенных; у чертежей один и тот же планшет, а силуэт на листе показывает, что он открывает."
 				]
 			},
 			"en": {
@@ -208,7 +209,8 @@
 					"«Pressure» icon: a golden bullet smashes a silver one (instead of a rocket)",
 					"«Outpost progress» became a path: a vertical line of milestones — done in green with a tick, the next goal in orange, the rest greyed out",
 					"The grenade launcher — a new weapon (blueprint in world 2); the grenade launcher and the RPG use charges: fire, EMP and cryo affect everyone in the blast; new charges — cluster and napalm; the tesla cannon is «in development» in the Arsenal",
-					"Aid kits: one picked up at full health goes to the backpack, H heals from it"
+					"Aid kits: one picked up at full health goes to the backpack, H heals from it",
+					"Ammo and blueprints in the backpack are drawn as series: ammo is a box with the effect emblem and a round beside it, from a cardboard box of standard rounds to a frosted cryo tin; blueprints share one clipboard, and the silhouette on the sheet shows what it unlocks."
 				]
 			}
 		},

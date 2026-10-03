@@ -257,7 +257,7 @@
 
 | Файл | id | Название |
 |---|---|---|
-| grenade_launcher.png | grenade_launcher | grenade_launcher |
+| grenade_launcher.png | grenade_launcher | Гранатомёт |
 | mg.png | mg | mg |
 | pistol.png | pistol | Пистолет |
 | rifle.png | rifle | Штурм. винтовка |
@@ -275,6 +275,23 @@
 | sender_institute.png | sender/guide | Институт |
 | sender_operations.png | sender/notifications | Оперштаб |
 | sender_story.png | sender/quests | Штаб усов |
+
+## Патроны (10)
+
+Где: Рюкзак и слоты патронов в планшете → Снаряжение; карточки патронов между волнами
+
+| Файл | id | Название |
+|---|---|---|
+| ammo_ap.png | ammo/ap | Бронебойные |
+| ammo_burn.png | ammo/burn | Зажигательные |
+| ammo_cluster.png | ammo/cluster | Кассетные |
+| ammo_cryo.png | ammo/cryo | Криогенные |
+| ammo_explosive.png | ammo/explosive | Разрывные |
+| ammo_napalm.png | ammo/napalm | Напалм |
+| ammo_ricochet.png | ammo/ricochet | Рикошет |
+| ammo_shock.png | ammo/shock | ЭМИ |
+| ammo_standard.png | ammo/standard | Обычные |
+| ammo_stun.png | ammo/stun | Контузящие |
 
 ## Портреты (1)
 
@@ -423,3 +440,16 @@
 | robot_arm.png | headquarters/hq_regen | Ремонтный автомат |
 | supply.png | headquarters/hq_supply | Техснабжение |
 | tesla.png | headquarters/hq_tesla | Катушка Теслы |
+
+## Чертежи (6)
+
+Где: Чертежи в рюкзаке (планшет → Снаряжение): один планшет, силуэт — категория
+
+| Файл | id | Название |
+|---|---|---|
+| bp_ability.png | blueprint/ability | Чертёж способности |
+| bp_bonus.png | blueprint/bonus | Чертёж бонуса |
+| bp_building.png | blueprint/research | Чертёж постройки |
+| bp_hq.png | blueprint/hq | Чертёж штаба |
+| bp_vehicle.png | blueprint/garage | Чертёж техники |
+| bp_weapon.png | blueprint/weapon | Чертёж оружия |

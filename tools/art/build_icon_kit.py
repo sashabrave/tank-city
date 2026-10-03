@@ -15,7 +15,7 @@ OUT = ROOT / "assets/ui/icon_kit"
 CANVAS = 384
 # Author decisions after play (brief, «Решения автора после игры»): gold alloy bars and the silver paw
 # token replace the generated symbols; a rebuild keeps those files.
-AUTHOR_KEPT = {"alloy", "token"}
+AUTHOR_KEPT = {"alloy", "token", "bullet_vs_rocket"}  # bullet_vs_rocket: T-123 redraw
 
 
 def cells(sheet, cols, rows):
@@ -102,6 +102,9 @@ def main():
 		("bonus_resources_v2.png", 4, 3): "snowflake star turret jeep wheel_wrench bricks bunker_wrench blueprint documents recipe trophy padlock",
 		("stations_v2.png", 4, 3): "st_character st_command st_garage st_headquarters st_mechanic st_merchant st_range st_recycling st_roadmap st_wardrobe st_weapons st_yard",
 		("categories_v2.png", 3, 3): "cat_hero cat_ability cat_hq cat_bonus cat_weapon sender_story sender_institute sender_operations weapon_tune",
+		("ammo_v2.png", 4, 2): "ammo_standard ammo_burn ammo_stun ammo_shock ammo_explosive ammo_ap ammo_ricochet ammo_cryo",
+		("blueprints_v2.png", 3, 2): "bp_weapon bp_vehicle bp_hq bp_ability bp_bonus bp_building",
+		("ammo_charges_v2.png", 2, 1): "ammo_cluster ammo_napalm",
 	}
 	for (sheet, cols, rows), names in symbols.items():
 		grid = cells(sheet, cols, rows)

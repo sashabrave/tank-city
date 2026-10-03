@@ -1726,7 +1726,7 @@
 		{
 			"path": "res://assets/icons/interface_straight/lock.svg",
 			"group": "Линейные значки",
-			"context": "Через общий поиск иконок или пока не используется",
+			"context": "gear_page",
 			"ids": [
 				"lock"
 			],
@@ -2019,7 +2019,7 @@
 				"grenade_launcher"
 			],
 			"names": [
-				"grenade_launcher"
+				"Гранатомёт"
 			],
 			"note": ""
 		},
@@ -2142,6 +2142,126 @@
 				"Штаб усов"
 			],
 			"note": "Символ «sender_story»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/ammo_ap.png",
+			"group": "Патроны",
+			"context": "Рюкзак и слоты патронов в планшете → Снаряжение; карточки патронов между волнами",
+			"ids": [
+				"ammo/ap"
+			],
+			"names": [
+				"Бронебойные"
+			],
+			"note": "Символ «ammo_ap»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/ammo_burn.png",
+			"group": "Патроны",
+			"context": "Рюкзак и слоты патронов в планшете → Снаряжение; карточки патронов между волнами",
+			"ids": [
+				"ammo/burn"
+			],
+			"names": [
+				"Зажигательные"
+			],
+			"note": "Символ «ammo_burn»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/ammo_cluster.png",
+			"group": "Патроны",
+			"context": "Рюкзак и слоты патронов в планшете → Снаряжение; карточки патронов между волнами",
+			"ids": [
+				"ammo/cluster"
+			],
+			"names": [
+				"Кассетные"
+			],
+			"note": "Символ «ammo_cluster»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/ammo_cryo.png",
+			"group": "Патроны",
+			"context": "Рюкзак и слоты патронов в планшете → Снаряжение; карточки патронов между волнами",
+			"ids": [
+				"ammo/cryo"
+			],
+			"names": [
+				"Криогенные"
+			],
+			"note": "Символ «ammo_cryo»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/ammo_explosive.png",
+			"group": "Патроны",
+			"context": "Рюкзак и слоты патронов в планшете → Снаряжение; карточки патронов между волнами",
+			"ids": [
+				"ammo/explosive"
+			],
+			"names": [
+				"Разрывные"
+			],
+			"note": "Символ «ammo_explosive»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/ammo_napalm.png",
+			"group": "Патроны",
+			"context": "Рюкзак и слоты патронов в планшете → Снаряжение; карточки патронов между волнами",
+			"ids": [
+				"ammo/napalm"
+			],
+			"names": [
+				"Напалм"
+			],
+			"note": "Символ «ammo_napalm»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/ammo_ricochet.png",
+			"group": "Патроны",
+			"context": "Рюкзак и слоты патронов в планшете → Снаряжение; карточки патронов между волнами",
+			"ids": [
+				"ammo/ricochet"
+			],
+			"names": [
+				"Рикошет"
+			],
+			"note": "Символ «ammo_ricochet»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/ammo_shock.png",
+			"group": "Патроны",
+			"context": "Рюкзак и слоты патронов в планшете → Снаряжение; карточки патронов между волнами",
+			"ids": [
+				"ammo/shock"
+			],
+			"names": [
+				"ЭМИ"
+			],
+			"note": "Символ «ammo_shock»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/ammo_standard.png",
+			"group": "Патроны",
+			"context": "Рюкзак и слоты патронов в планшете → Снаряжение; карточки патронов между волнами",
+			"ids": [
+				"ammo/standard"
+			],
+			"names": [
+				"Обычные"
+			],
+			"note": "Символ «ammo_standard»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/ammo_stun.png",
+			"group": "Патроны",
+			"context": "Рюкзак и слоты патронов в планшете → Снаряжение; карточки патронов между волнами",
+			"ids": [
+				"ammo/stun"
+			],
+			"names": [
+				"Контузящие"
+			],
+			"note": "Символ «ammo_stun»"
 		},
 		{
 			"path": "res://assets/portraits/major.png",
@@ -3250,6 +3370,78 @@
 				"Катушка Теслы"
 			],
 			"note": "Символ «tesla»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/bp_ability.png",
+			"group": "Чертежи",
+			"context": "Чертежи в рюкзаке (планшет → Снаряжение): один планшет, силуэт — категория",
+			"ids": [
+				"blueprint/ability"
+			],
+			"names": [
+				"Чертёж способности"
+			],
+			"note": "Символ «bp_ability»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/bp_bonus.png",
+			"group": "Чертежи",
+			"context": "Чертежи в рюкзаке (планшет → Снаряжение): один планшет, силуэт — категория",
+			"ids": [
+				"blueprint/bonus"
+			],
+			"names": [
+				"Чертёж бонуса"
+			],
+			"note": "Символ «bp_bonus»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/bp_building.png",
+			"group": "Чертежи",
+			"context": "Чертежи в рюкзаке (планшет → Снаряжение): один планшет, силуэт — категория",
+			"ids": [
+				"blueprint/research"
+			],
+			"names": [
+				"Чертёж постройки"
+			],
+			"note": "Символ «bp_building»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/bp_hq.png",
+			"group": "Чертежи",
+			"context": "Чертежи в рюкзаке (планшет → Снаряжение): один планшет, силуэт — категория",
+			"ids": [
+				"blueprint/hq"
+			],
+			"names": [
+				"Чертёж штаба"
+			],
+			"note": "Символ «bp_hq»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/bp_vehicle.png",
+			"group": "Чертежи",
+			"context": "Чертежи в рюкзаке (планшет → Снаряжение): один планшет, силуэт — категория",
+			"ids": [
+				"blueprint/garage"
+			],
+			"names": [
+				"Чертёж техники"
+			],
+			"note": "Символ «bp_vehicle»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/bp_weapon.png",
+			"group": "Чертежи",
+			"context": "Чертежи в рюкзаке (планшет → Снаряжение): один планшет, силуэт — категория",
+			"ids": [
+				"blueprint/weapon"
+			],
+			"names": [
+				"Чертёж оружия"
+			],
+			"note": "Символ «bp_weapon»"
 		}
 	]
 }

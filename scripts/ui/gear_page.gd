@@ -167,15 +167,18 @@ func item_cell(key:String,x:float,y:float,entry,locked:bool)->GearCell:
 		var rarity=clampi(int(ammo.get("rarity",0)),0,3)
 		var style=UiKit.style(Color(color,.12),12,Color(LootCatalog.RARITY_COLORS[rarity]) if type!=Ammo.STANDARD else Color(1,1,1,.16));style.set_border_width_all(2 if type!=Ammo.STANDARD else 1)
 		for state in ["normal","hover","pressed","focus"]:cell.add_theme_stylebox_override(state,style)
-		var key_art={"standard":"stats/damage","burn":"upgrades/burn","stun":"upgrades/stun","shock":"upgrades/shock"}.get(type,Ammo.ART.get(type,"stats/damage"))
-		art(cell,UiKit.trimmed(UiKit.icon_texture(key_art)),.18)
+		# Ammo series (box + cartridge, data/icon_kit.json «ammo/…»); older effect art as the fallback.
+		var key_art="ammo/"+type if IconKit.has("ammo/"+type) else {"standard":"stats/damage","burn":"upgrades/burn","stun":"upgrades/stun","shock":"upgrades/shock"}.get(type,Ammo.ART.get(type,"stats/damage"))
+		art(cell,UiKit.trimmed(UiKit.icon_texture(key_art)),.1 if key_art.begins_with("ammo/") else .18)
 		var name_label=UiKit.label(cell,Texts.render(Ammo.NAMES.get(type,type)),Vector2(4,C-20),Vector2(C-8,18),11 if C>=100 else 9,color);name_label.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;name_label.clip_text=true
 		cell.item_kind="ammo";cell.draggable=type!=Ammo.STANDARD
 		cell.tooltip_text=Texts.render(Ammo.NAMES.get(type,type)+" патроны")+("\n"+Ammo.describe(ammo) if type!=Ammo.STANDARD else "")
 		if is_slot and run()!=null and int(key.get_slice(":",1))==run().ammo_active and run().ammo_slots.size()>1:
 			UiKit.label(cell,"R",Vector2(C-18,4),Vector2(14,16),11,UiKit.MUTED)
 	else:
-		art(cell,UiKit.trimmed(UiKit.icon_texture(str(entry.item.get("id","")))),.16)
+		# Blueprint series: the same clipboard, the silhouette tells the category (data/icon_kit.json «blueprint/…»).
+		var sheet="blueprint/"+str(entry.item.get("category",""))
+		art(cell,UiKit.trimmed(UiKit.icon_texture(sheet if IconKit.has(sheet) else str(entry.item.get("id","")))),.1 if IconKit.has(sheet) else .16)
 		cell.item_kind="recipe";cell.draggable=true
 		cell.tooltip_text=Texts.render(Game.recipe_name(entry.item))+"\n"+Texts.render("Чертёж — донеси до хаба, чтобы открыть")
 	return cell
