@@ -138,7 +138,7 @@ func _process(_delta):
 	if get_viewport().get_visible_rect().size!=last_size:_layout()
 	health.set_health(data.hero_hp,data.hero_max);base_health.visible=not data.boss_room;base_health.set_health(data.base_hp,data.base_max)
 	dpad.visible=InputScheme.touch();fire_pad.visible=InputScheme.touch();biome_panel.visible=Settings.values.biome_info
-	Texts.set_text(biome_label,arena.BIOMES.caption(arena.run_seed,arena.room_index))
+	Texts.set_text(biome_label,arena.BIOMES.caption(arena.run_seed,arena.room_index,arena.room_lane()))
 	# Progress reads as pips: fields of the route and waves of the room; words only where they add meaning.
 	var plain=not arena.sandbox and not data.boss_room and not Campaign.endless
 	# The arena's difficulty stars sit right after the title (T-023), before the stage pips.

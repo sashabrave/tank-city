@@ -46,15 +46,15 @@ static func allowed(entry:Dictionary)->Array:
 ## Weather of the context's current room, or "" outside battle.
 static func pick(context:Node)->String:
 	if context==null or not context.has_method("room_palette") or not "room_index" in context:return ""
-	return for_room(context.run_seed,int(context.room_index))
+	return for_room(context.run_seed,int(context.room_index),context.run.route_choices if "run" in context and context.run else {})
 ## Weather of room `index` of a run (the route map shows the same weather the battle will have).
-static func for_room(run_seed:int,index:int)->String:
+static func for_room(run_seed:int,index:int,choices:Dictionary={})->String:
 	var choice=str(Settings.values.get("weather","random"))
 	if choice in KINDS:return choice
 	var rng=RandomNumberGenerator.new();rng.seed=hash([Game.visual_run_seed,"weather"])
 	var current="clear"
 	for room in range(index+1):
-		var options=allowed(BIOMES.entry(run_seed,room))
+		var options=allowed(BIOMES.entry(run_seed,room,BIOMES.chosen_lane(run_seed,room,choices)))
 		var roll=rng.randf();var pick_roll=rng.randf()
 		if roll<CHANGE_CHANCE or current not in options:current=weighted(options,pick_roll)
 	return current

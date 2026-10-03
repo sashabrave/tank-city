@@ -17,9 +17,9 @@ func run():
 	var early=[];var late=[]
 	for s in range(60):
 		early.append(B.entry(s,0).family);late.append(B.entry(s,5).family)
-	check(early.all(func(f):return f in ["forest","steppe"]),"world 1 opens with forest and steppe")
-	check(late.all(func(f):return f in ["urban","desert"]) and "urban" in late,"world 1 ends in city and desert")
-	check(B.world_line(1)=="лес, степь, берег, город, пустыня" or Settings.values.get("language","ru")!="ru","world 1 biome line: "+B.world_line(1))
+	check(early.all(func(f):return f in ["forest","steppe","coast","urban"]),"world 1 opens on calm ground (forest, steppe, coast, city)")
+	check(late.all(func(f):return f in ["desert","marsh","frost","ash","urban"]) and ("frost" in late or "ash" in late),"world 1 ends on hard ground (frost, ash, marsh, desert, city)")
+	check(B.world_line(1).split(", ").size()==8 or Settings.values.get("language","ru")!="ru","world 1 carries all eight families: "+B.world_line(1))
 	# Urban field with containers.
 	var seed_value=-1
 	for s in range(400):

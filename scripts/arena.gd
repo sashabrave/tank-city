@@ -43,7 +43,9 @@ const ROOM_WAVES = [
 ]
 const BIOMES=preload("res://scripts/biome_catalog.gd")
 var navigation=preload("res://scripts/systems/navigation_cache.gd").new(self)
-func room_palette()->Dictionary:return BIOMES.ENTRIES[sandbox_biome] if sandbox and sandbox_biome>=0 else BIOMES.entry(run_seed,room_index)
+func room_palette()->Dictionary:return BIOMES.ENTRIES[sandbox_biome] if sandbox and sandbox_biome>=0 else BIOMES.entry(run_seed,room_index,room_lane())
+## Lane of the route node this room was entered from: each node of a stage has its own biome and name.
+func room_lane()->int:return BIOMES.chosen_lane(run_seed,room_index,run.route_choices if run else {})
 
 var grid_size:
 	get:return room.grid_size
