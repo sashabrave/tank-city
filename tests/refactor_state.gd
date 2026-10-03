@@ -33,6 +33,8 @@ func run_test():
 	check(not is_instance_valid(old_player),"previous player scene released")
 	var service=load("res://scripts/service_room.gd").new();service.arena=arena;service.index=4;service.branch="vehicle";add_child(service);service.set_physics_process(false)
 	# The mechanic upgrades the vehicle the hero drives or will get (buggy when none).
+	# The run seed is random here: take the damage card so the check does not depend on the draw.
+	service.offers=[{"id":"damage","tier":0}]+service.offers
 	var kind=service.vehicle;var before=arena.vehicle_mods[kind].damage;service.claim(0);var after=arena.vehicle_mods[kind].damage;service.claim(0)
 	check(after>before and arena.vehicle_mods[kind].damage==after,"service reward remains one-time")
 	check(arena.pending_vehicle==kind,"service delivery staged in run state")

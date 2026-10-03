@@ -12,7 +12,9 @@ func run():
 	for branch in ["vehicle","ability","headquarters"]:
 		var room=load("res://scripts/service_room.gd").new();room.arena=arena;room.branch=branch;room.index=2;add_child(room)
 		await get_tree().process_frame
-		check(is_instance_valid(room.dressing) and room.dressing.get_child_count()>20,branch+": themed dressing built")
+		# Street rooms (the stop model) keep their surroundings and lights on the room itself (2026-10-03).
+		var dressed=room.dressing.get_child_count()>20 if not room.street else room.has_node("RoomSurroundings") and room.has_node("RoomLights")
+		check(is_instance_valid(room.dressing) and dressed,branch+": themed dressing built")
 		check(not room.dressing.open,branch+": exit closed before the choice")
 		var done=[false];room.completed.connect(func(_i):done[0]=true)
 		room.cell=room.dressing.EXIT_CELL+Vector2i.LEFT;room.avatar.position=Vector3(room.cell.x,0,room.cell.y);room.destination=room.avatar.position
