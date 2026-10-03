@@ -25,6 +25,11 @@ var C:=92.0
 var left_w:=300.0
 var right_x:=324.0
 
+## The gear page's cell side for this screen: the tablet content width gives the grid (see build()).
+## 775 is the tablet content width with the side menu open (field_tablet.gd).
+static func cell_size(_node:Node=null)->float:
+	var inner=775.0-PAD-8-14.0;var left=floorf(inner*.42)
+	return floorf((inner-(left+GUTTER)-3*GAP)/4.0)
 ## The picture and the name of a backpack item, shared with the run result screen.
 static func icon_key(kind:String,item:Dictionary)->String:
 	match kind:
@@ -125,6 +130,25 @@ func build_right()->float:
 	var hq=Game.hq_loadout();var module=hq[0] if not hq.is_empty() else ""
 	fixed_cell("hq",col(3),y,Vector2(C,C),module,HQCatalog.DATA.get(module,{}).get("name","Поддержка штаба"),HQCatalog.DATA.get(module,{}).get("description","Выбери модуль в «Штабе» → Технологии."),module=="","2")
 	y+=C+SECTION
+	y=loadout_block(y)
+	y=backpack_block(y)+GAP
+	# Discard zone: drag anything here; it lands on the field as an army sack.
+	var zone=GearCell.new();zone.name="DiscardZone";body.add_child(zone);zone.key="discard";zone.position=Vector2(right_x,y);zone.size=Vector2(4*C+3*GAP,40)
+	Texts.set_text(zone,"Выбросить" if Backpack.can_drop(arena) else "Выбросить можно только в бою");zone.disabled=not Backpack.can_drop(arena)
+	zone.add_theme_font_size_override("font_size",13);zone.on_drop=move
+	for state in ["normal","hover","disabled"]:
+		var style=UiKit.style(Color(1,1,1,.02),10,Color(1,1,1,.18));style.set_border_width_all(1)
+		zone.add_theme_stylebox_override(state,style)
+	cells["discard"]=zone
+	y+=40+GAP
+	# Detail line of the selected item with the same actions as the gestures (touch has no right click).
+	var info=Panel.new();info.name="GearInfo";body.add_child(info);info.position=Vector2(right_x,y);info.size=Vector2(4*C+3*GAP,INFO_H)
+	info.add_theme_stylebox_override("panel",UiKit.style(Color(1,1,1,.03),12,Color(1,1,1,.1)))
+	fill_info(info)
+	return y+INFO_H
+
+## The equipped weapon and the ammo slots — one block for the gear screen and the run result (2026-10-03).
+func loadout_block(y:float)->float:
 	section("Оружие",0,y,2);section("Боеприпасы",2,y,2)
 	y+=LABEL+UNDER_LABEL
 	var weapon=str(arena.weapon) if is_instance_valid(arena) else Game.selected_weapon
@@ -148,11 +172,15 @@ func build_right()->float:
 		var cell=item_cell("slot:%d" % i,col(2+i),y,null if locked else slots[i],locked)
 		if locked:cell.tooltip_text=Texts.render("Второй слот боеприпасов — «Арсенал», для этого оружия")
 	y+=C+SECTION
+	return y
+## The backpack grid (4×2 GearCells) — the same block on the gear screen and the run result; `entries` lets the
+## result screen show blueprints that were already taken away (Backpack.layout otherwise).
+func backpack_block(y:float,entries:Array=[])->float:
 	var r=run()
 	var used=Backpack.used(r) if r!=null else 0
-	section("Рюкзак · %d / %d" % [used,Backpack.capacity()],0,y,4)
+	section("Рюкзак · %d / %d" % [used if entries.is_empty() else entries.filter(func(e):return e!=null).size(),Backpack.capacity()],0,y,4)
 	y+=LABEL+UNDER_LABEL
-	var entries=Backpack.layout(r)
+	if entries.is_empty():entries=Backpack.layout(r)
 	var safe=Backpack.safe_cells(r)
 	for i in range(Backpack.CELLS):
 		var x=col(i%4);var cy=y+floorf(i/4.0)*(C+GAP)
@@ -165,21 +193,13 @@ func build_right()->float:
 			var badge=UiKit.icon(cell,"shield",Vector2(C-26,6),Vector2(20,20));badge.name="Safe";badge.mouse_filter=Control.MOUSE_FILTER_IGNORE
 			var rule=Texts.render("Сейф: чертёж не пропадёт при выбывании")
 			cell.tooltip_text=rule if cell.tooltip_text=="" else cell.tooltip_text+"\n"+rule
-	y+=2*C+GAP+GAP
-	# Discard zone: drag anything here; it lands on the field as an army sack.
-	var zone=GearCell.new();zone.name="DiscardZone";body.add_child(zone);zone.key="discard";zone.position=Vector2(right_x,y);zone.size=Vector2(4*C+3*GAP,40)
-	Texts.set_text(zone,"Выбросить" if Backpack.can_drop(arena) else "Выбросить можно только в бою");zone.disabled=not Backpack.can_drop(arena)
-	zone.add_theme_font_size_override("font_size",13);zone.on_drop=move
-	for state in ["normal","hover","disabled"]:
-		var style=UiKit.style(Color(1,1,1,.02),10,Color(1,1,1,.18));style.set_border_width_all(1)
-		zone.add_theme_stylebox_override(state,style)
-	cells["discard"]=zone
-	y+=40+GAP
-	# Detail line of the selected item with the same actions as the gestures (touch has no right click).
-	var info=Panel.new();info.name="GearInfo";body.add_child(info);info.position=Vector2(right_x,y);info.size=Vector2(4*C+3*GAP,INFO_H)
-	info.add_theme_stylebox_override("panel",UiKit.style(Color(1,1,1,.03),12,Color(1,1,1,.1)))
-	fill_info(info)
-	return y+INFO_H
+	return y+2*C+GAP
+## Cells shown as a record (the run result): no menu, no drag, no drop; the hover card stays.
+func freeze():
+	for key in cells:
+		var cell:GearCell=cells[key]
+		cell.draggable=false;cell.on_drop=Callable();cell.on_activate=Callable();cell.on_discard=Callable()
+		for link in cell.pressed.get_connections():cell.pressed.disconnect(link.callable)
 
 func section(text:String,column:int,y:float,span:int):
 	var label=UiKit.label(body,text,Vector2(col(column),y),Vector2(span*C+(span-1)*GAP,LABEL),UiKit.SECTION_SIZE);label.clip_text=true

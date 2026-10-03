@@ -37,7 +37,14 @@ func run():
 		var total:Label=panel.find_child("KeptTotal",true,false)
 		check(total.text==str(184-(0 if won else 55)),"total shows what reaches the base: "+total.text)
 		if not won:check(panel.find_child("LossValue",true,false)!=null,"loss line shown on defeat")
-		check(panel.find_child("LostEquip_Оружие",true,false)!=null and panel.find_child("LostEquip_Боеприпасы",true,false)!=null,"lines name the lost gun in hand and the loaded ammo")
-		check(panel.find_child("LostIcon",true,false)==null,"their icons have fallen off the screen")
+		# The inventory is the gear screen's blocks (2026-10-03): weapon cell, two ammo slots, the 4×2 backpack.
+		var inventory=panel.find_child("ResultInventory",true,false)
+		var cells=inventory.get_children().filter(func(c):return c is GearCell)
+		var keys=cells.map(func(c):return c.key)
+		check("weapon" in keys and "slot:0" in keys and "bag:7" in keys and cells.size()==1+2+Backpack.CELLS,"the result shows the gear screen's weapon, ammo slots and backpack cells")
+		var bag0=cells.filter(func(c):return c.key=="bag:0")[0];var bag4=cells.filter(func(c):return c.key=="bag:4")[0]
+		check(absf(bag0.size.x-minf(preload("res://scripts/ui/gear_page.gd").cell_size(),bag0.size.x))<.5 and bag4.position.y>bag0.position.y,"same cell size, two rows of four")
+		check(cells.filter(func(c):return c.key in ["weapon","slot:0","bag:0","bag:1"] and c.get_meta("lost",false)).size()==4,"the gun in hand, the loaded ammo and the backpack gear fell out")
+		check(inventory.position.y+bag4.position.y+bag4.size.y<=panel.size.y,"the inventory fits inside the panel")
 		arena.queue_free();await settle(3)
 	print("RUN RESULT: %d failures" % failures);get_tree().quit(1 if failures else 0)

@@ -5,6 +5,9 @@ func settle():
 	for i in range(3):await get_tree().process_frame
 func shot(path):
 	if DisplayServer.get_name()=="headless":return
+	# A lost window focus opens the pause tablet; the shots are of the rooms, so it is closed first.
+	for tablet in get_tree().get_nodes_in_group("field_tablet"):tablet.close(false)
+	await settle()
 	await RenderingServer.frame_post_draw;get_viewport().get_texture().get_image().save_png(path)
 func run():
 	Game.save_enabled=false;Game.sound_enabled=false;Settings.persistence_enabled=false;Settings.values.fullscreen=false;Settings.apply()

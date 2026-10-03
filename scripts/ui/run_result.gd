@@ -21,7 +21,11 @@ static func show(hud,arena,won:bool,reason:String):
 			cause.name="DeathCause"
 	panel.name="RunResult"
 	# Twice the old gap between the two middle columns (T-051).
-	var width=panel.size.x;var left=Vector2(30,150);var right=Vector2(width*.5+45,150);var column=width*.5-75
+	# The inventory stands where the gear screen keeps it — top right, the same cells; loot, summary and the kill
+	# staircase line up on the left around it (author, 2026-10-03).
+	var width=panel.size.x;var side=minf(GEAR.cell_size(),floorf((width*.45-3*GEAR.GAP)/4.0))
+	var inv_w=4*side+3*GEAR.GAP;var inv_x=width-30-inv_w
+	var left=Vector2(30,150);var column=inv_x-30-48;var right=left
 	var earned=int(arena.earned);var lost=int(arena.run.lost_alloy);var kept=maxi(0,earned-lost)
 	var clock=[.15]
 	var at=func(step:float=STEP)->float:clock[0]+=step;return clock[0]
@@ -61,57 +65,55 @@ static func show(hud,arena,won:bool,reason:String):
 	count_up(total,kept,"%d",total_at,.7)
 	pop(panel,total,total_at+.7)
 	y+=64
-	# The equipped cells (2026-10-03): the gun in hand and the loaded ammo stay on the field when the run ends —
-	# the next sortie starts with the hub's gun and standard ammo. One line each, its icon falls like a coin.
-	var losses=equipped_losses(arena.run)
-	if not losses.is_empty():
-		UiKit.label(panel,"Потеряно",Vector2(left.x,y+6),Vector2(column,24),15,UiKit.MUTED);y+=32
-	for gone_item in losses:
-		var line_at=at.call(.2)
-		var row=ledger(panel,Vector2(left.x,y),column,gone_item.what,gone_item.name,Color("ff9b84"),line_at)
-		row.name="LostEquip_"+gone_item.what
-		row.size.x-=36
-		var mark=UiKit.icon(row.get_parent(),gone_item.icon,Vector2(column-30,1),Vector2(28,28));mark.name="LostIcon"
-		heavy_fall(hud,mark,line_at+.5)
-		y+=32
-	# The whole backpack (one inventory with the gear screen): blueprints kept bright; lost blueprints char and
-	# drop; guns, ammo and aid kits never reach the hub and fall out of their cells, heavier than the coins.
-	var saved=arena.pending_recipes if won else arena.get_meta("saved_recipes",[])
+	# The run's inventory is the gear screen's own blocks (author, 2026-10-03): GearPage.loadout_block (the gun in
+	# hand and the ammo slots) and GearPage.backpack_block (the 4×2 backpack), the same cells at the same size,
+	# read-only. Whatever does not reach the hub falls out of its cell, heavier than the coins; lost blueprints
+	# char first. The next sortie starts with the hub's gun and standard ammo.
 	var gone=arena.get_meta("lost_recipes",[])
-	var items=[]
-	for pair in [["weapon",arena.run.weapon_bag],["ammo",arena.run.ammo_bag],["supply",arena.run.supplies]]:
-		for item in pair[1]:items.append([pair[0],item])
-	UiKit.label(panel,"Рюкзак · %d / %d" % [saved.size()+gone.size()+items.size(),Backpack.capacity()],Vector2(left.x,y+6),Vector2(column,24),15,UiKit.MUTED)
-	var side=minf(72.0,floorf((column-8.0*(MAX_SLOTS-1))/MAX_SLOTS));var pitch=side+8.0
-	var shown=saved.size()+gone.size()+items.size()
-	for slot in range(mini(shown,MAX_SLOTS),MAX_SLOTS):
-		var empty=UiKit.panel(panel,Vector2(left.x+slot*pitch,y+34),Vector2(side,side),Color("262b27"));empty.modulate.a=.45
-		if slot>=Backpack.capacity():
-			lock_mark(empty,side);empty.tooltip_text=Texts.render("Ячейка закрыта — расширяется в хабе")
-	var x=left.x
-	for entry in saved.map(func(r):return ["recipe",r,true])+gone.map(func(r):return ["recipe",r,false])+items.map(func(e):return [e[0],e[1],false]):
-		if x+side>left.x+column+1:break
-		var cell=UiKit.panel(panel,Vector2(x,y+34),Vector2(side,side),Color("2f3b33") if entry[2] else Color("262b27"));cell.modulate.a=0
-		var icon_key=GEAR.icon_key(entry[0],entry[1])
-		cell.tooltip_text=Texts.render(GEAR.item_name(entry[0],entry[1]))+("" if entry[2] else " · "+Texts.render("потерян"))
-		var art=UiKit.icon(cell,icon_key,Vector2(side*.14,side*.11),Vector2(side*.72,side*.72));art.name="Art"
-		var appear=at.call(.12)
-		reveal(cell,appear,"ui_confirm" if entry[2] else "debris",hud)
-		if entry[0]=="recipe":
-			UiKit.locked_preview(art,not entry[2])
-			if not entry[2]:
-				UiKit.label(cell,"✕",Vector2(side-20,0),Vector2(20,20),14,Color("ff6b57"))
-				# A lost blueprint chars and drops off the bottom of the screen.
-				var burn=cell.create_tween();burn.tween_interval(appear+.6)
-				burn.tween_property(cell,"modulate",Color(1,.45,.25,1),.25)
-				burn.parallel().tween_property(cell,"rotation",.35,.6)
-				burn.tween_property(cell,"position:y",panel.size.y+120,.7).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-		else:
-			# Run gear: the picture leaves its cell and falls; the cell stays empty.
-			heavy_fall(hud,art,appear+.55)
-		x+=pitch
-	# — Summary —
-	clock[0]=.15
+	var entries=Backpack.layout(arena.run)
+	for recipe in gone:
+		for c in range(Backpack.capacity()):
+			if entries[c]==null:entries[c]={"kind":"recipe","index":-1,"item":recipe};break
+	var grid=Control.new();grid.name="ResultInventory";panel.add_child(grid);grid.position=Vector2(inv_x,left.y);grid.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	var page=GEAR.new({"arena":arena});page.body=grid;page.right_x=0.0
+	page.C=side
+	var bottom=page.loadout_block(0.0)
+	bottom=page.backpack_block(bottom,entries)
+	page.freeze()
+	var lost_keys=[]
+	if not equipped_losses(arena.run).filter(func(l):return l.what=="Оружие").is_empty():lost_keys.append("weapon")
+	for i in range(arena.run.ammo_slots.size()):
+		var slot=arena.run.ammo_slots[i]
+		if slot is Dictionary and str(slot.get("type",Ammo.STANDARD))!=Ammo.STANDARD:lost_keys.append("slot:%d" % i)
+	for i in range(Backpack.CELLS):
+		var entry=entries[i]
+		if entry!=null and not (entry.kind=="recipe" and entry.item not in gone):lost_keys.append("bag:%d" % i)
+	# The inventory reveals on its own clock, alongside the loot (it is the other column).
+	var resume=clock[0];clock[0]=.3
+	for key in page.cells:
+		var cell:GearCell=page.cells[key]
+		var falls=key in lost_keys
+		if cell.get_node_or_null("Art")==null:continue
+		var appear=at.call(.1)
+		cell.modulate.a=0;reveal(cell,appear,"debris" if falls else "ui_confirm",hud)
+		if not falls:continue
+		if key.begins_with("bag:") and entries[int(key.get_slice(":",1))].kind=="recipe":
+			UiKit.label(cell,"✕",Vector2(page.C-20,0),Vector2(20,20),14,Color("ff6b57"))
+			var burn=cell.create_tween();burn.tween_interval(appear+.6);burn.tween_property(cell,"modulate",Color(1,.45,.25,1),.25)
+		# The picture leaves its cell and falls; the cell turns back into an empty one.
+		cell.get_node("Art").name="Falling"
+		heavy_fall(hud,cell.get_node("Falling"),appear+.55)
+		var empty_style=UiKit.style(Color(1,1,1,.04),12,Color(1,1,1,.16));empty_style.set_border_width_all(1)
+		var clear=cell.create_tween();clear.tween_interval(appear+.55)
+		clear.tween_callback(func():
+			for state in ["normal","hover","pressed","focus"]:cell.add_theme_stylebox_override(state,empty_style)
+			cell.modulate=Color.WHITE;cell.set_meta("lost",true)
+			for child in cell.get_children():
+				if child is Label:child.queue_free())
+	clock[0]=resume
+	var inv_bottom=left.y+bottom
+	# — Summary — under the loot in the same column.
+	right=Vector2(left.x,y+14)
 	UiKit.accent(UiKit.label(panel,"Сводка",right,Vector2(column,26),UiKit.SECTION_SIZE,UiKit.MUTED))
 	var fields=mini(arena.room_index+(1 if won else 0),Campaign.SIZES.size())
 	var best=int(Game.progression.counters.get("best_kills",0));var record=arena.kills>best and arena.kills>0
@@ -127,9 +129,9 @@ static func show(hud,arena,won:bool,reason:String):
 	# Killed enemies: one tile per type, each a little higher and to the right — a staircase.
 	var kinds:Array=arena.run.kills_by.keys()
 	kinds.sort_custom(func(a,b):return int(arena.run.kills_by[a])>int(arena.run.kills_by[b]))
-	var heading_y=right.y+(184 if Campaign.daily else 150)
+	var heading_y=right.y+(176 if Campaign.daily else 142)
 	if not kinds.is_empty():UiKit.label(panel,"Уничтожено",Vector2(right.x,heading_y),Vector2(column,24),15,UiKit.MUTED)
-	var base=Vector2(right.x,heading_y+60)
+	var base=Vector2(right.x,heading_y+54)
 	var tile=Vector2(64,74);var per_row=int((column+8)/(tile.x+8))
 	for i in range(mini(kinds.size(),per_row*2)):
 		var row=i/per_row;var col=i%per_row
@@ -138,7 +140,12 @@ static func show(hud,arena,won:bool,reason:String):
 		var icon=ICON.new();icon.kind=str(kinds[i]);card.add_child(icon);icon.position=Vector2(6,2);icon.size=Vector2(52,50);icon.mouse_filter=Control.MOUSE_FILTER_PASS
 		var count=UiKit.label(card,"×%d" % int(arena.run.kills_by[kinds[i]]),Vector2(0,50),Vector2(tile.x,22),15,UiKit.ORANGE);count.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
 		reveal(card,at.call(.14),"countdown_tick",hud,Vector2(0,14))
-	UiKit.button(panel,"В хаб",Vector2(width-310,panel.size.y-76),Vector2(280,52),func():arena.leave(),true)
+	var rows_used=ceili(minf(kinds.size(),per_row*2)/float(per_row)) if not kinds.is_empty() else 0
+	var left_bottom=base.y+rows_used*(tile.y+16) if rows_used>0 else heading_y
+	# The panel fits both columns (centred again); «В хаб» sits under the inventory.
+	var screen=hud.get_viewport().get_visible_rect().size
+	panel.size.y=minf(maxf(left_bottom+24,inv_bottom+24+52+24),screen.y-20);panel.position.y=(screen.y-panel.size.y)*.5
+	UiKit.button(panel,"В хаб",Vector2(inv_x,panel.size.y-76),Vector2(inv_w,52),func():arena.leave(),true).name="ToHub"
 
 ## One "title …… value" line that fades in at `delay`.
 const MAX_SLOTS=Backpack.CELLS
@@ -235,7 +242,8 @@ static func heavy_fall(hud,node:Control,delay:float):
 	var t=node.create_tween();t.tween_interval(delay)
 	t.tween_callback(func():
 		if not is_instance_valid(node):return
-		var start=node.get_global_rect().position;var size=node.size
+		# The HUD root may be scaled (interface size): place the picture in the layer's own coordinates.
+		var start=layer.get_global_transform().affine_inverse()*node.global_position;var size=node.size
 		node.get_parent().remove_child(node);layer.add_child(node);node.z_index=119;node.position=start;node.size=size;node.pivot_offset=size*.5;node.modulate.a=1.0
 		Game.sound("debris",hud)
 		var time=rng.randf_range(1.5,1.8);var drift=rng.randf_range(-50,50);var spin=rng.randf_range(-.45,.45)
