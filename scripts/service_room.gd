@@ -26,6 +26,7 @@ var facing=Vector2i.UP
 var dressing
 var walker
 var vehicle_prompt
+var combat:Node3D
 func _ready():
 	add_to_group("notification_context")
 	vehicle=current_vehicle()
@@ -69,6 +70,8 @@ func _ready():
 	if has_node("TakeVehicleLabel"):
 		var vehicle_name=GarageCatalog.VEHICLES.get(vehicle,{}).get("name",vehicle)
 		vehicle_prompt=preload("res://scripts/interaction_prompt.gd").attach(self,self,Texts.render("Купить")+" %s · %d" % [Texts.render(vehicle_name),VEHICLE_PRICES.get(vehicle,80)],PARKED,1.6,func():return has_node("TakeVehicleLabel"))
+	# Shooting and abilities work here like in the hub and in battle (T-158, T-185).
+	combat=preload("res://scripts/room_combat.gd").attach(self,avatar,walker,stand,root)
 	offers=arena.reward.service_offers(branch)
 	locker=preload("res://scripts/weapon_locker.gd").place(self,arena,Vector3(-3.4,0,0.5))
 	vendor=preload("res://scripts/ammo_vendor.gd").place(self,arena,Vector3(-3.4,0,2.4))
@@ -119,6 +122,8 @@ func interact():
 	if branch=="ability":
 		var salute=Visuals.box(avatar,Vector3(.27,.85,-.1),Vector3(.12,.38,.12),Color("a4ad85"));salute.rotation.z=-.8
 		create_tween().tween_interval(.8).finished.connect(salute.queue_free)
+	# No class ability yet (T-186): a short word from the instructor and alloy instead of upgrade cards.
+	if branch=="ability" and Game.class_loadout().is_empty():early_reward();return
 	modal=preload("res://scenes/ui/service_rewards.tscn").instantiate();root.add_child(modal);modal.add_to_group("selection_scope")
 	var panel=modal.get_node("Panel")
 	panel.get_node("Heading").text="Модификация · "+({"buggy":"Багги","apc":"БТР","tank":"Танк"}[vehicle] if branch=="vehicle" else "Штаб" if branch=="headquarters" else arena.abilities.NAMES.get(arena.abilities.selected,"Способность"))
@@ -133,8 +138,8 @@ func interact():
 		if branch=="headquarters":
 			preload("res://scripts/ui/choice_card.gd").configure(panel.get_node("Card"+str(i+1)),arena.headquarters.card(offers[i]),func():claim(i));continue
 		var offer=offers[i];var n=Balance.tier_power(offer.tier)
-		var title={"damage":"Урон транспорта","hp":"Броня транспорта","speed":"Передвижение","power":"Прочность / урон","cooldown":"Перезарядка","utility":"Особенность"}[offer.id]
-		var description=arena.abilities.description(offer.id,offer.tier) if branch=="ability" else {"damage":"+%.2f урона" % ((.15 if vehicle=="buggy" else 1.0)*n),"hp":"+%d брони" % roundi(3*n),"speed":"+%.1f %% скорости машины" % (4*n)}[offer.id]
+		var title={"damage":"Урон транспорта","hp":"Броня транспорта","speed":"Передвижение","rate":"Скорострельность","overhaul":"Капремонт","power":"Прочность / урон","cooldown":"Перезарядка","utility":"Особенность"}[offer.id]
+		var description=arena.abilities.description(offer.id,offer.tier) if branch=="ability" else {"damage":"+%.2f урона" % ((.15 if vehicle=="buggy" else 1.0)*n),"hp":"+%d брони" % roundi(3*n),"speed":"+%.1f %% скорости машины" % (4*n),"rate":"−%d %% к паузе между выстрелами" % roundi(4*n),"overhaul":"+%d брони и +%s урона" % [roundi(1.5*n),UiKit.number(snappedf((.08 if vehicle=="buggy" else .5)*n,.01))]}[offer.id]
 
 		if branch=="vehicle":
 			var mods=arena.vehicle_mods[vehicle];var tuning=Balance.CONFIG.enemy(vehicle)
@@ -146,8 +151,11 @@ func interact():
 				"hp":
 					var driver=1.15+Game.class_specialization()*.05 if Game.selected_class in ["driver","engineer"] else 1.0
 					description=UiKit.change_text("Броня",(tuning.health+mods.hp)*driver,(tuning.health+mods.hp+mini(index,6)+roundi(3*n))*driver)
+				"rate":
+					var now=float(mods.get("rate",1.0))
+					description=UiKit.change_text("Темп",roundf(100.0/now),roundf(100.0/maxf(.7,now-.04*n)),"%")
 				"speed":description=UiKit.change_text("Скорость",minf(Balance.speed_cap(),tuning.player_speed*arena.speed_multiplier*mods.speed),minf(Balance.speed_cap(),tuning.player_speed*arena.speed_multiplier*minf(1.25,mods.speed+.04*n)))
-		var view={"category":"Транспорт" if branch=="vehicle" else "Способность","title":title,"detail":description,"icon":offer.id,"heading":LootCatalog.RARITY_NAMES[offer.tier],"color":Color(LootCatalog.RARITY_COLORS[offer.tier])}
+		var view={"category":"Транспорт" if branch=="vehicle" else "Способность","title":title,"detail":description,"icon":{"rate":"garage/%s_gun" % vehicle,"overhaul":"pickups/vehicle_repair"}.get(offer.id,offer.id),"heading":LootCatalog.RARITY_NAMES[offer.tier],"color":Color(LootCatalog.RARITY_COLORS[offer.tier])}
 		preload("res://scripts/ui/choice_card.gd").configure(panel.get_node("Card"+str(i+1)),view,func():claim(i))
 	var reroll=panel.get_node("RerollButton");Texts.set_text(reroll,"Переброс · осталось %d" % arena.rerolls_left);reroll.pressed.connect(reroll_cards)
 	reroll.disabled=arena.rerolls_left<=0
@@ -162,6 +170,28 @@ func claim(i: int):
 	if claimed or i<0 or i>=offers.size():return
 	arena.reward.apply_service_reward(branch,vehicle,index,offers[i])
 	Game.sound("upgrade",self);claimed=true;close_cards();continue_button.disabled=false;interact_button.disabled=true;dressing.set_open(true)
+## Alloy instead of an ability upgrade, while the class has no ability yet.
+func early_reward():
+	var amount=EncounterRules.chest_alloy(arena.room_index,1)
+	modal=Control.new();modal.name="EarlyReward";root.add_child(modal);modal.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);modal.add_to_group("selection_scope")
+	var shade=ColorRect.new();modal.add_child(shade);shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);shade.color=Color(0,0,0,.45)
+	var screen=root.get_viewport_rect().size;var w=minf(520,screen.x-32);var h=320.0
+	var box=UiKit.glass(modal,((screen-Vector2(w,h))*.5).round(),Vector2(w,h));box.name="Box"
+	UiKit.accent(UiKit.label(box,"Способности ещё рано",Vector2(28,24),Vector2(w-56,36),24))
+	var text=UiKit.label(box,"Первая способность класса откроется в Казарме на %d уровне. Пока держи награду." % ClassCatalog.ABILITY_LEVELS[0],Vector2(28,70),Vector2(w-56,52),16,UiKit.MUTED);text.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	var prize=Control.new();box.add_child(prize);prize.position=Vector2(0,136);prize.size=Vector2(w,80);prize.name="Prize"
+	var number=UiKit.label(prize,"+%d" % amount,Vector2(0,10),Vector2(w*.5+20,60),44,UiKit.ORANGE);number.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
+	var coin=UiKit.icon(prize,"alloy",Vector2(w*.5+32,14),Vector2(52,52))
+	var ok=UiKit.button(box,"Ок",Vector2(28,h-28-58),Vector2(w-56,58),func():
+		Game.earn(amount);arena.run.earned+=amount;Game.sound("upgrade",self)
+		claimed=true;close_cards();continue_button.disabled=false;interact_button.disabled=true;dressing.set_open(true),true);ok.name="Ok"
+	ok.focus_mode=Control.FOCUS_ALL
+	(func():if is_instance_valid(ok) and ok.is_inside_tree():ok.grab_focus()).call_deferred()
+	if UiKit.motion_enabled():
+		# The prize drops in with a bounce, the coin spins once.
+		prize.position.y=60;prize.modulate.a=0
+		var t=prize.create_tween().set_parallel();t.tween_property(prize,"position:y",136.0,.45).set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT).set_delay(.15);t.tween_property(prize,"modulate:a",1.0,.2).set_delay(.15)
+		coin.pivot_offset=coin.size*.5;t.tween_property(coin,"scale",Vector2(-1,1),.18).set_delay(.6);t.chain().tween_property(coin,"scale",Vector2.ONE,.18)
 func close_cards():
 	if is_instance_valid(modal):modal.get_parent().remove_child(modal);modal.queue_free();modal=null
 	Game.reset_input();dpad.clear();dpad.enabled=true

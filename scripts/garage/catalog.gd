@@ -30,7 +30,7 @@ static func stats(kind:String,arena=null,origin:String="owned",zone:int=1,change
 		return {"hp":t.health*PLAYER_ARMOR.get(kind,1.0)*stock,"damage":t.damage*stock,"interval":t.fire_interval,"speed":t.player_speed,"pressure":.35}
 	var hp=t.health*PLAYER_ARMOR.get(kind,1.0);var damage=t.damage+Game.meta_damage()*(.25 if kind=="buggy" else 1.0);var interval=t.fire_interval;var speed=t.player_speed*CombatStats.initial_speed_multiplier()
 	if arena!=null:
-		var mods=arena.run.vehicle_mods[kind];hp+=mods.hp;damage+=mods.damage+(arena.damage_bonus+changes.get("damage_bonus",0.0))*(.25 if kind=="buggy" else 1.0);interval*=arena.fire_multiplier;speed=t.player_speed*mods.speed*arena.speed_multiplier
+		var mods=arena.run.vehicle_mods[kind];hp+=mods.hp;damage+=mods.damage+(arena.damage_bonus+changes.get("damage_bonus",0.0))*(.25 if kind=="buggy" else 1.0);interval*=arena.fire_multiplier*float(mods.get("rate",1.0));speed=t.player_speed*mods.speed*arena.speed_multiplier
 	hp*=1+Game.garage.level(kind,"armor")*.03;damage*=1+Game.garage.level(kind,"gun")*.03;interval/=1+Game.garage.level(kind,"loader")*.02
 	if Game.selected_class in ["driver","engineer"]:hp*=1.15+Game.class_specialization()*.01;damage*=1.1+Game.class_specialization()*.01
 	return {"hp":hp,"damage":damage,"interval":maxf(Balance.CONFIG.combat.minimum_fire_interval,interval),"speed":minf(speed,Balance.speed_cap()),"pressure":.35}

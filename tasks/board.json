@@ -1996,7 +1996,7 @@
 			"scene": "service_room",
 			"shot": "res://tasks/shots/T-158.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "В комнатах улучшений МОЖНО И СТРЕЛЯТЬ И СПОСОБНОСТИ ИСПОЛЬЗОВАТЬ",
 			"type": "bug",
 			"version": "0.8.0"
@@ -2152,7 +2152,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-170.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "после боя с боссом выпали карточки без объясенений или что это",
 			"type": "bug",
 			"version": "0.8.0"
@@ -2334,7 +2334,7 @@
 			"scene": "service_room",
 			"shot": "res://tasks/shots/T-184.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "карточек транспорта слишком мало",
 			"type": "bug",
 			"version": "0.8.0"
@@ -2347,7 +2347,7 @@
 			"scene": "service_room",
 			"shot": "res://tasks/shots/T-185.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "во всех комнатах способностей надо засинкать графику управление использование способностей и все все на свете как в одном месте - хабе- бою",
 			"type": "bug",
 			"version": "0.8.0"
@@ -2360,7 +2360,7 @@
 			"scene": "service_room",
 			"shot": "res://tasks/shots/T-186.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "у меня не открыты способности но я дошел до комнаты прокачки",
 			"type": "bug",
 			"version": "0.8.0"

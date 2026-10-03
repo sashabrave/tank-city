@@ -309,6 +309,10 @@ func show_recipe_draft():
 	var difficulty=2 if arena.room.boss_room else arena.room.difficulty
 	var panel=choice_screen("chest_screen","Сундук "+EncounterRules.STARS[difficulty],"Выбери награду",EncounterRules.reward_text(difficulty)+". Один предмет на выбор.")
 	panel.get_node("ReturnButton").pressed.connect(func():arena.pause_battle())
+	# What these cards are (T-170): one line under the heading, small, above the cards.
+	var why=panel.get_node("Subtitle")
+	Texts.set_text(why,("Награда за командира. " if arena.room.boss_room else "")+"Возьми одну: чертёж откроется, когда донесёшь его до хаба, трофей действует до конца вылазки")
+	why.add_theme_font_size_override("font_size",14);why.add_theme_color_override("font_color",UiKit.MUTED);why.position.y=110;why.size.y=24;why.clip_text=true
 	for i in range(3):
 		var offer=arena.draft_pickup.offers[i];var special=offer.category in ["secret","alloy","upgrade","documents"]
 		var tier=offer.get("tier",0) if special else Game.TIERS.tier(offer.id)

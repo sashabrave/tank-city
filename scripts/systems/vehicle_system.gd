@@ -169,6 +169,8 @@ func upgrade_at_service(kind:String,index:int,offer:Dictionary):
 		"damage":mods.damage+=(.15 if kind=="buggy" else 1.0)*n
 		"hp":mods.hp+=roundi(3*n)
 		"speed":mods.speed=minf(1.25,mods.speed+.04*n)
+		"rate":mods.rate=maxf(.7,float(mods.get("rate",1.0))-.04*n)
+		"overhaul":mods.hp+=roundi(1.5*n);mods.damage+=(.08 if kind=="buggy" else .5)*n
 	arena.run.pending_vehicle=kind
 
 func player_armor(kind:String,origin:String="owned",zone:int=1)->float:

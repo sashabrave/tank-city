@@ -326,7 +326,14 @@ func service_offers(branch:String)->Array:
 			var j=arena.run.combat_rng.randi_range(0,i);var swap=pool[i];pool[i]=pool[j];pool[j]=swap
 		return pool.slice(0,3)
 	var offers=[]
-	for id in ["damage","hp","speed"] if branch=="vehicle" else ["power","cooldown","utility"]:
+	var ids=["power","cooldown","utility"]
+	if branch=="vehicle":
+		# Five vehicle cards, three of them per visit (T-184): the stop does not repeat the same trio.
+		ids=["damage","hp","speed","rate","overhaul"]
+		for i in range(ids.size()-1,0,-1):
+			var j=arena.run.combat_rng.randi_range(0,i);var keep=ids[i];ids[i]=ids[j];ids[j]=keep
+		ids=ids.slice(0,3)
+	for id in ids:
 		offers.append({"id":id,"tier":Game.rarity_roll(arena.run.combat_rng.randf(),arena.room_index)})
 	return offers
 

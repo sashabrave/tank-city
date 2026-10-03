@@ -144,7 +144,7 @@ func _ready():
 		fire_interval *= arena.fire_multiplier
 		speed *= arena.speed_multiplier
 	if player_owned and kind in arena.vehicle_mods:
-		var mods=arena.vehicle_mods[kind];max_hp+=mods.hp;hp=max_hp;damage+=mods.damage;speed*=mods.speed
+		var mods=arena.vehicle_mods[kind];max_hp+=mods.hp;hp=max_hp;damage+=mods.damage;speed*=mods.speed;fire_interval*=float(mods.get("rate",1.0))
 	if player_owned and kind!="soldier" and Game.selected_class in ["driver","engineer"]:max_hp*=1.15+Game.class_specialization()*.01;hp=max_hp;damage*=1.1+Game.class_specialization()*.01
 	if player_owned and kind in GarageCatalog.VEHICLES:
 		var vehicle_stats=GarageCatalog.stats(kind,arena,vehicle_origin,vehicle_zone)

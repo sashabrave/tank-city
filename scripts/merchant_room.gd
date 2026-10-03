@@ -44,6 +44,8 @@ func _ready():
 	avatar=Visuals.model("soldier",self,destination,"cat",true)
 	walker=preload("res://scripts/room_walker.gd").new(avatar)
 	var canvas=CanvasLayer.new();add_child(canvas);root=Control.new();canvas.add_child(root);root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);root.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	# Shooting and abilities like in the hub and in battle (T-185).
+	preload("res://scripts/room_combat.gd").attach(self,avatar,walker,stand,root)
 	var heading=UiKit.glass(root,Vector2(25,25),Vector2(590,120),Color("242d27ed"));heading.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	UiKit.accent(UiKit.label(root,"Торговец",Vector2(40,30),Vector2(800,60),32))
 	UiKit.label(root,"Жетоны с врагов меняются здесь на усиления",Vector2(40,100),Vector2(1000,40),18)
@@ -96,6 +98,7 @@ func roll_stock()->Array:
 		if not recipe.is_empty():result.append({"kind":"blueprint","recipe":recipe,"price":10,"sold":false})
 	return result
 
+func stand(p:Vector3)->bool:return p.x>=-3.01 and p.x<=3.01 and p.z>=-.01 and p.z<=4.01
 func _physics_process(delta):
 	# Same as the hub: the on-screen pad only for touch play.
 	if is_instance_valid(dpad):dpad.visible=InputScheme.touch()
@@ -105,7 +108,7 @@ func _physics_process(delta):
 	if Input.is_action_just_pressed("pause"):preload("res://scripts/ui/pause_tablet.gd").open(self,Callable(),func():hub_requested.emit());return
 	# The kit model walks only when told (T-045): idle while standing, walk cycle while moving.
 	if "preview_moving" in avatar:avatar.preview_moving=moving;avatar.preview_speed=3.4
-	walker.step(delta,Game.direction(),func(p:Vector3):return p.x>=-3.01 and p.x<=3.01 and p.z>=-.01 and p.z<=4.01)
+	walker.step(delta,Game.direction(),stand)
 	moving=walker.moving;cell=walker.cell();facing=walker.facing
 	interact_button.disabled=avatar.position.distance_to(COUNTER)>2.2 and not near_slot()
 	if Game.wants_interact():interact()
