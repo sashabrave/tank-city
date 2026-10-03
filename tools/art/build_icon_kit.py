@@ -106,7 +106,7 @@ def main():
 		("blueprints_v2.png", 3, 2): "bp_weapon bp_vehicle bp_hq bp_ability bp_bonus bp_building",
 		("ammo_charges_v2.png", 2, 1): "ammo_cluster ammo_napalm",
 		# HQ is the mobile command truck (author, 2 Oct): these replace the tent and bunker pictures.
-		("hq_vehicle_v2.png", 3, 2): "cat_hq st_headquarters hq_repair medbay - -",
+		("hq_vehicle_v3.png", 3, 2): "cat_hq st_headquarters hq_repair medbay - -",
 		("bp_hq_v2.png", 1, 1): "bp_hq",
 	}
 	for (sheet, cols, rows), names in symbols.items():
