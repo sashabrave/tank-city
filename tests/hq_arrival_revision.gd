@@ -14,7 +14,9 @@ func run():
 		Game.visual_run_seed=seed_value
 		var arena=load("res://scenes/arena.tscn").instantiate();arena.run_seed=seed_value;add_child(arena);arena.auto_pause_enabled=false
 		var hq=arena.base_model;var yaw=hq.rotation.y;var samples=[]
-		for i in 70:
+		# 0.8: the drive up the field approach takes ARRIVE_RAMP; sample a little past it.
+		var until=Time.get_ticks_msec()+int(preload("res://scripts/battle_stage.gd").ARRIVE_RAMP*1250)
+		while Time.get_ticks_msec()<until:
 			await get_tree().process_frame
 			samples.append([hq.position,hq.rotation.y])
 		# Turning in the final 40% of the samples while the HQ is still moving.

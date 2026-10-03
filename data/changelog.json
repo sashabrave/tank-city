@@ -16,7 +16,8 @@
 					"Карта мира: руины домов меньше, добавлены деревенские домики и арочный ангар.",
 					"Карта мира: W ведёт машину штаба вдоль дорог, под наклоном карты, а не строго вверх экрана; на дорогах прерывистая разметка, где-то свежая, где-то стёртая.",
 					"Карта мира: по краям вместо гор-пирамид — массивные ступенчатые плато с полосами пород и обломками у подножия.",
-					"К полю боя снизу ведёт импровизированный подъезд для машины штаба: насыпь от бордюра с мешками по краям и колеями, внизу грунтовка уходит дугой в сторону, шлагбаум и пара ежей."
+					"К полю боя снизу ведёт широкий заезд-трапеция в цвет карты (80% ширины поля) с грунтовками налево и направо и следами шин; покрытие и детали под биом. Машина штаба заезжает из-за края экрана по широкой дуге, поднимается по насыпи с наклоном и потряхиванием на перепадах и плавно встаёт на место, а уезжает по другой дуге.",
+					"Начало боя по тактам: машина встала — боец выпрыгивает — строится стена. Неуязвимость в начале поля убрана."
 				]
 			},
 			"en": {
@@ -33,7 +34,8 @@
 					"World map: smaller ruined houses, plus village cottages and an arched hangar.",
 					"World map: W drives the HQ truck along the roads, tilted with the map, not straight up the screen; roads have a dashed centre line, fresh on some, worn on others.",
 					"World map: the edges have massive terraced plateaus with rock strata and fallen blocks instead of pyramid mountains.",
-					"An improvised approach for the HQ truck leads up to the field from below: an earth ramp from the rim with sandbags and wheel ruts, a dirt track curving off at the foot, a barrier pole and a couple of hedgehogs."
+					"A wide map-coloured trapezoid entry (80% of the field width) leads up to the field from below, with dirt tracks to the left and right and tyre marks; surface and details follow the biome. The HQ truck drives in from off-screen in a wide arc, climbs the ramp tilting and jolting on the edges, parks smoothly, and leaves along the other arc.",
+					"Battle start in beats: the truck stops — the soldier hops out — the wall goes up. The start-of-field invulnerability is gone."
 				]
 			}
 		},

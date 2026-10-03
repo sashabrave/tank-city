@@ -355,8 +355,7 @@ func begin_room(index: int):
 	ambience.seed_value=Game.visual_run_seed;ambience.room_index=index;ambience.biome=room_palette().ambience;ambience.radius=grid_size*.5;ambience.palette=room_palette();add_child(ambience)
 	player=spawn_actor(carried_kind,Vector2i(base_cell.x,grid_size-2 if boss_room else grid_size-3),true,false,1,false,"",carried_origin,carried_zone)
 	player.salvaged=carried_salvaged
-	# A short spawn grace covers the arrival; the soldier shimmers and the HUD shows the chip.
-	player.invulnerable=2.4
+	# No spawn grace since 0.8 (author: not needed for play, extra noise); the countdown covers the arrival.
 	if carried_kind!="soldier" and carried_armor>0:player.hp=minf(carried_armor,player.max_hp);player.refresh_health()
 	toast("Атакуй босса. При включении щита уничтожь светящийся генератор." if Campaign.is_final(room_index) else "Бой с генералом. Когда включится щит, уничтожь светящийся генератор на фланге." if boss_room else "")
 	preload("res://scripts/effect_warmup.gd").run(self)
