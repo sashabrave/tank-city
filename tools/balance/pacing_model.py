@@ -101,8 +101,10 @@ def load():
 # ladder is modelled from the rules: +0.2 professionalism per step (faster aim, more storming) is taken as +25% /
 # +50% damage taken; II also removes the breather heal and cuts the HQ by a quarter (Player.base_max / heal).
 # Kill and clear alloy are multiplied by Campaign.CHALLENGE_REWARD; chests are not.
-CHALLENGE_PRESSURE = [1.0, 1.25, 1.5]
+# 0.8: CHALLENGE_SKILL .2 → .3 per step, so +37.5% / +75% (same linear reading of the rules).
+CHALLENGE_PRESSURE = [1.0, 1.375, 1.75]
 CHALLENGE_REWARD = [1.0, 1.25, 1.5]
+BUILDINGS = {"weapons", "headquarters", "garage", "rescue", "reroll", "range"}
 
 def field_stats(data, dmg, mob, challenge, field):
     """Pooled bot numbers for a field (normal difficulty), scaled to the player's kill speed and the ladder step."""
@@ -284,7 +286,8 @@ class Player:
         if dead:
             self.deaths += 1
             earned *= 1 - max(ECON["loss_floor"], ECON["loss"] - .05 * self.insurance)
-            kept = [b for b in carried if rng.random() < min(.6, self.rescue * .06)]
+            # 0.8: building blueprints (research) always survive a death (RecipeExtraction.survivors).
+            kept = [b for b in carried if b in BUILDINGS or rng.random() < min(.6, self.rescue * .06)]
             lost = [b for b in carried if b not in kept]
             for b in lost: (self.rare_queue if b in RARE else self.research_queue).insert(0, b)
             carried = kept

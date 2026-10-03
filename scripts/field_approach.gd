@@ -110,7 +110,7 @@ func hedgehog(at:Vector3,rng):
 
 ## A dirt track from the lane at the wide end, curving away to its side and out of the frame, with tyre marks.
 func track(color:Color,tyre:Color,side:float):
-	var a=Vector3(lane(side),0,front+LENGTH);var c=a+Vector3(side*9.0,0,6.0);var d=a+Vector3(side*20.0,0,7.0)
+	var a=Vector3(lane(side),0,front+LENGTH);var c=a+Vector3(side*13.0,0,9.0);var d=a+Vector3(side*26.0,0,6.0)  # wide, lively arc that swings out and back
 	var points=[]
 	for i in range(25):
 		var t=i/24.0;var u=1.0-t

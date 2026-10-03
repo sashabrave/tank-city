@@ -7,7 +7,7 @@ extends Resource
 @export_group("Миры")
 @export var world_health:Array[float]=[1.0,1.75,2.7]
 @export var world_damage:Array[float]=[1.0,1.35,1.7]
-@export var world_boss_health:Array[float]=[700.0,1100.0,1600.0]
+@export var world_boss_health:Array[float]=[600.0,1100.0,1600.0]  # world 1: 700 → 600 (0.8 pacing)
 ## HP growth per field inside a world: the first value is world 1, the second every later world.
 @export var health_step_per_field:Array[float]=[0.13,0.08]
 @export_range(0,0.5,0.005) var damage_step_per_field:float=0.055

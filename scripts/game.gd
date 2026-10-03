@@ -594,7 +594,7 @@ func buy_insurance()->bool:
 	if progression.insurance>=Balance.CONFIG.economy.insurance_cap or credits<insurance_cost():return false
 	credits-=insurance_cost();progression.insurance+=1;save_progress();return true
 func weapon_level(id:String)->int:return int(progression.weapon_levels.get(id,0))
-func weapon_factor(id:String)->float:return 1.0+weapon_level(id)*.015
+func weapon_factor(id:String)->float:return 1.0+weapon_level(id)*.04  # 0.8: +4% per level (was 1.5%, a weak mid-game buy)
 func weapon_upgrade_cost(id:String)->int:return roundi(350*pow(1.65,weapon_level(id)))
 func upgrade_weapon(id:String)->bool:
 	if "weapons" not in built_workshops or id not in weapon_unlocks or weapon_level(id)>=Balance.CONFIG.economy.weapon_level_cap or credits<weapon_upgrade_cost(id):return false

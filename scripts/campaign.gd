@@ -16,7 +16,7 @@ static var challenge=0
 const CHALLENGE_REWARD=[1.0,1.25,1.5,2.0]
 ## Professionalism added per ladder step (see Professionalism.skill); no upper bound, so later steps or
 ## a late-game ladder can keep raising it (the derived behaviours are clamped by Professionalism.LIMITS).
-const CHALLENGE_SKILL=.2
+const CHALLENGE_SKILL=.3  # 0.8 pacing: challenge II lands near hour 4, not hour 3
 static func challenge_level()->int:return 0 if endless else challenge
 ## Highest ladder step a world offers: none until the world is cleared, then one past the best cleared step.
 static func challenge_open(id:int)->int:

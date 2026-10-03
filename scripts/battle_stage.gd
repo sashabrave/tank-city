@@ -6,11 +6,14 @@ extends RefCounted
 const WALL=preload("res://scripts/section_wall.gd")
 const ARRIVE=.85
 ## Up the field approach (0.8): a longer drive along the track and the ramp.
-const ARRIVE_RAMP=2.1
+const ARRIVE_RAMP=2.3
 ## Down the approach and away along the other track (0.8).
 const LEAVE_RAMP=1.8
 ## Pause between the arrival beats: HQ stops, soldier hops out, wall rises.
 const BEAT=.25
+## Soldier hop out of the HQ and the run round the barrier to the start cell (0.8).
+const HOP=.4
+const RUN=.75
 const STEP_OUT=.3
 const BRICKS_AT=.5
 ## Defence wall assembly pace: 1.2 = 20% slower than before.
@@ -53,14 +56,18 @@ static func intro(arena):
 	var hq:Node3D=arena.base_model
 	if not is_instance_valid(hq):return
 	var rest=hq.position;var yaw=hq.rotation.y;var s=side(arena)
-	if is_instance_valid(arena.presentation):arena.presentation.swoop_in(s)
 	var approach=arena.find_child("FieldApproach",true,false)
 	if approach and approach.has_meta("track_right"):
+		# 0.8: the camera stays on the field (no swoop after the HQ). The HQ drives in; the soldier hops out to
+		# the cell left of the HQ, the wall starts building from there, he runs round the outside of the barrier
+		# to the start cell — and the fight begins the moment he stops (the countdown is set to this sequence).
 		ramp_arrival(arena,hq,approach,rest,yaw)
-		# One-two-three (author, 0.8): the HQ stops — a beat — the soldier hops out — a beat — the wall rises.
-		step_out(arena,rest,ARRIVE_RAMP+BEAT)
-		build_bricks(arena,ARRIVE_RAMP+BEAT+STEP_OUT*1.5+.2+BEAT-BRICKS_AT)
+		var land=Vector2i(maxi(0,arena.base_cell.x-2),arena.base_cell.y)
+		hop_and_run(arena,rest,land,ARRIVE_RAMP+BEAT)
+		build_bricks(arena,ARRIVE_RAMP+BEAT+HOP-BRICKS_AT,land)
+		arena.countdown=ARRIVE_RAMP+BEAT+HOP+RUN
 		return
+	if is_instance_valid(arena.presentation):arena.presentation.swoop_in(s)
 	# The curve ends level with the rest point, so its last tangent is the final heading: no turn on the spot.
 	var start=rest+Vector3(s*5.5,0,3.2);var bend=rest+Vector3(s*4.2,0,0)
 	for node in [arena.base_label,arena.base_bar]:
@@ -103,7 +110,7 @@ static func ramp_arrival(arena,hq:Node3D,approach,rest:Vector3,yaw:float):
 		var heading=atan2(flat.x,flat.y) if flat.length()>.001 else yaw
 		# Steering: the nose looks ~a wheelbase ahead along the path and turns toward it gradually, like a car.
 		var target=lerp_angle(heading,yaw,smoothstep(.97,1.0,t))
-		hq.rotation.y=target if t<.01 or t>=1.0 else lerp_angle(hq.rotation.y,target,.3)
+		hq.rotation.y=target if t<.01 or t>=1.0 else lerp_angle(hq.rotation.y,target,.22)
 		hq.rotation.x=0.0 if t>=1.0 else -atan2(h_ahead-h,maxf(.05,flat.length()))+jolt*.05*sin(t*120.0)
 	var tween=stage_tween(arena)
 	tween.tween_method(drive,0.0,1.0,ARRIVE_RAMP).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
@@ -136,6 +143,47 @@ static func approach_curve(approach,s:float,rest:Vector3,forward:Vector3,arrivin
 	if arriving:curve.set_point_in(curve.point_count-1,-forward*1.4)
 	else:curve.set_point_out(0,forward*1.4)
 	return curve
+## 0.8: the soldier hops out of the HQ onto `land` (next to the wall start), then runs in an arc round the
+## outside of the barrier to his start cell. Model-only animation; the actor stands on the start cell.
+static func hop_and_run(arena,from:Vector3,land:Vector2i,arrive:float):
+	var actor=arena.player
+	if not is_instance_valid(actor) or not is_instance_valid(actor.model):return
+	var model:Node3D=actor.model;var home=model.position;var turn=model.rotation.y
+	model.visible=false;set_marks(actor,false);actor.set_meta("stage_hidden",true)
+	var to_local=func(p:Vector3)->Vector3:return home+(p-actor.position)
+	# The selection ring and the health bar travel with the soldier from the hop on (author).
+	var marks:Array=actor.get_children().filter(func(c):return c!=model and (c is MeshInstance3D or c is Sprite3D or c is Label3D))
+	var mark_home:Array=marks.map(func(c):return c.position)
+	var follow=func():
+		if not is_instance_valid(model):return
+		var shift=model.position-home;shift.y=0.0
+		for i in range(marks.size()):
+			if is_instance_valid(marks[i]):marks[i].position=mark_home[i]+shift
+	var start=to_local.call(from);var landing=to_local.call(arena.world_pos(land))
+	# Outside the barrier: up past the wall's corner, then across to the start cell.
+	var corner=to_local.call(arena.world_pos(Vector2i(land.x,actor.cell.y)))+Vector3(-.35,0,-.35)
+	var tween=stage_tween(arena,actor);tween.tween_interval(arrive)
+	tween.tween_callback(func():
+		if not is_instance_valid(model):return
+		if is_instance_valid(actor):actor.remove_meta("stage_hidden")
+		model.visible=true;model.position=start;model.scale=Vector3.ONE*.75
+		set_marks(actor,true);follow.call())
+	var hop=func(t:float):
+		if is_instance_valid(model):model.position=start.lerp(landing,t)+Vector3.UP*sin(t*PI)*.75;follow.call()
+	tween.tween_method(hop,0.0,1.0,HOP).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tween.parallel().tween_property(model,"scale",Vector3.ONE,HOP*.8)
+	tween.tween_callback(func():if is_instance_valid(actor):arena.burst(actor.position+(landing-home),Color("d8cfb4"),.25))
+	var run=func(t:float):
+		if not is_instance_valid(model):return
+		var p=bezier(landing,corner,home,t);var ahead=bezier(landing,corner,home,minf(1.0,t+.05))-p
+		model.position=p+Vector3.UP*absf(sin(t*PI*5.0))*.06
+		model.rotation.y=atan2(ahead.x,ahead.z) if t<.97 and ahead.length()>.001 else turn
+		follow.call()
+	tween.tween_method(run,0.0,1.0,RUN).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tween.tween_callback(func():
+		if is_instance_valid(model):model.position=home;model.rotation.y=turn
+		for i in range(marks.size()):
+			if is_instance_valid(marks[i]):marks[i].position=mark_home[i])
 ## The soldier (or his vehicle) leaves the HQ and takes the start cell.
 static func step_out(arena,from:Vector3,arrive:=ARRIVE):
 	var actor=arena.player
@@ -160,8 +208,10 @@ static func step_out(arena,from:Vector3,arrive:=ARRIVE):
 
 ## Staircase build: nearest cell first, inside a cell the sections rise diagonally; each drops in
 ## from a little above with a short overshoot. A damaged section is never redrawn.
-static func build_bricks(arena,later:=0.0):
+static func build_bricks(arena,later:=0.0,origin:=Vector2i(-1,-1)):
 	var cells=fort_walls(arena)
+	# The wall grows from where the soldier landed (0.8), nearest cells first.
+	if origin.x>=0:cells.sort_custom(func(a,b):return a.distance_squared_to(origin)<b.distance_squared_to(origin))
 	for k in range(cells.size()):
 		var wall=arena.walls[cells[k]];var batch:MultiMesh=wall.section_batch
 		for i in range(16):
@@ -192,8 +242,8 @@ static func outro(arena,done:Callable):
 		board.tween_callback(func():if is_instance_valid(model):model.visible=false)
 	for node in [arena.base_label,arena.base_bar]:
 		if is_instance_valid(node):node.visible=false
-	if is_instance_valid(arena.presentation):arena.presentation.swoop_out(s,hq)
 	var approach=arena.find_child("FieldApproach",true,false)
+	if not (approach and approach.has_meta("track_right")) and is_instance_valid(arena.presentation):arena.presentation.swoop_out(s,hq)
 	if approach and approach.has_meta("track_right"):
 		ramp_departure(arena,hq,approach,rest,hq.rotation.y,s,done)
 		return

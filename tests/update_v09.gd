@@ -60,7 +60,7 @@ func run():
 	check(arena.twin_boss and arena.spawn_queue==["boss","boss"] and arena.player.footprint==1,"twin wave only bosses have footprint")
 	var boss1=arena.spawn_actor("boss",Vector2i(3,1),false);boss1.set_physics_process(false)
 	var boss2=arena.spawn_actor("boss",Vector2i(14,1),false);boss2.set_physics_process(false)
-	check(boss1.footprint==2 and boss1.max_hp+boss2.max_hp==700,"twins total health and footprint")
+	check(boss1.footprint==2 and is_equal_approx(boss1.max_hp+boss2.max_hp,Balance.CONFIG.campaign.world_boss_health[0]),"twins total health and footprint")
 	arena.spawn_queue.clear();arena.room.generator_order.clear();arena.phase="combat";boss1.take_damage(9999);check(not arena.boss_defeated,"first twin is not victory")
 	boss2.take_damage(9999);check(arena.boss_defeated and arena.phase!="result","victory waits for chest")
 	chest=arena.pickups.back();check(chest.kind=="recipe_draft" and chest.final,"boss drops final chest")
