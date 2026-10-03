@@ -6,7 +6,7 @@ func run():
 	var arena=load("res://scenes/arena.tscn").instantiate();arena.run_seed=81;add_child(arena);arena.set_physics_process(false);arena.auto_pause_enabled=false;arena.phase="upgrade"
 	arena.player.set_physics_process(false)
 	assert(is_equal_approx(arena.soldier_max_hp,CombatStats.initial_health()))
-	for id in Game.LOOT.WEAPONS:
+	for id in Game.LOOT.gun_ids():
 		arena.weapon=id;arena.player.apply_weapon()
 		var stats=CombatStats.weapon(arena);var preview=preload("res://scripts/ui/weapon_benchmarks.gd").current_weapon(arena)
 		assert(is_equal_approx(arena.player.damage,stats.damage) and is_equal_approx(arena.player.fire_interval,stats.interval))

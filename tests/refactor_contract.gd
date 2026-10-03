@@ -15,7 +15,7 @@ func run_test():
 		# [world, local stage]: first field, last field, general; world 3 also the gigaboss.
 		for scenario in [[1,0],[1,5],[1,6],[2,0],[2,6],[3,6],[3,7]]:
 			Campaign.configure(scenario[0]);var stage=scenario[1]
-			Game.reset_upgrades();Game.health_level=6;Game.damage_level=3;Game.base_level=4;Game.bonus_unlocks=Game.LOOT.BONUSES.keys();Game.weapon_unlocks=Game.LOOT.WEAPONS.keys()
+			Game.reset_upgrades();Game.health_level=6;Game.damage_level=3;Game.base_level=4;Game.bonus_unlocks=Game.LOOT.BONUSES.keys();Game.weapon_unlocks=Game.LOOT.gun_ids()
 			var arena=load(source).new();add_child(arena);arena.auto_pause_enabled=false;arena.set_physics_process(false);arena.hud.set_process(false)
 			arena.run_seed=seed_value;arena.combat_rng.seed=seed_value;arena.begin_room(stage);arena.phase="combat";arena.player.set_physics_process(false)
 			var result={"seed":seed_value,"world":scenario[0],"stage":stage,"layout":arena.current_layout.duplicate(),"wave":arena.wave_roster.duplicate(true),"hero":[arena.soldier_hp,arena.soldier_max_hp,arena.base_hp,arena.player.damage,arena.player.fire_interval,arena.player_pressure()],"enemies":[]}

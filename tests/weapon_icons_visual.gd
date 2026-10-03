@@ -11,7 +11,7 @@ func run():
 	get_window().size=Vector2i(1600,900)
 	var arena=load("res://scenes/arena.tscn").instantiate();arena.run_seed=4;add_child(arena);arena.auto_pause_enabled=false
 	await get_tree().create_timer(1.0).timeout;arena.set_physics_process(false)
-	for id in Game.LOOT.WEAPONS:
+	for id in Game.LOOT.gun_ids():
 		arena.weapon=id;await get_tree().create_timer(.15).timeout
 		var art=arena.hud.weapon_icon.texture
 		check(art!=null,"HUD art for "+id)

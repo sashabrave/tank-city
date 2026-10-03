@@ -14,7 +14,7 @@ func run():
 	var folder="/tmp/war-cats-environment-v7-%d-%d" % [Time.get_ticks_usec(),randi()];DirAccess.make_dir_recursive_absolute(folder)
 	var original=Game.save_path;Game.save_path=folder+"/profile.json";Game.save_enabled=true
 	Game.set_all_recipes(true);Game.selected_weapon="rifle";Game.save_progress();Game.load_progress()
-	check(Game.recipe_owned("weapon").size()==Game.LOOT.WEAPONS.size(),"all weapon recipes survive save/load")
+	check(Game.recipe_owned("weapon").size()==Game.LOOT.gun_ids().size(),"all weapon recipes survive save/load")
 	Game.set_recipe_unlocked("weapon","rifle",false);Game.load_progress()
 	check("rifle" not in Game.weapon_unlocks and Game.selected_weapon=="pistol","closing equipped weapon persists and restores pistol")
 	Game.set_recipe_unlocked("research","garage",false);Game.load_progress()

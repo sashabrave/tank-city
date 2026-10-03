@@ -26,7 +26,7 @@ func run():
 	check(hub.bench_available("character")==N.has_dot("fighter"),"the bench dot follows the station notice")
 	# A weapon blueprint arrives: the Arsenal gets news and the card a «Новое» chip.
 	N.mark_all_seen("arsenal")
-	var fresh=Game.LOOT.WEAPONS.keys().filter(func(w):return w not in Game.weapon_unlocks)
+	var fresh=Game.LOOT.gun_ids().filter(func(w):return w not in Game.weapon_unlocks)
 	if not fresh.is_empty():
 		Game.weapon_unlocks.append(fresh[0])
 		check(N.has_dot("arsenal"),"a new blueprint lights the Arsenal dot")
