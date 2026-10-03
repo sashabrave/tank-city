@@ -171,7 +171,8 @@
 					"Один парашют на всю игру: белое плоское крыло у бонусов, товарища и доставленной техники. Стенд «Развитие заставы» больше не мерцает",
 					"Металл стал металлом: оружие, стальные балки, фермы, ворота, стеллажи, бочки, автомат патронов и детали техники блестят, а ткань, мех и камуфляж остаются матовыми. В инструментах тестировщика — библиотека материалов с ползунками и кнопками «Сбросить» и «Сохранить»",
 					"Пуля игрока днём — насыщенно-оранжевая с тёплым ободком (без чёрной обводки), хорошо видна на светлом полу; ночью — светло-золотая",
-					"Машина штаба сзади больше не пустая: дверь со стальными петлями, запасное колесо, лесенка, канистры в клетках, стальной бампер с буксирной петлёй и два высоких красных фонаря по углам. На карте маршрута, в мастерской штаба и у механика стоят настоящие машины игры в спокойном нейтральном цвете; точки прокачки нарисованы заново."
+					"Машина штаба сзади больше не пустая: дверь со стальными петлями, запасное колесо, лесенка, канистры в клетках, стальной бампер с буксирной петлёй и два высоких красных фонаря по углам. На карте маршрута, в мастерской штаба и у механика стоят настоящие машины игры в спокойном нейтральном цвете; точки прокачки нарисованы заново.",
+					"Оружие и патроны свободно перетаскиваются мышкой между руками, слотами и рюкзаком (оружие — тоже предмет рюкзака). Выброшенный предмет лежит на поле своей моделью со свечением редкости, при подходе — карточка: «E» взять/зарядить, «C» в рюкзак или «Нет места». Ящик патронов — короб с полосой цвета эффекта"
 				]
 			},
 			"en": {
@@ -342,7 +343,8 @@
 					"One parachute for the whole game: a flat white wing for bonuses, the comrade and delivered vehicles. The «Outpost progress» board no longer flickers",
 					"Metal now reads as metal: weapons, steel beams, trusses, gates, racks, drums, the ammo machine and vehicle parts shine, while cloth, fur and camo stay matte. Tester tools have a material library with sliders and «Reset»/«Save»",
 					"The player's bullet by day is a saturated orange with a warm rim (no black outline), easy to see on light floors; golden at night",
-					"The HQ truck's rear is no longer bare: a door with steel hinges, a spare wheel, a ladder, jerrycans in cages, a steel bumper with a tow hook and two tall red tail lights on the corners. The route-map HQ workshop and mechanic show the real game vehicles in a calm neutral colour; the upgrade stops are redrawn."
+					"The HQ truck's rear is no longer bare: a door with steel hinges, a spare wheel, a ladder, jerrycans in cages, a steel bumper with a tow hook and two tall red tail lights on the corners. The route-map HQ workshop and mechanic show the real game vehicles in a calm neutral colour; the upgrade stops are redrawn.",
+					"Weapons and ammo drag freely between hands, slots and the backpack (a gun is a backpack item too). A dropped item lies on the field as its own model with a rarity glow; up close a card offers E to take/load and C to stash, or «No room». The ammo box is a can with a band in the effect colour"
 				]
 			}
 		},

@@ -110,6 +110,9 @@ func build_right()->float:
 	var weapon=str(arena.weapon) if is_instance_valid(arena) else Game.selected_weapon
 	var w=fixed_cell("weapon",col(0),y,Vector2(2*C+GAP,C),weapon,Game.LOOT.WEAPONS[weapon].name,"Нажми ещё раз — характеристики и улучшения.",false,"")
 	w.set_meta("inset",.08)
+	# The gun in hand drags like any item (author, 2026-10-03): onto a backpack weapon to swap, or into a free
+	# backpack cell when another gun waits there to be taken.
+	w.item_kind="weapon";w.draggable=run()!=null
 	var slots:Array=run().ammo_slots if run()!=null else [Ammo.standard()]
 	for i in range(2):
 		var locked=i>=slots.size()
@@ -194,6 +197,15 @@ func item_cell(key:String,x:float,y:float,entry,locked:bool)->GearCell:
 		cell.tooltip_text=Texts.render(Ammo.NAMES.get(type,type)+" патроны")+("\n"+Ammo.describe(ammo) if type!=Ammo.STANDARD else "")
 		if is_slot and run()!=null and int(key.get_slice(":",1))==run().ammo_active and run().ammo_slots.size()>1:
 			UiKit.label(cell,"R",Vector2(C-18,4),Vector2(14,16),11,UiKit.MUTED)
+	elif entry.kind=="weapon":
+		# A spare gun for this run: double tap, «Взять» or a drag onto the weapon cell takes it in hand.
+		var gun=str(entry.item.get("id","pistol"));var tier=clampi(int(entry.item.get("rarity",0)),0,3)
+		var frame=UiKit.style(Color(1,1,1,.05),12,Color(LootCatalog.RARITY_COLORS[tier]) if tier>0 else Color(1,1,1,.16));frame.set_border_width_all(2 if tier>0 else 1)
+		for state in ["normal","hover","pressed","focus"]:cell.add_theme_stylebox_override(state,frame)
+		art(cell,UiKit.trimmed(UiKit.icon_texture(gun)),.1)
+		var name_label=UiKit.label(cell,Texts.render(Game.LOOT.WEAPONS[gun].name),Vector2(4,C-20),Vector2(C-8,18),11 if C>=100 else 9,UiKit.INK);name_label.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;name_label.clip_text=true
+		cell.item_kind="weapon";cell.draggable=true
+		cell.tooltip_text=Texts.render(Game.LOOT.WEAPONS[gun].name)+"\n"+Texts.render("Запасное оружие · ещё нажатие — взять в руки")
 	elif entry.kind=="supply":
 		# Aid kit (T-115): tap twice / E / H heals.
 		art(cell,UiKit.trimmed(UiKit.icon_texture("heart")),.16)
@@ -227,6 +239,8 @@ func activate(key:String):
 		match e.kind:
 			"supply":
 				if Backpack.use_medkit(arena,e.index):done("")
+			"weapon":
+				if Backpack.equip_weapon(arena,e.index):done("Оружие в руках")
 			"ammo":
 				if Backpack.equip(arena,e.index):done("Патроны заряжены")
 				else:arena.toast(Texts.render("Эти патроны не подходят к оружию"))
@@ -243,6 +257,17 @@ func move(from:String,to:String):
 	var r=run()
 	if r==null:return
 	if to=="discard":discard(from);return
+	if from.begins_with("bag:") and to=="weapon":
+		var e=entry(from)
+		if e!=null and e.kind=="weapon" and Backpack.equip_weapon(arena,e.index):done("Оружие в руках")
+		elif e!=null:arena.toast(Texts.render("Сюда кладётся только оружие"))
+		return
+	if from=="weapon" and to.begins_with("bag:"):
+		var e=entry(to)
+		if e!=null and e.kind=="weapon":
+			if Backpack.equip_weapon(arena,e.index):done("Оружие в руках")
+		else:arena.toast(Texts.render("Без оружия нельзя: положи сюда другое оружие из рюкзака"))
+		return
 	if from.begins_with("bag:") and to.begins_with("slot:"):
 		var e=entry(from)
 		if e!=null and e.kind=="ammo" and Backpack.equip(arena,e.index,int(to.get_slice(":",1))):done("Патроны заряжены")
@@ -309,6 +334,7 @@ func actions_for(key:String)->Array:
 	var cell:GearCell=cells[key];var actions=[]
 	if key.begins_with("bag:") and cell.item_kind=="ammo":actions.append(["Надеть",func():activate(key)])
 	if key.begins_with("bag:") and cell.item_kind=="supply":actions.append(["Вылечиться",func():activate(key)])
+	if key.begins_with("bag:") and cell.item_kind=="weapon":actions.append(["Взять",func():activate(key)])
 	if key.begins_with("slot:") and cell.draggable:actions.append(["Снять",func():activate(key)])
 	if (key.begins_with("bag:") or key.begins_with("slot:")) and cell.draggable and Backpack.can_drop(arena):actions.append(["Выбросить",func():discard(key)])
 	return actions

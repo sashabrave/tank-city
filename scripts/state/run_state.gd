@@ -69,6 +69,8 @@ var ammo_active:=0
 var ammo_bag:Array=[]
 ## Supplies carried in the backpack (T-115): aid kits picked up at full health {type:"medkit", heal}.
 var supplies:Array=[]
+## Spare weapons carried for this run (backpack items {id, rarity, stats}); the one in hand is `weapon`.
+var weapon_bag:Array=[]
 var last_player_shot=-10.0
 var dash_until=0.0
 var dash_ready_at=0.0

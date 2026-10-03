@@ -1,6 +1,6 @@
 extends RefCounted
 const VERSION=1
-const RUN_KEYS=["run_seed","upgrade_history","soldier_hp","soldier_max_hp","damage_bonus","fire_multiplier","speed_multiplier","earned","kills","elapsed","weapon","rerolls_left","weapon_mods","recovery_bonus","run_bonus_levels","pending_recipes","vehicle_mods","pending_vehicle","visited_services","intercept_chance","route_choices","range_multiplier","healing_multiplier","ability_power_multiplier","ability_cooldown_multiplier","behavior_cards","tokens","burn_duration","kills_by","mercy_used","dry_offers","ammo_slots","ammo_active","ammo_bag","supplies","best_hit","best_series","captured","damage_taken"]
+const RUN_KEYS=["run_seed","upgrade_history","soldier_hp","soldier_max_hp","damage_bonus","fire_multiplier","speed_multiplier","earned","kills","elapsed","weapon","rerolls_left","weapon_mods","recovery_bonus","run_bonus_levels","pending_recipes","vehicle_mods","pending_vehicle","visited_services","intercept_chance","route_choices","range_multiplier","healing_multiplier","ability_power_multiplier","ability_cooldown_multiplier","behavior_cards","tokens","burn_duration","kills_by","mercy_used","dry_offers","ammo_slots","ammo_active","ammo_bag","supplies","weapon_bag","best_hit","best_series","captured","damage_taken"]
 ## Checkpoint fields: the fixed list plus every registry stat, so a new stat file is saved automatically.
 static func keys()->Array:
 	var result=RUN_KEYS.duplicate()
@@ -54,6 +54,7 @@ static func upgrade(data:Dictionary)->Dictionary:
 		for id in ["buggy","apc","tank"]:
 			if not run.vehicle_mods.get(id) is Dictionary:run.vehicle_mods[id]=defaults.vehicle_mods[id].duplicate()
 	if run.get("behavior_cards") is Array:run.behavior_cards=run.behavior_cards.filter(func(id):return UpgradeRegistry.has(str(id)))
+	if run.get("weapon_bag") is Array:run.weapon_bag=run.weapon_bag.filter(func(w):return w is Dictionary and str(w.get("id","")) in Game.LOOT.WEAPONS)
 	return data
 static func valid(data:Dictionary)->bool:
 	if data.is_empty():return true

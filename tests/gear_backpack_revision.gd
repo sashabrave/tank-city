@@ -87,18 +87,47 @@ func run():
 	view.refresh();await get_tree().process_frame
 	check(cell(view,"bag:0").get_node_or_null("Safe")!=null and cell(view,"bag:1").get_node_or_null("Safe")==null,"the safe cell shows a shield badge")
 	r.safe_slots=0;r.pending_recipes.clear()
+	# Weapons as backpack items (2026-10-03): a spare gun lands in a cell; dragging it onto the weapon cell
+	# swaps it with the gun in hand; the gun in hand cannot leave for an empty cell (no weapon at all).
+	var in_hand=str(r.weapon);var spare="shotgun" if in_hand!="shotgun" else "smg"
+	while Backpack.full(r) and not r.ammo_bag.is_empty():r.ammo_bag.pop_back()
+	check(Backpack.add_weapon(arena,{"id":spare,"rarity":1}),"a spare weapon goes into the backpack")
+	var gun_cell=-1;var free_cell=-1
+	for c in range(Backpack.capacity()):
+		var e=Backpack.layout(r)[c]
+		if e!=null and e.kind=="weapon":gun_cell=c
+		elif e==null and free_cell<0:free_cell=c
+	page.move("bag:%d" % gun_cell,"weapon")
+	check(str(r.weapon)==spare and r.weapon_bag.size()==1 and str(r.weapon_bag[0].id)==in_hand and Backpack.layout(r)[gun_cell].kind=="weapon","dragging the spare onto the weapon cell swaps the guns in place")
+	if free_cell>=0:
+		page.move("weapon","bag:%d" % free_cell)
+		check(str(r.weapon)==spare and Backpack.layout(r)[free_cell]==null,"the gun in hand cannot go to an empty cell")
+	page.move("weapon","bag:%d" % gun_cell)
+	check(str(r.weapon)==in_hand,"dragging the gun in hand onto the spare swaps back")
+	var data=preload("res://scripts/profile/run_checkpoint.gd").upgrade({"run":{"weapon_bag":[{"id":"shotgun"},{"id":"nope"}]}})
+	check(data.run.weapon_bag.size()==1,"a saved run keeps valid spare weapons only")
+	r.weapon_bag.clear()
 	# Full backpack: unloading is refused, nothing is lost.
 	Backpack.equip(arena,0);r.pending_recipes.append({"id":"smg","category":"weapon"});r.ammo_bag.append(Ammo.roll("shock",0,1));r.ammo_bag.append(Ammo.roll("stun",0,2))
 	check(Backpack.full(r) and not Backpack.unequip(arena,0) and Ammo.active(r)!="standard","full backpack keeps the loaded ammo")
-	# Drop: right click / «Выбросить» → an army sack on the field; walking over it brings it back.
-	var before=Backpack.used(r);var sacks=arena.room.pickups.filter(func(p):return p.kind=="sack").size()
-	page.discard("bag:%d" % (r.pending_recipes.size()))
-	var sack=arena.room.pickups.filter(func(p):return p.kind=="sack")
-	check(Backpack.used(r)==before-1 and sack.size()==sacks+1,"discarded ammo lies on the field as a sack")
-	page.discard("bag:0")
-	check(r.pending_recipes.is_empty() and arena.room.pickups.filter(func(p):return p.kind=="sack").size()==sacks+2,"blueprints can be dropped too")
-	arena.reward.collect_pickup(arena.room.pickups.filter(func(p):return p.kind=="sack")[0])
-	check(Backpack.used(r)==before-1,"walking over a sack picks it back up")
+	# Drop: right click / «Выбросить» → the item itself lies on the field (one item: its model with a rarity glow
+	# and a card «E use / C to backpack»; several at once: a sack picked up by walking over it).
+	var before=Backpack.used(r);var items=arena.room.pickups.filter(func(p):return p.kind=="item").size()
+	var cell_of=func(kind:String)->int:
+		for c in range(Backpack.CELLS):
+			var e=Backpack.layout(r)[c]
+			if e!=null and e.kind==kind:return c
+		return -1
+	page.discard("bag:%d" % cell_of.call("ammo"))
+	check(Backpack.used(r)==before-1 and arena.room.pickups.filter(func(p):return p.kind=="item").size()==items+1,"discarded ammo lies on the field as itself")
+	page.discard("bag:%d" % cell_of.call("recipe"))
+	check(r.pending_recipes.is_empty() and arena.room.pickups.filter(func(p):return p.kind=="item").size()==items+2,"blueprints can be dropped too")
+	var dropped=arena.room.pickups.filter(func(p):return p.kind=="item")[0]
+	arena.reward.collect_pickup(dropped)
+	check(dropped in arena.room.pickups,"walking over a single item does not pick it up")
+	for card in get_tree().get_nodes_in_group("drop_prompts"):
+		if card.pickup==dropped:card.stash()
+	check(Backpack.used(r)==before-1 and dropped not in arena.room.pickups,"«C» puts it back into the backpack")
 	# Wrong class: charges-only ammo cannot go into a pistol (RPG ammo doesn't exist yet: fire fits both).
 	check(not Ammo.fits("explosive","rpg") and Ammo.fits("burn","rpg"),"ammo class rules")
 	# Outside battle nothing can be dropped.

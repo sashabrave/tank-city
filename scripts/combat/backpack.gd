@@ -9,7 +9,7 @@ const BASE_EXTRA=3
 const MAX_BOUGHT=5
 
 static func capacity()->int:return mini(CELLS,Game.backpack_slots+BASE_EXTRA)
-static func used(run)->int:return run.pending_recipes.size()+run.ammo_bag.size()+run.supplies.size() if run!=null else 0
+static func used(run)->int:return run.pending_recipes.size()+run.ammo_bag.size()+run.supplies.size()+run.weapon_bag.size() if run!=null else 0
 static func free_cells(run)->int:return capacity()-used(run)
 static func full(run)->bool:return free_cells(run)<=0
 ## Items in cell order: blueprints, then ammo. Each entry {kind:"recipe"|"ammo", item}.
@@ -23,7 +23,7 @@ static func layout(run)->Array:
 	var cells=[];cells.resize(CELLS)
 	if run==null:return cells
 	var entries=[]
-	for pair in [["recipe",run.pending_recipes],["ammo",run.ammo_bag],["supply",run.supplies]]:
+	for pair in [["recipe",run.pending_recipes],["ammo",run.ammo_bag],["supply",run.supplies],["weapon",run.weapon_bag]]:
 		for k in range(pair[1].size()):entries.append({"kind":pair[0],"index":k,"item":pair[1][k]})
 	var waiting=[]
 	for e in entries:
@@ -60,6 +60,25 @@ static func safe_order(run)->Array:
 			if str(e.item.get("category",""))!="research":count+=1
 		else:rest.append(e.item)
 	return [first+rest,count]
+
+## A spare weapon into the backpack (weapon crates, the gun in hand dragged out); false when it is full.
+static func add_weapon(arena,item:Dictionary,cell:=-1)->bool:
+	var run=arena.run
+	if full(run) or str(item.get("id","")) not in Game.LOOT.WEAPONS:return false
+	var copy=item.duplicate(true)
+	if cell>=0 and cell<capacity() and layout(run)[cell]==null:copy["cell"]=cell
+	run.weapon_bag.append(copy);refresh(arena);return true
+## Takes a backpack weapon in hand: the one in hand goes to that cell (a swap, so nothing is lost).
+static func equip_weapon(arena,index:int)->bool:
+	var run=arena.run
+	if index<0 or index>=run.weapon_bag.size():return false
+	var item:Dictionary=run.weapon_bag[index]
+	var old={"id":str(run.weapon)}
+	if item.has("cell"):old["cell"]=item.cell
+	run.weapon_bag[index]=old
+	run.weapon=str(item.id)
+	Ammo.ensure(run,run.weapon)
+	RunUpgrades.refresh_player(arena);refresh(arena);return true
 
 ## Bag ammo → the active slot (or a given one); the slot's special ammo comes back to the bag. Standard ammo
 ## is not an item and simply disappears from the slot.
@@ -104,6 +123,9 @@ static func drop(arena,kind:String,index:int)->bool:
 		"supply":
 			if index<0 or index>=run.supplies.size():return false
 			content["supplies"]=[run.supplies[index]];run.supplies.remove_at(index)
+		"weapon":
+			if index<0 or index>=run.weapon_bag.size():return false
+			content["weapons"]=[run.weapon_bag[index]];run.weapon_bag.remove_at(index)
 		"slot":
 			var item=run.ammo_slots[index] if index>=0 and index<run.ammo_slots.size() else null
 			if not item is Dictionary or item.type==Ammo.STANDARD:return false
@@ -113,9 +135,9 @@ static func drop(arena,kind:String,index:int)->bool:
 	refresh(arena);return true
 ## Picks a sack up when everything fits; otherwise it stays and says so.
 static func pick_sack(arena,content:Dictionary)->bool:
-	var run=arena.run;var count=content.recipes.size()+content.ammo.size()+content.get("supplies",[]).size()
+	var run=arena.run;var count=content.recipes.size()+content.ammo.size()+content.get("supplies",[]).size()+content.get("weapons",[]).size()
 	if free_cells(run)<count:arena.toast(Texts.render("Рюкзак полон"));return false
-	run.pending_recipes.append_array(content.recipes);run.ammo_bag.append_array(content.ammo);run.supplies.append_array(content.get("supplies",[]))
+	run.pending_recipes.append_array(content.recipes);run.ammo_bag.append_array(content.ammo);run.supplies.append_array(content.get("supplies",[]));run.weapon_bag.append_array(content.get("weapons",[]))
 	refresh(arena);return true
 static func refresh(arena):
 	if is_instance_valid(arena.hud):arena.hud.refresh_ammo()

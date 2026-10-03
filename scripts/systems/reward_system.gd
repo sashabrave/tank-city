@@ -42,14 +42,53 @@ func parachute(visual:Node3D,_tint:Color)->Node3D:return Visuals.parachute(visua
 func place_sack(cell:Vector2i,content:Dictionary):
 	var node=Node3D.new();arena.add_child(node);node.position=arena.world_pos(cell)+Vector3(randf_range(-.2,.2),0,randf_range(-.2,.2))
 	var visual=Node3D.new();node.add_child(visual)
-	var olive=Color("6b6a45")
-	Visuals.box(visual,Vector3(0,.16,0),Vector3(.36,.32,.28),olive)
-	Visuals.box(visual,Vector3(0,.34,0),Vector3(.22,.06,.18),olive.darkened(.25))
-	Visuals.box(visual,Vector3(0,.2,.145),Vector3(.06,.3,.02),Color("3e3a2a"))
-	Visuals.ring(node,Color("cfd3a0"),.38)
-	arena.room.pickups.append({"node":node,"visual":visual,"kind":"sack","content":content,"blocked":true})
+	# One item dropped: the item itself lies there with a glow in its rarity colour (author, 2026-10-03);
+	# several at once still go into an army sack.
+	var items=content.get("recipes",[]).size()+content.get("ammo",[]).size()+content.get("supplies",[]).size()+content.get("weapons",[]).size()
+	if items==1:
+		var tier=dropped_item(visual,content)
+		# Not picked up by walking over: a small card offers E (use now) and C (into the backpack).
+		var card=preload("res://scripts/ui/drop_prompt.gd").new();card.arena=arena;node.add_child(card)
+		var glow=Color(LootCatalog.RARITY_COLORS[clampi(tier,0,3)])
+		Visuals.ring(node,glow if tier>0 else Color("cfd3a0"),.38)
+		var light=OmniLight3D.new();light.name="RarityGlow";visual.add_child(light);light.position.y=.25;light.omni_range=1.3;light.light_color=glow;light.light_energy=.9 if tier>0 else .35;light.shadow_enabled=false
+		light.add_to_group("pickup_lights")
+	else:
+		var olive=Color("6b6a45")
+		Visuals.box(visual,Vector3(0,.16,0),Vector3(.36,.32,.28),olive,"fabric")
+		Visuals.box(visual,Vector3(0,.34,0),Vector3(.22,.06,.18),olive.darkened(.25),"fabric")
+		Visuals.box(visual,Vector3(0,.2,.145),Vector3(.06,.3,.02),Color("3e3a2a"),"rubber")
+		Visuals.ring(node,Color("cfd3a0"),.38)
+	var entry={"node":node,"visual":visual,"kind":"item" if items==1 else "sack","content":content,"blocked":true}
+	arena.room.pickups.append(entry)
+	for child in node.get_children():
+		if child.get_script()==preload("res://scripts/ui/drop_prompt.gd"):child.pickup=entry
 	Game.sound("debris",arena)
+## The model of a single dropped item; returns its rarity tier (0..3) for the glow.
+func dropped_item(visual:Node3D,content:Dictionary)->int:
+	if not content.get("weapons",[]).is_empty():
+		var gun:Dictionary=content.weapons[0];var path="res://assets/models/infantry_v6/weapon_"+str(gun.get("id","pistol"))+".glb"
+		if ResourceLoader.exists(path):
+			var model=load(path).instantiate();visual.add_child(model);model.scale=Vector3.ONE*1.6;model.rotation=Vector3(0,randf()*TAU,PI*.5);model.position.y=.08
+			Visuals.refresh_cozy_materials(model)
+		return int(gun.get("rarity",0))
+	if not content.get("ammo",[]).is_empty():
+		# The simplest ammo can (author, 2026-10-03): an olive box, a band in the ammo effect's colour, a steel handle.
+		var box:Dictionary=content.ammo[0];var color=Color(Ammo.COLORS.get(str(box.get("type","")),"cfd3c8"))
+		var can=Node3D.new();visual.add_child(can);can.rotation.y=randf_range(-.6,.6)
+		Visuals.box(can,Vector3(0,.12,0),Vector3(.36,.24,.2),Color("5d6147"),"paint")
+		Visuals.box(can,Vector3(0,.12,0),Vector3(.372,.07,.212),color,"paint")
+		Visuals.box(can,Vector3(0,.255,0),Vector3(.38,.03,.22),Color("4f5340"),"paint")
+		Visuals.box(can,Vector3(0,.29,0),Vector3(.16,.025,.03),Color("9aa1a4"),"steel")
+		return int(box.get("rarity",0))
+	if not content.get("supplies",[]).is_empty():
+		LootCatalog.visual(visual,"heart");return 0
+	var recipe:Dictionary=content.get("recipes",[{}])[0]
+	var board=Visuals.box(visual,Vector3(0,.04,0),Vector3(.3,.03,.4),Color("3f6fb0"),"paint");board.rotation.y=randf_range(-.4,.4)
+	Visuals.box(board,Vector3(0,.025,.0),Vector3(.24,.01,.3),Color("e8ecf2"))
+	return Game.TIERS.tier(str(recipe.get("id",""))) if recipe.has("id") else 0
 func collect_pickup(pickup: Dictionary):
+	if pickup.kind=="item":return  # a single dropped item answers its card (E / C), not walking over it
 	if pickup.kind=="sack":
 		if Backpack.pick_sack(arena,pickup.content):
 			arena.room.pickups.erase(pickup);preload("res://scripts/battle_stage.gd").vanish(pickup.node);Game.sound("pickup",arena);arena.toast(Texts.render("Мешок подобран"))
@@ -238,7 +277,7 @@ func collect_nearby_pickups(delta):
 	for pickup in arena.room.pickups.duplicate():
 		if arena.flat_distance(arena.room.player.position,pickup.node.position)>1.35:pickup["blocked"]=false
 		if arena.run.elapsed<float(pickup.get("land_at",0.0)):continue
-		if pickup.kind not in ["recipe_draft","cache"] and arena.flat_distance(arena.room.player.position,pickup.node.position)<1.1 and arena.clear_shot(arena.room.player.position,pickup.node.position,.05) and not pickup.get("blocked",false):collect_pickup(pickup)
+		if pickup.kind not in ["recipe_draft","cache","item"] and arena.flat_distance(arena.room.player.position,pickup.node.position)<1.1 and arena.clear_shot(arena.room.player.position,pickup.node.position,.05) and not pickup.get("blocked",false):collect_pickup(pickup)
 	for pickup in arena.room.pickups.duplicate():
 		if pickup.kind=="recipe_draft":continue  # chests stand still on the ground
 		var falling=float(pickup.get("land_at",0.0))-arena.run.elapsed
