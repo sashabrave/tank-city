@@ -365,7 +365,14 @@ static func start(parent:Node3D):
 	Visuals.box(parent,Vector3(2.3,.95,1.6),Vector3(.18,.3,.18),Color("cf613f"))
 
 ## Merchant stall: striped awning over a counter with crates.
+## Merchant stop: the military shop truck modelled in Blender (art_requests/merchant_point_v2, author pick 2 Oct).
+## The model carries its own round tile at the common height (plinth -0.08, top 0.28); the boxes below are the
+## fallback when the file is missing.
+const MERCHANT_MODEL:="res://assets/models/route/merchant_shop.glb"
 static func merchant(parent:Node3D):
+	if ResourceLoader.exists(MERCHANT_MODEL):
+		var shop:Node3D=load(MERCHANT_MODEL).instantiate();shop.name="MerchantShop";parent.add_child(shop);shop.position.y=-.08
+		return
 	var wood=Color("8a6a48")
 	base(parent,Color("a99b79"),true)
 	Visuals.box(parent,Vector3(0,.6,-.4),Vector3(3,.8,1),wood)

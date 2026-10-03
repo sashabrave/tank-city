@@ -18,7 +18,8 @@
 					"Карта мира: по краям вместо гор-пирамид — массивные ступенчатые плато с полосами пород и обломками у подножия.",
 					"К полю боя снизу ведёт широкий заезд-трапеция в цвет карты (80% ширины поля) с грунтовками налево и направо и следами шин; покрытие и детали под биом. Машина штаба заезжает из-за края экрана по широкой дуге, поднимается по насыпи с наклоном и потряхиванием на перепадах и плавно встаёт на место, а уезжает по другой дуге.",
 					"Начало боя по тактам: машина встала — боец выпрыгивает — строится стена. Неуязвимость в начале поля убрана.",
-					"Баланс: чертежи построек больше не теряются при гибели — штаб, стоянка и полигон открываются в первый час; генерал мира 1 слабее (600 здоровья вместо 700); испытания сложнее с каждой ступенью; уровень оружия даёт +4% урона вместо +1,5%."
+					"Баланс: чертежи построек больше не теряются при гибели — штаб, стоянка и полигон открываются в первый час; генерал мира 1 слабее (600 здоровья вместо 700); испытания сложнее с каждой ступенью; уровень оружия даёт +4% урона вместо +1,5%.",
+					"Торговец на карте маршрута теперь — военная лавка: грузовик со свёрнутым тентом, полки с касками и патронами, столик, канистры и бочка."
 				]
 			},
 			"en": {
@@ -37,7 +38,8 @@
 					"World map: the edges have massive terraced plateaus with rock strata and fallen blocks instead of pyramid mountains.",
 					"A wide map-coloured trapezoid entry (80% of the field width) leads up to the field from below, with dirt tracks to the left and right and tyre marks; surface and details follow the biome. The HQ truck drives in from off-screen in a wide arc, climbs the ramp tilting and jolting on the edges, parks smoothly, and leaves along the other arc.",
 					"Battle start in beats: the truck stops — the soldier hops out — the wall goes up. The start-of-field invulnerability is gone.",
-					"Balance: building blueprints are no longer lost on death — the HQ, garage and range open in the first hour; the world 1 general is weaker (600 health instead of 700); challenges get harder with every step; a weapon level gives +4% damage instead of +1.5%."
+					"Balance: building blueprints are no longer lost on death — the HQ, garage and range open in the first hour; the world 1 general is weaker (600 health instead of 700); challenges get harder with every step; a weapon level gives +4% damage instead of +1.5%.",
+					"The merchant on the route map is now a military shop: a truck with its tarp rolled up, shelves of helmets and ammo, a little table, jerrycans and a barrel."
 				]
 			}
 		},
