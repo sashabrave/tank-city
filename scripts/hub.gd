@@ -99,6 +99,7 @@ func _ready():
 	var gate=Visuals.model("gate",self,Vector3(5,0,-2))
 	gate.scale=Vector3(1.4,1.4,1.4)
 	Visuals.box(self,Vector3(5,.03,-2),Vector3(2.6,.03,1.7),Color("d29849"))
+	exit_marks()
 	update_bench_visuals()
 	Visuals.box(self,Vector3(4,-.08,-5.7),Vector3(4.1,.16,3.2),Color("919b88"))
 	var parked=Visuals.model("base",self,Vector3(3.7,0,-5.9));parked.rotation.y=PI*.65
@@ -336,6 +337,38 @@ func build_roadmap():
 	# A reached goal not seen yet: an orange «!» hops over the board until the station is opened.
 	roadmap_alert=Visuals.label3d(board,"!",Vector3(.62,2.05,0),UiKit.ORANGE,64);roadmap_alert.outline_size=12;roadmap_alert.name="RoadmapAlert"
 	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Развитие заставы",ROADMAP_POS,1.3,func():return not mounted)
+## The way out (author's draft, 2026-10-03): even chevrons on the yellow plate pointing into the gate, and
+## the two yellow panels on each pillar become lamps that softly pulse — a game-design «exit is here».
+const GATE_POS=Vector3(5,0,-2)
+var exit_lamps:Array=[]
+func exit_marks():
+	var dark=Color("2b2a24")
+	for k in range(3):
+		var z=GATE_POS.z+.55-k*.42
+		for side in [-1.0,1.0]:
+			var bar=Visuals.box(self,Vector3(GATE_POS.x+side*.19,.05,z-.05),Vector3(.5,.012,.09),dark)
+			bar.rotation.y=-side*deg_to_rad(40);bar.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	for side in [-1.0,1.0]:
+		for y in LAMP_HEIGHTS:
+			var lamp=Visuals.box(self,Vector3(GATE_POS.x+side*LAMP_X,y,GATE_POS.z+LAMP_Z),Vector3(.3,.07,.02),Color("ffd36a"))
+			var mat=StandardMaterial3D.new();mat.albedo_color=Color("ffd36a");mat.emission_enabled=true;mat.emission=Color("ffc04a");mat.emission_energy_multiplier=1.0;lamp.material_override=mat
+			lamp.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF;exit_lamps.append(mat)
+	var glow=OmniLight3D.new();glow.name="ExitGlow";add_child(glow);glow.position=GATE_POS+Vector3(0,.6,.4);glow.light_color=Color("ffc04a");glow.omni_range=2.2;glow.light_energy=.4;glow.shadow_enabled=false
+	exit_lamps.append(glow)
+	var t=create_tween().set_loops()
+	t.tween_method(func(v:float):
+		for m in exit_lamps:
+			if m is StandardMaterial3D:m.emission_energy_multiplier=.5+v*2.2
+			elif is_instance_valid(m):m.light_energy=.15+v*.55
+	,0.0,1.0,.9).set_trans(Tween.TRANS_SINE)
+	t.tween_method(func(v:float):
+		for m in exit_lamps:
+			if m is StandardMaterial3D:m.emission_energy_multiplier=.5+v*2.2
+			elif is_instance_valid(m):m.light_energy=.15+v*.55
+	,1.0,0.0,.9).set_trans(Tween.TRANS_SINE)
+const LAMP_X:=.98
+const LAMP_Z:=.33
+const LAMP_HEIGHTS=[.62,.36]
 func build_wardrobe():
 	var locker=Node3D.new();locker.name="Wardrobe";add_child(locker);locker.position=WARDROBE_POS
 	var olive=Color("59603f");var dark=Color("3f4430")

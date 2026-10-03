@@ -177,7 +177,8 @@
 					"Во всех комнатах прокачки и у торговца одна раскладка: ящик с оружием слева (три случайных ствола разной редкости с прибавками урона и темпа, за сплав, ствол уходит в рюкзак), автомат с аптечкой или патронами и место «Фортуна» справа — там бывает игровой автомат или ящик патронов.",
 					"Инвентарь как в военных играх, но уютнее: нажатие — меню действий, двойное — надеть или зарядить, наведение — карточка предмета с картинкой, понятным описанием эффекта и сравнением с надетым (зелёное лучше, красное хуже). Такая же карточка у предмета на земле. Цвета редкости стали пастельными. Оружие из ящика со случайными характеристиками даёт свой урон и темп",
 					"Предметы инвентаря перерисованы строго сбоку, без перспективы: оружие, патроны (крупный патрон и маленький ящик с цветной полоской эффекта) и чертежи — строже, с лычками редкости.",
-					"Песочница: выдать себе случайное оружие, патроны или аптечку — предмет вылетает из штаба по дуге и падает рядом; оружие в рюкзак. Цвет мира чуть сочнее, тени подхватывают дополнительный к свету оттенок, контровой свет ярче — всё настраивается в «Материалах». Ножки маскировочных сеток в цвет неразрушаемых блоков, без блеска. На чертежах в рюкзаке — лычка редкости"
+					"Песочница: выдать себе случайное оружие, патроны или аптечку — предмет вылетает из штаба по дуге и падает рядом; оружие в рюкзак. Цвет мира чуть сочнее, тени подхватывают дополнительный к свету оттенок, контровой свет ярче — всё настраивается в «Материалах». Ножки маскировочных сеток в цвет неразрушаемых блоков, без блеска. На чертежах в рюкзаке — лычка редкости",
+					"Выход из хаба: ровные стрелки-шевроны на жёлтой плите ведут в ворота, жёлтые панели на столбах мягко мигают, как лампы входа"
 				]
 			},
 			"en": {
@@ -354,7 +355,8 @@
 					"Every upgrade room and the merchant now share one layout: a weapon crate on the left (three random guns of different rarity with damage and fire-rate bonuses, bought for alloy, the gun goes into the backpack), a medkit or ammo machine and a «Fortune» spot on the right that may hold a slot machine or an ammo crate.",
 					"Inventory like military games but cosier: tap — actions, double tap — equip or load, hover — an item card with a picture, a plain effect description and a comparison with what is equipped (green better, red worse). Same card over items on the ground. Rarity colours are pastel now. Crate guns with rolled stats apply their damage and fire rate",
 					"Inventory items are redrawn in a strict side view without perspective: weapons, ammo (a big round and a small box with a coloured effect stripe) and calmer blueprints with rarity chevrons.",
-					"Sandbox: give yourself a random weapon, ammo or medkit — it flies out of the HQ in an arc and lands nearby; weapon to backpack. World colour slightly juicier, shadows pick up the light's complementary tint, stronger rim light — all tunable in «Materials». Camo net legs match the indestructible blocks, no shine. Blueprints in the backpack show a rarity chevron"
+					"Sandbox: give yourself a random weapon, ammo or medkit — it flies out of the HQ in an arc and lands nearby; weapon to backpack. World colour slightly juicier, shadows pick up the light's complementary tint, stronger rim light — all tunable in «Materials». Camo net legs match the indestructible blocks, no shine. Blueprints in the backpack show a rarity chevron",
+					"Hub exit: neat chevrons on the yellow plate lead into the gate, the yellow panels on the pillars softly pulse like entrance lamps"
 				]
 			}
 		},
