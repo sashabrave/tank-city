@@ -69,6 +69,9 @@ var next_button:Button
 var skip_button:Button
 var clock=0.0
 var reveal:Tween
+## The answered call box (screen rect): the window grows from it into place (T-182).
+var from_rect:=Rect2()
+var grow:=1.0
 
 ## First call whose condition holds and that was not shown yet; "" when none.
 static func due(hub)->String:
@@ -115,15 +118,27 @@ func _ready():
 	skip_button=UiKit.button(panel,"Положить трубку",Vector2.ZERO,Vector2.ZERO,finish)
 	next_button=UiKit.button(panel,"Дальше",Vector2.ZERO,Vector2.ZERO,advance,true);next_button.focus_mode=Control.FOCUS_ALL
 	resized.connect(layout);layout();show_step()
+	if from_rect.size.x>0 and UiKit.motion_enabled():
+		grow=0.0;layout()
+		var t=create_tween();t.tween_property(self,"grow",1.0,.3).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		t.parallel().tween_method(func(_v):layout(),0.0,1.0,.3)
 	Game.sound("telegram_accept",self)
 	if not replay:Game.notifications.post("Видеосвязь: "+MAJOR)
 	# No button is focused on open: a stray Space/Enter/E from the game must not skip the first line (T-048).
 
 func layout():
 	const PAD=24.0
-	var width=minf(880,size.x-32);var height=minf(270,size.y-32)
-	panel.size=Vector2(width,height);panel.position=(size-panel.size)*Vector2(.5,.78)
-	var side=clampf(height-PAD*2,96,200)
+	# Adaptive: the window takes a share of the screen; the portrait fills the height from the top-left corner
+	# down to the buttons' bottom edge (T-162).
+	var width=minf(900,size.x-32);var height=clampf(size.y*.4,200,300)
+	var target=Rect2((Vector2(size.x,size.y)-Vector2(width,height))*Vector2(.5,.78),Vector2(width,height))
+	var rect=target
+	if grow<1.0:
+		var from=Rect2(from_rect.position-get_global_rect().position,from_rect.size)
+		rect=Rect2(from.position.lerp(target.position,grow),from.size.lerp(target.size,grow))
+	width=rect.size.x;height=rect.size.y
+	panel.size=rect.size;panel.position=rect.position
+	var side=minf(height-PAD*2,width*.32)
 	var frame=panel.get_node("VideoFrame");frame.position=Vector2(PAD,PAD);frame.size=Vector2(side,side)
 	portrait.position=Vector2(8,8);portrait.size=frame.size-Vector2(16,16)
 	var scans=frame.get_children().filter(func(n):return n.name.begins_with("Scan"))
@@ -138,8 +153,9 @@ func layout():
 	# T-149: each button as wide as its text needs (they overlapped when «Положить трубку» outgrew 200 px).
 	var need=func(b:Button)->float:return b.get_theme_font("font").get_string_size(b.text,HORIZONTAL_ALIGNMENT_LEFT,-1,b.get_theme_font_size("font_size")).x+48
 	var next_w=clampf(need.call(next_button),160,(body-16)*.5);var skip_w=clampf(need.call(skip_button),160,(body-16)*.5)
-	next_button.size=Vector2(next_w,buttons);next_button.position=Vector2(width-PAD-next_w,height-PAD-buttons)
-	skip_button.size=Vector2(skip_w,buttons);skip_button.position=Vector2(next_button.position.x-16-skip_w,next_button.position.y)
+	# The real height can exceed 48 by the font's minimum; the bottom edge stays level with the portrait.
+	next_button.size=Vector2(next_w,buttons);next_button.position=Vector2(width-PAD-next_w,height-PAD-next_button.size.y)
+	skip_button.size=Vector2(skip_w,buttons);skip_button.position=Vector2(next_button.position.x-16-skip_w,height-PAD-skip_button.size.y)
 	line_label.add_theme_font_size_override("font_size",20 if width>=700 else 17)
 
 func show_step():
@@ -172,7 +188,6 @@ func finish():
 func _process(delta):
 	clock+=delta
 	if is_instance_valid(rec):rec.visible=fposmod(clock,1.0)<.6
-	if is_instance_valid(portrait):portrait.position.y=8+sin(clock*1.3)*1.2
 
 func _unhandled_input(event):
 	if event.is_action_pressed("pause"):finish();get_viewport().set_input_as_handled()

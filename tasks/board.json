@@ -2048,7 +2048,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-162.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "на жкранах вызова вровнять кнопки с аватаром",
 			"type": "bug",
 			"version": "0.8.0"
@@ -2295,7 +2295,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-181.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "тут кнопка взять должна быть гармончино зеленая и вибрировать",
 			"type": "bug",
 			"version": "0.8.0"
@@ -2308,7 +2308,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-182.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "нужно чтобы экран вызова трансформировался в этот экран чата плавными быстрыми анимациями",
 			"type": "bug",
 			"version": "0.8.0"

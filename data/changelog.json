@@ -154,7 +154,8 @@
 					"Казарма: экран класса просторнее — одна кнопка «Путь класса» (яркая, когда уровень по карману, иначе «ещё N ◈»), описание способности под каждой ячейкой; на пути класса шкалы показывают текущее и зелёную прибавку",
 					"«Развитие заставы»: дорожка проще — номера в больших кругах, без двойных галочек, больше воздуха; надпись над доской в штабе не наезжает на подсказку E",
 					"Планшет: все характеристики бойца по группам, левая колонка листается отдельно; кнопки действий всплывают прямо под предметом; предметы в рюкзаке можно переставлять перетаскиванием",
-					"«Сводка» в командном центре: что выросло с прошлого просмотра, плавно растёт зелёным с «+N»"
+					"«Сводка» в командном центре: что выросло с прошлого просмотра, плавно растёт зелёным с «+N»",
+					"Видеозвонок: зелёная вибрирующая кнопка «Взять», окно разговора плавно вырастает из окна вызова, портрет майора крупнее и вровень с кнопками, окна подстраиваются под экран"
 				]
 			},
 			"en": {
@@ -308,7 +309,8 @@
 					"Barracks: roomier class screen — one «Class path» button (bright when a level is affordable, otherwise «N ◈ more»), each ability described under its cell; class path bars show the current value plus the gain in green",
 					"Outpost progress: a cleaner track — numbers in big circles, no double ticks, more air; the board sign no longer overlaps the E prompt",
 					"Tablet: all fighter stats by groups, the left column scrolls on its own; item actions pop up right under the item; backpack items can be rearranged by dragging",
-					"Command centre summary: what grew since the last look rises smoothly in green with «+N»"
+					"Command centre summary: what grew since the last look rises smoothly in green with «+N»",
+					"Video call: a green buzzing «Answer» button, the conversation window grows smoothly out of the call window, the major's portrait is larger and level with the buttons, windows adapt to the screen"
 				]
 			}
 		},
