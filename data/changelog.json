@@ -152,7 +152,9 @@
 					"Esc закрывает текущее окно (а не открывает поверх меню паузы); пауза — только если ничего не открыто. Q/E вне боя переключают горизонтальные вкладки. Точки уведомлений гаснут сразу, на вкладках развития горят, пока есть незабранная награда. В задачах «Основные» больше нет приказов оперштаба, вкладки растянуты по ширине.",
 					"Окно задачи (F8): Tab переключает поля, а не закрывает окно; ⌘/Ctrl+Enter сохраняет; неотправленный текст не теряется",
 					"Казарма: экран класса просторнее — одна кнопка «Путь класса» (яркая, когда уровень по карману, иначе «ещё N ◈»), описание способности под каждой ячейкой; на пути класса шкалы показывают текущее и зелёную прибавку",
-					"«Развитие заставы»: дорожка проще — номера в больших кругах, без двойных галочек, больше воздуха; надпись над доской в штабе не наезжает на подсказку E"
+					"«Развитие заставы»: дорожка проще — номера в больших кругах, без двойных галочек, больше воздуха; надпись над доской в штабе не наезжает на подсказку E",
+					"Планшет: все характеристики бойца по группам, левая колонка листается отдельно; кнопки действий всплывают прямо под предметом; предметы в рюкзаке можно переставлять перетаскиванием",
+					"«Сводка» в командном центре: что выросло с прошлого просмотра, плавно растёт зелёным с «+N»"
 				]
 			},
 			"en": {
@@ -304,7 +306,9 @@
 					"Esc closes the current window (instead of opening the pause menu on top); pause only when nothing is open. Q/E switch horizontal tabs out of battle. Notification dots go out at once; progress tabs light up while a reward waits. «Main» quests no longer show operations orders; the tabs span the width.",
 					"Task window (F8): Tab switches fields instead of closing; Cmd/Ctrl+Enter saves; unsent text is kept",
 					"Barracks: roomier class screen — one «Class path» button (bright when a level is affordable, otherwise «N ◈ more»), each ability described under its cell; class path bars show the current value plus the gain in green",
-					"Outpost progress: a cleaner track — numbers in big circles, no double ticks, more air; the board sign no longer overlaps the E prompt"
+					"Outpost progress: a cleaner track — numbers in big circles, no double ticks, more air; the board sign no longer overlaps the E prompt",
+					"Tablet: all fighter stats by groups, the left column scrolls on its own; item actions pop up right under the item; backpack items can be rearranged by dragging",
+					"Command centre summary: what grew since the last look rises smoothly in green with «+N»"
 				]
 			}
 		},

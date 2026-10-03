@@ -17,6 +17,18 @@ static func items(run)->Array:
 	if run==null:return []
 	return run.pending_recipes.map(func(r):return {"kind":"recipe","item":r})+run.ammo_bag.map(func(a):return {"kind":"ammo","item":a})+run.supplies.map(func(x):return {"kind":"supply","item":x})
 
+## Swap two backpack cells (drag inside the backpack, T-168). Cells are grouped by kind (blueprints, ammo,
+## aid kits), so only items of the same kind trade places. False when the cells hold different kinds.
+static func swap(run,a:int,b:int)->bool:
+	if run==null or a==b:return false
+	var lists=[run.pending_recipes,run.ammo_bag,run.supplies];var start=0
+	for list in lists:
+		var end=start+list.size()
+		if a>=start and a<end and b>=start and b<end:
+			var keep=list[a-start];list[a-start]=list[b-start];list[b-start]=keep;return true
+		start=end
+	return false
+
 ## Bag ammo → the active slot (or a given one); the slot's special ammo comes back to the bag. Standard ammo
 ## is not an item and simply disappears from the slot.
 static func equip(arena,bag_index:int,slot:=-1)->bool:

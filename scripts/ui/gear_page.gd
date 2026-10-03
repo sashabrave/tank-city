@@ -16,6 +16,8 @@ const DOLL_FACES_LEFT:=true
 var view
 var arena
 var body:Control
+## The fighter column scrolls on its own (T-163): full stats by groups can be long.
+var left_body:Control
 var cells:={}
 var C:=92.0
 var left_w:=300.0
@@ -36,7 +38,13 @@ func build():
 	C=floorf((inner-right_x-3*GAP)/4.0)
 	body.custom_minimum_size=Vector2(inner,10)
 	if is_instance_valid(arena) and run()!=null:Ammo.ensure(run(),str(arena.weapon))
-	var bottom=maxf(build_left(),build_right())
+	# The left column lives in its own scroll over the left part of the page.
+	var left_scroll=ScrollContainer.new();left_scroll.name="FighterScroll";content.add_child(left_scroll);left_scroll.position=scroll.position;left_scroll.size=Vector2(left_w+10,scroll.size.y)
+	left_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
+	left_body=Control.new();left_body.name="FighterBody";left_scroll.add_child(left_body)
+	var left_bottom=build_left()
+	left_body.custom_minimum_size=Vector2(left_w,left_bottom+16)
+	var bottom=build_right()
 	body.custom_minimum_size.y=bottom+16
 	if selected!="" and not cells.has(selected):selected=""
 	highlight()
@@ -46,9 +54,9 @@ func col(i:int)->float:return right_x+i*(C+GAP)
 # ── Left: fighter ──────────────────────────────────────────────────────────────────────────────────────────
 func build_left()->float:
 	var level=Game.class_level()
-	UiKit.label(body,"%s, ур. %d" % [Game.CLASSES[Game.selected_class].name,level],Vector2(0,0),Vector2(left_w,LABEL+4),22).name="FighterTitle"
+	UiKit.label(left_body,"%s, ур. %d" % [Game.CLASSES[Game.selected_class].name,level],Vector2(0,0),Vector2(left_w,LABEL+4),22).name="FighterTitle"
 	var doll_h=2*C+LABEL+UNDER_LABEL+SECTION
-	var doll=Panel.new();doll.name="Doll";body.add_child(doll);doll.position=Vector2(0,LABEL+UNDER_LABEL);doll.size=Vector2(left_w,doll_h)
+	var doll=Panel.new();doll.name="Doll";left_body.add_child(doll);doll.position=Vector2(0,LABEL+UNDER_LABEL);doll.size=Vector2(left_w,doll_h)
 	doll.add_theme_stylebox_override("panel",UiKit.style(Color(1,1,1,.03),14,Color(1,1,1,.12)))
 	var picture=TextureRect.new();picture.name="DollArt";doll.add_child(picture);picture.texture=preload("res://scripts/ui/class_gallery.gd").texture(Game.selected_class,true)
 	picture.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;picture.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;picture.mouse_filter=Control.MOUSE_FILTER_IGNORE
@@ -69,14 +77,14 @@ func build_left()->float:
 		y+=48
 	# Stats under the doll: weapon numbers, then the active ammo in words.
 	var top=doll.position.y+doll_h+SECTION
-	UiKit.label(body,"Характеристики",Vector2(0,top),Vector2(left_w,LABEL),UiKit.SECTION_SIZE)
-	var weapon=str(arena.weapon) if is_instance_valid(arena) else Game.selected_weapon
-	var bars=STATS.add_bars(body,Vector2(0,top+LABEL+UNDER_LABEL),left_w,STATS.weapon(arena if is_instance_valid(arena) else null,weapon),52,false)
+	UiKit.label(left_body,"Характеристики",Vector2(0,top),Vector2(left_w,LABEL),UiKit.SECTION_SIZE)
+	# Every characteristic, grouped (fire, survival, abilities, ammo, recon, logistics), T-163.
+	var bars=STATS.add_bars(left_body,Vector2(0,top+LABEL+UNDER_LABEL),left_w,STATS.fighter(arena if is_instance_valid(arena) else null),46,false);bars.name="FighterStats"
 	var after=top+LABEL+UNDER_LABEL+bars.content_height()+GAP
 	var ammo=Ammo.item(run()) if run()!=null else Ammo.standard()
 	var line=Texts.render("Патроны")+": "+Texts.render(Ammo.NAMES.get(str(ammo.type),""))
 	if ammo.type!=Ammo.STANDARD:line+=" — "+Ammo.describe(ammo)
-	var note=UiKit.label(body,line,Vector2(0,after),Vector2(left_w,44),14,Color(Ammo.COLORS.get(str(ammo.type),"cfd3c8")));note.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;note.name="AmmoLine"
+	var note=UiKit.label(left_body,line,Vector2(0,after),Vector2(left_w,44),14,Color(Ammo.COLORS.get(str(ammo.type),"cfd3c8")));note.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;note.name="AmmoLine"
 	return after+note.get_minimum_size().y+8
 
 # ── Right: loadout and backpack ────────────────────────────────────────────────────────────────────────────
@@ -227,6 +235,9 @@ func move(from:String,to:String):
 	elif from.begins_with("slot:") and to.begins_with("bag:"):
 		if Backpack.unequip(arena,int(from.get_slice(":",1))):done("Патроны сняты в рюкзак")
 		else:arena.toast(Texts.render("Рюкзак полон"))
+	elif from.begins_with("bag:") and to.begins_with("bag:"):
+		# Reorder inside the backpack (T-168): items swap places within their own kind.
+		if Backpack.swap(r,int(from.get_slice(":",1)),int(to.get_slice(":",1))):selected=to;done("")
 	elif from.begins_with("slot:") and to.begins_with("slot:"):
 		var a=int(from.get_slice(":",1));var b=int(to.get_slice(":",1))
 		if b<r.ammo_slots.size():
@@ -256,6 +267,33 @@ func highlight():
 			ring=Panel.new();ring.name="SelectRing";cell.add_child(ring);ring.mouse_filter=Control.MOUSE_FILTER_IGNORE;ring.position=Vector2(-3,-3);ring.size=cell.size+Vector2(6,6)
 			var style=UiKit.style(Color.TRANSPARENT,14,UiKit.ORANGE);style.set_border_width_all(3);ring.add_theme_stylebox_override("panel",style)
 		elif key!=selected and ring!=null:ring.queue_free()
+	popover()
+## The actions of the selected item float right under it (T-172), so the buttons are where the eyes are.
+func popover():
+	var old=body.get_node_or_null("GearActions")
+	if old:old.queue_free()
+	if selected=="" or not cells.has(selected):return
+	var actions=actions_for(selected)
+	if actions.is_empty():return
+	var cell:Control=cells[selected]
+	var bw=104.0;var h=40.0;var pad=6.0
+	var box=Panel.new();box.name="GearActions";body.add_child(box);box.z_index=5
+	box.size=Vector2(actions.size()*bw+(actions.size()+1)*pad,h+pad*2)
+	box.add_theme_stylebox_override("panel",UiKit.style(Color("1d2420"),12,UiKit.ORANGE))
+	var x=clampf(cell.position.x+(cell.size.x-box.size.x)*.5,right_x,right_x+4*C+3*GAP-box.size.x)
+	box.position=Vector2(x,cell.position.y+cell.size.y+6)
+	for i in range(actions.size()):
+		var b=UiKit.button(box,actions[i][0],Vector2(pad+i*(bw+pad),pad),Vector2(bw,h),actions[i][1],i==0);b.add_theme_font_size_override("font_size",14);b.name="Act_%d" % i;b.clip_text=true
+	if UiKit.motion_enabled():
+		box.modulate.a=0;box.pivot_offset=Vector2(box.size.x*.5,0);box.scale=Vector2(.9,.9)
+		var t=box.create_tween().set_parallel();t.tween_property(box,"modulate:a",1.0,.12);t.tween_property(box,"scale",Vector2.ONE,.16).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+func actions_for(key:String)->Array:
+	var cell:GearCell=cells[key];var actions=[]
+	if key.begins_with("bag:") and cell.item_kind=="ammo":actions.append(["Надеть",func():activate(key)])
+	if key.begins_with("bag:") and cell.item_kind=="supply":actions.append(["Вылечиться",func():activate(key)])
+	if key.begins_with("slot:") and cell.draggable:actions.append(["Снять",func():activate(key)])
+	if (key.begins_with("bag:") or key.begins_with("slot:")) and cell.draggable and Backpack.can_drop(arena):actions.append(["Выбросить",func():discard(key)])
+	return actions
 func refresh_info():
 	var info=body.get_node_or_null("GearInfo")
 	if info:
@@ -269,11 +307,4 @@ func fill_info(info:Panel):
 	var cell:GearCell=cells[selected]
 	var lines=cell.tooltip_text.split("\n")
 	UiKit.label(info,lines[0],Vector2(14,8),Vector2(w-28,24),16)
-	var rest=UiKit.label(info,"\n".join(lines.slice(1)),Vector2(14,32),Vector2(w-200,56),12,UiKit.MUTED);rest.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-	var actions=[]
-	if selected.begins_with("bag:") and cell.item_kind=="ammo":actions.append(["Надеть",func():activate(selected)])
-	if selected.begins_with("bag:") and cell.item_kind=="supply":actions.append(["Вылечиться",func():activate(selected)])
-	if selected.begins_with("slot:") and cell.draggable:actions.append(["Снять",func():activate(selected)])
-	if (selected.begins_with("bag:") or selected.begins_with("slot:")) and cell.draggable and Backpack.can_drop(arena):actions.append(["Выбросить",func():discard(selected)])
-	for i in range(actions.size()):
-		var b=UiKit.button(info,actions[i][0],Vector2(w-14-(i+1)*88-i*6,48),Vector2(88,36),actions[i][1],i==0);b.add_theme_font_size_override("font_size",13)
+	var rest=UiKit.label(info,"\n".join(lines.slice(1)),Vector2(14,32),Vector2(w-28,56),12,UiKit.MUTED);rest.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART

@@ -2061,7 +2061,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-163.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "здесь конечно надо придумть как показывать полные характеристики которые  есть по группам, колонку с аватаром и статами можно скролить по вертикали",
 			"type": "bug",
 			"version": "0.8.0"
@@ -2126,7 +2126,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-168.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "патроны можно пертаскивать из интерфейса в ячейки и обратно. патроны чертежи и прочее - перемещаемы предметы мышкоц или тачем по инвентаре",
 			"type": "bug",
 			"version": "0.8.0"
@@ -2165,7 +2165,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-171.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "теперь патроны можно ложить в рюкзак, посмотри продумаймеханизм интерфейс разных сценарииев максимально просто и изящно",
 			"type": "bug",
 			"version": "0.8.0"
@@ -2178,7 +2178,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-172.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "кнопки непонятно где должны рядом маленьким тултипом впслывать кнопки действия",
 			"type": "bug",
 			"version": "0.8.0"
@@ -2412,7 +2412,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-190.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "если в сводке чтото поменялось то надо анимцией и шкалой зеленым цветом показть что изменилос плавненько",
 			"type": "bug",
 			"version": "0.8.0"

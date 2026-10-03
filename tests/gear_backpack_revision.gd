@@ -44,6 +44,11 @@ func run():
 	check(Ammo.active(r)=="cryo","drag from the backpack onto the slot loads")
 	page.move("slot:0","bag:3")
 	check(Ammo.active(r)=="standard" and r.ammo_bag.size()==2,"drag from the slot into the backpack unloads")
+	# T-168: dragging inside the backpack swaps items of the same kind.
+	var first_type=str(r.ammo_bag[0].type);var second_type=str(r.ammo_bag[1].type)
+	page.move("bag:%d" % r.pending_recipes.size(),"bag:%d" % (r.pending_recipes.size()+1))
+	check(str(r.ammo_bag[0].type)==second_type and str(r.ammo_bag[1].type)==first_type,"drag inside the backpack swaps two ammo boxes")
+	check(not Backpack.swap(r,0,99),"no swap with an empty cell")
 	# Full backpack: unloading is refused, nothing is lost.
 	Backpack.equip(arena,0);r.pending_recipes.append({"id":"smg","category":"weapon"});r.ammo_bag.append(Ammo.roll("shock",0,1));r.ammo_bag.append(Ammo.roll("stun",0,2))
 	check(Backpack.full(r) and not Backpack.unequip(arena,0) and Ammo.active(r)!="standard","full backpack keeps the loaded ammo")
