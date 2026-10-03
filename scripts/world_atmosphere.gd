@@ -71,7 +71,7 @@ func battle_clouds(grid_size:int,seed_value:int):
 			multi.set_instance_transform(i,Transform3D(Basis.IDENTITY.scaled(Vector3.ONE*discs[i][1]),discs[i][0]))
 			multi.set_instance_custom_data(i,Color(discs[i][2],discs[i][3],0,1))
 		var node=MultiMeshInstance3D.new();node.name="EdgeCloud";node.multimesh=multi;node.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF;node.extra_cull_margin=12
-		var mat=ShaderMaterial.new();mat.shader=preload("res://shaders/world/map_clouds.gdshader");mat.set_shader_parameter("opacity",.55);node.material_override=mat
+		var mat=ShaderMaterial.new();mat.shader=preload("res://shaders/world/map_clouds.gdshader");mat.set_shader_parameter("opacity",.55);mat.set_shader_parameter("screen_edge_fade",1.0);node.material_override=mat
 		add_child(node);clouds.append(node)
 		node.position=Vector3(side*(grid_size*.5+rng.randf_range(7.6,9.8)),rng.randf_range(10.0,12.5),rng.randf_range(-drift_span*.5,drift_span*.5))
 		drifters.append({"node":node,"speed":rng.randf_range(.18,.32)*(1.0 if rng.randf()<.5 else -1.0)})

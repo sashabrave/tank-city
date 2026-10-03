@@ -11,9 +11,11 @@ var departing=false
 ## so moving between framings is a clean arc instead of a straight slide with a spinning field.
 ## A "swoop" blends toward a scripted framing: in at the start of a room, out when the HQ leaves.
 const YAW=10.0
-const NORMAL={"yaw":YAW,"elev":53.6,"dist":23.6,"zoom":1.0}
-const OVERVIEW={"yaw":YAW,"elev":62.0,"dist":25.5,"zoom":1.08}
-var view={"yaw":YAW,"elev":53.6,"dist":23.6,"zoom":1.0}
+## 5% closer than before (author request, 0.7.2): the border may leave the frame, the cells never do
+## (camera_fit test).
+const NORMAL={"yaw":YAW,"elev":53.6,"dist":23.6,"zoom":.95}
+const OVERVIEW={"yaw":YAW,"elev":62.0,"dist":25.5,"zoom":1.026}
+var view=NORMAL.duplicate()
 var focus=Vector3.ZERO
 var swoop={}
 var swoop_weight=0.0

@@ -108,6 +108,9 @@ static func setup_world(parent: Node3D, camera_size: float, target: Vector3) -> 
 	parent.add_child(cam)
 	cam.projection = Camera3D.PROJECTION_ORTHOGONAL
 	cam.size = camera_size
+	# The default far plane (4000) spread the sun's shadow splits so thin that walls cast no shadow on the
+	# field and daylight read flat. Everything we draw is within ~60 m of the camera.
+	cam.far = 150
 	cam.position = target + Vector3(0,19,14).rotated(Vector3.UP,deg_to_rad(10))
 	cam.look_at(target)
 	cam.current = true

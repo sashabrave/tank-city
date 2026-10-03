@@ -121,7 +121,10 @@ func apply():
 	# Softness is a filter blur, not an angular sun size: PCSS (angular distance) samples the penumbra
 	# with noise that reads as grain on small geometry like brick courses.
 	sun.light_angular_distance=0.0
-	sun.shadow_blur=clampf(1.0+float(style.softness)*.5,1.0,4.0) if soft else 1.0
+	# The orthographic field falls into the far (coarse) shadow split, and the high-quality soft filter with a
+	# blur of 2+ smeared the sun shadows to nothing: walls cast no shadow and daylight read flat. Low filter
+	# quality (project setting) and a small blur keep a soft but visible edge.
+	sun.shadow_blur=clampf(1.0+float(style.softness)*.08,1.0,1.6) if soft else 1.0
 	# Moonlight shadows read as blurry as the day ones.
 	if soft and night:sun.shadow_blur=clampf(sun.shadow_blur*1.8,2.0,5.0)
 	sun.shadow_opacity=float(style.shadow) if cozy else 1.0
@@ -201,9 +204,11 @@ func depth_light(on:bool,night:=false):
 		# Golden hour on sand turned the whole frame yellow: the sun gets a little more neutral and softer there.
 		sun.light_color=sun.light_color.lerp(Color("fff1df"),.35*k);sun.light_energy*=1.0-.1*k
 		environment.adjustment_saturation*=1.0-.14*k
-	environment.ambient_light_color=environment.ambient_light_color.lerp(Color("9db0d8"),.12)
-	# Softer sun shadows: the surface colour shows through instead of near-black patches.
-	sun.shadow_opacity*=.82
+	# Volume (0.7.2): a cooler, weaker fill against the warm sun reads the sides and cast shadows of walls;
+	# the shadows stay coloured, never near-black.
+	environment.ambient_light_color=environment.ambient_light_color.lerp(Color("9db0d8"),.22)
+	environment.ambient_light_energy*=.86;sun.light_energy*=1.05
+	sun.shadow_opacity*=.92
 func _process(delta):
 	elapsed+=delta
 	if elapsed<.25:return
