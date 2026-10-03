@@ -1,5 +1,5 @@
 {
-	"next_id": 117,
+	"next_id": 125,
 	"tasks": [
 		{
 			"id": "T-001",
@@ -1473,6 +1473,110 @@
 			"created": "2026-10-02",
 			"source": "chat",
 			"shot": ""
+		},
+		{
+			"created": "2026-10-02",
+			"id": "T-117",
+			"note": "",
+			"priority": 2.0,
+			"scene": "arena",
+			"shot": "res://tasks/shots/T-117.png",
+			"source": "game",
+			"status": "backlog",
+			"title": "иконка базы здоровья должна быть миниатюрой нашей машины штаба",
+			"type": "bug",
+			"version": "0.7.2-pre"
+		},
+		{
+			"created": "2026-10-02",
+			"id": "T-118",
+			"note": "\"вы попали под обстрел\"\nстрелять можно спосоьности юзать можно",
+			"priority": 2.0,
+			"scene": "arena",
+			"shot": "res://tasks/shots/T-118.png",
+			"source": "game",
+			"status": "backlog",
+			"title": "режим выжиания надо начать с соощения типа",
+			"type": "bug",
+			"version": "0.7.2-pre"
+		},
+		{
+			"created": "2026-10-02",
+			"id": "T-119",
+			"note": "",
+			"priority": 1.0,
+			"scene": "service_room",
+			"shot": "res://tasks/shots/T-119.png",
+			"source": "game",
+			"status": "backlog",
+			"title": "нажимае е купить багги ничего не происходит, оформи покупку сценарино и интерфейсно",
+			"type": "bug",
+			"version": "0.7.2-pre"
+		},
+		{
+			"created": "2026-10-02",
+			"id": "T-120",
+			"note": "",
+			"priority": 2.0,
+			"scene": "hub",
+			"shot": "res://tasks/shots/T-120.png",
+			"source": "game",
+			"status": "backlog",
+			"title": "вызов незаметный, сделай его диалоговым окном похожихм по структурке на стартовый диалог, только больше, большой фото звонящено и кнопка взять",
+			"type": "polish",
+			"version": "0.7.2-pre"
+		},
+		{
+			"created": "2026-10-02",
+			"id": "T-121",
+			"note": "",
+			"priority": 2.0,
+			"scene": "hub",
+			"shot": "res://tasks/shots/T-121.png",
+			"source": "game",
+			"status": "backlog",
+			"title": "этотэкран не работает кнопки не нажимаются",
+			"type": "bug",
+			"version": "0.7.2-pre"
+		},
+		{
+			"created": "2026-10-02",
+			"id": "T-122",
+			"note": "",
+			"priority": 1.0,
+			"scene": "hub",
+			"shot": "res://tasks/shots/T-122.png",
+			"source": "game",
+			"status": "backlog",
+			"title": "короч никакие настройки тут не срабатывают и не применятся, проверь баг важный",
+			"type": "bug",
+			"version": "0.7.2-pre"
+		},
+		{
+			"created": "2026-10-02",
+			"id": "T-123",
+			"note": "Пуля золотая бьет другу пулю серебряную, у тебя ща ракета нарисована\n\nКартинка: res://assets/ui/icon_kit/symbols/bullet_vs_rocket.png\nГруппа: Карточки забега\nid: upgrades/intercept, pickups/pressure\nГде: Окно «Выбери усиление» между волнами; энциклопедия; сводка забега; Бонусы, выпадающие на поле; подсказки HUD\nУзел: /root/Border13/Arena/Hud/Layout/RewardsScreen/Panel/Card2/Icon",
+			"priority": 2.0,
+			"scene": "arena",
+			"shot": "res://tasks/shots/T-123.png",
+			"source": "game",
+			"status": "backlog",
+			"title": "Арт: Напор",
+			"type": "polish",
+			"version": "0.7.2-pre"
+		},
+		{
+			"created": "2026-10-02",
+			"id": "T-124",
+			"note": "может сделать как вертикальные майлстоуны? есть ли в этом смысл или нет лучше есть идеи?",
+			"priority": 2,
+			"scene": "hub",
+			"shot": "res://tasks/shots/T-124.png",
+			"source": "game",
+			"status": "backlog",
+			"title": "здесь надо неоткрытые сдеалать прям явно сильно неактивными с нецветными картинками какимито хз на уровне систему, не ощущается как путь",
+			"type": "bug",
+			"version": "0.7.2-pre"
 		}
 	]
 }
