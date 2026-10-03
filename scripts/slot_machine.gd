@@ -14,17 +14,18 @@ static func place(parent:Node3D,context,at:Vector3)->Node3D:
 	var machine=load("res://scripts/slot_machine.gd").new();machine.room=parent;machine.arena=context;machine.position=at;parent.add_child(machine);return machine
 func _ready():
 	name="SlotMachine";scale=Vector3.ONE*1.25
-	var red=Color("a8352d");var gold=Color("e5b34f")
-	Visuals.box(self,Vector3(0,.35,0),Vector3(1.1,.7,.8),red.darkened(.25),"paint")
-	Visuals.box(self,Vector3(0,1.15,-.05),Vector3(1.0,.9,.7),red,"paint")
-	Visuals.box(self,Vector3(0,1.15,.31),Vector3(.86,.42,.04),Color("1d211f"),"glass")
-	for i in range(3):Visuals.box(self,Vector3(-.28+i*.28,1.15,.34),Vector3(.22,.32,.02),Color("f4ecd6"))
-	Visuals.box(self,Vector3(0,.74,.3),Vector3(1.04,.06,.32),gold,"brass")
-	Visuals.box(self,Vector3(0,1.78,-.05),Vector3(1.1,.36,.74),gold,"brass")
-	Visuals.box(self,Vector3(0,1.78,.33),Vector3(.8,.2,.02),Color("fff0ce"))
-	Visuals.box(self,Vector3(.6,1.1,0),Vector3(.08,.5,.08),Color("6b6f6a"),"steel")
-	Visuals.box(self,Vector3(.6,1.42,0),Vector3(.16,.16,.16),Color("d64a3c"))
-	var glow=OmniLight3D.new();add_child(glow);glow.position=Vector3(0,1.4,.8);glow.light_color=Color("ffd27a");glow.light_energy=.7;glow.omni_range=2.4
+	if not preload("res://scripts/machine_model.gd").attach(self,"res://assets/models/route/machine_slot.glb",Color("ffd27a"),1.2):
+		var red=Color("a8352d");var gold=Color("e5b34f")
+		Visuals.box(self,Vector3(0,.35,0),Vector3(1.1,.7,.8),red.darkened(.25),"paint")
+		Visuals.box(self,Vector3(0,1.15,-.05),Vector3(1.0,.9,.7),red,"paint")
+		Visuals.box(self,Vector3(0,1.15,.31),Vector3(.86,.42,.04),Color("1d211f"),"glass")
+		for i in range(3):Visuals.box(self,Vector3(-.28+i*.28,1.15,.34),Vector3(.22,.32,.02),Color("f4ecd6"))
+		Visuals.box(self,Vector3(0,.74,.3),Vector3(1.04,.06,.32),gold,"brass")
+		Visuals.box(self,Vector3(0,1.78,-.05),Vector3(1.1,.36,.74),gold,"brass")
+		Visuals.box(self,Vector3(0,1.78,.33),Vector3(.8,.2,.02),Color("fff0ce"))
+		Visuals.box(self,Vector3(.6,1.1,0),Vector3(.08,.5,.08),Color("6b6f6a"),"steel")
+		Visuals.box(self,Vector3(.6,1.42,0),Vector3(.16,.16,.16),Color("d64a3c"))
+		var glow=OmniLight3D.new();add_child(glow);glow.position=Vector3(0,1.4,.8);glow.light_color=Color("ffd27a");glow.light_energy=.7;glow.omni_range=2.4
 	if room:preload("res://scripts/interaction_prompt.gd").attach(self,room,"Автомат · %d жетона" % PRICE,Vector3.ZERO,1.9,func():return true)
 func near(avatar:Node3D)->bool:return avatar.global_position.distance_to(global_position)<1.9
 ## Pulls the lever: pays PRICE tokens, rolls the outcome and opens the reel window over ui_root.

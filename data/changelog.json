@@ -189,7 +189,8 @@
 					"Предметы инвентаря перерисованы строго сбоку, без перспективы: оружие, боеприпасы (крупный патрон и маленький ящик с цветной полоской эффекта) и чертежи — строже, с лычками редкости.",
 					"Песочница: выдать себе случайное оружие, боеприпасы или аптечку — предмет вылетает из штаба по дуге и падает рядом; оружие в рюкзак. Цвет мира чуть сочнее, тени подхватывают дополнительный к свету оттенок, контровой свет ярче — всё настраивается в «Материалах». Ножки маскировочных сеток в цвет неразрушаемых блоков, без блеска. На чертежах в рюкзаке — лычка редкости",
 					"Выход из хаба: ровные стрелки-шевроны на жёлтой плите ведут в ворота, жёлтые панели на столбах мягко мигают, как лампы входа",
-					"Комнаты механика, инструктора и мастерской штаба выглядят как их точки на карте вблизи: грузовик с краном и подъёмник, палатка с мишенью, навес с машиной штаба и заправкой."
+					"Комнаты механика, инструктора и мастерской штаба выглядят как их точки на карте вблизи: грузовик с краном и подъёмник, палатка с мишенью, навес с машиной штаба и заправкой.",
+					"Автоматы в комнатах стали ярче и дружелюбнее, как в казино: аптечный автомат со светящимся крестом, автомат боеприпасов с куполом цветных капсул и ручкой, игровой автомат с аркой бегущих огней."
 				]
 			},
 			"en": {
@@ -378,7 +379,8 @@
 					"Inventory items are redrawn in a strict side view without perspective: weapons, ammo (a big round and a small box with a coloured effect stripe) and calmer blueprints with rarity chevrons.",
 					"Sandbox: give yourself a random weapon, ammo or medkit — it flies out of the HQ in an arc and lands nearby; weapon to backpack. World colour slightly juicier, shadows pick up the light's complementary tint, stronger rim light — all tunable in «Materials». Camo net legs match the indestructible blocks, no shine. Blueprints in the backpack show a rarity chevron",
 					"Hub exit: neat chevrons on the yellow plate lead into the gate, the yellow panels on the pillars softly pulse like entrance lamps",
-					"The mechanic, instructor and HQ workshop rooms now look like their map stops up close: a crane truck and a lift, a tent with a target board, a canopy over the HQ vehicle with a fuel pump."
+					"The mechanic, instructor and HQ workshop rooms now look like their map stops up close: a crane truck and a lift, a tent with a target board, a canopy over the HQ vehicle with a fuel pump.",
+					"Room machines are brighter and friendlier, casino style: a medkit machine with a glowing cross, an ammo gacha with a dome of coloured capsules and a crank, a slot machine with an arch of chaser lights."
 				]
 			}
 		},
