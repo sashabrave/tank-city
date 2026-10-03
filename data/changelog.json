@@ -165,7 +165,8 @@
 					"«Связь»: звонок раскрывается прямо в списке короткой перепиской с аватарами; точка гаснет, когда вкладку посмотрели, а «Сообщения» читаются при открытии. Окопы: из двух соседних выбирается ближайший, подсказка только у него, вход и выход — коротким прыжком. Окно торговца крупнее, кнопки под палец",
 					"Демо: миры 2–3 закрыты (в полной версии), после генерала открывается бесконечный рубеж. Казарма: лента классов прокручивается и снова показывает классы в разработке, кнопка «Все» открывает все классы на одном экране. Игровой автомат торговца: меньше пустых прокрутов, новые призы — сплав и ящик патронов",
 					"Новые аватары отправителей в заданиях: учёный кот из Института и кот-диспетчер из Оперштаба",
-					"У «Штаба усов» в заданиях теперь портрет майора — все три отправителя в одном стиле"
+					"У «Штаба усов» в заданиях теперь портрет майора — все три отправителя в одном стиле",
+					"Экран загрузки с логотипом при запуске и перед первым боем: прикрывает подготовку графики и исчезает, как только картинка идёт ровно; заставка движка заменена логотипом игры. Размытие краёв кадра стало легче для видеокарты"
 				]
 			},
 			"en": {
@@ -330,7 +331,8 @@
 					"Comms: a call unfolds right in the list as a short chat with avatars; the dot goes out once you look, and Messages are read on opening. Trenches: of two neighbours the closer one is taken, only it shows the hint, and you hop in and out. The merchant window is larger with finger-sized buttons",
 					"Demo: worlds 2–3 are closed (full game), the endless front opens after the general. Barracks: the class ribbon scrolls and shows the classes in development again, «All» opens every class on one screen. Merchant's slot machine: fewer blanks, new prizes — alloy and an ammo box",
 					"New sender avatars in tasks: a scientist cat from the Institute and a dispatcher cat from Operations",
-					"The «Moustache HQ» sender now shows the major's portrait — all three senders match"
+					"The «Moustache HQ» sender now shows the major's portrait — all three senders match",
+					"Loading screen with the logo at launch and before the first battle: it covers graphics warm-up and fades once frames run smoothly; the engine splash now shows the game logo. The edge blur is lighter on the GPU"
 				]
 			}
 		},

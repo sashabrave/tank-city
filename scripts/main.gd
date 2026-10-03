@@ -5,11 +5,24 @@ var route_choices:Dictionary={}
 var ready_ms=0
 func _ready():
 	ready_ms=Time.get_ticks_msec()
+	# Loading screen over the first frames: a cold first launch compiles shaders for seconds (2026-10-03).
+	if "--startup-report" not in OS.get_cmdline_user_args():preload("res://scripts/ui/loading_screen.gd").cover(self)
 	Game.profile_changed.connect(reload_profile_hub)
 	if Game.profiles.selected and not Game.save_blocked:show_hub()
 	else:ProfileMenu.call_deferred("open_start")
 	if "--arena" in OS.get_cmdline_user_args():call_deferred("start_run")
 	# Cold-start measurement: `-- --startup-report` prints engine start → first presented frame.
+	# `-- --startup-hub` (with a profile): launch → loading screen gone over a warm hub, and the longest frame.
+	if "--startup-hub" in OS.get_cmdline_user_args():
+		var longest=0;var last=Time.get_ticks_msec()
+		while get_tree().root.find_child("LoadingScreen",true,false)!=null:
+			await get_tree().process_frame
+			var now=Time.get_ticks_msec();longest=maxi(longest,now-last);last=now
+		var report="STARTUP hub ready %d ms · longest frame %d ms · hub %s" % [Time.get_ticks_msec(),longest,str(is_instance_valid(current))]
+		print(report)
+		var file=FileAccess.open("user://startup_report.txt",FileAccess.WRITE)
+		if file:file.store_line(report);file.close()
+		get_tree().quit()
 	if "--startup-report" in OS.get_cmdline_user_args():
 		await RenderingServer.frame_post_draw;await RenderingServer.frame_post_draw
 		var report="STARTUP first frame %d ms (main ready at %d ms)" % [Time.get_ticks_msec(),ready_ms]
@@ -100,6 +113,7 @@ func enter_room(index: int,node_id:String=""):
 		show_node_service(branch,index);return
 	clear_current()
 	if not is_instance_valid(run_arena):
+		preload("res://scripts/ui/loading_screen.gd").cover_first_battle(self)
 		run_arena=load("res://scenes/arena.tscn").instantiate();run_arena.run_seed=Game.visual_run_seed;run_arena.run.route_choices=route_choices;current=run_arena;add_child(current)
 		current.exit_requested.connect(show_hub);current.map_requested.connect(show_map);current.restart_requested.connect(restart_room)
 	else:
