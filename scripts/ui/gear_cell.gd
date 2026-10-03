@@ -31,12 +31,22 @@ func _cell_input(event:InputEvent):
 				if on_select.is_valid():on_select.call(key)
 	if event is InputEventScreenTouch and event.pressed and event.double_tap:
 		if on_activate.is_valid():on_activate.call(key)
+## The dragged item is the same cell, same size, lifted a little with an orange outline and a soft shadow;
+## the cell it left stays as a faint trace until the drop (author, 2026-10-03).
 func _get_drag_data(_at:Vector2):
 	if not draggable:return null
-	var preview=TextureRect.new();preview.texture=icon_texture();preview.size=size*.8;preview.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;preview.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;preview.modulate.a=.85
-	var holder=Control.new();holder.add_child(preview);preview.position=-preview.size*.5
+	var holder=Control.new()
+	var lifted=Panel.new();holder.add_child(lifted);lifted.size=size;lifted.position=-size*.5+Vector2(0,-8)
+	var frame=get_theme_stylebox("normal").duplicate() if get_theme_stylebox("normal") is StyleBoxFlat else StyleBoxFlat.new()
+	frame.border_color=UiKit.ORANGE;frame.set_border_width_all(3);frame.shadow_color=Color(0,0,0,.45);frame.shadow_size=12;frame.shadow_offset=Vector2(0,8)
+	lifted.add_theme_stylebox_override("panel",frame)
+	for child in get_children():
+		if child is TextureRect or child is Label:lifted.add_child(child.duplicate())
 	set_drag_preview(holder)
+	modulate.a=.35
 	return {"gear_key":key}
+func _notification(what):
+	if what==NOTIFICATION_DRAG_END:modulate.a=1.0
 func _can_drop_data(_at:Vector2,data)->bool:return data is Dictionary and data.has("gear_key") and data.gear_key!=key and on_drop.is_valid()
 func _drop_data(_at:Vector2,data):on_drop.call(str(data.gear_key),key)
 func icon_texture()->Texture2D:

@@ -31,6 +31,8 @@ func build():
 	# No page title: the selected tab already says «Снаряжение»; the fighter's name heads the page (sketch).
 	var scroll=ScrollContainer.new();scroll.name="GearScroll";content.add_child(scroll);scroll.position=Vector2(PAD,20);scroll.size=Vector2(content.size.x-PAD-8,content.size.y-32)
 	scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
+	# No visible scroll bars on this page (author, 2026-10-03): wheel and drag still scroll.
+	scroll.vertical_scroll_mode=ScrollContainer.SCROLL_MODE_SHOW_NEVER
 	body=Control.new();body.name="GearBody";scroll.add_child(body)
 	# Grid: inner width minus a 14 px lane for the scrollbar; the left column takes ~42 %, cells fill the rest.
 	var inner=scroll.size.x-14.0
@@ -40,7 +42,7 @@ func build():
 	if is_instance_valid(arena) and run()!=null:Ammo.ensure(run(),str(arena.weapon))
 	# The left column lives in its own scroll over the left part of the page.
 	var left_scroll=ScrollContainer.new();left_scroll.name="FighterScroll";content.add_child(left_scroll);left_scroll.position=scroll.position;left_scroll.size=Vector2(left_w+10,scroll.size.y)
-	left_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
+	left_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;left_scroll.vertical_scroll_mode=ScrollContainer.SCROLL_MODE_SHOW_NEVER
 	left_body=Control.new();left_body.name="FighterBody";left_scroll.add_child(left_body)
 	var left_bottom=build_left()
 	left_body.custom_minimum_size=Vector2(left_w,left_bottom+16)
@@ -79,7 +81,8 @@ func build_left()->float:
 	var top=doll.position.y+doll_h+SECTION
 	UiKit.label(left_body,"Характеристики",Vector2(0,top),Vector2(left_w,LABEL),UiKit.SECTION_SIZE)
 	# Every characteristic, grouped (fire, survival, abilities, ammo, recon, logistics), T-163.
-	var bars=STATS.add_bars(left_body,Vector2(0,top+LABEL+UNDER_LABEL),left_w,STATS.fighter(arena if is_instance_valid(arena) else null),46,false);bars.name="FighterStats"
+	# Bars at 80% of the column (author, 2026-10-03), left-aligned.
+	var bars=STATS.add_bars(left_body,Vector2(0,top+LABEL+UNDER_LABEL),floorf(left_w*.8),STATS.fighter(arena if is_instance_valid(arena) else null),46,false);bars.name="FighterStats"
 	var after=top+LABEL+UNDER_LABEL+bars.content_height()+GAP
 	var ammo=Ammo.item(run()) if run()!=null else Ammo.standard()
 	var line=Texts.render("Патроны")+": "+Texts.render(Ammo.NAMES.get(str(ammo.type),""))
@@ -117,13 +120,19 @@ func build_right()->float:
 	var used=Backpack.used(r) if r!=null else 0
 	section("Рюкзак · %d / %d" % [used,Backpack.capacity()],0,y,4)
 	y+=LABEL+UNDER_LABEL
-	var entries=Backpack.items(r)
+	var entries=Backpack.layout(r)
+	var safe=Backpack.safe_cells(r)
 	for i in range(Backpack.CELLS):
 		var x=col(i%4);var cy=y+floorf(i/4.0)*(C+GAP)
 		var locked=i>=Backpack.capacity()
-		var entry=entries[i] if i<entries.size() else null
+		var entry=entries[i]
 		var cell=item_cell("bag:%d" % i,x,cy,entry,locked)
 		if locked:cell.tooltip_text=Texts.render("Ячейка закрыта — «Казарма» → Рюкзак")
+		elif i<safe:
+			# «Сейф рюкзака» (T-196): an insured cell — a small shield in the corner, the rule in the tooltip.
+			var badge=UiKit.icon(cell,"shield",Vector2(C-26,6),Vector2(20,20));badge.name="Safe";badge.mouse_filter=Control.MOUSE_FILTER_IGNORE
+			var rule=Texts.render("Застрахованная ячейка: чертёж здесь не пропадёт при выбывании")
+			cell.tooltip_text=rule if cell.tooltip_text=="" else cell.tooltip_text+"\n"+rule
 	y+=2*C+GAP+GAP
 	# Discard zone: drag anything here; it lands on the field as an army sack.
 	var zone=GearCell.new();zone.name="DiscardZone";body.add_child(zone);zone.key="discard";zone.position=Vector2(right_x,y);zone.size=Vector2(4*C+3*GAP,40)
@@ -213,31 +222,41 @@ func activate(key:String):
 		return
 	if r==null:return
 	if key.begins_with("bag:"):
-		var n=int(key.get_slice(":",1));var recipes=r.pending_recipes.size()
-		var supply_from=recipes+r.ammo_bag.size()
-		if n>=supply_from:
-			if Backpack.use_medkit(arena,n-supply_from):done("")
-			return
-		if n>=recipes and Backpack.equip(arena,n-recipes):done("Патроны заряжены")
-		elif n<recipes:arena.toast(Texts.render("Чертёж донеси до хаба, чтобы открыть"))
-		else:arena.toast(Texts.render("Эти патроны не подходят к оружию"))
+		var e=entry(key)
+		if e==null:return
+		match e.kind:
+			"supply":
+				if Backpack.use_medkit(arena,e.index):done("")
+			"ammo":
+				if Backpack.equip(arena,e.index):done("Патроны заряжены")
+				else:arena.toast(Texts.render("Эти патроны не подходят к оружию"))
+			_:arena.toast(Texts.render("Чертёж донеси до хаба, чтобы открыть"))
 	elif key.begins_with("slot:"):
 		var slot=int(key.get_slice(":",1))
 		if Backpack.full(r):arena.toast(Texts.render("Рюкзак полон"));return
 		if Backpack.unequip(arena,slot):done("Патроны сняты в рюкзак")
+## The bag entry behind a «bag:N» cell key: {kind, index, item} or null.
+func entry(key:String):
+	var cells=Backpack.layout(run());var n=int(key.get_slice(":",1))
+	return cells[n] if n>=0 and n<cells.size() else null
 func move(from:String,to:String):
 	var r=run()
 	if r==null:return
 	if to=="discard":discard(from);return
 	if from.begins_with("bag:") and to.begins_with("slot:"):
-		var n=int(from.get_slice(":",1))-r.pending_recipes.size()
-		if n>=0 and Backpack.equip(arena,n,int(to.get_slice(":",1))):done("Патроны заряжены")
+		var e=entry(from)
+		if e!=null and e.kind=="ammo" and Backpack.equip(arena,e.index,int(to.get_slice(":",1))):done("Патроны заряжены")
+		elif e!=null:arena.toast(Texts.render("В слот патронов кладутся только патроны"))
 	elif from.begins_with("slot:") and to.begins_with("bag:"):
-		if Backpack.unequip(arena,int(from.get_slice(":",1))):done("Патроны сняты в рюкзак")
+		var target=int(to.get_slice(":",1))
+		if Backpack.unequip(arena,int(from.get_slice(":",1))):
+			# Lands in the cell it was dropped on when that cell is open and free.
+			if target<Backpack.capacity() and Backpack.layout(r)[target]==null:r.ammo_bag.back()["cell"]=target
+			done("Патроны сняты в рюкзак")
 		else:arena.toast(Texts.render("Рюкзак полон"))
 	elif from.begins_with("bag:") and to.begins_with("bag:"):
-		# Reorder inside the backpack (T-168): items swap places within their own kind.
-		if Backpack.swap(r,int(from.get_slice(":",1)),int(to.get_slice(":",1))):selected=to;done("")
+		# Free layout (T-196): any item to any open cell; an item already there swaps places.
+		if Backpack.place(r,int(from.get_slice(":",1)),int(to.get_slice(":",1))):selected=to;done("")
 	elif from.begins_with("slot:") and to.begins_with("slot:"):
 		var a=int(from.get_slice(":",1));var b=int(to.get_slice(":",1))
 		if b<r.ammo_slots.size():
@@ -249,9 +268,8 @@ func discard(key:String):
 		return
 	var ok=false
 	if key.begins_with("bag:"):
-		var n=int(key.get_slice(":",1));var recipes=r.pending_recipes.size()
-		var supply_from=recipes+r.ammo_bag.size()
-		ok=Backpack.drop(arena,"recipe",n) if n<recipes else Backpack.drop(arena,"ammo",n-recipes) if n<supply_from else Backpack.drop(arena,"supply",n-supply_from)
+		var e=entry(key)
+		ok=e!=null and Backpack.drop(arena,e.kind,e.index)
 	elif key.begins_with("slot:"):ok=Backpack.drop(arena,"slot",int(key.get_slice(":",1)))
 	if ok:selected="";done("Выброшено мешком рядом с бойцом")
 func done(message:String):

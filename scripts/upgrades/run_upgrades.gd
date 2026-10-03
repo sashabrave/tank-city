@@ -247,6 +247,10 @@ static func card(arena,offer:Dictionary)->Dictionary:
 		if float(item.damage)>0:extra.append(Texts.render("урон пули")+" +%d%%" % roundi(item.damage*100))
 		if item.twist:extra.append(Texts.render(Ammo.TWISTS[def.id]))
 		swap=Ammo.swap_data(same[0] if not same.is_empty() else out,item," · ".join(extra))
+		# T-194: one plain sentence of what happens to the slots.
+		if not same.is_empty():swap["action"]=Texts.render("Улучшит заряженные")+": "+rank.call(int(same[0].rarity))+" → "+rank.call(int(item.rarity))
+		elif not out.is_empty() and str(out.type)!=Ammo.STANDARD:swap["action"]=Texts.render("Заменит «%s», они уйдут в рюкзак") % Texts.render(Ammo.NAMES[out.type])
+		else:swap["action"]=Texts.render("Сразу заряжается в слот")
 		detail=Ammo.describe(item)+"\n"+def.detail
 	var art="upgrades/"+def.id
 	if def.id in Ammo.ART:art=Ammo.ART[def.id]

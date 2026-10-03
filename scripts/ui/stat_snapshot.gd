@@ -19,10 +19,19 @@ static func fighter(arena=null)->Array:
 		speed.current=actor.speed;gun[0].current=actor.damage;gun[1].current=1.0/actor.fire_interval*arena.effects.modify("fire_rate",1.0)
 	var percent=func(field:String,title:String):return row(title,100,100*float(run.get(field)) if run!=null else 100,"%")
 	var groups={"fire":gun.duplicate(),"survival":[health,speed,percent.call("healing_multiplier","Эффективность лечения")],"abilities":[percent.call("ability_power_multiplier","Сила способностей"),percent.call("ability_cooldown_multiplier","Перезарядка способностей")],"ammo":[],"recon":[],"logistics":[]}
+	# The gear page is the only place for them now (author, 2026-10-03): every combat stat shows, zero included,
+	# and the loaded ammo's own chances count (an ammo box carries its values, not the run).
+	var ammo=Ammo.effective(arena) if is_instance_valid(arena) and run!=null else {}
+	var from_ammo={"burn_chance":["burn","chance"],"burn_power":["burn","power"],"stun_chance":["stun","chance"],"shock_bonus":["shock","bonus"]}
 	for def in StatRegistry.all():
 		var item=registry_row(def,arena)
-		if is_zero_approx(float(item.base)) and is_zero_approx(float(item.current)):continue
+		var link=from_ammo.get(def.run_field,from_ammo.get(def.id,[]))
+		if not link.is_empty() and str(ammo.get("type",""))==link[0]:item.current=float(item.current)+float(ammo.get("stats",{}).get(link[1],0.0))*(100.0 if def.format=="percent" else 1.0)
 		groups[def.family].append(item)
+	if is_instance_valid(arena) and run!=null:
+		groups.survival.append(row("Прочность штаба",float(arena.base_max_hp),float(arena.base_hp)))
+		groups.logistics.append(row("Перебросы",float(run.rerolls_left),float(run.rerolls_left)))
+		groups.logistics.append(row("Ячейки рюкзака",float(Backpack.capacity()),float(Backpack.capacity())))
 	var result=[]
 	for key in ["fire","survival","abilities","ammo","recon","logistics"]:
 		if groups[key].is_empty():continue

@@ -260,12 +260,16 @@ static func apply_environment_palette(node:Node,context:Node,shade:float=0.0,ter
 		"brick":brick_color.lerp(floor_color,.12),"bag":Color("b0ac91").lerp(floor_color,.42),"olive":Color("74816b").lerp(floor_color,.4),"steel":floor_color.darkened(.32),"dark":floor_color.darkened(.62),"orange":brick_color,"paper":floor_color.lightened(.12)}
 	if terrain_cover:
 		colors["bag"]=floor_color.darkened(.12);colors["olive"]=floor_color.darkened(.1)
+		# Net legs and posts (T-195): the map colour, darker — the same paint as the indestructible blocks.
+		colors["steel"]=colors.concrete
 	for mesh in node.find_children("*","MeshInstance3D",true,false):
 		for index in range(mesh.mesh.get_surface_count()):
 			var source=mesh.mesh.surface_get_material(index)
 			if not source is StandardMaterial3D or not source.resource_name.begins_with("ENV7_"):continue
 			var mat=source.duplicate()
-			mat.albedo_color=colors.get(source.resource_name.trim_prefix("ENV7_"),floor_color).darkened(shade)
+			var key=source.resource_name.trim_prefix("ENV7_")
+			if terrain_cover:key=key.get_slice(".",0)  # «steel.002» from the cover export is still steel
+			mat.albedo_color=colors.get(key,floor_color).darkened(shade)
 			mat.metallic=0;mat.roughness=.9
 			cozy_material(mat)
 			mesh.set_surface_override_material(index,mat)

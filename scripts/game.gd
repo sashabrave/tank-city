@@ -446,6 +446,7 @@ func discover_recipe(rng: RandomNumberGenerator,pending: Array) -> String:
 func recipe_name(recipe: Dictionary) -> String:return recipe_catalog(recipe.category)[recipe.id].name
 func bank_recipes(pending: Array):
 	for recipe in pending:
+		if recipe is Dictionary:recipe.erase("cell")  # a backpack position, not part of the blueprint
 		var owned=recipe_owned(recipe.category)
 		if recipe.id not in owned:owned.append(recipe.id);new_recipes.append(recipe.duplicate(true))
 		else:duplicate_recipes.append({"category":recipe.category,"id":recipe.id})

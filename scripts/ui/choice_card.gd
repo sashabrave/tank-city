@@ -117,6 +117,7 @@ static func table(card:Panel,data:Dictionary,width:float,accent:Color):
 	for key in ["Description","NumericDescription"]:
 		var body=card.get_node_or_null(key)
 		if body:body.hide()
+	if data.has("swap") and data.swap.has("action"):ammo_table(card,data,width,accent);return
 	var y=240.0
 	# Two or more rows (ammo items with several rolled values) get a tighter rhythm so the note still fits.
 	var dense=data.rows.size()>=2;var step=(44.0 if data.has("swap") else 50.0) if dense else 80.0
@@ -146,6 +147,25 @@ static func table(card:Panel,data:Dictionary,width:float,accent:Color):
 	if short!="":
 		var note=UiKit.label(card,short,Vector2(22,y),Vector2(width-44,maxf(44,card.size.y-y-16)),14,UiKit.MUTED);note.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;note.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;note.vertical_alignment=VERTICAL_ALIGNMENT_TOP;note.name="ShortNote"
 		note.add_theme_constant_override("line_spacing",2)
+	card.tooltip_text=Texts.render(str(data.get("detail","")))
+## Ammo card (T-194): what happens to the slots in one line, then the box's values as a quiet two-column
+## list «parameter … value» (with «old → new» when the same ammo is already loaded), then bonuses.
+static func ammo_table(card:Panel,data:Dictionary,width:float,accent:Color):
+	var y=236.0
+	var action=UiKit.label(card,str(data.swap.action),Vector2(16,y),Vector2(width-32,40),14,accent.lightened(.3));action.name="AmmoAction"
+	action.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;action.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;action.vertical_alignment=VERTICAL_ALIGNMENT_CENTER
+	y+=46
+	for row in data.rows:
+		var name=Texts.render(str(row[1]));name=name.left(1).to_upper()+name.substr(1)
+		var label=UiKit.label(card,name,Vector2(20,y),Vector2(width*.55-20,24),14,UiKit.MUTED);label.clip_text=true;label.name="RowParam"
+		var value_text=Texts.render(str(row[3])) if row.size()>=4 else str(row[0])
+		if row.size()>=4 and str(row[2])!="—":value_text=Texts.render(str(row[2]))+" → "+value_text
+		var value=UiKit.label(card,value_text,Vector2(width*.55,y),Vector2(width*.45-20,24),15,UiKit.INK);value.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT;value.name="RowValue"
+		var line=ColorRect.new();card.add_child(line);line.position=Vector2(20,y+25);line.size=Vector2(width-40,1);line.color=Color(1,1,1,.06);line.mouse_filter=Control.MOUSE_FILTER_IGNORE
+		y+=30
+	var rest=str(data.swap.get("rest",""))
+	if rest!="":
+		var note=UiKit.label(card,rest,Vector2(20,y+4),Vector2(width-40,maxf(30,card.size.y-y-12)),13,accent.lightened(.2));note.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;note.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;note.name="ShortNote"
 	card.tooltip_text=Texts.render(str(data.get("detail","")))
 ## «old → new» strip: small framed icons of both ammo and an arrow; «Зарядит» shows an empty slot on the left.
 static func swap_strip(card:Panel,swap:Dictionary,y:float,width:float):

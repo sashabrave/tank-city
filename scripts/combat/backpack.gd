@@ -17,17 +17,49 @@ static func items(run)->Array:
 	if run==null:return []
 	return run.pending_recipes.map(func(r):return {"kind":"recipe","item":r})+run.ammo_bag.map(func(a):return {"kind":"ammo","item":a})+run.supplies.map(func(x):return {"kind":"supply","item":x})
 
-## Swap two backpack cells (drag inside the backpack, T-168). Cells are grouped by kind (blueprints, ammo,
-## aid kits), so only items of the same kind trade places. False when the cells hold different kinds.
-static func swap(run,a:int,b:int)->bool:
-	if run==null or a==b:return false
-	var lists=[run.pending_recipes,run.ammo_bag,run.supplies];var start=0
-	for list in lists:
-		var end=start+list.size()
-		if a>=start and a<end and b>=start and b<end:
-			var keep=list[a-start];list[a-start]=list[b-start];list[b-start]=keep;return true
-		start=end
-	return false
+## Free layout (T-196): every item remembers its cell (item["cell"]); new items take the first free cell.
+## Returns CELLS entries — null or {kind, index (in its own list), item}. Cells past capacity() are locked.
+static func layout(run)->Array:
+	var cells=[];cells.resize(CELLS)
+	if run==null:return cells
+	var entries=[]
+	for pair in [["recipe",run.pending_recipes],["ammo",run.ammo_bag],["supply",run.supplies]]:
+		for k in range(pair[1].size()):entries.append({"kind":pair[0],"index":k,"item":pair[1][k]})
+	var waiting=[]
+	for e in entries:
+		var c=int(e.item.get("cell",-1)) if e.item is Dictionary else -1
+		if c>=0 and c<CELLS and cells[c]==null:cells[c]=e
+		else:waiting.append(e)
+	for e in waiting:
+		for c in range(CELLS):
+			if cells[c]==null:
+				cells[c]=e
+				if e.item is Dictionary:e.item["cell"]=c
+				break
+	return cells
+## Moves the item in one cell to another open cell; an item already there takes the first cell (swap).
+static func place(run,from:int,to:int)->bool:
+	if run==null or from==to or to<0 or to>=capacity() or from<0 or from>=CELLS:return false
+	var cells=layout(run);var a=cells[from]
+	if a==null:return false
+	var b=cells[to]
+	a.item["cell"]=to
+	if b!=null:b.item["cell"]=from
+	return true
+static func swap(run,a:int,b:int)->bool:return place(run,a,b)
+## Cells whose blueprints survive a knock-out (card «Сейф рюкзака»): the first N open cells.
+static func safe_cells(run)->int:return mini(capacity(),int(run.safe_slots)) if run!=null else 0
+## Blueprints in safe cells first, and how many of the non-building ones are in safe cells.
+static func safe_order(run)->Array:
+	var safe=safe_cells(run);var cells=layout(run);var first=[];var rest=[];var count=0
+	for c in range(CELLS):
+		var e=cells[c]
+		if e==null or e.kind!="recipe":continue
+		if c<safe:
+			first.append(e.item)
+			if str(e.item.get("category",""))!="research":count+=1
+		else:rest.append(e.item)
+	return [first+rest,count]
 
 ## Bag ammo → the active slot (or a given one); the slot's special ammo comes back to the bag. Standard ammo
 ## is not an item and simply disappears from the slot.
@@ -41,6 +73,8 @@ static func equip(arena,bag_index:int,slot:=-1)->bool:
 	slot=clampi(slot,0,run.ammo_slots.size()-1)
 	# The same type already in the other slot: swap places instead of loading it twice.
 	var old=run.ammo_slots[slot]
+	# The ammo coming out of the slot takes the cell of the one going in.
+	if old is Dictionary and item.has("cell"):old["cell"]=item.cell
 	run.ammo_bag.remove_at(bag_index)
 	run.ammo_slots[slot]=item;run.ammo_active=slot
 	if old is Dictionary and old.type!=Ammo.STANDARD:run.ammo_bag.insert(mini(bag_index,run.ammo_bag.size()),old)

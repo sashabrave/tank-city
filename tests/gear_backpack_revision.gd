@@ -32,7 +32,8 @@ func run():
 	check(Ammo.active(r)=="burn" and r.ammo_bag.size()==1,"second tap loads the ammo; standard does not go to the bag")
 	# Equip another: the loaded one swaps back into the bag.
 	GP.selected="";view.refresh();await get_tree().process_frame
-	cell(view,"bag:0").pressed.emit();cell(view,"bag:0").pressed.emit();await get_tree().process_frame
+	# Items keep their cells now (T-196): the cryo box is still in cell 1.
+	cell(view,"bag:1").pressed.emit();cell(view,"bag:1").pressed.emit();await get_tree().process_frame
 	check(Ammo.active(r)=="cryo" and r.ammo_bag.size()==1 and r.ammo_bag[0].type=="burn","equipping swaps with the loaded ammo")
 	# Tap-tap on the slot unloads it.
 	GP.selected="";view.refresh();await get_tree().process_frame
@@ -40,15 +41,52 @@ func run():
 	check(Ammo.active(r)=="standard" and r.ammo_bag.size()==2,"tap-tap on the slot unloads to the backpack")
 	# Drag: bag → slot and slot → bag.
 	var page=gear(view);page.body=Control.new()
-	page.move("bag:1","slot:0")
+	var cryo_cell=-1
+	for c in range(Backpack.CELLS):
+		var e=Backpack.layout(r)[c]
+		if e!=null and e.kind=="ammo" and str(e.item.type)=="cryo":cryo_cell=c
+	page.move("bag:%d" % cryo_cell,"slot:0")
 	check(Ammo.active(r)=="cryo","drag from the backpack onto the slot loads")
 	page.move("slot:0","bag:3")
 	check(Ammo.active(r)=="standard" and r.ammo_bag.size()==2,"drag from the slot into the backpack unloads")
 	# T-168: dragging inside the backpack swaps items of the same kind.
-	var first_type=str(r.ammo_bag[0].type);var second_type=str(r.ammo_bag[1].type)
-	page.move("bag:%d" % r.pending_recipes.size(),"bag:%d" % (r.pending_recipes.size()+1))
-	check(str(r.ammo_bag[0].type)==second_type and str(r.ammo_bag[1].type)==first_type,"drag inside the backpack swaps two ammo boxes")
+	var first_type="";var second_type=""
+	for c in range(Backpack.CELLS):
+		var e=Backpack.layout(r)[c]
+		if e!=null and e.kind=="ammo":
+			if first_type=="":first_type=str(e.item.type)
+			elif second_type=="":second_type=str(e.item.type)
+	var ammo_cells=[]
+	for c in range(Backpack.CELLS):
+		if Backpack.layout(r)[c]!=null and Backpack.layout(r)[c].kind=="ammo":ammo_cells.append(c)
+	page.move("bag:%d" % ammo_cells[0],"bag:%d" % ammo_cells[1])
+	check(str(Backpack.layout(r)[ammo_cells[0]].item.type)==second_type and str(Backpack.layout(r)[ammo_cells[1]].item.type)==first_type,"drag inside the backpack swaps two ammo boxes")
 	check(not Backpack.swap(r,0,99),"no swap with an empty cell")
+	# T-196: free layout — a blueprint and an ammo box trade cells; an item moves into an empty open cell;
+	# locked cells refuse; the first «Сейф» cells keep their blueprint on a knock-out.
+	r.pending_recipes.append({"id":"smg","category":"weapon"})
+	var cells=Backpack.layout(r);var bp=-1;var box=-1;var empty=-1
+	for c in range(Backpack.capacity()):
+		if cells[c]==null and empty<0:empty=c
+		elif cells[c]!=null and cells[c].kind=="recipe" and bp<0:bp=c
+		elif cells[c]!=null and cells[c].kind=="ammo" and box<0:box=c
+	page.move("bag:%d" % bp,"bag:%d" % box)
+	cells=Backpack.layout(r)
+	check(cells[box].kind=="recipe" and cells[bp].kind=="ammo","a blueprint and an ammo box trade cells")
+	if empty>=0:
+		page.move("bag:%d" % box,"bag:%d" % empty)
+		check(Backpack.layout(r)[empty]!=null and Backpack.layout(r)[empty].kind=="recipe" and Backpack.layout(r)[box]==null,"an item moves into an empty cell")
+	check(not Backpack.place(r,0,Backpack.capacity()),"locked cells refuse items")
+	r.safe_slots=1
+	var at=-1
+	for c in range(Backpack.CELLS):
+		if Backpack.layout(r)[c]!=null and Backpack.layout(r)[c].kind=="recipe":at=c
+	if at!=0:Backpack.place(r,at,0)
+	var order=Backpack.safe_order(r)
+	check(order[1]==1 and order[0][0].id=="smg","the blueprint in the safe cell is the insured one")
+	view.refresh();await get_tree().process_frame
+	check(cell(view,"bag:0").get_node_or_null("Safe")!=null and cell(view,"bag:1").get_node_or_null("Safe")==null,"the safe cell shows a shield badge")
+	r.safe_slots=0;r.pending_recipes.clear()
 	# Full backpack: unloading is refused, nothing is lost.
 	Backpack.equip(arena,0);r.pending_recipes.append({"id":"smg","category":"weapon"});r.ammo_bag.append(Ammo.roll("shock",0,1));r.ammo_bag.append(Ammo.roll("stun",0,2))
 	check(Backpack.full(r) and not Backpack.unequip(arena,0) and Ammo.active(r)!="standard","full backpack keeps the loaded ammo")
