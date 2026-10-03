@@ -13,7 +13,8 @@
 					"Силуэты по бокам поля стали объёмными: светотень, мягкий контурный свет, размер до двух раз больше; они заполняют пустые края экрана и уходят за них.",
 					"Поле боя стоит на земле цвета карты с мягкими холмами; по бокам — крупные абстрактные лоуполи-символы биома и войны (ели, скалы, барханы, ежи, снаряды, каски, ящики), спокойные по цвету.",
 					"Углы поля: прожекторов от одного до четырёх, в разных местах у угла и с разным поворотом; сами прожекторы проще. На бордюре меньше мусора, предметы стоят на нём и окрашены в цвет карты.",
-					"Карта мира: руины домов меньше, добавлены деревенские домики и арочный ангар."
+					"Карта мира: руины домов меньше, добавлены деревенские домики и арочный ангар.",
+					"Карта мира: W ведёт машину штаба вдоль дорог, под наклоном карты, а не строго вверх экрана; на дорогах прерывистая разметка, где-то свежая, где-то стёртая."
 				]
 			},
 			"en": {
@@ -27,7 +28,8 @@
 					"Silhouettes beside the field are volumetric now: light and shade, a soft rim light, up to twice the size; they fill the empty screen sides and run past them.",
 					"The battle board stands on map-coloured ground with soft hills; beside it stand big abstract low-poly symbols of the biome and the war (pines, rocks, dunes, hedgehogs, shells, helmets, crates) in calm colours.",
 					"Field corners: one to four searchlights at varying spots near the corner and turned differently; the searchlights themselves are simpler. Less clutter on the rim; props stand on it in the map colour.",
-					"World map: smaller ruined houses, plus village cottages and an arched hangar."
+					"World map: smaller ruined houses, plus village cottages and an arched hangar.",
+					"World map: W drives the HQ truck along the roads, tilted with the map, not straight up the screen; roads have a dashed centre line, fresh on some, worn on others."
 				]
 			}
 		},

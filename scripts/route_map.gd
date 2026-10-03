@@ -81,7 +81,23 @@ func path_line(a:Vector3,b:Vector3):
 		points.append(a*u*u*u+(a+Vector3(0,0,bend))*3*u*u*t+(b-Vector3(0,0,bend))*3*u*t*t+b*t*t*t)
 	road.add_child(ribbon(points,2.05,-.43,Color("8f8a74")))
 	road.add_child(ribbon(points,1.45,-.41,Color("6b6e5c")))
+	markings(road,points,hash(key))
 	road_paths.append({"a":a,"b":b,"points":points,"node":road})
+## Dashed centre line with random wear (0.8): some roads fresh, some faded, single dashes missing.
+func markings(road:Node3D,points:Array,seed_value:int):
+	var rng=RandomNumberGenerator.new();rng.seed=seed_value
+	var wear=rng.randf_range(0.0,.7)
+	var paint=Color("e7dcb4").lerp(Color("6b6e5c"),.5).lerp(Color("6b6e5c"),wear*.6)  # half the contrast of fresh paint (author)
+	var travelled=0.0;var next_dash=rng.randf_range(.2,.6)
+	for i in range(points.size()-1):
+		var a:Vector3=points[i];var b:Vector3=points[i+1];var length=a.distance_to(b)
+		while next_dash<travelled+length:
+			var t=(next_dash-travelled)/length;var at=a.lerp(b,t);var dir=(b-a).normalized()
+			if rng.randf()>wear*.55:
+				var dash=Visuals.box(road,at+Vector3(0,-.395,0),Vector3(.08,.012,.42*rng.randf_range(.6,1.0)),paint.lerp(Color("6b6e5c"),rng.randf()*wear*.5))
+				dash.rotation.y=atan2(dir.x,dir.z);dash.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			next_dash+=.85
+		travelled+=length
 func ribbon(points:Array,width:float,height:float,color:Color)->MeshInstance3D:
 	var surface=SurfaceTool.new();surface.begin(Mesh.PRIMITIVE_TRIANGLES)
 	var left=[];var right=[]
@@ -507,7 +523,8 @@ func drive(delta):
 	if travelling or is_instance_valid(modal) or showing_pause:
 		update_card();return
 	var input=Input.get_vector("west","east","north","south")
-	var wish=Vector3(input.x,0,input.y).rotated(Vector3.UP,deg_to_rad(10))*DRIVE_SPEED
+	# W drives along the map axis, i.e. parallel to the roads (on screen a little tilted with the map), 0.8.
+	var wish=Vector3(input.x,0,input.y)*DRIVE_SPEED
 	drive_velocity=drive_velocity.move_toward(wish,delta*(22.0 if wish.length()>.1 else 16.0))
 	var hero=player_marker.get_node_or_null("CurrentHero")
 	if wish.length()>.1 and get_viewport().gui_get_focus_owner()!=null:get_viewport().gui_release_focus()  # WASD drives, not menus
