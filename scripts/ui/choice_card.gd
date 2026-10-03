@@ -119,7 +119,7 @@ static func table(card:Panel,data:Dictionary,width:float,accent:Color):
 		if body:body.hide()
 	var y=240.0
 	# Two or more rows (ammo items with several rolled values) get a tighter rhythm so the note still fits.
-	var dense=data.rows.size()>=2;var step=50.0 if dense else 80.0
+	var dense=data.rows.size()>=2;var step=(44.0 if data.has("swap") else 50.0) if dense else 80.0
 	for row in data.rows:
 		var value=UiKit.label(card,str(row[0]),Vector2(16,y),Vector2(width-32,28 if dense else 36),21 if dense else 28,accent.lightened(.25));value.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;value.vertical_alignment=VERTICAL_ALIGNMENT_CENTER;value.name="RowValue"
 		var compare=RichTextLabel.new();compare.name="RowParam";card.add_child(compare);compare.position=Vector2(16,y+(27 if dense else 42));compare.size=Vector2(width-32,24)
@@ -154,7 +154,9 @@ static func swap_strip(card:Panel,swap:Dictionary,y:float,width:float):
 		var tex=part.get("texture") as Texture2D
 		if tex:
 			var art=TextureRect.new();box.add_child(art);art.texture=tex;art.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;art.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;art.position=Vector2(3,3);art.size=Vector2(24,24);art.mouse_filter=Control.MOUSE_FILTER_IGNORE
-		var name=Label.new();strip.add_child(name);name.text=Texts.render(str(part.get("name","—")));name.add_theme_font_size_override("font_size",13);name.add_theme_color_override("font_color",color.lightened(.3))
+		var name=Label.new();strip.add_child(name);name.text=Texts.render(str(part.get("name","—")));name.add_theme_font_size_override("font_size",12);name.add_theme_color_override("font_color",color.lightened(.3))
+		# Both names share what is left after the two icons and the arrow; long ones end with «…».
+		name.clip_text=true;name.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS;name.custom_minimum_size.x=floorf((width-24-2*30-30-4*8)*.5)
 ## Vertical balance: the block from the icon to the last line sits in the middle of the space under the chip.
 static func balance(card:Panel):
 	var parts:Array=[card.get_node("Icon"),card.get_node("Title")]

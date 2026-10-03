@@ -228,7 +228,7 @@ static func card(arena,offer:Dictionary)->Dictionary:
 	if def.detail!="":detail=def.detail if detail=="" else detail+"\n"+def.detail
 	tier=clampi(tier,0,TIER_NAMES.size()-1)
 	# The card says what it does to the ammo slots (T-109).
-	var short=short_detail(def.detail)
+	var short=short_detail(def.detail);var swap={}
 	if def.id in Ammo.TYPES:
 		# The rolled item and how it compares with the ammo it replaces (or the same type already loaded).
 		Ammo.ensure(arena.run,str(arena.weapon))
@@ -242,8 +242,15 @@ static func card(arena,offer:Dictionary)->Dictionary:
 		else:short=Texts.render("Зарядит")+": "+Texts.render(Ammo.NAMES[def.id])
 		if float(item.damage)>0:short+=" · "+Texts.render("урон пули")+" +%d%%" % roundi(item.damage*100)
 		if item.twist:short+=". "+Texts.render(Ammo.TWISTS[def.id])
+		# T-127: the card shows «old → new» with icons; the remaining words are only bonuses.
+		var extra=[]
+		if float(item.damage)>0:extra.append(Texts.render("урон пули")+" +%d%%" % roundi(item.damage*100))
+		if item.twist:extra.append(Texts.render(Ammo.TWISTS[def.id]))
+		swap=Ammo.swap_data(same[0] if not same.is_empty() else out,item," · ".join(extra))
 		detail=Ammo.describe(item)+"\n"+def.detail
 	var art="upgrades/"+def.id
 	if def.id in Ammo.ART:art=Ammo.ART[def.id]
 	if def.id in Ammo.TYPES and IconKit.has("ammo/"+def.id):art="ammo/"+def.id
-	return {"rows":rows,"short":short,"category":FAMILIES.get(def.family,def.category),"title":def.title,"detail":detail,"icon":def.icon if def.icon!="" else def.id,"art_key":art if def.id in Ammo.TYPES else "upgrades/"+def.id,"heading":TIER_NAMES[tier],"color":Color(arena.LOOT.RARITY_COLORS[tier]),"disabled":false,"button":"Выбрать","family":def.family,"tier":tier,"stacks":stacks(arena,def.id)}
+	var view={"rows":rows,"short":short,"category":FAMILIES.get(def.family,def.category),"title":def.title,"detail":detail,"icon":def.icon if def.icon!="" else def.id,"art_key":art if def.id in Ammo.TYPES else "upgrades/"+def.id,"heading":TIER_NAMES[tier],"color":Color(arena.LOOT.RARITY_COLORS[tier]),"disabled":false,"button":"Выбрать","family":def.family,"tier":tier,"stacks":stacks(arena,def.id)}
+	if not swap.is_empty():view["swap"]=swap
+	return view

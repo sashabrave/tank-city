@@ -56,7 +56,8 @@ func build_left()->float:
 	# The doll always faces right (the gallery art looks left).
 	picture.flip_h=DOLL_FACES_LEFT
 	# Live states: a column of round icons with their timer sector; hover tells the details.
-	var states=STATS.state(arena if is_instance_valid(arena) else null)
+	# Only live effects (with a timer or «active»); no placeholder icons when nothing is on (T-126).
+	var states=STATS.state(arena if is_instance_valid(arena) else null).filter(func(item):return item.remaining!=null)
 	var y=12.0
 	for item in states.slice(0,int((doll_h-24)/48.0)):
 		var chip=Panel.new();doll.add_child(chip);chip.position=Vector2(12,y);chip.size=Vector2(40,40);chip.mouse_filter=Control.MOUSE_FILTER_PASS
@@ -175,6 +176,11 @@ func item_cell(key:String,x:float,y:float,entry,locked:bool)->GearCell:
 		cell.tooltip_text=Texts.render(Ammo.NAMES.get(type,type)+" патроны")+("\n"+Ammo.describe(ammo) if type!=Ammo.STANDARD else "")
 		if is_slot and run()!=null and int(key.get_slice(":",1))==run().ammo_active and run().ammo_slots.size()>1:
 			UiKit.label(cell,"R",Vector2(C-18,4),Vector2(14,16),11,UiKit.MUTED)
+	elif entry.kind=="supply":
+		# Aid kit (T-115): tap twice / E / H heals.
+		art(cell,UiKit.trimmed(UiKit.icon_texture("heart")),.16)
+		cell.item_kind="supply";cell.draggable=true
+		cell.tooltip_text=Texts.render("Аптечка")+"\n"+Texts.render("+%s здоровья · ещё нажатие или H — вылечиться") % str(snappedf(float(entry.item.get("heal",1.0)),.1))
 	else:
 		# Blueprint series: the same clipboard, the silhouette tells the category (data/icon_kit.json «blueprint/…»).
 		var sheet="blueprint/"+str(entry.item.get("category",""))
@@ -199,6 +205,10 @@ func activate(key:String):
 	if r==null:return
 	if key.begins_with("bag:"):
 		var n=int(key.get_slice(":",1));var recipes=r.pending_recipes.size()
+		var supply_from=recipes+r.ammo_bag.size()
+		if n>=supply_from:
+			if Backpack.use_medkit(arena,n-supply_from):done("")
+			return
 		if n>=recipes and Backpack.equip(arena,n-recipes):done("Патроны заряжены")
 		elif n<recipes:arena.toast(Texts.render("Чертёж донеси до хаба, чтобы открыть"))
 		else:arena.toast(Texts.render("Эти патроны не подходят к оружию"))
@@ -228,7 +238,8 @@ func discard(key:String):
 	var ok=false
 	if key.begins_with("bag:"):
 		var n=int(key.get_slice(":",1));var recipes=r.pending_recipes.size()
-		ok=Backpack.drop(arena,"recipe",n) if n<recipes else Backpack.drop(arena,"ammo",n-recipes)
+		var supply_from=recipes+r.ammo_bag.size()
+		ok=Backpack.drop(arena,"recipe",n) if n<recipes else Backpack.drop(arena,"ammo",n-recipes) if n<supply_from else Backpack.drop(arena,"supply",n-supply_from)
 	elif key.begins_with("slot:"):ok=Backpack.drop(arena,"slot",int(key.get_slice(":",1)))
 	if ok:selected="";done("Выброшено мешком рядом с бойцом")
 func done(message:String):
@@ -260,6 +271,7 @@ func fill_info(info:Panel):
 	var rest=UiKit.label(info,"\n".join(lines.slice(1)),Vector2(14,32),Vector2(w-200,56),12,UiKit.MUTED);rest.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	var actions=[]
 	if selected.begins_with("bag:") and cell.item_kind=="ammo":actions.append(["Надеть",func():activate(selected)])
+	if selected.begins_with("bag:") and cell.item_kind=="supply":actions.append(["Вылечиться",func():activate(selected)])
 	if selected.begins_with("slot:") and cell.draggable:actions.append(["Снять",func():activate(selected)])
 	if (selected.begins_with("bag:") or selected.begins_with("slot:")) and cell.draggable and Backpack.can_drop(arena):actions.append(["Выбросить",func():discard(selected)])
 	for i in range(actions.size()):

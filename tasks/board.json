@@ -1,5 +1,5 @@
 {
-	"next_id": 125,
+	"next_id": 128,
 	"tasks": [
 		{
 			"id": "T-001",
@@ -1456,7 +1456,7 @@
 			"note": "",
 			"type": "idea",
 			"priority": 1,
-			"status": "backlog",
+			"status": "review",
 			"version": "0.7.2",
 			"created": "2026-10-02",
 			"source": "chat",
@@ -1575,6 +1575,45 @@
 			"source": "game",
 			"status": "review",
 			"title": "здесь надо неоткрытые сдеалать прям явно сильно неактивными с нецветными картинками какимито хз на уровне систему, не ощущается как путь",
+			"type": "bug",
+			"version": "0.7.2-pre"
+		},
+		{
+			"created": "2026-10-02",
+			"id": "T-125",
+			"note": "надо нарисовать патроны с эффектами соотвтетвенно заявленным. эти например, обычные патроны, что-то невзрачное\n\nКартинка: res://assets/icons/v09/damage.png\nГруппа: —\nid: \nГде: —\nУзел: /root/@CanvasLayer@825/@Control@826/@Panel@1089/@Panel@1141/GearScroll/GearBody/Cell_slot_0/Art",
+			"priority": 2.0,
+			"scene": "hub",
+			"shot": "res://tasks/shots/T-125.png",
+			"source": "game",
+			"status": "backlog",
+			"title": "Арт: damage.png",
+			"type": "polish",
+			"version": "0.7.2-pre"
+		},
+		{
+			"created": "2026-10-02",
+			"id": "T-126",
+			"note": "",
+			"priority": 1.0,
+			"scene": "arena",
+			"shot": "res://tasks/shots/T-126.png",
+			"source": "game",
+			"status": "review",
+			"title": "если нет эффектов то не надо покзывать иконки",
+			"type": "bug",
+			"version": "0.7.2-pre"
+		},
+		{
+			"created": "2026-10-02",
+			"id": "T-127",
+			"note": "",
+			"priority": 2,
+			"scene": "arena",
+			"shot": "res://tasks/shots/T-127.png",
+			"source": "game",
+			"status": "review",
+			"title": "не очент очевидно кто кого заменит, сделай прям стрелочки и иконки предудщих можешь отдельным квадратиком налои",
 			"type": "bug",
 			"version": "0.7.2-pre"
 		}
