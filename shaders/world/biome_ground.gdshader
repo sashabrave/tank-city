@@ -1,6 +1,5 @@
 shader_type spatial;
-// Ground around the battle board (0.8): soft biome patches from world-space value noise, darker on slopes
-// and in hollows. No textures; three palette colours per biome come from BackdropGround.
+// Ground around the battle board (0.8): the map colour, a little darker on slopes and in hollows.
 render_mode diffuse_lambert, specular_disabled;
 uniform vec4 base_color : source_color = vec4(.55,.58,.48,1.0);
 uniform vec4 patch_color : source_color = vec4(.48,.55,.40,1.0);
@@ -18,16 +17,10 @@ void vertex(){
  world_normal=normalize((MODEL_MATRIX*vec4(NORMAL,0.0)).xyz);
 }
 void fragment(){
- vec2 p=world_pos.xz;
- float big=noise(p*.09)*.65+noise(p*.23)*.35;
- vec3 color=mix(base_color.rgb,patch_color.rgb,smoothstep(.42,.62,big));
- // Small accent spots (sand, dry grass, ash) and fine speckle so large areas are not flat.
- float spots=noise(p*.55+17.0);
- color=mix(color,accent_color.rgb,smoothstep(.68,.78,spots)*.8);
- color*=.94+.12*noise(p*2.3);
- // Slopes and low ground read a little darker: shape without extra lights.
+ // One flat map colour (author, 0.8: no patches); slopes a touch darker so the relief still reads.
+ vec3 color=base_color.rgb;
  float slope=1.0-clamp(world_normal.y,0.0,1.0);
- color*=1.0-slope*.9;
+ color*=1.0-slope*.6;
  color*=mix(.88,1.04,clamp((world_pos.y+1.4)*.6,0.0,1.0));
  ALBEDO=color;
  ROUGHNESS=1.0;

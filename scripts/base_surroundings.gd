@@ -3,9 +3,9 @@ extends RefCounted
 ## Light stands (tools/build_lights_v1.py): a tall lattice mast on the ground, a field tripod on block tops.
 ## One spotlight per stand sits in the modelled lamp heads (Godot -Z is the lamp side).
 const STANDS={"light_mast":{"anchor":Vector3(0,2.62,-.2),"tilt":-50.0,"range":8.0,"angle":31.0},"light_tripod":{"anchor":Vector3(0,1.5,-.16),"tilt":-47.0,"range":6.0,"angle":30.0}}
-static func lamp(parent:Node3D,pos:Vector3):
+static func lamp(parent:Node3D,pos:Vector3,yaw_jitter:=0.0):
 	var rig=Node3D.new();rig.name="MilitaryLightStand";parent.add_child(rig);rig.position=pos
-	rig.rotation.y=atan2(rig.global_position.x,rig.global_position.z)
+	rig.rotation.y=atan2(rig.global_position.x,rig.global_position.z)+yaw_jitter
 	var kind="light_tripod" if pos.y>=.5 else "light_mast"
 	Visuals.model(kind,rig)
 	var spec=STANDS[kind]
@@ -76,8 +76,9 @@ static func block(parent:Node3D,pos:Vector3,size:Vector3,material:Material)->Mes
 ## bare frame end), 3–4 brick towers (broken stepped top, side gouge). Rubble at the foot.
 static func ruin(parent:Node3D,pos:Vector3,rng:RandomNumberGenerator,side:float):
 	var node=Node3D.new();parent.add_child(node);node.position=pos;node.rotation.y=PI*.5+rng.randf_range(-.25,.25)+(PI if side>0 else 0.0)
+	node.scale=Vector3.ONE*.7  # 0.8: smaller, the route reads first
 	var panel=Color("a7a79c").darkened(rng.randf_range(0,.12));var brick=Color("9a6a52").darkened(rng.randf_range(0,.15))
-	var rubble=Color("85837a");var kind=rng.randi_range(0,4);var seed_value=rng.randi()
+	var rubble=Color("85837a");var kind=rng.randi_range(0,6);var seed_value=rng.randi()
 	match kind:
 		0:
 			# Whole block with a burnt corner that lost its top floors.
@@ -99,6 +100,20 @@ static func ruin(parent:Node3D,pos:Vector3,rng:RandomNumberGenerator,side:float)
 			block(node,Vector3.ZERO,Vector3(1.5,3.6,1.5),facade(brick,true,.3,seed_value))
 			block(node,Vector3(-.35,3.6,0),Vector3(.8,.5,1.5),facade(brick,true,.5,seed_value))
 			block(node,Vector3(-.5,4.1,-.3),Vector3(.5,.3,.9),facade(brick.darkened(.1),true,.8,seed_value))
+		5:
+			# Village house: two low cottages with pitched roofs, one roof caved in.
+			for i in range(2):
+				var x=-.9+i*1.9;var roof=Color("6f5a4a").darkened(rng.randf_range(0,.2))
+				block(node,Vector3(x,0,0),Vector3(1.4,.8,1.1),facade(panel.lerp(Color("c9bba0"),.4),false,.2+i*.5,seed_value))
+				for s in [-1,1]:
+					var slope=Visuals.box(node,Vector3(x,.98,s*.29),Vector3(1.5,.06,.68),roof);slope.rotation.x=s*-.62*(.55 if i==1 and s>0 else 1.0)
+				Visuals.box(node,Vector3(x+.4,1.2,.1),Vector3(.18,.4,.18),brick.darkened(.1))
+		6:
+			# Arched army hangar with a dark open end.
+			var shell=preload("res://scripts/route_miniatures.gd").cylinder(node,Vector3(0,.0,0),.95,3.0,Color("7f8574"),10)
+			shell.rotation.z=PI*.5;shell.position=Vector3(0,.2,0)
+			Visuals.box(node,Vector3(1.52,.45,0),Vector3(.04,.8,1.1),Color("2a2c2a"))
+			Visuals.box(node,Vector3(0,-.38,0),Vector3(3.4,.1,2.2),rubble)
 		_:
 			# Brick tower with a gouged side.
 			block(node,Vector3(-.3,0,0),Vector3(.9,4.3,1.6),facade(brick,true,.35,seed_value))

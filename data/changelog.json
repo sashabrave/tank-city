@@ -11,7 +11,9 @@
 					"Удалены старые чиповые треки, архив и неудачные черновики — игра стала легче.",
 					"Ночь стала по-настоящему тёмной и мягкой: луна и заполняющий свет слабее, особенно на светлом песке; прожекторы на мачтах светят узкими яркими пятнами; силуэты за краем поля темнее неба, ночные облака не светятся.",
 					"Силуэты по бокам поля стали объёмными: светотень, мягкий контурный свет, размер до двух раз больше; они заполняют пустые края экрана и уходят за них.",
-					"Поле боя стоит на земле: вокруг доски мягкий рельеф с пятнами почвы, травы и песка в цветах биома; силуэты и редкие группы предметов (деревья, камни, ящики, ежи, воронки, иногда сгоревшая техника) стоят на ней, каждый раз по-новому."
+					"Поле боя стоит на земле цвета карты с мягкими холмами; по бокам — крупные абстрактные лоуполи-символы биома и войны (ели, скалы, барханы, ежи, снаряды, каски, ящики), спокойные по цвету.",
+					"Углы поля: прожекторов от одного до четырёх, в разных местах у угла и с разным поворотом; сами прожекторы проще. На бордюре меньше мусора, предметы стоят на нём и окрашены в цвет карты.",
+					"Карта мира: руины домов меньше, добавлены деревенские домики и арочный ангар."
 				]
 			},
 			"en": {
@@ -23,7 +25,9 @@
 					"Old chip tracks, the archive and rejected drafts are removed, so the game is lighter.",
 					"Night is truly dark and soft now: the moon and fill light are weaker, especially on light sand; mast searchlights cast narrow bright pools; silhouettes beyond the field are darker than the sky, night clouds no longer glow.",
 					"Silhouettes beside the field are volumetric now: light and shade, a soft rim light, up to twice the size; they fill the empty screen sides and run past them.",
-					"The battle board stands on the ground: a soft relief around it with patches of soil, grass and sand in the biome colours; silhouettes and rare groups of props (trees, rocks, crates, hedgehogs, craters, sometimes a burnt-out vehicle) stand on it, different every time."
+					"The battle board stands on map-coloured ground with soft hills; beside it stand big abstract low-poly symbols of the biome and the war (pines, rocks, dunes, hedgehogs, shells, helmets, crates) in calm colours.",
+					"Field corners: one to four searchlights at varying spots near the corner and turned differently; the searchlights themselves are simpler. Less clutter on the rim; props stand on it in the map colour.",
+					"World map: smaller ruined houses, plus village cottages and an arched hangar."
 				]
 			}
 		},

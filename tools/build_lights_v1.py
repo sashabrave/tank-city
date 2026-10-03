@@ -48,15 +48,13 @@ def export(scene, kits, name):
     return ob
 
 
-def floodlight(k, name, center, width=.26, height=.18, depth=.16, tilt=-20, cage=True):
+def floodlight(k, name, center, width=.26, height=.18, depth=.16, tilt=-20, cage=False):
     """Box floodlight facing -Y: housing, glowing lens, visor, cooling fins, optional wire grille."""
     x, y, z = center
     rot = Matrix.Rotation(D(tilt), 3, 'X')
     k.rbox(name + "_body", (x, y, z), (width, depth, height), "gun_light", bevel=.012, rot=rot)
     k.rbox(name + "_lens", (x, y - depth * .52, z), (width * .82, .012, height * .74), "lamp", bevel=.004, rot=rot)
     k.rbox(name + "_visor", (x, y - depth * .62, z + height * .55), (width * 1.04, depth * .5, .014), "gun", bevel=.004, rot=rot)
-    for i in range(4):
-        k.rbox(f"{name}_fin{i}", (x - width * .36 + i * width * .24, y + depth * .56, z), (.012, .03, height * .8), "gun", bevel=.003)
     if cage:
         for i in range(3):
             k.rbox(f"{name}_bar{i}", (x - width * .3 + i * width * .3, y - depth * .64, z), (.008, .008, height * .8), "steel", bevel=0)
@@ -67,34 +65,24 @@ def light_mast():
     # Bolted concrete footing.
     k.rbox("footing", (0, 0, .09), (.62, .62, .18), "concrete", bevel=.02)
     k.rbox("plate", (0, 0, .19), (.36, .36, .03), "gun", bevel=.006)
-    for sx in (-1, 1):
-        for sy in (-1, 1):
-            k.cylinder(f"bolt{sx}{sy}", (sx * .14, sy * .14, .2), (sx * .14, sy * .14, .24), .018, "steel", sides=6)
     # Lattice mast: four tapered legs with cross braces.
     for sx in (-1, 1):
         for sy in (-1, 1):
             k.cylinder(f"leg{sx}{sy}", (sx * .13, sy * .13, .2), (sx * .06, sy * .06, 2.42), .02, "hull_dark", sides=6)
-    for i in range(7):
-        z0 = .32 + i * .3; z1 = z0 + .3; w0 = .13 - .07 * (z0 - .2) / 2.22; w1 = .13 - .07 * (z1 - .2) / 2.22
+    # 0.8: simpler by about a third — four brace levels, no ladder, two big heads, no fins or cages.
+    for i in range(4):
+        z0 = .32 + i * .52; z1 = z0 + .52; w0 = .13 - .07 * (z0 - .2) / 2.22; w1 = .13 - .07 * (z1 - .2) / 2.22
         for a, b in (((-w0, -w0), (w1, -w1)), ((w0, w0), (-w1, w1)), ((-w0, w0), (-w1, -w1)), ((w0, -w0), (w1, w1))):
             k.cylinder(f"brace{i}{a}{b}", (a[0], a[1], z0), (b[0], b[1], z1), .009, "hull", sides=4)
-    # Ladder on the back (+Y) side.
-    for x in (-.05, .05):
-        k.cylinder(f"rail{x}", (x, .17, .3), (x, .11, 2.3), .008, "steel", sides=4)
-    for i in range(12):
-        z = .38 + i * .16; yy = .17 - .06 * (z - .3) / 2.0
-        k.cylinder(f"rung{i}", (-.05, yy, z), (.05, yy, z), .006, "steel", sides=4)
     # Junction box with a conduit running down.
     k.rbox("junction", (.16, 0, .7), (.1, .16, .22), "hull", bevel=.01)
-    k.rbox("junction_lid", (.215, 0, .7), (.01, .14, .2), "hull_dark", bevel=.003)
-    k.rbox("junction_hazard", (.218, 0, .78), (.004, .1, .03), "hazard", bevel=0)
-    k.tube("conduit", [Vector((.15, 0, .58)), Vector((.15, .02, .3)), Vector((.12, .1, .2))], [.012, .012, .012], "rubber")
+
     # Crossbar with four caged floodlights.
     k.rbox("crossbar", (0, -.02, 2.46), (1.1, .07, .06), "gun", bevel=.008)
     k.rbox("crossbar_top", (0, -.02, 2.52), (.24, .1, .06), "hull_dark", bevel=.008)
-    for i, x in enumerate((-.42, -.14, .14, .42)):
-        k.cylinder(f"yoke{i}", (x, -.05, 2.49), (x, -.05, 2.55), .012, "gun", sides=6)
-        floodlight(k, f"head{i}", (x, -.12, 2.62), tilt=-24)
+    for i, x in enumerate((-.26, .26)):
+        k.cylinder(f"yoke{i}", (x, -.05, 2.49), (x, -.05, 2.55), .014, "gun", sides=6)
+        floodlight(k, f"head{i}", (x, -.12, 2.62), width=.34, height=.22, depth=.18, tilt=-24)
     # Obstruction lamp and a little lightning rod.
     k.cylinder("rod", (0, -.02, 2.55), (0, -.02, 2.86), .008, "steel", sides=4)
     k.ellipsoid("obstruction", (0, -.02, 2.76), (.035, .035, .04), "glow_red", seg=8, rings=4)
@@ -105,10 +93,7 @@ def light_tripod():
     scene, k = fresh()
     # Small generator at the foot.
     k.rbox("generator", (.22, .14, .12), (.28, .18, .22), "hull", bevel=.02)
-    k.rbox("generator_grille", (.22, .05, .12), (.2, .01, .14), "gun", bevel=.004)
-    k.rbox("generator_tank", (.22, .14, .25), (.2, .14, .05), "hull_dark", bevel=.01)
-    k.cylinder("generator_cap", (.3, .14, .27), (.3, .14, .3), .02, "hazard", sides=6)
-    k.tube("cable", [Vector((.1, .14, .1)), Vector((.02, .06, .04)), Vector((0, 0, .2))], [.011, .011, .011], "rubber")
+
     # Tripod legs, collar and telescopic mast.
     for a in (0, 120, 240):
         r = D(a); foot = Vector((math.sin(r) * .32, math.cos(r) * .32, 0))
@@ -116,13 +101,11 @@ def light_tripod():
         k.rbox(f"foot{a}", (foot.x, foot.y, .012), (.06, .06, .024), "rubber", bevel=.006)
     k.cylinder("collar", (0, 0, .48), (0, 0, .58), .04, "hull_dark", sides=8)
     k.cylinder("mast_low", (0, 0, .5), (0, 0, 1.0), .028, "gun_light", sides=8)
-    k.cylinder("mast_clamp", (0, 0, .98), (0, 0, 1.03), .036, "hazard", sides=8)
     k.cylinder("mast_high", (0, 0, 1.0), (0, 0, 1.38), .02, "steel", sides=8)
     # Yoke and one big floodlight.
     k.rbox("yoke_base", (0, 0, 1.4), (.1, .08, .04), "gun", bevel=.006)
     for x in (-.2, .2):
         k.rbox(f"yoke{x}", (x, 0, 1.47), (.02, .04, .16), "gun", bevel=.004)
-        k.cylinder(f"knob{x}", (x * 1.12, 0, 1.5), (x * 1.2, 0, 1.5), .022, "hazard", sides=6)
     floodlight(k, "head", (0, -.04, 1.5), width=.36, height=.24, depth=.2, tilt=-26)
     export(scene, [k], "light_tripod")
 

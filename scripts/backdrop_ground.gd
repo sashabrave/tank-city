@@ -10,7 +10,7 @@ var noise:=FastNoiseLite.new()
 static func colors(palette:Dictionary,family:String)->Array:
 	var floor=Color(str(palette.get("floor","9aa08a")));var edge=Color(str(palette.get("edge","7d8270")))
 	var green={"forest":Color("5f7a52"),"marsh":Color("5e7a62"),"mountains":Color("7d8a86"),"desert":Color("a8925f"),"inferno":Color("5a4038"),"city":Color("6f7368")}.get(family,Color("6c7a5a"))
-	return [edge.lerp(floor,.25).darkened(.1),green.lerp(edge,.35),floor.lightened(.04)]
+	return [floor.lerp(edge,.35).darkened(.06),green.lerp(edge,.35),floor.lightened(.04)]
 
 func setup(palette:Dictionary,family:String,size_radius:float,seed_value:int):
 	radius=size_radius
