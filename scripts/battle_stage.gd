@@ -6,11 +6,11 @@ extends RefCounted
 const WALL=preload("res://scripts/section_wall.gd")
 const ARRIVE=.85
 ## Up the field approach (0.8): a longer drive along the track and the ramp.
-const ARRIVE_RAMP=2.8
+const ARRIVE_RAMP=2.1
 ## Down the approach and away along the other track (0.8).
 const LEAVE_RAMP=1.8
 ## Pause between the arrival beats: HQ stops, soldier hops out, wall rises.
-const BEAT=.35
+const BEAT=.25
 const STEP_OUT=.3
 const BRICKS_AT=.5
 ## Defence wall assembly pace: 1.2 = 20% slower than before.
@@ -26,6 +26,9 @@ static func stop(arena):
 	for t in arena.get_meta("stage_tweens",[]):
 		if t is Tween and t.is_valid():t.kill()
 	arena.set_meta("stage_tweens",[])
+	# A cut-short intro must not leave the soldier hidden.
+	var actor=arena.get("player")
+	if is_instance_valid(actor) and actor.has_meta("stage_hidden"):actor.remove_meta("stage_hidden")
 
 ## Side the HQ arrives from. It follows the final yaw chosen when the room was built (MobileHQ.orientation), so
 ## the vehicle drives in already heading the way it will stand: facing +X it comes from -X and vice versa.
@@ -138,10 +141,11 @@ static func step_out(arena,from:Vector3,arrive:=ARRIVE):
 	var actor=arena.player
 	if not is_instance_valid(actor) or not is_instance_valid(actor.model):return
 	var model:Node3D=actor.model;var home=model.position
-	model.visible=false;set_marks(actor,false)
+	model.visible=false;set_marks(actor,false);actor.set_meta("stage_hidden",true)
 	var tween=stage_tween(arena,actor);tween.tween_interval(arrive-.08)
 	tween.tween_callback(func():
 		if not is_instance_valid(model):return
+		if is_instance_valid(actor):actor.remove_meta("stage_hidden")
 		model.visible=true;model.position=home+(from-actor.position);model.scale=Vector3.ONE*.7
 		set_marks(actor,true))
 	# 0.8: a clear hop out of the HQ — up in an arc, a squash on landing.
@@ -181,7 +185,7 @@ static func outro(arena,done:Callable):
 	var rest=hq.position;var s=side(arena)
 	var actor=arena.player
 	if is_instance_valid(actor) and is_instance_valid(actor.model):
-		var model:Node3D=actor.model;set_marks(actor,false)
+		var model:Node3D=actor.model;set_marks(actor,false);actor.set_meta("stage_hidden",true)
 		var board=stage_tween(arena,actor)
 		board.tween_property(model,"position",model.position+(rest-actor.position),STEP_OUT).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 		board.parallel().tween_property(model,"scale",Vector3.ONE*.6,STEP_OUT)

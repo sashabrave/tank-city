@@ -209,7 +209,7 @@ func _physics_process(delta):
 	if not player_owned and not allied:CombatMods.tick_burn(self,delta)
 	if dead:return
 	if not player_owned and not allied and (stun_time>0 or arena.freeze_time>0):return
-	if player_owned:
+	if player_owned and not has_meta("stage_hidden"):
 		model.visible=arena.abilities.cloak_time<=0 or fmod(arena.abilities.cloak_time,.25)<.15
 	if not player_owned and not allied:
 		arena.enemy.attention_tick(self,delta)
@@ -240,7 +240,8 @@ func _physics_process(delta):
 	if enemy_weapon=="rpg" and not player_owned and arena.enemy.rpg_step(self,delta):return
 	movement_pause=maxf(0,movement_pause-delta)
 	invulnerable = maxf(0,invulnerable-delta)
-	if player_owned:
+	# While BattleStage hides the soldier (before the hop-out, after boarding) visibility is left alone.
+	if player_owned and not has_meta("stage_hidden"):
 		model.visible=arena.star_time<=0 or fmod(arena.elapsed,.18)<.12
 		for mesh in model.find_children("*","GeometryInstance3D",true,false):mesh.transparency=.65 if arena.abilities.cloak_time>0 else 0.0
 	if turn_left > 0:
