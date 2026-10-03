@@ -8,11 +8,11 @@ extends RefCounted
 ## Weapons share two ammo classes: bullets (pistol, SMG, rifle, shotgun, sniper) and charges (RPG, grenade
 ## launcher); a type lists the classes it fits.
 const STANDARD="standard"
-const TYPES=["burn","stun","shock","explosive","ap","ricochet","cryo"]
-const NAMES={"standard":"Обычные","burn":"Зажигательные","stun":"Контузящие","shock":"ЭМИ","explosive":"Разрывные","ap":"Бронебойные","ricochet":"Рикошет","cryo":"Криогенные"}
-const COLORS={"standard":"cfd3c8","burn":"ff8a3d","stun":"f1cf55","shock":"86daec","explosive":"ff5a4a","ap":"b7c2cc","ricochet":"c9a5ff","cryo":"9fe6ff"}
+const TYPES=["burn","stun","shock","explosive","ap","ricochet","cryo","cluster","napalm"]
+const NAMES={"standard":"Обычные","burn":"Зажигательные","stun":"Контузящие","shock":"ЭМИ","explosive":"Разрывные","ap":"Бронебойные","ricochet":"Рикошет","cryo":"Криогенные","cluster":"Кассетные","napalm":"Напалм"}
+const COLORS={"standard":"cfd3c8","burn":"ff8a3d","stun":"f1cf55","shock":"86daec","explosive":"ff5a4a","ap":"b7c2cc","ricochet":"c9a5ff","cryo":"9fe6ff","cluster":"ffcf5a","napalm":"ff6a1a"}
 const CLASSES={"bullets":["pistol","smg","rifle","shotgun","sniper"],"charges":["rpg","grenade_launcher"]}
-const FITS={"burn":["bullets","charges"],"stun":["bullets"],"shock":["bullets","charges"],"explosive":["bullets"],"ap":["bullets"],"ricochet":["bullets"],"cryo":["bullets","charges"]}
+const FITS={"burn":["bullets","charges"],"stun":["bullets"],"shock":["bullets","charges"],"explosive":["bullets"],"ap":["bullets"],"ricochet":["bullets"],"cryo":["bullets","charges"],"cluster":["charges"],"napalm":["charges"]}
 ## Rolled values per type: [key, label, min, max, unit]. «%» values are stored as shares (0.2 = 20 %).
 const STATS={
 	"burn":[["chance","Шанс поджога",.12,.4,"%"],["power","Сила огня",.25,.6,"%"]],
@@ -22,14 +22,16 @@ const STATS={
 	"ap":[["pierce","Пробивает врагов",1,2,""],["armor","Урон по броне",.1,.35,"%"]],
 	"ricochet":[["bounces","Отскоков",1,2,""],["bounce_damage","Урон отскока",.45,.75,"%"]],
 	"cryo":[["slow","Замедление",.2,.4,"%"],["freeze","Шанс заморозить",.0,.08,"%"]],
+	"cluster":[["bomblets","Суббоеприпасов",3,5,""],["bomblet_damage","Урон суббоеприпаса",.25,.5,"%"]],
+	"napalm":[["fire_time","Горит",2.0,4.5,"с"],["fire_radius","Радиус пожара",.7,1.2,"кл"]],
 }
 ## Where each rarity rolls inside the range (share of min→max).
 const RARITY_SPAN=[[0.0,.35],[.3,.6],[.55,.85],[.8,1.0]]
 const RARITY_NAMES=["Обычные","Редкие","Эпические","Легендарные"]
 ## Legendary twist per type (one line on the card; the effect is wired in CombatMods).
-const TWISTS={"burn":"Горящие враги поджигают соседей","stun":"Каждый крит оглушает","shock":"Разряд перескакивает на соседнюю технику","explosive":"Убитый враг тоже взрывается","ap":"Ещё +1 пробитие","ricochet":"Ещё +1 отскок","cryo":"Замёрзший враг разлетается осколками"}
+const TWISTS={"burn":"Горящие враги поджигают соседей","stun":"Каждый крит оглушает","shock":"Разряд перескакивает на соседнюю технику","explosive":"Убитый враг тоже взрывается","ap":"Ещё +1 пробитие","ricochet":"Ещё +1 отскок","cryo":"Замёрзший враг разлетается осколками","cluster":"Суббоеприпасы разлетаются шире","napalm":"Горящие враги поджигают соседей"}
 ## Card art for the new types (the first three have their own upgrade icons).
-const ART={"explosive":"upgrades/legend_detonator","ap":"upgrades/pierce","ricochet":"upgrades/legend_ricochet","cryo":"pickups/freeze"}
+const ART={"explosive":"upgrades/legend_detonator","ap":"upgrades/pierce","ricochet":"upgrades/legend_ricochet","cryo":"pickups/freeze","cluster":"abilities/grenade","napalm":"upgrades/burn_long"}
 ## Arsenal price of the second slot for a weapon (alloy).
 const SLOT_PRICE=600
 

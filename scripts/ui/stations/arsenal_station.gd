@@ -12,6 +12,8 @@ func items(tab:String)->Array:
 				var owned=id in Game.weapon_unlocks;var level=Game.weapon_level(id)
 				var state="locked" if not owned else "active" if id==Game.selected_weapon else "max" if level>=Balance.CONFIG.economy.weapon_level_cap else "owned"
 				result.append({"id":id,"title":Game.LOOT.WEAPONS[id].name,"icon":Game.LOOT.WEAPONS[id].icon,"caption":"Нужен чертёж" if not owned else ("В бою · " if id==Game.selected_weapon else "")+"ур. %d / %d" % [level,Balance.CONFIG.economy.weapon_level_cap],"state":state})
+			# T-114: the electric cannon is planned for charges; shown as «В разработке».
+			result.append({"id":"concept_tesla","title":"Электропушка","icon":"shock","caption":"В разработке","soon":true,"group":"В разработке"})
 		"bonuses":
 			for id in Game.LOOT.BONUSES:
 				var owned=id in Game.bonus_unlocks;var level=Game.bonus_level(id)
@@ -22,6 +24,7 @@ func items(tab:String)->Array:
 				result.append({"id":id,"title":AbilityCatalog.DATA[id].name,"icon":"abilities/"+id,"caption":"Нужен чертёж" if not known else "Выбран" if Game.gadget==id else "Куплен" if bought else "%d ◈" % Game.gadget_cost(id),"state":"locked" if not known else "active" if Game.gadget==id else "owned" if bought else "ready"})
 	return result
 func detail(tab:String,id:String)->Dictionary:
+	if id=="concept_tesla":return {"title":"Электропушка","icon":"shock","text":"Набросок: стреляет зарядами-молниями, которые перескакивают между врагами и замыкают технику. Носит заряды, как гранатомёт и РПГ.","lines":["Появится в следующих обновлениях"],"actions":[]}
 	match tab:
 		"weapons":
 			var info=Game.LOOT.WEAPONS[id];var owned=id in Game.weapon_unlocks;var level=Game.weapon_level(id);var cap=Balance.CONFIG.economy.weapon_level_cap

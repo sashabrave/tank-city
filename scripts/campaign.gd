@@ -75,4 +75,4 @@ static func service_options(seed_value:int,index:int)->Array:
 ## World 1 and endless hold all content of the three worlds; locked worlds 2–3 keep their original gating.
 static func recipe_world()->int:return 3 if world==1 else world
 static func unified_content()->bool:return world==1 and not endless
-static func weapon_world(id:String)->int:return 3 if id=="rpg" else 2 if id=="sniper" else 1
+static func weapon_world(id:String)->int:return 3 if id=="rpg" else 2 if id in ["sniper","grenade_launcher"] else 1

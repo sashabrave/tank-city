@@ -314,14 +314,33 @@ func volley(actor,data:Dictionary):
 func rocket_impact(bullet):
 	if not bullet.friendly and not arena.room.boss_room and arena.flat_distance(bullet.position,arena.world_pos(arena.room.base_cell))<=bullet.rocket_radius:damage_base(bullet.damage)
 	arena.burst(bullet.position,Color("e8b957"),bullet.rocket_radius);Game.sound("boom",arena)
+	# The player's charges carry the loaded ammo (T-114): every enemy in the blast takes the hit with its
+	# effects (fire, EMP, cryo, crit); cluster scatters bomblets, napalm leaves a burning patch.
+	var player_charge=CombatMods.player_bullet(bullet) and not bullet.star_power
 	for enemy in arena.room.actors.duplicate():
 		if is_instance_valid(enemy) and not enemy.dead and (enemy.player_owned or enemy.allied)!=bullet.friendly and enemy!=bullet.owner_actor and arena.flat_distance(bullet.position,enemy.position)<=bullet.rocket_radius:
-			enemy.take_damage(enemy.max_hp if bullet.star_power else bullet.damage,Vector3.ZERO,bullet.vehicle_credit,"blast")
+			var amount=enemy.max_hp if bullet.star_power else (CombatMods.outgoing(arena,bullet,enemy) if player_charge else bullet.damage)
+			enemy.take_damage(amount,Vector3.ZERO,bullet.vehicle_credit,"blast")
+	if player_charge:charge_effects(bullet)
 	for cell in arena.room.walls.keys():
 		if arena.flat_distance(bullet.position,arena.world_pos(cell))<=bullet.rocket_radius:
 			if bullet.star_power:arena.room.walls[cell].node.queue_free();arena.room.walls.erase(cell);arena.navigation.invalidate(cell)
 			else:arena.damage_wall(cell,bullet.damage)
 
+func charge_effects(bullet):
+	var ammo=Ammo.effective(arena);var stats:Dictionary=ammo.stats;var at=bullet.position;at.y=0
+	match str(ammo.type):
+		"cluster":
+			var count=int(stats.get("bomblets",3));var reach=1.6+(.6 if ammo.get("twist",false) else 0.0)
+			for i in range(count):
+				var angle=TAU*i/count+arena.run.combat_rng.randf_range(-.3,.3);var spot=at+Vector3(cos(angle),0,sin(angle))*arena.run.combat_rng.randf_range(.6,reach)
+				var hit=bullet.damage*float(stats.get("bomblet_damage",.3))
+				arena.get_tree().create_timer(.18+i*.07,false).timeout.connect(func():
+					if is_instance_valid(arena) and arena.phase=="combat":grenade_explosion(spot,hit,true,.6))
+		"napalm":
+			var patch=preload("res://scripts/combat/napalm_patch.gd").new();patch.arena=arena;patch.position=at
+			patch.radius=float(stats.get("fire_radius",.8));patch.seconds=float(stats.get("fire_time",2.5));patch.damage=bullet.damage*.6
+			arena.add_child(patch)
 ## Captured hull: beacon, pointer and one short hint while the soldier is on foot.
 const TROPHY_HINTS={"buggy":"Трофейный багги: подойди и займи","apc":"Трофейный БТР: подойди и займи","tank":"Трофейный танк: подойди и займи"}
 func mark_trophy(wreck):

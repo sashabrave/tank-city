@@ -57,5 +57,13 @@ func run():
 	for b in vendor.modal.find_children("*","Button",true,false):
 		if b.text.contains("рюкзак"):b.pressed.emit()
 	check(run.ammo_bag.size()==bag+1,"«В рюкзак» keeps the item")
+	# Charges (T-114): grenade launcher takes charge ammo; napalm leaves a burning patch, cluster scatters bomblets.
+	check(Game.LOOT.WEAPONS.has("grenade_launcher") and Ammo.fits("napalm","grenade_launcher") and not Ammo.fits("napalm","pistol"),"grenade launcher with charge ammo")
+	arena.run.weapon="grenade_launcher";arena.weapon="grenade_launcher";Ammo.ensure(run,"grenade_launcher")
+	Ammo.load_item(run,Ammo.roll("napalm",1,5))
+	var rocket=load("res://scenes/projectile.tscn").instantiate();rocket.arena=arena;rocket.owner_actor=arena.player;rocket.friendly=true;rocket.damage=2.0;rocket.rocket_radius=1.1;rocket.position=arena.world_pos(Vector2i(5,5));add_child(rocket)
+	arena.combat.rocket_impact(rocket)
+	check(arena.get_children().any(func(n):return n.get_script()==preload("res://scripts/combat/napalm_patch.gd")),"napalm charge leaves a burning patch")
+	rocket.queue_free()
 	print("AMMO: %d failures" % failures)
 	get_tree().quit(1 if failures else 0)

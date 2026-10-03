@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="WeaponBalance" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/balance/weapon_balance.gd" id="1"]
+[resource]
+resource_name="Гранатомёт"
+script=ExtResource("1")
+id = "grenade_launcher"
+name = "Гранатомёт"
+rarity = 1
+damage = 2.4
+interval = 1.15
+speed = 8.0
+range = 10.0
+pellets = 1
+pierce = false
+blast = 1.1
+intercept = 0.5
+icon = "grenade_launcher"
+role = "Граната взрывается радиусом 1,1 клетки · заряды"
