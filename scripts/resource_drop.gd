@@ -17,7 +17,7 @@ static func split(value:int,rng:RandomNumberGenerator=null)->Array:
 	var result=[]
 	while value>0:
 		# Mostly the biggest bar that fits, sometimes one size down; small bars only for the remainder.
-		var unit=10 if value>=40 else (10 if rng.randf()<.6 else 5) if value>=10 else (5 if rng.randf()<.7 else 1) if value>=5 else 1
+		var unit=10 if value>=40 else (10 if rng.randf()<.6 else 5) if value>=10 else 5 if value>=5 else 1
 		result.append({"amount":unit,"denomination":unit});value-=unit
 	return result
 static func spawn(context,pos:Vector3,value:int,kind:String="alloy",blast:Vector3=Vector3.ZERO):

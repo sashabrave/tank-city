@@ -46,6 +46,16 @@ func run():
 	Ammo.switch(arena);check(Ammo.active(run)=="cryo","switching makes the other type active")
 	arena.hud.refresh_ammo()
 	check(arena.hud.ammo_row!=null and arena.hud.ammo_row.get_child_count()>=2,"HUD shows the ammo cells")
-	Game.ammo_slot_weapons=[]
+	# Ammo vending machine (T-116): tokens → a fitting rolled item; «Зарядить» swaps, the old one goes to the bag.
+	Game.ammo_slot_weapons=[];Ammo.ensure(run,arena.weapon)
+	var vendor=preload("res://scripts/ammo_vendor.gd").place(Node3D.new(),arena,Vector3.ZERO)
+	run.tokens=2;check(vendor.buy().is_empty() and run.tokens==2,"machine needs tokens")
+	run.tokens=10;var got=vendor.buy()
+	check(run.tokens==10-vendor.PRICE and Ammo.fits(str(got.type),arena.weapon) and got.has("stats"),"machine sells a fitting rolled item (%s)" % got.get("type",""))
+	var ui=Control.new();add_child(ui);ui.size=Vector2(1280,720);run.tokens=10;var bag=run.ammo_bag.size()
+	vendor.open(ui,func():pass)
+	for b in vendor.modal.find_children("*","Button",true,false):
+		if b.text.contains("рюкзак"):b.pressed.emit()
+	check(run.ammo_bag.size()==bag+1,"«В рюкзак» keeps the item")
 	print("AMMO: %d failures" % failures)
 	get_tree().quit(1 if failures else 0)

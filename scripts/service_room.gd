@@ -6,6 +6,7 @@ var index=2
 var branch="vehicle"
 var vehicle="buggy"
 var locker:Node3D
+var vendor:Node3D
 ## Price to take the mechanic's parked vehicle into the next field (T-011).
 const VEHICLE_PRICES={"buggy":60,"apc":110,"tank":180}
 const PARKED=Vector3(2.2,0,-1.2)
@@ -70,6 +71,7 @@ func _ready():
 		vehicle_prompt=preload("res://scripts/interaction_prompt.gd").attach(self,self,Texts.render("Купить")+" %s · %d" % [Texts.render(vehicle_name),VEHICLE_PRICES.get(vehicle,80)],PARKED,1.6,func():return has_node("TakeVehicleLabel"))
 	offers=arena.reward.service_offers(branch)
 	locker=preload("res://scripts/weapon_locker.gd").place(self,arena,Vector3(-3.4,0,0.5))
+	vendor=preload("res://scripts/ammo_vendor.gd").place(self,arena,Vector3(-3.4,0,2.4))
 ## The mechanic works on the player's vehicle: the one driven now, the one waiting for the next room, or the starting one.
 func current_vehicle()->String:
 	if is_instance_valid(arena.player) and arena.player.kind in GarageCatalog.VEHICLES:return arena.player.kind
@@ -98,14 +100,18 @@ func stand(p:Vector3)->bool:
 	return p.x>=-3.01 and p.x<=3.01 and p.z>=-2.01 and p.z<=4.01 and c not in [Vector2i(0,-1),Vector2i(2,-1)]
 func at_exit()->bool:return claimed and avatar.position.distance_to(Vector3(dressing.EXIT_CELL.x,0,dressing.EXIT_CELL.y))<1.3
 func interact():
+	if is_instance_valid(modal):return
+	# The ammo machine and the weapon locker work before and after the choice.
+	if is_instance_valid(vendor) and vendor.near(avatar):
+		Game.reset_input();dpad.clear();dpad.enabled=false
+		vendor.open(root,func():Game.reset_input();dpad.clear();dpad.enabled=true;modal=null);modal=vendor.modal;return
+	if is_instance_valid(locker) and locker.near(avatar):
+		Game.reset_input();dpad.clear();dpad.enabled=false
+		locker.open(root,func():Game.reset_input();dpad.clear();dpad.enabled=true);modal=locker.modal;return
 	# Leave only from the exit zone (T-083): a stray E elsewhere does nothing.
 	if claimed:
 		if at_exit():completed.emit(index);set_physics_process(false)
 		return
-	if is_instance_valid(modal):return
-	if is_instance_valid(locker) and locker.near(avatar):
-		Game.reset_input();dpad.clear();dpad.enabled=false
-		locker.open(root,func():Game.reset_input();dpad.clear();dpad.enabled=true);modal=locker.modal;return
 	if branch=="vehicle" and has_node("TakeVehicleLabel") and avatar.position.distance_to(PARKED)<1.5:
 		var price=int(VEHICLE_PRICES.get(vehicle,80))
 		if Game.credits<price:Game.sound("ui_denied",self);return
