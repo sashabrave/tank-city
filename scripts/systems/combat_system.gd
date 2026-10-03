@@ -284,6 +284,10 @@ func grenade_explosion(pos: Vector3,amount: float,friendly: bool,blast_radius: f
 		var player=arena.room.player
 		if is_instance_valid(player) and not player.dead and arena.flat_distance(pos,player.position)<=reach:player.take_damage(1.0,player.position-pos+Vector3(.01,0,.01),"","blast")
 		if not arena.room.boss_room and arena.flat_distance(pos,arena.world_pos(arena.room.base_cell))<=reach:damage_base(1.0)
+		# T-165: friendly fire only from explosives — allies caught in the blast take the same small bite;
+		# bullets never hurt your own side.
+		for ally in arena.room.actors.duplicate():
+			if is_instance_valid(ally) and ally!=player and ally.allied and not ally.dead and arena.flat_distance(pos,ally.position)<=reach:ally.take_damage(1.0,ally.position-pos+Vector3(.01,0,.01),"","blast")
 	for wreck in arena.room.wrecks.duplicate():
 		if is_instance_valid(wreck) and not wreck.spent and arena.flat_distance(pos,wreck.position)<1.15:wreck.take_damage(amount)
 

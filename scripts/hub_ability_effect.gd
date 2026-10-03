@@ -25,7 +25,15 @@ func _ready():
 			controlled.position=Vector3(hub.cell.x,0,hub.cell.y);hub.moving=false
 		position=Vector3(deployed_cell.x,0,deployed_cell.y);visual=Visuals.model("hedgehog",self);hub.training_barriers.append(deployed_cell);duration=20
 	elif kind in ["ally_drone","comrade"]:
-		visual=Visuals.model("flyer" if kind=="ally_drone" else "soldier",self,Vector3(1,0,0));duration=15
+		# The comrade stands on a free cell beside the hero and blocks it like a body (T-165); the drone flies.
+		var spot=Vector3(1,0,0)
+		if kind=="comrade":
+			var here=Vector2i(roundi(start.x),roundi(start.z));var found=false
+			for side in [Vector2i.RIGHT,Vector2i.LEFT,Vector2i.DOWN,Vector2i.UP]:
+				if hub.hub_free(here+side):deployed_cell=here+side;found=true;break
+			if not found:accepted=false;return
+			spot=Vector3(deployed_cell.x,0,deployed_cell.y)-start;hub.training_barriers.append(deployed_cell)
+		visual=Visuals.model("flyer" if kind=="ally_drone" else "soldier",self,spot);duration=15
 	elif kind=="laser":
 		target=start+Vector3(hub.facing.x,0,hub.facing.y)*9
 		visual=Visuals.box(self,(target-start)*.5+Vector3.UP*.5,Vector3(.12,.12,9),Color("79dbfa"));visual.rotation.y=atan2(target.x-start.x,target.z-start.z);duration=.35
@@ -75,4 +83,4 @@ func _process(delta):
 func _exit_tree():
 	if is_instance_valid(grenade_marker):grenade_marker.queue_free()
 	if kind=="cloak":fade_hero(0)
-	if kind=="barrier" and is_instance_valid(hub):hub.training_barriers.erase(deployed_cell)
+	if kind in ["barrier","comrade"] and is_instance_valid(hub):hub.training_barriers.erase(deployed_cell)

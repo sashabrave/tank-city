@@ -2087,7 +2087,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-165.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "через другого игрока/помощника нельзя проходить, сейчас я насквозь прохожу должна быть кллизия или как там",
 			"type": "bug",
 			"version": "0.8.0"
