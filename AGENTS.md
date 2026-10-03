@@ -1,6 +1,6 @@
 # Работа над War Cats
 
-Сначала прочитай guides/00_start/01_project.md и guides/00_start/02_agent_handoff.md, затем нужные разделы guides/01_design и guides/02_development. Актуальная документация находится в guides; старые docs и NEXT_CHAT_CONTEXT содержат исторические решения.
+Сначала прочитай guides/00_start/01_project.md, guides/00_start/02_agent_handoff.md и guides/04_handbook/01_handoff.md, затем нужные разделы guides/01_design, guides/02_development и guides/03_release. Актуальная документация находится в guides; docs/ и docs/history/ — история прошлых версий, при противоречии верны guides и код.
 
 - Береги существующие изменения и пользовательские сохранения. В тестах отключай Game.save_enabled и Settings.persistence_enabled. Проверки записи профилей направляй в новый временный каталог, включая резервные копии и индекс слотов.
 - Проверяй реальный тип объекта перед заменой доступа к свойствам: Dictionary.text — данные, а не Label. Для текста интерфейса используй Texts.set_text(Control, source), для данных словаря оставляй обычное присваивание.

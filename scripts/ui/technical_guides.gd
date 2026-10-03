@@ -55,7 +55,7 @@ func scan(folder:String,parent:TreeItem,depth:int):
 		var item=tree.create_item(parent);item.set_text(0,title);item.set_tooltip_text(0,path);item.set_metadata(0,path)
 		documents.append({"path":path,"item":item})
 func display_name(value:String)->String:
-	var names={"00_start":"Начать здесь","01_design":"Геймдизайн","02_development":"Разработка","03_release":"Альфа и проверки"}
+	var names={"00_start":"Начать здесь","01_design":"Геймдизайн","02_development":"Разработка","03_release":"Релиз и стратегия","04_handbook":"Хендбук"}
 	return Texts.render(names.get(value,value.replace("_"," ")))
 func document_title(path:String)->String:
 	var file=FileAccess.open(path,FileAccess.READ)
