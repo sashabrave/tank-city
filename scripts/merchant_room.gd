@@ -53,7 +53,25 @@ func _ready():
 	stock=roll_stock()
 	spots=RoomLayout.furnish(self,arena,index,true)
 	locker=spots.crate;vendor=spots.machine
+## The merchant room is the route stop seen up close (author, 3 Oct): the same military shop truck, bigger and more
+## detailed, its open side is the counter; jerrycans, a barrel, a table and a pine fill the edges. Boxes stay as a
+## fallback when the model file is missing.
+const ROOM_TRUCK:="res://assets/models/route/merchant_room_truck.glb"
 func build_stall():
+	if ResourceLoader.exists(ROOM_TRUCK):
+		var truck:Node3D=load(ROOM_TRUCK).instantiate();truck.name="ShopTruck";add_child(truck)
+		truck.position=Vector3(0,0,-2.6);truck.scale=Vector3.ONE*1.3
+		preload("res://scripts/route_miniatures.gd").library_surfaces(truck)
+		var olive=Color("59603f");var wood=Color("8a6a48")
+		# folding table with goods at the back left, jerrycans and a barrel on the right edge, a pine in the corner
+		Visuals.box(self,Vector3(-2.3,.75,-1.3),Vector3(1.3,.08,.6),wood,"wood")
+		for x in [-2.8,-1.8]:Visuals.box(self,Vector3(x,.37,-1.3),Vector3(.08,.74,.5),wood.darkened(.3),"wood")
+		Visuals.box(self,Vector3(-2.5,.92,-1.3),Vector3(.45,.26,.3),olive,"paint")
+		for i in range(2):Visuals.box(self,Vector3(3.6,.3,-.2+i*.45),Vector3(.38,.6,.22),olive,"paint")
+		var barrel=MeshInstance3D.new();var shape=CylinderMesh.new();shape.top_radius=.38;shape.bottom_radius=.38;shape.height=.9;barrel.mesh=shape;add_child(barrel)
+		barrel.position=Vector3(3.5,.45,-1.9);barrel.material_override=Visuals.surface_material(Color("5d6266"),"steel")
+		Visuals.label3d(self,"Торговец · E",COUNTER+Vector3(0,2.9,0),Color("fff0ce"),28)
+		return
 	var wood=Color("8a6a48");var cloth=Color("c9793f")
 	Visuals.box(self,COUNTER+Vector3(0,.45,0),Vector3(2.6,.9,.9),wood)
 	for x in [-1.25,1.25]:Visuals.box(self,COUNTER+Vector3(x,1.25,-.35),Vector3(.12,2.5,.12),wood.darkened(.3))
