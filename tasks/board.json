@@ -2009,7 +2009,7 @@
 			"scene": "service_room",
 			"shot": "res://tasks/shots/T-159.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "автмат жетонов",
 			"type": "bug",
 			"version": "0.8.0"
@@ -2373,7 +2373,7 @@
 			"scene": "service_room",
 			"shot": "res://tasks/shots/T-187.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "прокачай лутбоксы",
 			"type": "bug",
 			"version": "0.8.0"

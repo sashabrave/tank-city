@@ -3033,3 +3033,10 @@ Q · есть сразу	Q · from the start
 +%d брони и +%s урона	+%d armor and +%s damage
 щит пробивает с шансом	pierces shields with a chance of
 Патроны в слот: шанс оглушить врага — он не двигается и не стреляет. Босс оглушается втрое короче. Открывает усиления контузии.	Ammo for the slot: a chance to stun an enemy — it can't move or shoot. Bosses are stunned three times shorter. Unlocks concussion enhancements.
+Армейский припас	Army supply
+Армейский ящик	Army crate
+Офицерский ящик	Officer crate
+Открыть · %d жетонов	Open · %d tokens
+Крутится…	Spinning…
+Жетонов: %d · патроны под %s · чем дальше по карте, тем лучше шансы	Tokens: %d · ammo for %s · the farther along the map, the better the odds
+Выпало!	You got!

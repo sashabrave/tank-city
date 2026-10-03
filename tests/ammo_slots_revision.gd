@@ -54,9 +54,20 @@ func run():
 	check(run.tokens==10-vendor.PRICE and Ammo.fits(str(got.type),arena.weapon) and got.has("stats"),"machine sells a fitting rolled item (%s)" % got.get("type",""))
 	var ui=Control.new();add_child(ui);ui.size=Vector2(1280,720);run.tokens=10;var bag=run.ammo_bag.size()
 	vendor.open(ui,func():pass)
+	# T-159/T-187: two crates with odds, the reel, then the result window.
+	check(vendor.modal.find_child("Crate_army",true,false)!=null and vendor.modal.find_child("Crate_officer",true,false)!=null,"two crates to choose from")
+	var deep=vendor.odds("officer");var near=vendor.odds("army")
+	check(absf(deep.reduce(func(a,x):return a+x,0.0)-1.0)<.001 and deep[3]>near[3],"odds add up to 100% and the officer crate is richer")
+	var tokens_before=run.tokens
+	vendor.modal.find_child("Open_army",true,false).pressed.emit();await get_tree().process_frame
+	check(run.tokens==tokens_before-4 and vendor.modal.find_child("Reel",true,false)!=null,"opening a crate pays tokens and spins the reel")
+	var skip=vendor.modal.find_child("Skip",true,false)
+	if skip:skip.pressed.emit()
+	await get_tree().process_frame
+	vendor.modal.find_child("Next",true,false).pressed.emit();await get_tree().process_frame
 	for b in vendor.modal.find_children("*","Button",true,false):
 		if b.text.contains("рюкзак"):b.pressed.emit()
-	check(run.ammo_bag.size()==bag+1,"«В рюкзак» keeps the item")
+	check(run.ammo_bag.size()==bag+1 and vendor.modal==null,"«В рюкзак» keeps the item")
 	# Charges (T-114): grenade launcher takes charge ammo; napalm leaves a burning patch, cluster scatters bomblets.
 	check(Game.LOOT.WEAPONS.has("grenade_launcher") and Ammo.fits("napalm","grenade_launcher") and not Ammo.fits("napalm","pistol"),"grenade launcher with charge ammo")
 	arena.run.weapon="grenade_launcher";arena.weapon="grenade_launcher";Ammo.ensure(run,"grenade_launcher")
