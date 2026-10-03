@@ -110,7 +110,7 @@
 | boot_wind.png | upgrades/speed | Передвижение |
 | bullet_burst.png | upgrades/weapon_damage | Урон оружия |
 | bullet_shatter.png | upgrades/crit_damage, stats/crit_damage | Разрывные, Крит-урон |
-| bullet_vs_rocket.png | upgrades/intercept, pickups/pressure | Напор |
+| bullet_vs_rocket.png | upgrades/intercept, pickups/pressure | Стабилизатор, Ярость |
 | bullets_fast.png | upgrades/fire | Темп огня |
 | burst.png | upgrades/damage | Сила атаки |
 | clover_casing.png | upgrades/luck, stats/luck | Счастливая гильза, Удача |
@@ -128,7 +128,7 @@
 | gyro.png | upgrades/weapon_intercept | Стабилизатор |
 | heart_cage.png | upgrades/health, pickups/heart | Здоровье, Аптечка |
 | helmet_stars.png | upgrades/stun_long | Глубокая контузия |
-| hood.png | upgrades/stealth, stats/stealth | Маскхалат, Маскировка |
+| hood.png | upgrades/stealth, stats/stealth | Маскхалат, Скрытность |
 | hourglass_bullet.png | upgrades/opening_shot | Выдержка |
 | loot_sack.png | upgrades/marauder, stats/marauder | Запасливый |
 | magazine_fast.png | upgrades/weapon_fire | Скорострельность |
@@ -145,7 +145,7 @@
 | torn_flag.png | upgrades/last_stand | Последний рубеж |
 | trajectory.png | upgrades/range | Дальность |
 | vest.png | upgrades/guard_bullet, stats/guard_bullet | Бронежилет, Защита от пуль |
-| wrench_spark.png | upgrades/field_repair, stats/field_repair, abilities/field_repair | Полевой ремонт |
+| wrench_spark.png | upgrades/field_repair, stats/field_repair, abilities/field_repair | Ремонт на ходу, Полевой ремонт |
 
 ## Категории наград (6)
 
@@ -309,12 +309,13 @@
 |---|---|---|
 | mallet_stars.png | stats/stun_power | Оглушение |
 
-## Развитие заставы (24)
+## Развитие заставы (25)
 
 Где: Доска «Развитие заставы» в хабе: шаги целей
 
 | Файл | id | Название |
 |---|---|---|
+| all_built.png | all_built | all_built |
 | apc.png | apc | apc |
 | buggy.png | buggy | buggy |
 | class2.png | class2 | class2 |
@@ -424,6 +425,16 @@
 | vehicle.png | vehicle | vehicle |
 | vehicle_repair.png | vehicle_repair | vehicle_repair |
 | wall.png | wall | wall |
+
+## Техника игрока (3)
+
+Где: Стоянка в хабе (машины), чертежи техники, энциклопедия, HUD при езде
+
+| Файл | id | Название |
+|---|---|---|
+| veh_apc.png | vehicle/apc | БТР |
+| veh_buggy.png | vehicle/buggy | Багги |
+| veh_tank.png | vehicle/tank | Танк |
 
 ## Технологии штаба (9)
 

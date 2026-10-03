@@ -730,8 +730,8 @@
 				"pickups/pressure"
 			],
 			"names": [
-				"Напор",
-				"Напор"
+				"Стабилизатор",
+				"Ярость"
 			],
 			"note": "Символ «bullet_vs_rocket»"
 		},
@@ -959,7 +959,7 @@
 			],
 			"names": [
 				"Маскхалат",
-				"Маскировка"
+				"Скрытность"
 			],
 			"note": "Символ «hood»"
 		},
@@ -1177,7 +1177,7 @@
 				"abilities/field_repair"
 			],
 			"names": [
-				"Полевой ремонт",
+				"Ремонт на ходу",
 				"Полевой ремонт",
 				"Полевой ремонт"
 			],
@@ -2288,6 +2288,18 @@
 			"note": "Символ «mallet_stars»"
 		},
 		{
+			"path": "res://assets/ui/roadmap/all_built.png",
+			"group": "Развитие заставы",
+			"context": "Доска «Развитие заставы» в хабе: шаги целей",
+			"ids": [
+				"all_built"
+			],
+			"names": [
+				"all_built"
+			],
+			"note": ""
+		},
+		{
 			"path": "res://assets/ui/roadmap/apc.png",
 			"group": "Развитие заставы",
 			"context": "Доска «Развитие заставы» в хабе: шаги целей",
@@ -3262,6 +3274,42 @@
 				"wall"
 			],
 			"note": ""
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/veh_apc.png",
+			"group": "Техника игрока",
+			"context": "Стоянка в хабе (машины), чертежи техники, энциклопедия, HUD при езде",
+			"ids": [
+				"vehicle/apc"
+			],
+			"names": [
+				"БТР"
+			],
+			"note": "Символ «veh_apc»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/veh_buggy.png",
+			"group": "Техника игрока",
+			"context": "Стоянка в хабе (машины), чертежи техники, энциклопедия, HUD при езде",
+			"ids": [
+				"vehicle/buggy"
+			],
+			"names": [
+				"Багги"
+			],
+			"note": "Символ «veh_buggy»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/veh_tank.png",
+			"group": "Техника игрока",
+			"context": "Стоянка в хабе (машины), чертежи техники, энциклопедия, HUD при езде",
+			"ids": [
+				"vehicle/tank"
+			],
+			"names": [
+				"Танк"
+			],
+			"note": "Символ «veh_tank»"
 		},
 		{
 			"path": "res://assets/ui/icon_kit/symbols/dome.png",

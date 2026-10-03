@@ -108,7 +108,8 @@
 					"Патроны и чертежи в рюкзаке нарисованы сериями: у патронов пачка с эмблемой эффекта и патрон рядом, от картонной пачки обычных до инеевой жести криогенных; у чертежей один и тот же планшет, а силуэт на листе показывает, что он открывает.",
 					"Карточка патронов показывает замену иконками: старые → новые; пустые значения не показываются; на кукле в снаряжении только действующие эффекты; аптечки видны в рюкзаке и лечат по нажатию",
 					"Штаб везде нарисован как наша передвижная командная машина, а не бункер или палатка: категория наград, чертёж, верстак, ремонт штаба, медблок, доска развития.",
-					"Понятные имена: бонус на поле «Напор» стал «Ярость», карточка — «Стабилизатор», карточка ремонта — «Ремонт на ходу», навык Выучки — «Скрытность»; вкладка Казармы — «Рюкзак и перебросы»; недостижимая цель «Уровень базы 3» заменена на «Все постройки»"
+					"Понятные имена: бонус на поле «Напор» стал «Ярость», карточка — «Стабилизатор», карточка ремонта — «Ремонт на ходу», навык Выучки — «Скрытность»; вкладка Казармы — «Рюкзак и перебросы»; недостижимая цель «Уровень базы 3» заменена на «Все постройки»",
+					"Багги, БТР и танк перерисованы детальнее: швы брони, блестящий металл стволов и люков, протектор; на Стоянке, в чертежах, энциклопедии и на доске развития."
 				]
 			},
 			"en": {
@@ -216,7 +217,8 @@
 					"Ammo and blueprints in the backpack are drawn as series: ammo is a box with the effect emblem and a round beside it, from a cardboard box of standard rounds to a frosted cryo tin; blueprints share one clipboard, and the silhouette on the sheet shows what it unlocks.",
 					"The ammo card shows the swap with icons: old → new; empty values are hidden; the gear doll shows only active effects; aid kits appear in the backpack and heal on tap",
 					"The HQ is now drawn everywhere as our mobile command truck instead of a bunker or tent: reward category, blueprint, workbench, HQ repair, medbay, progress board.",
-					"Clear names: the field bonus «Pressure» became «Fury», the card «Stabilizer», the repair card «Repair on the move», the training skill «Stealth»; the Barracks tab «Backpack and rerolls»; the unreachable goal «Base level 3» was replaced by «All buildings»"
+					"Clear names: the field bonus «Pressure» became «Fury», the card «Stabilizer», the repair card «Repair on the move», the training skill «Stealth»; the Barracks tab «Backpack and rerolls»; the unreachable goal «Base level 3» was replaced by «All buildings»",
+					"The buggy, APC and tank are redrawn in more detail: armour seams, polished metal barrels and hatches, tyre tread; in the vehicle bay, blueprints, encyclopedia and progress board."
 				]
 			}
 		},

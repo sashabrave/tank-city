@@ -147,7 +147,10 @@
 		"blueprint/bonus": "bp_bonus",
 		"blueprint/research": "bp_building",
 		"ammo/cluster": "ammo_cluster",
-		"ammo/napalm": "ammo_napalm"
+		"ammo/napalm": "ammo_napalm",
+		"vehicle/buggy": "veh_buggy",
+		"vehicle/apc": "veh_apc",
+		"vehicle/tank": "veh_tank"
 	},
 	"aliases": {
 		"damage": "burst",
@@ -199,6 +202,12 @@
 		"shock": "bolt",
 		"standard": "bullet_burst",
 		"exit": "parachute",
-		"rare": "clover_casing"
+		"rare": "clover_casing",
+		"buggy": "veh_buggy",
+		"vehicle_buggy": "veh_buggy",
+		"apc": "veh_apc",
+		"vehicle_apc": "veh_apc",
+		"tank": "veh_tank",
+		"vehicle_tank": "veh_tank"
 	}
 }

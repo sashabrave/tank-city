@@ -33,6 +33,7 @@ func run():
 	var category:TextureRect=reward.get_node("CategoryIcon")
 	check(source(category.texture).begins_with(IconKit.ROOT) and category.modulate==Color.WHITE,"reward card category is a drawn symbol, not a tinted line glyph")
 	for key in ["quests","guide","notifications"]:check(IconKit.has("sender/"+key),"sender emblem drawn: "+key)
+	for key in ["buggy","apc","tank","vehicle_apc"]:check(source(UiKit.icon_texture(key)).get_file().begins_with("veh_"),"vehicle picture is the detailed drawing: "+key)
 	holder.queue_free()
 	arena.queue_free()
 	await get_tree().process_frame

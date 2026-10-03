@@ -108,6 +108,7 @@ def main():
 		# HQ is the mobile command truck (author, 2 Oct): these replace the tent and bunker pictures.
 		("hq_vehicle_v3.png", 3, 2): "cat_hq st_headquarters hq_repair medbay - -",
 		("bp_hq_v2.png", 1, 1): "bp_hq",
+		("vehicles_v2.png", 3, 2): "veh_buggy veh_apc veh_tank - - -",
 	}
 	for (sheet, cols, rows), names in symbols.items():
 		grid = cells(sheet, cols, rows)
