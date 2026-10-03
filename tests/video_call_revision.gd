@@ -6,6 +6,7 @@ func check(value:bool,message:String):
 	else:errors+=1;push_error("FAIL: "+message)
 func _ready():call_deferred("run")
 func run():
+	Engine.set_meta("hub_calls_off",false)
 	Game.save_enabled=false;Settings.persistence_enabled=false;Game.sound_enabled=false
 	var Call=preload("res://scripts/ui/video_call.gd")
 	var p=Game.progression;p.seen=p.seen.filter(func(s):return not str(s).begins_with("call_"))

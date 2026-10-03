@@ -7,6 +7,7 @@ func check(ok,message):
 	if not ok:failures+=1
 func _ready():call_deferred("run")
 func run():
+	Engine.set_meta("hub_calls_off",false)
 	Game.save_enabled=false;Game.sound_enabled=false;Settings.persistence_enabled=false;Settings.values.fullscreen=false;Settings.apply()
 	get_window().size=Vector2i(1600,900)
 	var p=Game.progression;p.seen=p.seen.filter(func(s):return not str(s).begins_with("call_"))

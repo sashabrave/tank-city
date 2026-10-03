@@ -2717,7 +2717,6 @@ Retina · полная чёткость	Retina · full sharpness
 Шанс замкнуть технику	Short-circuit chance
 Радиус взрыва	Blast radius
 Урон взрыва	Blast damage
-Пробивает врагов	Pierces enemies
 Урон по броне	Armour damage
 Отскоков	Bounces
 Урон отскока	Bounce damage
@@ -2801,3 +2800,10 @@ Retina · полная чёткость	Retina · full sharpness
 Вылечиться	Heal
 В Казарме открой «Общие улучшения» и купи здоровье.	In the Barracks open «General upgrades» and buy health.
 Сплав донёс — уже польза. В Казарме он превращается в здоровье и урон.	You brought alloy back — that already helps. In the Barracks it turns into health and damage.
+Пробой	Pierce
+Пуля взрывается при попадании и задевает врагов рядом. Значения зависят от редкости.	The bullet explodes on hit and catches nearby enemies. Values depend on rarity.
+Пуля пробивает врагов насквозь и сильнее бьёт по технике. Значения зависят от редкости.	The bullet passes through enemies and hits vehicles harder. Values depend on rarity.
+Пуля отскакивает в ближайшего врага. Значения зависят от редкости.	The bullet bounces into the nearest enemy. Values depend on rarity.
+Попадание замедляет врага, иногда замораживает. Значения зависят от редкости.	A hit slows the enemy and sometimes freezes it. Values depend on rarity.
+Взрыв разбрасывает суббоеприпасы вокруг. Только для гранатомёта и РПГ. Значения зависят от редкости.	The blast scatters bomblets around. Grenade launcher and RPG only. Values depend on rarity.
+На месте взрыва остаётся горящее пятно, поджигающее врагов. Только для гранатомёта и РПГ. Значения зависят от редкости.	The blast leaves a burning patch that sets enemies on fire. Grenade launcher and RPG only. Values depend on rarity.

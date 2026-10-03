@@ -17,6 +17,8 @@ func _ready():
 	if not args.any(func(a):return str(a).begins_with("tests/") or str(a).begins_with("res://tests/")):set_process(false);return
 	for a in Array(OS.get_cmdline_user_args())+args:
 		if str(a).begins_with("--test-timeout="):limit=float(str(a).get_slice("=",1))
+	# Hub calls open a blocking dialog (T-120); tests get no unasked calls, call tests switch them back on.
+	Engine.set_meta("hub_calls_off",true)
 	process_mode=Node.PROCESS_MODE_ALWAYS;started=Time.get_ticks_msec()
 	OS.add_logger(Watch.new(self))
 func abort(reason:String):

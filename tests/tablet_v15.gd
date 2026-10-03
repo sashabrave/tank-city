@@ -15,9 +15,10 @@ func run():
 		view.tab="quests";view.quest_filter=filter;view.refresh()
 	view.manage=true;view.quest_filter="operations";view.refresh()
 	view.manage=false;view.tab="inventory";view.refresh()
-	var cells=view.find_children("*","Button",true,false).filter(func(b):return "Закрытая ячейка" in b.tooltip_text)
-	assert(cells.size()==5,"Five locked trophy cells at start")
-	cells[0].pressed.emit();assert(view.get_child_count()==3,"Click opens item details")
+	# Gear screen v2 (T-113): 8 backpack cells, 4 open at start, 4 locked; a tap selects a cell.
+	var cells=view.find_children("*","Button",true,false).filter(func(b):return b is GearCell and b.key.begins_with("bag:"))
+	assert(cells.size()==Backpack.CELLS and cells.filter(func(b):return b.disabled).size()==Backpack.CELLS-Backpack.capacity(),"Locked backpack cells at start")
+	cells[0].pressed.emit();assert(preload("res://scripts/ui/gear_page.gd").selected=="bag:0","Tap selects a cell")
 	view.refresh()
 	await get_tree().process_frame
 	await get_tree().process_frame

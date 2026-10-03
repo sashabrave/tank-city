@@ -10,7 +10,7 @@ cd "$(dirname "$0")/.."
 G=${GODOT:-/Applications/Godot.app/Contents/MacOS/Godot}
 mode=${1:-quick}
 if [ "$mode" = quick ]; then names=($(grep -v '^#' tests/suites/quick.txt | grep -v '^$'))
-elif [ "$mode" = full ]; then names=($(ls tests/*.tscn | xargs -n1 basename | sed 's/\.tscn$//' | grep -vE '_visual$|^capture$|^chaos_monkey$|probe'))
+elif [ "$mode" = full ]; then names=($(ls tests/*.tscn | xargs -n1 basename | sed 's/\.tscn$//' | grep -vE '_visual$|capture|^chaos_monkey$|probe'))
 else names=("$@"); fi
 out=tmp/test_runs/$(date +%Y%m%d-%H%M%S); mkdir -p $out
 start=$(date +%s); pass=0; fail=()

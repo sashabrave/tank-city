@@ -19,5 +19,9 @@ func run():
 	check(room.has_node("TakeVehicleLabel"),"on foot the parked vehicle is offered")
 	var price=int(room.VEHICLE_PRICES.get(room.vehicle,80));var before=Game.credits
 	room.avatar.position=room.PARKED+Vector3(-.8,0,.6);room.interact();await settle()
+	# T-119: a purchase window opens first; «Купить» completes it.
+	for b in room.modal.find_children("*","Button",true,false):
+		if b.text.contains("Купить"):b.pressed.emit()
+	await settle()
 	check(arena.pending_vehicle==room.vehicle and Game.credits==before-price,"taking it costs alloy and waits at the next field")
 	print("TAKE VEHICLE: %d failures" % failures);get_tree().quit(1 if failures else 0)

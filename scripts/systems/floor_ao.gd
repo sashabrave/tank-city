@@ -62,6 +62,9 @@ static func casts(wall:Dictionary)->bool:
 	var height=float(node.get_meta("ao_height"))
 	return height<.05 or height>=TALL
 func rebuild_props(root:Node3D,skip:Array):
+	# The parent may not be in the tree yet (route map previews): make the material here if _ready has not run.
+	if material_override==null:
+		var mat=ShaderMaterial.new();mat.shader=preload("res://shaders/world/floor_ao.gdshader");mat.set_shader_parameter("depth",DEPTH);material_override=mat
 	material_override.set_shader_parameter("boxes",true);material_override.set_shader_parameter("strength",.3)
 	var items=[]
 	for mesh in root.find_children("*","MeshInstance3D",true,false):

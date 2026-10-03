@@ -24,7 +24,8 @@ func run():
 		check(not RunUpgrades.eligible(arena,UpgradeRegistry.get_def(id)),id+" waits for its base card")
 	for id in ["burn","stun","shock"]:check(RunUpgrades.eligible(arena,UpgradeRegistry.get_def(id)),id+" base card is offered")
 	RunUpgrades.apply(arena,"burn",0)
-	check(not RunUpgrades.eligible(arena,UpgradeRegistry.get_def("burn")),"base card is taken once")
+	# Ammo v2: the base ammo card can drop again (another roll); it loads, it does not stack (T-112).
+	check(Ammo.active(run)=="burn","base card loads incendiary ammo")
 	check(RunUpgrades.eligible(arena,UpgradeRegistry.get_def("burn_heat")) and RunUpgrades.eligible(arena,UpgradeRegistry.get_def("chain_fire")),"fire enhancements open after the base card")
 	check(not RunUpgrades.eligible(arena,UpgradeRegistry.get_def("stun_long")),"other effects stay closed")
 	# Burn strength and duration.
@@ -42,7 +43,7 @@ func run():
 	check(near.burn_time>0,"chain fire spreads to a neighbour")
 	# EMP card + station power.
 	RunUpgrades.apply(arena,"shock",0)
-	check(is_equal_approx(CombatMods.outgoing(arena,bullet_from(player,1.0),tank),1.0+.3+.25),"EMP card plus station power")
+	check(is_equal_approx(CombatMods.outgoing(arena,bullet_from(player,1.0),tank),1.0+float(Ammo.item(run).stats.bonus)+run.shock_power),"EMP item plus station power")
 	# Class: gunner no longer burns by default.
 	check(not ClassCatalog.info("gunner").modifiers.any(func(m):return m.stat in ["burn_chance","stun_chance","shock_bonus"]),"gunner has no default effect")
 	# Profile migration refunds the old station effect levels once.

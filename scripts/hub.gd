@@ -734,7 +734,7 @@ func present_call():
 	if not is_inside_tree() or is_queued_for_deletion():return
 	var VideoCall=preload("res://scripts/ui/video_call.gd")
 	var call=VideoCall.due(self)
-	if call=="" or phase!="combat":present_unlock();return
+	if call=="" or phase!="combat" or Engine.get_meta("hub_calls_off",false):present_unlock();return
 	# The call rings in the corner; the player answers when ready, nothing is blocked meanwhile.
 	if root.has_node("IncomingCall"):return
 	# The call opens as a dialog (T-120) and holds the hub until «Взять» or «Позже».

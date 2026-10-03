@@ -24,6 +24,9 @@ func run():
 	check(hits.any(func(h):return is_equal_approx(h,crit_hit)) and hits.has(1.0) and is_equal_approx(crit_hit,2.2),"crit doubles damage (+overflow) and stays below certainty")
 	check(CombatMods.crit_chance(arena)<=CombatMods.CAPS.crit_chance,"crit chance is capped")
 	run.crit_chance=0.0;run.crit_damage=1.5;Game.luck_level=0
+	# Effects work only through the loaded ammo (T-109): load a zero-roll item, the run stat does the rest.
+	var load_ammo=func(type:String):Ammo.ensure(run,arena.weapon);run.ammo_slots[0]={"type":type,"rarity":0,"stats":{},"damage":0.0,"twist":false};run.ammo_active=0
+	load_ammo.call("shock")
 	run.shock_bonus=.5
 	check(is_equal_approx(CombatMods.outgoing(arena,bullet_from(player,1.0),tank),1.5),"electric rounds hit machines harder")
 	check(is_equal_approx(CombatMods.outgoing(arena,bullet_from(player,1.0),enemy),1.0),"electric rounds do not boost infantry")
@@ -36,17 +39,18 @@ func run():
 	check(is_equal_approx(CombatMods.engage_range(arena,10.0),9.0),"stealth shortens enemy engage range")
 	run.stealth=0.0
 	# Statuses
+	load_ammo.call("burn")
 	run.burn_chance=1.0
 	for i in range(20):
 		if enemy.burn_time<=0:CombatMods.outgoing(arena,bullet_from(player,2.0),enemy)
 	check(enemy.burn_time>0 and enemy.burn_dps>0,"incendiary rounds ignite")
 	var before=enemy.hp;CombatMods.tick_burn(enemy,.6)
 	check(enemy.hp<before,"burning deals damage over time")
-	run.burn_chance=0.0;run.stun_chance=1.0
+	run.burn_chance=0.0;run.stun_chance=1.0;load_ammo.call("stun")
 	for i in range(20):
 		if enemy.stun_time<=0:CombatMods.outgoing(arena,bullet_from(player,1.0),enemy)
 	check(enemy.stun_time>0,"concussion stuns")
-	run.stun_chance=0.0
+	run.stun_chance=0.0;load_ammo.call("standard")
 	# Incoming: dodge cap and protection by source
 	run.dodge=1.0;var dodged=0
 	for i in range(400):

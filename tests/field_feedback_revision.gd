@@ -50,7 +50,9 @@ func run():
 	check(arena.add_barrier(Vector2i(5,4),10),"Barrier placed during step")
 	check(arena.can_stand(p.position,p) and not p.moving,"Player displaced safely and step canceled")
 	var drop=load("res://scripts/resource_drop.gd").new();drop.arena=arena;drop.position=arena.base_model.position+Vector3(0,.8,-1.8);arena.add_child(drop);arena.room.resource_drops.append(drop)
-	var mat=drop.visual.get_child(0).material_override;check(mat.metallic>.9 and mat.roughness<.3,"Alloy has gold PBR")
+	# Alloy is a gold bar model now (T-105): its meshes share the gold material.
+	var bars=drop.visual.find_children("*","MeshInstance3D",true,false)
+	var mat=bars[0].material_override if not bars.is_empty() else null;check(mat!=null and mat.metallic>.85,"Alloy has gold PBR")
 	await shot("gold")
 	var before=Game.credits;drop.collect();drop.collect();check(Game.credits==before+1,"Collection awards once")
 	check(ResourceStrip.pickup_flights.size()>0,"Pickup uses common HUD flight")

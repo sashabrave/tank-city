@@ -11,7 +11,7 @@ func run():
 	var rng=RandomNumberGenerator.new();rng.seed=77
 	var pending=[];Game.backpack_slots=6;Game.built_workshops=Game.BUILD_COST.keys()
 	for i in range(200):Game.discover_recipe(rng,pending)
-	check(pending.size()==6,"six inventory slots fill without duplicate recipes")
+	check(pending.size()==Backpack.capacity(),"the backpack fills without duplicate recipes")
 	check(Game.weapon_unlocks==["pistol"] and Game.bonus_unlocks==["heart"],"carried recipes do not unlock anything")
 	Game.bank_recipes(pending)
 	check(pending.is_empty() and "character" in Game.research_unlocks,"safe banking opens collection")
