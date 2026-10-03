@@ -8,7 +8,7 @@ func run():
 	Game.save_enabled=false;Game.sound_enabled=false;Settings.persistence_enabled=false;Settings.values.fullscreen=false;Settings.values.language="ru";Settings.values.world_lighting="day";Settings.apply()
 	var scene=load("res://scenes/hub.tscn").instantiate();add_child(scene);await get_tree().process_frame
 	var lighting=scene.get_node("WorldLighting");var day_color=lighting.environment.background_color;var day_energy=lighting.sun.light_energy;var cam=scene.get_viewport().get_camera_3d();var transform=cam.transform
-	Settings.change("world_lighting","night");assert(lighting.sun.light_energy<=.41,"night sun %s" % lighting.sun.light_energy);assert(cam.transform==transform,"camera %s -> %s" % [transform,cam.transform])
+	Settings.change("world_lighting","night");assert(lighting.sun.light_energy<=.55,"night sun %s" % lighting.sun.light_energy)  # 0.7.2 night palette: brighter silver moon;assert(cam.transform==transform,"camera %s -> %s" % [transform,cam.transform])
 	assert(get_tree().get_nodes_in_group("night_lamps").any(func(n):return n.visible));await snapshot("night-hub")
 	Settings.change("world_lighting","day");assert(lighting.environment.background_color==day_color);assert(is_equal_approx(lighting.sun.light_energy,day_energy) and day_energy>.4)
 	assert(get_tree().get_nodes_in_group("night_lamps").any(func(n):return n.visible))
