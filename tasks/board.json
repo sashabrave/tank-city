@@ -2100,7 +2100,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-166.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "развитие заставы на щите конфликты",
 			"type": "bug",
 			"version": "0.8.0"
@@ -2191,7 +2191,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-173.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "надо на шкалах показывать  текущее и зеленым лополнять до будущего",
 			"type": "bug",
 			"version": "0.8.0"
@@ -2282,7 +2282,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-180.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "на этом экране воздух нужен",
 			"type": "bug",
 			"version": "0.8.0"
@@ -2425,7 +2425,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-191.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "здесь шкала не нравится -верстка косая какаяито тесноая, дай воздуха. Галочка на галочке фигня. Поставь в большой центральнй круг цифру и подумай про контарст",
 			"type": "bug",
 			"version": "0.8.0"
@@ -2438,7 +2438,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-192.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "здесь две кнопки улушчить и открыть - сверни в одну, просто бэк яркий  яркий когда можно купить уровень. Когда еще не доступно то показано \"еще Хсплава\"",
 			"type": "bug",
 			"version": "0.8.0"
@@ -2451,7 +2451,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-193.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "экран класса очень тесный",
 			"type": "bug",
 			"version": "0.8.0"

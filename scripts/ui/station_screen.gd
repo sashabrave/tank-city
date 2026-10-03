@@ -128,13 +128,16 @@ func build():
 		# One rule (0.8.0): a station tab is lit while any of its items is new; plain screens keep «affordable».
 		var lit=provider.tab_dot(key) if provider.has_method("tab_dot") else preload("res://scripts/ui/station_notices.gd").tab_new(station_kind,key) if station_kind not in ["","roadmap"] else affordable_in(key)
 		if key!=tab and lit:UiKit.badge(b,"ready",0,"trailing")
+		# Long names shrink to fit beside the icon and the dot instead of running under it.
+		var room=190.0-14-22-10-10-(26 if key!=tab and lit else 0);var font=b.get_theme_font("font");var fs=16
+		while fs>12 and font.get_string_size(Texts.render(tabs[i][1]),HORIZONTAL_ALIGNMENT_LEFT,-1,fs).x>room:fs-=1
+		b.add_theme_font_size_override("font_size",fs);b.clip_text=true
 	# A tab can draw its own page instead of cards + detail (Barracks → «Классы», 0.8.0).
 	if provider.has_method("page_for"):
 		var page=provider.page_for(tab)
 		if page:
 			page.name="Page";panel.add_child(page);page.position=Vector2(232,96);page.setup(self,Vector2(866,532))
-			if notice!="":UiKit.label(panel,notice,Vector2(232,620),Vector2(600,24),15,Color("8fe895")).name="Notice"
-			return
+			return  # the page shows its own feedback (the notice line overlapped the class bio)
 	var scroll=ScrollContainer.new();panel.add_child(scroll);scroll.position=Vector2(232,96);scroll.size=Vector2(530,532);scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
 	var items=provider.items(tab)
 	if selected=="" and not items.is_empty():selected=items[0].id
@@ -160,52 +163,56 @@ func build():
 		animate_cards=false
 	detail_box=UiKit.panel(panel,Vector2(778,96),Vector2(320,532),Color("2c352e"));detail_box.name="Detail"
 	render_detail()
-## Vertical milestones: a line through round nodes — done (filled, ✓), the next goal (orange, glowing) and
-## later steps (hollow, picture in grey and dimmed). A tap selects the step for the detail panel.
+## Vertical milestones (T-191, the same quiet look as the class path): a thin track through big numbered
+## circles — done green, the next goal with an orange ring, later hollow — and an airy card per step.
+## A tap selects the step for the detail panel.
 func milestones(column:VBoxContainer,items:Array):
-	const ROW=96.0;const NODE=40.0;const X=20.0
+	const ROW=104.0;const NODE=46.0;const X=8.0;const GAP=14.0
 	var holder=Control.new();holder.name="Path";column.add_child(holder);holder.custom_minimum_size=Vector2(510,ROW*items.size()+8)
-	var axis=X+NODE*.5;var mid=func(i:int)->float:return i*ROW+(ROW-12)*.5
-	# A thick rounded track, green up to the last reached step (0.8.0, same look as the class path).
+	var axis=X+NODE*.5;var card_h=ROW-GAP;var mid=func(i:int)->float:return i*ROW+card_h*.5
 	if items.size()>1:
-		var rail=Panel.new();holder.add_child(rail);rail.mouse_filter=Control.MOUSE_FILTER_IGNORE;rail.position=Vector2(axis-4,mid.call(0));rail.size=Vector2(8,mid.call(items.size()-1)-mid.call(0))
-		rail.add_theme_stylebox_override("panel",bar_style(Color(1,1,1,.08),4))
+		var rail=Panel.new();holder.add_child(rail);rail.mouse_filter=Control.MOUSE_FILTER_IGNORE;rail.position=Vector2(axis-3,mid.call(0));rail.size=Vector2(6,mid.call(items.size()-1)-mid.call(0))
+		rail.add_theme_stylebox_override("panel",bar_style(Color(1,1,1,.08),3))
 		var last=-1
 		for i in range(items.size()):
 			if str(items[i].get("status",""))=="done":last=i
 		if last>0:
-			var fill=Panel.new();holder.add_child(fill);fill.mouse_filter=Control.MOUSE_FILTER_IGNORE;fill.position=Vector2(axis-4,mid.call(0));fill.size=Vector2(8,mid.call(last)-mid.call(0))
-			fill.add_theme_stylebox_override("panel",bar_style(Color("8fe895"),4))
+			var fill=Panel.new();holder.add_child(fill);fill.mouse_filter=Control.MOUSE_FILTER_IGNORE;fill.position=Vector2(axis-3,mid.call(0));fill.size=Vector2(6,mid.call(last)-mid.call(0))
+			fill.add_theme_stylebox_override("panel",bar_style(Color("8fe895"),3))
+	var left=X+NODE+20
 	for i in range(items.size()):
 		var item=items[i];var status=str(item.get("status","later"));var y=i*ROW
-		var row=Button.new();holder.add_child(row);row.name="Item_"+str(item.id);row.position=Vector2(X+NODE+16,y);row.size=Vector2(510-X-NODE-24,ROW-12);row.focus_mode=Control.FOCUS_NONE
+		var row=Button.new();holder.add_child(row);row.name="Item_"+str(item.id);row.position=Vector2(left,y);row.size=Vector2(510-left-14,card_h);row.focus_mode=Control.FOCUS_NONE
 		var chosen=str(item.id)==selected
-		var style=UiKit.style(Color("584a2c") if status=="goal" else Color("2c4433") if status=="done" and item.get("claimable",false) else Color(1,1,1,.04) if status=="done" else Color(0,0,0,.12),12,UiKit.ORANGE if chosen else Color(1,1,1,.1));style.set_border_width_all(2 if chosen else 1)
+		var bg=Color(UiKit.ORANGE,.16) if status=="goal" else Color(1,1,1,.05) if status=="done" else Color(0,0,0,.14)
+		var style=UiKit.style(bg,14,UiKit.ORANGE if chosen else Color(1,1,1,.07));style.set_border_width_all(2 if chosen else 1)
 		for state in ["normal","hover","pressed","focus"]:row.add_theme_stylebox_override(state,style)
 		var id=str(item.id)
 		row.pressed.connect(func():selected=id;notice="";build())
-		var node=preload("res://scripts/ui/track_node.gd").new();node.status=status;node.milestone=true;node.size=Vector2(NODE,NODE);node.position=Vector2(axis-NODE*.5,mid.call(i)-NODE*.5);node.name="Node_"+id
+		var node=preload("res://scripts/ui/track_node.gd").new();node.status=status;node.milestone=true;node.number=str(i+1);node.size=Vector2(NODE,NODE);node.position=Vector2(axis-NODE*.5,mid.call(i)-NODE*.5);node.name="Node_"+id
 		if status=="goal":node.progress=float(item.get("progress",0.0))
 		holder.add_child(node)
 		if id==str(get_meta("just_claimed","")):node.celebrate.call_deferred()
-		var art=TextureRect.new();row.add_child(art);art.mouse_filter=Control.MOUSE_FILTER_IGNORE;art.position=Vector2(10,8);art.size=Vector2(ROW-28,ROW-28)
+		var pic=card_h-28
+		var art=TextureRect.new();row.add_child(art);art.mouse_filter=Control.MOUSE_FILTER_IGNORE;art.position=Vector2(14,14);art.size=Vector2(pic,pic)
 		art.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;art.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		art.texture=item.get("texture",UiKit.icon_texture(str(item.get("icon",""))))
 		if status=="later":
-			var grey=ShaderMaterial.new();grey.shader=GREY;art.material=grey;art.self_modulate=Color(.75,.75,.75,.45);art.set_meta("kit_layer",true)
-		var reward=int(item.get("reward",0));var right=110.0 if reward>0 else 10.0
-		var title=UiKit.label(row,str(item.title),Vector2(ROW,10),Vector2(row.size.x-ROW-right,26),18,UiKit.INK if status!="later" else UiKit.MUTED);title.clip_text=true
-		UiKit.label(row,str(item.get("caption","")),Vector2(ROW,40),Vector2(row.size.x-ROW-right,22),13,Color("8fe895") if status=="done" else UiKit.ORANGE if status=="goal" else Color(UiKit.MUTED,.7)).clip_text=true
-		# The reward: a pill with the coin; a reached, unclaimed one becomes a «Забрать» button right in the row.
+			var grey=ShaderMaterial.new();grey.shader=GREY;art.material=grey;art.self_modulate=Color(.8,.8,.8,.55);art.set_meta("kit_layer",true)
+		var reward=int(item.get("reward",0));var right=112.0 if reward>0 else 14.0
+		var text_x=14+pic+16;var text_w=row.size.x-text_x-right
+		var title=UiKit.label(row,str(item.title),Vector2(text_x,card_h*.5-26),Vector2(text_w,26),18,UiKit.INK if status!="later" else Color(UiKit.INK,.62));title.clip_text=true
+		UiKit.label(row,str(item.get("caption","")),Vector2(text_x,card_h*.5+2),Vector2(text_w,22),13,Color("8fe895") if status=="done" else UiKit.ORANGE if status=="goal" else Color(UiKit.MUTED,.85)).clip_text=true
+		# The reward: a pill with the coin; a reached, unclaimed one becomes a «+N» button right in the row.
 		if reward>0:
 			if status=="done" and item.get("claimable",false):
-				var claim=UiKit.button(row,"+%d" % reward,Vector2(row.size.x-104,(ROW-12)*.5-20),Vector2(94,40),func():selected=id;perform("claim");set_meta("just_claimed",id),true);claim.name="Claim_"+id
+				var claim=UiKit.button(row,"+%d" % reward,Vector2(row.size.x-104,card_h*.5-20),Vector2(92,40),func():selected=id;perform("claim");set_meta("just_claimed",id),true);claim.name="Claim_"+id
 				claim.icon=UiKit.icon_texture("alloy");claim.expand_icon=true;claim.add_theme_constant_override("icon_max_width",20);claim.tooltip_text=Texts.render("Забрать награду")
 				if UiKit.motion_enabled():
 					claim.pivot_offset=claim.size*.5;var t=claim.create_tween().set_loops();t.tween_property(claim,"scale",Vector2.ONE*1.06,.5);t.tween_property(claim,"scale",Vector2.ONE,.5)
 			else:
-				var pill=UiKit.panel(row,Vector2(row.size.x-104,(ROW-12)*.5-16),Vector2(94,32),Color(1,1,1,.07) if status!="goal" else Color(UiKit.ORANGE,.22))
-				var amount=UiKit.label(pill,("✓ " if status=="done" else "+")+str(reward),Vector2(8,4),Vector2(56,24),15,Color("8fe895") if status=="done" else UiKit.INK if status=="goal" else UiKit.MUTED);amount.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
+				var pill=UiKit.panel(row,Vector2(row.size.x-104,card_h*.5-16),Vector2(92,32),Color(1,1,1,.06) if status!="goal" else Color(UiKit.ORANGE,.24))
+				var amount=UiKit.label(pill,("" if status=="done" else "+")+str(reward),Vector2(6,4),Vector2(56,24),15,Color("8fe895") if status=="done" else UiKit.INK if status=="goal" else UiKit.MUTED);amount.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
 				UiKit.icon(pill,"alloy",Vector2(66,6),Vector2(20,20)).modulate=Color(1,1,1,1.0 if status!="later" else .5)
 static var GREY:Shader:
 	get:

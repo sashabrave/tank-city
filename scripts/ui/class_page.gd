@@ -19,8 +19,8 @@ func setup(owner,area:Vector2):
 func build():
 	for child in get_children():child.queue_free()
 	class_tabs()
-	var y=88.0;var h=size.y-y
-	var a=190.0;var c=272.0;var gap=16.0;var b=size.x-a-c-gap*2
+	var y=100.0;var h=size.y-y
+	var a=190.0;var c=284.0;var gap=28.0;var b=size.x-a-c-gap*2
 	about(Vector2(0,y),Vector2(a,h))
 	level_column(Vector2(a+gap,y),Vector2(b,h))
 	abilities_column(Vector2(a+gap+b+gap,y),Vector2(c,h))
@@ -60,35 +60,28 @@ func about(pos:Vector2,area:Vector2):
 	if not owned and ClassCatalog.unlock_text(id)!="":text+="\n\n[color=#f2a33a]"+Texts.render("Открытие: ")+Texts.render(ClassCatalog.unlock_text(id))+"[/color]"
 	rich.text=text
 
-## Middle column: name, level badge, the upgrade button, «Путь класса», the class's stats.
+## Middle column: name and level badge, one path button (bright when the next level is affordable, otherwise
+## «ещё N ◈»; T-192), the class's stats at 75% width (T-193).
 func level_column(pos:Vector2,area:Vector2):
 	var id=viewed;var owned=id in Game.class_unlocks;var level=ClassCatalog.level(id)
-	UiKit.accent(UiKit.label(self,Game.CLASSES[id].name,pos,Vector2(area.x-84,40),28))
-	var badge=Panel.new();add_child(badge);badge.position=pos+Vector2(area.x-72,-4);badge.size=Vector2(68,68);badge.name="LevelBadge"
-	badge.add_theme_stylebox_override("panel",UiKit.style(Color("4d6355") if owned else Color("2c352e"),34,Color(1,1,1,.12)))
-	var number=UiKit.label(badge,str(level) if owned else "–",Vector2.ZERO,badge.size,30);number.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;number.vertical_alignment=VERTICAL_ALIGNMENT_CENTER;UiKit.accent(number)
-	UiKit.label(self,"Каждый уровень: "+ClassCatalog.growth_line(id),pos+Vector2(0,42),Vector2(area.x-84,20),12,UiKit.MUTED).clip_text=true
-	var y=pos.y+72
-	if owned:
-		if level>=ClassCatalog.MAX_LEVEL:
-			UiKit.label(self,"Максимальный уровень",Vector2(pos.x,y),Vector2(area.x,52),18,Color("8fe895"))
-		else:
-			var cost=Game.class_upgrade_cost(id,false);var short=cost-Game.credits
-			var text=("Улучшить до %d · %d ◈" % [level+1,cost]) if short<=0 else ("Улучшить до %d · не хватает %d ◈" % [level+1,short])
-			var b=UiKit.button(self,text,Vector2(pos.x,y),Vector2(area.x,52),func():act(Game.upgrade_class(id,false),"Уровень %d" % (level+1)),short<=0)
-			b.name="LevelUp";b.disabled=short>0;b.clip_text=true;b.add_theme_font_size_override("font_size",16);UiKit.muted_locked_button(b)
-		y+=60
-	# The path button names the next reward, so the goal is always in sight.
-	var next_reward=0
-	for n in range(level+1,ClassCatalog.MAX_LEVEL+1):
-		if ClassCatalog.TRACK.has(n):next_reward=n;break
-	var path_text="Путь класса · ур. %d: %s" % [next_reward,Texts.render(ClassCatalog.track_title(next_reward)).get_slice(" · ",0)] if next_reward>0 else "Путь класса · %d уровней" % ClassCatalog.MAX_LEVEL
-	var path=UiKit.button(self,path_text,Vector2(pos.x,y),Vector2(area.x,40),open_path);path.name="ClassPath";path.add_theme_font_size_override("font_size",14);path.clip_text=true
-	y+=52
-	UiKit.label(self,"Характеристики класса",Vector2(pos.x,y),Vector2(area.x,24),16);y+=28
+	UiKit.accent(UiKit.label(self,Game.CLASSES[id].name,pos+Vector2(0,4),Vector2(area.x-84,40),28))
+	var badge=Panel.new();add_child(badge);badge.position=pos+Vector2(area.x-60,0);badge.size=Vector2(56,56);badge.name="LevelBadge"
+	badge.add_theme_stylebox_override("panel",UiKit.style(Color("4d6355") if owned else Color("2c352e"),28,Color(1,1,1,.12)))
+	var number=UiKit.label(badge,str(level) if owned else "–",Vector2.ZERO,badge.size,26);number.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;number.vertical_alignment=VERTICAL_ALIGNMENT_CENTER;UiKit.accent(number)
+	UiKit.label(self,("Уровень %d из %d" % [level,ClassCatalog.MAX_LEVEL]) if owned else "Класс ещё не открыт",pos+Vector2(0,40),Vector2(area.x-84,20),13,UiKit.MUTED)
+	var y=pos.y+80
+	var text="Путь класса";var bright=false
+	if owned and level<ClassCatalog.MAX_LEVEL:
+		var cost=Game.class_upgrade_cost(id,false);var short=cost-Game.credits;bright=short<=0
+		text=("Путь класса · ур. %d за %d ◈" % [level+1,cost]) if bright else ("Путь класса · ур. %d · ещё %d ◈" % [level+1,short])
+	elif owned:text="Путь класса пройден"
+	var path=UiKit.button(self,text,Vector2(pos.x,y),Vector2(area.x,52),open_path,bright);path.name="ClassPath";path.add_theme_font_size_override("font_size",16);path.clip_text=true
+	y+=52+28
+	UiKit.label(self,"Характеристики класса",Vector2(pos.x,y),Vector2(area.x,24),16);y+=34
 	var box=ScrollContainer.new();add_child(box);box.position=Vector2(pos.x,y);box.size=Vector2(area.x,pos.y+area.y-y);box.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;box.name="ClassStats"
 	var holder=Control.new();box.add_child(holder)
-	var bars=STATS.add_bars(holder,Vector2.ZERO,area.x-12,class_rows(id),40,false);holder.custom_minimum_size=Vector2(area.x-12,bars.content_height()+8)
+	var width=roundf(area.x*.75)
+	var bars=STATS.add_bars(holder,Vector2.ZERO,width,class_rows(id),40,false);holder.custom_minimum_size=Vector2(width,bars.content_height()+8)
 
 ## The numbers this class starts a run with: the four base ones plus its own stats (class bonus + level growth),
 ## each bar from the plain start value to the class value.
@@ -106,17 +99,20 @@ static func class_rows(id:String)->Array:
 		rows.append(STATS.row(def.title,base*mult,(base+float(extra[def.run_field]))*mult,"%" if def.format=="percent" else ""))
 	return rows
 
-## Right column: two slot cells (an ability, an empty slot with a yellow «+», or locked «с N ур.»), the
-## description of the focused one, the big «Выбрать». A tap on an open cell opens the ability list beside it.
+## Right column: two slot cells (an ability, an empty slot with a yellow «+», or locked «с N ур.»), under each
+## its own short description as wide as the cell (T-193), the big «Выбрать». A tap on an open cell opens the
+## ability list beside it.
 func abilities_column(pos:Vector2,area:Vector2):
 	var id=viewed;var owned=id in Game.class_unlocks
 	ability_area=Rect2(pos,area)
-	UiKit.label(self,"Способности",pos,Vector2(area.x,26),18)
+	UiKit.label(self,"Способности",pos+Vector2(0,4),Vector2(area.x,26),18)
 	var layout=Game.class_slot_layout(id) if owned else []
 	slot_focus=clampi(slot_focus,0,1)
-	var cell=(area.x-12)*.5
+	var gap=16.0;var cell=(area.x-gap)*.5;var top=48.0
+	var abilities=ClassCatalog.abilities(id)
 	for slot in range(2):
-		var b=Button.new();add_child(b);b.position=pos+Vector2(slot*(cell+12),34);b.size=Vector2(cell,cell);b.name="Slot_%d" % slot;b.focus_mode=Control.FOCUS_ALL
+		var x=pos.x+slot*(cell+gap)
+		var b=Button.new();add_child(b);b.position=Vector2(x,pos.y+top);b.size=Vector2(cell,cell);b.name="Slot_%d" % slot;b.focus_mode=Control.FOCUS_ALL
 		var open=slot<layout.size();var filled=open and layout[slot]!=""
 		var focused=slot==slot_focus and open
 		var style=UiKit.style(Color("2c352e") if open else Color("232a25"),14,UiKit.ORANGE if focused else Color(1,1,1,.1));style.set_border_width_all(2 if focused else 1)
@@ -126,26 +122,26 @@ func abilities_column(pos:Vector2,area:Vector2):
 		if filled:UiKit.icon(b,"abilities/"+str(layout[slot]),Vector2(cell*.18,cell*.12),Vector2(cell*.64,cell*.64))
 		elif open:plus_mark(b,Vector2(cell*.3,cell*.26),cell*.4)
 		else:UiKit.icon(b,"lock",Vector2(cell*.3,cell*.26),Vector2(cell*.4,cell*.4)).modulate=Color(1,1,1,.45)
-		var key=UiKit.label(b,"Q" if slot==0 else "1",Vector2(8,cell-26),Vector2(30,20),13,UiKit.ORANGE);key.mouse_filter=Control.MOUSE_FILTER_IGNORE
-		if not open:
-			var note=UiKit.label(b,"с %d ур." % ClassCatalog.ABILITY_LEVELS[slot],Vector2(0,cell-26),Vector2(cell-8,20),12,UiKit.MUTED);note.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT;note.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	var text=""
-	var focused_id=str(layout[slot_focus]) if slot_focus<layout.size() else ""
-	if layout.is_empty():
-		var first=ClassCatalog.abilities(id)[0]
-		text="Способностей пока нет.\nПервая — «%s» — откроется на %d уровне класса." % [AbilityCatalog.DATA[first].name,ClassCatalog.ABILITY_LEVELS[0]]
-	elif focused_id=="":text="Слот пуст. Нажми на него, чтобы взять способность."
-	else:
-		var info=AbilityCatalog.DATA[focused_id];text="%s\n%s" % [info.name,info.get("description","")]
-	var desc=UiKit.label(self,text,pos+Vector2(0,34+cell+14),Vector2(area.x,area.y-34-cell-14-104),13,UiKit.MUTED)
-	desc.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;desc.vertical_alignment=VERTICAL_ALIGNMENT_TOP
+		var key=UiKit.label(b,"Q" if slot==0 else "1",Vector2(10,cell-28),Vector2(30,20),13,UiKit.ORANGE);key.mouse_filter=Control.MOUSE_FILTER_IGNORE
+		# The cell's own description underneath, the width of the cell.
+		var title="";var body=""
+		if filled:
+			var info=AbilityCatalog.DATA[str(layout[slot])];title=info.name;body=info.get("description","")
+		elif open:title="Пусто";body="Нажми, чтобы взять способность"
+		else:
+			var lv=ClassCatalog.ABILITY_LEVELS[slot];title="С %d уровня" % lv
+			if slot==0 and abilities.size()>0:body="Первая способность — «%s»" % AbilityCatalog.DATA[abilities[0]].name
+			else:body="Второй слот"
+		var name_label=UiKit.label(self,title,Vector2(x,pos.y+top+cell+12),Vector2(cell,20),14,UiKit.INK if filled else UiKit.MUTED);name_label.clip_text=true;name_label.name="SlotTitle_%d" % slot
+		var desc=UiKit.label(self,body,Vector2(x,pos.y+top+cell+34),Vector2(cell,area.y-top-cell-34-90),12,UiKit.MUTED);desc.name="SlotText_%d" % slot
+		desc.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;desc.vertical_alignment=VERTICAL_ALIGNMENT_TOP;desc.clip_text=true
 	var take
 	if id==Game.selected_class:
-		take=UiKit.button(self,"Выбран",pos+Vector2(0,area.y-68),Vector2(area.x,62),func():pass);take.disabled=true;UiKit.muted_locked_button(take)
+		take=UiKit.button(self,"Выбран",pos+Vector2(0,area.y-62),Vector2(area.x,62),func():pass);take.disabled=true;UiKit.muted_locked_button(take)
 	elif owned or Game.can_select_class(id):
-		take=UiKit.button(self,"Выбрать" if owned else "Открыть и выбрать",pos+Vector2(0,area.y-68),Vector2(area.x,62),choose,true)
+		take=UiKit.button(self,"Выбрать" if owned else "Открыть и выбрать",pos+Vector2(0,area.y-62),Vector2(area.x,62),choose,true)
 	else:
-		take=UiKit.button(self,"Закрыто",pos+Vector2(0,area.y-68),Vector2(area.x,62),func():pass);take.disabled=true;UiKit.muted_locked_button(take)
+		take=UiKit.button(self,"Закрыто",pos+Vector2(0,area.y-62),Vector2(area.x,62),func():pass);take.disabled=true;UiKit.muted_locked_button(take)
 	take.name="Take";take.add_theme_font_size_override("font_size",22)
 
 ## A yellow outlined square with «+»: an empty slot, or «put this ability in».
@@ -313,13 +309,18 @@ func level_card(body:Control,pos:Vector2,dims:Vector2,n:int,status:String,left:b
 	var stats=[["Здоровье",ClassCatalog.hp_per_level(id),""]]
 	for g in ClassCatalog.GROWTH.get(id,[]):stats.append([str(g[2]).left(1).to_upper()+str(g[2]).substr(1),float(g[1])*100,"%"])
 	var col_w=(dims.x-40)*.5
+	var current=ClassCatalog.level(id) if id in Game.class_unlocks else 1
 	for k in range(stats.size()):
 		var cx=16+(k%2)*(col_w+8);var cy=88+floori(k/2.0)*40
 		var total=stats[k][1]*(n-1)
 		var name=UiKit.label(card,str(stats[k][0]),Vector2(cx,cy),Vector2(col_w-60,18),12,UiKit.MUTED);name.clip_text=true
 		var value=UiKit.label(card,"+%s%s" % [UiKit.number(snappedf(total,.01)),stats[k][2]],Vector2(cx+col_w-70,cy),Vector2(70,18),12,Color("8fe895") if status=="done" else UiKit.INK if status=="goal" else UiKit.MUTED);value.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
 		var track=ColorRect.new();card.add_child(track);track.position=Vector2(cx,cy+22);track.size=Vector2(col_w,6);track.color=Color(1,1,1,.08);track.mouse_filter=Control.MOUSE_FILTER_IGNORE
-		var bar=ColorRect.new();track.add_child(bar);bar.size=Vector2(col_w*float(n-1)/(ClassCatalog.MAX_LEVEL-1),6);bar.color=Color("8fe895") if status=="done" else UiKit.ORANGE if status=="goal" else Color(1,1,1,.22);bar.mouse_filter=Control.MOUSE_FILTER_IGNORE
+		# What the class has now (light), and in green what this level adds on top of it (T-173).
+		var per=col_w/(ClassCatalog.MAX_LEVEL-1);var now=mini(n,current)-1
+		var base=ColorRect.new();track.add_child(base);base.size=Vector2(per*now,6);base.color=Color(1,1,1,.5);base.mouse_filter=Control.MOUSE_FILTER_IGNORE
+		if n>current:
+			var gain=ColorRect.new();track.add_child(gain);gain.position.x=per*now;gain.size=Vector2(per*(n-current),6);gain.color=Color("8fe895",1.0 if status=="goal" else .55);gain.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	# Bottom: bought / buy (nearest level only) / price.
 	var by=dims.y-46
 	if status=="done":

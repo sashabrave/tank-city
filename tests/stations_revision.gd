@@ -20,7 +20,7 @@ func run():
 	var view=screen(hub)
 	check(view!=null and view.find_child("StationPanel",true,false)!=null,"fighter station opens on the template")
 	check(view.provider.tabs().size()==4 and view.find_child("Page",true,false)!=null and view.find_children("Class_*","Button",true,false).size()==ClassCatalog.ROSTER.size(),"«Классы» is one page with the class column")
-	check(view.find_child("LevelUp",true,false)!=null and view.find_children("Slot_*","Button",true,false).size()==2 and view.find_child("Take",true,false)!=null and view.find_child("ClassPath",true,false)!=null,"level button, path, two slot cells and the take button")
+	check(view.find_children("Slot_*","Button",true,false).size()==2 and view.find_child("Take",true,false)!=null and view.find_child("ClassPath",true,false)!=null,"one path button, two slot cells and the take button")
 	# Meta stage 4: no «Выучка» tab.
 	check(not view.provider.tabs().any(func(t):return t[0]=="training"),"no training tab")
 	var p=view.provider

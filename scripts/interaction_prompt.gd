@@ -8,6 +8,10 @@ var amount=0.0
 var key_label:Label
 var enabled_check:Callable
 var action="interact"
+## The world sign with the same caption (e.g. «Развитие заставы» over the board): it fades while the prompt
+## shows, so the two don't stack (T-166).
+var twin:Label3D
+var twin_searched=false
 static func attach(parent:Node3D,world_context:Node,text:String,at:Vector3=Vector3.ZERO,reach:float=1.65,condition:Callable=Callable()):
 	var prompt=load("res://scripts/interaction_prompt.gd").new();prompt.context=world_context;prompt.caption=text;prompt.position=at;prompt.radius=reach;prompt.enabled_check=condition;parent.add_child(prompt);return prompt
 func _ready():
@@ -50,6 +54,11 @@ func _process(delta):
 			var distance=observer.global_position.distance_to(other.global_position)
 			if distance<other.radius and (distance<observer.global_position.distance_to(global_position)-.001 or (is_equal_approx(distance,observer.global_position.distance_to(global_position)) and other.get_instance_id()<get_instance_id())):active=false;amount=0;break
 	amount=move_toward(amount,1.0 if active else 0.0,delta*7)
+	if not twin_searched:
+		twin_searched=true
+		for node in context.find_children("*","Label3D",true,false):
+			if node.text in [caption,Texts.render(caption)] and node.global_position.distance_to(global_position)<3.0:twin=node;break
+	if is_instance_valid(twin):twin.modulate.a=1.0-amount;twin.outline_modulate.a=1.0-amount
 	var camera=get_viewport().get_camera_3d()
 	panel.modulate.a=amount;panel.visible=amount>0 and is_visible_in_tree() and is_instance_valid(camera)
 	if panel.visible:
