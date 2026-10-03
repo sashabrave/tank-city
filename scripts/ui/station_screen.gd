@@ -221,14 +221,16 @@ func render_detail():
 	var body=Control.new();scroll.add_child(body);body.custom_minimum_size=Vector2(content.size.x-12,0)
 	var y=0.0
 	if str(info.get("text",""))!="":
-		var text=UiKit.label(body,str(info.text),Vector2(16,y),Vector2(288,96),15,UiKit.MUTED);text.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;y+=104
+		var text=UiKit.label(body,str(info.text),Vector2(16,y),Vector2(288,96),15,UiKit.MUTED);text.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+		# Height follows the text: a fixed 96 px left a hole under short descriptions and hid the lines below.
+		text.size.y=wrapped_height(text,288,15);y+=text.size.y+10
 	for row in info.get("rows",[]):
 		UiKit.label(body,str(row[0]),Vector2(16,y),Vector2(150,24),15)
 		var value="%s → %s" % [str(row[1]),str(row[2])] if str(row[1])!=str(row[2]) else str(row[1])
 		var cell=UiKit.label(body,value,Vector2(160,y),Vector2(144,24),15,UiKit.ORANGE if str(row[1])!=str(row[2]) else UiKit.INK);cell.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
 		y+=28
 	for line in info.get("lines",[]):
-		var l=UiKit.label(body,str(line),Vector2(16,y),Vector2(288,24),14,UiKit.MUTED);l.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;y+=26
+		var l=UiKit.label(body,str(line),Vector2(16,y),Vector2(288,24),14,UiKit.MUTED);l.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;l.size.y=maxf(24,wrapped_height(l,288,14));y+=l.size.y+2
 	body.custom_minimum_size.y=y
 	for i in range(actions.size()-1,-1,-1):
 		var action=actions[i];bottom-=48
@@ -237,6 +239,10 @@ func render_detail():
 		bottom-=4
 	if notice!="":UiKit.label(content,notice,Vector2(16,detail_box.size.y-44),Vector2(288,28),15,Color("8fe895")).name="Notice"
 	UiKit.reveal(content,0,Vector2(18,0),.22)
+## Height of a wrapped label at its width, from the label's own shaping (theme font, rendered text).
+static func wrapped_height(label:Label,_width:float,_font_size:int)->float:
+	label.text_overrun_behavior=TextServer.OVERRUN_NO_TRIMMING;label.max_lines_visible=-1
+	return label.get_line_count()*(label.get_line_height()+label.get_theme_constant("line_spacing"))+4
 func perform(action:String):
 	var message=str(provider.act(tab,selected,action))
 	if message=="":return

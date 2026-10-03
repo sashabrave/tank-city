@@ -1,11 +1,11 @@
 extends RefCounted
-## «Казарма» (always available): classes and their abilities, general upgrades, the stat tree («Выучка»),
-## field supply, backpack and rerolls. The stat tree is built from StatRegistry.
+## «Казарма» (always available): classes and their abilities, general upgrades,
+## field supply, backpack and rerolls. Class levels open milestones (ClassCatalog.MILESTONES).
 const GENERAL=[["health","Здоровье","+2 HP за уровень"],["damage","Сила","+5% базового урона за уровень"],["mobility","Скорость","Прирост уменьшается с каждым уровнем"],["pressure","Напор","Шанс, что твой снаряд переживёт столкновение"]]
 const SUPPLY=[["heal","Сила лечения","upgrade/heal"],["supplies","Аптечки в передышках","upgrade/supplies"],["luck","Удача","upgrade/luck"]]
 func title()->String:return "Казарма"
-func subtitle()->String:return "Классы, выучка, снабжение — на все вылазки."
-func tabs()->Array:return [["shells","Классы","fighter"],["general","Общие улучшения","health"],["training","Выучка","rare"],["supply","Снабжение","heart"],["kit","Рюкзак и перебросы","inventory"]]
+func subtitle()->String:return "Классы, улучшения, снабжение — на все вылазки."
+func tabs()->Array:return [["shells","Классы","fighter"],["general","Общие улучшения","health"],["supply","Снабжение","heart"],["kit","Рюкзак и перебросы","inventory"]]
 func items(tab:String)->Array:
 	var result=[]
 	match tab:
@@ -23,12 +23,6 @@ func items(tab:String)->Array:
 			for row in SUPPLY:
 				var unlocked=Game.branch_unlocked(row[0])
 				result.append({"id":row[0],"title":row[1],"icon":row[2],"caption":"ур. %d / %d" % [Game.level(row[0]),Game.upgrade_cap(row[0])] if unlocked else "Открыть · %d ◈" % Game.UNLOCK_COSTS[row[0]],"state":"owned" if unlocked else "ready"})
-		"training":
-			for def in StatRegistry.all():
-				if def.step<=0 or def.meta_field!="":continue
-				var level=StatRegistry.level(def.id);var open=StatRegistry.unlocked(def.id)
-				var state="max" if level>=def.max_level else "ready" if StatRegistry.can_buy(def.id) else "owned" if open else "locked"
-				result.append({"id":def.id,"title":def.title,"icon":"stats/"+def.id,"group":RunUpgrades.FAMILIES[def.family],"caption":"ур. %d / %d" % [level,def.max_level] if open else "Нужно: %s %d" % [StatRegistry.get_def(def.requires).title,def.requires_level],"state":state})
 		"kit":
 			result.append({"id":"backpack","title":"Рюкзак","icon":"inventory","caption":"%d / %d ячеек" % [Backpack.capacity(),Backpack.CELLS],"state":"max" if Game.backpack_slots>=Backpack.MAX_BOUGHT else "owned"})
 			result.append({"id":"reroll","title":"Перебросы","icon":"reroll","caption":"+%d за забег" % Game.reroll_level if "reroll" in Game.research_unlocks else "Нужен чертёж","state":"locked" if "reroll" not in Game.research_unlocks else "owned"})
@@ -44,22 +38,14 @@ func detail(tab:String,id:String)->Dictionary:
 			var first=Game.CLASS_SKILLS[id];var second=Game.class_second(id);var other=Game.CLASS_CHOICES[id].filter(func(a):return a!=second)[0]
 			var actions=[]
 			if id!=Game.selected_class:actions.append({"id":"equip","text":"Выбрать" if owned else "Открыть и выбрать" if Game.can_select_class(id) else ClassCatalog.unlock_text(id),"enabled":Game.can_select_class(id),"primary":true})
-			if owned and id not in Game.class_first_slots:actions.append({"id":"first","text":"%s · 30 ◈" % AbilityCatalog.DATA[first].name,"enabled":Game.credits>=30})
-			if owned and id in Game.class_first_slots and id not in Game.class_second_slots:actions.append({"id":"second","text":"%s · 2500 ◈" % AbilityCatalog.DATA[second].name if level>=5 else "Вторая способность · ур. 5","enabled":level>=5 and Game.credits>=2500})
 			# Meta stage 3: slot «1» holds one of two class abilities; switching is free in the hub.
 			if owned:actions.append({"id":"pick","text":"Слот 1: взять «%s»" % AbilityCatalog.DATA[other].name,"enabled":true})
-			if owned:actions.append({"id":"level","text":"Максимум" if level>=10 else "Уровень %d · %d ◈" % [level+1,Game.class_upgrade_cost(id,false)],"enabled":level<10 and Game.credits>=Game.class_upgrade_cost(id,false)})
+			if owned:actions.append({"id":"level","text":"Максимум" if level>=10 else "Уровень %d%s · %d ◈" % [level+1,ClassCatalog.milestone_suffix(level+1),Game.class_upgrade_cost(id,false)],"enabled":level<10 and Game.credits>=Game.class_upgrade_cost(id,false)})
 			return {"title":Game.CLASSES[id].name,"icon":id,"texture":preload("res://scripts/ui/class_gallery.gd").texture(id),"text":"%s. %s%s" % [ClassCatalog.info(id).role,Game.CLASSES[id].desc,("" if owned or ClassCatalog.unlock_text(id)=="" else "\nОткрытие: "+ClassCatalog.unlock_text(id))]+"\nЛюбимая семья карточек: "+RunUpgrades.FAMILIES[ClassCatalog.info(id).family],"rows":[["Здоровье",UiKit.number(now.health),UiKit.number(then.health)],["Урон",UiKit.number(now.damage),UiKit.number(then.damage)],["Скорость",UiKit.number(now.speed),UiKit.number(then.speed)],["Напор",UiKit.number(now.pressure)+"%",UiKit.number(then.pressure)+"%"]],
-				"lines":ClassCatalog.modifier_lines(id)+["Q · %s%s" % [AbilityCatalog.DATA[first].name," ✓" if id in Game.class_first_slots else ""],"1 · %s%s (или %s)" % [AbilityCatalog.DATA[second].name," ✓" if id in Game.class_second_slots else "",AbilityCatalog.DATA[other].name]],"actions":actions}
+				"lines":ClassCatalog.modifier_lines(id)+["Q · %s%s" % [AbilityCatalog.DATA[first].name,(" · сильнее" if level>=7 else "")],"1 · %s (или %s)%s" % [AbilityCatalog.DATA[second].name,AbilityCatalog.DATA[other].name,"" if level>=3 else " · с 3 уровня"]]+ClassCatalog.perk_lines(id),"actions":actions}
 		"general":
 			var row=GENERAL.filter(func(r):return r[0]==id)[0]
 			return {"title":row[1],"icon":"upgrade/"+id,"text":row[2]+". Действует во всех классах; бесплатный сброс возвращает всё вложенное.","rows":[["Уровень",Game.level(id),Game.level(id)+1]],"actions":[{"id":"buy","text":"Улучшить · %d ◈" % Game.cost(id),"enabled":Game.credits>=Game.cost(id),"primary":true},{"id":"reset","text":"Сбросить · вернуть %d ◈" % Game.shell_refund(),"enabled":Game.shell_refund()>0}]}
-		"training":
-			var def=StatRegistry.get_def(id);var level=StatRegistry.level(id)
-			var now=StatRegistry.base_value(def);var then=now+(def.step if level<def.max_level else 0.0)
-			var open=StatRegistry.unlocked(id)
-			var action={"id":"buy","text":"Максимум" if level>=def.max_level else ("Улучшить · %d ◈" % StatRegistry.cost(id) if open else "Нужно: %s %d" % [StatRegistry.get_def(def.requires).title,def.requires_level]),"enabled":StatRegistry.can_buy(id),"primary":true}
-			return {"title":def.title,"icon":"stats/"+def.id,"text":def.description,"rows":[["Уровень",level,mini(level+1,def.max_level)],["В начале забега",StatRegistry.text(def,now),StatRegistry.text(def,then)]],"lines":["Ветка: "+RunUpgrades.FAMILIES[def.family],"Карточки забега прибавляются сверху."],"actions":[action]}
 		"supply":
 			var row=SUPPLY.filter(func(r):return r[0]==id)[0];var unlocked=Game.branch_unlocked(id);var level=Game.level(id);var cap=Game.upgrade_cap(id)
 			var action={"id":"buy","text":("Максимум" if level>=cap else "Улучшить · %d ◈" % Game.cost(id)) if unlocked else "Открыть · %d ◈" % Game.UNLOCK_COSTS[id],"enabled":(level<cap and Game.credits>=Game.cost(id)) if unlocked else Game.credits>=Game.UNLOCK_COSTS[id],"primary":true}
@@ -78,14 +64,11 @@ func supply_text(id:String)->String:
 func act(tab:String,id:String,action:String)->String:
 	match [tab,action]:
 		["shells","equip"]:return "Класс выбран" if Game.select_class(id) else ""
-		["shells","first"]:return "Первая способность открыта · Q" if Game.buy_first_class_skill(id) else ""
-		["shells","second"]:return "Вторая способность открыта · 1" if Game.buy_class_slot(id) else ""
 		["shells","pick"]:
 			var other=Game.CLASS_CHOICES[id].filter(func(a):return a!=Game.class_second(id))[0]
 			return "Слот 1 · %s" % AbilityCatalog.DATA[other].name if Game.choose_class_second(id,other) else ""
 		["shells","level"]:return "Класс улучшен" if Game.upgrade_class(id,false) else ""
 		["general","buy"]:return "Улучшено для всех классов" if Game.purchase(id) else ""
-		["training","buy"]:return "Выучка улучшена" if StatRegistry.buy(id) else ""
 		["general","reset"]:Game.reset_shell();return "Общие улучшения сброшены"
 		["supply","buy"]:return "Улучшено" if (Game.purchase(id) if Game.branch_unlocked(id) else Game.unlock_branch(id)) else ""
 		["kit","buy"]:return "Готово" if (Game.upgrade_backpack() if id=="backpack" else Game.upgrade_rerolls()) else ""

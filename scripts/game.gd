@@ -321,9 +321,18 @@ func apply_profile(data:Dictionary):
 		if not PlayerModels.valid(player_model):player_model=PlayerModels.DEFAULT
 		stat_levels={}
 		var saved_stats=data.get("stat_levels",{})
+		# Meta stage 4: «Выучка» is gone. Alloy spent on it and on the old 2500 second-ability slot comes back once.
+		var refund=0
 		if saved_stats is Dictionary:
 			for key in saved_stats:
-				if typeof(saved_stats[key]) in [TYPE_INT,TYPE_FLOAT]:stat_levels[str(key)]=clampi(int(saved_stats[key]),0,MAX_LEVEL)
+				var def=StatRegistry.get_def(str(key))
+				if def==null or not typeof(saved_stats[key]) in [TYPE_INT,TYPE_FLOAT]:continue
+				for step in range(clampi(int(saved_stats[key]),0,def.max_level)):refund+=def.cost_base+def.cost_step*step
+		refund+=2500*data.get("class_second_slots",[]).size() if data.get("class_second_slots",[]) is Array else 0
+		class_second_slots=[]
+		if refund>0:
+			credits+=refund
+			notification_history.append({"text":"Выучка убрана, вторая способность теперь открывается на 3 уровне класса: возвращено %d ◈." % refund,"sender":"Оперштаб","time":Time.get_unix_time_from_system(),"read":false,"category":"important"})
 		base_level=clampi(int(data.get("base",0)),0,MAX_LEVEL)
 		heal_level=clampi(int(data.get("heal",0)),0,MAX_LEVEL)
 		mobility_level=maxi(0,int(data.get("mobility",0)))
@@ -603,8 +612,10 @@ func choose_class_second(id:String,ability:String)->bool:
 	if ability not in CLASS_CHOICES.get(id,[]) or class_second(id)==ability:return false
 	class_choices[id]=ability;save_progress();return true
 func class_loadout()->Array:
-	var result=[class_skill()] if selected_class in class_first_slots else []
-	if selected_class in class_second_slots:result.append(class_second())
+	# Meta stage 4: an owned class always has its Q; the second ability opens at class level 3.
+	if selected_class not in class_unlocks:return []
+	var result=[class_skill()]
+	if ClassCatalog.level(selected_class)>=3:result.append(class_second())
 	return result
 ## The gadget (F) is left out when the class already carries the same ability in slot «1».
 func hero_loadout()->Array:
@@ -612,9 +623,6 @@ func hero_loadout()->Array:
 	if gadget!="" and gadget in purchased_gadgets and ability_available(gadget) and gadget not in result:result.append(gadget)
 	return result
 func ability_action(index:int)->String:return "ability" if index>=class_loadout().size() else "class_ability" if index==0 else "skill_1"
-func buy_class_slot(id:String)->bool:
-	if id not in class_first_slots or id not in class_unlocks or id in class_second_slots or int(class_levels.get(id,0))<5 or credits<2500:return false
-	credits-=2500;class_second_slots.append(id);save_progress();return true
 
 func ability_available(id:String)->bool:
 	if id in class_loadout():return selected_class in class_unlocks
@@ -651,9 +659,6 @@ func upgrade_hq(id:String)->bool:
 func class_health_bonus()->float:return 0.0
 func class_pressure_bonus()->float:return 0.0
 
-func buy_first_class_skill(id:String)->bool:
-	if id not in class_unlocks or id in class_first_slots or credits<30:return false
-	credits-=30;class_first_slots.append(id);save_progress();return true
 func gadget_cost(id:String)->int:return 35 if id=="barrier" else 100 if id=="mine" else 240
 func hq_purchase_cost(id:String)->int:return 60 if id=="hq_medbay" else 90+HQCatalog.DATA[id].rarity*120
 

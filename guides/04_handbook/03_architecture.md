@@ -58,7 +58,7 @@
 | Реестр | Файлы | Потребители |
 |---|---|---|
 | `UpgradeRegistry` / `UpgradeDef` | `assets/balance/upgrades/*.tres` | Выдача карточек, превью, справочник |
-| `StatRegistry` / `StatDef` | `assets/balance/stats/*.tres` | Станция «Выучка», досье, чекпоинт, песочница, справочник |
+| `StatRegistry` / `StatDef` | `assets/balance/stats/*.tres` | Досье, чекпоинт, песочница, справочник |
 | `Balance.CONFIG` | `game_balance.tres` → combat, economy, campaign, enemies, weapons, abilities | Все системы |
 | `ClassCatalog` | `scripts/classes/class_catalog.gd` | Казарма, выдача карточек, старт забега |
 | `BossCatalog` | `scripts/boss_catalog.gd` | Боссы, превью, справочник |

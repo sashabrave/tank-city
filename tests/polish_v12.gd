@@ -5,8 +5,8 @@ func shot(id):
 	RenderingServer.force_draw();get_viewport().get_texture().get_image().save_png("/tmp/"+id+".png")
 func run():
 	Game.save_enabled=false;Game.sound_enabled=false;Settings.persistence_enabled=false;Game.reset_upgrades()
-	# Hub abilities are the class loadout: the recruit's first skill is bought explicitly.
-	Game.credits=30;assert(Game.buy_first_class_skill("recruit"))
+	# Hub abilities are the class loadout: the recruit's Q comes with the class.
+	assert(Game.class_loadout()==["grenade"])
 	assert(Game.progression.level_cost()==500)
 	for room in range(6):
 		for seed_value in range(30):

@@ -32,7 +32,7 @@ func _ready():
 	assert(not Store.write_file("/dev/null/impossible/save.json",data,Schema.validate).ok)
 	Game.profiles.directory=directory;Game.profiles.active=1;Game.profiles.selected=true;Game.save_path=Game.profiles.path(1);Game.save_enabled=true
 	Game.apply_profile(Game.fresh_profile.duplicate(true));Game.credits=123;Game.progression.prepare_telegrams();assert(Game.save_progress())
-	assert(Game.profiles.choose(2,true));assert(Game.credits==0 and Game.built_workshops.is_empty() and Game.hero_loadout().is_empty())
+	assert(Game.profiles.choose(2,true));assert(Game.credits==0 and Game.built_workshops.is_empty() and Game.hero_loadout()==[Game.class_skill()])
 	Game.duplicate_recipes=[{"category":"weapon","id":"pistol"}];Game.credits=456;Game.health_level=7;assert(Game.save_progress())
 	assert(Game.profiles.choose(1));assert(Game.credits==123 and Game.health_level==0 and Game.duplicate_recipes.is_empty())
 	assert(Game.profiles.choose(2));assert(Game.credits==456 and Game.health_level==7 and Game.duplicate_recipes.size()==1)
