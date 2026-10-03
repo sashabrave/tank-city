@@ -117,6 +117,13 @@ func build():
 		# One rule (0.8.0): a station tab is lit while any of its items is new; plain screens keep «affordable».
 		var lit=preload("res://scripts/ui/station_notices.gd").tab_new(station_kind,key) if station_kind not in ["","roadmap"] else affordable_in(key)
 		if key!=tab and lit:UiKit.badge(b,"ready",0,"trailing")
+	# A tab can draw its own page instead of cards + detail (Barracks → «Классы», 0.8.0).
+	if provider.has_method("page_for"):
+		var page=provider.page_for(tab)
+		if page:
+			page.name="Page";panel.add_child(page);page.position=Vector2(232,96);page.setup(self,Vector2(866,532))
+			if notice!="":UiKit.label(panel,notice,Vector2(232,620),Vector2(600,24),15,Color("8fe895")).name="Notice"
+			return
 	var scroll=ScrollContainer.new();panel.add_child(scroll);scroll.position=Vector2(232,96);scroll.size=Vector2(530,532);scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
 	var items=provider.items(tab)
 	if selected=="" and not items.is_empty():selected=items[0].id

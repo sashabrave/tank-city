@@ -6,6 +6,8 @@ const SUPPLY=[["heal","Сила лечения","upgrade/heal"],["supplies","А�
 func title()->String:return "Казарма"
 func subtitle()->String:return "Классы, улучшения, снабжение — на все вылазки."
 func tabs()->Array:return [["shells","Классы","fighter"],["general","Общие улучшения","health"],["supply","Снабжение","heart"],["kit","Рюкзак и перебросы","inventory"]]
+## «Классы» is one page of its own (scripts/ui/class_page.gd); the other tabs use cards + detail.
+func page_for(tab:String)->Control:return preload("res://scripts/ui/class_page.gd").new() if tab=="shells" else null
 func items(tab:String)->Array:
 	var result=[]
 	match tab:

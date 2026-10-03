@@ -52,7 +52,8 @@ func build_left()->float:
 	doll.add_theme_stylebox_override("panel",UiKit.style(Color(1,1,1,.03),14,Color(1,1,1,.12)))
 	var picture=TextureRect.new();picture.name="DollArt";doll.add_child(picture);picture.texture=preload("res://scripts/ui/class_gallery.gd").texture(Game.selected_class,true)
 	picture.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;picture.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;picture.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	picture.position=Vector2(60,12);picture.size=Vector2(left_w-72,doll_h-24)
+	# Centred in the block (T-146); the state icons overlay its left edge.
+	picture.position=Vector2(12,12);picture.size=Vector2(left_w-24,doll_h-24)
 	# The doll always faces right (the gallery art looks left).
 	picture.flip_h=DOLL_FACES_LEFT
 	# Live states: a column of round icons with their timer sector; hover tells the details.
