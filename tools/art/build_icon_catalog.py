@@ -53,6 +53,8 @@ GROUPS = {
 	"pickups": ("Бонусы поля", "Бонусы, выпадающие на поле; подсказки HUD; энциклопедия"),
 	"building": ("Верстаки хаба", "Меню строительства, карточки верстаков, доска «Развитие заставы»"),
 	"resource": ("Ресурсы", "Счётчик валют сверху, награды, итоги вылазки, торговец"),
+	"category": ("Категории наград", "Значок категории в углу карточки награды (сундуки, чертежи, торговец)"),
+	"sender": ("Отправители сообщений", "Аватар в ленте заданий планшета: Штаб усов, Институт, Оперштаб"),
 }
 
 
@@ -72,6 +74,10 @@ def name_for(group, key):
 		return BONUSES.get(key, key)
 	if group == "building":
 		return WORKSHOPS.get(key, key)
+	if group == "category":
+		return {"hero": "Герой", "ability": "Способность", "hq": "Штаб", "bonus": "Бонус", "weapon": "Оружие", "vehicle": "Транспорт", "blueprint": "Чертёж", "trophy": "Трофей"}.get(key, key)
+	if group == "sender":
+		return {"quests": "Штаб усов", "guide": "Институт", "notifications": "Оперштаб"}.get(key, key)
 	return RESOURCES.get(key, key)
 
 

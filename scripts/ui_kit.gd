@@ -210,6 +210,8 @@ static func icon_texture(id:String)->Texture2D:
 		icon_cache[key]=texture
 	return icon_cache[key]
 static func icon_lookup(id:String)->Texture2D:
+	# Legendary rules keep their own golden pictures; a bare id (encyclopedia) finds them too.
+	if id.begins_with("legend_"):id="upgrades/"+id
 	# Station upgrade art (T-056): drawn GPT icons for the hub stations' general rows.
 	if id.begins_with("upgrade/") and ResourceLoader.exists("res://assets/ui/upgrade_icons/"+id.get_slice("/",1)+".png"):return load("res://assets/ui/upgrade_icons/"+id.get_slice("/",1)+".png")
 	if id.begins_with("building/") and ResourceLoader.exists("res://assets/ui/buildings/"+id.get_slice("/",1)+".png"):return load("res://assets/ui/buildings/"+id.get_slice("/",1)+".png")

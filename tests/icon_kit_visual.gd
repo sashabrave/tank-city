@@ -28,6 +28,12 @@ func run():
 		var glow=rect.get_parent().get_node_or_null("RarityGlow")
 		check(glow!=null and glow.material is ShaderMaterial and glow.get_index()==0,"rarity-tinted background under the content")
 	await shot("/tmp/r13-icon-kit-cards.png")
+	var holder=Control.new();arena.hud.modal.add_child(holder);holder.position=Vector2(40,40)
+	var reward=preload("res://scripts/ui/choice_card.gd").create(holder,Vector2.ZERO,Vector2(280,390),{"color":Color("4aa3ff"),"heading":"Редкое","category":"Штаб","title":"Медблок","detail":"Лечит штаб","icon":"hq_medbay"},func():pass,"upgrade")
+	var category:TextureRect=reward.get_node("CategoryIcon")
+	check(source(category.texture).begins_with(IconKit.ROOT) and category.modulate==Color.WHITE,"reward card category is a drawn symbol, not a tinted line glyph")
+	for key in ["quests","guide","notifications"]:check(IconKit.has("sender/"+key),"sender emblem drawn: "+key)
+	holder.queue_free()
 	arena.queue_free()
 	await get_tree().process_frame
 	var layer=CanvasLayer.new();add_child(layer)

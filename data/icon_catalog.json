@@ -28,12 +28,14 @@
 		{
 			"path": "res://assets/ui/icon_kit/symbols/jeep.png",
 			"group": "Бонусы поля",
-			"context": "Бонусы, выпадающие на поле; подсказки HUD; энциклопедия",
+			"context": "Бонусы, выпадающие на поле; подсказки HUD; энциклопедия; Значок категории в углу карточки награды (сундуки, чертежи, торговец)",
 			"ids": [
-				"pickups/vehicle"
+				"pickups/vehicle",
+				"category/vehicle"
 			],
 			"names": [
-				"Десант техники"
+				"Десант техники",
+				"Транспорт"
 			],
 			"note": "Символ «jeep»"
 		},
@@ -374,14 +376,14 @@
 			"note": ""
 		},
 		{
-			"path": "res://assets/ui/icon_kit/symbols/trophy.png",
+			"path": "res://assets/ui/icon_kit/symbols/weapon_tune.png",
 			"group": "Запас символов",
 			"context": "Нарисован, пока нигде не подключён",
 			"ids": [
-				"trophy"
+				"weapon_tune"
 			],
 			"names": [
-				"trophy"
+				"weapon_tune"
 			],
 			"note": ""
 		},
@@ -1180,6 +1182,78 @@
 				"Полевой ремонт"
 			],
 			"note": "Символ «wrench_spark»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/cat_ability.png",
+			"group": "Категории наград",
+			"context": "Значок категории в углу карточки награды (сундуки, чертежи, торговец)",
+			"ids": [
+				"category/ability"
+			],
+			"names": [
+				"Способность"
+			],
+			"note": "Символ «cat_ability»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/cat_bonus.png",
+			"group": "Категории наград",
+			"context": "Значок категории в углу карточки награды (сундуки, чертежи, торговец)",
+			"ids": [
+				"category/bonus"
+			],
+			"names": [
+				"Бонус"
+			],
+			"note": "Символ «cat_bonus»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/cat_hero.png",
+			"group": "Категории наград",
+			"context": "Значок категории в углу карточки награды (сундуки, чертежи, торговец)",
+			"ids": [
+				"category/hero"
+			],
+			"names": [
+				"Герой"
+			],
+			"note": "Символ «cat_hero»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/cat_hq.png",
+			"group": "Категории наград",
+			"context": "Значок категории в углу карточки награды (сундуки, чертежи, торговец)",
+			"ids": [
+				"category/hq"
+			],
+			"names": [
+				"Штаб"
+			],
+			"note": "Символ «cat_hq»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/cat_weapon.png",
+			"group": "Категории наград",
+			"context": "Значок категории в углу карточки награды (сундуки, чертежи, торговец)",
+			"ids": [
+				"category/weapon"
+			],
+			"names": [
+				"Оружие"
+			],
+			"note": "Символ «cat_weapon»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/trophy.png",
+			"group": "Категории наград",
+			"context": "Значок категории в углу карточки награды (сундуки, чертежи, торговец)",
+			"ids": [
+				"category/trophy"
+			],
+			"names": [
+				"Трофей"
+			],
+			"note": "Символ «trophy»"
 		},
 		{
 			"path": "res://assets/ui/reward_categories/ability.svg",
@@ -2034,6 +2108,42 @@
 			"note": ""
 		},
 		{
+			"path": "res://assets/ui/icon_kit/symbols/sender_institute.png",
+			"group": "Отправители сообщений",
+			"context": "Аватар в ленте заданий планшета: Штаб усов, Институт, Оперштаб",
+			"ids": [
+				"sender/guide"
+			],
+			"names": [
+				"Институт"
+			],
+			"note": "Символ «sender_institute»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/sender_operations.png",
+			"group": "Отправители сообщений",
+			"context": "Аватар в ленте заданий планшета: Штаб усов, Институт, Оперштаб",
+			"ids": [
+				"sender/notifications"
+			],
+			"names": [
+				"Оперштаб"
+			],
+			"note": "Символ «sender_operations»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/sender_story.png",
+			"group": "Отправители сообщений",
+			"context": "Аватар в ленте заданий планшета: Штаб усов, Институт, Оперштаб",
+			"ids": [
+				"sender/quests"
+			],
+			"names": [
+				"Штаб усов"
+			],
+			"note": "Символ «sender_story»"
+		},
+		{
 			"path": "res://assets/portraits/major.png",
 			"group": "Портреты",
 			"context": "Видеосвязь с майором Мурлыкиным",
@@ -2444,11 +2554,13 @@
 		{
 			"path": "res://assets/ui/icon_kit/symbols/blueprint.png",
 			"group": "Ресурсы",
-			"context": "Счётчик валют сверху, награды, итоги вылазки, торговец",
+			"context": "Счётчик валют сверху, награды, итоги вылазки, торговец; Значок категории в углу карточки награды (сундуки, чертежи, торговец)",
 			"ids": [
-				"blueprint"
+				"blueprint",
+				"category/blueprint"
 			],
 			"names": [
+				"Чертёж",
 				"Чертёж"
 			],
 			"note": "Символ «blueprint»"

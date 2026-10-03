@@ -12,7 +12,7 @@
 |---|---|---|
 | bricks.png | pickups/wall | Укрепление |
 | bunker_wrench.png | pickups/repair | Ремонт базы |
-| jeep.png | pickups/vehicle | Десант техники |
+| jeep.png | pickups/vehicle, category/vehicle | Десант техники, Транспорт |
 | snowflake.png | pickups/freeze | Фриз |
 | star.png | pickups/star | Звезда |
 | turret.png | pickups/turret | Турель |
@@ -61,7 +61,7 @@
 | stopwatch.png | stopwatch | stopwatch |
 | tank_shell.png | tank_shell | tank_shell |
 | trench.png | trench | trench |
-| trophy.png | trophy | trophy |
+| weapon_tune.png | weapon_tune | weapon_tune |
 
 ## Здания (иллюстрации) (12)
 
@@ -146,6 +146,19 @@
 | trajectory.png | upgrades/range | Дальность |
 | vest.png | upgrades/guard_bullet, stats/guard_bullet | Бронежилет, Защита от пуль |
 | wrench_spark.png | upgrades/field_repair, stats/field_repair, abilities/field_repair | Полевой ремонт |
+
+## Категории наград (6)
+
+Где: Значок категории в углу карточки награды (сундуки, чертежи, торговец)
+
+| Файл | id | Название |
+|---|---|---|
+| cat_ability.png | category/ability | Способность |
+| cat_bonus.png | category/bonus | Бонус |
+| cat_hero.png | category/hero | Герой |
+| cat_hq.png | category/hq | Штаб |
+| cat_weapon.png | category/weapon | Оружие |
+| trophy.png | category/trophy | Трофей |
 
 ## Категории наград (линейные) (8)
 
@@ -253,6 +266,16 @@
 | smg.png | smg | ПП |
 | sniper.png | sniper | Снайперка |
 
+## Отправители сообщений (3)
+
+Где: Аватар в ленте заданий планшета: Штаб усов, Институт, Оперштаб
+
+| Файл | id | Название |
+|---|---|---|
+| sender_institute.png | sender/guide | Институт |
+| sender_operations.png | sender/notifications | Оперштаб |
+| sender_story.png | sender/quests | Штаб усов |
+
 ## Портреты (1)
 
 Где: Видеосвязь с майором Мурлыкиным
@@ -321,7 +344,7 @@
 | Файл | id | Название |
 |---|---|---|
 | alloy.png | alloy | Сплав |
-| blueprint.png | blueprint | Чертёж |
+| blueprint.png | blueprint, category/blueprint | Чертёж |
 | documents.png | documents, core | Документы, Документы (ядро) |
 | recipe.png | recipe | Рецепт |
 | token.png | token | Жетон |

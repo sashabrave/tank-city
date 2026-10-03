@@ -101,6 +101,7 @@ def main():
 		("hq_garage_v2.png", 4, 3): "medbay plating robot_arm supply interceptor tesla pulse dome emp_dish armor_plate cannon ammo_belt",
 		("bonus_resources_v2.png", 4, 3): "snowflake star turret jeep wheel_wrench bricks bunker_wrench blueprint documents recipe trophy padlock",
 		("stations_v2.png", 4, 3): "st_character st_command st_garage st_headquarters st_mechanic st_merchant st_range st_recycling st_roadmap st_wardrobe st_weapons st_yard",
+		("categories_v2.png", 3, 3): "cat_hero cat_ability cat_hq cat_bonus cat_weapon sender_story sender_institute sender_operations weapon_tune",
 	}
 	for (sheet, cols, rows), names in symbols.items():
 		grid = cells(sheet, cols, rows)

@@ -227,7 +227,7 @@ func quest_message(q:Dictionary,count:int,news:bool,ready:bool,done:bool)->Contr
 	var height=(206 if not actions else (296 if order and taken else 250))
 	var row=Control.new();row.name="Quest_"+str(q.id);row.custom_minimum_size=Vector2(0,height)
 	var avatar=Panel.new();row.add_child(avatar);avatar.position=Vector2(0,4);avatar.size=Vector2(46,46);avatar.add_theme_stylebox_override("panel",UiKit.style(Color(sender.color),23))
-	var glyph=UiKit.icon(avatar,sender.icon,Vector2(11,11),Vector2(24,24));glyph.texture=UiKit.interface_icon(sender.icon)
+	sender_avatar(avatar,sender)
 	var bubble=Panel.new();row.add_child(bubble);bubble.name="Bubble";bubble.position=Vector2(56,0);bubble.size=Vector2(bw,height)
 	var tint=Color("eee4bf") if ready else Color("cfddbf") if news else Color("dce3d5")
 	var style=UiKit.style(tint,12);style.corner_radius_top_left=3;bubble.add_theme_stylebox_override("panel",style)
@@ -276,7 +276,7 @@ func telegram_offer_card(box:VBoxContainer):
 	var height=92+ORDER_TILE_HEIGHT+(62 if manage else 40)
 	var row=Control.new();row.name="TelegramOffer";box.add_child(row);row.custom_minimum_size=Vector2(0,height)
 	var avatar=Panel.new();row.add_child(avatar);avatar.position=Vector2(0,4);avatar.size=Vector2(46,46);avatar.add_theme_stylebox_override("panel",UiKit.style(Color(sender.color),23))
-	var glyph=UiKit.icon(avatar,sender.icon,Vector2(11,11),Vector2(24,24));glyph.texture=UiKit.interface_icon(sender.icon)
+	sender_avatar(avatar,sender)
 	var bubble=Panel.new();row.add_child(bubble);bubble.name="Bubble"
 	bubble.anchor_right=1.0;bubble.anchor_bottom=1.0;bubble.offset_left=56;bubble.offset_right=-14
 	var style=UiKit.style(Color("eee4bf"),12);style.corner_radius_top_left=3;bubble.add_theme_stylebox_override("panel",style)
@@ -597,3 +597,8 @@ func fit_panel():
 	# Phones and tablets: grow to fill the screen (text stays readable); desktop keeps 1:1 at most.
 	var factor=minf(fit,1.35) if InputScheme.touch() else minf(1.0,fit)
 	panel.scale=Vector2.ONE*factor;panel.position=(available-panel.size*factor)*.5
+## Sender avatar: the drawn emblem (data/icon_kit.json «sender/<icon>») over the coloured circle, else the line glyph.
+func sender_avatar(avatar:Panel,sender:Dictionary):
+	var drawn=IconKit.symbol("sender/"+str(sender.icon))
+	var glyph=UiKit.icon(avatar,sender.icon,Vector2(5,5) if drawn else Vector2(11,11),Vector2(36,36) if drawn else Vector2(24,24))
+	glyph.texture=drawn if drawn else UiKit.interface_icon(sender.icon)
