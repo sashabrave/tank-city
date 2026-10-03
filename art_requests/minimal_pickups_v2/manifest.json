@@ -1,0 +1,47 @@
+[
+  {
+    "id": "bonus_pressure",
+    "triangles": 80,
+    "file": "glb/bonus_pressure.glb"
+  },
+  {
+    "id": "bonus_freeze",
+    "triangles": 860,
+    "file": "glb/bonus_freeze.glb"
+  },
+  {
+    "id": "bonus_heart",
+    "triangles": 316,
+    "file": "glb/bonus_heart.glb"
+  },
+  {
+    "id": "bonus_repair",
+    "triangles": 316,
+    "file": "glb/bonus_repair.glb"
+  },
+  {
+    "id": "bonus_wall",
+    "triangles": 132,
+    "file": "glb/bonus_wall.glb"
+  },
+  {
+    "id": "bonus_vehicle_repair",
+    "triangles": 216,
+    "file": "glb/bonus_vehicle_repair.glb"
+  },
+  {
+    "id": "bonus_turret",
+    "triangles": 508,
+    "file": "glb/bonus_turret.glb"
+  },
+  {
+    "id": "bonus_vehicle",
+    "triangles": 464,
+    "file": "glb/bonus_vehicle.glb"
+  },
+  {
+    "id": "bonus_star",
+    "triangles": 116,
+    "file": "glb/bonus_star.glb"
+  }
+]

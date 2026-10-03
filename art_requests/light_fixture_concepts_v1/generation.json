@@ -1,0 +1,27 @@
+{
+  "params": {
+    "model": "gpt_image_2_5",
+    "folder_id": "b6d33678-4471-43a8-bd76-4d910b162d50",
+    "use_unlim": false,
+    "quality": "high",
+    "resolution": "2k",
+    "variant": "flare",
+    "aspect_ratio": "21:9",
+    "background": "opaque",
+    "medias": [
+      {
+        "role": "image",
+        "value": "e3ded456-8e77-423d-994e-cd9d27cc3801"
+      }
+    ],
+    "prompt": "Create a single clean game prop concept lineup, FOUR distinct military light fixtures arranged in ONE horizontal row on a plain medium warm gray seamless ground and background. Use the reference ONLY for its cozy chunky simplified olive/charcoal toy game art material language, NOT its subjects or layout. Extremely minimalist stylized 3D game props for War Cats, friendly chunky proportions, smooth broad shading, matte surfaces, softly bevelled simple solids, virtually no small details. More simple than the reference. All objects fully visible, ample spacing, consistent front three-quarter view with luminous front faces clearly visible. No text, labels, border, panels, characters, weapons, scenery. Four designs left to right: (1) tall base floodlight mast: one thick solid olive square pole, wide squat square concrete foot, short T crossbar carrying TWO oversized rounded rectangular cream glowing lamp heads in charcoal housings; no lattice, no ladder. (2) portable field floodlight: one big rounded square warm ivory luminous face in olive housing, a short thick telescopic stem and three short splayed chunky legs, compact olive battery brick nestled between legs. (3) wall bulkhead lamp: a broad chunky olive mounting plate visible behind a short elbow bracket and one oval pill-shaped warm ivory lamp with a thick charcoal protective rim; present this object floating just above the ground in the lineup without wall scenery, enlarge it for readability. (4) low armored swivel searchlight: oversized short cylindrical olive lamp barrel with broad warm cream lens, thick U-shaped charcoal cradle on a wide flat circular olive turntable base; one simple top handle. Each prop made of roughly 5 to 8 clean solid forms, very few seams, NO thin rods, NO wire cages, NO cables, NO screws or bolts, NO mechanical greebles, NO camouflage pattern, NO surface wear or photorealistic texture, NO tiny switches. A single muted mustard collar accent at most per object. Deliberately thick sturdy supports. Four highly distinct silhouettes tall T / tripod triangle / compact wall oval / squat circular turret. Scale the mast moderately taller, the other three still large and clearly readable in the composition, not strict real-world relative scale. Lighting is soft studio ambient, warm luminous lenses with extremely subtle glow and soft contact shadows, no projected light beams or fog. Quiet olive green, charcoal gray, warm ivory, restrained ochre. Polished cozy mobile strategy game asset proposal, maximum simplicity, grey background."
+  },
+  "job_id": "983f0031-d0f6-4a5c-8038-50a36ef170eb",
+  "inspected_models": [
+    "assets/models/environment_v7/light_mast.glb",
+    "assets/models/environment_v7/light_tripod.glb",
+    "assets/models/environment_v7/light_wall.glb",
+    "assets/models/environment_v7/light_block.glb"
+  ],
+  "purpose": "Concept lineup only; no game code or models replaced."
+}

@@ -20,3 +20,10 @@ tmp/
 __pycache__/
 audio_backup/
 audio_demo/
+
+# Рабочие копии агентов и снимки для отчётов (не часть игры)
+.claude/worktrees/
+screenshots/
+# Отклонённые черновики героя (большие, остаются только локально)
+art_requests/hero_cat_v7/
+art_requests/hero_cat_v9_master/
