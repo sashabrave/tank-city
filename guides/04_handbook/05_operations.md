@@ -18,7 +18,7 @@
 - Тестовые сборки собираются в отдельной копии репозитория `.claude/worktrees/release-build` (внутри проекта, скрыта, в git не попадает): `git checkout --detach <коммит>`, номер `config/build` = число коммитов, экспорт в её `build/macos/`, затем `git checkout project.godot`.
 - Автору отдаётся **одна** папка на рабочем столе: `~/Desktop/War Cats — сборка/` — только последняя сборка (`.app` и `.zip`). Предыдущую при выкладке новой — в Корзину, не копить.
 - Рабочие копии агентов (`.claude/worktrees/agent-*`) после слияния удалять (`git worktree remove`), не оставлять папок на рабочем столе.
-- Headless-экспорт пропускает запекание шейдеров; финальный релиз экспортировать в окне (первый запуск ~8 с вместо ~19 с).
+- Headless-экспорт пропускает запекание шейдеров; релизную сборку экспортировать в окне (`Godot --path . --export-release …` без `--headless`, ~10 с). Полное запекание в `.metallib` требует полного Xcode с Metal Toolchain (`xcrun -f metal`); без него запекается только SPIR-V, остальное компилируется на первом запуске под экраном загрузки.
 
 **Версия** в трёх местах: `BUILD_VERSION.txt` (`alpha-X.Y.Z`), `project.godot` (`config/version`), `export_presets.cfg` (`short_version`, `version` +1). Changelog: новые записи с `"version":"X.Y.Z"`; выпущенные теги не переписывать (сверять с `git show vX.Y.Z-alpha:data/changelog.json`).
 
