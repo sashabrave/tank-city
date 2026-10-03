@@ -31,7 +31,16 @@ const LOW_SUN=30.0
 const LOW_SUN_SHADOW=.55
 ## Battle-only moment; hub and route map keep the style sun. Deterministic per run and room,
 ## seeded from the visual seed so gameplay RNG is never touched.
+## Upgrade rooms and the merchant (author, 2026-10-03): always a warm, cozy time of day picked at random —
+## golden hour, sunset or dawn — whatever the day/night setting. A room opts in with `var cozy_light:=true`.
+const COZY_MOMENTS=["golden","sunset","dawn"]
+static func cozy_room(context)->bool:return context!=null and context.get("cozy_light")==true
 static func moment(context:Node,night:bool)->Dictionary:
+	if cozy_room(context):
+		var pick=RandomNumberGenerator.new();pick.seed=hash([Game.visual_run_seed,int(context.get("index") if context.get("index")!=null else 0),"cozy_sun"])
+		var cozy:Dictionary=MOMENTS[COZY_MOMENTS[pick.randi_range(0,COZY_MOMENTS.size()-1)]].duplicate()
+		var rise=pick.randf_range(Vector2(cozy.elevation).x,Vector2(cozy.elevation).y)
+		cozy.angle=Vector3(-rise,wrapf(10.0+pick.randf_range(35,325),-180,180),0);return cozy
 	if context==null or not context.has_method("room_palette") or not "room_index" in context:return {}
 	var choice=str(Settings.values.get("sun_night" if night else "sun_day","random"))
 	var ids=NIGHT_MOMENTS if night else DAY_MOMENTS
@@ -69,7 +78,7 @@ func relight():
 		get_tree().create_timer(.4,true).timeout.connect(func():if is_instance_valid(probe):probe.update_mode=ReflectionProbe.UPDATE_ONCE)
 	refresh_materials();update_lamps()
 func apply():
-	var night=Settings.values.get("world_lighting","day")=="night"
+	var night=Settings.values.get("world_lighting","day")=="night" and not cozy_room(get_parent())
 	if last_night!=null and last_night!=night and is_inside_tree():relight.call_deferred()
 	last_night=night
 	environment.background_color=day_background.darkened(.78) if night else day_background
@@ -246,7 +255,7 @@ func _process(delta):
 	elapsed=0.0;update_lamps()
 func update_lamps():
 	if not is_inside_tree():return
-	var night=Settings.values.get("world_lighting","day")=="night"
+	var night=Settings.values.get("world_lighting","day")=="night" and not cozy_room(get_parent())
 	var camera=get_viewport().get_camera_3d()
 	var lamps=get_tree().get_nodes_in_group("night_lamps").filter(func(n):return get_parent().is_ancestor_of(n))
 	if camera:

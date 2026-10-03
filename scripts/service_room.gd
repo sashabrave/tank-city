@@ -2,6 +2,8 @@ extends Node3D
 signal completed(index: int)
 signal hub_requested
 var arena
+## Warm, cozy light in every visit (world_lighting.gd COZY_MOMENTS), day/night setting aside.
+var cozy_light:=true
 var index=2
 var branch="vehicle"
 var vehicle="buggy"

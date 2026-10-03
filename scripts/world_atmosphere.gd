@@ -30,7 +30,7 @@ func _ready():
 	var haze_material=ShaderMaterial.new();haze_material.shader=preload("res://shaders/world/haze.gdshader");haze.material=haze_material
 	Settings.changed.connect(apply);apply()
 func apply():
-	var night=Settings.values.world_lighting=="night"
+	var night=Settings.values.world_lighting=="night" and not preload("res://scripts/world_lighting.gd").cozy_room(get_parent())
 	for mat in materials:mat.set_shader_parameter("night",night)
 	var biome="forest"
 	if get_parent().has_method("room_palette"):biome=get_parent().room_palette().ambience

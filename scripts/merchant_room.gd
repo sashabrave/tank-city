@@ -6,6 +6,8 @@ signal completed(index: int)
 signal hub_requested
 const CARD_PRICES=[3,5,8,12]
 var arena
+## Warm, cozy light in every visit (world_lighting.gd COZY_MOMENTS), day/night setting aside.
+var cozy_light:=true
 var index=2
 var locker:Node3D
 var vendor:Node3D
