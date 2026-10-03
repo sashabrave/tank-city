@@ -15,7 +15,10 @@ OUT = ROOT / "assets/ui/icon_kit"
 CANVAS = 384
 # Author decisions after play (brief, «Решения автора после игры»): gold alloy bars and the silver paw
 # token replace the generated symbols; a rebuild keeps those files.
-AUTHOR_KEPT = {"alloy", "token", "bullet_vs_rocket"}  # bullet_vs_rocket: T-123 redraw
+AUTHOR_KEPT = {"alloy", "token", "bullet_vs_rocket",
+	# side-view inventory series (art_requests/inventory_side_v1, cut by hand: uneven blueprint/rank grid)
+	"ammo_standard", "ammo_burn", "ammo_stun", "ammo_shock", "ammo_explosive", "ammo_ap", "ammo_ricochet", "ammo_cryo", "ammo_cluster", "ammo_napalm",
+	"bp_weapon", "bp_vehicle", "bp_hq", "bp_ability", "bp_building"}  # bullet_vs_rocket: T-123 redraw
 
 
 def cells(sheet, cols, rows):

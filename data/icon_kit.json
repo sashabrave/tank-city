@@ -150,7 +150,11 @@
 		"ammo/napalm": "ammo_napalm",
 		"vehicle/buggy": "veh_buggy",
 		"vehicle/apc": "veh_apc",
-		"vehicle/tank": "veh_tank"
+		"vehicle/tank": "veh_tank",
+		"rank/0": "rank_0",
+		"rank/1": "rank_1",
+		"rank/2": "rank_2",
+		"rank/3": "rank_3"
 	},
 	"aliases": {
 		"damage": "burst",

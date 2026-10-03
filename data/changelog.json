@@ -175,7 +175,8 @@
 					"Оружие и патроны свободно перетаскиваются мышкой между руками, слотами и рюкзаком (оружие — тоже предмет рюкзака). Выброшенный предмет лежит на поле своей моделью со свечением редкости, при подходе — карточка: «E» взять/зарядить, «C» в рюкзак или «Нет места». Ящик патронов — короб с полосой цвета эффекта",
 					"Нельзя выбросить оружие из рук и обычные патроны — об этом скажет подсказка; если в бою нет оружия, штаб выдаёт выбранное, пустой слот патронов заряжается обычными",
 					"Во всех комнатах прокачки и у торговца одна раскладка: ящик с оружием слева (три случайных ствола разной редкости с прибавками урона и темпа, за сплав, ствол уходит в рюкзак), автомат с аптечкой или патронами и место «Фортуна» справа — там бывает игровой автомат или ящик патронов.",
-					"Инвентарь как в военных играх, но уютнее: нажатие — меню действий, двойное — надеть или зарядить, наведение — карточка предмета с картинкой, понятным описанием эффекта и сравнением с надетым (зелёное лучше, красное хуже). Такая же карточка у предмета на земле. Цвета редкости стали пастельными. Оружие из ящика со случайными характеристиками даёт свой урон и темп"
+					"Инвентарь как в военных играх, но уютнее: нажатие — меню действий, двойное — надеть или зарядить, наведение — карточка предмета с картинкой, понятным описанием эффекта и сравнением с надетым (зелёное лучше, красное хуже). Такая же карточка у предмета на земле. Цвета редкости стали пастельными. Оружие из ящика со случайными характеристиками даёт свой урон и темп",
+					"Предметы инвентаря перерисованы строго сбоку, без перспективы: оружие, патроны (крупный патрон и маленький ящик с цветной полоской эффекта) и чертежи — строже, с лычками редкости."
 				]
 			},
 			"en": {
@@ -350,7 +351,8 @@
 					"Weapons and ammo drag freely between hands, slots and the backpack (a gun is a backpack item too). A dropped item lies on the field as its own model with a rarity glow; up close a card offers E to take/load and C to stash, or «No room». The ammo box is a can with a band in the effect colour",
 					"You can't throw away the gun in hand or the plain rounds — a hint says so; with no weapon in battle the HQ issues your chosen one, an empty ammo slot gets plain rounds",
 					"Every upgrade room and the merchant now share one layout: a weapon crate on the left (three random guns of different rarity with damage and fire-rate bonuses, bought for alloy, the gun goes into the backpack), a medkit or ammo machine and a «Fortune» spot on the right that may hold a slot machine or an ammo crate.",
-					"Inventory like military games but cosier: tap — actions, double tap — equip or load, hover — an item card with a picture, a plain effect description and a comparison with what is equipped (green better, red worse). Same card over items on the ground. Rarity colours are pastel now. Crate guns with rolled stats apply their damage and fire rate"
+					"Inventory like military games but cosier: tap — actions, double tap — equip or load, hover — an item card with a picture, a plain effect description and a comparison with what is equipped (green better, red worse). Same card over items on the ground. Rarity colours are pastel now. Crate guns with rolled stats apply their damage and fire rate",
+					"Inventory items are redrawn in a strict side view without perspective: weapons, ammo (a big round and a small box with a coloured effect stripe) and calmer blueprints with rarity chevrons."
 				]
 			}
 		},
