@@ -86,7 +86,7 @@ func dressing(arena,color:Color,rng):
 			lay(Vector3(.26,.15,.5),u,v,bag.darkened(rng.randf_range(0,.12)),side*atan2((wide-narrow)*.5,LENGTH))
 	var pole_side=-1.0 if rng.randf()<.5 else 1.0
 	var pole_at=on_apron(pole_side*1.12,.92,0.0)
-	Visuals.box(self,pole_at+Vector3(0,.3,0),Vector3(.12,.6,.12),Color("5c6150"))
+	Visuals.box(self,pole_at+Vector3(0,.3,0),Vector3(.12,.6,.12),Color("6f7563"),"paint")
 	var arm=Visuals.box(self,pole_at+Vector3(-pole_side*.55,.62,0),Vector3(1.2,.07,.07),Color("e8e2d0"));arm.rotation.z=pole_side*.5
 	for k in range(rng.randi_range(0,3)):hedgehog(on_apron(rng.randf_range(-1.6,-1.2) if rng.randf()<.5 else rng.randf_range(1.2,1.6),rng.randf_range(.3,1.0),0.0),rng)
 	for k in range(rng.randi_range(0,2)):
@@ -98,7 +98,7 @@ func dressing(arena,color:Color,rng):
 func hedgehog(at:Vector3,rng):
 	var hog=Node3D.new();add_child(hog);hog.position=at;hog.rotation.y=rng.randf()*TAU
 	for axis in [Vector3(1,1,0),Vector3(-1,1,0),Vector3(0,1,1)]:
-		var beam=Visuals.box(hog,Vector3(0,.22,0),Vector3(.07,.55,.07),Color("4f5443"))
+		var beam=Visuals.box(hog,Vector3(0,.22,0),Vector3(.07,.55,.07),Color("6a6f60"),"gunmetal")
 		beam.basis=Basis(Vector3.UP.cross(axis.normalized()).normalized(),Vector3.UP.angle_to(axis.normalized()))
 
 ## A dirt track from the lane at the wide end, curving away to its side and out of the frame, with tyre marks.

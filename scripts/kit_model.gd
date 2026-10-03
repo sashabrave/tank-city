@@ -124,6 +124,7 @@ func equip_weapon(id:String):
 	for child in weapon_socket.get_children():
 		weapon_socket.remove_child(child);child.queue_free()
 	equipped_weapon=load(path).instantiate();weapon_socket.add_child(equipped_weapon);weapon_id=id
+	Visuals.refresh_cozy_materials(equipped_weapon)  # guns are metal (palette metal map, 2026-10-03)
 	support_grip=Visuals.named_part(equipped_weapon,"SupportGrip")
 	muzzle=Visuals.named_part(equipped_weapon,"Muzzle")
 
@@ -231,6 +232,7 @@ func set_paint(mode:String,rank:int=1):
 				mat.set_shader_parameter("atlas",is_atlas)
 				mat.set_shader_parameter("base_color",source.albedo_color)
 				mat.set_shader_parameter("surface_roughness",source.roughness)
+				MaterialLibrary.paint_params(mat)
 				if is_atlas:
 					mat.set_shader_parameter("color_texture",source.albedo_texture)
 					mat.set_shader_parameter("signal_texture",source.emission_texture)

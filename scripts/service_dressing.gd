@@ -90,8 +90,8 @@ func shell():
 	# Back wall of ribbed panels, a low left wall and a hazard band around the station.
 	for i in range(10):
 		var x=-4.5+i
-		Visuals.box(self,Vector3(x,1.3,-3.75),Vector3(.96,2.6,.2),steel().darkened(.06 if i%2==0 else 0.0))
-		Visuals.box(self,Vector3(x+.48,1.3,-3.62),Vector3(.06,2.6,.08),Color("454c51"))
+		Visuals.box(self,Vector3(x,1.3,-3.75),Vector3(.96,2.6,.2),steel().darkened(.06 if i%2==0 else 0.0),"paint")
+		Visuals.box(self,Vector3(x+.48,1.3,-3.62),Vector3(.06,2.6,.08),Color("7a8186"),"steel")
 	Visuals.box(self,Vector3(0,2.66,-3.7),Vector3(10.1,.12,.36),Color("3b4145"))
 	for z in range(-3,5):
 		Visuals.box(self,Vector3(-4.75,.45,z),Vector3(.2,.9,.96),steel().darkened(.1))
@@ -107,8 +107,8 @@ func shell():
 
 func exit_gate():
 	var at=Vector3(EXIT_CELL.x+.45,0,EXIT_CELL.y)
-	for side in [-1,1]:Visuals.box(self,at+Vector3(0,1.1,side*.62),Vector3(.24,2.2,.2),Color("4a5249"))
-	Visuals.box(self,at+Vector3(0,2.26,0),Vector3(.3,.22,1.5),Color("4a5249"))
+	for side in [-1,1]:Visuals.box(self,at+Vector3(0,1.1,side*.62),Vector3(.24,2.2,.2),Color("6c756b"),"steel")
+	Visuals.box(self,at+Vector3(0,2.26,0),Vector3(.3,.22,1.5),Color("6c756b"),"steel")
 	for i in range(5):
 		var z=-.5+i*.25;var band=Visuals.box(self,at+Vector3(0,2.26,z),Vector3(.32,.1,.12),Color("e0b13a") if i%2==0 else Color("2c2f30"))
 		band.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
@@ -129,11 +129,11 @@ func set_open(value:bool):
 func mechanic():
 	# Lift under the vehicle, tool wall, tyres, barrels, welding glow.
 	var lift=Vector3(2.2,0,-1.2)
-	Visuals.box(self,lift+Vector3(0,.08,0),Vector3(2.0,.16,2.3),Color("3e4447"))
+	Visuals.box(self,lift+Vector3(0,.08,0),Vector3(2.0,.16,2.3),Color("5a6266"),"gunmetal")
 	for side in [-1,1]:Visuals.box(self,lift+Vector3(side*1.02,.1,0),Vector3(.06,.2,2.3),Color("e0b13a"))
-	for x in [-.6,.6]:Visuals.box(self,lift+Vector3(x,.9,-1.3),Vector3(.12,1.8,.12),Color("c24a3a"))
+	for x in [-.6,.6]:Visuals.box(self,lift+Vector3(x,.9,-1.3),Vector3(.12,1.8,.12),Color("c24a3a"),"paint")
 	for i in range(6):
-		var hook=Visuals.box(self,Vector3(-3.4+i*.34,1.6+(i%2)*.18,-3.58),Vector3(.08,.4+rng.randf()*.3,.06),Color("9aa3a8"));hook.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		var hook=Visuals.box(self,Vector3(-3.4+i*.34,1.6+(i%2)*.18,-3.58),Vector3(.08,.4+rng.randf()*.3,.06),Color("9aa3a8"),"steel");hook.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	Visuals.box(self,Vector3(-2.55,1.62,-3.62),Vector3(2.2,1.2,.04),Color("2e3538"))
 	for i in range(3):tyre(Vector3(-3.8,.14+i*.26,2.6))
 	tyre(Vector3(-3.1,.14,3.1))
@@ -157,8 +157,8 @@ func instructor():
 
 func command_post():
 	# Field command post: antenna mast, radio crates, camo net, a green terminal glow.
-	Visuals.box(self,Vector3(3.6,2.0,-3.1),Vector3(.08,4.0,.08),Color("6e757a"))
-	for y in [1.2,2.2,3.2]:Visuals.box(self,Vector3(3.6,y,-3.1),Vector3(.5,.04,.04),Color("6e757a"))
+	Visuals.box(self,Vector3(3.6,2.0,-3.1),Vector3(.08,4.0,.08),Color("8a9196"),"steel")
+	for y in [1.2,2.2,3.2]:Visuals.box(self,Vector3(3.6,y,-3.1),Vector3(.5,.04,.04),Color("8a9196"),"steel")
 	var tip=Visuals.box(self,Vector3(3.6,4.05,-3.1),Vector3(.12,.12,.12),Color("e2493b"));tip.material_override=Visuals.material(Color("e2493b"),true);flicker.append(tip)
 	for i in range(3):
 		var crate=Visuals.box(self,Vector3(-3.4+i*.75,.3,-2.9),Vector3(.65,.6,.5),Color("4f5b45"))

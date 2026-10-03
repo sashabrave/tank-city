@@ -10,8 +10,8 @@ static func place(parent:Node3D,context,at:Vector3)->Node3D:
 func _ready():
 	name="WeaponLocker"
 	var olive=Color("59603f")
-	Visuals.box(self,Vector3(0,.8,0),Vector3(.9,1.6,.5),olive)
-	Visuals.box(self,Vector3(0,.8,.26),Vector3(.8,1.45,.03),olive.darkened(.2))
+	Visuals.box(self,Vector3(0,.8,0),Vector3(.9,1.6,.5),olive,"paint")
+	Visuals.box(self,Vector3(0,.8,.26),Vector3(.8,1.45,.03),olive.darkened(.2),"paint")
 	for i in range(3):
 		var rack=Visuals.model("weapon_"+["rifle","shotgun","smg"][i],self,Vector3(-.25+i*.25,.95,.3));rack.rotation=Vector3(0,0,PI*.5);rack.scale=Vector3.ONE*.7
 	Visuals.label3d(self,"Оружие · E",Vector3(0,1.9,0),Color("fff0ce"),24)

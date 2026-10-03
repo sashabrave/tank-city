@@ -87,7 +87,7 @@ static func barrier(parent,color):
 	for x in [-.18,.18]:
 		var stripe=Visuals.box(parent,Vector3(x,.18,-.085),Vector3(.085,.12,.012),Color("b39858"));stripe.rotation.z=-.25
 static func wire(parent):
-	for x in [-.34,.34]:Visuals.box(parent,Vector3(x,.16,0),Vector3(.025,.32,.025),Color("59665c"))
+	for x in [-.34,.34]:Visuals.box(parent,Vector3(x,.16,0),Vector3(.025,.32,.025),Color("7e8a80"),"steel")
 	var mesh=ImmediateMesh.new();mesh.surface_begin(Mesh.PRIMITIVE_LINE_STRIP)
 	for i in range(65):
 		var t=float(i)/64;mesh.surface_add_vertex(Vector3(lerpf(-.34,.34,t),.19+sin(t*TAU*8)*.075,cos(t*TAU*8)*.075))

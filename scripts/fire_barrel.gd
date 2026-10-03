@@ -14,12 +14,12 @@ var intensity=1.0
 static func drum(parent:Node3D,color:Color,pos:=Vector3.ZERO)->Node3D:
 	var root=Node3D.new();root.name="Drum";parent.add_child(root);root.position=pos
 	var body=MeshInstance3D.new();var c=CylinderMesh.new();c.top_radius=.24;c.bottom_radius=.24;c.height=.72;c.radial_segments=16;body.mesh=c;body.position.y=.36
-	body.material_override=Visuals.material(color);root.add_child(body)
+	body.material_override=Visuals.surface_material(color,"paint");root.add_child(body)  # painted steel drum
 	for y in [.12,.6]:
 		var hoop=MeshInstance3D.new();var h=CylinderMesh.new();h.top_radius=.25;h.bottom_radius=.25;h.height=.04;h.radial_segments=16;hoop.mesh=h;hoop.position.y=y
-		hoop.material_override=Visuals.material(color.darkened(.35));root.add_child(hoop)
+		hoop.material_override=Visuals.surface_material(color.darkened(.35),"paint");root.add_child(hoop)
 	var lid=MeshInstance3D.new();var l=CylinderMesh.new();l.top_radius=.2;l.bottom_radius=.22;l.height=.03;l.radial_segments=16;lid.mesh=l;lid.position.y=.735
-	lid.material_override=Visuals.material(color.darkened(.2));root.add_child(lid)
+	lid.material_override=Visuals.surface_material(color.darkened(.2),"paint");root.add_child(lid)
 	return root
 
 func _ready():

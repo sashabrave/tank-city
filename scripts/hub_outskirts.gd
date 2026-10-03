@@ -22,23 +22,24 @@ func _ready():
 	vegetation(biome)
 	cargo()
 
-func steel()->Color:return Color("5d646a")
+## Bare structural steel (library surface «steel»), light enough to read as metal without bright reflections.
+func steel()->Color:return Color("848b90")
 
 func hangar():
 	var frame=Node3D.new();frame.name="HangarFrame";add_child(frame)
 	for x in [-5.8,7.8]:
 		for z in [-3.4,.6,4.4]:
-			Visuals.box(frame,Vector3(x,1.7,z),Vector3(.22,3.6,.22),steel())
-			Visuals.box(frame,Vector3(x,.06,z),Vector3(.5,.12,.5),steel().darkened(.2))
-		Visuals.box(frame,Vector3(x,3.45,.5),Vector3(.2,.2,7.9),steel())
+			Visuals.box(frame,Vector3(x,1.7,z),Vector3(.22,3.6,.22),steel(),"steel")
+			Visuals.box(frame,Vector3(x,.06,z),Vector3(.5,.12,.5),steel().darkened(.2),"steel")
+		Visuals.box(frame,Vector3(x,3.45,.5),Vector3(.2,.2,7.9),steel(),"steel")
 	# Trusses only over the back half, so they never cover the playable floor from this camera.
 	for z in [-3.4,-1.0]:
-		Visuals.box(frame,Vector3(1,3.6,z),Vector3(13.8,.14,.14),steel())
-		Visuals.box(frame,Vector3(1,3.1,z),Vector3(13.8,.1,.1),steel())
+		Visuals.box(frame,Vector3(1,3.6,z),Vector3(13.8,.14,.14),steel(),"steel")
+		Visuals.box(frame,Vector3(1,3.1,z),Vector3(13.8,.1,.1),steel(),"steel")
 		for i in range(12):
-			var brace=Visuals.box(frame,Vector3(-4.9+i*1.15,3.35,z),Vector3(.06,.6,.06),steel());brace.rotation.z=.6 if i%2 else -.6
+			var brace=Visuals.box(frame,Vector3(-4.9+i*1.15,3.35,z),Vector3(.06,.6,.06),steel(),"steel");brace.rotation.z=.6 if i%2 else -.6
 		for x in [-2.5,1.0,4.5]:
-			Visuals.box(frame,Vector3(x,2.9,z),Vector3(.04,.4,.04),steel().darkened(.3))
+			Visuals.box(frame,Vector3(x,2.9,z),Vector3(.04,.4,.04),steel().darkened(.3),"steel")
 			var lamp=Visuals.box(frame,Vector3(x,2.68,z),Vector3(.5,.08,.2),Color("ffe7b0"));lamp.material_override=Visuals.material(Color("ffe7b0"),true)
 
 ## Back wall over the lockers: pipes with gauges, a cable tray, stepped vent fans, a tool board,
@@ -49,7 +50,7 @@ func backwall():
 	var z=-3.25;var pipe=Color("7b6f5a");var olive=Color("59603f");var anim=preload("res://scripts/diorama_animator.gd").new();wall.add_child(anim)
 	for y in [2.05,2.3]:
 		var run=MeshInstance3D.new();var mesh=CylinderMesh.new();mesh.top_radius=.06;mesh.bottom_radius=.06;mesh.height=12.6;run.mesh=mesh
-		run.rotation.z=PI*.5;run.position=Vector3(1,y,z);run.material_override=Visuals.material(pipe if y<2.2 else steel());wall.add_child(run)
+		run.rotation.z=PI*.5;run.position=Vector3(1,y,z);run.material_override=Visuals.surface_material(pipe,"paint") if y<2.2 else Visuals.surface_material(steel(),"steel");wall.add_child(run)
 	for x in [-3.6,.4,4.2]:
 		var gauge=MeshInstance3D.new();var disc=CylinderMesh.new();disc.top_radius=.13;disc.bottom_radius=.13;disc.height=.05;gauge.mesh=disc
 		gauge.rotation.x=PI*.5;gauge.position=Vector3(x,2.05,z+.1);gauge.material_override=Visuals.material(Color("e8e2d0"));wall.add_child(gauge)
@@ -66,19 +67,19 @@ func backwall():
 		anim.add(blades,"rotation:z",[0.0,.7,1.4,2.1])
 	var board=Visuals.box(wall,Vector3(-.8,1.55,z+.02),Vector3(1.2,.7,.04),Color("6a6f63"))
 	for i in range(5):
-		var tool=Visuals.box(wall,Vector3(-1.25+i*.22,1.55,z+.06),Vector3(.05,.42-(i%2)*.14,.03),Color("c9cfbe") if i%2 else Color("cf613f"));tool.rotation.z=(i-2)*.08
-	var cabinet=Visuals.box(wall,Vector3(5.2,1.5,z+.06),Vector3(.8,1.0,.14),olive)
+		var tool=Visuals.box(wall,Vector3(-1.25+i*.22,1.55,z+.06),Vector3(.05,.42-(i%2)*.14,.03),Color("c9cfbe") if i%2 else Color("cf613f"),"steel" if i%2 else "paint");tool.rotation.z=(i-2)*.08
+	var cabinet=Visuals.box(wall,Vector3(5.2,1.5,z+.06),Vector3(.8,1.0,.14),olive,"paint")
 	for i in range(3):
 		var led=Visuals.box(wall,Vector3(4.95+i*.25,1.85,z+.14),Vector3(.08,.08,.02),[Color("8fe895"),Color("ffb52c"),Color("ff4a3a")][i]);led.material_override=Visuals.material([Color("8fe895"),Color("ffb52c"),Color("ff4a3a")][i],true)
 		anim.add(led,"visible",[true,i!=2,i==0,true])
 	for i in range(16):Visuals.box(wall,Vector3(-4.5+i*.8,1.2,z+.03),Vector3(.4,.1,.02),Color("e5b34f") if i%2==0 else Color("2f332d"))
 	# Chain hoist over the corner with an engine block hanging from it.
 	var hoist=Node3D.new();wall.add_child(hoist);hoist.position=Vector3(6.8,0,-2.6)
-	Visuals.box(hoist,Vector3(0,3.2,0),Vector3(.12,.12,1.4),steel())
-	for i in range(6):Visuals.box(hoist,Vector3(0,3.05-i*.16,.2),Vector3(.05,.12,.05),Color("8d9189"))
+	Visuals.box(hoist,Vector3(0,3.2,0),Vector3(.12,.12,1.4),steel(),"steel")
+	for i in range(6):Visuals.box(hoist,Vector3(0,3.05-i*.16,.2),Vector3(.05,.12,.05),Color("8d9189"),"steel")
 	var engine=Node3D.new();hoist.add_child(engine);engine.position=Vector3(0,1.95,.2)
-	Visuals.box(engine,Vector3.ZERO,Vector3(.7,.45,.5),Color("5d646a"))
-	for k in range(3):Visuals.box(engine,Vector3(-.2+k*.2,.3,0),Vector3(.12,.18,.3),Color("73797b"))
+	Visuals.box(engine,Vector3.ZERO,Vector3(.7,.45,.5),Color("6d747a"),"gunmetal")
+	for k in range(3):Visuals.box(engine,Vector3(-.2+k*.2,.3,0),Vector3(.12,.18,.3),Color("8a9196"),"steel")
 	anim.add(engine,"rotation:y",[0.0,.08,0.0,-.08])
 
 func racks():
@@ -87,7 +88,7 @@ func racks():
 		for z in ([-1.8,1.8] if x<0 else [-2.2,2.2]):
 			var rack=Node3D.new();rack.name="StorageRack";add_child(rack);rack.position=Vector3(x,0,z)
 			for dx in [-.35,.35]:
-				for dz in [-.9,.9]:Visuals.box(rack,Vector3(dx,1.1,dz),Vector3(.07,2.2,.07),steel())
+				for dz in [-.9,.9]:Visuals.box(rack,Vector3(dx,1.1,dz),Vector3(.07,2.2,.07),steel(),"steel")
 			for y in [.1,.85,1.6]:
 				Visuals.box(rack,Vector3(0,y,0),Vector3(.8,.05,1.9),Color("8a7a56"))
 				for k in range(2):

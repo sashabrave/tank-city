@@ -3070,3 +3070,23 @@ Q · есть сразу	Q · from the start
 В слот патронов кладутся только патроны	Only ammo goes into the ammo slot
 Прочность штаба	HQ durability
 Ячейки рюкзака	Backpack cells
+Материалы	Materials
+Меняется сразу в игре. Сохранить — в data/materials.json	Changes apply in the game at once. Save writes data/materials.json
+Вернулось к сохранённому	Back to the saved values
+Не удалось сохранить	Could not save
+Поверхности	Surfaces
+Шлифовка (полосы)	Brushed (streaks)
+Детали палитры (оружие, бойцы, лампы)	Palette parts (weapons, troops, lamps)
+Металл	Metal
+Шероховатость	Roughness
+Лак	Lacquer
+Не сохранено	Not saved
+Сталь	Steel
+Оружейный металл	Gunmetal
+Латунь	Brass
+Крашеный металл	Painted metal
+Резина	Rubber
+Дерево	Wood
+Ткань	Fabric
+Бетон	Concrete
+Стекло	Glass

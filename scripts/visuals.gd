@@ -55,12 +55,21 @@ static func material(color: Color, emission = false) -> StandardMaterial3D:
 	cozy_material(mat)
 	return mat
 
-static func box(parent: Node3D, pos: Vector3, dimensions: Vector3, color: Color) -> MeshInstance3D:
+## A material of a library surface with this colour (shared per colour and surface).
+static var surface_cache:Dictionary={}
+static func surface_material(color:Color,surface:String)->StandardMaterial3D:
+	var key=color.to_html()+"|"+surface
+	if not surface_cache.has(key) or not is_instance_valid(surface_cache[key]):
+		var mat=StandardMaterial3D.new();mat.resource_name="srf_"+surface;mat.albedo_color=color;mat.roughness=.9
+		cozy_material(mat);surface_cache[key]=mat
+	return surface_cache[key]
+## A box; `surface` names a MaterialLibrary surface («steel», «gunmetal», «brass», «paint», «rubber», «wood»…).
+static func box(parent: Node3D, pos: Vector3, dimensions: Vector3, color: Color, surface:="") -> MeshInstance3D:
 	var m = MeshInstance3D.new()
 	var mesh = BoxMesh.new()
 	mesh.size = dimensions
 	m.mesh = mesh
-	m.material_override = material(color)
+	m.material_override = material(color) if surface=="" else surface_material(color,surface)
 	parent.add_child(m)
 	m.position = pos
 	return m
@@ -294,21 +303,43 @@ static func cozy_material(mat:StandardMaterial3D):
 	var shiny=bool(Settings.values.get("shiny_metal",true))
 	if Settings.values.get("rim_light",true) and mat.shading_mode!=BaseMaterial3D.SHADING_MODE_UNSHADED:
 		mat.rim_enabled=true;mat.rim=.4;mat.rim_tint=.55
-	if "steel" in title or "metal" in title:
-		# T-005: smoother steel catches sun glints and the contrasting reflection sky.
-		mat.metallic=.96 if shiny else .9;mat.roughness=.18 if shiny else .48;mat.roughness_texture=metal_roughness();mat.roughness_texture_channel=BaseMaterial3D.TEXTURE_CHANNEL_RED
-	elif shiny and ("graphite" in title or "frames" in title):
-		# Weapon bodies and frames: blued gunmetal instead of flat plastic.
-		mat.metallic=.88;mat.roughness=.24
-	elif "rubber" in title or "dark" in title or "graphite" in title:
-		mat.roughness=.85
-	elif title.begins_with("env7_"):pass
-	elif "armor" in title or "armour" in title or "ivory" in title or "olive" in title or "enamel" in title or "sage" in title or "ochre" in title:
-		mat.metallic=.1 if shiny else 0.0;mat.roughness=.46 if shiny else .52
-		if shiny:mat.clearcoat_enabled=true;mat.clearcoat=.5;mat.clearcoat_roughness=.35
+	if title.begins_with("v6_palette_fabric") or title.begins_with("v6_weapon_palette"):
+		# Palette atlas (weapons, troops, lamps, gates…): each cell has its own surface, so metal goes on the
+		# metal parts only (MaterialLibrary «palette», 2026-10-03).
+		palette_metal(mat,shiny);return
+	# Everything else: a surface from the library — asked for directly («srf_steel» from Visuals.box) or found
+	# by the imported material's name. Biome-painted ENV7 props keep their paint unless they are steel.
+	var kind=title.trim_prefix("srf_") if title.begins_with("srf_") else MaterialLibrary.by_name(title)
+	if title.begins_with("env7_") and kind!="steel":kind=""
+	if kind!="" and not MaterialLibrary.surface(kind).is_empty():apply_surface(mat,MaterialLibrary.surface(kind),shiny)
 	elif original.x>.8:
 		mat.roughness=minf(original.y,.2) if shiny else .35
+## Library surface → material. With «Блестящий металл» off everything turns duller together.
+static func apply_surface(mat:StandardMaterial3D,spec:Dictionary,shiny:bool):
+	var metallic=float(spec.get("metallic",0.0));var roughness=float(spec.get("roughness",.8))
+	if not shiny:roughness=maxf(roughness,.45);metallic=metallic if metallic>=.8 else 0.0
+	mat.metallic=metallic;mat.roughness=roughness
+	if bool(spec.get("brushed",false)):mat.roughness_texture=metal_roughness();mat.roughness_texture_channel=BaseMaterial3D.TEXTURE_CHANNEL_RED
+	var coat=float(spec.get("clearcoat",0.0))
+	if shiny and coat>0.0:mat.clearcoat_enabled=true;mat.clearcoat=coat;mat.clearcoat_roughness=.35
 
+## Metallic / roughness per palette cell, same layout as InfantryPalette (cell 4 px, one row): green =
+## roughness, blue = metallic, from the cell's library surface (data/materials.json «palette»); cells without
+## one stay matte cloth.
+static var palette_orm_texture:ImageTexture
+static func palette_orm()->ImageTexture:
+	if palette_orm_texture==null:
+		var names=InfantryPalette.NAMES;var cell=InfantryPalette.CELL
+		var image=Image.create(cell*names.size(),cell,false,Image.FORMAT_RGBA8)
+		for i in range(names.size()):
+			var spec=MaterialLibrary.surface(MaterialLibrary.palette_surface(names[i]))
+			image.fill_rect(Rect2i(i*cell,0,cell,cell),Color(1.0,float(spec.get("roughness",.85)),float(spec.get("metallic",0.0)),1.0))
+		palette_orm_texture=ImageTexture.create_from_image(image)
+	return palette_orm_texture
+static func palette_metal(mat:StandardMaterial3D,shiny:bool):
+	mat.metallic=1.0 if shiny else .6;mat.metallic_texture=palette_orm();mat.metallic_texture_channel=BaseMaterial3D.TEXTURE_CHANNEL_BLUE
+	mat.roughness=1.0;mat.roughness_texture=palette_orm();mat.roughness_texture_channel=BaseMaterial3D.TEXTURE_CHANNEL_GREEN
+	mat.metallic_specular=.5
 static func refresh_cozy_materials(root:Node):
 	if root is GeometryInstance3D and root.material_override is StandardMaterial3D:cozy_material(root.material_override)
 	if root is MeshInstance3D and root.mesh:

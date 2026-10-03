@@ -23,3 +23,4 @@ combat_terrain_revision
 biomes_revision
 card_table_visual
 meta_integrity_revision
+material_library_revision

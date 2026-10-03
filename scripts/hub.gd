@@ -175,7 +175,7 @@ func build_ui():
 func build_dev_menu():
 	var toggle=UiKit.button(root,"Инструменты",Vector2(30,191),Vector2(345,50),func():toggle_dev_menu());toggle.name="ToolsButton"
 	toggle.icon=UiKit.interface_icon("debug");toggle.expand_icon=true;toggle.add_theme_constant_override("icon_max_width",20);toggle.add_theme_font_size_override("font_size",18)
-	var rows=[["DebugAlloyButton","+1000 сплава"],["RecipeShopButton","Магазин чертежей"],["SandboxButton","Песочница"],["DevMapButton","Дев-режим карты: выкл"],["TasksButton","Задачи (F9) · новая — F8"]]
+	var rows=[["DebugAlloyButton","+1000 сплава"],["RecipeShopButton","Магазин чертежей"],["SandboxButton","Песочница"],["DevMapButton","Дев-режим карты: выкл"],["TasksButton","Задачи (F9) · новая — F8"],["MaterialsButton","Материалы"]]
 	const PAD=12.0;const ROW=46.0;const GAP=8.0
 	var menu=UiKit.glass(root,Vector2(30,249),Vector2(345,PAD*2+rows.size()*ROW+(rows.size()-1)*GAP));menu.name="DevMenu";menu.hide();menu.z_index=20
 	var y=PAD
@@ -200,6 +200,7 @@ func build_dev_menu():
 	menu.get_node("DebugAlloyButton").pressed.connect(func():Game.earn(1000);refresh())
 	menu.get_node("RecipeShopButton").pressed.connect(func():toggle_dev_menu(false);show_recipe_shop())
 	menu.get_node("SandboxButton").pressed.connect(func():toggle_dev_menu(false);sandbox_requested.emit())
+	menu.get_node("MaterialsButton").pressed.connect(func():toggle_dev_menu(false);preload("res://scripts/ui/material_library_view.gd").open(get_tree()))
 	menu.get_node("TasksButton").pressed.connect(func():toggle_dev_menu(false);preload("res://scripts/ui/task_board_view.gd").open(get_tree(),"board"))
 	var dev_map:Button=menu.get_node("DevMapButton");Texts.set_text(dev_map,"Дев-режим карты: "+("вкл" if Game.dev_map else "выкл"))
 	dev_map.pressed.connect(func():Game.dev_map=not Game.dev_map;Texts.set_text(dev_map,"Дев-режим карты: "+("вкл" if Game.dev_map else "выкл")))
@@ -338,14 +339,14 @@ func build_roadmap():
 func build_wardrobe():
 	var locker=Node3D.new();locker.name="Wardrobe";add_child(locker);locker.position=WARDROBE_POS
 	var olive=Color("59603f");var dark=Color("3f4430")
-	Visuals.box(locker,Vector3(0,.95,-.1),Vector3(1.1,1.9,.55),olive)
+	Visuals.box(locker,Vector3(0,.95,-.1),Vector3(1.1,1.9,.55),olive,"paint")
 	for x in [-.27,.27]:
-		Visuals.box(locker,Vector3(x,.95,.19),Vector3(.5,1.78,.03),dark)
+		Visuals.box(locker,Vector3(x,.95,.19),Vector3(.5,1.78,.03),dark,"paint")
 		for i in range(3):Visuals.box(locker,Vector3(x,1.55+i*.07,.21),Vector3(.3,.025,.01),Color("2a2e22"))
-		Visuals.box(locker,Vector3(x+(.18 if x<0 else -.18),.95,.22),Vector3(.04,.16,.03),Color("c9cfbe"))
+		Visuals.box(locker,Vector3(x+(.18 if x<0 else -.18),.95,.22),Vector3(.04,.16,.03),Color("c9cfbe"),"steel")
 	# The right door stands open: a uniform on a hanger inside.
 	var hanger=Node3D.new();locker.add_child(hanger);hanger.position=Vector3(.62,0,.2)
-	Visuals.box(hanger,Vector3(0,1.62,0),Vector3(.3,.03,.03),Color("c9cfbe"))
+	Visuals.box(hanger,Vector3(0,1.62,0),Vector3(.3,.03,.03),Color("c9cfbe"),"steel")
 	uniform_preview=Visuals.box(hanger,Vector3(0,1.28,0),Vector3(.42,.62,.14),Color("5d6147"))
 	Visuals.box(hanger,Vector3(0,.82,0),Vector3(.34,.32,.13),Color("4a5039"))
 	Visuals.label3d(locker,"Шкаф",Vector3(0,2.15,0),Color("dcf6ec"),22)
@@ -375,7 +376,7 @@ func build_yard():
 	yard_dressing(yard)
 	parking_sign=Node3D.new();parking_sign.name="ParkingSign";yard.add_child(parking_sign);parking_sign.position=YARD_PARK+Vector3(.75,0,-.7)
 	var post=Color("5b5f57")
-	Visuals.box(parking_sign,Vector3(0,.55,0),Vector3(.07,1.1,.07),post)
+	Visuals.box(parking_sign,Vector3(0,.55,0),Vector3(.07,1.1,.07),Color("8a9196"),"steel")
 	Visuals.box(parking_sign,Vector3(0,1.15,0),Vector3(.6,.45,.05),Color("2f3b33"))
 	var icon=Sprite3D.new();icon.texture=load("res://assets/icons/v1/vehicle.png");  # world sign: plain sprite, not the UI pin
 	icon.pixel_size=.4/maxf(1.0,float(icon.texture.get_width()));icon.position=Vector3(0,1.15,.035);parking_sign.add_child(icon)
@@ -439,26 +440,26 @@ func test_track(yard:Node3D):
 ## Covered passage from the hangar to the yard along row 0: grating floor with hazard edges, panel walls,
 ## roof beams with amber lamps and a raised roll-up gate on the hangar side.
 func passage(yard:Node3D):
-	var steel=Color("5d646a");var panel=Color("6f766f")
+	var steel=Color("848b90");var panel=Color("6f766f")
 	Visuals.box(yard,Vector3(9.15,.02,0),Vector3(2.5,.04,1.4),Color("4c514c"))  # decal layers: .04 grating, .05 stripes
 	for i in range(9):Visuals.box(yard,Vector3(8.05+i*.28,.045,0),Vector3(.05,.01,1.3),Color("3b3f3b"))
 	for z in [-.68,.68]:
 		for i in range(10):Visuals.box(yard,Vector3(8.0+i*.25,.05,z),Vector3(.12,.012,.08),Color("e5b34f") if i%2==0 else Color("2f332d"))
-		Visuals.box(yard,Vector3(9.25,.8,z*1.4),Vector3(1.9,1.6,.08),panel)
-		for x in [8.3,9.25,10.2]:Visuals.box(yard,Vector3(x,1.1,z*1.4),Vector3(.12,2.2,.12),steel)
-	for x in [8.3,8.95,9.6,10.2]:Visuals.box(yard,Vector3(x,2.22,0),Vector3(.12,.12,2.0),steel)
+		Visuals.box(yard,Vector3(9.25,.8,z*1.4),Vector3(1.9,1.6,.08),panel,"paint")
+		for x in [8.3,9.25,10.2]:Visuals.box(yard,Vector3(x,1.1,z*1.4),Vector3(.12,2.2,.12),steel,"steel")
+	for x in [8.3,8.95,9.6,10.2]:Visuals.box(yard,Vector3(x,2.22,0),Vector3(.12,.12,2.0),steel,"steel")
 	# Open beams, no roof plate: the top-down camera must see who walks through.
 	for x in [8.65,9.9]:
 		var lamp=Visuals.box(yard,Vector3(x,2.08,0),Vector3(.3,.07,.14),Color("ffcf7a"));lamp.material_override=Visuals.material(Color("ffcf7a"),true)
 	var light=OmniLight3D.new();light.light_color=Color("ffcf8a");light.light_energy=.9;light.omni_range=2.6;light.position=Vector3(9.25,1.8,0);yard.add_child(light)
 	# Roll-up gate, raised: drum and rails at the hangar end, a beacon on top.
 	var drum=MeshInstance3D.new();var cyl=CylinderMesh.new();cyl.top_radius=.16;cyl.bottom_radius=.16;cyl.height=1.9;drum.mesh=cyl;drum.rotation.x=PI*.5
-	drum.position=Vector3(8.2,2.0,0);drum.material_override=Visuals.material(Color("8a8f86"));yard.add_child(drum)
+	drum.position=Vector3(8.2,2.0,0);drum.material_override=Visuals.surface_material(Color("8a8f86"),"steel");yard.add_child(drum)
 	var beacon=Visuals.box(yard,Vector3(8.2,2.4,.75),Vector3(.14,.14,.14),Color("ffb52c"));beacon.material_override=Visuals.material(Color("ffb52c"),true)
 	# Closed gate until the yard is bought: a ribbed shutter with hazard stripes.
 	yard_gate=Node3D.new();yard_gate.name="YardGate";yard.add_child(yard_gate);yard_gate.position=Vector3(8.2,0,0)
-	Visuals.box(yard_gate,Vector3(0,1.0,0),Vector3(.08,2.0,1.8),Color("7d837b"))
-	for i in range(6):Visuals.box(yard_gate,Vector3(-.05,.3+i*.3,0),Vector3(.02,.05,1.8),Color("5d635b"))
+	Visuals.box(yard_gate,Vector3(0,1.0,0),Vector3(.08,2.0,1.8),Color("7d837b"),"paint")
+	for i in range(6):Visuals.box(yard_gate,Vector3(-.05,.3+i*.3,0),Vector3(.02,.05,1.8),Color("8a9196"),"steel")
 	for i in range(5):Visuals.box(yard_gate,Vector3(-.05,.12,-.72+i*.36),Vector3(.02,.12,.18),Color("e5b34f"))
 	preload("res://scripts/interaction_prompt.gd").attach(self,self,"🔒 Площадка · %d ◈" % Game.YARD_COST,Vector3(7,0,0),1.3,func():return "yard" not in Game.built_workshops and not mounted)
 ## Around the apron: concrete barriers along the south and east edges, parking lines, a guard booth and a

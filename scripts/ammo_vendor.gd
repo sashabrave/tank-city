@@ -19,16 +19,16 @@ static func place(parent:Node3D,context,at:Vector3)->Node3D:
 	var vendor=load("res://scripts/ammo_vendor.gd").new();vendor.room=parent;vendor.arena=context;vendor.position=at;parent.add_child(vendor);return vendor
 func _ready():
 	name="AmmoVendor"
-	var steel=Color("4f5a5e");var brass=Color("d9a441")
-	Visuals.box(self,Vector3(0,.85,0),Vector3(.8,1.7,.6),steel)
-	Visuals.box(self,Vector3(0,1.25,.31),Vector3(.62,.62,.03),Color("1d2326"))
+	var steel=Color("6c777b");var brass=Color("d9a441")
+	Visuals.box(self,Vector3(0,.85,0),Vector3(.8,1.7,.6),steel,"gunmetal")
+	Visuals.box(self,Vector3(0,1.25,.31),Vector3(.62,.62,.03),Color("1d2326"),"glass")
 	# Cartridges standing behind the glass, one per ammo colour.
 	var colors=["ff8a3d","86daec","f1cf55","9fe6ff","ff5a4a"]
 	for i in range(colors.size()):
-		var round=Visuals.box(self,Vector3(-.22+i*.11,1.2,.29),Vector3(.06,.24,.06),brass);var tip=Visuals.box(self,Vector3(-.22+i*.11,1.36,.29),Vector3(.05,.08,.05),Color(colors[i]))
+		var round=Visuals.box(self,Vector3(-.22+i*.11,1.2,.29),Vector3(.06,.24,.06),brass,"brass");var tip=Visuals.box(self,Vector3(-.22+i*.11,1.36,.29),Vector3(.05,.08,.05),Color(colors[i]))
 		tip.material_override=Visuals.material(Color(colors[i]),true)
 	Visuals.box(self,Vector3(0,.55,.32),Vector3(.5,.14,.04),Color("2a3033"))
-	Visuals.box(self,Vector3(0,1.75,0),Vector3(.86,.12,.66),brass)
+	Visuals.box(self,Vector3(0,1.75,0),Vector3(.86,.12,.66),brass,"brass")
 	var glow=OmniLight3D.new();add_child(glow);glow.position=Vector3(0,1.3,.7);glow.light_color=Color("9fe6ff");glow.light_energy=.5;glow.omni_range=2.0
 	Visuals.label3d(self,"Патроны · %d жетона · E" % PRICE,Vector3(0,2.1,0),Color("fff0ce"),22)
 	preload("res://scripts/interaction_prompt.gd").attach(self,room,"Патронный автомат",Vector3.ZERO,1.4)

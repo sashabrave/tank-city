@@ -13,6 +13,10 @@ uniform float barrel_end = 100.0;
 uniform bool striped = false;
 uniform float flash = 0.0;
 uniform float surface_roughness = 0.85;
+// Painted hull = library surface «paint» (data/materials.json): painted steel, not plastic (2026-10-03).
+uniform float paint_metallic = 0.25;
+uniform float paint_roughness = 0.45;
+uniform float paint_clearcoat = 0.5;
 varying vec3 local_point;
 void vertex(){local_point=VERTEX;}
 void fragment(){
@@ -39,8 +43,8 @@ void fragment(){
   float tread=atlas ? float(tile==vec2(0.0,2.0) || tile==vec2(2.0,0.0) || tile==vec2(3.0,0.0)) : 0.0;
   float brushed=sin(local_point.y*720.0+sin(local_point.x*137.0))*.022;
   float shine=cozy_shiny ? 1.0 : 0.35;
-  METALLIC=(steel*.92+gunmetal*.85+tread*.35)*shine+mask*.12*shine;
-  ROUGHNESS=mix(surface_roughness,.46,mask);
+  METALLIC=(steel*.92+gunmetal*.85+tread*.35)*shine+mask*paint_metallic*shine;
+  ROUGHNESS=mix(surface_roughness,paint_roughness,mask);
   ROUGHNESS=mix(ROUGHNESS,.28+brushed,steel*shine);
   ROUGHNESS=mix(ROUGHNESS,.36,gunmetal*shine);
   ROUGHNESS=mix(ROUGHNESS,.62,tread);
@@ -49,7 +53,7 @@ void fragment(){
   ALBEDO=mix(ALBEDO,max(ALBEDO,vec3(.26,.29,.32)),gunmetal*shine);
   ALBEDO*=1.0+brushed*steel*.65;
   // Toy-like lacquer on painted armour: soft highlight without changing the paint colour.
-  if(cozy_shiny){CLEARCOAT=.55*(1.0-steel-gunmetal-tread);CLEARCOAT_ROUGHNESS=.35;}
+  if(cozy_shiny){CLEARCOAT=paint_clearcoat*(1.0-steel-gunmetal-tread);CLEARCOAT_ROUGHNESS=.35;}
   SPECULAR=.5+.2*shine;
   RIM=cozy_rim;RIM_TINT=.55;
  }
