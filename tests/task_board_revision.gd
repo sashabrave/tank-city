@@ -8,7 +8,7 @@ func check(ok,message):
 func _ready():call_deferred("run")
 func shot(path):
 	if DisplayServer.get_name()=="headless":return
-	await RenderingServer.frame_post_draw;get_viewport().get_texture().get_image().save_png(path)
+	await get_tree().process_frame;RenderingServer.force_draw(false);get_viewport().get_texture().get_image().save_png(path)
 func run():
 	Game.save_enabled=false;Settings.persistence_enabled=false;Game.sound_enabled=false
 	get_window().size=Vector2i(1600,900)
@@ -49,6 +49,27 @@ func run():
 	await shot("/tmp/r13-board-after.png")
 	view.close();await get_tree().process_frame
 	check(not get_tree().paused,"closing resumes the game")
+	# T-161: Tab moves between the fields instead of closing, the unsent draft survives, ⌘+Enter sends.
+	preload("res://scripts/ui/task_board_view.gd").open(get_tree(),"add")
+	await get_tree().process_frame;await get_tree().process_frame
+	view=get_tree().root.get_node_or_null("TaskBoardView")
+	view.title_edit.grab_focus();view.title_edit.text="Черновик";view.note_edit.text="детали"
+	var key=func(code,meta:=false):
+		var e=InputEventKey.new();e.keycode=code;e.pressed=true;e.meta_pressed=meta;Input.parse_input_event(e);await get_tree().process_frame;await get_tree().process_frame
+	await key.call(KEY_TAB)
+	check(is_instance_valid(view) and view.note_edit.has_focus(),"Tab moves to the details field and keeps the form open")
+	await key.call(KEY_ESCAPE)
+	check(not is_instance_valid(view) or view.is_queued_for_deletion(),"Esc closes the form")
+	await get_tree().process_frame
+	preload("res://scripts/ui/task_board_view.gd").open(get_tree(),"add")
+	await get_tree().process_frame;await get_tree().process_frame
+	view=get_tree().root.get_node_or_null("TaskBoardView")
+	check(view.title_edit.text=="Черновик" and view.note_edit.text=="детали","unsent draft comes back")
+	await shot("/tmp/r13-board-form.png")
+	await key.call(KEY_ENTER,true)
+	await get_tree().process_frame
+	check(B.column("backlog").any(func(t):return t.title=="Черновик") and not is_instance_valid(get_tree().root.get_node_or_null("TaskBoardView")),"⌘+Enter sends the task")
+	check(preload("res://scripts/ui/task_board_view.gd").draft_title=="","draft cleared after sending")
 	for sub in ["shots","repo_shots",""]:
 		var d=dir.path_join(sub)
 		for f in DirAccess.get_files_at(d):DirAccess.remove_absolute(d.path_join(f))

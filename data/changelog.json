@@ -149,7 +149,8 @@
 					"Развитие заставы: шкала с медалями этапов, светящаяся следующая цель, награда сплавом на каждом этапе и кнопка «+N» — забрать прямо в строке.",
 					"Путь класса — вертикальная шкала: карточки уровней слева и справа с картинкой награды и ростом параметров шкалами; купить можно только ближайший уровень, кнопкой в его карточке; в конце — «20+ уровень · Пройди игру».",
 					"Слоты способностей: тап по ячейке открывает список способностей класса со шкалами перезарядки и силы; жёлтый «+» кладёт способность в слот, «Убрать» освобождает его, закрытые показывают уровень открытия. Пустой слот — жёлтый «+».",
-					"Esc закрывает текущее окно (а не открывает поверх меню паузы); пауза — только если ничего не открыто. Q/E вне боя переключают горизонтальные вкладки. Точки уведомлений гаснут сразу, на вкладках развития горят, пока есть незабранная награда. В задачах «Основные» больше нет приказов оперштаба, вкладки растянуты по ширине."
+					"Esc закрывает текущее окно (а не открывает поверх меню паузы); пауза — только если ничего не открыто. Q/E вне боя переключают горизонтальные вкладки. Точки уведомлений гаснут сразу, на вкладках развития горят, пока есть незабранная награда. В задачах «Основные» больше нет приказов оперштаба, вкладки растянуты по ширине.",
+					"Окно задачи (F8): Tab переключает поля, а не закрывает окно; ⌘/Ctrl+Enter сохраняет; неотправленный текст не теряется"
 				]
 			},
 			"en": {
@@ -298,7 +299,8 @@
 					"Outpost progress: a track with step medals, a glowing next goal, an alloy reward on every step and a «+N» button to claim it right in the row.",
 					"Class path is a vertical track: level cards left and right with a reward picture and the stat growth as bars; only the nearest level can be bought, with the button on its card; at the end — «Level 20+ · Finish the game».",
 					"Ability slots: tapping a cell opens the class's abilities with cooldown and power bars; the yellow «+» puts one in the slot, «Remove» empties it, locked ones show their level. An empty slot shows a yellow «+».",
-					"Esc closes the current window (instead of opening the pause menu on top); pause only when nothing is open. Q/E switch horizontal tabs out of battle. Notification dots go out at once; progress tabs light up while a reward waits. «Main» quests no longer show operations orders; the tabs span the width."
+					"Esc closes the current window (instead of opening the pause menu on top); pause only when nothing is open. Q/E switch horizontal tabs out of battle. Notification dots go out at once; progress tabs light up while a reward waits. «Main» quests no longer show operations orders; the tabs span the width.",
+					"Task window (F8): Tab switches fields instead of closing; Cmd/Ctrl+Enter saves; unsent text is kept"
 				]
 			}
 		},

@@ -2035,7 +2035,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-161.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "да что уж там говорить это окно отправки бага пофикси физуально кнпоки интер",
 			"type": "bug",
 			"version": "0.8.0"

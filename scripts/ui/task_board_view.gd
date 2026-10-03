@@ -13,6 +13,9 @@ var note_edit:TextEdit
 var type_choice="bug"
 var priority_choice=2
 var keep_shot:CheckBox
+## Unsent text survives closing the form (T-161): reopened with F8, the fields come back.
+static var draft_title:=""
+static var draft_note:=""
 static func open(tree:SceneTree,start_mode:String,screenshot:Image=null):
 	if tree.root.has_node("TaskBoardView"):return
 	var view=load("res://scripts/ui/task_board_view.gd").new();view.mode=start_mode;view.shot=screenshot
@@ -33,35 +36,51 @@ func screen_size()->Vector2:
 	var visible=get_viewport().get_visible_rect().size
 	return Vector2(minf(visible.x,root.size.x if root.size.x>0 else visible.x),minf(visible.y,root.size.y if root.size.y>0 else visible.y))
 func close():
+	keep_draft()
 	get_tree().paused=was_paused;Game.reset_input();queue_free()
+func keep_draft():
+	if is_instance_valid(title_edit):draft_title=title_edit.text;draft_note=note_edit.text
+## Only Esc closes (Tab is the pause key in the game but here it moves between the fields); ⌘/Ctrl+Enter sends.
 func _input(event):
-	if event.is_action_pressed("pause") or (event is InputEventKey and event.pressed and event.keycode==KEY_ESCAPE):
+	if not (event is InputEventKey and event.pressed and not event.echo):return
+	if mode=="add" and event.keycode in [KEY_ENTER,KEY_KP_ENTER] and (event.meta_pressed or event.ctrl_pressed):
+		get_viewport().set_input_as_handled();save();return
+	if event.keycode==KEY_TAB and mode=="add":
 		get_viewport().set_input_as_handled()
-		if mode=="add" and has_meta("from_board"):mode="board";build()
+		if title_edit.has_focus():note_edit.grab_focus()
+		else:title_edit.grab_focus()
+		return
+	if event.keycode==KEY_ESCAPE:
+		get_viewport().set_input_as_handled()
+		if mode=="add" and has_meta("from_board"):keep_draft();mode="board";build()
 		else:close()
 
 func build_form():
-	var size=Vector2(640,470);var panel=UiKit.glass(root,((screen_size()-size)*.5).round(),size)
+	var size=Vector2(minf(660,screen_size().x-32),530);var panel=UiKit.glass(root,((screen_size()-size)*.5).round(),size)
+	var inner=size.x-48
 	UiKit.label(panel,"Новая задача",Vector2(24,16),Vector2(400,36),24)
-	UiKit.label(panel,"Попадёт в бэклог. Скриншот и версия прикладываются сами.",Vector2(24,52),Vector2(590,22),14,UiKit.MUTED)
-	title_edit=LineEdit.new();panel.add_child(title_edit);title_edit.position=Vector2(24,86);title_edit.size=Vector2(592,44);title_edit.placeholder_text=Texts.localized("Коротко: что не так или что хочется");title_edit.name="TaskTitle"
+	UiKit.label(panel,"Попадёт в бэклог. Скриншот и версия прикладываются сами.",Vector2(24,52),Vector2(inner,22),14,UiKit.MUTED)
+	title_edit=LineEdit.new();panel.add_child(title_edit);title_edit.position=Vector2(24,86);title_edit.size=Vector2(inner,44);title_edit.placeholder_text=Texts.localized("Коротко: что не так или что хочется");title_edit.name="TaskTitle"
 	title_edit.text_submitted.connect(func(_t):save())
-	note_edit=TextEdit.new();panel.add_child(note_edit);note_edit.position=Vector2(24,140);note_edit.size=Vector2(592,110);note_edit.placeholder_text=Texts.localized("Подробности, если нужно");note_edit.name="TaskNote"
+	note_edit=TextEdit.new();panel.add_child(note_edit);note_edit.position=Vector2(24,140);note_edit.size=Vector2(inner,110);note_edit.placeholder_text=Texts.localized("Подробности, если нужно");note_edit.name="TaskNote"
+	note_edit.wrap_mode=TextEdit.LINE_WRAPPING_BOUNDARY
 	note_edit.set_meta("text_editor",true);title_edit.set_meta("text_editor",true)
-	UiKit.label(panel,"Тип",Vector2(24,262),Vector2(100,24),15,UiKit.MUTED)
-	choice_row(panel,Vector2(110,258),TaskBoard.TYPES.map(func(t):return [t,TaskBoard.TYPE_NAMES[t]]),type_choice,func(v):type_choice=v)
-	UiKit.label(panel,"Важность",Vector2(24,310),Vector2(100,24),15,UiKit.MUTED)
-	choice_row(panel,Vector2(110,306),[[1,"Высокая"],[2,"Обычная"],[3,"Низкая"]],priority_choice,func(v):priority_choice=v)
-	keep_shot=CheckBox.new();panel.add_child(keep_shot);keep_shot.position=Vector2(24,352);Texts.set_text(keep_shot,"Приложить скриншот");keep_shot.button_pressed=shot!=null;keep_shot.disabled=shot==null
-	UiKit.button(panel,"Отмена",Vector2(300,404),Vector2(150,46),func():
-		if has_meta("from_board"):mode="board";build()
-		else:close())
-	UiKit.button(panel,"Сохранить [Enter]",Vector2(462,404),Vector2(154,46),save,true).name="SaveTask"
-	title_edit.call_deferred("grab_focus")
-func choice_row(parent:Control,pos:Vector2,options:Array,current,pick:Callable):
-	var buttons=[]
+	title_edit.text=draft_title;note_edit.text=draft_note
+	UiKit.label(panel,"Тип",Vector2(24,262),Vector2(inner,22),14,UiKit.MUTED)
+	choice_row(panel,Vector2(24,286),inner,TaskBoard.TYPES.map(func(t):return [t,TaskBoard.TYPE_NAMES[t]]),type_choice,func(v):type_choice=v)
+	UiKit.label(panel,"Важность",Vector2(24,334),Vector2(inner,22),14,UiKit.MUTED)
+	choice_row(panel,Vector2(24,358),inner,[[1,"Высокая"],[2,"Обычная"],[3,"Низкая"]],priority_choice,func(v):priority_choice=v)
+	keep_shot=CheckBox.new();panel.add_child(keep_shot);keep_shot.position=Vector2(24,408);Texts.set_text(keep_shot,"Приложить скриншот");keep_shot.button_pressed=shot!=null;keep_shot.disabled=shot==null
+	var bw=(inner-12)*.5
+	UiKit.button(panel,"Отмена · Esc",Vector2(24,size.y-70),Vector2(bw,48),func():
+		if has_meta("from_board"):keep_draft();mode="board";build()
+		else:close()).name="CancelTask"
+	UiKit.button(panel,"Сохранить · ⌘↵",Vector2(36+bw,size.y-70),Vector2(bw,48),save,true).name="SaveTask"
+	(note_edit if draft_title!="" else title_edit).call_deferred("grab_focus")
+func choice_row(parent:Control,pos:Vector2,width:float,options:Array,current,pick:Callable):
+	var buttons=[];var gap=8.0;var each=(width-gap*(options.size()-1))/options.size()
 	for i in range(options.size()):
-		var b=UiKit.button(parent,options[i][1],pos+Vector2(i*128,0),Vector2(120,38),func():pass);b.toggle_mode=true;b.button_pressed=options[i][0]==current;b.add_theme_font_size_override("font_size",14);buttons.append(b)
+		var b=UiKit.button(parent,options[i][1],pos+Vector2(i*(each+gap),0),Vector2(each,38),func():pass);b.toggle_mode=true;b.button_pressed=options[i][0]==current;b.add_theme_font_size_override("font_size",14);b.clip_text=true;buttons.append(b)
 	for i in range(buttons.size()):
 		var value=options[i][0]
 		buttons[i].pressed.connect(func():
@@ -70,6 +89,7 @@ func choice_row(parent:Control,pos:Vector2,options:Array,current,pick:Callable):
 func save():
 	if title_edit.text.strip_edges()=="":title_edit.grab_focus();return
 	TaskBoard.add(title_edit.text,note_edit.text,type_choice,priority_choice,shot if keep_shot.button_pressed else null)
+	title_edit.text="";note_edit.text="";draft_title="";draft_note=""
 	if has_meta("from_board"):mode="board";build()
 	else:close()
 
