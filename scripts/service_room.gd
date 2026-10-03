@@ -47,6 +47,11 @@ func _ready():
 	if street:Visuals.box(self,Vector3(0,-.4,0),Vector3(9.3,.6,9.3),Color("7d7462"))
 	else:Visuals.box(self,Vector3(0,-.4,.5),Vector3(9.3,.6,8.3),Color("4e5856"))
 	dressing=preload("res://scripts/service_dressing.gd").new();dressing.branch=branch;dressing.vehicle=vehicle;dressing.street=street;add_child(dressing)
+	# Cozy surroundings (2026-10-03): the biome of the last field close around the room, fair weather, and fixed
+	# decorative lights — a festoon over the far edge and two masts at the front corners.
+	if street:
+		preload("res://scripts/location_ambience.gd").room(self,arena,index,4.9)
+		preload("res://scripts/room_lights.gd").build(self,-4.5)
 	if street:
 		var stop:Node3D=load(ROOM_MODELS[branch]).instantiate();stop.name="StopModel";add_child(stop)
 		preload("res://scripts/route_miniatures.gd").library_surfaces(stop)

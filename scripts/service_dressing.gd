@@ -22,7 +22,7 @@ func _ready():
 	if street:
 		# The stop model brings its own dressing: daylight like the merchant, only the exit gate is added.
 		exit_gate()
-		silhouettes(self,rng,Color("b7ae9c"))
+		# Surroundings and lights come from the room (LocationAmbience.room, RoomLights), like the merchant.
 		return
 	lighting()
 	shell()

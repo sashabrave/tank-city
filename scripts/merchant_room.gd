@@ -36,8 +36,9 @@ func _ready():
 	Visuals.tiled_floor(self,positions,Color("98917f"))
 	Visuals.box(self,Vector3(0,-.4,.5),Vector3(9.3,.6,8.3),Color("7d7462"))
 	build_stall()
-	var shapes_rng=RandomNumberGenerator.new();shapes_rng.seed=Game.visual_run_seed+index*31
-	preload("res://scripts/service_dressing.gd").silhouettes(self,shapes_rng,Color("b7ae9c"))
+	# Cozy surroundings and fixed decorative lights, the same as the upgrade rooms (2026-10-03).
+	preload("res://scripts/location_ambience.gd").room(self,arena,index,4.9)
+	preload("res://scripts/room_lights.gd").build(self,-3.55)
 	avatar=Visuals.model("soldier",self,destination,"cat",true)
 	walker=preload("res://scripts/room_walker.gd").new(avatar)
 	var canvas=CanvasLayer.new();add_child(canvas);root=Control.new();canvas.add_child(root);root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);root.mouse_filter=Control.MOUSE_FILTER_IGNORE

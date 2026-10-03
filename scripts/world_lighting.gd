@@ -39,7 +39,8 @@ static func moment(context:Node,night:bool)->Dictionary:
 	if cozy_room(context):
 		var pick=RandomNumberGenerator.new();pick.seed=hash([Game.visual_run_seed,int(context.get("index") if context.get("index")!=null else 0),"cozy_sun"])
 		var cozy:Dictionary=MOMENTS[COZY_MOMENTS[pick.randi_range(0,COZY_MOMENTS.size()-1)]].duplicate()
-		var rise=pick.randf_range(Vector2(cozy.elevation).x,Vector2(cozy.elevation).y)
+		# Warm colours, but the sun stands higher than the real golden hour: long low shadows spoiled the rooms.
+		var rise=pick.randf_range(36.0,46.0)
 		cozy.angle=Vector3(-rise,wrapf(10.0+pick.randf_range(35,325),-180,180),0);return cozy
 	if context==null or not context.has_method("room_palette") or not "room_index" in context:return {}
 	var choice=str(Settings.values.get("sun_night" if night else "sun_day","random"))
