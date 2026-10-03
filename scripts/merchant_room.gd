@@ -164,7 +164,7 @@ func describe(entry:Dictionary)->Dictionary:
 		"repair":return {"icon":"vehicle","title":"Ремонт машины","detail":"Восстанавливает броню техники полностью"}
 		"reroll":return {"icon":"reroll","title":"Переброс","detail":"+1 переброс карт на этот забег"}
 		"blueprint":return {"icon":"blueprint","title":"Чертёж · "+Game.recipe_name(entry.recipe),"detail":"Попадёт в рюкзак — его нужно донести до хаба"}
-		"slot":return {"icon":"slot_machine","title":"Игровой автомат","detail":"Ставка %d: жетоны, сплав, патроны, лечение или карта — иногда эпическая" % entry.price}
+		"slot":return {"icon":"slot_machine","title":"Игровой автомат","detail":"Ставка %d: жетоны, сплав, боеприпасы, лечение или карта — иногда эпическая" % entry.price}
 	return {"icon":"token","title":entry.kind,"detail":""}
 func available(entry:Dictionary)->bool:
 	match entry.kind:

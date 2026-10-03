@@ -374,7 +374,7 @@ func refresh_ammo():
 		var cell=Panel.new();ammo_row.add_child(cell);cell.custom_minimum_size=Vector2(18,18);cell.size_flags_vertical=Control.SIZE_SHRINK_CENTER
 		var style=UiKit.style(color if on else Color(color,.28),9,Color.WHITE if on else Color(color,.6));style.set_border_width_all(2 if on else 1)
 		cell.add_theme_stylebox_override("panel",style)
-		cell.tooltip_text=Texts.render("Патроны")+": "+Texts.render(Ammo.NAMES.get(type,type))+(" · "+Texts.render("активные") if on else "")+(" · R" if run.ammo_slots.size()>1 else "")
+		cell.tooltip_text=Texts.render("Боеприпасы")+": "+Texts.render(Ammo.NAMES.get(type,type))+(" · "+Texts.render("активные") if on else "")+(" · R" if run.ammo_slots.size()>1 else "")
 		if slot is Dictionary and type!=Ammo.STANDARD:cell.tooltip_text+="\n"+Ammo.describe(slot)
 		cell.gui_input.connect(func(event):
 			var tap=(event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT and event.pressed) or (event is InputEventScreenTouch and event.pressed)

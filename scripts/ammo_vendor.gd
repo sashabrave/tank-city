@@ -30,8 +30,8 @@ func _ready():
 	Visuals.box(self,Vector3(0,.55,.32),Vector3(.5,.14,.04),Color("2a3033"))
 	Visuals.box(self,Vector3(0,1.75,0),Vector3(.86,.12,.66),brass,"brass")
 	var glow=OmniLight3D.new();add_child(glow);glow.position=Vector3(0,1.3,.7);glow.light_color=Color("9fe6ff");glow.light_energy=.5;glow.omni_range=2.0
-	Visuals.label3d(self,"Патроны · %d жетона · E" % PRICE,Vector3(0,2.1,0),Color("fff0ce"),22)
-	preload("res://scripts/interaction_prompt.gd").attach(self,room,"Патронный автомат",Vector3.ZERO,1.4)
+	Visuals.label3d(self,"Боеприпасы · %d жетона · E" % PRICE,Vector3(0,2.1,0),Color("fff0ce"),22)
+	preload("res://scripts/interaction_prompt.gd").attach(self,room,"Автомат боеприпасов",Vector3.ZERO,1.4)
 func near(avatar:Node3D)->bool:return avatar.global_position.distance_to(global_position)<1.4
 ## How far along the map the run is, 0..1 (the crates' odds slide toward their deep values).
 func depth()->float:
@@ -86,13 +86,13 @@ func ammo_texture(type:String)->Texture2D:
 func choose(ui_root:Control):
 	var panel=window(ui_root,Vector2(780,470));var w=panel.size.x
 	UiKit.accent(UiKit.label(panel,"Армейский припас",Vector2(24,16),Vector2(w-120,36),24))
-	UiKit.label(panel,"Жетонов: %d · патроны под %s · чем дальше по карте, тем лучше шансы" % [arena.run.tokens,Texts.render(Game.LOOT.WEAPONS[str(arena.weapon)].name)],Vector2(24,54),Vector2(w-48,22),14,UiKit.MUTED).clip_text=true
+	UiKit.label(panel,"Жетонов: %d · боеприпасы под %s · чем дальше по карте, тем лучше шансы" % [arena.run.tokens,Texts.render(Game.LOOT.WEAPONS[str(arena.weapon)].name)],Vector2(24,54),Vector2(w-48,22),14,UiKit.MUTED).clip_text=true
 	UiKit.button(panel,"×",Vector2(w-62,16),Vector2(44,40),close).name="Close"
 	# What can drop: one icon per fitting ammo type.
 	var pool=types();var icon=36.0
 	for k in range(pool.size()):
 		var t=TextureRect.new();panel.add_child(t);t.texture=ammo_texture(pool[k]);t.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;t.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		t.position=Vector2(24+k*(icon+6),84);t.size=Vector2(icon,icon);t.tooltip_text=Texts.render(Ammo.NAMES[pool[k]]+" патроны")
+		t.position=Vector2(24+k*(icon+6),84);t.size=Vector2(icon,icon);t.tooltip_text=Texts.render(Ammo.NAMES[pool[k]]+" боеприпасы")
 	var col=(w-48-16)*.5;var top=136.0;var h=panel.size.y-top-20
 	for c in range(CRATES.size()):
 		var spec=CRATES[c];var x=24+c*(col+16);var chances=odds(spec[0])
@@ -142,7 +142,7 @@ func spin(ui_root:Control,id:String):
 		var color=Color(LootCatalog.RARITY_COLORS[int(item.rarity)])
 		if panel.has_node("Skip"):panel.get_node("Skip").hide()
 		var lit=UiKit.style(color.darkened(.45),12,color);lit.set_border_width_all(4);lit.shadow_color=Color(color,.7);lit.shadow_size=14;won.add_theme_stylebox_override("panel",lit);won.z_index=2
-		Texts.set_text(tip,Texts.render("Выпало!")+" "+Texts.render(Ammo.RARITY_NAMES[int(item.rarity)])+" · "+Texts.render(Ammo.NAMES[item.type]+" патроны"));tip.add_theme_color_override("font_color",color)
+		Texts.set_text(tip,Texts.render("Выпало!")+" "+Texts.render(Ammo.RARITY_NAMES[int(item.rarity)])+" · "+Texts.render(Ammo.NAMES[item.type]+" боеприпасы"));tip.add_theme_color_override("font_color",color)
 		Game.sound("rare_reveal" if int(item.rarity)>=2 else "reroll",room)
 		if UiKit.motion_enabled():
 			var pop=won.create_tween();pop.tween_property(won,"scale",Vector2.ONE*1.18,.14).set_trans(Tween.TRANS_BACK);pop.tween_property(won,"scale",Vector2.ONE*1.08,.2)
@@ -166,7 +166,7 @@ func result(ui_root:Control,item:Dictionary):
 	var panel=window(ui_root,Vector2(560,250+rows.size()*30));var size=panel.size
 	var color=Color(LootCatalog.RARITY_COLORS[clampi(int(item.rarity),0,3)])
 	UiKit.label(panel,Texts.render(Ammo.RARITY_NAMES[int(item.rarity)]).to_lower(),Vector2(24,16),Vector2(500,22),14,color)
-	UiKit.label(panel,Texts.render(Ammo.NAMES[item.type]+" патроны"),Vector2(24,38),Vector2(500,34),24,Color(Ammo.COLORS[item.type]))
+	UiKit.label(panel,Texts.render(Ammo.NAMES[item.type]+" боеприпасы"),Vector2(24,38),Vector2(500,34),24,Color(Ammo.COLORS[item.type]))
 	var y=84.0
 	for row in rows:
 		UiKit.label(panel,str(row[1]).left(1).to_upper()+str(row[1]).substr(1),Vector2(24,y),Vector2(300,26),16)

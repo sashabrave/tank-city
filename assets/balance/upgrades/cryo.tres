@@ -5,7 +5,7 @@
 [resource]
 script = ExtResource("1")
 id = "cryo"
-title = "Криогенные патроны"
+title = "Криогенные боеприпасы"
 category = "Оружие"
 family = "ammo"
 icon = "freeze"

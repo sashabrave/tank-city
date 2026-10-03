@@ -35,7 +35,7 @@ static func of(kind:String,item:Dictionary,arena,equipped:=false)->Dictionary:
 			if same:info.note="В руках"
 		"ammo":
 			var type=str(item.get("type",Ammo.STANDARD));info.tier=int(item.get("rarity",0)) if type!=Ammo.STANDARD else 0
-			info.title=Texts.render(Ammo.NAMES.get(type,type)+" патроны");info["rank"]=Ammo.RARITY_NAMES[clampi(info.tier,0,3)]
+			info.title=Texts.render(Ammo.NAMES.get(type,type)+" боеприпасы");info["rank"]=Ammo.RARITY_NAMES[clampi(info.tier,0,3)]
 			info.icon=UiKit.trimmed(UiKit.icon_texture("ammo/"+type if IconKit.has("ammo/"+type) else "stats/damage"))
 			info.summary=AMMO_EFFECT.get(type,"")
 			# Compared with the same ammo already loaded; another type has nothing to compare with.

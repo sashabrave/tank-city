@@ -65,7 +65,7 @@ func play()->String:
 			var type=types[arena.run.combat_rng.randi_range(0,types.size()-1)]
 			var item=Ammo.roll(type,1 if arena.run.combat_rng.randf()<.3 else 0,arena.run.combat_rng.randi())
 			arena.run.ammo_bag.append(item)  # like the ammo machine: one over the backpack limit until the next field
-			return Texts.render(Ammo.NAMES[type]+" патроны")+" · "+Texts.render("в рюкзак")
+			return Texts.render(Ammo.NAMES[type]+" боеприпасы")+" · "+Texts.render("в рюкзак")
 		"card0","card1","card2":
 			var ids=RunUpgrades.roll(arena,1)
 			if ids.is_empty():last_slot="empty";return "Автомат: пусто"

@@ -5,7 +5,7 @@
 [resource]
 script = ExtResource("1")
 id = "shock"
-title = "ЭМИ-патроны"
+title = "ЭМИ-боеприпасы"
 category = "Оружие"
 family = "ammo"
 icon = "device_power"

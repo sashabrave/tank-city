@@ -42,20 +42,31 @@ func _physics_process(delta):
 	facing=walker.facing;cell=walker.cell();moving=walker.moving
 	dummy.position=avatar.position+Vector3(facing.x,0,facing.y)*3.0
 	fire_cooldown=maxf(0,fire_cooldown-delta)
+	# The gun in hand is the run's one (a crate gun, a swap in the backpack), not the hub's choice.
+	if avatar.get("weapon_id")!=null and avatar.weapon_id!=weapon_id():Visuals.equip_model(avatar,weapon_id())
 	if phase!="combat":return
 	for slot in range(Game.hero_loadout().size()):
 		if Input.is_action_just_pressed(Game.ability_action(slot)):skills.cast(slot)
 	if Game.wants_fire() and walker.turn_timer<=0 and fire_cooldown<=0:shoot()
 
-## The hub's shot: the selected weapon's pellets, speed, range and damage.
+## The run behind the room (service rooms and the merchant keep the battle arena in `arena`).
+func run_arena():
+	var owner_arena=room.get("arena") if is_instance_valid(room) else null
+	return owner_arena if is_instance_valid(owner_arena) and owner_arena.get("run")!=null else null
+func weapon_id()->String:
+	var a=run_arena()
+	var id=str(a.run.weapon) if a!=null else Game.selected_weapon
+	return id if id in LOOT.WEAPONS else "pistol"
+## The battle's shot: the gun in hand with its pellets, speed, range and damage (rarity and crate stats too).
 func shoot():
-	var data=LOOT.WEAPONS.get(Game.selected_weapon,LOOT.WEAPONS["pistol"])
+	var id=weapon_id();var data=LOOT.WEAPONS[id]
+	var stats=CombatStats.weapon(run_arena(),id) if run_arena()!=null else {"damage":data.damage*Game.weapon_factor(id),"interval":data.interval}
 	if avatar.has_method("kick"):avatar.kick()
-	fire_cooldown=data.interval
+	fire_cooldown=stats.interval
 	for i in range(data.pellets):
 		var bullet=load("res://scenes/projectile.tscn").instantiate()
-		bullet.sniper_visual=Game.selected_weapon=="sniper"
-		bullet.arena=self;bullet.friendly=true;bullet.speed=data.speed;bullet.damage=data.damage*Game.weapon_factor(Game.selected_weapon)
+		bullet.sniper_visual=id=="sniper"
+		bullet.arena=self;bullet.friendly=true;bullet.speed=data.speed;bullet.damage=stats.damage
 		bullet.travel_direction=Vector3(facing.x,0,facing.y).rotated(Vector3.UP,(i-(data.pellets-1)*.5)*.1)
 		var muzzle=avatar.get("muzzle")
 		var height=muzzle.global_position.y-avatar.position.y if muzzle is Node3D and is_instance_valid(muzzle) else .55

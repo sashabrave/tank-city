@@ -294,7 +294,7 @@ func ensure_armed()->bool:
 	if str(run.weapon) not in LOOT.WEAPONS:
 		run.weapon=Game.selected_weapon if Game.selected_weapon in LOOT.WEAPONS else "pistol";fixed=true
 		toast(Texts.render("Нет оружия в руках — выдано из штаба: %s") % Texts.render(LOOT.WEAPONS[run.weapon].name))
-	if run.ammo_slots.is_empty():fixed=true;toast(Texts.render("Нет патронов в слоте — заряжены обычные"))
+	if run.ammo_slots.is_empty():fixed=true;toast(Texts.render("Нет боеприпасов в слоте — заряжены обычные"))
 	Ammo.ensure(run,str(run.weapon))
 	return fixed
 func begin_room(index: int):

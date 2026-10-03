@@ -371,7 +371,7 @@ func shoot() -> bool:
 	if (kind=="shield" and shield_phase in ["raising","active"]) or kind in ["grenadier","mortar"] or turn_left > 0 or fire_cooldown > 0 or dead: return false
 	if player_owned and not allied and arena.challenges.weapons_locked():
 		fire_cooldown=.6
-		if arena.toast_time<=0:arena.toast("Патроны кончились")
+		if arena.toast_time<=0:arena.toast("Боеприпасы кончились")
 		return false
 	fire_cooldown = fire_interval/(arena.effects.modify("fire_rate",1.0) if player_owned and kind=="soldier" else 1.0)
 	if not player_owned and not allied and kind in ["soldier","shield"]:EnemyLoadouts.begin(self)

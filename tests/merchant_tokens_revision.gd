@@ -34,6 +34,12 @@ func run():
 	main.show_service("merchant",2);await settle()
 	var shop=main.current
 	check(shop.get_script()==load("res://scripts/merchant_room.gd"),"merchant stop opens")
+	# The room hero holds and fires the run's gun, not the hub's choice (2026-10-03).
+	var room_gun="shotgun" if Game.selected_weapon!="shotgun" else "smg"
+	arena.run.weapon=room_gun;await get_tree().physics_frame;await get_tree().physics_frame
+	var room_combat=shop.get_node("RoomCombat")
+	check(room_combat.weapon_id()==room_gun and shop.avatar.weapon_id==room_gun,"the room hero holds the run's gun")
+	arena.run.weapon=Game.selected_weapon if Game.selected_weapon in Game.LOOT.WEAPONS else "pistol"
 	check(shop.stock.any(func(e):return e.kind=="card") and shop.find_child("SlotMachine",true,false)!=null,"stock has cards; the slot machine stands apart")
 	var heal=shop.stock.map(func(e):return e.kind).find("heal")
 	check(shop.purchase(heal) and arena.run.soldier_hp==arena.run.soldier_max_hp and arena.run.tokens==27,"heal bought for tokens")

@@ -23,7 +23,7 @@ static func configure(card:Panel,data:Dictionary,choose:Callable):
 	var stripe=ColorRect.new();stripe.name="CategoryStripe";card.add_child(stripe)
 	stripe.mouse_filter=Control.MOUSE_FILTER_IGNORE;stripe.position=Vector2(0,16);stripe.size=Vector2(9,48);stripe.color=data.color
 	var silhouette=TextureRect.new();silhouette.name="CategoryIcon";card.add_child(silhouette)
-	var symbol={"Огневая мощь":"weapon","Живучесть":"hero","Спецпатроны":"bonus","Разведка":"ability","Тыл":"hq","Герой":"hero","Штаб":"hq","Оружие":"weapon","Способность":"ability","Транспорт":"vehicle","Чертёж":"blueprint","Бонус":"bonus","Тактика":"hero"}.get(category,"trophy")
+	var symbol={"Огневая мощь":"weapon","Живучесть":"hero","Спецбоеприпасы":"bonus","Разведка":"ability","Тыл":"hq","Герой":"hero","Штаб":"hq","Оружие":"weapon","Способность":"ability","Транспорт":"vehicle","Чертёж":"blueprint","Бонус":"bonus","Тактика":"hero"}.get(category,"trophy")
 	# Drawn category symbol (data/icon_kit.json «category/…»); the line silhouette tinted by rarity is the fallback.
 	var drawn=IconKit.symbol("category/"+symbol)
 	silhouette.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;silhouette.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED

@@ -102,8 +102,11 @@ func run():
 	page.move("bag:%d" % gun_cell,"weapon")
 	check(str(r.weapon)==spare and r.weapon_bag.size()==1 and str(r.weapon_bag[0].id)==in_hand and Backpack.layout(r)[gun_cell].kind=="weapon","dragging the spare onto the weapon cell swaps the guns in place")
 	if free_cell>=0:
+		# Empty hands (2026-10-03): the gun in hand goes into a free cell; taking it back restores the hands.
 		page.move("weapon","bag:%d" % free_cell)
-		check(str(r.weapon)==spare and Backpack.layout(r)[free_cell]==null,"the gun in hand cannot go to an empty cell")
+		check(Backpack.holstered(r) and Backpack.layout(r)[free_cell].kind=="weapon" and Backpack.layout(r)[free_cell].index==-1,"the gun in hand goes into an empty cell: hands empty")
+		page.move("bag:%d" % free_cell,"weapon")
+		check(not Backpack.holstered(r) and str(r.weapon)==spare,"taking it back fills the hands")
 	page.move("weapon","bag:%d" % gun_cell)
 	check(str(r.weapon)==in_hand,"dragging the gun in hand onto the spare swaps back")
 	var data=preload("res://scripts/profile/run_checkpoint.gd").upgrade({"run":{"weapon_bag":[{"id":"shotgun"},{"id":"nope"}]}})
@@ -149,6 +152,26 @@ func run():
 		check(arena.room.pickups.size()==count and str(r.ammo_slots[std_slot].type)==Ammo.STANDARD,"the plain rounds cannot be thrown away")
 	r.weapon="";check(arena.ensure_armed() and str(r.weapon)==Game.selected_weapon,"no gun in hand: the HQ issues the chosen one")
 	r.weapon=gun_before;Ammo.ensure(r,gun_before)
+	# Empty hands and the tablet: closing is refused (the gear page stays and explains), the put-away gun cannot be
+	# thrown away, another spare taken in hand leaves the old one as an ordinary spare in its cell.
+	while Backpack.free_cells(r)<2 and not r.ammo_bag.is_empty():r.ammo_bag.pop_back()
+	var tablet=get_tree().get_nodes_in_group("field_tablet")[0]
+	check(Backpack.holster(arena),"the gun can be put away any time")
+	var hand_cell=r.holster_cell
+	page.discard("bag:%d" % hand_cell)
+	check(Backpack.holstered(r) and str(r.weapon)==gun_before,"the put-away gun is the last one: it cannot be thrown away")
+	view.tab="fighter";tablet.close();await get_tree().process_frame
+	check(is_instance_valid(tablet) and not tablet.is_queued_for_deletion() and view.tab=="inventory","with empty hands the tablet does not close and shows the gear page")
+	check(cell(view,"weapon")!=null and cell(view,"weapon").get_node_or_null("EmptyHands")!=null,"the weapon cell says the hands are empty")
+	Backpack.add_weapon(arena,{"id":"smg" if gun_before!="smg" else "shotgun"})
+	Backpack.equip_weapon(arena,r.weapon_bag.size()-1)
+	check(not Backpack.holstered(r) and Backpack.layout(r)[hand_cell].kind=="weapon" and str(Backpack.layout(r)[hand_cell].item.id)==gun_before,"taking another spare leaves the old gun in its cell")
+	Backpack.holster(arena);tablet.close(false)
+	check(not Backpack.holstered(r),"leaving for the hub puts the gun back in hand")
+	r.weapon=gun_before;r.weapon_bag.clear();Ammo.ensure(r,gun_before)
+	await get_tree().process_frame;preload("res://scripts/ui/pause_tablet.gd").open(arena);await get_tree().create_timer(.4).timeout
+	view=get_tree().root.find_children("*","Control",true,false).filter(func(n):return n.get_script()==preload("res://scripts/ui/field_tablet.gd"))[0]
+	view.tab="inventory";view.refresh();await get_tree().process_frame
 	# Wrong class: charges-only ammo cannot go into a pistol (RPG ammo doesn't exist yet: fire fits both).
 	check(not Ammo.fits("explosive","rpg") and Ammo.fits("burn","rpg"),"ammo class rules")
 	# Outside battle nothing can be dropped.

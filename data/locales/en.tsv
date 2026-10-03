@@ -1484,7 +1484,7 @@ Changelog	Changelog
 Удержание	Hold
 Держи точку	Hold the point
 Стой в зоне, пока враги наступают	Stay in the zone while enemies advance
-Патроны кончились	Out of ammo
+Боеприпасы кончились	Out of ammo
 Уклоняйся от обстрела	Dodge the barrage
 Выживание: оружие не стреляет — уходи из красных меток	Survival: weapons won't fire — get out of the red markers
 Испытание пройдено	Challenge complete
@@ -1498,7 +1498,7 @@ Changelog	Changelog
 Выживание ★	Survival ★
 Выживание ★★	Survival ★★
 Займи точку и стой в ней, пока враги наступают. Шкала растёт, только если в зоне нет врагов. Штаб тоже нужно беречь.	Take the point and stay in it while enemies advance. Progress grows only while no enemy is inside. Keep the HQ safe too.
-Патроны кончились: оружие не стреляет. Уклоняйся от красных меток артобстрела, пока не выйдет время.	Out of ammo: weapons won't fire. Dodge the red artillery markers until time runs out.
+Боеприпасы кончились: оружие не стреляет. Уклоняйся от красных меток артобстрела, пока не выйдет время.	Out of ammo: weapons won't fire. Dodge the red artillery markers until time runs out.
 Напёрстки	Thimbles
 Напёрстки ★	Thimbles ★
 Напёрстки ★★	Thimbles ★★
@@ -1624,7 +1624,7 @@ F2 — админ	F2 — admin
 Точка удержана	Point held
 Пройди удержание: стой в зоне, пока шкала не заполнится.	Complete Hold: stay in the zone until the bar fills.
 Под огнём	Under fire
-Пройди выживание без патронов под артобстрелом.	Complete Survival without ammo under the barrage.
+Пройди выживание без боеприпасов под артобстрелом.	Complete Survival without ammo under the barrage.
 Зоркий глаз	Sharp eye
 Угадай колпак со штабом в напёрстках.	Guess the cup with the HQ in Thimbles.
 Код сейфа	Safe code
@@ -1860,7 +1860,7 @@ FPS в углу экрана во всех режимах, в хабе — ещ�
 Снаряды танков, БТР, багги и босса.	Shells from tanks, APCs, buggies and the boss.
 Зажигательные	Incendiary rounds
 Поджог: урон 3 с, огонь перекидывается на соседей, бочки взрываются с одного попадания.	Burning: damage for 3 s, fire spreads to neighbours, barrels blow up in one hit.
-ЭМИ-патроны	EMP rounds
+ЭМИ-боеприпасы	EMP rounds
 Бонус урона по технике и дронам.	Bonus damage to vehicles and drones.
 Контузия	Concussion
 Оглушение на 0,8 с: враг не двигается и не стреляет. Босс — втрое короче.	Stun for 0.8 s: the enemy can't move or shoot. Bosses: a third as long.
@@ -1883,7 +1883,7 @@ FPS в углу экрана во всех режимах, в хабе — ещ�
 Защита от пуль, взрывов и техники.	Protection from bullets, blasts and vehicles.
 Огневая мощь	Firepower
 Живучесть	Survival
-Спецпатроны	Special ammo
+Спецбоеприпасы	Special ammo
 Тыл	Logistics
 Крит	Crit
 Крит-урон	Crit damage
@@ -1945,7 +1945,7 @@ HP штаба и техники за каждое убийство.	HQ and vehic
 Победи босса мира	Defeat the world boss
 Универсал · крит	All-rounder · crit
 Штурм · живучесть	Assault · survival
-Подрыв · спецпатроны	Demolition · special ammo
+Подрыв · спецбоеприпасы	Demolition · special ammo
 Разведка · засада	Recon · ambush
 Тыл · техника и дроны	Logistics · vehicles and drones
 Крит +5% · граната	Crit +5% · grenade
@@ -2359,7 +2359,7 @@ E — в хаб	E — to the hub
 Ну всё, хватит болтать. Пора в бой.	Right, enough talk. Time to fight.
 Ещё	More
 Эффекты пуль теперь берутся картами в бою. За прежнюю выучку возвращено %d сплава.	Bullet effects now come from cards in battle. %d alloy refunded for the old training.
-Зажигательные патроны	Incendiary rounds
+Зажигательные боеприпасы	Incendiary rounds
 Шанс поджечь врага: урон 3 с. Бочки взрываются с одного попадания. Открывает усиления огня.	Chance to set an enemy on fire: damage for 3 s. Barrels blow up from one hit. Unlocks fire enhancements.
 Жар	Heat
 Горение жжёт сильнее.	Burning hurts more.
@@ -2378,11 +2378,11 @@ E — в хаб	E — to the hub
 Попадание по технике с шансом 25% глушит её на 0,6 с.	A hit on a vehicle has a 25% chance to disable it for 0.6 s.
 Разряд	Arc
 Попадание по технике бьёт током соседние машины: 40% урона.	A hit on a vehicle shocks nearby machines for 40% damage.
-Урон горения. Действует, когда в бою взяты «Зажигательные патроны».	Burn damage. Works once «Incendiary rounds» are taken in battle.
-Урон ЭМИ по технике. Действует, когда в бою взяты «ЭМИ-патроны».	EMP damage to vehicles. Works once «EMP rounds» are taken in battle.
+Урон горения. Действует, когда в бою взяты «Зажигательные боеприпасы».	Burn damage. Works once «Incendiary rounds» are taken in battle.
+Урон ЭМИ по технике. Действует, когда в бою взяты «ЭМИ-боеприпасы».	EMP damage to vehicles. Works once «EMP rounds» are taken in battle.
 Длительность оглушения, секунды. Действует, когда в бою взята «Контузия».	Stun duration in seconds. Works once «Concussion» is taken in battle.
-Шанс поджечь врага. Даёт карта «Зажигательные патроны» в бою.	Chance to ignite an enemy. Given by the «Incendiary rounds» card in battle.
-Бонус урона по технике и дронам. Даёт карта «ЭМИ-патроны» в бою.	Bonus damage to vehicles and drones. Given by the «EMP rounds» card in battle.
+Шанс поджечь врага. Даёт карта «Зажигательные боеприпасы» в бою.	Chance to ignite an enemy. Given by the «Incendiary rounds» card in battle.
+Бонус урона по технике и дронам. Даёт карта «ЭМИ-боеприпасы» в бою.	Bonus damage to vehicles and drones. Given by the «EMP rounds» card in battle.
 Шанс оглушить врага. Даёт карта «Контузия» в бою.	Chance to stun an enemy. Given by the «Concussion» card in battle.
 Урон горения	Burn damage
 Горение	Burning
@@ -2668,7 +2668,6 @@ Retina · полная чёткость	Retina · full sharpness
 стал звездой	became a star
 Положить трубку	Hang up
 Уже взято: %d	Already taken: %d
-Купить	Buy
 Выход на карту	Exit to the map
 Техника доставлена	Vehicle delivered
 Техника доставлена — ждёт на старте поля	Vehicle delivered — waiting at the field start
@@ -2693,23 +2692,23 @@ Retina · полная чёткость	Retina · full sharpness
 Вернутся прежние через %d с	Reverting in %d s
 Вернуть	Revert
 Оставить	Keep
-Патроны	Ammo
+Боеприпасы	Ammo
 Обычные	Standard
 Контузящие	Concussive
 ЭМИ	EMP
 активные	active
 Заменит	Replaces
 Зарядит	Loads
-Сменить патроны	Switch ammo
-Второй слот патронов · %d ◈	Second ammo slot · %d ◈
-Второй слот патронов открыт	Second ammo slot unlocked
-Слоты патронов: %d%s	Ammo slots: %d%s
- · R — сменить патроны в бою	 · R — switch ammo in battle
+Сменить боеприпасы	Switch ammo
+Второй слот боеприпасов · %d ◈	Second ammo slot · %d ◈
+Второй слот боеприпасов открыт	Second ammo slot unlocked
+Слоты боеприпасов: %d%s	Ammo slots: %d%s
+ · R — сменить боеприпасы в бою	 · R — switch ammo in battle
 Криогенные	Cryo
-Разрывные патроны	Explosive ammo
-Бронебойные патроны	Armour-piercing ammo
-Патроны-рикошет	Ricochet ammo
-Криогенные патроны	Cryo ammo
+Разрывные боеприпасы	Explosive ammo
+Бронебойные боеприпасы	Armour-piercing ammo
+Боеприпасы-рикошет	Ricochet ammo
+Криогенные боеприпасы	Cryo ammo
 Шанс поджога	Ignite chance
 Сила огня	Fire power
 Шанс оглушения	Stun chance
@@ -2731,7 +2730,6 @@ Retina · полная чёткость	Retina · full sharpness
 Ещё +1 отскок	+1 more bounce
 Замёрзший враг разлетается осколками	A frozen enemy shatters into shards
 Улучшит	Upgrades
-Обычные	Common
 Редкие	Rare
 Эпические	Epic
 Легендарные	Legendary
@@ -2743,29 +2741,28 @@ Retina · полная чёткость	Retina · full sharpness
 Что здесь должно быть нарисовано?	What should be drawn here?
 Копировать id	Copy id
 На доску задач	To the task board
-Патронный автомат	Ammo machine
-Патроны · %d жетона · E	Ammo · %d tokens · E
+Автомат боеприпасов	Ammo machine
+Боеприпасы · %d жетона · E	Ammo · %d tokens · E
 В рюкзак	To backpack
 Зарядить	Load
 Свободный слот	Free slot
-Контузящие патроны	Concussive ammo
-ЭМИ патроны	EMP ammo
-Рикошет патроны	Ricochet ammo
+Контузящие боеприпасы	Concussive ammo
+ЭМИ боеприпасы	EMP ammo
+Рикошет боеприпасы	Ricochet ammo
 Мешок подобран	Sack picked up
-Патроны заряжены	Ammo loaded
-Патроны сняты в рюкзак	Ammo moved to the backpack
+Боеприпасы заряжены	Ammo loaded
+Боеприпасы сняты в рюкзак	Ammo moved to the backpack
 Выброшено мешком рядом с бойцом	Dropped as a sack next to the soldier
 Выбросить можно только в бою	You can only drop things in battle
 Чертёж донеси до хаба, чтобы открыть	Bring the blueprint to the hub to unlock it
-Эти патроны не подходят к оружию	This ammo does not fit the weapon
+Эти боеприпасы не подходят к оружию	This ammo does not fit the weapon
 Перетащи сюда, чтобы выбросить мешком на поле	Drag here to drop it as a sack on the field
 Снять	Unequip
 Выбросить	Drop
-Боеприпасы	Ammo
 Ячейка закрыта — «Казарма» → Рюкзак	Locked cell — «Barracks» → Backpack
-Второй слот патронов — «Арсенал», для этого оружия	Second ammo slot — «Arsenal», for this weapon
+Второй слот боеприпасов — «Арсенал», для этого оружия	Second ammo slot — «Arsenal», for this weapon
 Нажми на ячейку — описание; ещё раз — надеть или снять. Перетаскивай между ячейками, правый клик — выбросить.	Tap a cell for details; tap again to equip or unequip. Drag between cells, right click to drop.
-Ячейки рюкзака для чертежей и патронов в вылазке.	Backpack cells for blueprints and ammo during a sortie.
+Ячейки рюкзака для чертежей и боеприпасов в вылазке.	Backpack cells for blueprints and ammo during a sortie.
 Чертёж — донеси до хаба, чтобы открыть	Blueprint — bring it to the hub to unlock
 Техника ждёт на старте следующего поля: садишься в неё сразу. Броня и урон — как у твоей машины в гараже.	The vehicle waits at the start of the next field: you get in right away. Armour and damage are those of your garage vehicle.
 Доставлено · ждёт на старте поля	Delivered · waiting at the field start
@@ -2781,8 +2778,8 @@ Retina · полная чёткость	Retina · full sharpness
 Кассетные	Cluster
 Напалм	Napalm
 Кассетные заряды	Cluster charges
-Кассетные патроны	Cluster charges
-Напалм патроны	Napalm charges
+Кассетные боеприпасы	Cluster charges
+Напалм боеприпасы	Napalm charges
 Суббоеприпасов	Bomblets
 Урон суббоеприпаса	Bomblet damage
 Горит	Burns for
@@ -2860,10 +2857,10 @@ Q сильнее	Stronger Q
 Уровень %d%s · %d ◈	Level %d%s · %d ◈
 Выучка убрана, вторая способность теперь открывается на 3 уровне класса: возвращено %d ◈.	Training is gone and the second ability now opens at class level 3: %d ◈ refunded.
 все биомы, от леса до пепелища	every biome, from forest to ashland
-Редкость патронов	Ammo rarity
+Редкость боеприпасов	Ammo rarity
 Зарядить (в оружие сейчас: %s)	Load (weapon in hand: %s)
  · не подходит	 · does not fit
-Патроны в рюкзак	Ammo into the backpack
+Боеприпасы в рюкзак	Ammo into the backpack
 Аптечка в рюкзак	Medkit into the backpack
 Мешок рядом	Sack nearby
 Очистить рюкзак	Empty the backpack
@@ -2960,8 +2957,6 @@ Q · есть сразу	Q · from the start
 Ур. 12 · мастерство: %s	Lv. 12 · mastery: %s
 Ур. 12 · мастерство: %s (закрыто)	Lv. 12 · mastery: %s (locked)
  · награда ждёт	 · reward waiting
-Забрать награду	Claim the reward
-Способность	Ability
 Секрет	Secret
 Через %d ур.	In %d lv.
 Откройте класс	Unlock the class
@@ -2985,11 +2980,9 @@ Q · есть сразу	Q · from the start
 Чинит всё, что сломали, и немного то, что ещё работало. Дрон собрал из чайника — летает.	Fixes everything that broke, and a bit of what still worked. Built a drone from a kettle — it flies.
 Техника и дроны служат дольше, полевой ремонт и быстрые способности.	Vehicles and drones last longer; field repair and fast abilities.
 Сам по себе стреляет средне: сила в том, что рядом.	An average shot on his own: his strength is what's around him.
-Открытие: 	Unlock: 
 Путь класса · ур. %d: %s	Class path · lv. %d: %s
 Уровень %d из %d · каждый уровень: %s	Level %d of %d · every level: %s
 20+ уровень	Level 20+
-Недоступно	Unavailable
 Пройди игру	Finish the game
 %d уровень	Level %d
 Способность · 	Ability · 
@@ -2999,12 +2992,9 @@ Q · есть сразу	Q · from the start
 Секретная способность · в разработке	Secret ability · in development
 ✓ Получено	✓ Reached
 Получить · %d ◈	Get · %d ◈
-Не хватает %d ◈	%d ◈ short
 Слот пуст. Нажми на него, чтобы взять способность.	The slot is empty. Tap it to take an ability.
 Выбери способность · слот %s	Choose an ability · slot %s
 Секретная способность класса · в разработке	The class's secret ability · in development
-Перезарядка	Cooldown
-Сила	Power
 %s с	%s s
 ✓ В слоте	✓ In the slot
 Убрать	Remove
@@ -3032,20 +3022,20 @@ Q · есть сразу	Q · from the start
 −%d %% к паузе между выстрелами	−%d%% delay between shots
 +%d брони и +%s урона	+%d armor and +%s damage
 щит пробивает с шансом	pierces shields with a chance of
-Патроны в слот: шанс оглушить врага — он не двигается и не стреляет. Босс оглушается втрое короче. Открывает усиления контузии.	Ammo for the slot: a chance to stun an enemy — it can't move or shoot. Bosses are stunned three times shorter. Unlocks concussion enhancements.
+Боеприпасы в слот: шанс оглушить врага — он не двигается и не стреляет. Босс оглушается втрое короче. Открывает усиления контузии.	Ammo for the slot: a chance to stun an enemy — it can't move or shoot. Bosses are stunned three times shorter. Unlocks concussion enhancements.
 Армейский припас	Army supply
 Армейский ящик	Army crate
 Офицерский ящик	Officer crate
 Открыть · %d жетонов	Open · %d tokens
 Крутится…	Spinning…
-Жетонов: %d · патроны под %s · чем дальше по карте, тем лучше шансы	Tokens: %d · ammo for %s · the farther along the map, the better the odds
+Жетонов: %d · боеприпасы под %s · чем дальше по карте, тем лучше шансы	Tokens: %d · ammo for %s · the farther along the map, the better the odds
 Выпало!	You got!
 Стройка во дворе: нужны Площадка и чертёж Полигона.	Built in the yard: needs the Yard and the Range blueprint.
 Победи босса мира новым классом	Beat a world boss with a new class
 Звонки майора — нажми, и разговор раскроется	The major's calls — tap one to unfold the conversation
 Сплав: +%d	Alloy: +%d
 в рюкзак	to the backpack
-Ставка %d: жетоны, сплав, патроны, лечение или карта — иногда эпическая	Bet %d: tokens, alloy, ammo, healing or a card — sometimes epic
+Ставка %d: жетоны, сплав, боеприпасы, лечение или карта — иногда эпическая	Bet %d: tokens, alloy, ammo, healing or a card — sometimes epic
 Открыт бесконечный рубеж	The endless line is open
 Открыт бесконечный рубеж. На карточке мира — лестница испытаний. Вот твой отпуск.	The endless line is open. The world card has the challenge ladder. That's your leave.
 В полной версии игры: новые биомы и враги.	In the full game: new biomes and enemies.
@@ -3067,7 +3057,7 @@ Q · есть сразу	Q · from the start
 Заменит «%s», они уйдут в рюкзак	Replaces «%s», they go to the backpack
 Сразу заряжается в слот	Loads straight into the slot
 Застрахованная ячейка: чертёж здесь не пропадёт при выбывании	Insured cell: a blueprint here survives a knock-out
-В слот патронов кладутся только патроны	Only ammo goes into the ammo slot
+В слот боеприпасов кладутся только боеприпасы	Only ammo goes into the ammo slot
 Прочность штаба	HQ durability
 Ячейки рюкзака	Backpack cells
 Материалы	Materials
@@ -3098,9 +3088,9 @@ Q · есть сразу	Q · from the start
 Подобрать	Pick up
 Нет места	No room
 Нельзя выбросить последнее оружие — нечем будет воевать	You cannot throw away your last weapon — nothing to fight with
-Нельзя выбросить последние патроны — нечем будет воевать	You cannot throw away your last ammo — nothing to fight with
+Нельзя выбросить последние боеприпасы — нечем будет воевать	You cannot throw away your last ammo — nothing to fight with
 Нет оружия в руках — выдано из штаба: %s	No weapon in hand — the HQ issued: %s
-Нет патронов в слоте — заряжены обычные	No ammo in the slot — standard rounds loaded
+Нет боеприпасов в слоте — заряжены обычные	No ammo in the slot — standard rounds loaded
 Ящик с оружием	Weapon crate
 Ствол уходит в рюкзак — перетащи его в слот оружия	The gun goes into the backpack — drag it into the weapon slot
 Без прибавок	No bonuses
@@ -3118,4 +3108,13 @@ Q · есть сразу	Q · from the start
 Оружие в рюкзак	Weapon to backpack
 Из штаба — с полётом на клетку у штаба	From the HQ — flies to a cell next to it
 Случайное оружие	Random weapon
-Случайные патроны	Random ammo
+Случайные боеприпасы	Random ammo
+Руки пусты	Hands empty
+Руки пусты — возьми оружие	Hands empty — take a weapon
+Возьми оружие из рюкзака: перетащи сюда или нажми на него дважды.	Take a weapon from the backpack: drag it here or double tap it.
+Руки пусты. Возьми оружие из рюкзака: перетащи его на ячейку «Оружие» или нажми на него дважды. Без оружия планшет не закроется.	Hands empty. Take a weapon from the backpack: drag it onto the Weapon cell or double tap it. The tablet will not close without a weapon.
+Оружие в рюкзаке — возьми другое в руки	Weapon in the backpack — take another in hand
+Нельзя выбросить последнее оружие — сначала возьми в руки другое	You can't throw away your last weapon — take another in hand first
+Случайное событие — из штаба	Random event — from the HQ
+Выдать случайное оружие	Give a random weapon
+Выдать случайные боеприпасы	Give random ammo

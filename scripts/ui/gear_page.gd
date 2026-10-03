@@ -13,6 +13,8 @@ const STATS=preload("res://scripts/ui/stat_snapshot.gd")
 const ITEM=preload("res://scripts/ui/item_info.gd")
 const INFO_H:=190.0
 static var selected:=""
+## Set by the tablet when it refuses to close with empty hands: the weapon cell pulses, the line explains.
+static var warn_hands:=false
 ## The class gallery art looks to the left; the doll is mirrored so it always faces right.
 const DOLL_FACES_LEFT:=true
 var view
@@ -87,7 +89,7 @@ func build_left()->float:
 	var bars=STATS.add_bars(left_body,Vector2(0,top+LABEL+UNDER_LABEL),floorf(left_w*.8),STATS.fighter(arena if is_instance_valid(arena) else null),46,false);bars.name="FighterStats"
 	var after=top+LABEL+UNDER_LABEL+bars.content_height()+GAP
 	var ammo=Ammo.item(run()) if run()!=null else Ammo.standard()
-	var line=Texts.render("Патроны")+": "+Texts.render(Ammo.NAMES.get(str(ammo.type),""))
+	var line=Texts.render("Боеприпасы")+": "+Texts.render(Ammo.NAMES.get(str(ammo.type),""))
 	if ammo.type!=Ammo.STANDARD:line+=" — "+Ammo.describe(ammo)
 	var note=UiKit.label(left_body,line,Vector2(0,after),Vector2(left_w,44),14,Color(Ammo.COLORS.get(str(ammo.type),"cfd3c8")));note.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;note.name="AmmoLine"
 	return after+note.get_minimum_size().y+8
@@ -110,17 +112,27 @@ func build_right()->float:
 	section("Оружие",0,y,2);section("Боеприпасы",2,y,2)
 	y+=LABEL+UNDER_LABEL
 	var weapon=str(arena.weapon) if is_instance_valid(arena) else Game.selected_weapon
-	var w=fixed_cell("weapon",col(0),y,Vector2(2*C+GAP,C),weapon,Game.LOOT.WEAPONS[weapon].name,"Нажми ещё раз — характеристики и улучшения.",false,"")
-	w.info=ITEM.of("weapon",{"id":weapon},arena,true)
+	var w:GearCell
+	if Backpack.holstered(run()):
+		# Hands empty (2026-10-03): an empty cell that only waits for a gun; the tablet does not close like this.
+		w=fixed_cell("weapon",col(0),y,Vector2(2*C+GAP,C),"","Руки пусты","Возьми оружие из рюкзака: перетащи сюда или нажми на него дважды.",false,"")
+		var hint=UiKit.label(w,"Руки пусты — возьми оружие",Vector2(8,0),Vector2(w.size.x-16,C),14,UiKit.ORANGE);hint.name="EmptyHands";hint.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;hint.vertical_alignment=VERTICAL_ALIGNMENT_CENTER;hint.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+		var frame=UiKit.style(Color(UiKit.ORANGE,.08),12,UiKit.ORANGE);frame.set_border_width_all(2)
+		for state in ["normal","hover","pressed","focus"]:w.add_theme_stylebox_override(state,frame)
+		if warn_hands and UiKit.motion_enabled():
+			var pulse=w.create_tween().set_loops(3);pulse.tween_property(w,"modulate",Color(1.35,1.15,.9),.18);pulse.tween_property(w,"modulate",Color.WHITE,.22)
+	else:
+		w=fixed_cell("weapon",col(0),y,Vector2(2*C+GAP,C),weapon,Game.LOOT.WEAPONS[weapon].name,"Нажми ещё раз — характеристики и улучшения.",false,"")
+		w.info=ITEM.of("weapon",{"id":weapon},arena,true)
+		# The gun in hand drags like any item (author, 2026-10-03): onto a backpack weapon to swap, or into a free
+		# cell — then the hands are empty until a gun is taken again (the tablet will not close before that).
+		w.item_kind="weapon";w.draggable=run()!=null
 	w.set_meta("inset",.08)
-	# The gun in hand drags like any item (author, 2026-10-03): onto a backpack weapon to swap, or into a free
-	# backpack cell when another gun waits there to be taken.
-	w.item_kind="weapon";w.draggable=run()!=null
 	var slots:Array=run().ammo_slots if run()!=null else [Ammo.standard()]
 	for i in range(2):
 		var locked=i>=slots.size()
 		var cell=item_cell("slot:%d" % i,col(2+i),y,null if locked else slots[i],locked)
-		if locked:cell.tooltip_text=Texts.render("Второй слот патронов — «Арсенал», для этого оружия")
+		if locked:cell.tooltip_text=Texts.render("Второй слот боеприпасов — «Арсенал», для этого оружия")
 	y+=C+SECTION
 	var r=run()
 	var used=Backpack.used(r) if r!=null else 0
@@ -198,7 +210,7 @@ func item_cell(key:String,x:float,y:float,entry,locked:bool)->GearCell:
 		var name_label=UiKit.label(cell,Texts.render(Ammo.NAMES.get(type,type)),Vector2(4,C-20),Vector2(C-8,18),11 if C>=100 else 9,color);name_label.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;name_label.clip_text=true
 		cell.item_kind="ammo";cell.draggable=type!=Ammo.STANDARD
 		cell.info=ITEM.of("ammo",ammo,arena,is_slot)
-		cell.tooltip_text=Texts.render(Ammo.NAMES.get(type,type)+" патроны")+("\n"+Ammo.describe(ammo) if type!=Ammo.STANDARD else "")
+		cell.tooltip_text=Texts.render(Ammo.NAMES.get(type,type)+" боеприпасы")+("\n"+Ammo.describe(ammo) if type!=Ammo.STANDARD else "")
 		if is_slot and run()!=null and int(key.get_slice(":",1))==run().ammo_active and run().ammo_slots.size()>1:
 			UiKit.label(cell,"R",Vector2(C-18,4),Vector2(14,16),11,UiKit.MUTED)
 	elif entry.kind=="weapon":
@@ -234,6 +246,7 @@ func tapped(key:String):
 	highlight();refresh_info()
 func activate(key:String):
 	var r=run()
+	if key=="weapon" and Backpack.holstered(r):return
 	if key=="weapon":
 		preload("res://scripts/ui/tablet_pages.gd").new(view).weapon_details(str(arena.weapon) if is_instance_valid(arena) else Game.selected_weapon);return
 	if not key.begins_with("bag:") and not key.begins_with("slot:"):
@@ -248,15 +261,15 @@ func activate(key:String):
 			"supply":
 				if Backpack.use_medkit(arena,e.index):done("")
 			"weapon":
-				if Backpack.equip_weapon(arena,e.index):done("Оружие в руках")
+				if Backpack.equip_weapon(arena,e.index):warn_hands=false;done("Оружие в руках")
 			"ammo":
-				if Backpack.equip(arena,e.index):done("Патроны заряжены")
-				else:arena.toast(Texts.render("Эти патроны не подходят к оружию"))
+				if Backpack.equip(arena,e.index):done("Боеприпасы заряжены")
+				else:arena.toast(Texts.render("Эти боеприпасы не подходят к оружию"))
 			_:arena.toast(Texts.render("Чертёж донеси до хаба, чтобы открыть"))
 	elif key.begins_with("slot:"):
 		var slot=int(key.get_slice(":",1))
 		if Backpack.full(r):arena.toast(Texts.render("Рюкзак полон"));return
-		if Backpack.unequip(arena,slot):done("Патроны сняты в рюкзак")
+		if Backpack.unequip(arena,slot):done("Боеприпасы сняты в рюкзак")
 ## The bag entry behind a «bag:N» cell key: {kind, index, item} or null.
 func entry(key:String):
 	var cells=Backpack.layout(run());var n=int(key.get_slice(":",1))
@@ -267,25 +280,26 @@ func move(from:String,to:String):
 	if to=="discard":discard(from);return
 	if from.begins_with("bag:") and to=="weapon":
 		var e=entry(from)
-		if e!=null and e.kind=="weapon" and Backpack.equip_weapon(arena,e.index):done("Оружие в руках")
+		if e!=null and e.kind=="weapon" and Backpack.equip_weapon(arena,e.index):warn_hands=false;done("Оружие в руках")
 		elif e!=null:arena.toast(Texts.render("Сюда кладётся только оружие"))
 		return
 	if from=="weapon" and to.begins_with("bag:"):
 		var e=entry(to)
 		if e!=null and e.kind=="weapon":
-			if Backpack.equip_weapon(arena,e.index):done("Оружие в руках")
-		else:arena.toast(Texts.render("Без оружия нельзя: положи сюда другое оружие из рюкзака"))
+			if Backpack.equip_weapon(arena,e.index):warn_hands=false;done("Оружие в руках")
+		elif e==null and Backpack.holster(arena,int(to.get_slice(":",1))):selected="";done("Оружие в рюкзаке — возьми другое в руки")
+		elif e==null:arena.toast(Texts.render("Рюкзак полон"))
 		return
 	if from.begins_with("bag:") and to.begins_with("slot:"):
 		var e=entry(from)
-		if e!=null and e.kind=="ammo" and Backpack.equip(arena,e.index,int(to.get_slice(":",1))):done("Патроны заряжены")
-		elif e!=null:arena.toast(Texts.render("В слот патронов кладутся только патроны"))
+		if e!=null and e.kind=="ammo" and Backpack.equip(arena,e.index,int(to.get_slice(":",1))):done("Боеприпасы заряжены")
+		elif e!=null:arena.toast(Texts.render("В слот боеприпасов кладутся только боеприпасы"))
 	elif from.begins_with("slot:") and to.begins_with("bag:"):
 		var target=int(to.get_slice(":",1))
 		if Backpack.unequip(arena,int(from.get_slice(":",1))):
 			# Lands in the cell it was dropped on when that cell is open and free.
 			if target<Backpack.capacity() and Backpack.layout(r)[target]==null:r.ammo_bag.back()["cell"]=target
-			done("Патроны сняты в рюкзак")
+			done("Боеприпасы сняты в рюкзак")
 		else:arena.toast(Texts.render("Рюкзак полон"))
 	elif from.begins_with("bag:") and to.begins_with("bag:"):
 		# Free layout (T-196): any item to any open cell; an item already there swaps places.
@@ -305,9 +319,11 @@ func discard(key:String):
 	if key.begins_with("slot:"):
 		var slot=r.ammo_slots[int(key.get_slice(":",1))] if int(key.get_slice(":",1))<r.ammo_slots.size() else null
 		if not slot is Dictionary or str(slot.get("type",Ammo.STANDARD))==Ammo.STANDARD:
-			arena.toast(Texts.render("Нельзя выбросить последние патроны — нечем будет воевать"));Game.sound("ui_denied",arena);return
+			arena.toast(Texts.render("Нельзя выбросить последние боеприпасы — нечем будет воевать"));Game.sound("ui_denied",arena);return
 	if key.begins_with("bag:"):
 		var e=entry(key)
+		if e!=null and e.kind=="weapon" and e.index==-1:
+			arena.toast(Texts.render("Нельзя выбросить последнее оружие — сначала возьми в руки другое"));Game.sound("ui_denied",arena);return
 		ok=e!=null and Backpack.drop(arena,e.kind,e.index)
 	elif key.begins_with("slot:"):ok=Backpack.drop(arena,"slot",int(key.get_slice(":",1)))
 	if ok:selected="";done("Выброшено мешком рядом с бойцом")
@@ -350,6 +366,7 @@ func actions_for(key:String)->Array:
 	if key.begins_with("bag:") and cell.item_kind=="supply":actions.append(["Вылечиться",func():activate(key)])
 	if key.begins_with("bag:") and cell.item_kind=="weapon":actions.append(["Взять",func():activate(key)])
 	if key.begins_with("slot:") and cell.draggable:actions.append(["Снять",func():activate(key)])
+	if key=="weapon" and cell.draggable and run()!=null and not Backpack.full(run()):actions.append(["Снять",func():move("weapon","bag:-1")])
 	if (key.begins_with("bag:") or key.begins_with("slot:")) and cell.draggable and Backpack.can_drop(arena):actions.append(["Выбросить",func():discard(key)])
 	return actions
 func refresh_info():
@@ -360,6 +377,10 @@ func refresh_info():
 func fill_info(info:Panel):
 	var w=info.size.x
 	var cell:GearCell=cells.get(selected) if selected!="" else null
+	if Backpack.holstered(run()):
+		UiKit.label(info,"Руки пусты. Возьми оружие из рюкзака: перетащи его на ячейку «Оружие» или нажми на него дважды. Без оружия планшет не закроется.",Vector2(14,10),Vector2(w-28,76),14,UiKit.ORANGE).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+		if cell==null or cell.info.is_empty():return
+		var spare=ITEM.card(cell.info,w-28);info.add_child(spare);spare.position=Vector2(14,86);return
 	if cell==null or cell.info.is_empty():
 		UiKit.label(info,"Нажми на предмет — действия. Дважды — надеть или зарядить. Наведи — сравнение с надетым. Перетаскивай между ячейками.",Vector2(14,10),Vector2(w-28,76),13,UiKit.MUTED).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 		return

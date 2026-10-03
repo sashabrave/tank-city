@@ -79,11 +79,11 @@ func use():
 			replace({"recipes":[],"ammo":[],"weapons":[old]});Game.sound("weapon_equip",arena);arena.toast(Texts.render("Оружие в руках"))
 		"ammo":
 			Ammo.ensure(run,str(arena.weapon))
-			if not Ammo.fits(str(it.type),str(arena.weapon)):arena.toast(Texts.render("Эти патроны не подходят к оружию"));return
+			if not Ammo.fits(str(it.type),str(arena.weapon)):arena.toast(Texts.render("Эти боеприпасы не подходят к оружию"));return
 			var out=Ammo.load_item(run,it);Backpack.refresh(arena)
 			if out.is_empty():remove()
 			else:replace({"recipes":[],"ammo":[out]})
-			Game.sound("weapon_equip",arena);arena.toast(Texts.render("Патроны заряжены"))
+			Game.sound("weapon_equip",arena);arena.toast(Texts.render("Боеприпасы заряжены"))
 		"supply":
 			run.supplies.append(it)
 			if Backpack.use_medkit(arena,run.supplies.size()-1):remove()

@@ -109,7 +109,7 @@ static func switch(arena)->bool:
 	if run==null or run.ammo_slots.size()<2:return false
 	run.ammo_active=(run.ammo_active+1)%run.ammo_slots.size()
 	Game.sound("weapon_equip",arena)
-	arena.toast(Texts.render("Патроны")+": "+Texts.render(NAMES.get(active(run),"")))
+	arena.toast(Texts.render("Боеприпасы")+": "+Texts.render(NAMES.get(active(run),"")))
 	return true
 ## The ammo type an effect card belongs to (base or improvement), or "".
 static func type_of(card_id:String)->String:

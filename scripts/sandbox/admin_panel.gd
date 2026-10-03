@@ -15,6 +15,11 @@ var tier=0
 var panel:Panel
 var body:Control
 var toggle:Button
+var scroll:ScrollContainer
+## Each header starts its own grid under a full-width title, so a long title never widens a button column.
+var section:GridContainer
+## Admin buttons stretch to the column; the column count follows the panel width (no clipped grid, 2026-10-03).
+const BUTTON_MIN:=200.0
 func _ready():
 	layer=105;process_mode=Node.PROCESS_MODE_ALWAYS
 	var holder=Control.new();add_child(holder);holder.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);holder.mouse_filter=Control.MOUSE_FILTER_IGNORE
@@ -35,24 +40,31 @@ func open_panel():
 	panel=UiKit.panel(shade,(size-Vector2(width,height))*.5,Vector2(width,height));panel.name="AdminPanel";shade.add_to_group("selection_scope")
 	UiKit.label(panel,"Песочница · админ",Vector2(24,16),Vector2(width-300,40),26)
 	UiKit.button(panel,"Закрыть",Vector2(width-160,16),Vector2(136,40),close_panel)
+	# Tabs share the height left between the title and «Выйти», so a short window never overlaps them.
+	var step=minf(50.0,(height-72-74)/TABS.size())
 	for i in range(TABS.size()):
 		var key=TABS[i][0]
-		var b=UiKit.button(panel,TABS[i][1],Vector2(24,72+i*50),Vector2(190,42),func():tab=key;render(),key==tab);b.name="Tab_"+key
+		var b=UiKit.button(panel,TABS[i][1],Vector2(24,72+i*step),Vector2(190,step-8),func():tab=key;render(),key==tab);b.name="Tab_"+key
 	var leave=UiKit.button(panel,"Выйти",Vector2(24,height-62),Vector2(190,44),func():close_panel();exit_requested.emit());leave.name="ExitSandbox";leave.tooltip_text="Выйти из песочницы в хаб"
-	var scroll=ScrollContainer.new();panel.add_child(scroll);scroll.position=Vector2(234,72);scroll.size=Vector2(width-258,height-96);scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
-	body=VBoxContainer.new();scroll.add_child(body);body.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+	scroll=ScrollContainer.new();scroll.name="AdminScroll";panel.add_child(scroll);scroll.position=Vector2(234,72);scroll.size=Vector2(width-258,height-96);scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
+	body=VBoxContainer.new();body.name="AdminBody";scroll.add_child(body);body.size_flags_horizontal=Control.SIZE_EXPAND_FILL;body.custom_minimum_size.x=scroll.size.x-16
 	render()
 func close_panel():
 	if is_instance_valid(panel):panel.get_parent().queue_free()
 	panel=null;get_tree().paused=false;Game.reset_input()
 func render():
 	if not is_instance_valid(body):return
-	for child in body.get_children():child.queue_free()
+	for child in body.get_children():body.remove_child(child);child.queue_free()
+	section=null
 	for child in panel.get_children():
 		if child.name.begins_with("Tab_"):child.add_theme_stylebox_override("normal",UiKit.style(Color("584a2c") if child.name=="Tab_"+tab else Color("2c352e"),6))
-	var grid=GridContainer.new();body.add_child(grid);grid.columns=3;grid.add_theme_constant_override("h_separation",10);grid.add_theme_constant_override("v_separation",10)
+	var grid=GridContainer.new();grid.name="AdminGrid";body.add_child(grid);grid.columns=clampi(int((body.custom_minimum_size.x+10)/(BUTTON_MIN+10)),1,4);grid.size_flags_horizontal=Control.SIZE_EXPAND_FILL;grid.add_theme_constant_override("h_separation",10);grid.add_theme_constant_override("v_separation",10)
 	match tab:
 		"field":
+			# Ready-made random events first (author, 2026-10-03): a gun or ammo flies out of the HQ.
+			header(grid,"Случайное событие — из штаба")
+			action(grid,"Выдать случайное оружие",func():airdrop({"recipes":[],"ammo":[],"weapons":[random_gun()]})).name="RandomWeapon"
+			action(grid,"Выдать случайные боеприпасы",func():airdrop({"recipes":[],"ammo":[Ammo.roll(Ammo.TYPES[randi()%Ammo.TYPES.size()],tier,randi())]})).name="RandomAmmo"
 			header(grid,"Размер поля")
 			for value in SIZES:action(grid,"%d × %d" % [value,value],func():rebuild({"size":value}),arena.sandbox_size==value)
 			header(grid,"Генерация")
@@ -90,29 +102,32 @@ func render():
 				var id=def.id;action(grid,def.title+(" ×%d" % RunUpgrades.stacks(arena,id) if RunUpgrades.stacks(arena,id)>0 else ""),func():RunUpgrades.apply(arena,id,tier);render())
 		"stats":
 			# Every registry stat, built from assets/balance/stats: a new stat file appears here by itself.
+			# One row per stat: the name and value stretch, «−» and «+» stay small on the right.
+			grid.columns=1
 			for def in StatRegistry.all():
 				var stat=def;var nudge={"percent":.05,"multiplier":.25,"integer":1.0,"number":.25}[def.format]
-				var label=Label.new();grid.add_child(label);label.custom_minimum_size=Vector2(230,40);label.vertical_alignment=VERTICAL_ALIGNMENT_CENTER
+				var row=HBoxContainer.new();grid.add_child(row);row.size_flags_horizontal=Control.SIZE_EXPAND_FILL;row.add_theme_constant_override("separation",10)
+				var label=Label.new();row.add_child(label);label.custom_minimum_size=Vector2(0,40);label.size_flags_horizontal=Control.SIZE_EXPAND_FILL;label.vertical_alignment=VERTICAL_ALIGNMENT_CENTER;label.clip_text=true
 				Texts.set_text(label,"%s · %s" % [def.title,StatRegistry.text(def,StatRegistry.value(def,arena))])
-				action(grid,"−",func():nudge_stat(stat,-nudge))
-				action(grid,"+",func():nudge_stat(stat,nudge))
+				for sign in [-1,1]:
+					var b=UiKit.button(row,"−" if sign<0 else "+",Vector2.ZERO,Vector2(64,40),func():nudge_stat(stat,sign*nudge));b.custom_minimum_size=Vector2(64,40)
 		"kit":
 			# 0.7.2 features: rolled ammo items, the backpack and sacks, any ability in any slot, class milestones.
-			header(grid,"Редкость патронов")
+			header(grid,"Редкость боеприпасов")
 			for t in range(Ammo.RARITY_NAMES.size()):
 				var value=t;action(grid,Ammo.RARITY_NAMES[t],func():tier=value;render(),tier==t)
 			header(grid,"Зарядить (в оружие сейчас: %s)" % Game.LOOT.WEAPONS[arena.run.weapon].name)
 			for type in Ammo.TYPES:
 				var kind=type;action(grid,Ammo.NAMES[type]+("" if Ammo.fits(type,arena.run.weapon) else " · не подходит"),func():load_ammo(kind))
 			header(grid,"Рюкзак · %d / %d" % [Backpack.used(arena.run),Backpack.capacity()])
-			action(grid,"Патроны в рюкзак",func():to_bag({"ammo":[Ammo.roll(Ammo.TYPES[randi()%Ammo.TYPES.size()],tier,randi())]}))
+			action(grid,"Боеприпасы в рюкзак",func():to_bag({"ammo":[Ammo.roll(Ammo.TYPES[randi()%Ammo.TYPES.size()],tier,randi())]}))
 			action(grid,"Аптечка в рюкзак",func():to_bag({"supplies":[{"type":"medkit","heal":3.0}]}))
 			action(grid,"Мешок рядом",drop_sack)
 			action(grid,"Оружие в рюкзак",gun_to_bag)
 			action(grid,"Очистить рюкзак",func():arena.run.ammo_bag.clear();arena.run.supplies.clear();arena.run.weapon_bag.clear();Backpack.refresh(arena);render())
 			header(grid,"Из штаба — с полётом на клетку у штаба")
 			action(grid,"Случайное оружие",func():airdrop({"recipes":[],"ammo":[],"weapons":[random_gun()]}))
-			action(grid,"Случайные патроны",func():airdrop({"recipes":[],"ammo":[Ammo.roll(Ammo.TYPES[randi()%Ammo.TYPES.size()],tier,randi())]}))
+			action(grid,"Случайные боеприпасы",func():airdrop({"recipes":[],"ammo":[Ammo.roll(Ammo.TYPES[randi()%Ammo.TYPES.size()],tier,randi())]}))
 			action(grid,"Аптечка",func():airdrop({"recipes":[],"ammo":[],"supplies":[{"type":"medkit","heal":3.0}]}))
 			header(grid,"Способность в слот")
 			for s in range(3):
@@ -144,7 +159,7 @@ func load_ammo(type:String):
 	Ammo.ensure(arena.run,arena.run.weapon)
 	var old=Ammo.load_item(arena.run,Ammo.roll(type,tier,randi()))
 	if not old.is_empty() and not Backpack.full(arena.run):arena.run.ammo_bag.append(old)
-	Backpack.refresh(arena);arena.toast(Texts.render("Патроны")+": "+Texts.render(Ammo.NAMES[type]));render()
+	Backpack.refresh(arena);arena.toast(Texts.render("Боеприпасы")+": "+Texts.render(Ammo.NAMES[type]));render()
 func to_bag(content:Dictionary):
 	if Backpack.full(arena.run):arena.toast("Рюкзак полон");return
 	arena.run.ammo_bag.append_array(content.get("ammo",[]));arena.run.supplies.append_array(content.get("supplies",[]))
@@ -196,12 +211,13 @@ func nudge_stat(def:StatDef,amount:float):
 	arena.run.set(def.run_field,int(round(next)) if typeof(arena.run.get(def.run_field))==TYPE_INT else next)
 	render()
 func header(grid:GridContainer,text:String):
-	for i in range(grid.get_child_count()%grid.columns,grid.columns if grid.get_child_count()%grid.columns else 0):grid.add_child(Control.new())
-	var label=Label.new();grid.add_child(label);Texts.set_text(label,text);label.add_theme_color_override("font_color",UiKit.MUTED);label.custom_minimum_size=Vector2(230,28)
-	for i in range(grid.columns-1):grid.add_child(Control.new())
+	var label=Label.new();body.add_child(label);Texts.set_text(label,text);label.add_theme_color_override("font_color",UiKit.MUTED);label.custom_minimum_size=Vector2(0,30);label.vertical_alignment=VERTICAL_ALIGNMENT_BOTTOM;label.clip_text=true
+	section=GridContainer.new();body.add_child(section);section.columns=grid.columns;section.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+	section.add_theme_constant_override("h_separation",10);section.add_theme_constant_override("v_separation",10)
 func action(grid:GridContainer,text:String,callback:Callable,selected:bool=false)->Button:
-	var b=UiKit.button(grid,text,Vector2.ZERO,Vector2(0,40),callback,selected);b.custom_minimum_size=Vector2(230,40)
-	b.add_theme_font_size_override("font_size",15);b.clip_text=true
+	if is_instance_valid(section) and section.get_parent()==body:grid=section
+	var b=UiKit.button(grid,text,Vector2.ZERO,Vector2(0,40),callback,selected);b.custom_minimum_size=Vector2(BUTTON_MIN,40);b.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+	b.add_theme_font_size_override("font_size",15);b.clip_text=true;b.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS;b.tooltip_text=Texts.render(text)
 	return b
 
 ## Rebuilds the room with new overrides; the soldier keeps the run's upgrades.
