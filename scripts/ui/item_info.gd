@@ -60,10 +60,17 @@ static func of(kind:String,item:Dictionary,arena,equipped:=false)->Dictionary:
 			if is_instance_valid(arena) and arena.run!=null:info.rows.append([Texts.render("Здоровье"),"%s / %s" % [UiKit.number(snappedf(arena.run.soldier_hp,.1)),UiKit.number(snappedf(arena.run.soldier_max_hp,.1))],"",0])
 		_:
 			info.title=Game.recipe_name(item);info.tier=Game.TIERS.tier(str(item.get("id","")))
-			var sheet="blueprint/"+str(item.get("category",""))
+			var sheet=blueprint_key(item)
 			info.icon=UiKit.trimmed(UiKit.icon_texture(sheet if IconKit.has(sheet) else "blueprint"))
 			info.summary="Чертёж: донеси до хаба — откроется навсегда."
 	return info
+## Blueprint picture with its rarity chevron baked in (the chevron travels with the item): «blueprint/<cat>/<rarity>»,
+## falling back to the plain «blueprint/<cat>».
+static func blueprint_key(item:Dictionary)->String:
+	var cat=str(item.get("category",""))
+	var rarity=clampi(int(Game.recipe_catalog(cat).get(str(item.get("id","")),{}).get("rarity",0)),0,3) if cat!="" else 0
+	var key="blueprint/%s/%d" % [cat,rarity]
+	return key if IconKit.has(key) else "blueprint/"+cat
 static func row(label:String,new:float,old:float,unit:String,same:bool)->Array:
 	var text=func(v:float)->String:return UiKit.number(snappedf(v,.01))+unit
 	if same or is_equal_approx(new,old):return [Texts.render(label),text.call(new),"",0]
