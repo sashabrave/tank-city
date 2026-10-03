@@ -68,5 +68,16 @@ func run():
 		worst=maxi(worst,Time.get_ticks_usec()-began)
 	print("PATH ten infantry / 90 frames worst search batch ms: ",worst/1000.0)
 	assert(worst<20000)
+	# T-108: two trenches next to the soldier — E takes the one closer to his centre, and only that one shows a hint.
+	for t in arena.trenches.keys():arena.trenches[t].queue_free()
+	arena.trenches.clear()
+	var me=arena.player;me.occupying_trench=false;me.hidden_in_trench=false
+	var spot=Vector2i(4,4);me.cell=spot;me.position=arena.world_pos(spot)+Vector3(.25,0,0);me.facing=Vector2i.UP
+	for t in [spot+Vector2i.RIGHT,spot+Vector2i.LEFT]:
+		if arena.walls.has(t):arena.walls[t].node.queue_free();arena.walls.erase(t)
+		arena.trenches[t]=Node3D.new();arena.add_child(arena.trenches[t])
+	assert(arena.board.trench_target()==spot+Vector2i.RIGHT,"the trench closer to the soldier's centre wins")
+	me.position=arena.world_pos(spot)+Vector3(-.25,0,0)
+	assert(arena.board.trench_target()==spot+Vector2i.LEFT,"step to the other side — the other trench")
 	print("PASS trench reservation, centering, full-cell exclusion, death/exit release, .49 infantry through .5 corridor both ways, closed-gap collision")
 	get_tree().quit()

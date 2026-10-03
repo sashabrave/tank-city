@@ -128,7 +128,7 @@ func interact():
 func open_shop():
 	modal=Control.new();modal.name="MerchantShop";root.add_child(modal);modal.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);modal.add_to_group("selection_scope")
 	var shade=ColorRect.new();modal.add_child(shade);shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);shade.color=Color(0,0,0,.5)
-	var size=get_viewport().get_visible_rect().size;var width=minf(900,size.x-40);var height=minf(620,size.y-40)
+	var size=get_viewport().get_visible_rect().size;var width=minf(940,size.x-24);var height=minf(660,size.y-24)
 	var panel=UiKit.glass(modal,(size-Vector2(width,height))*.5,Vector2(width,height))
 	UiKit.accent(UiKit.label(panel,"Торговец",Vector2(25,18),Vector2(width-260,40),28))
 	var wallet=UiKit.icon(panel,"token",Vector2(width-265,24),Vector2(28,28))
@@ -139,16 +139,22 @@ func open_shop():
 	var list=VBoxContainer.new();scroll.add_child(list);list.size_flags_horizontal=Control.SIZE_EXPAND_FILL;list.add_theme_constant_override("separation",10);list.name="Stock"
 	for i in range(stock.size()):row(list,i,width-70)
 	if not shop_revealed:shop_revealed=true;UiKit.reveal_list(list)
+## One stock row (T-133): big enough for a finger — 64 px picture, 60 px button; on a narrow screen the button
+## goes under the text across the whole row.
 func row(list:VBoxContainer,i:int,width:float):
 	var entry=stock[i];var view=describe(entry)
-	var card=Panel.new();list.add_child(card);card.custom_minimum_size=Vector2(width,86);card.add_theme_stylebox_override("panel",UiKit.style(Color("dce3d5"),9))
-	var picture=UiKit.icon(card,view.icon,Vector2(14,19),Vector2(48,48));picture.modulate=view.get("tint",UiKit.INK)
-	UiKit.label(card,view.title,Vector2(76,8),Vector2(width-320,30),19)
-	var detail=UiKit.label(card,view.detail,Vector2(76,38),Vector2(width-320,44),15,UiKit.MUTED);detail.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	var narrow=width<600
+	var text_w=width-96-(0.0 if narrow else 260.0)
+	var card=Panel.new();list.add_child(card);card.add_theme_stylebox_override("panel",UiKit.style(Color("dce3d5"),12))
+	var picture=UiKit.icon(card,view.icon,Vector2(16,18),Vector2(64,64));picture.modulate=view.get("tint",UiKit.INK)
+	UiKit.label(card,view.title,Vector2(96,12),Vector2(text_w,30),21).clip_text=true
+	var detail=UiKit.label(card,view.detail,Vector2(96,44),Vector2(text_w,52),16,UiKit.MUTED);detail.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	var label="Продано" if entry.sold else "Купить · %d" % entry.price
 	if entry.kind=="slot":label="Сыграть · %d" % entry.price
-	var buy=UiKit.button(card,label,Vector2(width-220,20),Vector2(200,46),func():purchase(i),not entry.sold and arena.run.tokens>=entry.price)
-	buy.name="Buy%d" % i;buy.disabled=entry.sold or arena.run.tokens<entry.price or not available(entry)
+	var at=Vector2(16,104) if narrow else Vector2(width-244,20);var size=Vector2(width-32,60) if narrow else Vector2(228,60)
+	card.custom_minimum_size=Vector2(width,180 if narrow else 104)
+	var buy=UiKit.button(card,label,at,size,func():purchase(i),not entry.sold and arena.run.tokens>=entry.price)
+	buy.name="Buy%d" % i;buy.disabled=entry.sold or arena.run.tokens<entry.price or not available(entry);buy.add_theme_font_size_override("font_size",19)
 	UiKit.muted_locked_button(buy)
 func describe(entry:Dictionary)->Dictionary:
 	match entry.kind:

@@ -36,6 +36,14 @@ func run_test():
 	command.tab="fighter";command.refresh()
 	# Meta stage 2: the tab is the sortie report; outside a run it shows the last sortie or a hint.
 	assert(command.content.find_children("*","Label",true,false).any(func(l):return l.text in ["Отчёт появится после первой вылазки","Последняя вылазка","Последняя вылазка · провал"]))
+	# T-107: a seen call opens as a chat with avatars right in «Связь».
+	if "call_intro" not in Game.progression.seen:Game.progression.seen.append("call_intro")
+	command.tab="notifications";command.message_tab="calls";command.open_call="";command.refresh()
+	var row=command.content.find_child("Call_intro",true,false);assert(row!=null,"the intro call is listed")
+	row.pressed.emit();await get_tree().process_frame
+	assert(command.content.find_child("CallChat",true,false)!=null and command.open_call=="intro","a tap unfolds the call as a chat")
+	assert(not get_tree().root.find_children("*","Control",true,false).any(func(n):return n.get_script()==preload("res://scripts/ui/video_call.gd")),"no call window opens over the tablet")
+	command.open_call=""
 	command.queue_free();hub.queue_free();await get_tree().process_frame
 	print("PASS command: direct telegram choice/decline, red/yellow priority/readiness/read state, slow alerts/build arrows")
 	get_tree().quit()

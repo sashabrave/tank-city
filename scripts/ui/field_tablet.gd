@@ -346,23 +346,46 @@ func orders_page():
 static func quest_echo(entry:Dictionary)->bool:
 	var text=str(entry.get("text","")).to_lower()
 	return text.begins_with("новое задание") or text.begins_with("новый приказ") or text.begins_with("поступила телеграмма") or "задание выполнено" in text
+## The call shown as a chat in «Связь» (T-107); "" when none is open.
+static var open_call:=""
+func call_chat(box:VBoxContainer,id:String):
+	var Call=preload("res://scripts/ui/video_call.gd")
+	var chat=VBoxContainer.new();chat.name="CallChat";box.add_child(chat);chat.add_theme_constant_override("separation",6)
+	for line in Call.CALLS[id]:
+		var who=str(line[0]);var major=who==Call.MAJOR
+		var row=HBoxContainer.new();chat.add_child(row);row.add_theme_constant_override("separation",10)
+		var face=TextureRect.new();row.add_child(face);face.custom_minimum_size=Vector2(44,44);face.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;face.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		face.texture=load("res://assets/portraits/major.png") if major and ResourceLoader.exists("res://assets/portraits/major.png") else preload("res://scripts/ui/class_gallery.gd").texture("heavy" if major else Game.selected_class)
+		var bubble=PanelContainer.new();row.add_child(bubble);bubble.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+		var style=UiKit.style(Color("2f3a32") if major else Color("394237"),10);style.content_margin_left=12;style.content_margin_right=12;style.content_margin_top=6;style.content_margin_bottom=8
+		bubble.add_theme_stylebox_override("panel",style)
+		var lines=VBoxContainer.new();bubble.add_child(lines);lines.add_theme_constant_override("separation",2)
+		var name_label=Label.new();lines.add_child(name_label);Texts.set_text(name_label,who);name_label.add_theme_font_size_override("font_size",13);name_label.add_theme_color_override("font_color",UiKit.ORANGE if major else UiKit.MUTED)
+		var text=Label.new();lines.add_child(text);Texts.set_text(text,str(line[1]));text.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;text.add_theme_font_size_override("font_size",15);text.add_theme_color_override("font_color",UiKit.INK)
 func messages_page():
 	UiKit.accent(UiKit.label(content,"Связь",Vector2(UiKit.PAGE_PADDING,20),Vector2(720,28),UiKit.PAGE_TITLE_SIZE))
 	if message_tab not in ["calls","important","technical"]:message_tab="calls"
 	for button in UiKit.tab_row(content,Vector2(22,68),content.size.x-44,[["calls","История"],["important","Сообщения"],["technical","Технические"]],message_tab,func(key):message_tab=key;refresh()):button.add_theme_font_size_override("font_size",16)
-	var hint={"calls":"Звонки майора — их можно пересмотреть","important":"Развитие, открытия и важные события","technical":"Боевые реплики · без всплывающих уведомлений"}[message_tab]
+	var hint={"calls":"Звонки майора — нажми, и разговор раскроется","important":"Развитие, открытия и важные события","technical":"Боевые реплики · без всплывающих уведомлений"}[message_tab]
 	UiKit.label(content,hint,Vector2(22,106+UiKit.TAB_CONTENT_GAP),Vector2(720,26),14,UiKit.MUTED)
 	var box=scroller(Vector2(22,164),Vector2(content.size.x-44,335))
+	Game.progression.viewed_updates["notifications_seen"]=str(Game.notification_history.size())
 	if message_tab=="calls":
+		# T-107: a call opens right here as a short chat with avatars instead of replaying the call window.
 		var Call=preload("res://scripts/ui/video_call.gd")
 		for id in Call.ORDER:
 			if "call_"+id not in Game.progression.seen:continue
 			var first=str(Call.CALLS[id][0][1])
+			var call=id
 			var b=list_button(box,first if first.length()<70 else first.substr(0,68)+"…",func():
-				var view=Call.new();view.id=id;view.replay=true;get_tree().root.add_child(view),56)
+				open_call=("" if open_call==call else call);refresh(),56)
+			b.name="Call_"+id
 			b.icon=UiKit.interface_icon("call");b.expand_icon=true;b.add_theme_constant_override("icon_max_width",20)
+			if open_call==id:call_chat(box,id)
 		if box.get_child_count()==0:UiKit.label(box,"Звонков ещё не было",Vector2.ZERO,Vector2(500,40),16,UiKit.MUTED)
 		UiKit.reveal_list(box);return
+	# Opening «Сообщения» reads them: the list is the news, there is no second step.
+	if message_tab=="important":Game.notifications.mark_all("important")
 	for i in range(Game.notification_history.size()-1,-1,-1):
 		var entry=Game.notification_history[i]
 		if Game.notifications.category(entry)!=message_tab or quest_echo(entry):continue
@@ -569,7 +592,8 @@ func signature(key:String)->String:
 ## player changes them himself. A run keeps its own "viewed" mark, so returning to the hub never lights them (T-033).
 func viewed_key(key:String)->String:return key+"@run" if key in ["inventory","fighter"] and is_instance_valid(arena) else key
 func section_new(key:String)->bool:
-	if key=="notifications":return Game.notifications.unread()>0
+	# T-107: the dot means «something new since you last looked», not «unread somewhere in the log».
+	if key=="notifications":return Game.notifications.unread()>0 and str(Game.progression.viewed_updates.get("notifications_seen",""))!=str(Game.notification_history.size())
 	if key in ["inventory","fighter"] and not is_instance_valid(arena):return false
 	var value=signature(key)
 	return value!="" and str(Game.progression.viewed_updates.get(viewed_key(key),""))!=value

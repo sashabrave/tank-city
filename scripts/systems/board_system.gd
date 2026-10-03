@@ -228,7 +228,9 @@ func trench_available(cell:Vector2i,actor)->bool:
 
 func occupy_trench(actor,cell:Vector2i)->bool:
 	if actor.kind!="soldier" or not arena.trenches.has(cell) or not trench_available(cell,actor):return false
+	var from=actor.position
 	actor.cell=cell;actor.destination=cell;actor.position=arena.world_pos(cell)
+	if actor.player_owned:hop(actor,from)
 	actor.quarter_destination=actor.position;actor.moving=false;actor.occupying_trench=true
 	actor.hidden_in_trench=false;actor.slide_remaining=0;actor.terrain_direction=Vector2i.ZERO;actor.terrain_sliding=false
 	if actor.has_meta("quarter_search"):actor.remove_meta("quarter_search")
@@ -242,9 +244,33 @@ func interact_trench()->bool:
 		for step in range(4):
 			var target=actor.cell+directions[(start+step)%4]
 			if arena.can_enter(target,actor):
-				actor.cell=target;actor.destination=target;actor.position=arena.world_pos(target);actor.occupying_trench=false;actor.hidden_in_trench=false;actor.model.position.y=0;actor.moving=false;actor.quarter_destination=actor.position;return true
+				var from=actor.position
+				actor.cell=target;actor.destination=target;actor.position=arena.world_pos(target);actor.occupying_trench=false;actor.hidden_in_trench=false;actor.model.position.y=0;actor.moving=false;actor.quarter_destination=actor.position
+				hop(actor,from);return true
 		arena.toast("Выход занят");return true
+	var cell=trench_target()
+	return cell!=NO_TRENCH and occupy_trench(actor,cell)
+
+const NO_TRENCH:=Vector2i(-999,-999)
+## Which trench E would take (T-108): of the free ones within a cell, the one closest to the soldier's centre;
+## a tie goes to the one he faces. The hint shows only over this one.
+func trench_target()->Vector2i:
+	var actor=arena.player
+	if not is_instance_valid(actor) or actor.kind!="soldier" or actor.occupying_trench:return NO_TRENCH
+	var best=NO_TRENCH;var best_score=INF
 	for cell in arena.trenches:
-		if (cell-actor.cell).length()>1.01:continue
-		if occupy_trench(actor,cell):return true
-	return false
+		if (cell-actor.cell).length()>1.01 or not trench_available(cell,actor):continue
+		var score=arena.flat_distance(actor.position,arena.world_pos(cell))-(.05 if cell-actor.cell==actor.facing else 0.0)
+		if score<best_score:best_score=score;best=cell
+	return best
+## A short hop between the trench and the ground (T-094): the body is already in place, the model catches up
+## along a small arc. Visual only.
+func hop(actor,from:Vector3):
+	if not is_instance_valid(actor.model) or not UiKit.motion_enabled():return
+	var offset=from-actor.position;offset.y=0
+	actor.model.position=Vector3(offset.x,actor.model.position.y,offset.z)
+	var rest=actor.model.position.y
+	var t=actor.model.create_tween()
+	t.tween_method(func(k:float):
+		if is_instance_valid(actor.model):actor.model.position=Vector3(offset.x*(1.0-k),rest+sin(k*PI)*.22,offset.z*(1.0-k))
+	,0.0,1.0,.2).set_trans(Tween.TRANS_SINE)

@@ -1189,7 +1189,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-094.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "для входа - выхода в окоп нужна простенькая анимация",
 			"type": "bug",
 			"version": "0.7.2-pre"
@@ -1357,7 +1357,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-107.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "в командном центре уведомления учитываются только у заданий ;иконки круги)",
 			"type": "bug",
 			"version": "0.7.2-pre"
@@ -1370,7 +1370,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-108.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "непонятная ситеуация когда два окопа рядом,  я не понимаб в какой он садится",
 			"type": "bug",
 			"version": "0.7.2-pre"
@@ -1683,7 +1683,7 @@
 			"note": "Окно торговца и строки товаров крупнее, кнопки под палец, мобильная раскладка.",
 			"type": "polish",
 			"priority": 2,
-			"status": "backlog",
+			"status": "review",
 			"version": "0.8.1",
 			"created": "2026-10-02",
 			"source": "chat",
@@ -2316,12 +2316,12 @@
 		{
 			"created": "2026-10-03",
 			"id": "T-183",
-			"note": "",
+			"note": "Агент (03.10): враги стреляют в кирпичный полублок, когда к штабу нет другой линии огня — так штаб остаётся уязвимым. Попытка «не стрелять в полублоки карты» оставляла пехоту без цели (стоит и ждёт, тест active_battle). Нужно решение: 1) полублоки карты в колонне штаба не ставить; 2) враг сначала обходит полублок сбоку, стреляет только если обхода нет; 3) оставить как есть.",
 			"priority": 2.0,
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-183.png",
 			"source": "game",
-			"status": "review",
+			"status": "backlog",
 			"title": "вот тут не перестали стрелять в полублок перед базой враги",
 			"type": "bug",
 			"version": "0.8.0"

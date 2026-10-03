@@ -108,12 +108,7 @@ func player_shot(actor,weapon_range:float)->Vector2i:
 func concrete_to_base(cell:Vector2i)->bool:
 	var p=cell+Vector2i.DOWN
 	while p.y<arena.room.base_cell.y:
-		var wall=arena.room.walls.get(p)
-		if wall!=null and wall.hp<0:return true
-		# T-183: a half-block of the map (not the HQ's own ring) only eats the shots — the unit moves on and
-		# finds a lane instead of pounding it. The HQ ring stays breachable by design.
-		var ring=p.y>=arena.room.grid_size-2 and absi(p.x-arena.room.base_cell.x)<=1
-		if wall!=null and wall.has("half_side") and not ring:return true
+		if arena.room.walls.has(p) and arena.room.walls[p].hp<0:return true
 		p+=Vector2i.DOWN
 	return false
 func needs_breach(actor)->bool:
@@ -158,7 +153,7 @@ func path_direction(actor) -> Vector2i:
 	while not state.queue.is_empty() and expanded<96:
 		if Time.get_ticks_usec()-began+path_budget_usec>=2000 or Time.get_ticks_usec()-began>=450:break
 		var p:Vector2i=frontier_pop(state.queue);expanded+=1
-		if (waypoint!=Vector2i(-1,-1) and p==waypoint) or (waypoint==Vector2i(-1,-1) and ((not arena.boss_room and p.x==arena.base_cell.x and p.y>=arena.grid_size-4 and p!=arena.base_cell and not concrete_to_base(p)) or (arena.boss_room and is_instance_valid(arena.player) and arena.aligned_direction(p,arena.player.cell)!=Vector2i.ZERO and arena.clear_line(p,arena.player.cell)))):
+		if (waypoint!=Vector2i(-1,-1) and p==waypoint) or (waypoint==Vector2i(-1,-1) and ((not arena.boss_room and p.x==arena.base_cell.x and p.y>=arena.grid_size-4 and p!=arena.base_cell) or (arena.boss_room and is_instance_valid(arena.player) and arena.aligned_direction(p,arena.player.cell)!=Vector2i.ZERO and arena.clear_line(p,arena.player.cell)))):
 			goal=p;state.done=true;break
 		for dir in arena.DIRS:
 			var next:Vector2i=p+dir
@@ -230,7 +225,7 @@ func quarter_path_direction(actor)->Vector2i:
 		var p:Vector2i=frontier_pop(state.queue);expanded+=1
 		var pos=Vector3(p.x*.25,actor.position.y,p.y*.25);var cell=arena.grid_pos(pos)
 		var at_waypoint=cell==waypoint and (not arena.trenches.has(cell) or pos.is_equal_approx(arena.world_pos(cell)))
-		if (waypoint!=Vector2i(-1,-1) and at_waypoint) or (waypoint==Vector2i(-1,-1) and ((not arena.boss_room and cell.x==arena.base_cell.x and cell.y>=arena.grid_size-4 and cell!=arena.base_cell and not concrete_to_base(cell)) or (arena.boss_room and is_instance_valid(arena.player) and arena.aligned_direction(cell,arena.player.cell)!=Vector2i.ZERO and arena.clear_line(cell,arena.player.cell)))):
+		if (waypoint!=Vector2i(-1,-1) and at_waypoint) or (waypoint==Vector2i(-1,-1) and ((not arena.boss_room and cell.x==arena.base_cell.x and cell.y>=arena.grid_size-4 and cell!=arena.base_cell) or (arena.boss_room and is_instance_valid(arena.player) and arena.aligned_direction(cell,arena.player.cell)!=Vector2i.ZERO and arena.clear_line(cell,arena.player.cell)))):
 			goal=p;state.done=true;break
 		for dir in arena.DIRS:
 			var next=p+dir

@@ -31,7 +31,7 @@ func _process(_delta):
 	var player=arena.player if is_instance_valid(arena) else null
 	var soldier=is_instance_valid(player) and player.kind=="soldier" and not player.dead and arena.phase in ["combat","countdown"]
 	var inside=soldier and player.occupying_trench and player.cell==cell
-	var near=soldier and not player.occupying_trench and Vector2(player.cell-cell).length()<=1.01
+	var near=soldier and not player.occupying_trench and arena.board.trench_target()==cell
 	chip.visible=is_instance_valid(camera) and (inside or near)
 	if not chip.visible:return
 	enter.refresh();crouch.refresh()
