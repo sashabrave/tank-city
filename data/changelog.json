@@ -163,7 +163,8 @@
 					"Патронный автомат стал лутбоксом: два ящика (армейский и офицерский) с шансами по редкости, которые растут дальше по карте, и лента с прокруткой, которая останавливается на выигрыше",
 					"На стене штаба иногда проступает цифра. Говорят, она меняется после больших побед",
 					"«Связь»: звонок раскрывается прямо в списке короткой перепиской с аватарами; точка гаснет, когда вкладку посмотрели, а «Сообщения» читаются при открытии. Окопы: из двух соседних выбирается ближайший, подсказка только у него, вход и выход — коротким прыжком. Окно торговца крупнее, кнопки под палец",
-					"Демо: миры 2–3 закрыты (в полной версии), после генерала открывается бесконечный рубеж. Казарма: лента классов прокручивается и снова показывает классы в разработке, кнопка «Все» открывает все классы на одном экране. Игровой автомат торговца: меньше пустых прокрутов, новые призы — сплав и ящик патронов"
+					"Демо: миры 2–3 закрыты (в полной версии), после генерала открывается бесконечный рубеж. Казарма: лента классов прокручивается и снова показывает классы в разработке, кнопка «Все» открывает все классы на одном экране. Игровой автомат торговца: меньше пустых прокрутов, новые призы — сплав и ящик патронов",
+					"Новые аватары отправителей в заданиях: учёный кот из Института и кот-диспетчер из Оперштаба"
 				]
 			},
 			"en": {
@@ -326,7 +327,8 @@
 					"The ammo machine is now a loot box: two crates (army and officer) with rarity odds that improve farther along the map, and a spinning reel that stops on your prize",
 					"A number sometimes shows through on the HQ wall. They say it changes after big victories",
 					"Comms: a call unfolds right in the list as a short chat with avatars; the dot goes out once you look, and Messages are read on opening. Trenches: of two neighbours the closer one is taken, only it shows the hint, and you hop in and out. The merchant window is larger with finger-sized buttons",
-					"Demo: worlds 2–3 are closed (full game), the endless front opens after the general. Barracks: the class ribbon scrolls and shows the classes in development again, «All» opens every class on one screen. Merchant's slot machine: fewer blanks, new prizes — alloy and an ammo box"
+					"Demo: worlds 2–3 are closed (full game), the endless front opens after the general. Barracks: the class ribbon scrolls and shows the classes in development again, «All» opens every class on one screen. Merchant's slot machine: fewer blanks, new prizes — alloy and an ammo box",
+					"New sender avatars in tasks: a scientist cat from the Institute and a dispatcher cat from Operations"
 				]
 			}
 		},

@@ -2217,7 +2217,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-175.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "Арт: Институт",
 			"type": "polish",
 			"version": "0.8.0"
@@ -2230,7 +2230,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-176.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "Арт: Оперштаб",
 			"type": "polish",
 			"version": "0.8.0"
