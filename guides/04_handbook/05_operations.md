@@ -14,6 +14,12 @@
 3. `Godot --headless --path . --import`, затем `--export-release "macOS" build/macos/WarCats-<версия>-b<N>.zip`; распаковать в `.app`; короткий запуск с временным HOME и `--verbose` без ошибок.
 4. Импорт может создать новые `.uid` в main-папке — провести их через ветку тем же способом.
 
+**Где лежат сборки (порядок с 03.10.2026, просьба автора):**
+- Тестовые сборки собираются в отдельной копии репозитория `.claude/worktrees/release-build` (внутри проекта, скрыта, в git не попадает): `git checkout --detach <коммит>`, номер `config/build` = число коммитов, экспорт в её `build/macos/`, затем `git checkout project.godot`.
+- Автору отдаётся **одна** папка на рабочем столе: `~/Desktop/War Cats — сборка/` — только последняя сборка (`.app` и `.zip`). Предыдущую при выкладке новой — в Корзину, не копить.
+- Рабочие копии агентов (`.claude/worktrees/agent-*`) после слияния удалять (`git worktree remove`), не оставлять папок на рабочем столе.
+- Headless-экспорт пропускает запекание шейдеров; финальный релиз экспортировать в окне (первый запуск ~8 с вместо ~19 с).
+
 **Версия** в трёх местах: `BUILD_VERSION.txt` (`alpha-X.Y.Z`), `project.godot` (`config/version`), `export_presets.cfg` (`short_version`, `version` +1). Changelog: новые записи с `"version":"X.Y.Z"`; выпущенные теги не переписывать (сверять с `git show vX.Y.Z-alpha:data/changelog.json`).
 
 **Тег:** `git tag -a vX.Y.Z-alpha -m "Альфа X.Y.Z"` на `main`, пуш `main`, рабочих веток и тега.
