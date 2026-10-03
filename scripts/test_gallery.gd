@@ -139,7 +139,7 @@ func build_exhibits():
 		var builder=load("res://scripts/location_ambience.gd").new();builder.biome=biome;builder.miniature=true;builder.make_shape(shape,combat_rng);builder.free()
 
 func icon_exhibit(id:String,title:String):
-	var pos=world_pos(stand(title));var sprite=Sprite3D.new();sprite.texture=IconKit.flat(id) if IconKit.has(id) else UiKit.icon_texture(id);sprite.billboard=BaseMaterial3D.BILLBOARD_ENABLED
+	var pos=world_pos(stand(title));var sprite=Sprite3D.new();sprite.texture=UiKit.icon_texture(id);sprite.billboard=BaseMaterial3D.BILLBOARD_ENABLED
 	sprite.pixel_size=1.4/maxf(1,sprite.texture.get_width());add_child(sprite);sprite.position=pos+Vector3.UP
 
 func build_gallery_ui():

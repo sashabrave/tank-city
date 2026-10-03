@@ -61,27 +61,23 @@ static func minimal(card:Panel,data:Dictionary):
 	var chip_text=UiKit.label(chip,data.category,Vector2(22,2),Vector2(160,20),12,family_color.lightened(.2))
 	var dot=Panel.new();chip.add_child(dot);dot.position=Vector2(9,8);dot.size=Vector2(7,7);dot.add_theme_stylebox_override("panel",UiKit.style(family_color,4,family_color))
 	chip.position=Vector2(14,14);chip.size=Vector2(chip_text.get_theme_font("font").get_string_size(Texts.render(data.category),HORIZONTAL_ALIGNMENT_LEFT,-1,12).x+32,24)
-	# Icon family frames (roadmap stage 1): the full 512 canvas of the icon under a rarity frame, chevrons for
-	# how many times the card was already taken. Rarity now reads from the frame, so the corner pips are gone.
+	# One drawn symbol, no frame around it: rarity reads from the card border and its tinted background.
 	var tier=clampi(int(data.get("tier",0)),0,3)
 	var full=UiKit.icon_texture(data.get("art_key",data.icon))
-	if full:icon.texture=full
-	# Air inside the frame: the kit picture keeps 13% of the side free on each edge (KitIcon icon_inset).
-	icon.position=Vector2(width*.5-74,46);icon.size=Vector2(148,148);icon.set_meta("icon_inset",.13)
+	if full:icon.texture=UiKit.trimmed(full)
+	icon.position=Vector2(width*.5-62,50);icon.size=Vector2(124,124)
 	icon.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;icon.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
-	var frame=TextureRect.new();frame.name="RarityFrame";icon.add_child(frame);frame.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	frame.texture=load("res://assets/ui/icon_frames/rarity_%s.png" % ["common","rare","epic","legendary"][tier])
-	frame.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;frame.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;frame.position=Vector2.ZERO;frame.size=icon.size
+	rarity_glow(card,data.color,tier)
 	var owned=mini(3,int(data.get("stacks",0)))
 	if owned>0:
 		var chevrons=TextureRect.new();chevrons.name="PowerChevrons";icon.add_child(chevrons);chevrons.mouse_filter=Control.MOUSE_FILTER_IGNORE
 		chevrons.texture=load("res://assets/ui/icon_frames/power_%d.png" % owned);chevrons.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;chevrons.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		chevrons.position=Vector2.ZERO;chevrons.size=icon.size
+		chevrons.position=Vector2(0,18);chevrons.size=icon.size
 		chevrons.tooltip_text=Texts.render("Уже взято: %d") % owned
-	var title:Label=card.get_node("Title");title.position=Vector2(16,208);title.size=Vector2(width-32,34);title.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;title.vertical_alignment=VERTICAL_ALIGNMENT_CENTER
+	var title:Label=card.get_node("Title");title.position=Vector2(16,196);title.size=Vector2(width-32,34);title.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;title.vertical_alignment=VERTICAL_ALIGNMENT_CENTER
 	for key in ["Description","NumericDescription"]:
 		var body=card.get_node_or_null(key)
-		if body:body.position=Vector2(18,252);body.size=Vector2(width-36,card.size.y-266)
+		if body:body.position=Vector2(18,240);body.size=Vector2(width-36,card.size.y-254)
 		if body is Label:body.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
 	var rich=card.get_node_or_null("NumericDescription")
 	if rich is RichTextLabel:rich.text="[center]"+rich.text+"[/center]"
@@ -92,13 +88,32 @@ static func minimal(card:Panel,data:Dictionary):
 	for key in ["normal","hover","pressed","focus","disabled"]:button.add_theme_stylebox_override(key,clear)
 	card.move_child(button,card.get_child_count()-1)
 
+## Card background tinted towards the rarity: soft gradient, light pool behind the icon, a rare random glint
+## (shaders/ui/rarity_card.gdshader). Sits inside the border; the glint stops with «Анимации интерфейса» off.
+static func rarity_glow(card:Panel,color:Color,tier:int):
+	var style:StyleBox=card.get_theme_stylebox("panel")
+	var border=style.border_width_top if style is StyleBoxFlat else 2
+	var corner=style.corner_radius_top_left if style is StyleBoxFlat else 14
+	var glow=ColorRect.new();glow.name="RarityGlow";glow.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	card.add_child(glow);card.move_child(glow,0)
+	var width=card.size.x if card.size.x>0 else 280.0
+	glow.position=Vector2.ONE*border;glow.size=Vector2(width,card.size.y)-Vector2.ONE*border*2
+	var material=ShaderMaterial.new();material.shader=preload("res://shaders/ui/rarity_card.gdshader")
+	material.set_shader_parameter("tint",color.lightened(.1))
+	material.set_shader_parameter("strength",[.12,.18,.22,.26][tier])
+	material.set_shader_parameter("rect_size",glow.size)
+	material.set_shader_parameter("radius",maxf(0.0,corner-border))
+	material.set_shader_parameter("seed",randf()*10.0)
+	material.set_shader_parameter("motion",1.0 if UiKit.motion_enabled() else 0.0)
+	glow.material=material
+
 ## Change view, centred on an 8 px rhythm: the change in large type, below it the parameter with the old
 ## value struck through and the resulting one, then one short sentence. The long description is the tooltip.
 static func table(card:Panel,data:Dictionary,width:float,accent:Color):
 	for key in ["Description","NumericDescription"]:
 		var body=card.get_node_or_null(key)
 		if body:body.hide()
-	var y=252.0
+	var y=240.0
 	for row in data.rows:
 		var value=UiKit.label(card,str(row[0]),Vector2(16,y),Vector2(width-32,36),28,accent.lightened(.25));value.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;value.vertical_alignment=VERTICAL_ALIGNMENT_CENTER;value.name="RowValue"
 		var compare=RichTextLabel.new();compare.name="RowParam";card.add_child(compare);compare.position=Vector2(16,y+42);compare.size=Vector2(width-32,24)

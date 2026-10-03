@@ -1,656 +1,125 @@
 {
-	"_about": "Layered icon kit: icon id -> group, symbol, optional badge and variant. Layers live in assets/ui/icon_kit. guides/03_release/07_icon_kit_brief.md",
-	"badge": [
-		0.79,
-		0.77,
-		0.38
-	],
-	"groups": {
-		"upgrade": {
-			"face": "upgrade_face_{variant}",
-			"rim": "upgrade_rim_{variant}",
-			"aura": "aura_rays",
-			"symbol": [
-				0.5,
-				0.47,
-				0.6
-			]
-		},
-		"stat": {
-			"face": "stat_face_{variant}",
-			"rim": "stat_rim",
-			"symbol": [
-				0.5,
-				0.56,
-				0.5
-			]
-		},
-		"ability": {
-			"symbol": [
-				0.5,
-				0.5,
-				0.96
-			],
-			"still": true
-		},
-		"pickup": {
-			"face": "pickup_face_{variant}",
-			"rim": "pickup_rim",
-			"aura": "aura_ring",
-			"symbol": [
-				0.5,
-				0.4,
-				0.42
-			]
-		},
-		"hq": {
-			"face": "hq_face",
-			"rim": "hq_rim",
-			"symbol": [
-				0.5,
-				0.5,
-				0.6
-			]
-		},
-		"garage": {
-			"face": "garage_face",
-			"rim": "garage_rim",
-			"symbol": [
-				0.5,
-				0.5,
-				0.5
-			]
-		},
-		"station": {
-			"face": "station_face",
-			"rim": "station_rim",
-			"symbol": [
-				0.5,
-				0.56,
-				0.56
-			]
-		},
-		"resource": {
-			"symbol": [
-				0.5,
-				0.5,
-				0.96
-			]
-		}
-	},
+	"_about": "Static icon symbols: icon id -> one drawn symbol PNG in assets/ui/icon_kit/symbols (no plates, no layers). Rules and metaphors: guides/03_release/07_icon_kit_brief.md",
 	"icons": {
-		"upgrades/ace": {
-			"group": "upgrade",
-			"variant": "fire",
-			"symbol": "scope_star"
-		},
-		"upgrades/boarding": {
-			"group": "upgrade",
-			"variant": "logistics",
-			"symbol": "grapple"
-		},
-		"upgrades/burn": {
-			"group": "upgrade",
-			"variant": "ammo",
-			"symbol": "flame"
-		},
-		"upgrades/burn_heat": {
-			"group": "upgrade",
-			"variant": "ammo",
-			"symbol": "flame",
-			"badge": "up"
-		},
-		"upgrades/burn_long": {
-			"group": "upgrade",
-			"variant": "ammo",
-			"symbol": "flame",
-			"badge": "longer"
-		},
-		"upgrades/chain_fire": {
-			"group": "upgrade",
-			"variant": "ammo",
-			"symbol": "flame_chain"
-		},
-		"upgrades/crew": {
-			"group": "upgrade",
-			"variant": "fire",
-			"symbol": "steering_bullet"
-		},
-		"upgrades/crit_chance": {
-			"group": "upgrade",
-			"variant": "fire",
-			"symbol": "crosshair"
-		},
-		"upgrades/crit_damage": {
-			"group": "upgrade",
-			"variant": "fire",
-			"symbol": "bullet_shatter"
-		},
-		"upgrades/crit_stun": {
-			"group": "upgrade",
-			"variant": "ammo",
-			"symbol": "bell"
-		},
-		"upgrades/damage": {
-			"group": "upgrade",
-			"variant": "fire",
-			"symbol": "burst"
-		},
-		"upgrades/device_cooldown": {
-			"group": "upgrade",
-			"variant": "logistics",
-			"symbol": "grenade_clock"
-		},
-		"upgrades/device_power": {
-			"group": "upgrade",
-			"variant": "logistics",
-			"symbol": "grenade_up"
-		},
-		"upgrades/dodge": {
-			"group": "upgrade",
-			"variant": "survival",
-			"symbol": "boot_dodge"
-		},
-		"upgrades/exit_dash": {
-			"group": "upgrade",
-			"variant": "recon",
-			"symbol": "door_dash"
-		},
-		"upgrades/field_repair": {
-			"group": "upgrade",
-			"variant": "logistics",
-			"symbol": "wrench_spark"
-		},
-		"upgrades/fire": {
-			"group": "upgrade",
-			"variant": "fire",
-			"symbol": "bullets_fast"
-		},
-		"upgrades/fortress": {
-			"group": "upgrade",
-			"variant": "survival",
-			"symbol": "sandbags"
-		},
-		"upgrades/ghost": {
-			"group": "upgrade",
-			"variant": "recon",
-			"symbol": "ghost_dash"
-		},
-		"upgrades/guard_blast": {
-			"group": "upgrade",
-			"variant": "survival",
-			"symbol": "bomb",
-			"badge": "shield"
-		},
-		"upgrades/guard_bullet": {
-			"group": "upgrade",
-			"variant": "survival",
-			"symbol": "vest"
-		},
-		"upgrades/guard_vehicle": {
-			"group": "upgrade",
-			"variant": "survival",
-			"symbol": "tank_shell",
-			"badge": "shield"
-		},
-		"upgrades/healing": {
-			"group": "upgrade",
-			"variant": "survival",
-			"symbol": "medkit"
-		},
-		"upgrades/health": {
-			"group": "upgrade",
-			"variant": "survival",
-			"symbol": "heart_cage"
-		},
-		"upgrades/intercept": {
-			"group": "upgrade",
-			"variant": "fire",
-			"symbol": "bullet_vs_rocket"
-		},
-		"upgrades/landing": {
-			"group": "upgrade",
-			"variant": "recon",
-			"symbol": "parachute"
-		},
-		"upgrades/last_stand": {
-			"group": "upgrade",
-			"variant": "survival",
-			"symbol": "torn_flag"
-		},
-		"upgrades/luck": {
-			"group": "upgrade",
-			"variant": "logistics",
-			"symbol": "clover_casing"
-		},
-		"upgrades/marauder": {
-			"group": "upgrade",
-			"variant": "logistics",
-			"symbol": "loot_sack"
-		},
-		"upgrades/opening_shot": {
-			"group": "upgrade",
-			"variant": "fire",
-			"symbol": "hourglass_bullet"
-		},
-		"upgrades/pierce": {
-			"group": "upgrade",
-			"variant": "fire",
-			"symbol": "pierce"
-		},
-		"upgrades/range": {
-			"group": "upgrade",
-			"variant": "recon",
-			"symbol": "trajectory"
-		},
-		"upgrades/safe": {
-			"group": "upgrade",
-			"variant": "logistics",
-			"symbol": "safe"
-		},
-		"upgrades/shock": {
-			"group": "upgrade",
-			"variant": "ammo",
-			"symbol": "bolt"
-		},
-		"upgrades/shock_arc": {
-			"group": "upgrade",
-			"variant": "ammo",
-			"symbol": "bolt_arc"
-		},
-		"upgrades/shock_overload": {
-			"group": "upgrade",
-			"variant": "ammo",
-			"symbol": "bolt",
-			"badge": "up"
-		},
-		"upgrades/shock_short": {
-			"group": "upgrade",
-			"variant": "ammo",
-			"symbol": "plug_spark"
-		},
-		"upgrades/speed": {
-			"group": "upgrade",
-			"variant": "recon",
-			"symbol": "boot_wind"
-		},
-		"upgrades/stealth": {
-			"group": "upgrade",
-			"variant": "recon",
-			"symbol": "hood"
-		},
-		"upgrades/stun": {
-			"group": "upgrade",
-			"variant": "ammo",
-			"symbol": "dizzy"
-		},
-		"upgrades/stun_long": {
-			"group": "upgrade",
-			"variant": "ammo",
-			"symbol": "dizzy",
-			"badge": "longer"
-		},
-		"upgrades/stun_often": {
-			"group": "upgrade",
-			"variant": "ammo",
-			"symbol": "dizzy",
-			"badge": "often"
-		},
-		"upgrades/weapon_damage": {
-			"group": "upgrade",
-			"variant": "fire",
-			"symbol": "bullet_burst"
-		},
-		"upgrades/weapon_fire": {
-			"group": "upgrade",
-			"variant": "fire",
-			"symbol": "magazine_fast"
-		},
-		"upgrades/weapon_intercept": {
-			"group": "upgrade",
-			"variant": "fire",
-			"symbol": "gyro"
-		},
-		"stats/burn_chance": {
-			"group": "stat",
-			"variant": "ammo",
-			"symbol": "flame"
-		},
-		"stats/burn_power": {
-			"group": "stat",
-			"variant": "ammo",
-			"symbol": "flame",
-			"badge": "up"
-		},
-		"stats/crit_chance": {
-			"group": "stat",
-			"variant": "fire",
-			"symbol": "crosshair"
-		},
-		"stats/crit_damage": {
-			"group": "stat",
-			"variant": "fire",
-			"symbol": "bullet_shatter"
-		},
-		"stats/dodge": {
-			"group": "stat",
-			"variant": "survival",
-			"symbol": "boot_dodge"
-		},
-		"stats/field_repair": {
-			"group": "stat",
-			"variant": "logistics",
-			"symbol": "wrench_spark"
-		},
-		"stats/guard_blast": {
-			"group": "stat",
-			"variant": "survival",
-			"symbol": "bomb",
-			"badge": "shield"
-		},
-		"stats/guard_bullet": {
-			"group": "stat",
-			"variant": "survival",
-			"symbol": "vest"
-		},
-		"stats/guard_vehicle": {
-			"group": "stat",
-			"variant": "survival",
-			"symbol": "tank_shell",
-			"badge": "shield"
-		},
-		"stats/luck": {
-			"group": "stat",
-			"variant": "logistics",
-			"symbol": "clover_casing"
-		},
-		"stats/marauder": {
-			"group": "stat",
-			"variant": "logistics",
-			"symbol": "loot_sack"
-		},
-		"stats/pierce": {
-			"group": "stat",
-			"variant": "fire",
-			"symbol": "pierce"
-		},
-		"stats/safe_slots": {
-			"group": "stat",
-			"variant": "logistics",
-			"symbol": "safe"
-		},
-		"stats/shock_bonus": {
-			"group": "stat",
-			"variant": "ammo",
-			"symbol": "bolt"
-		},
-		"stats/shock_power": {
-			"group": "stat",
-			"variant": "ammo",
-			"symbol": "bolt",
-			"badge": "up"
-		},
-		"stats/stealth": {
-			"group": "stat",
-			"variant": "recon",
-			"symbol": "hood"
-		},
-		"stats/stun_chance": {
-			"group": "stat",
-			"variant": "ammo",
-			"symbol": "dizzy"
-		},
-		"stats/stun_power": {
-			"group": "stat",
-			"variant": "ammo",
-			"symbol": "dizzy",
-			"badge": "up"
-		},
-		"abilities/airstrike": {
-			"group": "ability",
-			"symbol": "airstrike"
-		},
-		"abilities/ally_drone": {
-			"group": "ability",
-			"symbol": "ally_drone"
-		},
-		"abilities/barrier": {
-			"group": "ability",
-			"symbol": "barrier"
-		},
-		"abilities/cloak": {
-			"group": "ability",
-			"symbol": "hood_fade"
-		},
-		"abilities/comrade": {
-			"group": "ability",
-			"symbol": "comrade"
-		},
-		"abilities/dynamite": {
-			"group": "ability",
-			"symbol": "dynamite"
-		},
-		"abilities/field_repair": {
-			"group": "ability",
-			"symbol": "wrench_spark"
-		},
-		"abilities/gas": {
-			"group": "ability",
-			"symbol": "gas"
-		},
-		"abilities/grenade": {
-			"group": "ability",
-			"symbol": "grenade"
-		},
-		"abilities/laser": {
-			"group": "ability",
-			"symbol": "laser"
-		},
-		"abilities/mine": {
-			"group": "ability",
-			"symbol": "mine"
-		},
-		"abilities/shield": {
-			"group": "ability",
-			"symbol": "riot_shield"
-		},
-		"headquarters/hq_emp": {
-			"group": "hq",
-			"symbol": "emp_dish"
-		},
-		"headquarters/hq_field": {
-			"group": "hq",
-			"symbol": "dome"
-		},
-		"headquarters/hq_interceptor": {
-			"group": "hq",
-			"symbol": "interceptor"
-		},
-		"headquarters/hq_medbay": {
-			"group": "hq",
-			"symbol": "medbay"
-		},
-		"headquarters/hq_patch": {
-			"group": "hq",
-			"symbol": "pulse"
-		},
-		"headquarters/hq_plating": {
-			"group": "hq",
-			"symbol": "plating"
-		},
-		"headquarters/hq_regen": {
-			"group": "hq",
-			"symbol": "robot_arm"
-		},
-		"headquarters/hq_supply": {
-			"group": "hq",
-			"symbol": "supply"
-		},
-		"headquarters/hq_tesla": {
-			"group": "hq",
-			"symbol": "tesla"
-		},
-		"garage/buggy_armor": {
-			"group": "garage",
-			"symbol": "armor_plate",
-			"badge": "buggy"
-		},
-		"garage/buggy_gun": {
-			"group": "garage",
-			"symbol": "cannon",
-			"badge": "buggy"
-		},
-		"garage/buggy_loader": {
-			"group": "garage",
-			"symbol": "ammo_belt",
-			"badge": "buggy"
-		},
-		"garage/apc_armor": {
-			"group": "garage",
-			"symbol": "armor_plate",
-			"badge": "apc"
-		},
-		"garage/apc_gun": {
-			"group": "garage",
-			"symbol": "cannon",
-			"badge": "apc"
-		},
-		"garage/apc_loader": {
-			"group": "garage",
-			"symbol": "ammo_belt",
-			"badge": "apc"
-		},
-		"garage/tank_armor": {
-			"group": "garage",
-			"symbol": "armor_plate",
-			"badge": "tank"
-		},
-		"garage/tank_gun": {
-			"group": "garage",
-			"symbol": "cannon",
-			"badge": "tank"
-		},
-		"garage/tank_loader": {
-			"group": "garage",
-			"symbol": "ammo_belt",
-			"badge": "tank"
-		},
-		"pickups/freeze": {
-			"group": "pickup",
-			"variant": "ice",
-			"symbol": "snowflake"
-		},
-		"pickups/heart": {
-			"group": "pickup",
-			"variant": "red",
-			"symbol": "heart_cage"
-		},
-		"pickups/pressure": {
-			"group": "pickup",
-			"variant": "orange",
-			"symbol": "bullet_vs_rocket"
-		},
-		"pickups/repair": {
-			"group": "pickup",
-			"variant": "blue",
-			"symbol": "bunker_wrench"
-		},
-		"pickups/star": {
-			"group": "pickup",
-			"variant": "orange",
-			"symbol": "star"
-		},
-		"pickups/turret": {
-			"group": "pickup",
-			"variant": "teal",
-			"symbol": "turret"
-		},
-		"pickups/vehicle": {
-			"group": "pickup",
-			"variant": "olive",
-			"symbol": "jeep"
-		},
-		"pickups/vehicle_repair": {
-			"group": "pickup",
-			"variant": "olive",
-			"symbol": "wheel_wrench"
-		},
-		"pickups/wall": {
-			"group": "pickup",
-			"variant": "blue",
-			"symbol": "bricks"
-		},
-		"building/character": {
-			"group": "station",
-			"symbol": "st_character"
-		},
-		"building/command": {
-			"group": "station",
-			"symbol": "st_command"
-		},
-		"building/garage": {
-			"group": "station",
-			"symbol": "st_garage"
-		},
-		"building/headquarters": {
-			"group": "station",
-			"symbol": "st_headquarters"
-		},
-		"building/mechanic": {
-			"group": "station",
-			"symbol": "st_mechanic"
-		},
-		"building/merchant": {
-			"group": "station",
-			"symbol": "st_merchant"
-		},
-		"building/range": {
-			"group": "station",
-			"symbol": "st_range"
-		},
-		"building/recycling": {
-			"group": "station",
-			"symbol": "st_recycling"
-		},
-		"building/roadmap": {
-			"group": "station",
-			"symbol": "st_roadmap"
-		},
-		"building/wardrobe": {
-			"group": "station",
-			"symbol": "st_wardrobe"
-		},
-		"building/weapons": {
-			"group": "station",
-			"symbol": "st_weapons"
-		},
-		"building/yard": {
-			"group": "station",
-			"symbol": "st_yard"
-		},
-		"alloy": {
-			"group": "resource",
-			"symbol": "alloy"
-		},
-		"documents": {
-			"group": "resource",
-			"symbol": "documents"
-		},
-		"core": {
-			"group": "resource",
-			"symbol": "documents"
-		},
-		"token": {
-			"group": "resource",
-			"symbol": "token"
-		},
-		"recipe": {
-			"group": "resource",
-			"symbol": "recipe"
-		},
-		"blueprint": {
-			"group": "resource",
-			"symbol": "blueprint"
-		}
+		"upgrades/ace": "scope_star",
+		"upgrades/boarding": "grapple",
+		"upgrades/burn": "flame",
+		"upgrades/burn_heat": "thermometer_flame",
+		"upgrades/burn_long": "torch",
+		"upgrades/chain_fire": "flame_chain",
+		"upgrades/crew": "crew_hatch",
+		"upgrades/crit_chance": "crosshair",
+		"upgrades/crit_damage": "bullet_shatter",
+		"upgrades/crit_stun": "bell",
+		"upgrades/damage": "burst",
+		"upgrades/device_cooldown": "grenade_clock",
+		"upgrades/device_power": "grenade_up",
+		"upgrades/dodge": "boot_dodge",
+		"upgrades/exit_dash": "door_dash",
+		"upgrades/field_repair": "wrench_spark",
+		"upgrades/fire": "bullets_fast",
+		"upgrades/fortress": "sandbags",
+		"upgrades/ghost": "ghost_dash",
+		"upgrades/guard_blast": "bomb_suit",
+		"upgrades/guard_bullet": "vest",
+		"upgrades/guard_vehicle": "shell_bounce",
+		"upgrades/healing": "medkit",
+		"upgrades/health": "heart_cage",
+		"upgrades/intercept": "bullet_vs_rocket",
+		"upgrades/landing": "parachute",
+		"upgrades/last_stand": "torn_flag",
+		"upgrades/luck": "clover_casing",
+		"upgrades/marauder": "loot_sack",
+		"upgrades/opening_shot": "hourglass_bullet",
+		"upgrades/pierce": "pierce",
+		"upgrades/range": "trajectory",
+		"upgrades/safe": "safe",
+		"upgrades/shock": "bolt",
+		"upgrades/shock_arc": "bolt_arc",
+		"upgrades/shock_overload": "battery_bolt",
+		"upgrades/shock_short": "plug_spark",
+		"upgrades/speed": "boot_wind",
+		"upgrades/stealth": "hood",
+		"upgrades/stun": "dizzy",
+		"upgrades/stun_long": "helmet_stars",
+		"upgrades/stun_often": "flashbang",
+		"upgrades/weapon_damage": "bullet_burst",
+		"upgrades/weapon_fire": "magazine_fast",
+		"upgrades/weapon_intercept": "gyro",
+		"stats/burn_chance": "flame",
+		"stats/burn_power": "thermometer_flame",
+		"stats/crit_chance": "crosshair",
+		"stats/crit_damage": "bullet_shatter",
+		"stats/dodge": "boot_dodge",
+		"stats/field_repair": "wrench_spark",
+		"stats/guard_blast": "bomb_suit",
+		"stats/guard_bullet": "vest",
+		"stats/guard_vehicle": "shell_bounce",
+		"stats/luck": "clover_casing",
+		"stats/marauder": "loot_sack",
+		"stats/pierce": "pierce",
+		"stats/safe_slots": "safe",
+		"stats/shock_bonus": "bolt",
+		"stats/shock_power": "battery_bolt",
+		"stats/stealth": "hood",
+		"stats/stun_chance": "dizzy",
+		"stats/stun_power": "mallet_stars",
+		"abilities/airstrike": "airstrike",
+		"abilities/ally_drone": "ally_drone",
+		"abilities/barrier": "barrier",
+		"abilities/cloak": "hood_fade",
+		"abilities/comrade": "comrade",
+		"abilities/dynamite": "dynamite",
+		"abilities/field_repair": "wrench_spark",
+		"abilities/gas": "gas",
+		"abilities/grenade": "grenade",
+		"abilities/laser": "laser",
+		"abilities/mine": "mine",
+		"abilities/shield": "riot_shield",
+		"headquarters/hq_emp": "emp_dish",
+		"headquarters/hq_field": "dome",
+		"headquarters/hq_interceptor": "interceptor",
+		"headquarters/hq_medbay": "medbay",
+		"headquarters/hq_patch": "pulse",
+		"headquarters/hq_plating": "plating",
+		"headquarters/hq_regen": "robot_arm",
+		"headquarters/hq_supply": "supply",
+		"headquarters/hq_tesla": "tesla",
+		"garage/buggy_armor": "armor_plate",
+		"garage/buggy_gun": "cannon",
+		"garage/buggy_loader": "ammo_belt",
+		"garage/apc_armor": "armor_plate",
+		"garage/apc_gun": "cannon",
+		"garage/apc_loader": "ammo_belt",
+		"garage/tank_armor": "armor_plate",
+		"garage/tank_gun": "cannon",
+		"garage/tank_loader": "ammo_belt",
+		"pickups/freeze": "snowflake",
+		"pickups/heart": "heart_cage",
+		"pickups/pressure": "bullet_vs_rocket",
+		"pickups/repair": "bunker_wrench",
+		"pickups/star": "star",
+		"pickups/turret": "turret",
+		"pickups/vehicle": "jeep",
+		"pickups/vehicle_repair": "wheel_wrench",
+		"pickups/wall": "bricks",
+		"building/character": "st_character",
+		"building/command": "st_command",
+		"building/garage": "st_garage",
+		"building/headquarters": "st_headquarters",
+		"building/mechanic": "st_mechanic",
+		"building/merchant": "st_merchant",
+		"building/range": "st_range",
+		"building/recycling": "st_recycling",
+		"building/roadmap": "st_roadmap",
+		"building/wardrobe": "st_wardrobe",
+		"building/weapons": "st_weapons",
+		"building/yard": "st_yard",
+		"alloy": "alloy",
+		"documents": "documents",
+		"core": "documents",
+		"token": "token",
+		"recipe": "recipe",
+		"blueprint": "blueprint"
 	}
 }
