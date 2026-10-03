@@ -469,6 +469,7 @@ func can_enter(cell: Vector2i,actor=null) -> bool:
 func spawn_actor(kind: String, cell: Vector2i, owned: bool, allied=false,rank: int=1,surprise:bool=false,loadout:String="",vehicle_origin:String="owned",vehicle_zone:int=1):
 	var actor = load("res://scenes/"+kind+".tscn").instantiate()
 	actor.vehicle_origin=vehicle_origin;actor.vehicle_zone=vehicle_zone
+	if owned and vehicle_origin=="captured" and run!=null:run.captured+=1
 	actor.rank=rank;actor.surprise_spawn=surprise;actor.enemy_weapon=loadout
 	if not owned and not allied:actor.chevrons=Professionalism.tier(room_index)
 	actor.arena = self

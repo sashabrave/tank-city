@@ -82,45 +82,17 @@ func inventory_legacy():
 	if is_instance_valid(arena) and not arena.recipe_offer.is_empty():
 		var take=UiKit.button(body,"Подобрать: "+Game.recipe_name(arena.recipe_offer.recipe),Vector2(0,778+shift),Vector2(680,45),func():arena.take_offered_recipe();view.closed.emit());take.disabled=recipes.size()>=Game.backpack_slots;body.custom_minimum_size.y=835+maxf(0,shift)
 	STATS.follow_grid(body,bars)
+## «Вылазка» (meta stage 2): a report of the current sortie, outside a run — of the last one.
 func fighter():
-	var body=page("Боец",850)
-	var portrait=TextureRect.new();portrait.name="ClassPortrait";body.add_child(portrait);portrait.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;portrait.texture=preload("res://scripts/ui/class_gallery.gd").texture(Game.selected_class);portrait.position=Vector2(0,0);portrait.size=Vector2(110,116);portrait.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;portrait.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	UiKit.label(body,Game.CLASSES[Game.selected_class].name,Vector2(125,0),Vector2(550,35),25)
-	UiKit.label(body,"%s\n%s" % [ClassCatalog.info(Game.selected_class).role,Game.CLASSES[Game.selected_class].desc],Vector2(125,42),Vector2(550,70),17).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-	var rows=STATS.fighter(arena if is_instance_valid(arena) else null)
-	UiKit.label(body,"База включает хаб · цветом — изменения вылазки и активные эффекты",Vector2(0,128),Vector2(690,28),13,UiKit.MUTED)
-	# Grouped two-column dossier on 80% of the page width: short lines read at a glance.
-	var bars=STATS.add_bars(body,Vector2(0,168),roundf(maxf(440,body.size.x if body.size.x>0 else 690)*.8),rows,64,true)
-	var upgrades_y=178+bars.content_height()
-	for line in STATS.status(arena if is_instance_valid(arena) else null):
-		UiKit.label(body,line,Vector2(0,upgrades_y),Vector2(690,44),15).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-		upgrades_y+=48
-	UiKit.label(body,"Усиления вылазки",Vector2(0,upgrades_y),Vector2(690,30),UiKit.SECTION_SIZE)
-	var entries=[]
-	if is_instance_valid(arena):
-		if arena.run.damage_bonus!=0:entries.append(["Урон +",UiKit.number(arena.run.damage_bonus)])
-		if arena.run.fire_multiplier!=1:entries.append(["Темп ×",UiKit.number(1.0/arena.run.fire_multiplier)])
-		if arena.run.speed_multiplier!=1:entries.append(["Скорость ×",UiKit.number(arena.run.speed_multiplier)])
-		for key in arena.run.weapon_mods:
-			for stat in arena.run.weapon_mods[key]:
-				var value=arena.run.weapon_mods[key][stat]
-				if value==(1 if stat=="interval" else 0):continue
-				entries.append([Game.LOOT.WEAPONS[key].name+" / "+{"damage":"урон","interval":"интервал","intercept":"напор"}.get(stat,stat),UiKit.number(value)])
-		for key in arena.run.run_bonus_levels:entries.append([Game.LOOT.BONUSES.get(key,{}).get("name",key),str(arena.run.run_bonus_levels[key])])
-		for id in arena.headquarters.loadout():entries.append([HQCatalog.DATA[id].name,HQCatalog.stat(id,arena.headquarters.level(id))])
-		for i in range(arena.run.upgrade_history.size()):
-			var choice=arena.run.upgrade_history[i];var id=choice.id
-			var title=UpgradeRegistry.get_def(id).title if UpgradeRegistry.has(id) else AbilityCatalog.DATA.get(id,HQCatalog.DATA.get(id,Game.LOOT.WEAPONS.get(id,{}))).get("name",{"damage":"Урон","intercept":"Напор","speed":"Скорость","fire":"Темп","health":"Здоровье","recovery":"Защита","weapon_damage":"Урон оружия","weapon_fire":"Темп оружия","weapon_intercept":"Напор оружия"}.get(id,id))
-			# T-050: the card says what it does (its short description), with the rarity, not just «Обычное».
-			var what=UpgradeRegistry.get_def(id).detail if UpgradeRegistry.has(id) else ""
-			entries.append(["%d. %s" % [i+1,title],choice.get("detail",RunUpgrades.TIER_NAMES[clampi(int(choice.tier),0,3)]),what])
-	for i in range(entries.size()):
-		var info="Текущее усиление: "+str(entries[i][1])+(("\n"+str(entries[i][2])) if entries[i].size()>2 and str(entries[i][2])!="" else "")
-		var b=cell(body,Vector2((i%4)*174,upgrades_y+45+floori(i/4.0)*100),"",str(entries[i][0]),info,false,Vector2(162,90))
-		UiKit.label(b,str(entries[i][0]),Vector2(8,5),Vector2(147,30),14);UiKit.label(b,str(entries[i][1]) if str(entries[i][1]).length()<18 else "Подробнее…",Vector2(8,39),Vector2(147,40),16)
-	if entries.is_empty():UiKit.label(body,"Усиления появятся во время вылазки",Vector2(0,upgrades_y+45),Vector2(690,35),17,UiKit.MUTED)
-	body.custom_minimum_size.y=maxf(upgrades_y+100,upgrades_y+65+ceilf(entries.size()/4.0)*100)
-	STATS.follow_grid(body,bars)
+	var body=page("Вылазка",600);var live=is_instance_valid(arena)
+	var report=preload("res://scripts/ui/sortie_report.gd")
+	report.build(body,report.snapshot(arena) if live else Game.progression.last_run,live)
+	if live:
+		var y=body.custom_minimum_size.y
+		for line in STATS.status(arena):
+			UiKit.label(body,line,Vector2(0,y),Vector2(690,44),15).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+			y+=48
+		body.custom_minimum_size.y=y
 func weapon_details(id:String):
 	var overlay=Control.new();view.add_child(overlay);overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);overlay.add_to_group("selection_scope")
 	var dim=ColorRect.new();overlay.add_child(dim);dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);dim.color=Color(0,0,0,.65)

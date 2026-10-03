@@ -401,7 +401,7 @@ func take_damage(amount: float,blast:Vector3=Vector3.ZERO,vehicle_credit:String=
 		hp=1.0;arena.soldier_hp=hp;invulnerable=2.0;refresh_health();return
 	if player_owned and kind=="soldier" and arena.run!=null and not arena.run.mercy_used and hp>1.0 and hp-amount<=0 and not arena.sandbox:
 		# Once per run a lethal hit leaves 1 HP and a moment to escape.
-		arena.run.mercy_used=true;amount=hp-1.0
+		arena.run.mercy_used=true;amount=hp-1.0;arena.run.damage_taken+=amount
 		arena.burst(position+Vector3.UP*.5,Color("fff2c4"),.7);Game.sound("shield_restore",self)
 		arena.toast("На волоске! Второго шанса в этой вылазке не будет")
 		arena.floating_number(position,-amount);hp=1.0;arena.soldier_hp=hp;invulnerable=1.6;refresh_health()
@@ -418,6 +418,7 @@ func take_damage(amount: float,blast:Vector3=Vector3.ZERO,vehicle_credit:String=
 		var by=str(arena.get_meta("attacker",""))
 		arena.set_meta("hero_hit_by",by if by!="" else {"blast":"blast","melee":"zombie"}.get(source,"blast" if blast.length()>.01 else ""))
 	if player_owned:
+		if arena.run!=null:arena.run.damage_taken+=amount
 		invulnerable = .65
 		if kind == "soldier": arena.soldier_hp = maxf(0,hp)
 		Game.sound("player_hurt",self)

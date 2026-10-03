@@ -109,7 +109,8 @@
 					"Карточка патронов показывает замену иконками: старые → новые; пустые значения не показываются; на кукле в снаряжении только действующие эффекты; аптечки видны в рюкзаке и лечат по нажатию",
 					"Штаб везде нарисован как наша передвижная командная машина, а не бункер или палатка: категория наград, чертёж, верстак, ремонт штаба, медблок, доска развития.",
 					"Понятные имена: бонус на поле «Напор» стал «Ярость», карточка — «Стабилизатор», карточка ремонта — «Ремонт на ходу», навык Выучки — «Скрытность»; вкладка Казармы — «Рюкзак и перебросы»; недостижимая цель «Уровень базы 3» заменена на «Все постройки»",
-					"Багги, БТР и танк перерисованы детальнее: швы брони, блестящий металл стволов и люков, протектор; на Стоянке, в чертежах, энциклопедии и на доске развития."
+					"Багги, БТР и танк перерисованы детальнее: швы брони, блестящий металл стволов и люков, протектор; на Стоянке, в чертежах, энциклопедии и на доске развития.",
+					"Планшет: вкладка «Боец» стала «Вылазкой» — отчёт о забеге: поле, время, добыча, убитые по типам, лучшие моменты (сильнейший удар, серия, угнанная техника, полученный урон), сборка и рекорды. Вне забега показывает последнюю вылазку."
 				]
 			},
 			"en": {
@@ -218,7 +219,8 @@
 					"The ammo card shows the swap with icons: old → new; empty values are hidden; the gear doll shows only active effects; aid kits appear in the backpack and heal on tap",
 					"The HQ is now drawn everywhere as our mobile command truck instead of a bunker or tent: reward category, blueprint, workbench, HQ repair, medbay, progress board.",
 					"Clear names: the field bonus «Pressure» became «Fury», the card «Stabilizer», the repair card «Repair on the move», the training skill «Stealth»; the Barracks tab «Backpack and rerolls»; the unreachable goal «Base level 3» was replaced by «All buildings»",
-					"The buggy, APC and tank are redrawn in more detail: armour seams, polished metal barrels and hatches, tyre tread; in the vehicle bay, blueprints, encyclopedia and progress board."
+					"The buggy, APC and tank are redrawn in more detail: armour seams, polished metal barrels and hatches, tyre tread; in the vehicle bay, blueprints, encyclopedia and progress board.",
+					"Tablet: the Fighter tab is now Sortie — a run report: field, time, loot, kills by type, best moments (strongest hit, streak, captured vehicles, damage taken), build and records. Outside a run it shows the last sortie."
 				]
 			}
 		},

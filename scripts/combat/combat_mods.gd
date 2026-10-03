@@ -69,6 +69,7 @@ static func outgoing(arena,bullet,target)->float:
 			target.slow_time=maxf(target.slow_time,2.0);target.slow_factor=maxf(target.slow_factor,float(stats.get("slow",.2)))
 			if rng.randf()<float(stats.get("freeze",0.0)):stun(target,1.0);target.set_meta("frozen_by_cryo",true)
 			arena.burst(target.position+Vector3.UP*.4,Color("bff3ff"),.25)
+	run.best_hit=maxf(run.best_hit,amount)
 	return amount
 static func stun_time(run,ammo:Dictionary={})->float:
 	var base=float(ammo.get("stats",{}).get("time",STUN_TIME)) if ammo.get("type","")=="stun" else STUN_TIME

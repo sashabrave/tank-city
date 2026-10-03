@@ -440,6 +440,7 @@ func safe_drop_position(pos:Vector3)->Vector3:
 func kill_series(actor):
 	var run=arena.run
 	run.series=run.series+1 if arena.elapsed-run.series_at<=KILL_SERIES_WINDOW else 1
+	run.best_series=maxi(run.best_series,run.series)
 	run.series_at=arena.elapsed
 	if run.series<2:return
 	var label=Visuals.label3d(arena,"×%d" % run.series,actor.position+Vector3(0,2.2,0),Color("ffd26b"),44+mini(run.series,6)*4)

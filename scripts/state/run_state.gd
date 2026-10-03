@@ -82,4 +82,9 @@ var mercy_used=false
 var dry_offers=0
 ## Kill series: kills within KILL_SERIES_WINDOW seconds of each other.
 var series=0
+## Run report («Вылазка», meta stage 2): best single hit, longest kill series, vehicles taken, damage taken.
+var best_hit:=0.0
+var best_series:=0
+var captured:=0
+var damage_taken:=0.0
 var series_at=-10.0

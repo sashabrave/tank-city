@@ -30,6 +30,7 @@ func _return_hub():
 	Game.music_context("hub")
 	if is_instance_valid(run_arena):
 		run_arena.resolve_recipes_on_return()
+		Game.progression.last_run=preload("res://scripts/ui/sortie_report.gd").snapshot(run_arena)
 		# Alloy that reached the HQ counts even after a defeat: what was collected minus what was taken (T-095).
 		var delivered=int(run_arena.run.earned)-(int(run_arena.run.lost_alloy) if run_arena.run.lost_run else 0)
 		if delivered>0:Game.progression.event("extracted",delivered)

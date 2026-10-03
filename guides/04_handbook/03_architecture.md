@@ -75,7 +75,7 @@
 
 - **UiKit** (`scripts/ui_kit.gd`): стиль, кнопки, иконки (`icon_texture` с цепочкой запасных наборов), стекло (`glass`, шейдер `shaders/ui/glass.gdshader`), бейджи, `tab_row`, ритм планшета (`PAGE_TITLE_SIZE` 20, `PAGE_PADDING` 24, `PAGE_CONTENT_TOP` 64).
 - **Станции хаба:** один шаблон `ui/station_screen.gd` + провайдеры `ui/stations/*` (items / detail / act). Статус карточки выводится централизованно (`status()`).
-- **Планшет** (`ui/field_tablet.gd` + `tablet_pages.gd`): Снаряжение, Боец, Задачи, Лента, Радио, Настройки, Энциклопедия, Об игре (changelog по версиям), Тех. информация (эти гайды).
+- **Планшет** (`ui/field_tablet.gd` + `tablet_pages.gd`): Снаряжение, Вылазка (отчёт о забеге, `ui/sortie_report.gd`), Задачи, Лента, Радио, Настройки, Энциклопедия, Об игре (changelog по версиям), Тех. информация (эти гайды).
 - **HUD боя:** `hud.gd` + `hud.tscn`, полоска эффектов `ui/status_strip.gd`, точки этапов `pip_strip`.
 
 ## Визуал
