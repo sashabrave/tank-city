@@ -26,6 +26,12 @@ func _ready():
 	# Battle: 7 per side spread past both ends so the empty left and right are filled; up to twice as big at
 	# random, the outer ones are cut by the screen edge. Miniatures (route map) keep the old small set.
 	var count=8 if miniature else 14
+	# Battle ground (0.8): the board stands on a biome surface with a soft relief, not in the air.
+	var ground=null
+	if not miniature:
+		ground=preload("res://scripts/backdrop_ground.gd").new();ground.name="BackdropGround";add_child(ground)
+		ground.setup(palette,biome,radius,seed_value+room_index*7109)
+	var tones:Array=preload("res://scripts/backdrop_ground.gd").colors(palette,biome) if not miniature else []
 	for i in range(count):
 		var root=Node3D.new();add_child(root)
 		var side=-1 if i%2==0 else 1
@@ -35,11 +41,19 @@ func _ready():
 		# A bigger shape stands further out, so its foot never covers the field border.
 		var gap=rng.randf_range(2,5) if miniature else 2.0+scale_value*1.05+rng.randf_range(0,2.5)
 		root.position=Vector3(side*(radius+gap), -.7,lerpf(-depth,depth,row)+rng.randf_range(-1,1))
+		if ground:root.position.y=ground.height(root.position.x,root.position.z)-.05
 		root.scale=Vector3.ONE*scale_value
+		var first=backdrop_materials.size()
 		make_shape(root,rng)
-		silhouettes.append({"node":root,"phase":rng.randf()*TAU,"scale":scale_value})
+		# A touch of colour: each shape leans to one of the ground tones, so the sides are not one grey.
+		if not tones.is_empty():
+			var tone:Color=tones[rng.randi()%tones.size()]
+			for k in range(first,backdrop_materials.size()):
+				var mat:StandardMaterial3D=backdrop_materials[k];mat.set_meta("day_color",Color(mat.get_meta("day_color")).lerp(tone,.45))
+			update_lighting()
+		silhouettes.append({"node":root,"phase":rng.randf()*TAU,"scale":scale_value,"y":root.position.y})
 	if not miniature:
-		var islands=preload("res://scripts/war_islands.gd").new();islands.name="WarIslands";islands.palette=palette;islands.radius=radius;islands.seed_value=seed_value+room_index*7109;add_child(islands);islands.build()
+		var islands=preload("res://scripts/war_islands.gd").new();islands.name="WarIslands";islands.palette=palette;islands.ground=get_node_or_null("BackdropGround");islands.radius=radius;islands.seed_value=seed_value+room_index*7109;add_child(islands);islands.build()
 		Game.sound_loop("ambience_"+biome,self)
 		var canvas=CanvasLayer.new();canvas.layer=0;add_child(canvas)
 		var cloud=ColorRect.new();cloud.mouse_filter=Control.MOUSE_FILTER_IGNORE;canvas.add_child(cloud);cloud.size=get_viewport().get_visible_rect().size
@@ -78,5 +92,5 @@ func _process(delta):
 	elapsed+=delta
 	for item in silhouettes:
 		item.node.rotation.z=sin(elapsed*TAU/80+item.phase)*.014
-		item.node.position.y=-.7+sin(elapsed*TAU/95+item.phase)*.045
+		item.node.position.y=float(item.get("y",-.7))+(sin(elapsed*TAU/95+item.phase)*.045 if miniature else 0.0)
 	if cloud_material:cloud_material.set_shader_parameter("elapsed",elapsed)
