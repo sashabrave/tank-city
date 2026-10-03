@@ -162,7 +162,7 @@ func available(entry:Dictionary)->bool:
 	match entry.kind:
 		"heal":return arena.run.soldier_hp<arena.run.soldier_max_hp
 		"repair":return is_instance_valid(arena.room.player) and arena.room.player.hp<arena.room.player.max_hp
-		"blueprint":return arena.run.pending_recipes.size()<Game.backpack_slots
+		"blueprint":return not Backpack.full(arena.run)
 	return true
 func purchase(i:int)->bool:
 	if i<0 or i>=stock.size():return false

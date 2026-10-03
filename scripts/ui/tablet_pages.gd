@@ -31,6 +31,10 @@ func cell(parent,pos:Vector2,id:String,title:String,info:String,locked=false,dim
 	if locked:b.add_theme_stylebox_override("normal",UiKit.style(Color("d5dbcf"),9))
 	return b
 func inventory():
+	# T-113: the gear screen from the author's sketch (scripts/ui/gear_page.gd); the old layout below is kept
+	# only as inventory_legacy() for reference until the new one is accepted.
+	preload("res://scripts/ui/gear_page.gd").new(view).build()
+func inventory_legacy():
 	var body=page("Снаряжение",775)
 	var weapon=arena.weapon if is_instance_valid(arena) else Game.selected_weapon
 	var data=Game.LOOT.WEAPONS[weapon]
@@ -305,7 +309,9 @@ func keep_prompt():
 	if Settings.before_apply.is_empty():return
 	var layer=view.get_tree().root
 	var shade=ColorRect.new();shade.name="KeepDisplayPrompt";shade.color=Color(0,0,0,.45);shade.mouse_filter=Control.MOUSE_FILTER_STOP
-	var canvas=CanvasLayer.new();canvas.layer=125;layer.add_child(canvas);canvas.add_child(shade);shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	# The tablet pauses the game: the prompt must keep working (buttons, countdown) while paused.
+	var canvas=CanvasLayer.new();canvas.layer=125;canvas.process_mode=Node.PROCESS_MODE_ALWAYS;layer.add_child(canvas);canvas.add_child(shade);shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	shade.add_to_group("selection_scope")
 	var box=Panel.new();shade.add_child(box);box.size=Vector2(460,170);box.add_theme_stylebox_override("panel",UiKit.style(Color("242d27"),16,Color("4a5a4f")))
 	box.set_anchors_preset(Control.PRESET_CENTER);box.position=(shade.get_viewport_rect().size-box.size)*.5
 	UiKit.label(box,"Оставить эти настройки экрана?",Vector2(24,20),Vector2(412,30),20)

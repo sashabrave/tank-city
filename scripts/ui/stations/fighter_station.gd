@@ -30,7 +30,7 @@ func items(tab:String)->Array:
 				var state="max" if level>=def.max_level else "ready" if StatRegistry.can_buy(def.id) else "owned" if open else "locked"
 				result.append({"id":def.id,"title":def.title,"icon":"stats/"+def.id,"group":RunUpgrades.FAMILIES[def.family],"caption":"ур. %d / %d" % [level,def.max_level] if open else "Нужно: %s %d" % [StatRegistry.get_def(def.requires).title,def.requires_level],"state":state})
 		"kit":
-			result.append({"id":"backpack","title":"Рюкзак","icon":"inventory","caption":"%d / 6 ячеек" % Game.backpack_slots,"state":"max" if Game.backpack_slots>=6 else "owned"})
+			result.append({"id":"backpack","title":"Рюкзак","icon":"inventory","caption":"%d / %d ячеек" % [Backpack.capacity(),Backpack.CELLS],"state":"max" if Game.backpack_slots>=Backpack.MAX_BOUGHT else "owned"})
 			result.append({"id":"reroll","title":"Перебросы","icon":"reroll","caption":"+%d за забег" % Game.reroll_level if "reroll" in Game.research_unlocks else "Нужен чертёж","state":"locked" if "reroll" not in Game.research_unlocks else "owned"})
 	return result
 func detail(tab:String,id:String)->Dictionary:
@@ -63,7 +63,7 @@ func detail(tab:String,id:String)->Dictionary:
 			var action={"id":"buy","text":("Максимум" if level>=cap else "Улучшить · %d ◈" % Game.cost(id)) if unlocked else "Открыть · %d ◈" % Game.UNLOCK_COSTS[id],"enabled":(level<cap and Game.credits>=Game.cost(id)) if unlocked else Game.credits>=Game.UNLOCK_COSTS[id],"primary":true}
 			return {"title":row[1],"icon":row[2],"text":supply_text(id),"rows":[["Уровень",level,mini(level+1,cap)]],"actions":[action]}
 		"kit":
-			if id=="backpack":return {"title":"Рюкзак","icon":"inventory","text":"Сколько чертежей можно нести из вылазки.","rows":[["Ячейки",Game.backpack_slots,mini(Game.backpack_slots+1,6)]],"actions":[{"id":"buy","text":"Максимум" if Game.backpack_slots>=6 else "Ячейка · %d ◈" % Game.bag_cost(),"enabled":Game.backpack_slots<6 and Game.credits>=Game.bag_cost(),"primary":true}]}
+			if id=="backpack":return {"title":"Рюкзак","icon":"inventory","text":"Ячейки рюкзака для чертежей и патронов в вылазке.","rows":[["Ячейки",Backpack.capacity(),mini(Backpack.capacity()+1,Backpack.CELLS)]],"actions":[{"id":"buy","text":"Максимум" if Game.backpack_slots>=Backpack.MAX_BOUGHT else "Ячейка · %d ◈" % Game.bag_cost(),"enabled":Game.backpack_slots<Backpack.MAX_BOUGHT and Game.credits>=Game.bag_cost(),"primary":true}]}
 			var known="reroll" in Game.research_unlocks
 			return {"title":"Перебросы","icon":"reroll","text":"Дополнительные перебросы карт на каждый забег." if known else "Нужен чертёж перебросов.","rows":[["За забег",3+Game.reroll_level,3+mini(Game.reroll_level+1,5)]],"actions":[{"id":"buy","text":"Максимум" if Game.reroll_level>=5 else "+1 · %d ◈" % Game.reroll_cost(),"enabled":known and Game.reroll_level<5 and Game.credits>=Game.reroll_cost(),"primary":true}]}
 	return {}

@@ -64,12 +64,12 @@ static func show(hud,arena,won:bool,reason:String):
 	var saved=arena.pending_recipes if won else arena.get_meta("saved_recipes",[])
 	var gone=arena.get_meta("lost_recipes",[])
 	# The backpack is always shown (T-051): kept blueprints bright, empty slots dim; lost ones fall off the bottom.
-	UiKit.label(panel,"Рюкзак · %d / %d" % [saved.size(),Game.backpack_slots],Vector2(left.x,y+6),Vector2(column,24),15,UiKit.MUTED)
+	UiKit.label(panel,"Рюкзак · %d / %d" % [saved.size(),Backpack.capacity()],Vector2(left.x,y+6),Vector2(column,24),15,UiKit.MUTED)
 	# The whole backpack (T-086): all MAX_SLOTS cells, the ones not bought yet shown locked.
 	var side=minf(72.0,floorf((column-8.0*(MAX_SLOTS-1))/MAX_SLOTS));var pitch=side+8.0
 	for slot in range(saved.size(),MAX_SLOTS):
 		var empty=UiKit.panel(panel,Vector2(left.x+slot*pitch,y+34),Vector2(side,side),Color("262b27"));empty.modulate.a=.45
-		if slot>=Game.backpack_slots:
+		if slot>=Backpack.capacity():
 			lock_mark(empty,side);empty.tooltip_text=Texts.render("Ячейка закрыта — расширяется в хабе")
 	var x=left.x
 	for entry in saved.map(func(r):return [r,true])+gone.map(func(r):return [r,false]):
@@ -117,7 +117,7 @@ static func show(hud,arena,won:bool,reason:String):
 	UiKit.button(panel,"В хаб",Vector2(width-310,panel.size.y-76),Vector2(280,52),func():arena.leave(),true)
 
 ## One "title …… value" line that fades in at `delay`.
-const MAX_SLOTS=6
+const MAX_SLOTS=Backpack.CELLS
 ## A small padlock drawn from two panels: the shackle ring and the body.
 static func lock_mark(cell:Control,side:float):
 	var u=side/72.0

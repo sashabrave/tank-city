@@ -35,8 +35,8 @@ static func show(hub):
 		for id in ["bag","reroll"]:
 			var card=Panel.new();grid.add_child(card);card.custom_minimum_size=Vector2(485,300);card.add_theme_stylebox_override("panel",UiKit.style(Color("30382f"),12))
 			UiKit.icon(card,"inventory" if id=="bag" else "repeat",Vector2(185,20),Vector2(110,100))
-			UiKit.label(card,"Рюкзак · %d / 6" % Game.backpack_slots if id=="bag" else "Перебросы · %d / 5" % Game.reroll_level,Vector2(18,134),Vector2(450,35),22)
+			UiKit.label(card,"Рюкзак · %d / %d" % [Backpack.capacity(),Backpack.CELLS] if id=="bag" else "Перебросы · %d / 5" % Game.reroll_level,Vector2(18,134),Vector2(450,35),22)
 			UiKit.label(card,"Больше места для чертежей. Ресурсы не занимают ячейки." if id=="bag" else "Повторный выбор карточек. Запас восстанавливается в начале вылазки.",Vector2(18,177),Vector2(450,64),15).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-			var price=Game.bag_cost() if id=="bag" else Game.reroll_cost();var full=Game.backpack_slots>=6 if id=="bag" else Game.reroll_level>=5;var known=id=="bag" or "reroll" in Game.research_unlocks
+			var price=Game.bag_cost() if id=="bag" else Game.reroll_cost();var full=Game.backpack_slots>=Backpack.MAX_BOUGHT if id=="bag" else Game.reroll_level>=5;var known=id=="bag" or "reroll" in Game.research_unlocks
 			var button=UiKit.button(card,"Максимум" if full else "Нужен чертёж" if not known else "+1 · %d ◈" % price,Vector2(18,249),Vector2(450,38),func():Game.upgrade_backpack() if id=="bag" else Game.upgrade_rerolls();Catalog.mark(id);show(hub));button.disabled=full or not known or Game.credits<price
 	UiKit.label(panel,"Чертёж открывает постройку. Строительство и улучшения сохраняются после вылазки.",Vector2(24,646),Vector2(1005,28),14,UiKit.MUTED)

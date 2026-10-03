@@ -95,7 +95,8 @@
 					"Патроны стали предметами: у каждых редкость и случайные значения, карточка показывает, чем они лучше или хуже заряженных; новые типы — разрывные, бронебойные, рикошет и криогенные; патроны делятся на пули и заряды; легендарные получают особый эффект",
 					"Векторные значки интерфейса стали чёткими на экранах высокой чёткости. Для тестирования: правый клик по любой картинке показывает её название и где она используется, а комментарий можно сразу отправить на доску задач.",
 					"Контурные заглушки заменены рисованными иконками: категории наград в углу карточек, аватары Штаба усов, Института и Оперштаба в ленте заданий, легендарные правила в энциклопедии.",
-					"Патронный автомат у торговца и в комнатах улучшения: за жетоны выдаёт случайные патроны под твоё оружие, редкость зависит от удачи; их можно сразу зарядить или убрать в рюкзак"
+					"Патронный автомат у торговца и в комнатах улучшения: за жетоны выдаёт случайные патроны под твоё оружие, редкость зависит от удачи; их можно сразу зарядить или убрать в рюкзак",
+					"Новая вкладка «Снаряжение»: кукла бойца с состояниями, способности, оружие, слоты патронов и рюкзак на одной сетке; патроны надеваются и снимаются нажатием, двойным нажатием или перетаскиванием, выброшенное ложится мешком на поле и подбирается обратно; рюкзак на старте — 4 ячейки; Tab открывает планшет, W/S листают вкладки; исправлено окно «Оставить эти настройки?» — оно не работало при открытом планшете"
 				]
 			},
 			"en": {
@@ -190,7 +191,8 @@
 					"Ammo became items: each has a rarity and random values, the card shows how it compares with what is loaded; new types — explosive, armour-piercing, ricochet and cryo; ammo splits into bullets and charges; legendary ones get a special effect",
 					"Interface line icons are now sharp on high-resolution screens. For testing: right-click any picture to see its name and where it is used, and send a comment straight to the task board.",
 					"Outline placeholders replaced with drawn icons: reward categories in the card corner, avatars of the Whisker HQ, the Institute and Operations in the quest feed, legendary rules in the encyclopedia.",
-					"An ammo machine at the merchant and in upgrade rooms: tokens buy random ammo for your weapon, rarity depends on luck; load it right away or keep it in the backpack"
+					"An ammo machine at the merchant and in upgrade rooms: tokens buy random ammo for your weapon, rarity depends on luck; load it right away or keep it in the backpack",
+					"New «Gear» tab: the fighter doll with states, abilities, weapon, ammo slots and backpack on one grid; ammo is equipped and removed by tap, double tap or drag, dropped items lie on the field as a sack and can be picked up again; the backpack starts with 4 cells; Tab opens the tablet, W/S switch tabs; fixed the «Keep these settings?» prompt — it did not work while the tablet was open"
 				]
 			}
 		},

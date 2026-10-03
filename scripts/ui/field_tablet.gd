@@ -79,6 +79,7 @@ func refresh():
 	var tabs=[["inventory","Снаряжение"],["fighter","Боец"],["quests","Задачи"],["notifications","Связь"],["music","Радио"],["settings","Настройки"],["guide","Энциклопедия"],["about","Об игре"],["tech","Тех. информация"]]
 	# Command centre: quests first, then a compact summary; loadout, radio and settings stay in the field tablet.
 	if manage:tabs=[tabs[2],["base","Сводка"],tabs[3],["guide","Энциклопедия"],["tech","Тех. информация"]]
+	tab_order=tabs.map(func(t):return t[0])
 	for i in range(tabs.size()):
 		var key=tabs[i][0]
 		var b=sidebar_button(tabs[i][1],key,80+i*(44 if manage or can_quit() else 48),40,func():tab=key;mark_section(key);refresh())
@@ -100,7 +101,7 @@ func refresh():
 		_:quest_page()
 
 	# Pages built from content.size (quests) already know the collapsed width; scaling them again pushed cards out.
-	if nav_collapsed and tab in ["inventory","fighter","settings","base","about"]:expand_layout(content,932.0/775.0)
+	if nav_collapsed and tab in ["fighter","settings","base","about"]:expand_layout(content,932.0/775.0)
 	if tab=="music":
 		for child in content.get_children():
 			if child is PanelContainer:child.size.x=content.size.x-44
@@ -529,9 +530,18 @@ func guide_article(width:float):
 	var text=Label.new();column.add_child(text);Texts.set_text(text,entry.text);text.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;text.add_theme_font_size_override("font_size",18);text.add_theme_color_override("font_color",UiKit.INK)
 	if dev_edit and not entry.get("auto",false):UiKit.button(column,"Редактировать",Vector2.ZERO,Vector2(0,36),func():preload("res://scripts/ui/encyclopedia_editor.gd").open(self,entry.id))
 
+var tab_order:Array=[]
 func _input(event):
 	if is_instance_valid(quit_confirm) and event.is_action_pressed("pause") and not event.is_echo():
 		cancel_quit();get_viewport().set_input_as_handled();return
+	# W / S (the movement keys, not the arrows) walk through the tablet tabs.
+	if waiting_key=="" and event is InputEventKey and event.pressed and not event.echo and not tab_order.is_empty():
+		var focus=get_viewport().gui_get_focus_owner()
+		if not (focus is LineEdit or focus is TextEdit) and get_tree().get_nodes_in_group("selection_scope").back()==self:
+			var step=-1 if event.physical_keycode==Settings.keys.get("north",KEY_W) else 1 if event.physical_keycode==Settings.keys.get("south",KEY_S) else 0
+			if step!=0:
+				var at=maxi(0,tab_order.find(tab));var next=tab_order[posmod(at+step,tab_order.size())]
+				tab=next;mark_section(next);refresh();get_viewport().set_input_as_handled();return
 	if waiting_key=="" or not event is InputEventKey or not event.pressed or event.echo:return
 	if event.physical_keycode==KEY_ESCAPE:waiting_key="";refresh();get_viewport().set_input_as_handled();return
 	if event.physical_keycode<=0:return

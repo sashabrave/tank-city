@@ -55,9 +55,25 @@ func parachute(visual:Node3D,tint:Color)->Node3D:
 			var line=Visuals.box(chute,(top+bottom)*.5,Vector3(.01,.01,top.distance_to(bottom)),Color("8d8f7c"))
 			line.look_at_from_position(line.position,top,Vector3.UP)
 	return chute
+## An army sack with dropped backpack items (T-113): it stays until the soldier walks over it with room to spare.
+func place_sack(cell:Vector2i,content:Dictionary):
+	var node=Node3D.new();arena.add_child(node);node.position=arena.world_pos(cell)+Vector3(randf_range(-.2,.2),0,randf_range(-.2,.2))
+	var visual=Node3D.new();node.add_child(visual)
+	var olive=Color("6b6a45")
+	Visuals.box(visual,Vector3(0,.16,0),Vector3(.36,.32,.28),olive)
+	Visuals.box(visual,Vector3(0,.34,0),Vector3(.22,.06,.18),olive.darkened(.25))
+	Visuals.box(visual,Vector3(0,.2,.145),Vector3(.06,.3,.02),Color("3e3a2a"))
+	Visuals.ring(node,Color("cfd3a0"),.38)
+	arena.room.pickups.append({"node":node,"visual":visual,"kind":"sack","content":content,"blocked":true})
+	Game.sound("debris",arena)
 func collect_pickup(pickup: Dictionary):
+	if pickup.kind=="sack":
+		if Backpack.pick_sack(arena,pickup.content):
+			arena.room.pickups.erase(pickup);preload("res://scripts/battle_stage.gd").vanish(pickup.node);Game.sound("pickup",arena);arena.toast(Texts.render("Мешок подобран"))
+		else:pickup["blocked"]=true
+		return
 	if pickup.kind=="recipe":
-		if arena.run.pending_recipes.size()>=Game.backpack_slots:
+		if Backpack.full(arena.run):
 			arena.room.recipe_offer=pickup;pickup["blocked"]=true;arena.pause_battle();return
 		arena.run.pending_recipes.append(pickup.recipe);arena.toast("В рюкзаке: "+Game.recipe_name(pickup.recipe))
 		arena.room.pickups.erase(pickup);preload("res://scripts/battle_stage.gd").vanish(pickup.node);Game.sound("pickup",arena);return
@@ -205,7 +221,7 @@ func choose_recipe_card(index: int):
 	elif offer.category=="secret":apply_secret(offer)
 	elif offer.category=="documents":Game.earn(int(offer.amount)*Game.DOC_ALLOY);arena.run.earned+=int(offer.amount)*Game.DOC_ALLOY
 	elif offer.category=="upgrade":apply_trophy_upgrade(offer.id,offer.tier)
-	elif arena.run.pending_recipes.size()>=Game.backpack_slots:
+	elif Backpack.full(arena.run):
 		arena.room.recipe_offer=arena.room.draft_pickup;arena.room.recipe_offer.recipe=offer;arena.hud.show_pause();return
 	else:arena.run.pending_recipes.append(offer)
 	consume_chest(arena.room.draft_pickup);arena.room.draft_pickup={};arena.room.recipe_offer={};Game.sound("pickup",arena)
@@ -219,7 +235,7 @@ func discard_recipe(index: int):
 	if arena.phase!="paused" or index<0 or index>=arena.run.pending_recipes.size():return
 	arena.run.pending_recipes.remove_at(index);arena.hud.show_pause()
 func take_offered_recipe():
-	if arena.phase!="paused" or arena.room.recipe_offer.is_empty() or arena.run.pending_recipes.size()>=Game.backpack_slots:return
+	if arena.phase!="paused" or arena.room.recipe_offer.is_empty() or Backpack.full(arena.run):return
 	arena.run.pending_recipes.append(arena.room.recipe_offer.recipe);consume_chest(arena.room.recipe_offer);arena.room.recipe_offer={};arena.room.draft_pickup={}
 	if is_instance_valid(arena.replay):arena.replay.call_deferred("next")
 	else:arena.hud.show_pause()

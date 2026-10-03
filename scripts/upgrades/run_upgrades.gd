@@ -91,7 +91,10 @@ static func apply(arena,id:String,tier:int,record:bool=true)->bool:
 		Ammo.ensure(arena.run,str(arena.weapon))
 		var item=Ammo.roll(id,tier,Ammo.seed_for(arena,id,tier))
 		var old=Ammo.load_item(arena.run,item)
-		if not old.is_empty():arena.run.ammo_bag.append(old)
+		if not old.is_empty():
+			# No room in the backpack: the replaced ammo waits on the field in a sack (nothing is lost).
+			if Backpack.full(arena.run) and Backpack.can_drop(arena):arena.reward.place_sack(arena.grid_pos(arena.room.player.position),{"recipes":[],"ammo":[old]})
+			else:arena.run.ammo_bag.append(old)
 		if record:arena.run.upgrade_history.append({"id":id,"tier":tier})
 		refresh_player(arena)
 		if is_instance_valid(arena.hud):arena.hud.refresh_ammo()

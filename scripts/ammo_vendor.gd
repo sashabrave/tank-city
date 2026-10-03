@@ -61,10 +61,12 @@ func open(ui_root:Control,done:Callable):
 	if not extra.is_empty():UiKit.label(panel," · ".join(extra),Vector2(24,y),Vector2(512,26),14,color);y+=30
 	var note=(Texts.render("Заменит")+": "+Texts.render(Ammo.NAMES[old.type])) if not old.is_empty() else Texts.render("Свободный слот")
 	UiKit.label(panel,note,Vector2(24,y+4),Vector2(512,22),13,UiKit.MUTED)
-	UiKit.button(panel,"В рюкзак",Vector2(24,size.y-66),Vector2(250,48),func():
+	var bag_button=UiKit.button(panel,"В рюкзак",Vector2(24,size.y-66),Vector2(250,48),func():
 		arena.run.ammo_bag.append(item);close.call())
+	if Backpack.full(arena.run):bag_button.disabled=true;bag_button.tooltip_text=Texts.render("Рюкзак полон")
 	var load_button=UiKit.button(panel,"Зарядить",Vector2(size.x-274,size.y-66),Vector2(250,48),func():
 		var out=Ammo.load_item(arena.run,item)
+		# Outside battle a full backpack still takes the swapped-out ammo (one over the limit until the next field).
 		if not out.is_empty():arena.run.ammo_bag.append(out)
 		Game.sound("weapon_equip",room);close.call(),true)
 	load_button.grab_focus()

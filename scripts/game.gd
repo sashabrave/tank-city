@@ -416,7 +416,7 @@ func roll_recipe(rng: RandomNumberGenerator,pending: Array,ground: Array=[],stag
 			for i in range(GarageCatalog.weight(id,stage) if category=="garage" else TIERS.weight(id,stage)):options.append({"id":id,"category":category})
 	return {} if options.is_empty() else options[rng.randi_range(0,options.size()-1)]
 func discover_recipe(rng: RandomNumberGenerator,pending: Array) -> String:
-	if pending.size()>=backpack_slots:return "Рюкзак полон"
+	if pending.size()>=Backpack.capacity():return "Рюкзак полон"
 	var recipe=roll_recipe(rng,pending)
 	if recipe.is_empty():return ""
 	pending.append(recipe);return "Чертёж · "+recipe_name(recipe)
@@ -429,7 +429,7 @@ func bank_recipes(pending: Array):
 	pending.clear();save_progress()
 func bag_cost() -> int:return ceili(72*pow(2,backpack_slots-1))
 func upgrade_backpack() -> bool:
-	if backpack_slots>=6 or credits<bag_cost():return false
+	if backpack_slots>=Backpack.MAX_BOUGHT or credits<bag_cost():return false
 	credits-=bag_cost();backpack_slots+=1;save_progress();return true
 func reroll_cost() -> int:return roundi(96*pow(1.7,reroll_level))
 func upgrade_rerolls() -> bool:
