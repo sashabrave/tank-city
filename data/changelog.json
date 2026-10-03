@@ -137,7 +137,8 @@
 					"Торговец на карте маршрута теперь — военная лавка: грузовик со свёрнутым тентом, полки с касками и патронами, столик, канистры и бочка.",
 					"Тени в игре пушистые: края заметно размыты — на поле, в хабе и на карте.",
 					"Земля вокруг поля и заезд больше не ловят грубые прямоугольные тени при низком солнце.",
-					"Заезд к полю — в цвет земли под полем, темнее поля и бордюра; на нём ровные полосы следов шин без лишних плиток."
+					"Заезд к полю — в цвет земли под полем, темнее поля и бордюра; на нём ровные полосы следов шин без лишних плиток.",
+					"«Забег дня» и таблица «Топ» доступны с самого начала — отдельные кнопки под карточками миров."
 				]
 			},
 			"en": {
@@ -274,7 +275,8 @@
 					"The merchant on the route map is now a military shop: a truck with its tarp rolled up, shelves of helmets and ammo, a little table, jerrycans and a barrel.",
 					"Shadows are fluffy now: clearly blurred edges on the field, in the hub and on the map.",
 					"The ground around the field and the entry ramp no longer catch blocky rectangular shadows at a low sun.",
-					"The field entry ramp is the colour of the ground under the board, darker than the field and the rim, with smooth tyre-mark strips and no stray tiles."
+					"The field entry ramp is the colour of the ground under the board, darker than the field and the rim, with smooth tyre-mark strips and no stray tiles.",
+					"The daily run and its «Top» table are open from the start — separate buttons under the world cards."
 				]
 			}
 		},

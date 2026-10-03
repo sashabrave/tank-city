@@ -1,8 +1,8 @@
 extends Control
 ## «В бой»: worlds as collectible cards. Each card shows art, a big number, the name, field progress as pips and
 ## a medal once the world is cleared; locked worlds are dark with one line on how to open them. The last
-## unlocked world is preselected, so E / Enter starts right away; ←/→ switch cards. Endless keeps the daily run
-## as a small second button. Art: res://assets/ui/worlds/<id>.png when present, a drawn backdrop otherwise.
+## unlocked world is preselected, so E / Enter starts right away; ←/→ switch cards. The daily run and its table («Топ»)
+## are buttons under the cards, open from the start (0.8.0). Art: res://assets/ui/worlds/<id>.png when present, a drawn backdrop otherwise.
 signal selected(world:int,infinite:bool)
 signal daily_selected
 signal cancelled
@@ -31,6 +31,11 @@ func _ready():
 		if Campaign.unlocked(i+1):current=i
 	focus(current)
 	UiKit.label(panel,"[E] в бой   ←/→ выбор",Vector2(26,size_total.y-44),Vector2(500,26),14,UiKit.MUTED)
+	# 0.8.0 (author): the daily run is open from the start — its own button under the cards, not on Endless.
+	var daily=UiKit.button(panel,"Забег дня",Vector2(size_total.x-26-260-12-90,size_total.y-58),Vector2(260,44),func():daily_selected.emit());daily.name="DailyRun"
+	daily.tooltip_text=Texts.render("Одно поле на всех на сегодня. "+DailyRun.describe(DailyRun.best(DailyRun.today_key())))
+	var board=UiKit.button(panel,"Топ",Vector2(size_total.x-26-90,size_total.y-58),Vector2(90,44),func():show_board());board.name="DailyBoard"
+	board.tooltip_text=Texts.localized("Таблица дня")
 
 func open(i:int)->bool:return Campaign.unlocked(i+1) if i<3 else Campaign.infinite_unlocked()
 
@@ -72,10 +77,6 @@ func card(panel:Control,i:int,pos:Vector2)->Button:
 	else:
 		var best=int(Game.progression.counters.get("endless_cycle",0))
 		UiKit.label(button,"Лучший сектор: %d" % best if best>0 else "Сектор за сектором",Vector2(16,318),Vector2(CARD.x-32,24),15,UiKit.MUTED)
-		var daily=UiKit.button(button,"Забег дня",Vector2(16,CARD.y-52),Vector2(CARD.x-32-66,38),func():daily_selected.emit())
-		var board=UiKit.button(button,"Топ",Vector2(CARD.x-74,CARD.y-52),Vector2(58,38),func():show_board());board.name="DailyBoard"
-		board.add_theme_font_size_override("font_size",15);board.tooltip_text=Texts.localized("Таблица дня")
-		daily.add_theme_font_size_override("font_size",15);daily.tooltip_text=Texts.render("Одно поле на всех на сегодня. "+DailyRun.describe(DailyRun.best(DailyRun.today_key())))
 	# Worlds 2 and 3 are not built yet (author, 2 Oct): world 1 carries every biome for now.
 	if i in [1,2]:
 		var wip=UiKit.label(button,"В разработке",Vector2(16,346),Vector2(CARD.x-32,24),15,UiKit.ORANGE);wip.name="InDevelopment"

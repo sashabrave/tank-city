@@ -23,10 +23,16 @@ func run():
 	check(FileAccess.file_exists(dir.path_join("daily_board.json")),"board file next to profiles, in the temp folder")
 	Game.save_enabled=false
 	Game.profiles.active=2
+	# 0.8.0: the daily run is open before world 1 is cleared.
+	var cleared=Game.progression.cleared_worlds.duplicate();Game.progression.cleared_worlds.clear()
+	var early=load("res://scripts/ui/world_select.gd").new();add_child(early);await get_tree().process_frame
+	check(early.find_child("DailyRun",true,false)!=null and early.find_child("DailyBoard",true,false)!=null,"daily run and table open from the start")
+	early.queue_free();await get_tree().process_frame
+	Game.progression.cleared_worlds=cleared
 	if 1 not in Game.progression.cleared_worlds:Game.progression.cleared_worlds.append(1)
 	var picker=load("res://scripts/ui/world_select.gd").new();add_child(picker);await get_tree().create_timer(.6).timeout
 	var board=picker.find_child("DailyBoard",true,false)
-	check(board!=null,"world card has the table button")
+	check(board!=null,"world picker has the table button")
 	if board:board.pressed.emit()
 	await get_tree().create_timer(.4).timeout
 	check(picker.has_node("DailyBoardView"),"table opens")
