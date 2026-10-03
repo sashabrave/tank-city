@@ -1880,7 +1880,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-149.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "тут во первых кнопки слиплись",
 			"type": "bug",
 			"version": "0.8.0"
@@ -1893,7 +1893,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-150.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "в квестах табы вкладки должны быть горизонтальными",
 			"type": "bug",
 			"version": "0.8.0"
@@ -1906,7 +1906,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-151.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "вот тут текст разъехался",
 			"type": "bug",
 			"version": "0.8.0"
@@ -1919,7 +1919,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-152.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "отключить управление игроком до начала боя",
 			"type": "bug",
 			"version": "0.8.0"
@@ -1932,7 +1932,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-153.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "верни анимацию когда игрок выпрыгивает из машины на центральную клетку поля",
 			"type": "bug",
 			"version": "0.8.0"
@@ -1945,7 +1945,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-154.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "ох первая итерация вроде норм но както мусорно и непонятно, переосмысли еще раз, картоки класов лучше расположить горизонтальными табавми а внизу самой нижней строкой две ячейки способнсотей и кнопка взять  (заблокировано /условие разблокировки)",
 			"type": "bug",
 			"version": "0.8.0"
