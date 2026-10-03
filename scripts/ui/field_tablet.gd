@@ -194,19 +194,21 @@ func quest_page():
 	var incoming=p.telegram.is_empty() and not p.telegram_options.is_empty() and p.order_wait==0
 	var counts={"main":quests.filter(func(q):return not is_ops.call(q) and news_of.call(q)).size(),"operations":quests.filter(func(q):return is_ops.call(q) and news_of.call(q)).size()+(1 if incoming else 0),"completed":0}
 	var feed_top=UiKit.PAGE_CONTENT_TOP
+	var quest_tabs=[]
 	for i in range(3):
 		var key=["main","operations","completed"][i]
-		var tab_w=minf(200.0,(full-20)/3.0)
+		var tab_w=(full-20)/3.0  # the row spans the feed (T-160)
 		var t=UiKit.button(content,["Основные","Оперштаб","Выполнено"][i],Vector2(UiKit.PAGE_PADDING+i*(tab_w+10),feed_top),Vector2(tab_w,44),func():quest_filter=key;refresh(),key==quest_filter)
-		t.name="QuestTab_"+key;t.add_theme_font_size_override("font_size",16)
+		t.name="QuestTab_"+key;t.add_theme_font_size_override("font_size",16);quest_tabs.append(t)
 		if counts[key]>0:UiKit.badge(t,"news",counts[key],"trailing")
+	UiKit.mark_h_tabs(quest_tabs,["main","operations","completed"].find(quest_filter))
 	var box=scroller(Vector2(UiKit.PAGE_PADDING,feed_top+58),Vector2(full,content.size.y-feed_top-58-16));box.name="QuestFeed";box.add_theme_constant_override("separation",12)
 	var shown=[]
 	if quest_filter=="completed":shown=p.quests("completed").slice(-20);shown.reverse()
 	else:shown=quests.filter(func(q):return is_ops.call(q)==(quest_filter=="operations"))
-	# A new telegram offer needs an answer: it sits on top of both open tabs.
-	if quest_filter!="completed" and incoming:telegram_offer_card(box);p.viewed_updates["operations"]=p.operations_signature()
-	if shown.is_empty() and not (quest_filter!="completed" and incoming):list_button(box,"Нет заданий",func():pass)
+	# A new telegram offer needs an answer: it sits on top of the «Оперштаб» tab only (T-160).
+	if quest_filter=="operations" and incoming:telegram_offer_card(box);p.viewed_updates["operations"]=p.operations_signature()
+	if shown.is_empty() and not (quest_filter=="operations" and incoming):list_button(box,"Нет заданий",func():pass)
 	# Rank: ready to hand in 4, new 3, offer not taken yet 2, in progress 1.
 	var done=quest_filter=="completed"
 	var ranked=shown.map(func(q):
@@ -545,6 +547,10 @@ func _input(event):
 			if step!=0:
 				var at=maxi(0,tab_order.find(tab));var next=tab_order[posmod(at+step,tab_order.size())]
 				tab=next;mark_section(next);refresh();get_viewport().set_input_as_handled();return
+	# Q / E walk the horizontal tabs of the page (T-178).
+	if waiting_key=="" and get_tree().get_nodes_in_group("selection_scope").back()==self:
+		var hstep=UiKit.tab_step(event)
+		if hstep!=0 and UiKit.cycle_h_tabs(content,hstep):get_viewport().set_input_as_handled();return
 	if waiting_key=="" or not event is InputEventKey or not event.pressed or event.echo:return
 	if event.physical_keycode==KEY_ESCAPE:waiting_key="";refresh();get_viewport().set_input_as_handled();return
 	if event.physical_keycode<=0:return

@@ -92,6 +92,11 @@ func _ready():
 	build()
 func _unhandled_input(event):
 	if event.is_action_pressed("pause"):get_viewport().set_input_as_handled();closed.emit()
+## Q / E walk the horizontal tabs (T-178), taken before the GUI so E does not press the focused button.
+func _input(event):
+	if get_tree().get_nodes_in_group("selection_scope").back()!=self and not is_ancestor_of(get_tree().get_nodes_in_group("selection_scope").back()):return
+	var step=UiKit.tab_step(event)
+	if step!=0 and UiKit.cycle_h_tabs(self,step):get_viewport().set_input_as_handled()
 func fit():
 	if not is_instance_valid(panel):return
 	var available=get_viewport_rect().size
@@ -105,6 +110,12 @@ func build():
 	UiKit.label(panel,provider.subtitle(),Vector2(28,54),Vector2(700,24),15,UiKit.MUTED)
 	# The global currency strip at the top already shows alloy; the station window keeps no second counter (T-030).
 	var close=UiKit.button(panel,"",Vector2(1046,16),Vector2(52,44),func():closed.emit());close.icon=UiKit.interface_icon("close");close.expand_icon=true;close.add_theme_constant_override("icon_max_width",20);close.name="Close"
+	# The item shown in the detail panel counts as viewed before the dots are drawn (T-179): its «Новое» and,
+	# with the last one, the tab dot go out at once.
+	if selected=="" and not provider.has_method("page_for"):
+		var first_items=provider.items(tab)
+		if not first_items.is_empty():selected=str(first_items[0].id)
+	if selected!="" and station_kind not in ["","roadmap"]:preload("res://scripts/ui/station_notices.gd").mark_item_seen(station_kind,tab,str(selected))
 	var tabs=provider.tabs()
 	for i in range(tabs.size()):
 		var key=tabs[i][0]
@@ -115,7 +126,7 @@ func build():
 		b.expand_icon=true;b.add_theme_constant_override("icon_max_width",22);b.add_theme_constant_override("h_separation",10);b.alignment=HORIZONTAL_ALIGNMENT_LEFT;b.add_theme_font_size_override("font_size",16)
 		# T-052: a tab with something affordable right now carries a «ready» dot, as everywhere else.
 		# One rule (0.8.0): a station tab is lit while any of its items is new; plain screens keep «affordable».
-		var lit=preload("res://scripts/ui/station_notices.gd").tab_new(station_kind,key) if station_kind not in ["","roadmap"] else affordable_in(key)
+		var lit=provider.tab_dot(key) if provider.has_method("tab_dot") else preload("res://scripts/ui/station_notices.gd").tab_new(station_kind,key) if station_kind not in ["","roadmap"] else affordable_in(key)
 		if key!=tab and lit:UiKit.badge(b,"ready",0,"trailing")
 	# A tab can draw its own page instead of cards + detail (Barracks → «Классы», 0.8.0).
 	if provider.has_method("page_for"):
@@ -127,8 +138,7 @@ func build():
 	var scroll=ScrollContainer.new();panel.add_child(scroll);scroll.position=Vector2(232,96);scroll.size=Vector2(530,532);scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
 	var items=provider.items(tab)
 	if selected=="" and not items.is_empty():selected=items[0].id
-	# The item shown in the detail panel counts as viewed: its «Новое» goes out (and with the last one, the dots).
-	if selected!="" and station_kind not in ["","roadmap"]:preload("res://scripts/ui/station_notices.gd").mark_item_seen(station_kind,tab,str(selected))
+
 	var grouped=items.any(func(item):return item.has("group"))
 	var column=VBoxContainer.new();column.name="Items";scroll.add_child(column);column.add_theme_constant_override("separation",8)
 	var current_group=null;grid=null

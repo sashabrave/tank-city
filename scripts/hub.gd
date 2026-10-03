@@ -247,7 +247,8 @@ func _physics_process(delta):
 	if hint_refresh<=0:
 		for id in bench_dots:bench_dots[id].visible=bench_available(id)
 		if is_instance_valid(barracks_dot):
-			barracks_dot.visible=not preload("res://scripts/ui/station_notices.gd").actionable("fighter").is_empty()
+			# One dot per station (T-179): the printer bench already carries the Barracks dot when it is built.
+			barracks_dot.visible=not bench_dots.has("character") and preload("res://scripts/ui/station_notices.gd").has_dot("fighter")
 		var build:Button=root.get_node("BuildButton")
 		var badge=build.get_node_or_null("Badge")
 		if badge==null:badge=UiKit.badge(build,"news")
@@ -272,10 +273,7 @@ func _physics_process(delta):
 	if is_instance_valid(roadmap_alert) and roadmap_alert.visible:roadmap_alert.position.y=2.05+absf(sin(hint_clock*3.0))*.12
 	for arrow in build_arrows.values():
 		if is_instance_valid(arrow):arrow.position.y=1.9+(1-cos(hint_clock*TAU/4.8))*.18
-	if is_instance_valid(build_menu):
-		if Input.is_action_just_pressed("pause"):close_station()
-		return
-	if Input.is_action_just_pressed("pause"):preload("res://scripts/ui/pause_tablet.gd").open(self);return
+	if is_instance_valid(build_menu):return
 	for slot in range(Game.hero_loadout().size()):
 		if Input.is_action_just_pressed(Game.ability_action(slot)):use_training_ability(slot)
 	fire_cooldown=maxf(0,fire_cooldown-delta);turn_timer=maxf(0,turn_timer-delta)
@@ -753,3 +751,15 @@ func open_call(call:String):
 	var view=preload("res://scripts/ui/video_call.gd").new();view.id=call;root.add_child(view)
 	view.closed.connect(func():
 		phase="combat";dpad.enabled=true;fire_pad.enabled=true;Game.reset_input())
+
+## Esc (T-189): the topmost open window closes first — windows that handle Esc themselves get it before the hub
+## (they are deeper in the tree); a station without its own handler is closed here; only with nothing open
+## does Esc bring up the pause tablet.
+func _unhandled_input(event):
+	if not event.is_action_pressed("pause") or event.is_echo():return
+	get_viewport().set_input_as_handled()
+	if is_instance_valid(build_menu):close_station();return
+	for node in get_tree().get_nodes_in_group("selection_scope"):
+		if node is CanvasItem and node.is_visible_in_tree() and is_ancestor_of(node):return
+	if phase in ["combat"]:preload("res://scripts/ui/pause_tablet.gd").open(self)
+

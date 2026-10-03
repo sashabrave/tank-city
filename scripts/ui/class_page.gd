@@ -41,6 +41,7 @@ func class_tabs():
 		var p=ClassCatalog.progress(id)
 		var caption=("Выбран · ур. %d" % ClassCatalog.level(id) if id==Game.selected_class else "ур. %d" % ClassCatalog.level(id)) if owned else ("можно открыть" if Game.can_select_class(id) else "%d / %d" % [p[0],p[1]])
 		var sub=UiKit.label(b,caption,Vector2(62,40),Vector2(w-66,20),12,UiKit.ORANGE if id==Game.selected_class else UiKit.MUTED);sub.mouse_filter=Control.MOUSE_FILTER_IGNORE;sub.clip_text=true
+	UiKit.mark_h_tabs(get_children().filter(func(c):return str(c.name).begins_with("Class_")),ClassCatalog.ROSTER.find(viewed))
 	if is_instance_valid(screen) and screen.station_kind!="":preload("res://scripts/ui/station_notices.gd").mark_item_seen(screen.station_kind,"shells",viewed)
 
 ## Left column: the portrait and what the class is about.
@@ -337,6 +338,12 @@ func level_card(body:Control,pos:Vector2,dims:Vector2,n:int,status:String,left:b
 		var price=UiKit.label(card,str(roundi(100.0*pow(1.32,n-2))) if n>=2 else "",Vector2(16,by+8),Vector2(dims.x-60,26),15,UiKit.MUTED)
 		if n>=2:UiKit.icon(card,"alloy",Vector2(16+price.get_theme_font("font").get_string_size(price.text,HORIZONTAL_ALIGNMENT_LEFT,-1,15).x+6,by+10),Vector2(20,20)).modulate=Color(1,1,1,.6)
 
+## Esc closes the open list or path first, not the whole Barracks (T-189).
+func _input(event):
+	if not event.is_action_pressed("pause") or event.is_echo():return
+	for name in ["AbilityPopup","ClassPathView"]:
+		var o=get_node_or_null(name)
+		if o:o.queue_free();get_viewport().set_input_as_handled();return
 func act(ok:bool,message:String):
 	if not ok:return
 	Game.sound("upgrade",self);screen.notice=message;screen.selected=viewed;screen.changed.emit();screen.build()

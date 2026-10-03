@@ -15,6 +15,8 @@ const REWARDS={"depth1":40,"depth3":80,"depth5":150,"general1":400,"endless":300
 	"second_weapon":60,"tune":60,"half":150,"all":400}
 func reward(id:String)->int:return int(REWARDS.get(id,0))
 func claimed(id:String)->bool:return "roadmap_reward:"+id in Game.progression.seen
+## A tab is lit while a reached step on it still has its reward waiting (T-164).
+func tab_dot(tab:String)->bool:return steps(tab).any(func(s):return s[2] and reward(str(s[0]))>0 and not claimed(str(s[0])))
 ## Reached steps whose alloy is still waiting.
 func unclaimed()->Array:
 	var result=[]

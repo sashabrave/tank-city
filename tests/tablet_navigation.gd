@@ -29,7 +29,8 @@ func run():
 		var feed=view.content.find_child("QuestFeed",true,false);assert(feed!=null)
 		var scroll=feed.get_parent();assert(scroll.position.x+scroll.size.x<=view.content.size.x+.5 and scroll.size.x>view.content.size.x*.6)  # feed next to the vertical filter tabs
 		if DisplayServer.get_name()!="headless":RenderingServer.force_draw();get_viewport().get_texture().get_image().save_png("/tmp/quest-feed-"+str(collapsed)+".png")
-	Game.notifications.post("Задание выполнено\nПроверка неподвижности текста", "Командование", "important")
+	Game.notifications.post("Новая постройка\nПроверка неподвижности текста", "Командование", "important")  # not a quest echo (those are filtered out)
+	view.message_tab="important"  # the remembered sub-tab comes from the player's own tablet memory
 	view.tab="notifications";view.refresh();await get_tree().process_frame;await get_tree().process_frame
 	var cards=view.content.find_children("*","Button",true,false).filter(func(b):return b.get_script()==load("res://scripts/ui/message_card.gd"))
 	assert(not cards.is_empty())

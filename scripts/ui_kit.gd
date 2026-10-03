@@ -194,7 +194,37 @@ static func tab_row(parent:Control,pos:Vector2,width:float,tabs:Array,active:Str
 		if key==active:
 			for state in ["normal","hover","focus"]:b.add_theme_stylebox_override(state,style(Color("584a2c"),6,ORANGE))
 		result.append(b)
+	mark_h_tabs(result,tabs.map(func(t):return str(t[0])).find(active))
 	return result
+## Horizontal tab rows answer Q / E out of battle (T-178): every row registers its buttons in order.
+static func mark_h_tabs(buttons:Array,active:int):
+	var row=str(Time.get_ticks_usec())+str(randi())
+	for i in range(buttons.size()):
+		buttons[i].add_to_group("h_tab");buttons[i].set_meta("h_row",row);buttons[i].set_meta("h_index",i);buttons[i].set_meta("h_active",i==active)
+## Q / E: press the next / previous tab of the first visible horizontal row under `root`. True if one moved.
+static func cycle_h_tabs(root:Node,step:int)->bool:
+	var rows:Dictionary={}
+	for b in root.get_tree().get_nodes_in_group("h_tab"):
+		if b is Button and b.is_visible_in_tree() and root.is_ancestor_of(b) and not b.is_queued_for_deletion():
+			var key=str(b.get_meta("h_row"))
+			if not rows.has(key):rows[key]=[]
+			rows[key].append(b)
+	if rows.is_empty():return false
+	var row:Array=rows.values()[0];row.sort_custom(func(a,b):return int(a.get_meta("h_index"))<int(b.get_meta("h_index")))
+	var at=0
+	for b in row:
+		if b.get_meta("h_active",false):at=int(b.get_meta("h_index"))
+	var next=row[posmod(at+step,row.size())]
+	if next.disabled:return false
+	next.pressed.emit();return true
+## Q / E keys as a tab step (-1, +1, 0): out of battle only, never while typing.
+static func tab_step(event:InputEvent)->int:
+	if not (event is InputEventKey or event is InputEventAction) or not event.pressed or event.is_echo():return 0
+	var focus=Engine.get_main_loop().root.gui_get_focus_owner()
+	if focus is LineEdit or focus is TextEdit:return 0
+	if event.is_action_pressed("class_ability"):return -1
+	if event.is_action_pressed("interact"):return 1
+	return 0
 
 ## Unique artwork (cozy_ui_2026): explicit keys "upgrades/<id>", "stats/<id>", "abilities/<id>",
 ## "headquarters/<id>", "garage/<vehicle>_<branch>". Looked up before any alias folding; a missing file
