@@ -12,6 +12,12 @@ var ground=null
 var narrow=4.0
 var wide=6.4
 
+## Everything on the approach ignores the sun shadow: on the slope it rendered as blocky rectangles (0.8.0).
+func no_shadows():
+	for node in find_children("*","GeometryInstance3D",true,false):
+		node.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		# Only our own override materials: model materials (crates) are shared with the field.
+		if node.material_override is BaseMaterial3D:node.material_override.disable_receive_shadows=true
 func build(arena,ground_node,seed_value:int):
 	ground=ground_node
 	var rng=RandomNumberGenerator.new();rng.seed=hash([seed_value,"approach"])
@@ -32,6 +38,7 @@ func build(arena,ground_node,seed_value:int):
 	dressing(arena,earth,rng)
 	var tyre=floor.darkened(.1)
 	for side in [-1.0,1.0]:track(earth,tyre,side)
+	no_shadows.call_deferred()
 	for side in [-1.0,1.0]:
 		for wheel in [-.5,.5]:
 			for k in range(10):lay(Vector3(.16,.012,LENGTH/10.0),(lane(side)+wheel)/(lerpf(narrow,wide,(k+.5)/10.0)*.5),(k+.5)/10.0,tyre)

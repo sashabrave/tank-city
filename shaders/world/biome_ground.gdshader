@@ -1,6 +1,8 @@
 shader_type spatial;
 // Ground around the battle board (0.8): the map colour, a little darker on slopes and in hollows.
-render_mode diffuse_lambert, specular_disabled;
+// shadows_disabled: the far, coarse sun shadow split drew the board and fences onto the ground as blocky
+// rectangles at a low sun (author, 0.8.0); the relief reads from slope shading instead.
+render_mode diffuse_lambert, specular_disabled, shadows_disabled;
 uniform vec4 base_color : source_color = vec4(.55,.58,.48,1.0);
 uniform vec4 patch_color : source_color = vec4(.48,.55,.40,1.0);
 uniform vec4 accent_color : source_color = vec4(.66,.62,.50,1.0);
