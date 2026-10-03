@@ -30,6 +30,8 @@ var selected_class="recruit"
 var class_unlocks:Array=["recruit"]
 var ability_slots=1
 var class_second_slots:Array=[]
+## Meta stage 3: which of the two «1» abilities each class carries (class id → ability id), switchable in the hub.
+var class_choices:Dictionary={}
 var gadget=""
 var class_first_slots:Array=[]
 var purchased_gadgets:Array=[]
@@ -207,7 +209,7 @@ func reset_upgrades() -> int:
 	new_recipes.clear();duplicate_recipes.clear()
 	hq_unlocks=HQCatalog.DEFAULT_UNLOCKS.duplicate();hq_modules=[];hq_active="";hq_levels.clear();hq_slots=1;pressure_level=0
 	progression=preload("res://scripts/progression/base_progression.gd").new()
-	class_first_slots.clear();purchased_gadgets.clear();purchased_hq.clear();class_second_slots.clear();gadget="";superboss_defeated=false;cores=0;selected_class="recruit";class_unlocks=["recruit"];class_levels.clear();specializations.clear();ability_slots=1;equipped_abilities=["barrier"];rescue_level=0;shield_capacity_level=0
+	class_first_slots.clear();purchased_gadgets.clear();purchased_hq.clear();class_second_slots.clear();class_choices.clear();gadget="";superboss_defeated=false;cores=0;selected_class="recruit";class_unlocks=["recruit"];class_levels.clear();specializations.clear();ability_slots=1;equipped_abilities=["barrier"];rescue_level=0;shield_capacity_level=0
 	selected_weapon="pistol";backpack_slots=1;reroll_level=0;camp_level=0;research_unlocks.clear();built_workshops.clear()
 	ability_unlocks=["barrier","shield"];selected_ability="barrier";branch_unlocks=["health"];weapon_unlocks=["pistol"];ammo_slot_weapons=[];bonus_unlocks=["heart"];bonus_levels.clear()
 	health_level=0;damage_level=0;luck_level=0;turret_level=0;rarity_level=0;base_level=0;heal_level=0;mobility_level=0;recovery_level=0;credits=0
@@ -220,7 +222,7 @@ func earn(amount: int):
 	save_progress()
 
 func serialize_progress()->Dictionary:
-	return {"skins":skins_owned.duplicate(),"skin":skin,"player_model":player_model,"stat_levels":stat_levels.duplicate(),"run_checkpoint":run_checkpoint,"duplicate_recipes":duplicate_recipes,"garage":garage.serialize(),"notifications":notification_history,"class_first_slots":class_first_slots,"purchased_gadgets":purchased_gadgets,"purchased_hq":purchased_hq,"class_second_slots":class_second_slots,"gadget":gadget,"pressure_level":pressure_level,"headquarters":{"slots":hq_slots,"unlocks":hq_unlocks,"modules":hq_modules,"active":hq_active,"levels":hq_levels},"progression":progression.serialize(),"version":ProfileSchema.VERSION,"camp_level":camp_level,"selected_weapon":selected_weapon,"backpack_slots":backpack_slots,"reroll_level":reroll_level,"research":research_unlocks,"built":built_workshops,"credits":credits,"health":health_level,"damage":damage_level,"luck":luck_level,"turret":turret_level,"rarity":rarity_level,"base":base_level,"heal":heal_level,"mobility":mobility_level,"recovery":recovery_level,"v09":{"class_levels":class_levels,"specializations":specializations,"cores":cores,"class":selected_class,"classes":class_unlocks,"superboss_defeated":superboss_defeated,"slots":ability_slots,"equipped":equipped_abilities,"rescue":rescue_level,"shield_capacity":shield_capacity_level},"abilities":ability_unlocks,"selected_ability":selected_ability,"branch_unlocks":branch_unlocks,"weapon_unlocks":weapon_unlocks,"ammo_slot_weapons":ammo_slot_weapons,"bonus_unlocks":bonus_unlocks,"bonus_levels":bonus_levels}
+	return {"skins":skins_owned.duplicate(),"skin":skin,"player_model":player_model,"stat_levels":stat_levels.duplicate(),"run_checkpoint":run_checkpoint,"duplicate_recipes":duplicate_recipes,"garage":garage.serialize(),"notifications":notification_history,"class_first_slots":class_first_slots,"purchased_gadgets":purchased_gadgets,"purchased_hq":purchased_hq,"class_second_slots":class_second_slots,"class_choices":class_choices,"gadget":gadget,"pressure_level":pressure_level,"headquarters":{"slots":hq_slots,"unlocks":hq_unlocks,"modules":hq_modules,"active":hq_active,"levels":hq_levels},"progression":progression.serialize(),"version":ProfileSchema.VERSION,"camp_level":camp_level,"selected_weapon":selected_weapon,"backpack_slots":backpack_slots,"reroll_level":reroll_level,"research":research_unlocks,"built":built_workshops,"credits":credits,"health":health_level,"damage":damage_level,"luck":luck_level,"turret":turret_level,"rarity":rarity_level,"base":base_level,"heal":heal_level,"mobility":mobility_level,"recovery":recovery_level,"v09":{"class_levels":class_levels,"specializations":specializations,"cores":cores,"class":selected_class,"classes":class_unlocks,"superboss_defeated":superboss_defeated,"slots":ability_slots,"equipped":equipped_abilities,"rescue":rescue_level,"shield_capacity":shield_capacity_level},"abilities":ability_unlocks,"selected_ability":selected_ability,"branch_unlocks":branch_unlocks,"weapon_unlocks":weapon_unlocks,"ammo_slot_weapons":ammo_slot_weapons,"bonus_unlocks":bonus_unlocks,"bonus_levels":bonus_levels}
 
 func save_progress()->bool:
 	if not save_enabled or not profiles.selected:return true
@@ -283,6 +285,11 @@ func apply_profile(data:Dictionary):
 		var extra=data.get("v09",{})
 		class_levels=extra.get("class_levels",{});specializations=extra.get("specializations",{})
 		class_second_slots=data.get("class_second_slots",[]);gadget=str(data.get("gadget","barrier"))
+		class_choices={}
+		var choices=data.get("class_choices",{})
+		if choices is Dictionary:
+			for id in choices:
+				if str(choices[id]) in CLASS_CHOICES.get(str(id),[]):class_choices[str(id)]=str(choices[id])
 		if gadget not in ["barrier","mine","laser","airstrike"]:gadget=""
 		cores=maxi(0,int(extra.get("cores",0)))
 		selected_class=extra.get("class","recruit");class_unlocks=extra.get("classes",["recruit"])
@@ -584,19 +591,34 @@ func upgrade_weapon(id:String)->bool:
 	if "weapons" not in built_workshops or id not in weapon_unlocks or weapon_level(id)>=Balance.CONFIG.economy.weapon_level_cap or credits<weapon_upgrade_cost(id):return false
 	credits-=weapon_upgrade_cost(id);progression.weapon_levels[id]=weapon_level(id)+1;save_progress();return true
 
-const CLASS_SECOND={"recruit":"comrade","gunner":"gas","driver":"ally_drone","marksman":"grenade","engineer":"field_repair","heavy":"comrade"}
+## Meta stage 3 (guides/01_design/08_meta_proposal.md): every class has its own Q (CLASS_SKILLS) and picks
+## one of two abilities for slot «1». No Q repeats between classes; the gadget (F) and HQ support stay shared.
+const CLASS_CHOICES={"recruit":["comrade","mine"],"heavy":["barrier","gas"],"gunner":["gas","mine"],"marksman":["airstrike","laser"],"engineer":["field_repair","barrier"],"driver":["field_repair","barrier"]}
+func class_second(id:String=selected_class)->String:
+	var options:Array=CLASS_CHOICES.get(id,[])
+	if options.is_empty():return ""
+	var chosen=str(class_choices.get(id,""))
+	return chosen if chosen in options else str(options[0])
+func choose_class_second(id:String,ability:String)->bool:
+	if ability not in CLASS_CHOICES.get(id,[]) or class_second(id)==ability:return false
+	class_choices[id]=ability;save_progress();return true
 func class_loadout()->Array:
 	var result=[class_skill()] if selected_class in class_first_slots else []
-	if selected_class in class_second_slots:result.append(CLASS_SECOND[selected_class])
+	if selected_class in class_second_slots:result.append(class_second())
 	return result
-func hero_loadout()->Array:return class_loadout()+([gadget] if gadget!="" and gadget in purchased_gadgets and ability_available(gadget) else [])
+## The gadget (F) is left out when the class already carries the same ability in slot «1».
+func hero_loadout()->Array:
+	var result=class_loadout()
+	if gadget!="" and gadget in purchased_gadgets and ability_available(gadget) and gadget not in result:result.append(gadget)
+	return result
 func ability_action(index:int)->String:return "ability" if index>=class_loadout().size() else "class_ability" if index==0 else "skill_1"
 func buy_class_slot(id:String)->bool:
 	if id not in class_first_slots or id not in class_unlocks or id in class_second_slots or int(class_levels.get(id,0))<5 or credits<2500:return false
 	credits-=2500;class_second_slots.append(id);save_progress();return true
 
 func ability_available(id:String)->bool:
-	if id in CLASS_SKILLS.values() or id in CLASS_SECOND.values():return id in class_loadout() and selected_class in class_unlocks
+	if id in class_loadout():return selected_class in class_unlocks
+	if id in CLASS_SKILLS.values() or id in ["comrade","gas","field_repair"]:return false  # class-only abilities
 	return id in ability_unlocks
 
 func hq_loadout()->Array:return ([hq_active] if hq_active!="" else [])+hq_modules

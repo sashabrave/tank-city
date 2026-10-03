@@ -41,14 +41,16 @@ func detail(tab:String,id:String)->Dictionary:
 				return {"title":concept[0],"icon":"fighter","text":"«%s». Класс в разработке: цифры и способности — набросок." % concept[1],"lines":[concept[2],concept[3]],"actions":[]}
 			var owned=id in Game.class_unlocks;var level=int(Game.class_levels.get(id,0))
 			var now=CombatStats.shell_preview(Game.selected_class);var then=CombatStats.shell_preview(id)
-			var first=Game.CLASS_SKILLS[id];var second=Game.CLASS_SECOND[id]
+			var first=Game.CLASS_SKILLS[id];var second=Game.class_second(id);var other=Game.CLASS_CHOICES[id].filter(func(a):return a!=second)[0]
 			var actions=[]
 			if id!=Game.selected_class:actions.append({"id":"equip","text":"Выбрать" if owned else "Открыть и выбрать" if Game.can_select_class(id) else ClassCatalog.unlock_text(id),"enabled":Game.can_select_class(id),"primary":true})
 			if owned and id not in Game.class_first_slots:actions.append({"id":"first","text":"%s · 30 ◈" % AbilityCatalog.DATA[first].name,"enabled":Game.credits>=30})
 			if owned and id in Game.class_first_slots and id not in Game.class_second_slots:actions.append({"id":"second","text":"%s · 2500 ◈" % AbilityCatalog.DATA[second].name if level>=5 else "Вторая способность · ур. 5","enabled":level>=5 and Game.credits>=2500})
+			# Meta stage 3: slot «1» holds one of two class abilities; switching is free in the hub.
+			if owned:actions.append({"id":"pick","text":"Слот 1: взять «%s»" % AbilityCatalog.DATA[other].name,"enabled":true})
 			if owned:actions.append({"id":"level","text":"Максимум" if level>=10 else "Уровень %d · %d ◈" % [level+1,Game.class_upgrade_cost(id,false)],"enabled":level<10 and Game.credits>=Game.class_upgrade_cost(id,false)})
 			return {"title":Game.CLASSES[id].name,"icon":id,"texture":preload("res://scripts/ui/class_gallery.gd").texture(id),"text":"%s. %s%s" % [ClassCatalog.info(id).role,Game.CLASSES[id].desc,("" if owned or ClassCatalog.unlock_text(id)=="" else "\nОткрытие: "+ClassCatalog.unlock_text(id))]+"\nЛюбимая семья карточек: "+RunUpgrades.FAMILIES[ClassCatalog.info(id).family],"rows":[["Здоровье",UiKit.number(now.health),UiKit.number(then.health)],["Урон",UiKit.number(now.damage),UiKit.number(then.damage)],["Скорость",UiKit.number(now.speed),UiKit.number(then.speed)],["Напор",UiKit.number(now.pressure)+"%",UiKit.number(then.pressure)+"%"]],
-				"lines":ClassCatalog.modifier_lines(id)+["Q · %s%s" % [AbilityCatalog.DATA[first].name," ✓" if id in Game.class_first_slots else ""],"1 · %s%s" % [AbilityCatalog.DATA[second].name," ✓" if id in Game.class_second_slots else ""]],"actions":actions}
+				"lines":ClassCatalog.modifier_lines(id)+["Q · %s%s" % [AbilityCatalog.DATA[first].name," ✓" if id in Game.class_first_slots else ""],"1 · %s%s (или %s)" % [AbilityCatalog.DATA[second].name," ✓" if id in Game.class_second_slots else "",AbilityCatalog.DATA[other].name]],"actions":actions}
 		"general":
 			var row=GENERAL.filter(func(r):return r[0]==id)[0]
 			return {"title":row[1],"icon":"upgrade/"+id,"text":row[2]+". Действует во всех классах; бесплатный сброс возвращает всё вложенное.","rows":[["Уровень",Game.level(id),Game.level(id)+1]],"actions":[{"id":"buy","text":"Улучшить · %d ◈" % Game.cost(id),"enabled":Game.credits>=Game.cost(id),"primary":true},{"id":"reset","text":"Сбросить · вернуть %d ◈" % Game.shell_refund(),"enabled":Game.shell_refund()>0}]}
@@ -78,6 +80,9 @@ func act(tab:String,id:String,action:String)->String:
 		["shells","equip"]:return "Класс выбран" if Game.select_class(id) else ""
 		["shells","first"]:return "Первая способность открыта · Q" if Game.buy_first_class_skill(id) else ""
 		["shells","second"]:return "Вторая способность открыта · 1" if Game.buy_class_slot(id) else ""
+		["shells","pick"]:
+			var other=Game.CLASS_CHOICES[id].filter(func(a):return a!=Game.class_second(id))[0]
+			return "Слот 1 · %s" % AbilityCatalog.DATA[other].name if Game.choose_class_second(id,other) else ""
 		["shells","level"]:return "Класс улучшен" if Game.upgrade_class(id,false) else ""
 		["general","buy"]:return "Улучшено для всех классов" if Game.purchase(id) else ""
 		["training","buy"]:return "Выучка улучшена" if StatRegistry.buy(id) else ""

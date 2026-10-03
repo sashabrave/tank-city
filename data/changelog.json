@@ -110,7 +110,8 @@
 					"Штаб везде нарисован как наша передвижная командная машина, а не бункер или палатка: категория наград, чертёж, верстак, ремонт штаба, медблок, доска развития.",
 					"Понятные имена: бонус на поле «Напор» стал «Ярость», карточка — «Стабилизатор», карточка ремонта — «Ремонт на ходу», навык Выучки — «Скрытность»; вкладка Казармы — «Рюкзак и перебросы»; недостижимая цель «Уровень базы 3» заменена на «Все постройки»",
 					"Багги, БТР и танк перерисованы детальнее: швы брони, блестящий металл стволов и люков, протектор; на Стоянке, в чертежах, энциклопедии и на доске развития.",
-					"Планшет: вкладка «Боец» стала «Вылазкой» — отчёт о забеге: поле, время, добыча, убитые по типам, лучшие моменты (сильнейший удар, серия, угнанная техника, полученный урон), сборка и рекорды. Вне забега показывает последнюю вылазку."
+					"Планшет: вкладка «Боец» стала «Вылазкой» — отчёт о забеге: поле, время, добыча, убитые по типам, лучшие моменты (сильнейший удар, серия, угнанная техника, полученный урон), сборка и рекорды. Вне забега показывает последнюю вылазку.",
+					"Способности классов: у каждого класса своя Q без повторов и выбор одной из двух на слот «1» — переключается бесплатно в Казарме. Стрелок: товарищ или мина; Штурмовик: ёж или газ; Подрывник: газ или мина; Разведчик: авиаудар или лазер; Инженер: полевой ремонт или ёж. Гаджет не дублирует способность слота «1»."
 				]
 			},
 			"en": {
@@ -220,7 +221,8 @@
 					"The HQ is now drawn everywhere as our mobile command truck instead of a bunker or tent: reward category, blueprint, workbench, HQ repair, medbay, progress board.",
 					"Clear names: the field bonus «Pressure» became «Fury», the card «Stabilizer», the repair card «Repair on the move», the training skill «Stealth»; the Barracks tab «Backpack and rerolls»; the unreachable goal «Base level 3» was replaced by «All buildings»",
 					"The buggy, APC and tank are redrawn in more detail: armour seams, polished metal barrels and hatches, tyre tread; in the vehicle bay, blueprints, encyclopedia and progress board.",
-					"Tablet: the Fighter tab is now Sortie — a run report: field, time, loot, kills by type, best moments (strongest hit, streak, captured vehicles, damage taken), build and records. Outside a run it shows the last sortie."
+					"Tablet: the Fighter tab is now Sortie — a run report: field, time, loot, kills by type, best moments (strongest hit, streak, captured vehicles, damage taken), build and records. Outside a run it shows the last sortie.",
+					"Class abilities: every class has its own Q with no repeats and picks one of two for slot «1» — switch for free in the Barracks. Rifleman: comrade or mine; Assault: hedgehog or gas; Demolitionist: gas or mine; Scout: airstrike or laser; Engineer: field repair or hedgehog. The gadget no longer duplicates the slot «1» ability."
 				]
 			}
 		},

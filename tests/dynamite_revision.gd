@@ -8,7 +8,7 @@ func check(ok,message):
 func _ready():call_deferred("run")
 func run():
 	Game.save_enabled=false;Game.sound_enabled=false;Settings.persistence_enabled=false;Game.reset_upgrades();Campaign.configure(1)
-	check(Game.CLASS_SKILLS.gunner=="dynamite" and Game.CLASS_SECOND.gunner=="gas","Подрывник: dynamite first, gas second")
+	check(Game.CLASS_SKILLS.gunner=="dynamite" and Game.class_second("gunner")=="gas","Подрывник: dynamite first, gas second")
 	check(AbilityCatalog.DATA.has("dynamite"),"dynamite is in the ability catalog")
 	var arena=load("res://scenes/arena.tscn").instantiate();arena.run_seed=3;add_child(arena);arena.auto_pause_enabled=false
 	await get_tree().process_frame;arena.set_physics_process(false);arena.phase="combat"

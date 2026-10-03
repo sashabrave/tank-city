@@ -13,6 +13,9 @@ func run():
 	hub.open_station("fighter");await get_tree().create_timer(.3).timeout
 	var screen=hub.build_menu;screen.tab="general";screen.selected="";screen.build();await get_tree().create_timer(.5).timeout
 	await shot("/tmp/r13-station-fighter.png")
+	if "recruit" not in Game.class_second_slots:Game.class_second_slots.append("recruit")
+	screen.tab="shells";screen.selected="recruit";screen.build();await get_tree().create_timer(.5).timeout
+	await shot("/tmp/r13-station-class.png")
 	hub.close_station();hub.open_station("hq");await get_tree().create_timer(.3).timeout
 	screen=hub.build_menu;screen.tab=screen.provider.tabs()[1][0];screen.selected="";screen.build();await get_tree().create_timer(.5).timeout
 	await shot("/tmp/r13-station-hq.png")

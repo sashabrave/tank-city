@@ -115,7 +115,7 @@ func build_shell()->float:
 		var bars=SNAPSHOT.add_bars(body,Vector2(origin.x,offset),width,rows,52,true);offset+=bars.size.y+12
 	return maxf(offset,y+232)
 func ability_card(pos:Vector2,width:float,slot:int)->float:
-	var skill=(Game.CLASS_SKILLS if slot==0 else Game.CLASS_SECOND)[viewed];var info=AbilityCatalog.DATA[skill]
+	var skill=Game.CLASS_SKILLS[viewed] if slot==0 else Game.class_second(viewed);var info=AbilityCatalog.DATA[skill]
 	var owned=viewed in Game.class_unlocks;var unlocked=viewed in (Game.class_first_slots if slot==0 else Game.class_second_slots)
 	var level=int(Game.class_levels.get(viewed,0));var height=(174.0 if width>=470 else 210.0)-(44.0 if unlocked else 0.0)
 	var card=UiKit.panel(body,pos,Vector2(width,height),Color("30382f"));card.name="Ability"+str(slot+1)
