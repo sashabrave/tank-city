@@ -39,8 +39,8 @@ static func moment(context:Node,night:bool)->Dictionary:
 	if cozy_room(context):
 		var pick=RandomNumberGenerator.new();pick.seed=hash([Game.visual_run_seed,int(context.get("index") if context.get("index")!=null else 0),"cozy_sun"])
 		var cozy:Dictionary=MOMENTS[COZY_MOMENTS[pick.randi_range(0,COZY_MOMENTS.size()-1)]].duplicate()
-		# Warm colours, but the sun stands higher than the real golden hour: long low shadows spoiled the rooms.
-		var rise=pick.randf_range(36.0,46.0)
+		# Warm colours of a low sun; the height itself is lifted by the shared rule in apply() (min_sun).
+		var rise=pick.randf_range(Vector2(cozy.elevation).x,Vector2(cozy.elevation).y)+20.0
 		cozy.angle=Vector3(-rise,wrapf(10.0+pick.randf_range(35,325),-180,180),0);return cozy
 	if context==null or not context.has_method("room_palette") or not "room_index" in context:return {}
 	var choice=str(Settings.values.get("sun_night" if night else "sun_day","random"))
@@ -168,6 +168,10 @@ func apply():
 		sun.shadow_opacity=float(style.shadow)*float(weather.shadow)
 		environment.adjustment_saturation=float(style.saturation)*float(weather.saturation)
 	if cozy:
+		# One rule everywhere (author, 2026-10-03): battle, hub, route map and rooms keep the sun at least
+		# «min_sun» degrees high (Материалы → цветовой грейд) — long low shadow stripes spoiled every scene.
+		var lowest=float(MaterialLibrary.grade().get("min_sun",30.0))
+		var angle:Vector3=style.sun_angle;angle.x=minf(angle.x,-lowest);style=style.duplicate();style.sun_angle=angle
 		sun.rotation_degrees=style.sun_angle
 		var height=-float(Vector3(style.sun_angle).x)
 		if not night and height<LOW_SUN:sun.shadow_opacity*=lerpf(LOW_SUN_SHADOW,1.0,clampf((height-12.0)/(LOW_SUN-12.0),0.0,1.0))
@@ -190,6 +194,9 @@ func apply():
 func colour_grade():
 	var grade:Dictionary=MaterialLibrary.grade()
 	environment.adjustment_saturation*=float(grade.get("saturation",1.0))
+	# A juicier sun (author): the light colour itself is a little more saturated, the brightness unchanged.
+	var sun_colour=sun.light_color
+	sun.light_color=Color.from_hsv(sun_colour.h,clampf(sun_colour.s*float(grade.get("sun_saturation",1.3)),0.0,1.0),sun_colour.v)
 	var h=sun.light_color.h;var fill=environment.ambient_light_color
 	var opposite=Color.from_hsv(fposmod(h+.5,1.0),clampf(fill.s+.25,0.0,.45),fill.v)
 	environment.ambient_light_color=fill.lerp(opposite,float(grade.get("harmony",0.0)))

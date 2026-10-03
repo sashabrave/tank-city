@@ -32,7 +32,7 @@ static func read(path:String)->Dictionary:
 static func surfaces()->Dictionary:ensure();return data.surfaces
 static func grade()->Dictionary:
 	ensure()
-	if not data.get("grade") is Dictionary:data["grade"]={"saturation":1.0,"harmony":0.0,"rim":1.0}
+	if not data.get("grade") is Dictionary:data["grade"]={"saturation":1.0,"harmony":0.0,"rim":1.0,"sun_saturation":1.3,"min_sun":30.0}
 	return data.grade
 static func surface(kind:String)->Dictionary:ensure();return data.surfaces.get(kind,{})
 static func palette_surface(cell:String)->String:ensure();return str(data.palette.get(cell,""))

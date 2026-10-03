@@ -42,7 +42,7 @@ func build(list:VBoxContainer):
 	heading(list,"Цвет мира (все время суток и погода)")
 	var grade=MaterialLibrary.grade()
 	var g=VBoxContainer.new();list.add_child(g);g.name="Grade"
-	for param in [["saturation","Сочность",0.7,1.4],["harmony","Гармония теней",0.0,.6],["rim","Контровой свет",0.0,2.0]]:slider(g,grade,param[0],param[1],param[2],param[3])
+	for param in [["saturation","Сочность",0.7,1.4],["harmony","Гармония теней",0.0,.6],["rim","Контровой свет",0.0,2.0],["sun_saturation","Насыщенность солнца",1.0,1.8],["min_sun","Высота солнца не ниже, °",10.0,60.0]]:slider(g,grade,param[0],param[1],param[2],param[3])
 	heading(list,"Поверхности")
 	var surfaces=MaterialLibrary.surfaces()
 	for kind in surfaces:
