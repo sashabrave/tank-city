@@ -108,17 +108,11 @@ func interact():
 	if is_instance_valid(locker) and locker.near(avatar):
 		Game.reset_input();dpad.clear();dpad.enabled=false
 		locker.open(root,func():Game.reset_input();dpad.clear();dpad.enabled=true);modal=locker.modal;return
+	# The parked vehicle can be bought before and after the upgrade choice (T-119).
+	if near_vehicle():open_vehicle_offer();return
 	# Leave only from the exit zone (T-083): a stray E elsewhere does nothing.
 	if claimed:
 		if at_exit():completed.emit(index);set_physics_process(false)
-		return
-	if branch=="vehicle" and has_node("TakeVehicleLabel") and avatar.position.distance_to(PARKED)<1.5:
-		var price=int(VEHICLE_PRICES.get(vehicle,80))
-		if Game.credits<price:Game.sound("ui_denied",self);return
-		Game.credits-=price;Game.save_progress();arena.pending_vehicle=vehicle;Game.sound("weapon_equip",self)
-		get_node("TakeVehicleLabel").name="BoughtVehicleLabel";get_node("BoughtVehicleLabel").queue_free()
-		Visuals.label3d(self,"Техника доставлена — ждёт на старте поля",Vector3(2.2,1.7,-.4),Color("bdf0b0"),24)
-		arena.toast(Texts.render("Техника доставлена"))
 		return
 	if avatar.position.distance_to(Vector3(0,0,-1))>1.8:return
 	Game.reset_input();dpad.clear();dpad.enabled=false
@@ -183,3 +177,33 @@ func collect_medkits():
 func skip_choice():
 	if claimed:return
 	claimed=true;close_cards();continue_button.disabled=false;interact_button.disabled=true;dressing.set_open(true)
+
+func near_vehicle()->bool:return branch=="vehicle" and has_node("TakeVehicleLabel") and avatar.position.distance_to(PARKED)<1.6
+## Purchase window (T-119): the vehicle, what it gives, the price; «Купить» or «Отмена»; then a clear
+## «Техника доставлена» with where it waits.
+func open_vehicle_offer():
+	var price=int(VEHICLE_PRICES.get(vehicle,80));var info=GarageCatalog.VEHICLES.get(vehicle,{})
+	Game.reset_input();dpad.clear();dpad.enabled=false
+	modal=Control.new();modal.name="VehicleOffer";root.add_child(modal);modal.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);modal.add_to_group("selection_scope")
+	var shade=ColorRect.new();modal.add_child(shade);shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);shade.color=Color(0,0,0,.5)
+	var size=Vector2(560,300);var panel=UiKit.glass(modal,((root.get_viewport_rect().size-size)*.5).round(),size)
+	var close=func():
+		if is_instance_valid(modal):modal.queue_free()
+		modal=null;Game.reset_input();dpad.clear();dpad.enabled=true
+	var picture=UiKit.icon(panel,vehicle,Vector2(24,24),Vector2(150,110))
+	UiKit.label(panel,str(info.get("name",vehicle)),Vector2(190,24),Vector2(346,34),24)
+	var text=UiKit.label(panel,"Техника ждёт на старте следующего поля: садишься в неё сразу. Броня и урон — как у твоей машины в гараже.",Vector2(190,62),Vector2(346,80),14,UiKit.MUTED);text.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	var cost=UiKit.label(panel,"%d ◈" % price,Vector2(24,150),Vector2(150,30),22,UiKit.ORANGE if Game.credits>=price else Color("ff8a7a"));cost.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+	if Game.credits<price:UiKit.label(panel,Texts.render("Не хватает %d ◈") % (price-Game.credits),Vector2(190,150),Vector2(346,30),15,Color("ff8a7a"))
+	UiKit.button(panel,"Отмена",Vector2(24,size.y-70),Vector2(250,48),close)
+	var buy=UiKit.button(panel,"Купить · %d ◈" % price,Vector2(size.x-274,size.y-70),Vector2(250,48),func():
+		if Game.credits<price:return
+		Game.credits-=price;Game.save_progress();arena.pending_vehicle=vehicle;Game.sound("weapon_equip",self)
+		get_node("TakeVehicleLabel").name="BoughtVehicleLabel";get_node("BoughtVehicleLabel").queue_free()
+		Visuals.label3d(self,"Доставлено · ждёт на старте поля",Vector3(2.2,1.7,-.4),Color("bdf0b0"),24)
+		for child in panel.get_children():child.queue_free()
+		UiKit.icon(panel,vehicle,Vector2(24,24),Vector2(150,110))
+		UiKit.label(panel,"Техника доставлена",Vector2(190,28),Vector2(346,34),24,Color("bdf0b0"))
+		var done=UiKit.label(panel,"%s ждёт тебя на старте следующего поля." % str(info.get("name",vehicle)),Vector2(190,68),Vector2(346,60),15,UiKit.INK);done.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+		var ok=UiKit.button(panel,"Отлично",Vector2(size.x-274,size.y-70),Vector2(250,48),close,true);ok.grab_focus(),true)
+	buy.disabled=Game.credits<price;buy.grab_focus()

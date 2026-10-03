@@ -8,5 +8,6 @@ func run():
 	await get_tree().process_frame;remove_child(arena)
 	var room=load("res://scripts/service_room.gd").new();room.arena=arena;room.branch=branch;add_child(room)
 	await get_tree().create_timer(1.5).timeout
+	if branch=="vehicle" and room.has_node("TakeVehicleLabel"):Game.credits=500;room.open_vehicle_offer();await get_tree().create_timer(.4).timeout
 	await RenderingServer.frame_post_draw;get_viewport().get_texture().get_image().save_png("/tmp/r13-service-%s.png" % branch)
 	get_tree().quit()

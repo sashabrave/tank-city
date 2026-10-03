@@ -29,6 +29,14 @@ func run():
 		check(room.avatar.position.x>room.dressing.EXIT_CELL.x-.6,branch+": the hero walks into the open gate")
 		room.interact()
 		check(done[0],branch+": E at the gate completes the room")
+		if branch=="vehicle" and room.has_node("TakeVehicleLabel"):
+			# T-119: after the choice the parked vehicle can still be bought, through a purchase window.
+			Game.credits=500;var was_done=done[0]
+			room.avatar.position=room.PARKED+Vector3(-.9,0,.6);room.interact()
+			check(is_instance_valid(room.modal) and room.modal.name=="VehicleOffer","E at the parked vehicle opens the purchase window")
+			for b in room.modal.find_children("*","Button",true,false):
+				if b.text.contains("Купить"):b.pressed.emit()
+			check(arena.pending_vehicle==room.vehicle and Game.credits==500-int(room.VEHICLE_PRICES[room.vehicle]),"buying delivers the vehicle to the next field")
 		room.queue_free();await get_tree().process_frame
 	arena.queue_free()
 	print("SERVICE ROOM: %d failures" % errors);get_tree().quit(1 if errors else 0)

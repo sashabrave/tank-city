@@ -1508,7 +1508,7 @@
 			"scene": "service_room",
 			"shot": "res://tasks/shots/T-119.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "нажимае е купить багги ничего не происходит, оформи покупку сценарино и интерфейсно",
 			"type": "bug",
 			"version": "0.7.2-pre"
@@ -1534,7 +1534,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-121.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "этотэкран не работает кнопки не нажимаются",
 			"type": "bug",
 			"version": "0.7.2-pre"
@@ -1547,7 +1547,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-122.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "короч никакие настройки тут не срабатывают и не применятся, проверь баг важный",
 			"type": "bug",
 			"version": "0.7.2-pre"
