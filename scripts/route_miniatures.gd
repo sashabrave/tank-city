@@ -144,6 +144,7 @@ static func battle_alt(parent:Node3D,difficulty:int,side:float,y:float,bag:Color
 			anim.add(light_head,"rotation:y",[-.6,-.2,.2,.6,.2,-.2])
 			sandbags(parent,Vector3(-side*1.3,y,1.1),7,.7,bag)
 static func service(parent:Node3D,hangar:bool,color:Color):
+	if stop_model(parent,MECHANIC_MODEL if hangar else TRAINING_MODEL,"MechanicPoint" if hangar else "TrainingPoint"):return
 	base(parent,color,true)
 	var dark=color.darkened(.3)
 	if hangar:
@@ -190,6 +191,7 @@ static func star(parent:Node3D,count:int=1,index:int=0):
 ## Pit-stop depot: the HQ vehicle drives in, gets its cards and drives on. Open bay with a lift,
 ## a fuel pump, a tool wall and a blinking bay lamp; chevrons lead in.
 static func depot(parent:Node3D):
+	if stop_model(parent,WORKSHOP_MODEL,"WorkshopPoint"):return
 	var concrete=Color("8c9588");base(parent,concrete,true)
 	var frame=Color("4b5048");var accent=Color("e5b34f")
 	for x in [-1.9,1.9]:Visuals.box(parent,Vector3(x,1.2,-.6),Vector3(.26,1.9,2.6),frame)
@@ -209,6 +211,7 @@ static func depot(parent:Node3D):
 			var chevron=Visuals.box(parent,Vector3(side*.34,.31,2.3-i*.6),Vector3(.7,.03,.14),Color("f0d27a"));chevron.rotation.y=side*.75
 ## «Захваченный КП»: a dark enemy bunker with a torn red flag, sandbags, a radio mast and a glowing chest.
 static func command_post(parent:Node3D):
+	if stop_model(parent,COMMAND_POST_MODEL,"CommandPostPoint"):return
 	base(parent,Color("5b5752"),true)
 	var concrete=Color("6f6c66");var dark=Color("3a3734")
 	Visuals.box(parent,Vector3(0,.75,-.4),Vector3(3.4,1.1,2.2),concrete)
@@ -365,14 +368,22 @@ static func start(parent:Node3D):
 	Visuals.box(parent,Vector3(2.3,.95,1.6),Vector3(.18,.3,.18),Color("cf613f"))
 
 ## Merchant stall: striped awning over a counter with crates.
+## Route stops modelled in Blender (art_requests/route_services_v2): each file carries its own round tile at the common
+## height (plinth -0.08, top 0.28). Returns false when the file is missing, so the box version is drawn instead.
+const TRAINING_MODEL:="res://assets/models/route/training_point.glb"
+const MECHANIC_MODEL:="res://assets/models/route/mechanic_point.glb"
+const WORKSHOP_MODEL:="res://assets/models/route/workshop_point.glb"
+const COMMAND_POST_MODEL:="res://assets/models/route/command_post_point.glb"
+static func stop_model(parent:Node3D,path:String,node_name:String)->bool:
+	if not ResourceLoader.exists(path):return false
+	var model:Node3D=load(path).instantiate();model.name=node_name;parent.add_child(model);model.position.y=-.08
+	return true
 ## Merchant stop: the military shop truck modelled in Blender (art_requests/merchant_point_v2, author pick 2 Oct).
 ## The model carries its own round tile at the common height (plinth -0.08, top 0.28); the boxes below are the
 ## fallback when the file is missing.
 const MERCHANT_MODEL:="res://assets/models/route/merchant_shop.glb"
 static func merchant(parent:Node3D):
-	if ResourceLoader.exists(MERCHANT_MODEL):
-		var shop:Node3D=load(MERCHANT_MODEL).instantiate();shop.name="MerchantShop";parent.add_child(shop);shop.position.y=-.08
-		return
+	if stop_model(parent,MERCHANT_MODEL,"MerchantShop"):return
 	var wood=Color("8a6a48")
 	base(parent,Color("a99b79"),true)
 	Visuals.box(parent,Vector3(0,.6,-.4),Vector3(3,.8,1),wood)
