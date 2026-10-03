@@ -108,7 +108,12 @@ func render():
 			action(grid,"Патроны в рюкзак",func():to_bag({"ammo":[Ammo.roll(Ammo.TYPES[randi()%Ammo.TYPES.size()],tier,randi())]}))
 			action(grid,"Аптечка в рюкзак",func():to_bag({"supplies":[{"type":"medkit","heal":3.0}]}))
 			action(grid,"Мешок рядом",drop_sack)
-			action(grid,"Очистить рюкзак",func():arena.run.ammo_bag.clear();arena.run.supplies.clear();Backpack.refresh(arena);render())
+			action(grid,"Оружие в рюкзак",gun_to_bag)
+			action(grid,"Очистить рюкзак",func():arena.run.ammo_bag.clear();arena.run.supplies.clear();arena.run.weapon_bag.clear();Backpack.refresh(arena);render())
+			header(grid,"Из штаба — с полётом на клетку у штаба")
+			action(grid,"Случайное оружие",func():airdrop({"recipes":[],"ammo":[],"weapons":[random_gun()]}))
+			action(grid,"Случайные патроны",func():airdrop({"recipes":[],"ammo":[Ammo.roll(Ammo.TYPES[randi()%Ammo.TYPES.size()],tier,randi())]}))
+			action(grid,"Аптечка",func():airdrop({"recipes":[],"ammo":[],"supplies":[{"type":"medkit","heal":3.0}]}))
 			header(grid,"Способность в слот")
 			for s in range(3):
 				var value=s;action(grid,["Слот Q","Слот 1","Слот F"][s],func():ability_slot=value;render(),ability_slot==s)
@@ -144,6 +149,29 @@ func to_bag(content:Dictionary):
 	if Backpack.full(arena.run):arena.toast("Рюкзак полон");return
 	arena.run.ammo_bag.append_array(content.get("ammo",[]));arena.run.supplies.append_array(content.get("supplies",[]))
 	Backpack.refresh(arena);render()
+func gun_to_bag():
+	if not Backpack.add_weapon(arena,random_gun()):arena.toast("Рюкзак полон")
+	render()
+## A random gun item of the chosen rarity with rolled stats (like a weapon crate).
+func random_gun()->Dictionary:
+	var ids=Game.LOOT.WEAPONS.keys();var span=[[0,.06],[.05,.12],[.1,.2],[.18,.3]][clampi(tier,0,3)]
+	return {"id":ids[randi()%ids.size()],"rarity":tier,"stats":{"damage":snappedf(randf_range(span[0],span[1]),.01),"fire":snappedf(randf_range(span[0],span[1])*.6,.01)}}
+## The item flies out of the HQ in an arc and lands on a free cell beside it (visual only, sandbox).
+func airdrop(content:Dictionary):
+	var cell=arena.find_free_near(arena.room.base_cell+Vector2i(randi_range(-2,2),-2))
+	arena.reward.place_sack(cell,content)
+	var dropped=arena.room.pickups.back();var visual:Node3D=dropped.visual
+	var start=arena.world_pos(arena.room.base_cell)+Vector3(0,1.4,0)-dropped.node.position;var t0=Time.get_ticks_msec()
+	visual.position=start
+	var tween=visual.create_tween()
+	tween.tween_method(func(k:float):
+		if not is_instance_valid(visual):return
+		visual.position=start.lerp(Vector3.ZERO,k)+Vector3.UP*sin(k*PI)*2.2
+		visual.rotation.y=k*TAU*1.5
+	,0.0,1.0,.75).set_trans(Tween.TRANS_SINE)
+	tween.tween_property(visual,"scale",Vector3(1.25,.75,1.25),.07);tween.tween_property(visual,"scale",Vector3.ONE,.18).set_trans(Tween.TRANS_BACK)
+	tween.tween_callback(func():Game.sound("delivery_land",arena);arena.burst(dropped.node.position+Vector3.UP*.2,Color("eccf8c"),.35))
+	Game.sound("grenade_throw",arena);render()
 func drop_sack():
 	var content={"recipes":[],"ammo":[Ammo.roll(Ammo.TYPES[randi()%Ammo.TYPES.size()],tier,randi())],"supplies":[{"type":"medkit","heal":3.0}]}
 	arena.reward.place_sack(arena.find_free_near(arena.player.cell+Vector2i(1,0)),content);arena.toast("Мешок рядом")

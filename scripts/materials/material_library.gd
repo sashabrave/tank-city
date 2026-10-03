@@ -17,8 +17,10 @@ static func ensure():
 	loaded=true;data=read(PATH)
 	if FileAccess.file_exists(USER_PATH) and not OS.has_feature("editor"):
 		var user=read(USER_PATH)
-		for key in ["surfaces","palette"]:
-			if user.get(key) is Dictionary:data[key].merge(user[key],true)
+		for key in ["surfaces","palette","grade"]:
+			if user.get(key) is Dictionary:
+				if not data.get(key) is Dictionary:data[key]={}
+				data[key].merge(user[key],true)
 static func read(path:String)->Dictionary:
 	var parsed=JSON.parse_string(FileAccess.get_file_as_string(path)) if FileAccess.file_exists(path) else null
 	var result:Dictionary=parsed if parsed is Dictionary else {}
@@ -28,6 +30,10 @@ static func read(path:String)->Dictionary:
 	return result
 
 static func surfaces()->Dictionary:ensure();return data.surfaces
+static func grade()->Dictionary:
+	ensure()
+	if not data.get("grade") is Dictionary:data["grade"]={"saturation":1.0,"harmony":0.0,"rim":1.0}
+	return data.grade
 static func surface(kind:String)->Dictionary:ensure();return data.surfaces.get(kind,{})
 static func palette_surface(cell:String)->String:ensure();return str(data.palette.get(cell,""))
 ## Surface for an imported material by its name, "" when no rule matches.
@@ -54,6 +60,8 @@ static func paint_params(mat:ShaderMaterial):
 	mat.set_shader_parameter("paint_metallic",float(spec.get("metallic",.25)));mat.set_shader_parameter("paint_roughness",float(spec.get("roughness",.45)));mat.set_shader_parameter("paint_clearcoat",float(spec.get("clearcoat",.5)))
 ## Re-applies every material in the running scene (after an edit).
 static func apply_live(tree:SceneTree):
+	for light in tree.root.find_children("WorldLighting","Node",true,false):
+		if light.has_method("apply"):light.apply()
 	Visuals.palette_orm_texture=null
 	for key in Visuals.surface_cache:
 		if is_instance_valid(Visuals.surface_cache[key]):Visuals.cozy_material(Visuals.surface_cache[key])

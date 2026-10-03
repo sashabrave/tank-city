@@ -39,6 +39,10 @@ func say(text:String):Texts.set_text(status,text)
 func heading(list:VBoxContainer,text:String):
 	var l=Label.new();list.add_child(l);Texts.set_text(l,text);l.add_theme_font_size_override("font_size",16);l.add_theme_color_override("font_color",UiKit.ORANGE);l.custom_minimum_size=Vector2(0,30)
 func build(list:VBoxContainer):
+	heading(list,"Цвет мира (все время суток и погода)")
+	var grade=MaterialLibrary.grade()
+	var g=VBoxContainer.new();list.add_child(g);g.name="Grade"
+	for param in [["saturation","Сочность",0.7,1.4],["harmony","Гармония теней",0.0,.6],["rim","Контровой свет",0.0,2.0]]:slider(g,grade,param[0],param[1],param[2],param[3])
 	heading(list,"Поверхности")
 	var surfaces=MaterialLibrary.surfaces()
 	for kind in surfaces:
@@ -61,10 +65,10 @@ func build(list:VBoxContainer):
 			if i==0:MaterialLibrary.data.palette.erase(cell)
 			else:MaterialLibrary.data.palette[cell]=kinds[i]
 			changed())
-func slider(box:VBoxContainer,spec:Dictionary,key:String,title:String):
+func slider(box:VBoxContainer,spec:Dictionary,key:String,title:String,low:=0.0,high:=1.0):
 	var row=HBoxContainer.new();box.add_child(row)
 	var name=Label.new();row.add_child(name);Texts.set_text(name,title);name.custom_minimum_size=Vector2(130,0);name.add_theme_font_size_override("font_size",13);name.add_theme_color_override("font_color",UiKit.MUTED)
-	var bar=HSlider.new();row.add_child(bar);bar.min_value=0;bar.max_value=1;bar.step=.01;bar.value=float(spec.get(key,0.0));bar.size_flags_horizontal=Control.SIZE_EXPAND_FILL;bar.name="Slider_"+key
+	var bar=HSlider.new();row.add_child(bar);bar.min_value=low;bar.max_value=high;bar.step=.01;bar.value=float(spec.get(key,0.0));bar.size_flags_horizontal=Control.SIZE_EXPAND_FILL;bar.name="Slider_"+key
 	var value=Label.new();row.add_child(value);value.text="%.2f" % bar.value;value.custom_minimum_size=Vector2(44,0);value.add_theme_font_size_override("font_size",13)
 	bar.value_changed.connect(func(v):spec[key]=snappedf(v,.01);value.text="%.2f" % v;changed())
 ## Re-apply at most once per frame while a slider is dragged.

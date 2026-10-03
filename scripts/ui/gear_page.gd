@@ -220,6 +220,10 @@ func item_cell(key:String,x:float,y:float,entry,locked:bool)->GearCell:
 		var sheet="blueprint/"+str(entry.item.get("category",""))
 		art(cell,UiKit.trimmed(UiKit.icon_texture(sheet if IconKit.has(sheet) else str(entry.item.get("id","")))),.1 if IconKit.has(sheet) else .16)
 		cell.item_kind="recipe";cell.draggable=true;cell.info=ITEM.of("recipe",entry.item,arena)
+		# Rarity chevron in the corner (drawn rank/0..3: grey, blue, violet, gold with a star).
+		var cat=str(entry.item.get("category",""));var rarity=int(Game.recipe_catalog(cat).get(str(entry.item.get("id","")),{}).get("rarity",0)) if cat!="" else 0
+		if IconKit.has("rank/%d" % clampi(rarity,0,3)):
+			var chevron=UiKit.icon(cell,"rank/%d" % clampi(rarity,0,3),Vector2(C*.66,C*.64),Vector2(C*.3,C*.3));chevron.name="Rank";chevron.mouse_filter=Control.MOUSE_FILTER_IGNORE
 		cell.tooltip_text=Texts.render(Game.recipe_name(entry.item))+"\n"+Texts.render("Чертёж — донеси до хаба, чтобы открыть")
 	return cell
 

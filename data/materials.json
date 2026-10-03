@@ -1,23 +1,142 @@
 {
 	"surfaces": {
-		"steel": {"title": "Сталь", "metallic": 0.95, "roughness": 0.2, "clearcoat": 0.0, "brushed": true},
-		"gunmetal": {"title": "Оружейный металл", "metallic": 0.88, "roughness": 0.28, "clearcoat": 0.0, "brushed": false},
-		"brass": {"title": "Латунь", "metallic": 0.9, "roughness": 0.28, "clearcoat": 0.0, "brushed": false},
-		"paint": {"title": "Крашеный металл", "metallic": 0.25, "roughness": 0.45, "clearcoat": 0.5, "brushed": false},
-		"rubber": {"title": "Резина", "metallic": 0.0, "roughness": 0.88, "clearcoat": 0.0, "brushed": false},
-		"wood": {"title": "Дерево", "metallic": 0.0, "roughness": 0.8, "clearcoat": 0.0, "brushed": false},
-		"fabric": {"title": "Ткань", "metallic": 0.0, "roughness": 0.95, "clearcoat": 0.0, "brushed": false},
-		"concrete": {"title": "Бетон", "metallic": 0.0, "roughness": 0.9, "clearcoat": 0.0, "brushed": false},
-		"glass": {"title": "Стекло", "metallic": 0.1, "roughness": 0.08, "clearcoat": 0.0, "brushed": false}
+		"steel": {
+			"title": "Сталь",
+			"metallic": 0.95,
+			"roughness": 0.2,
+			"clearcoat": 0.0,
+			"brushed": true
+		},
+		"gunmetal": {
+			"title": "Оружейный металл",
+			"metallic": 0.88,
+			"roughness": 0.28,
+			"clearcoat": 0.0,
+			"brushed": false
+		},
+		"brass": {
+			"title": "Латунь",
+			"metallic": 0.9,
+			"roughness": 0.28,
+			"clearcoat": 0.0,
+			"brushed": false
+		},
+		"paint": {
+			"title": "Крашеный металл",
+			"metallic": 0.25,
+			"roughness": 0.45,
+			"clearcoat": 0.5,
+			"brushed": false
+		},
+		"rubber": {
+			"title": "Резина",
+			"metallic": 0.0,
+			"roughness": 0.88,
+			"clearcoat": 0.0,
+			"brushed": false
+		},
+		"wood": {
+			"title": "Дерево",
+			"metallic": 0.0,
+			"roughness": 0.8,
+			"clearcoat": 0.0,
+			"brushed": false
+		},
+		"fabric": {
+			"title": "Ткань",
+			"metallic": 0.0,
+			"roughness": 0.95,
+			"clearcoat": 0.0,
+			"brushed": false
+		},
+		"concrete": {
+			"title": "Бетон",
+			"metallic": 0.0,
+			"roughness": 0.9,
+			"clearcoat": 0.0,
+			"brushed": false
+		},
+		"glass": {
+			"title": "Стекло",
+			"metallic": 0.1,
+			"roughness": 0.08,
+			"clearcoat": 0.0,
+			"brushed": false
+		}
 	},
 	"palette": {
-		"gun": "gunmetal", "gun_light": "steel", "steel": "steel", "gold": "brass", "bronze": "brass",
-		"black": "paint", "glass": "glass", "hull": "paint", "hull_light": "paint", "hull_dark": "paint",
-		"rubber": "rubber", "wood": "wood", "furniture": "wood", "hazard": "paint"
+		"gun": "gunmetal",
+		"gun_light": "steel",
+		"steel": "steel",
+		"gold": "brass",
+		"bronze": "brass",
+		"black": "paint",
+		"glass": "glass",
+		"hull": "paint",
+		"hull_light": "paint",
+		"hull_dark": "paint",
+		"rubber": "rubber",
+		"wood": "wood",
+		"furniture": "wood",
+		"hazard": "paint"
 	},
 	"names": [
-		["steel", "steel"], ["metal", "steel"], ["graphite", "gunmetal"], ["frames", "gunmetal"],
-		["rubber", "rubber"], ["dark", "rubber"],
-		["armor", "paint"], ["armour", "paint"], ["ivory", "paint"], ["olive", "paint"], ["enamel", "paint"], ["sage", "paint"], ["ochre", "paint"]
-	]
+		[
+			"steel",
+			"steel"
+		],
+		[
+			"metal",
+			"steel"
+		],
+		[
+			"graphite",
+			"gunmetal"
+		],
+		[
+			"frames",
+			"gunmetal"
+		],
+		[
+			"rubber",
+			"rubber"
+		],
+		[
+			"dark",
+			"rubber"
+		],
+		[
+			"armor",
+			"paint"
+		],
+		[
+			"armour",
+			"paint"
+		],
+		[
+			"ivory",
+			"paint"
+		],
+		[
+			"olive",
+			"paint"
+		],
+		[
+			"enamel",
+			"paint"
+		],
+		[
+			"sage",
+			"paint"
+		],
+		[
+			"ochre",
+			"paint"
+		]
+	],
+	"grade": {
+		"saturation": 1.08,
+		"harmony": 0.18,
+		"rim": 1.15
+	}
 }

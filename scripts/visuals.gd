@@ -279,6 +279,8 @@ static func apply_environment_palette(node:Node,context:Node,shade:float=0.0,ter
 			var key=source.resource_name.trim_prefix("ENV7_")
 			if terrain_cover:key=key.get_slice(".",0)  # «steel.002» from the cover export is still steel
 			mat.albedo_color=colors.get(key,floor_color).darkened(shade)
+			# Net legs paint like the indestructible blocks: same colour, matte — not shiny steel (author, 2026-10-03).
+			if terrain_cover and key=="steel":mat.resource_name="ENV7_cover_post"
 			mat.metallic=0;mat.roughness=.9
 			cozy_material(mat)
 			mesh.set_surface_override_material(index,mat)

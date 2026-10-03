@@ -171,8 +171,20 @@ func apply():
 	else:sun.rotation_degrees=Vector3(-55,-32,0)
 	depth_light(cozy and bool(Settings.values.get("depth_light",true)),night)
 	cinematic_light(cozy and bool(Settings.values.get("cinematic_light",true)),night,Vector3(style.sun_angle) if cozy else Vector3(-55,-32,0))
+	if cozy:colour_grade()
 	refresh_materials()
 	update_lamps()
+## Colour grade (2026-10-03, «20% effort»): one gentle pass over every time of day and weather, tunable in
+## Инструменты → Материалы (data/materials.json «grade»): a little more juice (saturation), shadows take the
+## colour complementary to the light (harmony) so random palettes still sit together, a stronger rim light.
+func colour_grade():
+	var grade:Dictionary=MaterialLibrary.grade()
+	environment.adjustment_saturation*=float(grade.get("saturation",1.0))
+	var h=sun.light_color.h;var fill=environment.ambient_light_color
+	var opposite=Color.from_hsv(fposmod(h+.5,1.0),clampf(fill.s+.25,0.0,.45),fill.v)
+	environment.ambient_light_color=fill.lerp(opposite,float(grade.get("harmony",0.0)))
+	var rim:DirectionalLight3D=get_node_or_null("CineRim")
+	if rim:rim.light_energy*=float(grade.get("rim",1.0))
 ## «Киношный свет» (T-066): a second, shadowless back light opposite the sun in a complementary colour
 ## (warm key / cool rim, or the reverse at night). It outlines every model so it reads in volume. The recipe
 ## is picked per room from the visual seed, so each field gets its own mood; hub and route map use room 0.
