@@ -93,6 +93,11 @@ def main():
 		("symbols_4_v1.png", 5, 4): "medbay plating robot_arm supply interceptor tesla pulse dome emp_dish armor_plate cannon ammo_belt documents recipe trophy stopwatch crossed_rifles invulnerable trench token",
 		("symbols_5_v1.png", 4, 3): "st_character st_command st_garage st_headquarters st_mechanic st_merchant st_range st_recycling st_roadmap st_wardrobe st_weapons st_yard",
 		("symbols_6_v1.png", 3, 3): "thermometer_flame torch helmet_stars flashbang mallet_stars battery_bolt bomb_suit shell_bounce crew_hatch",
+		# v2, shiny metal with soft bevels (later sheets override earlier symbols of the same name).
+		("abilities_v2.png", 4, 3): "airstrike ally_drone barrier hood_fade comrade dynamite gas grenade laser mine riot_shield wrench_spark",
+		("upgrades_a_v2.png", 5, 3): "burst bullet_burst bullets_fast magazine_fast crosshair bullet_shatter scope_star bullet_vs_rocket gyro hourglass_bullet pierce torn_flag bell crew_hatch grapple",
+		("upgrades_b_v2.png", 5, 3): "flame thermometer_flame torch flame_chain bolt battery_bolt bolt_arc plug_spark dizzy helmet_stars flashbang mallet_stars heart_cage medkit bomb_suit",
+		("upgrades_c_v2.png", 5, 3): "vest shell_bounce sandbags boot_dodge boot_wind trajectory hood ghost_dash parachute door_dash clover_casing loot_sack safe grenade_clock grenade_up",
 	}
 	for (sheet, cols, rows), names in symbols.items():
 		grid = cells(sheet, cols, rows)
