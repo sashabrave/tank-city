@@ -19,6 +19,9 @@ var level={"cooldown":0.0,"power":0.0,"utility":0.0}
 func setup():
 	slots=Game.hero_loadout()
 	for id in slots:states[id]={"cooldown":0.0,"level":{"cooldown":0.0,"power":0.0,"utility":0.0}}
+	# Class level 7 (meta stage 4): the class Q starts one power step stronger.
+	var q=Game.class_skill()
+	if q in states and ClassCatalog.level(Game.selected_class)>=7:states[q].level.power=1.0
 	if not slots.is_empty():select(slots[0])
 	shield_hits=0
 func select(id:String):
@@ -45,7 +48,7 @@ func cast_slot(index:int)->bool:
 	if not ok and is_instance_valid(arena.player) and not arena.player.dead:Game.sound("ability_denied",arena)
 	return ok
 func interval() -> float:
-	return maxf(Balance.CONFIG.combat.minimum_ability_cooldown,AbilityCatalog.DATA.get(selected,AbilityCatalog.DATA.barrier).cooldown*arena.run.ability_cooldown_multiplier*pow(Balance.CONFIG.combat.ability_cooldown_multiplier,level.cooldown)*(.9-Game.class_specialization()*.01 if Game.selected_class=="engineer" else 1.0))
+	return maxf(Balance.CONFIG.combat.minimum_ability_cooldown,AbilityCatalog.DATA.get(selected,AbilityCatalog.DATA.barrier).cooldown*arena.run.ability_cooldown_multiplier*pow(Balance.CONFIG.combat.ability_cooldown_multiplier,level.cooldown))
 func power() -> float:return AbilityCatalog.DATA.get(selected,AbilityCatalog.DATA.barrier).power*arena.run.ability_power_multiplier*(1+level.power*Balance.CONFIG.combat.ability_power_step)
 func barrier_count() -> int:return mini(4,1+int(level.utility))
 func laser_walls() -> int:return mini(4,1+int(level.utility))

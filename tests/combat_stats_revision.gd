@@ -100,11 +100,12 @@ func run():
 	var keys=preload("res://scripts/profile/run_checkpoint.gd").keys()
 	check(StatRegistry.all().all(func(d):return d.run_field in keys),"checkpoint saves every registry stat")
 	check(preload("res://scripts/ui/stat_snapshot.gd").registry(arena).size()==StatRegistry.all().size(),"dossier lists every registry stat")
-	Game.stat_levels={"dodge":2,"future_stat":4}
+	# Meta stage 4: «Выучка» is gone — old station levels are refunded on load and no longer apply.
+	Game.stat_levels={"dodge":2,"future_stat":4};var credits_before=Game.credits
 	var saved=Game.serialize_progress();Game.apply_profile(saved)
-	check(int(Game.stat_levels.get("dodge",0))==2 and int(Game.stat_levels.get("future_stat",0))==4,"station levels persist, unknown ids are kept")
+	check(Game.stat_levels.is_empty() and Game.credits>credits_before,"old station levels are refunded")
 	var fresh=preload("res://scripts/state/run_state.gd").new();StatRegistry.apply_meta(fresh)
-	check(is_equal_approx(fresh.dodge,StatRegistry.get_def("dodge").step*2),"station levels apply at run start")
+	check(is_equal_approx(fresh.dodge,0.0),"no station levels at run start")
 	# Backpack safe: the first slots always survive a death, the rest roll the HQ insurance
 	var carried=[{"id":"a"},{"id":"b"},{"id":"c"}]
 	var kept=preload("res://scripts/recipe_extraction.gd").survivors(carried,false,0,arena.run.combat_rng,2)

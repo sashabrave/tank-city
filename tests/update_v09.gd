@@ -9,6 +9,7 @@ func run():
 	Game.save_enabled=false;Settings.persistence_enabled=false;Game.sound_enabled=false;Game.reset_upgrades()
 	Game.equipped_abilities=["barrier","grenade","gas"];Game.ability_slots=3
 	var arena=load("res://scenes/arena.tscn").instantiate();add_child(arena);arena.auto_pause_enabled=false;arena.set_physics_process(false);arena.player.set_physics_process(false);arena.phase="combat"
+	arena.abilities.slots=["barrier","grenade","gas"];arena.abilities.select("barrier")  # the class Q is free since meta stage 4
 	check(arena.abilities.interval()==33 and arena.abilities.barrier_count()==1,"barrier baseline")
 	# Face a cell inside the field (a random seed may put the soldier with his back to the edge).
 	for d in [Vector2i.UP,Vector2i.LEFT,Vector2i.RIGHT,Vector2i.DOWN]:

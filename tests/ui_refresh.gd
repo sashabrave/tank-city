@@ -19,13 +19,13 @@ func arrive(route):
 func run():
 	Game.save_enabled=false;Game.sound_enabled=false;Settings.persistence_enabled=false;Game.reset_upgrades()
 	# Abilities come from the class: heavy has the shield first and a bought second slot (comrade).
-	Game.selected_class="heavy";Game.class_unlocks=["recruit","heavy"];Game.class_first_slots=["heavy"];Game.class_second_slots=["heavy"]
+	Game.selected_class="heavy";Game.class_unlocks=["recruit","heavy"];Game.class_levels={"heavy":3}
 	var benchmark=preload("res://scripts/ui/weapon_benchmarks.gd").weapon("rifle")
 	check(is_equal_approx(benchmark.damage,9.55865625) and is_equal_approx(benchmark.rate,1.0/(.28*pow(.7,4))),"rifle benchmark follows real damage and rate formulas")
 	check(UiKit.number(10)=="10" and UiKit.number(1.25)=="1.25","number formatting")
 	check(NumberDisplay.clean("12.00 / 2,0 / 0.75")=="12 / 2 / 0.75","text numbers retain fractional precision")
 	Game.health_level=2;Game.bonus_levels={"heart":2};Game.class_levels={"recruit":1}
-	check(Game.total_upgrade_level()==6,"total includes levels and second class slot")
+	check(Game.total_upgrade_level()==5,"total includes levels")
 	var arena=load("res://scenes/arena.tscn").instantiate();add_child(arena);arena.auto_pause_enabled=false;arena.set_physics_process(false)
 	for actor in arena.actors:actor.set_physics_process(false)
 	arena.phase="combat";arena.abilities.select("comrade");arena.abilities.cast_slot(0)

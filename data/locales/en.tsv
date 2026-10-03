@@ -2835,4 +2835,28 @@ Retina · полная чёткость	Retina · full sharpness
 Слот 1: взять «%s»	Slot 1: take «%s»
 Слот 1 · %s	Slot 1 · %s
 1 · %s%s (или %s)	1 · %s%s (or %s)
+Вторая способность	Second ability
+Перк класса	Class perk
+Q сильнее	Stronger Q
+Мастерство	Mastery
+Ур. 5 · перк: %s	Lv. 5 · perk: %s
+Ур. 5 · перк: %s (закрыто)	Lv. 5 · perk: %s (locked)
+Ур. 10 · мастерство: %s	Lv. 10 · mastery: %s
+Ур. 10 · мастерство: %s (закрыто)	Lv. 10 · mastery: %s (locked)
+Шанс крита +5%	Crit chance +5%
+Урон крита +25%	Crit damage +25%
+Дробовик ×1,1 урона	Shotgun ×1.1 damage
+Здоровье +2	Health +2
+Поджог +25%	Ignite +25%
+Защита от взрывов +15%	Blast protection +15%
+Снайперская винтовка ×1,15 урона	Sniper rifle ×1.15 damage
+Скрытность +8%	Stealth +8%
+Перезарядка способностей −10%	Ability cooldown −10%
+Полевой ремонт +30%	Field repair +30%
+Классы, улучшения, снабжение — на все вылазки.	Classes, upgrades, supply — for every sortie.
+1 · %s (или %s)%s	1 · %s (or %s)%s
+ · с 3 уровня	 · from level 3
+ · сильнее	 · stronger
+Уровень %d%s · %d ◈	Level %d%s · %d ◈
+Выучка убрана, вторая способность теперь открывается на 3 уровне класса: возвращено %d ◈.	Training is gone and the second ability now opens at class level 3: %d ◈ refunded.
 все биомы, от леса до пепелища	every biome, from forest to ashland

@@ -2,13 +2,14 @@ class_name CombatStats
 extends RefCounted
 ## Shared calculations for actors, workshop/tablet values and card previews.
 static func class_weapon_multiplier(id:String)->float:
-	if Game.selected_class=="heavy" and id=="shotgun":return 1.1+Game.class_specialization()*.01
-	if Game.selected_class=="marksman" and id=="sniper":return 1.15+Game.class_specialization()*.01
+	if Game.selected_class=="heavy" and id=="shotgun" and ClassCatalog.perk_on("heavy",0):return 1.1
+	if Game.selected_class=="marksman" and id=="sniper" and ClassCatalog.perk_on("marksman",0):return 1.15
 	return 1.0
 ## Class level adds flat health (T-098): +0.2% per level was invisible (7 → 7.01).
+## Every class level still adds +0.5 HP (T-098); damage and speed per level are gone (meta stage 4).
 const CLASS_HP_PER_LEVEL=.5
 static func initial_health()->float:return Balance.CONFIG.combat.hero_health+Game.health_upgrade_bonus()+Game.class_health_bonus()+Game.class_level()*CLASS_HP_PER_LEVEL
-static func initial_speed_multiplier()->float:return Game.mobility_multiplier()*(.95 if Game.selected_class=="heavy" else 1.0)*(1+Game.class_level()*.001)
+static func initial_speed_multiplier()->float:return Game.mobility_multiplier()*(.95 if Game.selected_class=="heavy" else 1.0)
 static func soldier_speed(run=null,extra:float=0.0)->float:
 	var multiplier=initial_speed_multiplier() if run==null else run.speed_multiplier
 	return minf(Balance.speed_cap(),Balance.CONFIG.combat.hero_speed*(minf(Balance.speed_multiplier_cap(),multiplier+extra) if extra>0 else multiplier))
@@ -18,7 +19,7 @@ static func weapon(arena=null,id:String="",changes:Dictionary={})->Dictionary:
 	var run=arena.run if arena!=null else null
 	var mods={"damage":0.0,"interval":1.0,"intercept":0.0} if run==null else run.weapon_mods[id]
 	var bonus=(0.0 if run==null else run.damage_bonus)+changes.get("damage_bonus",0.0)
-	var damage=(1+Game.class_level()*.002)*class_weapon_multiplier(id)*data.damage*Game.weapon_factor(id)*(1+Game.damage_level*.05+bonus*.3+mods.damage+changes.get("weapon_damage",0.0))
+	var damage=class_weapon_multiplier(id)*data.damage*Game.weapon_factor(id)*(1+Game.damage_level*.05+bonus*.3+mods.damage+changes.get("weapon_damage",0.0))
 	var interval=maxf(Balance.CONFIG.combat.minimum_fire_interval,data.interval*(1.0 if run==null else run.fire_multiplier)*mods.interval*changes.get("fire",1.0)*changes.get("weapon_fire",1.0))
 	return {"damage":damage,"interval":interval,"rate":float(data.get("burst",1))/interval,"range":data.range*(1.0 if run==null else run.range_multiplier),"intercept":probability(arena,"soldier",id)*100}
 static func probability(arena=null,kind:String="soldier",weapon_id:String="",origin:String="owned")->float:
@@ -33,16 +34,19 @@ static func probability(arena=null,kind:String="soldier",weapon_id:String="",ori
 	return chance
 
 static func shell_preview(id:String)->Dictionary:
-	var level=int(Game.class_levels.get(id,0));var spec=clampi(int(Game.specializations.get(id,0)),0,3)
-	# Class stat bonuses come from ClassCatalog start modifiers; only the flat HP ones show here.
+	# Class stat bonuses come from ClassCatalog start modifiers and unlocked perks; only flat HP shows here.
 	var extra_hp=0.0
-	for modifier in ClassCatalog.info(id).modifiers:
+	var modifiers=ClassCatalog.info(id).modifiers.duplicate()
+	var perks=ClassCatalog.PERKS.get(id,[])
+	for n in range(perks.size()):
+		if ClassCatalog.perk_on(id,n):modifiers+=perks[n][1]
+	for modifier in modifiers:
 		if modifier.stat=="soldier_max_hp":extra_hp+=float(modifier.value)
 	var weapon_id=Game.selected_weapon
-	var factor=1.1+spec*.01 if id=="heavy" and weapon_id=="shotgun" else 1.15+spec*.01 if id=="marksman" and weapon_id=="sniper" else 1.0
+	var factor=1.1 if id=="heavy" and weapon_id=="shotgun" and ClassCatalog.perk_on(id,0) else 1.15 if id=="marksman" and weapon_id=="sniper" and ClassCatalog.perk_on(id,0) else 1.0
 	return {
-		"health":Balance.CONFIG.combat.hero_health+Game.health_upgrade_bonus()+level*CLASS_HP_PER_LEVEL+extra_hp,
-		"speed":minf(Balance.speed_cap(),Balance.CONFIG.combat.hero_speed*Game.mobility_multiplier()*(.95 if id=="heavy" else 1.0)*(1+level*.001)),
-		"damage":weapon().damage/((1+Game.class_level()*.002)*class_weapon_multiplier(weapon_id))*(1+level*.002)*factor,
+		"health":Balance.CONFIG.combat.hero_health+Game.health_upgrade_bonus()+ClassCatalog.level(id)*CLASS_HP_PER_LEVEL+extra_hp,
+		"speed":minf(Balance.speed_cap(),Balance.CONFIG.combat.hero_speed*Game.mobility_multiplier()*(.95 if id=="heavy" else 1.0)),
+		"damage":weapon().damage/class_weapon_multiplier(weapon_id)*factor,
 		"pressure":clampf(Game.LOOT.WEAPONS[weapon_id].intercept*Balance.CONFIG.combat.interception_base_scale+Game.shell_pressure_bonus(),Balance.CONFIG.combat.interception_floor,Balance.CONFIG.combat.interception_cap)*100
 	}

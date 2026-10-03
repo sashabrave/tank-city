@@ -12,7 +12,7 @@ func run():
 	check(qs.size()==Array(qs).reduce(func(acc,q):return acc if q in acc else acc+[q],[]).size(),"no Q repeats between classes")
 	for id in ClassCatalog.ROSTER:
 		check(Game.CLASS_CHOICES[id].size()==2 and Game.CLASS_CHOICES[id].all(func(a):return AbilityCatalog.DATA.has(a) and a!=Game.CLASS_SKILLS[id]),"two real «1» options: "+id)
-	Game.class_unlocks=["recruit","marksman"];Game.selected_class="recruit";Game.class_first_slots=["recruit","marksman"];Game.class_second_slots=["recruit"]
+	Game.class_unlocks=["recruit","marksman"];Game.selected_class="recruit";Game.class_levels={"recruit":3}
 	check(Game.class_loadout()==["grenade","comrade"],"default second is the first option")
 	check(Game.choose_class_second("recruit","mine") and Game.class_loadout()==["grenade","mine"],"free switch to the other option")
 	check(not Game.choose_class_second("recruit","laser"),"foreign ability is refused")

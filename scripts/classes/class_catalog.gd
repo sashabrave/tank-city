@@ -36,8 +36,36 @@ static func goal_met(id:String)->bool:var p=progress(id);return p[0]>=p[1]
 static func unlock_text(id:String)->String:
 	var unlock=info(id).unlock;var p=progress(id)
 	return "" if unlock.is_empty() else "%s · %d / %d" % [unlock.text,p[0],p[1]]
+## Meta stage 4: class level milestones. 3 — second ability (Game.class_loadout), 5 — perk, 7 — Q +1 power
+## (RunAbility.setup), 10 — mastery. Perks use the card modifier format; weapon multipliers that used to be
+## hidden (shotgun, sniper) are part of the level 5 perk now (CombatStats.class_weapon_multiplier).
+const MILESTONES=[[3,"Вторая способность"],[5,"Перк класса"],[7,"Q сильнее"],[10,"Мастерство"]]
+const PERKS={
+	"recruit":[["Шанс крита +5%",[{"stat":"crit_chance","op":"add","value":.05}]],["Урон крита +25%",[{"stat":"crit_damage","op":"add","value":.25}]]],
+	"heavy":[["Дробовик ×1,1 урона",[]],["Здоровье +2",[{"stat":"soldier_max_hp","op":"add_round","value":2.0},{"stat":"soldier_hp","op":"add_round","value":2.0}]]],
+	"gunner":[["Поджог +25%",[{"stat":"burn_power","op":"add","value":.25}]],["Защита от взрывов +15%",[{"stat":"guard_blast","op":"add","value":.15}]]],
+	"marksman":[["Снайперская винтовка ×1,15 урона",[]],["Скрытность +8%",[{"stat":"stealth","op":"add","value":.08}]]],
+	"engineer":[["Перезарядка способностей −10%",[{"stat":"ability_cooldown_multiplier","op":"scale","value":-.1}]],["Полевой ремонт +30%",[{"stat":"field_repair","op":"add","value":.3}]]],
+}
+## « · вторая способность» for a level that opens a milestone, otherwise empty.
+static func milestone_suffix(at:int)->String:
+	for m in MILESTONES:
+		if m[0]==at:return " · "+Texts.render(m[1]).to_lower()
+	return ""
+static func level(id:String)->int:return clampi(int(Game.class_levels.get(id,0)),0,10)
+## n: 0 — the level 5 perk, 1 — the level 10 mastery line.
+static func perk_on(id:String,n:int)->bool:return level(id)>=(5 if n==0 else 10)
+static func perk_lines(id:String)->Array:
+	var result=[]
+	var perks=PERKS.get(id,[])
+	for n in range(perks.size()):result.append(("Ур. 5 · перк: %s" if n==0 else "Ур. 10 · мастерство: %s") % perks[n][0]+("" if perk_on(id,n) else " (закрыто)"))
+	return result
 static func apply_start(run):
 	for modifier in info(Game.selected_class).modifiers:RunUpgrades.apply_modifier(run,modifier,1.0)
+	var perks=PERKS.get(Game.selected_class,[])
+	for n in range(perks.size()):
+		if perk_on(Game.selected_class,n):
+			for modifier in perks[n][1]:RunUpgrades.apply_modifier(run,modifier,1.0)
 	run.soldier_hp=minf(run.soldier_hp,run.soldier_max_hp)
 ## Start bonuses as dossier lines, formatted by the stat registry ("Шанс крита +5%").
 static func modifier_lines(id:String)->Array:
