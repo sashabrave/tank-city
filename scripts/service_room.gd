@@ -29,7 +29,7 @@ var vehicle_prompt
 func _ready():
 	add_to_group("notification_context")
 	vehicle=current_vehicle()
-	Visuals.setup_world(self,12,Vector3.ZERO)
+	Visuals.setup_world(self,11.4,Vector3.ZERO)
 	var positions=[]
 	for x in range(-4,5):
 		for z in range(-3,5):positions.append(Vector3(x,0,z))

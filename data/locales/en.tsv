@@ -2860,3 +2860,19 @@ Q сильнее	Stronger Q
 Уровень %d%s · %d ◈	Level %d%s · %d ◈
 Выучка убрана, вторая способность теперь открывается на 3 уровне класса: возвращено %d ◈.	Training is gone and the second ability now opens at class level 3: %d ◈ refunded.
 все биомы, от леса до пепелища	every biome, from forest to ashland
+Редкость патронов	Ammo rarity
+Зарядить (в оружие сейчас: %s)	Load (weapon in hand: %s)
+ · не подходит	 · does not fit
+Патроны в рюкзак	Ammo into the backpack
+Аптечка в рюкзак	Medkit into the backpack
+Мешок рядом	Sack nearby
+Очистить рюкзак	Empty the backpack
+Способность в слот	Ability into slot
+Слот Q	Slot Q
+Слот 1	Slot 1
+Слот F	Slot F
+Сила способности +1	Ability power +1
+Сила: +%d	Power: +%d
+Уровень класса (%s · %d)	Class level (%s · %d)
+Уровень %d	Level %d
+Уровень класса %d · перки — с нового забега	Class level %d · perks from the next run

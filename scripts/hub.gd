@@ -86,7 +86,7 @@ func _ready():
 	add_to_group("profile_hub")
 	PerfOverlay.show_build=true;tree_exiting.connect(func():PerfOverlay.show_build=false)
 	add_to_group("notification_context")
-	Visuals.setup_world(self,11.8,Vector3(0,0,0))
+	Visuals.setup_world(self,11.2,Vector3(0,0,0))
 	preload("res://scripts/base_surroundings.gd").hub(self,Color(room_palette().floor).darkened(.12))
 	var outskirts=preload("res://scripts/hub_outskirts.gd").new();outskirts.hub=self;add_child(outskirts)
 	Visuals.box(self,Vector3(1,-.4,.5),Vector3(13.3,.6,8.3),Color("8b9585"))

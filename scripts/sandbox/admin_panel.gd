@@ -5,7 +5,8 @@ extends CanvasLayer
 signal exit_requested
 const ENEMIES=[["soldier","Стрелок"],["grenadier","Гранатомётчик"],["shield","Щитовой"],["sniper","Снайпер"],["buggy","Багги"],["apc","БТР"],["tank","Танк"],["mortar","Миномёт"],["drone","Дрон"],["flyer","Летающий"]]
 const SIZES=[13,15,17,19,21,23,25]
-const TABS=[["field","Поле"],["enemies","Враги"],["bonuses","Бонусы"],["cards","Карты"],["stats","Статы"],["gear","Техника"],["challenges","Испытания"]]
+const TABS=[["field","Поле"],["enemies","Враги"],["bonuses","Бонусы"],["cards","Карты"],["stats","Статы"],["kit","Снаряжение"],["gear","Техника"],["challenges","Испытания"]]
+var ability_slot=0  # sandbox «Снаряжение»: which slot (Q, 1, F) an ability button fills
 var arena
 var tab="field"
 var rank=1
@@ -95,6 +96,28 @@ func render():
 				Texts.set_text(label,"%s · %s" % [def.title,StatRegistry.text(def,StatRegistry.value(def,arena))])
 				action(grid,"−",func():nudge_stat(stat,-nudge))
 				action(grid,"+",func():nudge_stat(stat,nudge))
+		"kit":
+			# 0.7.2 features: rolled ammo items, the backpack and sacks, any ability in any slot, class milestones.
+			header(grid,"Редкость патронов")
+			for t in range(Ammo.RARITY_NAMES.size()):
+				var value=t;action(grid,Ammo.RARITY_NAMES[t],func():tier=value;render(),tier==t)
+			header(grid,"Зарядить (в оружие сейчас: %s)" % Game.LOOT.WEAPONS[arena.run.weapon].name)
+			for type in Ammo.TYPES:
+				var kind=type;action(grid,Ammo.NAMES[type]+("" if Ammo.fits(type,arena.run.weapon) else " · не подходит"),func():load_ammo(kind))
+			header(grid,"Рюкзак · %d / %d" % [Backpack.used(arena.run),Backpack.capacity()])
+			action(grid,"Патроны в рюкзак",func():to_bag({"ammo":[Ammo.roll(Ammo.TYPES[randi()%Ammo.TYPES.size()],tier,randi())]}))
+			action(grid,"Аптечка в рюкзак",func():to_bag({"supplies":[{"type":"medkit","heal":3.0}]}))
+			action(grid,"Мешок рядом",drop_sack)
+			action(grid,"Очистить рюкзак",func():arena.run.ammo_bag.clear();arena.run.supplies.clear();Backpack.refresh(arena);render())
+			header(grid,"Способность в слот")
+			for s in range(3):
+				var value=s;action(grid,["Слот Q","Слот 1","Слот F"][s],func():ability_slot=value;render(),ability_slot==s)
+			for id in AbilityCatalog.DATA:
+				var ability=id;action(grid,AbilityCatalog.DATA[id].name+(" ✓" if id in arena.abilities.slots else ""),func():set_ability(ability))
+			action(grid,"Сила способности +1",func():arena.abilities.level.power+=1.0;arena.toast("Сила: +%d" % int(arena.abilities.level.power)))
+			header(grid,"Уровень класса (%s · %d)" % [Game.CLASSES[Game.selected_class].name,ClassCatalog.level(Game.selected_class)])
+			for lv in [0,3,5,7,10]:
+				var value=lv;action(grid,"Уровень %d" % lv,func():class_level(value),ClassCatalog.level(Game.selected_class)==lv)
 		"gear":
 			header(grid,"Техника рядом")
 			for kind in GarageCatalog.VEHICLES:
@@ -112,6 +135,33 @@ func render():
 			header(grid,"Запустить")
 			for mode in RoutePlan.CHALLENGES:
 				var id=mode;action(grid,ChallengeRooms.TITLES.get(mode,mode),func():rebuild({"mode":id}))
+func load_ammo(type:String):
+	Ammo.ensure(arena.run,arena.run.weapon)
+	var old=Ammo.load_item(arena.run,Ammo.roll(type,tier,randi()))
+	if not old.is_empty() and not Backpack.full(arena.run):arena.run.ammo_bag.append(old)
+	Backpack.refresh(arena);arena.toast(Texts.render("Патроны")+": "+Texts.render(Ammo.NAMES[type]));render()
+func to_bag(content:Dictionary):
+	if Backpack.full(arena.run):arena.toast("Рюкзак полон");return
+	arena.run.ammo_bag.append_array(content.get("ammo",[]));arena.run.supplies.append_array(content.get("supplies",[]))
+	Backpack.refresh(arena);render()
+func drop_sack():
+	var content={"recipes":[],"ammo":[Ammo.roll(Ammo.TYPES[randi()%Ammo.TYPES.size()],tier,randi())],"supplies":[{"type":"medkit","heal":3.0}]}
+	arena.reward.place_sack(arena.find_free_near(arena.player.cell+Vector2i(1,0)),content);arena.toast("Мешок рядом")
+func set_ability(id:String):
+	var slots:Array=arena.abilities.slots
+	while slots.size()<=ability_slot:slots.append(id)
+	slots[ability_slot]=id;arena.abilities.select(id)
+	refresh_skill_icons();render()
+func refresh_skill_icons():
+	if not is_instance_valid(arena.hud):return
+	for i in range(arena.hud.skill_buttons.size()):
+		var button=arena.hud.skill_buttons[i];button.visible=i<arena.abilities.slots.size()
+		if button.visible:button.get_node("Icon").texture=UiKit.trimmed(UiKit.icon_texture("abilities/"+str(arena.abilities.slots[i])))
+## Class level for milestone checks: abilities (second slot, Q +1 at 7) rebuild now; perks need a new run.
+func class_level(level:int):
+	Game.class_levels[Game.selected_class]=level
+	arena.abilities.setup();refresh_skill_icons()
+	arena.toast("Уровень класса %d · перки — с нового забега" % level);render()
 func nudge_stat(def:StatDef,amount:float):
 	var current=float(arena.run.get(def.run_field))
 	var next=maxf(0.0,current+amount)

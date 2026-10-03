@@ -115,6 +115,8 @@
 					"Картинки миров в окне «Куда выдвигаемся» стали минималистичными диорамами в стиле игры: островок поля с домиком, сухая гряда с окопом, крепость псов в снегу и бесконечный рубеж из четырёх биомов.",
 					"Уровни класса стали вехами: Q есть сразу, на 3 уровне — вторая способность (бесплатно), на 5 — перк класса, на 7 — Q сильнее, на 10 — мастерство. Каждый уровень по-прежнему даёт +0,5 здоровья, мелкие проценты урона и скорости убраны. Вкладка «Выучка» убрана: вложенный в неё сплав и 2500 за прежнюю покупку второй способности возвращены. Описания в Казарме больше не обрезаются.",
 					"Мир 1 теперь проходит через все восемь биомов, от спокойных к опасным; точки одного этапа на карте — разные биомы. У каждого поля своё название, как в учебнике истории: «Засада у Красного поля», «Битва за Каменную топь». Миры 2 и 3 — в разработке. Картинки миров — киношные пейзажи над полем боя.",
+					"Дневной свет объёмнее: тени от стен, ящиков и заборов снова видны (камера обрезала дальность теней), заполняющий свет чуть холоднее и слабее. Камера на 5% ближе в бою, хабе и комнатах; клетки поля всегда на экране. Облака у краёв больше не размываются в светлые пятна сверху и снизу экрана.",
+					"Песочница: новая вкладка «Снаряжение» — любые патроны любой редкости, рюкзак, аптечки, мешок, любая способность в любой слот и уровни класса для проверки вех.",
 					"Заголовки теперь набраны чистым Rubik, жирным и заглавными буквами, вместо «грязного» Rubik Dirt. Ими подписаны страницы планшета, станции, окна выбора, карточки усилений, этапы маршрута и итоги вылазки.",
 					"Смена фаз в бою («Волна 2», «Бой с генералом», «Командир») появляется ступеньками: слово за словом, каждое поднимается на место — как реплики в чате хаба."
 				]
@@ -231,6 +233,8 @@
 					"World pictures in «Where to» are now minimalist dioramas in the game's style: a field island with a cottage, a dry ridge with a trench, the dog fortress in the snow and the endless frontier made of four biomes.",
 					"Class levels are milestones now: Q from the start, level 3 opens the second ability (free), level 5 a class perk, level 7 a stronger Q, level 10 mastery. Every level still adds +0.5 health; tiny damage and speed percentages are gone. The Training tab is removed: alloy spent on it and 2500 for the old second-ability purchase are refunded. Barracks descriptions are no longer cut off.",
 					"World 1 now runs through all eight biomes, from calm to dangerous; the nodes of one stage on the map are different biomes. Every field has its own name, like in a history book: «Ambush at Red Field», «Battle for Stone Bog». Worlds 2 and 3 are in development. World pictures are cinematic landscapes over the battlefield.",
+					"Daylight has more volume: walls, crates and fences cast visible shadows again (the camera cut the shadow range), the fill light is a bit cooler and weaker. The camera is 5% closer in battle, the hub and rooms; field cells always stay on screen. Edge clouds no longer smear into light blobs at the top and bottom of the screen.",
+					"Sandbox: new Equipment tab — any ammo of any rarity, backpack, medkits, a sack, any ability in any slot and class levels to check milestones.",
 					"Headings now use clean bold Rubik in capitals instead of the rough Rubik Dirt: tablet pages, stations, choice windows, upgrade cards, route stages and sortie results.",
 					"Battle phase titles («Wave 2», «General fight», «Commander») appear in steps, word after word rising into place, like lines in the hub chat."
 				]
