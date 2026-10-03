@@ -808,7 +808,7 @@
 				"stats/stun_chance"
 			],
 			"names": [
-				"Контузия",
+				"Контузящие патроны",
 				"Контузия"
 			],
 			"note": "Символ «dizzy»"
@@ -2010,6 +2010,54 @@
 				"vehicle"
 			],
 			"note": "Векторный, растрируется в 3×"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/rank_0.png",
+			"group": "Лычки редкости",
+			"context": "Лычка редкости на чертеже в рюкзаке: серая, синяя, фиолетовая, золотая",
+			"ids": [
+				"rank/0"
+			],
+			"names": [
+				"Обычная"
+			],
+			"note": "Символ «rank_0»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/rank_1.png",
+			"group": "Лычки редкости",
+			"context": "Лычка редкости на чертеже в рюкзаке: серая, синяя, фиолетовая, золотая",
+			"ids": [
+				"rank/1"
+			],
+			"names": [
+				"Редкая"
+			],
+			"note": "Символ «rank_1»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/rank_2.png",
+			"group": "Лычки редкости",
+			"context": "Лычка редкости на чертеже в рюкзаке: серая, синяя, фиолетовая, золотая",
+			"ids": [
+				"rank/2"
+			],
+			"names": [
+				"Эпическая"
+			],
+			"note": "Символ «rank_2»"
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/rank_3.png",
+			"group": "Лычки редкости",
+			"context": "Лычка редкости на чертеже в рюкзаке: серая, синяя, фиолетовая, золотая",
+			"ids": [
+				"rank/3"
+			],
+			"names": [
+				"Легендарная"
+			],
+			"note": "Символ «rank_3»"
 		},
 		{
 			"path": "res://assets/illustrations/gpt_image_2_5/icons/weapons/grenade_launcher.png",

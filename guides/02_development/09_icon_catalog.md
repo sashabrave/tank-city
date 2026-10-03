@@ -116,7 +116,7 @@
 | clover_casing.png | upgrades/luck, stats/luck | Счастливая гильза, Удача |
 | crew_hatch.png | upgrades/crew | Экипаж |
 | crosshair.png | upgrades/crit_chance, stats/crit_chance | Меткий глаз, Шанс крита |
-| dizzy.png | upgrades/stun, stats/stun_chance | Контузия |
+| dizzy.png | upgrades/stun, stats/stun_chance | Контузящие патроны, Контузия |
 | door_dash.png | upgrades/exit_dash | Смена позиции |
 | flame.png | upgrades/burn, stats/burn_chance | Зажигательные патроны, Поджог |
 | flame_chain.png | upgrades/chain_fire | Цепная реакция |
@@ -250,6 +250,17 @@
 | slot_machine.svg | slot_machine | slot_machine |
 | token.svg | token | token |
 | vehicle.svg | vehicle | vehicle |
+
+## Лычки редкости (4)
+
+Где: Лычка редкости на чертеже в рюкзаке: серая, синяя, фиолетовая, золотая
+
+| Файл | id | Название |
+|---|---|---|
+| rank_0.png | rank/0 | Обычная |
+| rank_1.png | rank/1 | Редкая |
+| rank_2.png | rank/2 | Эпическая |
+| rank_3.png | rank/3 | Легендарная |
 
 ## Оружие (8)
 
