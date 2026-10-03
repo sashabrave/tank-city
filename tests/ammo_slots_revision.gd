@@ -30,7 +30,9 @@ func run():
 	card=RunUpgrades.card(arena,{"id":"cryo","tier":0})
 	check(str(card.short).contains("Заменит"),"card shows the replacement")
 	RunUpgrades.apply(arena,"cryo",0)
-	check(Ammo.active(run)=="cryo" and run.ammo_bag.size()==1 and run.ammo_bag[0].type=="burn","cryo replaces fire; the old ammo goes to the bag")
+	# Replaced plain rounds are an item too (author, T-197): the bag holds them and the fire ammo.
+	check(Ammo.active(run)=="cryo" and run.ammo_bag.any(func(a):return a.type=="burn"),"cryo replaces fire; the old ammo goes to the bag")
+	run.ammo_bag=run.ammo_bag.filter(func(a):return a.type!="standard")
 	check(not RunUpgrades.eligible(arena,heat),"fire improvements stop dropping")
 	# Combat: cryo slows the target.
 	var enemy=arena.spawn_actor("soldier",Vector2i(4,3),false)
