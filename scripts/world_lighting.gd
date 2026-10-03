@@ -26,6 +26,7 @@ const MOMENTS={
 const DAY_MOMENTS=["dawn","morning","noon","golden","sunset"]
 const NIGHT_MOMENTS=["dusk","moon","predawn"]
 ## Below this sun height, shadows fade towards LOW_SUN_SHADOW opacity so long stripes do not cover the field.
+const SOFTER=1.3  # shadow edge blur multiplier, author request (30% softer)
 const LOW_SUN=30.0
 const LOW_SUN_SHADOW=.55
 ## Battle-only moment; hub and route map keep the style sun. Deterministic per run and room,
@@ -124,9 +125,10 @@ func apply():
 	# The orthographic field falls into the far (coarse) shadow split, and the high-quality soft filter with a
 	# blur of 2+ smeared the sun shadows to nothing: walls cast no shadow and daylight read flat. Low filter
 	# quality (project setting) and a small blur keep a soft but visible edge.
-	sun.shadow_blur=clampf(1.0+float(style.softness)*.08,1.0,1.6) if soft else 1.0
+	# 0.8.0 b4xx (author): shadows 30% softer — SOFTER scales every shadow blur below.
+	sun.shadow_blur=clampf(1.0+float(style.softness)*.08,1.0,1.6)*SOFTER if soft else 1.0
 	# Moonlight shadows read as blurry as the day ones.
-	if soft and night:sun.shadow_blur=clampf(sun.shadow_blur*1.8,2.0,5.0)
+	if soft and night:sun.shadow_blur=clampf(sun.shadow_blur*1.8,2.0,5.0*SOFTER)
 	sun.shadow_opacity=float(style.shadow) if cozy else 1.0
 	sun.light_specular=float(style.specular) if cozy else .5
 	var time:Dictionary=moment(get_parent(),night) if cozy else {}
@@ -249,7 +251,7 @@ func update_lamps():
 		light.shadow_enabled=light.visible and not light.get_meta("no_shadow",false) and (light.get_meta("occluded_beam",false) or (cozy and i<3))
 		light.light_volumetric_fog_energy=1.5 if cozy else 0.0
 		# Lamp shadows at night were crisp next to the soft day ones; a wider filter blurs them the same way.
-		light.shadow_blur=(3.2 if night else 1.5) if cozy and Settings.values.get("soft_shadows",true) else 1.0
+		light.shadow_blur=(3.2 if night else 1.5)*SOFTER if cozy and Settings.values.get("soft_shadows",true) else 1.0
 		if light is SpotLight3D:
 			if not light.has_node("SoftCone"):add_cone(light)
 			# A faint beam is always visible; night and fog make it denser (T-058).
