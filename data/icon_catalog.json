@@ -14,7 +14,7 @@
 			"note": "Символ «bricks»"
 		},
 		{
-			"path": "res://assets/ui/icon_kit/symbols/bunker_wrench.png",
+			"path": "res://assets/ui/icon_kit/symbols/hq_repair.png",
 			"group": "Бонусы поля",
 			"context": "Бонусы, выпадающие на поле; подсказки HUD; энциклопедия",
 			"ids": [
@@ -23,7 +23,7 @@
 			"names": [
 				"Ремонт базы"
 			],
-			"note": "Символ «bunker_wrench»"
+			"note": "Символ «hq_repair»"
 		},
 		{
 			"path": "res://assets/ui/icon_kit/symbols/jeep.png",

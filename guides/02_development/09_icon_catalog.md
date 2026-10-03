@@ -11,7 +11,7 @@
 | Файл | id | Название |
 |---|---|---|
 | bricks.png | pickups/wall | Укрепление |
-| bunker_wrench.png | pickups/repair | Ремонт базы |
+| hq_repair.png | pickups/repair | Ремонт базы |
 | jeep.png | pickups/vehicle, category/vehicle | Десант техники, Транспорт |
 | snowflake.png | pickups/freeze | Фриз |
 | star.png | pickups/star | Звезда |

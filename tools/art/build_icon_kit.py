@@ -89,7 +89,7 @@ def main():
 	symbols = {
 		("symbols_1_v1.png", 5, 4): "burst bullet_burst bullets_fast crosshair bullet_shatter pierce flame flame_chain bolt dizzy bell heart_cage boot_dodge vest bomb tank_shell boot_wind hood clover_casing grenade_up",
 		("symbols_2_v1.png", 5, 4): "magazine_fast scope_star steering_bullet bullet_vs_rocket gyro hourglass_bullet torn_flag bolt_arc plug_spark medkit sandbags trajectory ghost_dash parachute door_dash loot_sack safe wrench_spark grapple grenade_clock",
-		("symbols_3_v1.png", 5, 4): "airstrike ally_drone barrier hood_fade comrade dynamite gas grenade laser mine riot_shield snowflake star turret jeep wheel_wrench bricks bunker_wrench alloy blueprint",
+		("symbols_3_v1.png", 5, 4): "airstrike ally_drone barrier hood_fade comrade dynamite gas grenade laser mine riot_shield snowflake star turret jeep wheel_wrench bricks - alloy blueprint",
 		("symbols_4_v1.png", 5, 4): "medbay plating robot_arm supply interceptor tesla pulse dome emp_dish armor_plate cannon ammo_belt documents recipe trophy stopwatch crossed_rifles invulnerable trench token",
 		("symbols_5_v1.png", 4, 3): "st_character st_command st_garage st_headquarters st_mechanic st_merchant st_range st_recycling st_roadmap st_wardrobe st_weapons st_yard",
 		("symbols_6_v1.png", 3, 3): "thermometer_flame torch helmet_stars flashbang mallet_stars battery_bolt bomb_suit shell_bounce crew_hatch",
@@ -99,16 +99,21 @@ def main():
 		("upgrades_b_v2.png", 5, 3): "flame thermometer_flame torch flame_chain bolt battery_bolt bolt_arc plug_spark dizzy helmet_stars flashbang mallet_stars heart_cage medkit bomb_suit",
 		("upgrades_c_v2.png", 5, 3): "vest shell_bounce sandbags boot_dodge boot_wind trajectory hood ghost_dash parachute door_dash clover_casing loot_sack safe grenade_clock grenade_up",
 		("hq_garage_v2.png", 4, 3): "medbay plating robot_arm supply interceptor tesla pulse dome emp_dish armor_plate cannon ammo_belt",
-		("bonus_resources_v2.png", 4, 3): "snowflake star turret jeep wheel_wrench bricks bunker_wrench blueprint documents recipe trophy padlock",
+		("bonus_resources_v2.png", 4, 3): "snowflake star turret jeep wheel_wrench bricks - blueprint documents recipe trophy padlock",
 		("stations_v2.png", 4, 3): "st_character st_command st_garage st_headquarters st_mechanic st_merchant st_range st_recycling st_roadmap st_wardrobe st_weapons st_yard",
 		("categories_v2.png", 3, 3): "cat_hero cat_ability cat_hq cat_bonus cat_weapon sender_story sender_institute sender_operations weapon_tune",
 		("ammo_v2.png", 4, 2): "ammo_standard ammo_burn ammo_stun ammo_shock ammo_explosive ammo_ap ammo_ricochet ammo_cryo",
 		("blueprints_v2.png", 3, 2): "bp_weapon bp_vehicle bp_hq bp_ability bp_bonus bp_building",
 		("ammo_charges_v2.png", 2, 1): "ammo_cluster ammo_napalm",
+		# HQ is the mobile command truck (author, 2 Oct): these replace the tent and bunker pictures.
+		("hq_vehicle_v2.png", 3, 2): "cat_hq st_headquarters hq_repair medbay - -",
+		("bp_hq_v2.png", 1, 1): "bp_hq",
 	}
 	for (sheet, cols, rows), names in symbols.items():
 		grid = cells(sheet, cols, rows)
 		for i, name in enumerate(names.split()):
+			if name == "-":
+				continue
 			if name in AUTHOR_KEPT and (OUT / f"symbols/{name}.png").exists():
 				continue
 			save(single(grid[(i // cols, i % cols)]), f"symbols/{name}.png")

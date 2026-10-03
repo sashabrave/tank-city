@@ -106,7 +106,8 @@
 					"Гранатомёт — новое оружие (чертёж в мире 2); гранатомёт и РПГ носят заряды: огонь, ЭМИ и крио действуют на всех во взрыве; новые заряды — кассетные и напалм; электропушка «в разработке» в Арсенале",
 					"Аптечки: подобранная при полном здоровье уходит в рюкзак, H — вылечиться из рюкзака",
 					"Патроны и чертежи в рюкзаке нарисованы сериями: у патронов пачка с эмблемой эффекта и патрон рядом, от картонной пачки обычных до инеевой жести криогенных; у чертежей один и тот же планшет, а силуэт на листе показывает, что он открывает.",
-					"Карточка патронов показывает замену иконками: старые → новые; пустые значения не показываются; на кукле в снаряжении только действующие эффекты; аптечки видны в рюкзаке и лечат по нажатию"
+					"Карточка патронов показывает замену иконками: старые → новые; пустые значения не показываются; на кукле в снаряжении только действующие эффекты; аптечки видны в рюкзаке и лечат по нажатию",
+					"Штаб везде нарисован как наша передвижная командная машина, а не бункер или палатка: категория наград, чертёж, верстак, ремонт штаба, медблок, доска развития."
 				]
 			},
 			"en": {
@@ -212,7 +213,8 @@
 					"The grenade launcher — a new weapon (blueprint in world 2); the grenade launcher and the RPG use charges: fire, EMP and cryo affect everyone in the blast; new charges — cluster and napalm; the tesla cannon is «in development» in the Arsenal",
 					"Aid kits: one picked up at full health goes to the backpack, H heals from it",
 					"Ammo and blueprints in the backpack are drawn as series: ammo is a box with the effect emblem and a round beside it, from a cardboard box of standard rounds to a frosted cryo tin; blueprints share one clipboard, and the silhouette on the sheet shows what it unlocks.",
-					"The ammo card shows the swap with icons: old → new; empty values are hidden; the gear doll shows only active effects; aid kits appear in the backpack and heal on tap"
+					"The ammo card shows the swap with icons: old → new; empty values are hidden; the gear doll shows only active effects; aid kits appear in the backpack and heal on tap",
+					"The HQ is now drawn everywhere as our mobile command truck instead of a bunker or tent: reward category, blueprint, workbench, HQ repair, medbay, progress board."
 				]
 			}
 		},

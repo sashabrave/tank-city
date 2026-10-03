@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://byrcqbr2sdw42"
-path="res://.godot/imported/bunker_wrench.png-fa12a6868ee26648f6e0a36d384fe045.ctex"
+uid="uid://b0vjx1e6d6625"
+path="res://.godot/imported/hq_repair.png-80ee688e058e4417b0f3e60377a500e7.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/ui/icon_kit/symbols/bunker_wrench.png"
-dest_files=["res://.godot/imported/bunker_wrench.png-fa12a6868ee26648f6e0a36d384fe045.ctex"]
+source_file="res://assets/ui/icon_kit/symbols/hq_repair.png"
+dest_files=["res://.godot/imported/hq_repair.png-80ee688e058e4417b0f3e60377a500e7.ctex"]
 
 [params]
 
