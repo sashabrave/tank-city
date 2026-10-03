@@ -29,19 +29,18 @@ func build(arena,ground_node,seed_value:int):
 	# The colour of the ground under the board (author): darker than the field and the rim.
 	var earth:Color=preload("res://scripts/backdrop_ground.gd").colors(palette,family)[0]
 	apron(earth)
-	match family:
-		"city":slabs(earth,rng)
-		"marsh":planks(earth,rng)
-		"mountains":gravel(earth,rng,Color("eef0ee"))
-		"inferno":gravel(earth,rng,Color("3a3230"))
-		_:pass  # plain map-coloured earth; tyre marks come with the lanes
+	# 0.8.0: no slabs/planks/gravel boxes on the slope — under side light they read as stray rectangles.
 	dressing(arena,earth,rng)
 	var tyre=floor.darkened(.1)
 	for side in [-1.0,1.0]:track(earth,tyre,side)
 	no_shadows.call_deferred()
+	# Tyre marks on the slope: continuous strips from the rim down to the tracks, following the surface.
 	for side in [-1.0,1.0]:
 		for wheel in [-.5,.5]:
-			for k in range(10):lay(Vector3(.16,.012,LENGTH/10.0),(lane(side)+wheel)/(lerpf(narrow,wide,(k+.5)/10.0)*.5),(k+.5)/10.0,tyre)
+			var strip=[]
+			for k in range(9):strip.append(Vector3(lane(side)+wheel,0,front+LENGTH*k/8.0))
+			for k in range(strip.size()):strip[k].y=path_height(strip[k])+.025
+			add_child(ribbon(strip,.16,0.0,tyre))
 
 ## Surface height of the approach at a ground point (for the arriving HQ); board top inside the field.
 func path_height(p:Vector3)->float:
@@ -76,19 +75,6 @@ func lay(size:Vector3,u:float,v:float,color:Color,yaw:=0.0)->MeshInstance3D:
 	var node=Visuals.box(self,on_apron(u,v,size.y*.5),size,color)
 	var slope=atan2(top_y-path_height(Vector3(x0,0,front+LENGTH)),LENGTH)
 	node.rotation=Vector3(slope,yaw,0);node.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF;return node
-
-func ruts(color:Color,rng):
-	for side in [-.32,.32]:
-		for k in range(8):lay(Vector3(.26,.015,LENGTH/8.0*.95),side+rng.randf_range(-.03,.03),(k+.5)/8.0,color.darkened(.2+rng.randf()*.08))
-func slabs(color:Color,rng):
-	for row in range(4):
-		for col in range(3):
-			if rng.randf()<.15:continue
-			lay(Vector3(lerpf(narrow,wide,(row+.5)/4.0)/3.0*.9,.04,LENGTH/4.0*.88),-.66+col*.66,(row+.5)/4.0,color.lightened(rng.randf_range(-.04,.08)),rng.randf_range(-.04,.04))
-func planks(color:Color,rng):
-	for k in range(14):lay(Vector3(lerpf(narrow,wide,(k+.5)/14.0)*.8,.05,.2),rng.randf_range(-.05,.05),(k+.5)/14.0,Color("7d6648").lerp(color,.55).darkened(rng.randf()*.15),rng.randf_range(-.06,.06))
-func gravel(color:Color,rng,accent:Color):
-	for k in range(10):lay(Vector3(rng.randf_range(.3,.7),.03,rng.randf_range(.3,.6)),rng.randf_range(-.9,.9),rng.randf(),color.lerp(accent,.35),rng.randf()*TAU)
 
 ## Random military dressing: sandbag rows on 0–2 edges, a barrier pole, hedgehogs, crates, a tyre stack.
 func dressing(arena,color:Color,rng):
