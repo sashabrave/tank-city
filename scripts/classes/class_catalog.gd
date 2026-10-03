@@ -26,6 +26,14 @@ const CONCEPTS=[
 	["Десантник","С неба в бой","Уклонение +10% · скорость +10%","Q Прыжок через стену · 1 Сигнальный дым"],
 	["Охотник","Одна пуля","Крит +15% · темп −30%","Q Прицельный выстрел · 1 Ложная позиция"],
 ]
+## Barracks blurb under the doll (author, 0.8.0): two sentences of backstory in the cozy-trench tone, then
+## what the class is good and bad at in play. [story, strengths, weaknesses].
+const BIO={
+	"recruit":["Пришёл на заставу за пайком, а остался за компанию. Стреляет так, будто от этого зависит обед — и обычно зависит.","Метко бьёт и часто критует, граната выручает в любой каше.","Без брони и фокусов: в окружении долго не продержится."],
+	"heavy":["Бывший грузчик полевой кухни: носил котлы, теперь носит щит. Говорит мало, стоит долго.","Держит пули и удар, дробовик в упор — его разговор.","Медленный, а вдали от врагов почти бесполезен."],
+	"gunner":["Считает, что любой спор решается бочкой. Пока ни разу не проиграл — ни спор, ни бочку.","Взрывы, поджог, толпы врагов разом; не боится собственных подрывов.","Против одиночной цели и техники без бочек рядом — так себе."],
+	"marksman":["Сидел в кустах так долго, что его оформили как куст. Видит всё, а его — никто.","Первый выстрел из засады и снайперская винтовка решают бой до его начала.","Хрупкий: в лоб и на ближней дистанции быстро сдаётся."],
+	"engineer":["Чинит всё, что сломали, и немного то, что ещё работало. Дрон собрал из чайника — летает.","Техника и дроны служат дольше, полевой ремонт и быстрые способности.","Сам по себе стреляет средне: сила в том, что рядом."]}
 static func info(id:String)->Dictionary:return INFO.get(id,INFO.recruit)
 static func progress(id:String)->Array:
 	var unlock=info(id).unlock
@@ -36,10 +44,41 @@ static func goal_met(id:String)->bool:var p=progress(id);return p[0]>=p[1]
 static func unlock_text(id:String)->String:
 	var unlock=info(id).unlock;var p=progress(id)
 	return "" if unlock.is_empty() else "%s · %d / %d" % [unlock.text,p[0],p[1]]
-## Meta stage 4: class level milestones. 3 — second ability (Game.class_loadout), 5 — perk, 7 — Q +1 power
-## (RunAbility.setup), 10 — mastery. Perks use the card modifier format; weapon multipliers that used to be
-## hidden (shotgun, sniper) are part of the level 5 perk now (CombatStats.class_weapon_multiplier).
-const MILESTONES=[[3,"Вторая способность"],[5,"Перк класса"],[7,"Q сильнее"],[10,"Мастерство"]]
+## Class path (0.8.0, author): levels 1–20. A level costs alloy on a geometric ladder (Game.class_upgrade_cost),
+## so the first levels of any class are cheap and the second slot (level 8) comes near the world 1 general.
+## No abilities at the very start (author): the first one (Q) at 3, the second ability and second slot at 8,
+## the third at 14, a secret one at 20 (in development); the perk at 5, a stronger Q at 10, mastery at 12.
+## Every other level is a class upgrade «в разработке». Each level grows health and the class stats (GROWTH).
+const MAX_LEVEL=20
+const ABILITY_LEVELS=[3,8,14,20]
+const TRACK={3:["ability","Первая способность · слот Q"],5:["perk","Перк класса"],8:["ability","Вторая способность · второй слот"],10:["power","Q сильнее"],12:["mastery","Мастерство"],14:["ability","Третья способность"],20:["secret","Секретная способность"]}
+## Abilities of a class in unlock order; the fourth (level 20) is a secret still in development.
+static func abilities(id:String)->Array:return [Game.CLASS_SKILLS.get(id,"grenade")]+Game.CLASS_CHOICES.get(id,[])
+static func ability_level(id:String,ability:String)->int:
+	var i=abilities(id).find(ability);return ABILITY_LEVELS[i] if i>=0 else 99
+static func unlocked_abilities(id:String)->Array:
+	return abilities(id).filter(func(a):return level(id)>=ability_level(id,a))
+static func slot_count(id:String)->int:return 2 if level(id)>=ABILITY_LEVELS[1] else 1 if level(id)>=ABILITY_LEVELS[0] else 0
+## Growth per level after the first (author, 0.8.0): health for everyone (Штурмовик more) plus the class's own
+## stats, same fields as run cards. Shown on the class page and on every row of the class path.
+const HP_PER_LEVEL={"heavy":.5}
+const GROWTH={
+	"recruit":[["crit_chance",.004,"шанс крита"],["crit_damage",.02,"крит-урон"]],
+	"heavy":[["guard_bullet",.006,"защита от пуль"]],
+	"gunner":[["burn_power",.02,"сила поджога"],["guard_blast",.005,"защита от взрывов"]],
+	"marksman":[["crit_damage",.025,"крит-урон"],["stealth",.004,"скрытность"]],
+	"engineer":[["field_repair",.02,"полевой ремонт"],["dodge",.003,"уклонение"]]}
+static func hp_per_level(id:String)->float:return float(HP_PER_LEVEL.get(id,.3))
+## Growth reached at the class's current level: [[field, total, title], …].
+static func growth(id:String)->Array:
+	var steps=level(id)-1
+	return GROWTH.get(id,[]).map(func(g):return [g[0],float(g[1])*steps,g[2]])
+## «+0,3 здоровья · +0,4% шанс крита · …» for one level.
+static func growth_line(id:String)->String:
+	var parts=["+%s здоровья" % UiKit.number(hp_per_level(id))]
+	for g in GROWTH.get(id,[]):parts.append("+%s%% %s" % [UiKit.number(float(g[1])*100),g[2]])
+	return " · ".join(parts)
+static func track_title(at:int)->String:return str(TRACK[at][1]) if TRACK.has(at) else "Улучшение класса · в разработке"
 const PERKS={
 	"recruit":[["Шанс крита +5%",[{"stat":"crit_chance","op":"add","value":.05}]],["Урон крита +25%",[{"stat":"crit_damage","op":"add","value":.25}]]],
 	"heavy":[["Дробовик ×1,1 урона",[]],["Здоровье +2",[{"stat":"soldier_max_hp","op":"add_round","value":2.0},{"stat":"soldier_hp","op":"add_round","value":2.0}]]],
@@ -47,21 +86,23 @@ const PERKS={
 	"marksman":[["Снайперская винтовка ×1,15 урона",[]],["Скрытность +8%",[{"stat":"stealth","op":"add","value":.08}]]],
 	"engineer":[["Перезарядка способностей −10%",[{"stat":"ability_cooldown_multiplier","op":"scale","value":-.1}]],["Полевой ремонт +30%",[{"stat":"field_repair","op":"add","value":.3}]]],
 }
-## « · вторая способность» for a level that opens a milestone, otherwise empty.
+## « · вторая способность» for a level that opens a track milestone, otherwise empty.
 static func milestone_suffix(at:int)->String:
-	for m in MILESTONES:
-		if m[0]==at:return " · "+Texts.render(m[1]).to_lower()
-	return ""
-static func level(id:String)->int:return clampi(int(Game.class_levels.get(id,0)),0,10)
-## n: 0 — the level 5 perk, 1 — the level 10 mastery line.
-static func perk_on(id:String,n:int)->bool:return level(id)>=(5 if n==0 else 10)
+	if not TRACK.has(at):return ""
+	var text=Texts.render(TRACK[at][1])
+	return " · "+(text if text.begins_with("Q") else text.left(1).to_lower()+text.substr(1))
+## Displayed class level 1–20 (stored levels count upgrades bought, from 0).
+static func level(id:String)->int:return clampi(1+int(Game.class_levels.get(id,0)),1,MAX_LEVEL)
+## n: 0 — the level 5 perk, 1 — the level 12 mastery line.
+static func perk_on(id:String,n:int)->bool:return level(id)>=(5 if n==0 else 12)
 static func perk_lines(id:String)->Array:
 	var result=[]
 	var perks=PERKS.get(id,[])
-	for n in range(perks.size()):result.append(("Ур. 5 · перк: %s" if n==0 else "Ур. 10 · мастерство: %s") % perks[n][0]+("" if perk_on(id,n) else " (закрыто)"))
+	for n in range(perks.size()):result.append(("Ур. 5 · перк: %s" if n==0 else "Ур. 12 · мастерство: %s") % perks[n][0]+("" if perk_on(id,n) else " (закрыто)"))
 	return result
 static func apply_start(run):
 	for modifier in info(Game.selected_class).modifiers:RunUpgrades.apply_modifier(run,modifier,1.0)
+	for g in growth(Game.selected_class):RunUpgrades.apply_modifier(run,{"stat":g[0],"op":"add","value":g[1]},1.0)
 	var perks=PERKS.get(Game.selected_class,[])
 	for n in range(perks.size()):
 		if perk_on(Game.selected_class,n):

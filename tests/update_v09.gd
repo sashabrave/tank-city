@@ -52,7 +52,7 @@ func run():
 		arena.abilities.select(id);arena.abilities.cooldown=0;check(arena.abilities.cast(),"cast "+id)
 	check(arena.actors.any(func(a):return a.allied and a.kind=="flyer"),"helper exists")
 	arena.abilities.level.utility=3;arena.abilities.cooldown=0;arena.abilities.cast();check(arena.abilities.cloak_ghost,"max cloak ghost")
-	arena.phase="countdown";var oldcell=arena.player.cell;var oldpos=arena.player.position;arena.player.facing=Vector2i.RIGHT
+	arena.phase="countdown";arena.set_meta("intro_lock",false);var oldcell=arena.player.cell;var oldpos=arena.player.position;arena.player.facing=Vector2i.RIGHT
 	var target=oldcell+Vector2i.RIGHT
 	if arena.walls.has(target):arena.walls[target].node.queue_free();arena.walls.erase(target)
 	Input.action_press("east");arena.player.turn_left=0;arena.player._physics_process(.1);arena.player._physics_process(.5);Input.action_release("east");check(arena.player.position.x>oldpos.x,"movement during countdown")

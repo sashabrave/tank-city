@@ -5,10 +5,8 @@ static func class_weapon_multiplier(id:String)->float:
 	if Game.selected_class=="heavy" and id=="shotgun" and ClassCatalog.perk_on("heavy",0):return 1.1
 	if Game.selected_class=="marksman" and id=="sniper" and ClassCatalog.perk_on("marksman",0):return 1.15
 	return 1.0
-## Class level adds flat health (T-098): +0.2% per level was invisible (7 → 7.01).
-## Every class level still adds +0.5 HP (T-098); damage and speed per level are gone (meta stage 4).
-const CLASS_HP_PER_LEVEL=.5
-static func initial_health()->float:return Balance.CONFIG.combat.hero_health+Game.health_upgrade_bonus()+Game.class_health_bonus()+Game.class_level()*CLASS_HP_PER_LEVEL
+## Every class level adds health (ClassCatalog.hp_per_level, T-098) and the class's own stats (ClassCatalog.GROWTH).
+static func initial_health()->float:return Balance.CONFIG.combat.hero_health+Game.health_upgrade_bonus()+Game.class_health_bonus()+Game.class_level()*ClassCatalog.hp_per_level(Game.selected_class)
 static func initial_speed_multiplier()->float:return Game.mobility_multiplier()*(.95 if Game.selected_class=="heavy" else 1.0)
 static func soldier_speed(run=null,extra:float=0.0)->float:
 	var multiplier=initial_speed_multiplier() if run==null else run.speed_multiplier
@@ -45,7 +43,7 @@ static func shell_preview(id:String)->Dictionary:
 	var weapon_id=Game.selected_weapon
 	var factor=1.1 if id=="heavy" and weapon_id=="shotgun" and ClassCatalog.perk_on(id,0) else 1.15 if id=="marksman" and weapon_id=="sniper" and ClassCatalog.perk_on(id,0) else 1.0
 	return {
-		"health":Balance.CONFIG.combat.hero_health+Game.health_upgrade_bonus()+ClassCatalog.level(id)*CLASS_HP_PER_LEVEL+extra_hp,
+		"health":Balance.CONFIG.combat.hero_health+Game.health_upgrade_bonus()+(ClassCatalog.level(id)-1)*ClassCatalog.hp_per_level(id)+extra_hp,
 		"speed":minf(Balance.speed_cap(),Balance.CONFIG.combat.hero_speed*Game.mobility_multiplier()*(.95 if id=="heavy" else 1.0)),
 		"damage":weapon().damage/class_weapon_multiplier(weapon_id)*factor,
 		"pressure":clampf(Game.LOOT.WEAPONS[weapon_id].intercept*Balance.CONFIG.combat.interception_base_scale+Game.shell_pressure_bonus(),Balance.CONFIG.combat.interception_floor,Balance.CONFIG.combat.interception_cap)*100

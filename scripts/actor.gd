@@ -298,7 +298,8 @@ func _physics_process(delta):
 			if turn_left==0:try_move(dir)
 		return
 	# T-152: no control while the room intro plays (HQ drive-in, hop-out, run to the start cell).
-	if player_owned and arena.get_meta("intro_lock",false):return
+	# Only while the countdown runs: a cut-short intro can never leave the soldier frozen in combat.
+	if player_owned and arena.phase=="countdown" and arena.get_meta("intro_lock",false):return
 	if player_owned:
 		if occupying_trench:
 			var aim=Game.direction()

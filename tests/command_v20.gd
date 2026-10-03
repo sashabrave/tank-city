@@ -20,6 +20,7 @@ func run_test():
 	hub.phase="workshop"
 	# Command centre is the tablet in manage mode: the telegram offer sits on top of the quest feed.
 	var command=load("res://scripts/progression/command_screen.gd").new();command.tab="quests";hub.root.add_child(command)
+	command.quest_filter="main";command.refresh()  # the remembered filter comes from the player's own tablet memory
 	var offer=command.find_children("TelegramOffer","Control",true,false)
 	assert(offer.size()==1)
 	assert(offer[0].find_children("*","Button",true,false).filter(func(b):return b.text==Texts.render("Принять")).size()==3)

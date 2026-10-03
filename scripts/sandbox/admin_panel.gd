@@ -116,7 +116,7 @@ func render():
 				var ability=id;action(grid,AbilityCatalog.DATA[id].name+(" ✓" if id in arena.abilities.slots else ""),func():set_ability(ability))
 			action(grid,"Сила способности +1",func():arena.abilities.level.power+=1.0;arena.toast("Сила: +%d" % int(arena.abilities.level.power)))
 			header(grid,"Уровень класса (%s · %d)" % [Game.CLASSES[Game.selected_class].name,ClassCatalog.level(Game.selected_class)])
-			for lv in [0,3,5,7,10]:
+			for lv in [1,3,5,8,10,14,20]:
 				var value=lv;action(grid,"Уровень %d" % lv,func():class_level(value),ClassCatalog.level(Game.selected_class)==lv)
 		"gear":
 			header(grid,"Техника рядом")
@@ -159,7 +159,7 @@ func refresh_skill_icons():
 		if button.visible:button.get_node("Icon").texture=UiKit.trimmed(UiKit.icon_texture("abilities/"+str(arena.abilities.slots[i])))
 ## Class level for milestone checks: abilities (second slot, Q +1 at 7) rebuild now; perks need a new run.
 func class_level(level:int):
-	Game.class_levels[Game.selected_class]=level
+	Game.class_levels[Game.selected_class]=level-1  # displayed level 1–20
 	arena.abilities.setup();refresh_skill_icons()
 	arena.toast("Уровень класса %d · перки — с нового забега" % level);render()
 func nudge_stat(def:StatDef,amount:float):

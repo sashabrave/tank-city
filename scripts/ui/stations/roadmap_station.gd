@@ -81,8 +81,8 @@ func items(tab:String)->Array:
 		if status=="goal":next_found=true
 		var gift=reward(str(step[0]))
 		var caption={"done":"Готово","goal":"Следующая цель","later":"Позже"}[status]
-		if gift>0:caption+=(" · забери %d ◈" % gift) if status=="done" and not claimed(str(step[0])) else ("" if status=="done" else " · награда %d ◈" % gift)
-		var item={"id":step[0],"title":step[1],"icon":icon,"caption":caption,"status":status}
+		if gift>0 and status=="done" and not claimed(str(step[0])):caption+=" · награда ждёт"
+		var item={"id":step[0],"title":step[1],"icon":icon,"caption":caption,"status":status,"reward":gift,"claimable":status=="done" and gift>0 and not claimed(str(step[0]))}
 		# Drawn step art (assets/ui/roadmap/<step id>.png) when present.
 		var art="res://assets/ui/roadmap/%s.png" % step[0]
 		if ResourceLoader.exists(art):item["texture"]=load(art)

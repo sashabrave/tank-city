@@ -2923,3 +2923,91 @@ Q · есть сразу	Q · from the start
  Награда: %d сплава.	 Reward: %d alloy.
 Каждый раз разброс ±10% от этого значения.	It varies by ±10% of this value each time.
 Потеря сплава при выбывании: примерно %s%% (±10%%)	Alloy lost when knocked out: about %s%% (±10%%)
+Способность Q	Q ability
+Вторая способность · второй слот	Second ability · second slot
+Третья способность	Third ability
+Секретная способность	Secret ability
+Улучшение класса · в разработке	Class upgrade · in development
+Каждый уровень: 	Every level: 
++%s%% %s	+%s%% %s
+шанс крита	crit chance
+крит-урон	crit damage
+защита от пуль	bullet protection
+сила поджога	ignite power
+защита от взрывов	blast protection
+скрытность	stealth
+полевой ремонт	field repair
+уклонение	dodge
+Улучшить до %d%s · %d ◈	Upgrade to %d%s · %d ◈
+Улучшить до %d · не хватает %d ◈	Upgrade to %d · %d ◈ short
+Улучшить до %d · %d ◈	Upgrade to %d · %d ◈
+Путь класса · %d уровней	Class path · %d levels
+Характеристики класса	Class stats
+с %d ур.	from lv. %d
+Тап по ячейке — сменить способность	Tap a cell to change the ability
+Слот %s · выбери способность	Slot %s · choose an ability
+Секрет · ур. %d	Secret · lv. %d
+Откроется на ур. %d	Opens at lv. %d
+Прокачка · в разработке	Upgrades · in development
+Путь класса · %s	Class path · %s
+Старт класса	Class start
+Получено	Reached
+Слот %s · %s	Slot %s · %s
+Любимая семья карточек: %s	Favourite card family: %s
+Открытие: 	Unlock: 
+Ур. 4 · перк: %s	Lv. 4 · perk: %s
+Ур. 4 · перк: %s (закрыто)	Lv. 4 · perk: %s (locked)
+Ур. 12 · мастерство: %s	Lv. 12 · mastery: %s
+Ур. 12 · мастерство: %s (закрыто)	Lv. 12 · mastery: %s (locked)
+ · награда ждёт	 · reward waiting
+Забрать награду	Claim the reward
+Способность	Ability
+Секрет	Secret
+Через %d ур.	In %d lv.
+Откройте класс	Unlock the class
+Следующий уровень	Next level
+%d · Перк · %s	%d · Perk · %s
+%d · Мастерство · %s	%d · Mastery · %s
+Способностей пока нет.\nПервая — «%s» — откроется на %d уровне класса.	No abilities yet.\nThe first, «%s», opens at class level %d.
+Первая способность · слот Q	First ability · slot Q
+Пришёл на заставу за пайком, а остался за компанию. Стреляет так, будто от этого зависит обед — и обычно зависит.	Came to the outpost for rations and stayed for the company. Shoots like lunch depends on it — and it usually does.
+Метко бьёт и часто критует, граната выручает в любой каше.	Accurate, crits often, and the grenade sorts out any mess.
+Без брони и фокусов: в окружении долго не продержится.	No armour, no tricks: won't last long when surrounded.
+Бывший грузчик полевой кухни: носил котлы, теперь носит щит. Говорит мало, стоит долго.	Used to haul pots for the field kitchen; now he hauls a shield. Says little, stands long.
+Держит пули и удар, дробовик в упор — его разговор.	Soaks bullets and hits; a shotgun at point blank is how he talks.
+Медленный, а вдали от врагов почти бесполезен.	Slow, and nearly useless far from the enemy.
+Считает, что любой спор решается бочкой. Пока ни разу не проиграл — ни спор, ни бочку.	Believes any argument is settled with a barrel. Hasn't lost one yet — argument or barrel.
+Взрывы, поджог, толпы врагов разом; не боится собственных подрывов.	Blasts, fire, whole crowds at once; shrugs off his own explosions.
+Против одиночной цели и техники без бочек рядом — так себе.	So-so against a single target or vehicles with no barrels around.
+Сидел в кустах так долго, что его оформили как куст. Видит всё, а его — никто.	Sat in the bushes so long he got registered as a bush. Sees everything; nobody sees him.
+Первый выстрел из засады и снайперская винтовка решают бой до его начала.	An ambush first shot and a sniper rifle end fights before they start.
+Хрупкий: в лоб и на ближней дистанции быстро сдаётся.	Fragile: head-on and up close he folds fast.
+Чинит всё, что сломали, и немного то, что ещё работало. Дрон собрал из чайника — летает.	Fixes everything that broke, and a bit of what still worked. Built a drone from a kettle — it flies.
+Техника и дроны служат дольше, полевой ремонт и быстрые способности.	Vehicles and drones last longer; field repair and fast abilities.
+Сам по себе стреляет средне: сила в том, что рядом.	An average shot on his own: his strength is what's around him.
+Открытие: 	Unlock: 
+Путь класса · ур. %d: %s	Class path · lv. %d: %s
+Уровень %d из %d · каждый уровень: %s	Level %d of %d · every level: %s
+20+ уровень	Level 20+
+Недоступно	Unavailable
+Пройди игру	Finish the game
+%d уровень	Level %d
+Способность · 	Ability · 
+ · второй слот	 · second slot
+Перк · 	Perk · 
+Мастерство · 	Mastery · 
+Секретная способность · в разработке	Secret ability · in development
+✓ Получено	✓ Reached
+Получить · %d ◈	Get · %d ◈
+Не хватает %d ◈	%d ◈ short
+Слот пуст. Нажми на него, чтобы взять способность.	The slot is empty. Tap it to take an ability.
+Выбери способность · слот %s	Choose an ability · slot %s
+Секретная способность класса · в разработке	The class's secret ability · in development
+Перезарядка	Cooldown
+Сила	Power
+%s с	%s s
+✓ В слоте	✓ In the slot
+Убрать	Remove
+Слот %s пуст	Slot %s empty
+На %d-м уровне	At level %d
+Секрет · %d ур.	Secret · lv. %d

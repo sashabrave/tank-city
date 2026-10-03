@@ -25,8 +25,8 @@ func run():
 				if field==3:assert(commander in ["grenadier","tank"],"Heavy tier reveal")
 	print("PASS tank pacing: 3 worlds, 100 seeds each")
 	# Meta stage 4: the class Q is free, the second ability opens at class level 3.
-	assert(Game.class_loadout()==[Game.class_skill()] and Game.hq_loadout().is_empty(),"Only the class Q at start")
-	Game.class_levels[Game.selected_class]=3;assert(Game.class_loadout().size()==2)
+	assert(Game.class_loadout().is_empty() and Game.hq_loadout().is_empty(),"No abilities at the very start (0.8.0 class path)")
+	Game.class_levels[Game.selected_class]=7;assert(Game.class_loadout().size()==2)
 	assert(Game.hero_loadout().size()<=3 and Game.hq_loadout().size()<=1)
 	assert(Game.ability_action(0)=="class_ability" and Game.ability_action(1)=="skill_1" and Game.ability_action(2)=="ability")
 	assert(Game.upgrade_cap("health")>10000)
@@ -42,8 +42,8 @@ func run():
 	# Fresh temporary folder: the profile, its backup and temp files never touch real saves or older runs.
 	var dir=OS.get_temp_dir().path_join("warcats_v16_%d" % Time.get_ticks_usec());DirAccess.make_dir_recursive_absolute(dir)
 	var old_path=Game.save_path;Game.save_path=dir.path_join("profile.json");Game.save_enabled=true
-	Game.health_level=45;Game.class_choices[Game.selected_class]=Game.CLASS_CHOICES[Game.selected_class][1];Game.save_progress();Game.health_level=0;Game.class_choices={};Game.load_progress()
-	assert(Game.health_level==45 and Game.class_second()==Game.CLASS_CHOICES[Game.selected_class][1],"Save preserves uncapped levels and the class choice")
+	Game.health_level=45;Game.class_slots[Game.selected_class]=[Game.class_skill(),Game.CLASS_CHOICES[Game.selected_class][0]];Game.save_progress();Game.health_level=0;Game.class_slots={};Game.load_progress()
+	assert(Game.health_level==45 and Game.class_second()==Game.CLASS_CHOICES[Game.selected_class][0],"Save preserves uncapped levels and the class slots")
 	Game.save_enabled=false;Game.save_path=old_path
 	for file in DirAccess.get_files_at(dir):DirAccess.remove_absolute(dir.path_join(file))
 	DirAccess.remove_absolute(dir)

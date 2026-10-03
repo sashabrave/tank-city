@@ -25,7 +25,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "cryo",
+					"id": "crit_damage",
 					"tier": 0
 				}
 			],
@@ -43,7 +43,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "marauder",
+					"id": "opening_shot",
 					"tier": 0
 				}
 			],
@@ -61,7 +61,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "device_cooldown",
+					"id": "damage",
 					"tier": 0
 				}
 			],
@@ -97,7 +97,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "guard_bullet",
+					"id": "guard_vehicle",
 					"tier": 0
 				}
 			]
@@ -377,7 +377,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "healing",
+					"id": "health",
 					"tier": 2
 				}
 			],
@@ -393,7 +393,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "exit_dash",
+					"id": "field_repair",
 					"tier": 2
 				}
 			],
@@ -409,7 +409,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "field_repair",
+					"id": "fire",
 					"tier": 2
 				}
 			],
@@ -425,7 +425,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "marauder",
+					"id": "opening_shot",
 					"tier": 2
 				}
 			],
@@ -847,7 +847,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "healing",
+					"id": "health",
 					"tier": 2
 				}
 			],
@@ -863,7 +863,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "exit_dash",
+					"id": "field_repair",
 					"tier": 2
 				}
 			],
@@ -879,7 +879,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "field_repair",
+					"id": "fire",
 					"tier": 2
 				}
 			],
@@ -895,7 +895,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "marauder",
+					"id": "opening_shot",
 					"tier": 2
 				}
 			]
@@ -1167,7 +1167,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "range",
+					"id": "ricochet",
 					"tier": 0
 				}
 			],
@@ -1185,7 +1185,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "marauder",
+					"id": "opening_shot",
 					"tier": 1
 				}
 			],
@@ -1221,7 +1221,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "field_repair",
+					"id": "fire",
 					"tier": 0
 				}
 			]
@@ -1640,7 +1640,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "dodge",
+					"id": "exit_dash",
 					"tier": 2
 				}
 			],
@@ -1656,7 +1656,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "range",
+					"id": "ricochet",
 					"tier": 2
 				}
 			],
@@ -1672,7 +1672,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "health",
+					"id": "landing",
 					"tier": 2
 				}
 			],
@@ -1704,7 +1704,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "device_power",
+					"id": "dodge",
 					"tier": 2
 				}
 			]
@@ -1945,7 +1945,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "dodge",
+					"id": "exit_dash",
 					"tier": 2
 				}
 			],
@@ -1961,7 +1961,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "range",
+					"id": "ricochet",
 					"tier": 2
 				}
 			],
@@ -1977,7 +1977,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "health",
+					"id": "landing",
 					"tier": 2
 				}
 			],
@@ -2009,7 +2009,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "device_power",
+					"id": "dodge",
 					"tier": 2
 				}
 			]
@@ -2252,7 +2252,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "dodge",
+					"id": "exit_dash",
 					"tier": 2
 				}
 			],
@@ -2268,7 +2268,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "range",
+					"id": "ricochet",
 					"tier": 2
 				}
 			],
@@ -2284,7 +2284,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "health",
+					"id": "landing",
 					"tier": 2
 				}
 			],
@@ -2316,7 +2316,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "device_power",
+					"id": "dodge",
 					"tier": 2
 				}
 			]
@@ -2584,7 +2584,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "device_cooldown",
+					"id": "damage",
 					"tier": 0
 				}
 			],
@@ -2602,7 +2602,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "opening_shot",
+					"id": "range",
 					"tier": 0
 				}
 			],
@@ -2960,7 +2960,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "device_cooldown",
+					"id": "damage",
 					"tier": 1
 				}
 			],
@@ -2996,7 +2996,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "luck",
+					"id": "marauder",
 					"tier": 3
 				}
 			],
@@ -3388,7 +3388,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "intercept",
+					"id": "last_stand",
 					"tier": 2
 				}
 			],
@@ -3404,7 +3404,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "opening_shot",
+					"id": "range",
 					"tier": 2
 				}
 			],
@@ -3452,7 +3452,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "health",
+					"id": "intercept",
 					"tier": 2
 				}
 			]
@@ -3694,7 +3694,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "device_cooldown",
+					"id": "damage",
 					"tier": 1
 				}
 			],
@@ -3710,7 +3710,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "opening_shot",
+					"id": "range",
 					"tier": 1
 				}
 			],
@@ -4187,7 +4187,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "intercept",
+					"id": "last_stand",
 					"tier": 2
 				}
 			],
@@ -4203,7 +4203,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "opening_shot",
+					"id": "range",
 					"tier": 2
 				}
 			],
@@ -4251,7 +4251,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "health",
+					"id": "intercept",
 					"tier": 2
 				}
 			]
@@ -4498,7 +4498,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "intercept",
+					"id": "last_stand",
 					"tier": 2
 				}
 			],
@@ -4514,7 +4514,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "opening_shot",
+					"id": "range",
 					"tier": 2
 				}
 			],
@@ -4562,7 +4562,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "health",
+					"id": "intercept",
 					"tier": 2
 				}
 			]
@@ -4805,7 +4805,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "intercept",
+					"id": "last_stand",
 					"tier": 2
 				}
 			],
@@ -4821,7 +4821,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "opening_shot",
+					"id": "range",
 					"tier": 2
 				}
 			],
@@ -4869,7 +4869,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "health",
+					"id": "intercept",
 					"tier": 2
 				}
 			]

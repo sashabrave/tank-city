@@ -53,6 +53,6 @@ static func set_purchase(group:String,id:String,value:bool):
 	Game.save_progress()
 static func second_skill(id:String,value:bool):
 	if value:
-		set_purchase("classes",id,true);Game.class_levels[id]=maxi(3,int(Game.class_levels.get(id,0)))
-	else:Game.class_levels[id]=mini(2,int(Game.class_levels.get(id,0)))
+		set_purchase("classes",id,true);Game.class_levels[id]=maxi(7,int(Game.class_levels.get(id,0)))  # level 8: second slot
+	else:Game.class_levels[id]=mini(6,int(Game.class_levels.get(id,0)))
 	Game.save_progress()

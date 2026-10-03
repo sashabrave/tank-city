@@ -52,7 +52,7 @@ func detail(tab:String,id:String)->Dictionary:
 		var label="Навык 1" if tab=="classes" else "Постройка" if tab=="research" else "Покупка"
 		actions.append({"id":"purchase","text":label+(": отменить" if bought else ": выдать бесплатно"),"enabled":true})
 	if tab=="classes":
-		var second=ClassCatalog.level(id)>=3
+		var second=ClassCatalog.level(id)>=8
 		actions.append({"id":"second","text":"Навык 2: закрыть" if second else "Навык 2: выдать","enabled":true})
 	actions.append({"id":"group_on","text":"Открыть всю группу","enabled":true});actions.append({"id":"group_off","text":"Закрыть всю группу","enabled":true})
 	return {"title":name,"icon":id,"text":"Стартовый чертёж — есть всегда." if base(tab,id) else "Чертёж открыт." if owned else "Чертёж закрыт.","actions":actions}
@@ -67,7 +67,7 @@ func act(tab:String,id:String,action:String)->String:
 					return "Профиль обнулён"
 		"toggle":DevUnlocks.toggle(tab,id,not DevUnlocks.owned(tab,id));return "Готово"
 		"purchase":DevUnlocks.set_purchase(tab,id,not DevUnlocks.purchased(tab,id));return "Готово"
-		"second":DevUnlocks.second_skill(id,ClassCatalog.level(id)<3);return "Готово"
+		"second":DevUnlocks.second_skill(id,ClassCatalog.level(id)<8);return "Готово"
 		"group_on","group_off":
 			for key in DevUnlocks.catalog(tab):DevUnlocks.toggle(tab,key,action=="group_on")
 			return "Группа обновлена"

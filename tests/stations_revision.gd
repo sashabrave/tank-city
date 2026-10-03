@@ -20,14 +20,14 @@ func run():
 	var view=screen(hub)
 	check(view!=null and view.find_child("StationPanel",true,false)!=null,"fighter station opens on the template")
 	check(view.provider.tabs().size()==4 and view.find_child("Page",true,false)!=null and view.find_children("Class_*","Button",true,false).size()==ClassCatalog.ROSTER.size(),"«Классы» is one page with the class column")
-	check(view.find_child("LevelUp",true,false)!=null and view.find_children("Ability_*","Button",true,false).size()==2 and view.find_child("Take",true,false)!=null,"level button, two ability cells and the take button")
+	check(view.find_child("LevelUp",true,false)!=null and view.find_children("Slot_*","Button",true,false).size()==2 and view.find_child("Take",true,false)!=null and view.find_child("ClassPath",true,false)!=null,"level button, path, two slot cells and the take button")
 	# Meta stage 4: no «Выучка» tab.
 	check(not view.provider.tabs().any(func(t):return t[0]=="training"),"no training tab")
 	var p=view.provider
 	check(p.act("shells","gunner","equip")=="","class stays closed until its goal")
 	Game.progression.counters["barrel_kills"]=10
 	check(p.act("shells","gunner","equip")!="" and Game.selected_class=="gunner","goal opens and selects a class")
-	check(Game.class_loadout()==["dynamite"],"the class Q comes with the class")
+	check(Game.class_loadout().is_empty(),"a new class starts without abilities")
 	check(p.act("general","health","buy")!="" and Game.health_level==1,"general upgrade")
 	check(p.act("supply","heal","buy")!="" and Game.branch_unlocked("heal"),"supply branch unlocks without a building")
 	check(p.act("kit","backpack","buy")!="" and Game.backpack_slots==2,"backpack in the fighter station")

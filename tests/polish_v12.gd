@@ -6,7 +6,7 @@ func shot(id):
 func run():
 	Game.save_enabled=false;Game.sound_enabled=false;Settings.persistence_enabled=false;Game.reset_upgrades()
 	# Hub abilities are the class loadout: the recruit's Q comes with the class.
-	assert(Game.class_loadout()==["grenade"])
+	Game.class_levels["recruit"]=2;assert(Game.class_loadout()==["grenade"])  # Q opens at class level 3
 	assert(Game.progression.level_cost()==500)
 	for room in range(6):
 		for seed_value in range(30):

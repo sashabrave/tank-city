@@ -113,7 +113,7 @@
 					"Планшет: вкладка «Боец» стала «Вылазкой» — отчёт о забеге: поле, время, добыча, убитые по типам, лучшие моменты (сильнейший удар, серия, угнанная техника, полученный урон), сборка и рекорды. Вне забега показывает последнюю вылазку.",
 					"Способности классов: у каждого класса своя Q без повторов и выбор одной из двух на слот «1» — переключается бесплатно в Казарме. Стрелок: товарищ или мина; Штурмовик: ёж или газ; Подрывник: газ или мина; Разведчик: авиаудар или лазер; Инженер: полевой ремонт или ёж. Гаджет не дублирует способность слота «1».",
 					"Картинки миров в окне «Куда выдвигаемся» стали минималистичными диорамами в стиле игры: островок поля с домиком, сухая гряда с окопом, крепость псов в снегу и бесконечный рубеж из четырёх биомов.",
-					"Уровни класса стали вехами: Q есть сразу, на 3 уровне — вторая способность (бесплатно), на 5 — перк класса, на 7 — Q сильнее, на 10 — мастерство. Каждый уровень по-прежнему даёт +0,5 здоровья, мелкие проценты урона и скорости убраны. Вкладка «Выучка» убрана: вложенный в неё сплав и 2500 за прежнюю покупку второй способности возвращены. Описания в Казарме больше не обрезаются.",
+					"Вкладка «Выучка» убрана: вложенный в неё сплав и 2500 за прежнюю покупку второй способности возвращены.",
 					"Мир 1 теперь проходит через все восемь биомов, от спокойных к опасным; точки одного этапа на карте — разные биомы. У каждого поля своё название, как в учебнике истории: «Засада у Красного поля», «Битва за Каменную топь». Миры 2 и 3 — в разработке. Картинки миров — киношные пейзажи над полем боя.",
 					"Дневной свет объёмнее: тени от стен, ящиков и заборов снова видны (камера обрезала дальность теней), заполняющий свет чуть холоднее и слабее. Камера на 5% ближе в бою, хабе и комнатах; клетки поля всегда на экране. Облака у краёв больше не размываются в светлые пятна сверху и снизу экрана.",
 					"Песочница: новая вкладка «Снаряжение» — любые патроны любой редкости, рюкзак, аптечки, мешок, любая способность в любой слот и уровни класса для проверки вех.",
@@ -140,12 +140,15 @@
 					"Заезд к полю — в цвет земли под полем, темнее поля и бордюра; на нём ровные полосы следов шин без лишних плиток.",
 					"«Забег дня» и таблица «Топ» доступны с самого начала — отдельные кнопки под карточками миров.",
 					"Точки уведомлений по одному правилу: на вкладке, станции и в хабе точка горит, пока есть хоть один новый предмет, и гаснет, как только просмотрен последний.",
-					"Казарма → «Классы» переделана: классы вкладками сверху; шкала уровня с вехами (3 — слот 1, 5 — перк, 7 — Q сильнее, 10 — мастерство) и одна кнопка уровня; характеристики и перки; внизу две ячейки способностей (Q есть сразу, слот 1 меняется тапом, бесплатно) и кнопка «Взять класс». Кукла в планшете по центру.",
+					"Путь класса: 20 уровней, цена растёт с каждым уровнем — первые дешёвые, удобно качать несколько классов. На старте способностей нет: первая — на 3 уровне, второй слот — на 8 (к генералу мира 1), третья — на 14, секретная — на 20. Каждый уровень растит здоровье и профильные параметры класса. Казарма → «Классы» по-новому: кукла, предыстория, сильные и слабые стороны, шкала пути с медалями наград, две ячейки способностей с выбором и кнопка «Выбрать». Кукла в планшете по центру.",
 					"Во время заезда штаба и выхода бойца управление отключено: боец выпрыгивает, обегает стену и встаёт на клетку — тогда начинается бой.",
 					"Интерфейс: кнопки видеозвонка больше не слипаются, вкладки задач горизонтальные, длинная строка «было → стало» на карточке усиления ужимается и не вылезает за край.",
 					"Полевой планшет всегда открывается на вкладке «Снаряжение».",
 					"Потеря сплава при выбывании каждый раз немного разная: ±10% от уровня страховки (на станции написано «≈»).",
-					"Выпавшие при гибели жетоны и сплав соответствуют потере: один жетон — один жетон, большие суммы падают кусками разного номинала и размера, каждый раз по-разному."
+					"Выпавшие при гибели жетоны и сплав соответствуют потере: один жетон — один жетон, большие суммы падают кусками разного номинала и размера, каждый раз по-разному.",
+					"Развитие заставы: шкала с медалями этапов, светящаяся следующая цель, награда сплавом на каждом этапе и кнопка «+N» — забрать прямо в строке.",
+					"Путь класса — вертикальная шкала: карточки уровней слева и справа с картинкой награды и ростом параметров шкалами; купить можно только ближайший уровень, кнопкой в его карточке; в конце — «20+ уровень · Пройди игру».",
+					"Слоты способностей: тап по ячейке открывает список способностей класса со шкалами перезарядки и силы; жёлтый «+» кладёт способность в слот, «Убрать» освобождает его, закрытые показывают уровень открытия. Пустой слот — жёлтый «+»."
 				]
 			},
 			"en": {
@@ -258,7 +261,7 @@
 					"Tablet: the Fighter tab is now Sortie — a run report: field, time, loot, kills by type, best moments (strongest hit, streak, captured vehicles, damage taken), build and records. Outside a run it shows the last sortie.",
 					"Class abilities: every class has its own Q with no repeats and picks one of two for slot «1» — switch for free in the Barracks. Rifleman: comrade or mine; Assault: hedgehog or gas; Demolitionist: gas or mine; Scout: airstrike or laser; Engineer: field repair or hedgehog. The gadget no longer duplicates the slot «1» ability.",
 					"World pictures in «Where to» are now minimalist dioramas in the game's style: a field island with a cottage, a dry ridge with a trench, the dog fortress in the snow and the endless frontier made of four biomes.",
-					"Class levels are milestones now: Q from the start, level 3 opens the second ability (free), level 5 a class perk, level 7 a stronger Q, level 10 mastery. Every level still adds +0.5 health; tiny damage and speed percentages are gone. The Training tab is removed: alloy spent on it and 2500 for the old second-ability purchase are refunded. Barracks descriptions are no longer cut off.",
+					"The Training tab is removed: alloy spent on it and 2500 for the old second-ability purchase are refunded.",
 					"World 1 now runs through all eight biomes, from calm to dangerous; the nodes of one stage on the map are different biomes. Every field has its own name, like in a history book: «Ambush at Red Field», «Battle for Stone Bog». Worlds 2 and 3 are in development. World pictures are cinematic landscapes over the battlefield.",
 					"Daylight has more volume: walls, crates and fences cast visible shadows again (the camera cut the shadow range), the fill light is a bit cooler and weaker. The camera is 5% closer in battle, the hub and rooms; field cells always stay on screen. Edge clouds no longer smear into light blobs at the top and bottom of the screen.",
 					"Sandbox: new Equipment tab — any ammo of any rarity, backpack, medkits, a sack, any ability in any slot and class levels to check milestones.",
@@ -285,12 +288,15 @@
 					"The field entry ramp is the colour of the ground under the board, darker than the field and the rim, with smooth tyre-mark strips and no stray tiles.",
 					"The daily run and its «Top» table are open from the start — separate buttons under the world cards.",
 					"Notification dots follow one rule: on a tab, a station and in the hub a dot stays while any item is new and goes out as soon as the last one is viewed.",
-					"Barracks → «Classes» redone: classes as tabs on top; a level track with milestones (3 — slot 1, 5 — perk, 7 — stronger Q, 10 — mastery) and one level button; stats and perks; at the bottom two ability cells (Q from the start, slot 1 swaps by a tap, free) and a «Take class» button. The tablet doll is centred.",
+					"Class path: 20 levels, each a bit pricier — the first ones are cheap, handy for levelling several classes. No abilities at the start: the first at level 3, the second slot at 8 (near the world 1 general), the third at 14, a secret one at 20. Every level grows health and the class's own stats. Barracks → «Classes» redone: doll, backstory, strengths and weaknesses, a path track with reward medals, two ability cells with a picker and a «Select» button. The tablet doll is centred.",
 					"Controls are off while the HQ drives in and the soldier hops out: he jumps, runs round the wall and takes his cell — then the fight begins.",
 					"Interface: video call buttons no longer stick together, quest tabs are horizontal, a long «before → after» line on an upgrade card shrinks instead of running past the edge.",
 					"The field tablet always opens on the Equipment tab.",
 					"Alloy lost when knocked out varies a little each time: ±10% around the insurance level (the station shows «≈»).",
-					"Tokens and alloy that fall on death match the loss: one token is one token, big amounts fall in pieces of different value and size, different every time."
+					"Tokens and alloy that fall on death match the loss: one token is one token, big amounts fall in pieces of different value and size, different every time.",
+					"Outpost progress: a track with step medals, a glowing next goal, an alloy reward on every step and a «+N» button to claim it right in the row.",
+					"Class path is a vertical track: level cards left and right with a reward picture and the stat growth as bars; only the nearest level can be bought, with the button on its card; at the end — «Level 20+ · Finish the game».",
+					"Ability slots: tapping a cell opens the class's abilities with cooldown and power bars; the yellow «+» puts one in the slot, «Remove» empties it, locked ones show their level. An empty slot shows a yellow «+»."
 				]
 			}
 		},

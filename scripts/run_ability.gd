@@ -19,9 +19,9 @@ var level={"cooldown":0.0,"power":0.0,"utility":0.0}
 func setup():
 	slots=Game.hero_loadout()
 	for id in slots:states[id]={"cooldown":0.0,"level":{"cooldown":0.0,"power":0.0,"utility":0.0}}
-	# Class level 7 (meta stage 4): the class Q starts one power step stronger.
+	# Class level 10 (0.8.0 class path): the class Q starts one power step stronger.
 	var q=Game.class_skill()
-	if q in states and ClassCatalog.level(Game.selected_class)>=7:states[q].level.power=1.0
+	if q in states and ClassCatalog.level(Game.selected_class)>=10:states[q].level.power=1.0
 	if not slots.is_empty():select(slots[0])
 	shield_hits=0
 func select(id:String):

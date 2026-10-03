@@ -5,7 +5,7 @@ func run():
 	assert(DevUnlocks.catalog("ability").size()==4)
 	assert(not DevUnlocks.catalog("ability").has("shield"))
 	DevUnlocks.set_purchase("classes","gunner",true);assert("gunner" in Game.class_unlocks and "gunner" in Game.class_first_slots)
-	DevUnlocks.second_skill("gunner",true);assert(Game.class_levels.gunner>=3)
+	DevUnlocks.second_skill("gunner",true);assert(ClassCatalog.level("gunner")>=8)
 	DevUnlocks.toggle("classes","gunner",false);assert("gunner" not in Game.class_unlocks)
 	for pair in [["ability","barrier"],["hq","hq_medbay"],["garage","vehicle_tank"],["research","weapons"]]:
 		DevUnlocks.set_purchase(pair[0],pair[1],true);assert(DevUnlocks.purchased(pair[0],pair[1]))
