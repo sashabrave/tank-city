@@ -71,6 +71,9 @@ var ammo_bag:Array=[]
 var supplies:Array=[]
 ## Spare weapons carried for this run (backpack items {id, rarity, stats}); the one in hand is `weapon`.
 var weapon_bag:Array=[]
+## The gun in hand as an item: rarity and rolled stats from a weapon crate ({"damage": share, "fire": share}).
+var weapon_rarity:=0
+var weapon_stats:Dictionary={}
 var last_player_shot=-10.0
 var dash_until=0.0
 var dash_ready_at=0.0

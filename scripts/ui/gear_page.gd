@@ -10,6 +10,8 @@ const LABEL:=26.0
 const UNDER_LABEL:=8.0
 const SECTION:=18.0
 const STATS=preload("res://scripts/ui/stat_snapshot.gd")
+const ITEM=preload("res://scripts/ui/item_info.gd")
+const INFO_H:=190.0
 static var selected:=""
 ## The class gallery art looks to the left; the doll is mirrored so it always faces right.
 const DOLL_FACES_LEFT:=true
@@ -109,6 +111,7 @@ func build_right()->float:
 	y+=LABEL+UNDER_LABEL
 	var weapon=str(arena.weapon) if is_instance_valid(arena) else Game.selected_weapon
 	var w=fixed_cell("weapon",col(0),y,Vector2(2*C+GAP,C),weapon,Game.LOOT.WEAPONS[weapon].name,"Нажми ещё раз — характеристики и улучшения.",false,"")
+	w.info=ITEM.of("weapon",{"id":weapon},arena,true)
 	w.set_meta("inset",.08)
 	# The gun in hand drags like any item (author, 2026-10-03): onto a backpack weapon to swap, or into a free
 	# backpack cell when another gun waits there to be taken.
@@ -147,10 +150,10 @@ func build_right()->float:
 	cells["discard"]=zone
 	y+=40+GAP
 	# Detail line of the selected item with the same actions as the gestures (touch has no right click).
-	var info=Panel.new();info.name="GearInfo";body.add_child(info);info.position=Vector2(right_x,y);info.size=Vector2(4*C+3*GAP,96)
+	var info=Panel.new();info.name="GearInfo";body.add_child(info);info.position=Vector2(right_x,y);info.size=Vector2(4*C+3*GAP,INFO_H)
 	info.add_theme_stylebox_override("panel",UiKit.style(Color(1,1,1,.03),12,Color(1,1,1,.1)))
 	fill_info(info)
-	return y+96
+	return y+INFO_H
 
 func section(text:String,column:int,y:float,span:int):
 	var label=UiKit.label(body,text,Vector2(col(column),y),Vector2(span*C+(span-1)*GAP,LABEL),UiKit.SECTION_SIZE);label.clip_text=true
@@ -159,7 +162,7 @@ func base_cell(key:String,x:float,y:float,size:Vector2,locked:bool)->GearCell:
 	var cell=GearCell.new();cell.name="Cell_"+key.replace(":","_");body.add_child(cell);cell.key=key;cell.position=Vector2(x,y);cell.size=size;cell.custom_minimum_size=size
 	var style=UiKit.style(Color(1,1,1,.04) if not locked else Color(0,0,0,.18),12,Color(1,1,1,.16) if not locked else Color(1,1,1,.08));style.set_border_width_all(1)
 	for state in ["normal","hover","pressed","disabled","focus"]:cell.add_theme_stylebox_override(state,style)
-	cell.on_drop=move;cell.on_discard=discard
+	cell.on_drop=move;cell.on_discard=discard;cell.on_activate=activate
 	cell.pressed.connect(func():tapped(key))
 	if locked:
 		cell.disabled=true
@@ -194,6 +197,7 @@ func item_cell(key:String,x:float,y:float,entry,locked:bool)->GearCell:
 		art(cell,UiKit.trimmed(UiKit.icon_texture(key_art)),.1 if key_art.begins_with("ammo/") else .18)
 		var name_label=UiKit.label(cell,Texts.render(Ammo.NAMES.get(type,type)),Vector2(4,C-20),Vector2(C-8,18),11 if C>=100 else 9,color);name_label.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;name_label.clip_text=true
 		cell.item_kind="ammo";cell.draggable=type!=Ammo.STANDARD
+		cell.info=ITEM.of("ammo",ammo,arena,is_slot)
 		cell.tooltip_text=Texts.render(Ammo.NAMES.get(type,type)+" патроны")+("\n"+Ammo.describe(ammo) if type!=Ammo.STANDARD else "")
 		if is_slot and run()!=null and int(key.get_slice(":",1))==run().ammo_active and run().ammo_slots.size()>1:
 			UiKit.label(cell,"R",Vector2(C-18,4),Vector2(14,16),11,UiKit.MUTED)
@@ -204,26 +208,30 @@ func item_cell(key:String,x:float,y:float,entry,locked:bool)->GearCell:
 		for state in ["normal","hover","pressed","focus"]:cell.add_theme_stylebox_override(state,frame)
 		art(cell,UiKit.trimmed(UiKit.icon_texture(gun)),.1)
 		var name_label=UiKit.label(cell,Texts.render(Game.LOOT.WEAPONS[gun].name),Vector2(4,C-20),Vector2(C-8,18),11 if C>=100 else 9,UiKit.INK);name_label.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;name_label.clip_text=true
-		cell.item_kind="weapon";cell.draggable=true
+		cell.item_kind="weapon";cell.draggable=true;cell.info=ITEM.of("weapon",entry.item,arena)
 		cell.tooltip_text=Texts.render(Game.LOOT.WEAPONS[gun].name)+"\n"+Texts.render("Запасное оружие · ещё нажатие — взять в руки")
 	elif entry.kind=="supply":
 		# Aid kit (T-115): tap twice / E / H heals.
 		art(cell,UiKit.trimmed(UiKit.icon_texture("heart")),.16)
-		cell.item_kind="supply";cell.draggable=true
+		cell.item_kind="supply";cell.draggable=true;cell.info=ITEM.of("supply",entry.item,arena)
 		cell.tooltip_text=Texts.render("Аптечка")+"\n"+Texts.render("+%s здоровья · ещё нажатие или H — вылечиться") % str(snappedf(float(entry.item.get("heal",1.0)),.1))
 	else:
 		# Blueprint series: the same clipboard, the silhouette tells the category (data/icon_kit.json «blueprint/…»).
 		var sheet="blueprint/"+str(entry.item.get("category",""))
 		art(cell,UiKit.trimmed(UiKit.icon_texture(sheet if IconKit.has(sheet) else str(entry.item.get("id","")))),.1 if IconKit.has(sheet) else .16)
-		cell.item_kind="recipe";cell.draggable=true
+		cell.item_kind="recipe";cell.draggable=true;cell.info=ITEM.of("recipe",entry.item,arena)
 		cell.tooltip_text=Texts.render(Game.recipe_name(entry.item))+"\n"+Texts.render("Чертёж — донеси до хаба, чтобы открыть")
 	return cell
 
 # ── Gestures ───────────────────────────────────────────────────────────────────────────────────────────────
 ## Tap: select; tap the selected cell again (or double tap / E) to use it.
+## One tap: the item's actions as a small menu under it (a second tap closes it); a double tap uses it
+## (equip / load / heal / take in hand); hover shows its card against what is equipped (2026-10-03).
 func tapped(key:String):
-	if key==selected:activate(key);return
-	selected=key;highlight();refresh_info()
+	var cell=cells.get(key)
+	if cell and cell.skip_tap:cell.skip_tap=false;return
+	selected="" if key==selected else key
+	highlight();refresh_info()
 func activate(key:String):
 	var r=run()
 	if key=="weapon":
@@ -351,10 +359,9 @@ func refresh_info():
 		fill_info(info)
 func fill_info(info:Panel):
 	var w=info.size.x
-	if selected=="" or not cells.has(selected):
-		UiKit.label(info,"Нажми на ячейку — описание; ещё раз — надеть или снять. Перетаскивай между ячейками, правый клик — выбросить.",Vector2(14,10),Vector2(w-28,76),13,UiKit.MUTED).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	var cell:GearCell=cells.get(selected) if selected!="" else null
+	if cell==null or cell.info.is_empty():
+		UiKit.label(info,"Нажми на предмет — действия. Дважды — надеть или зарядить. Наведи — сравнение с надетым. Перетаскивай между ячейками.",Vector2(14,10),Vector2(w-28,76),13,UiKit.MUTED).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 		return
-	var cell:GearCell=cells[selected]
-	var lines=cell.tooltip_text.split("\n")
-	UiKit.label(info,lines[0],Vector2(14,8),Vector2(w-28,24),16)
-	var rest=UiKit.label(info,"\n".join(lines.slice(1)),Vector2(14,32),Vector2(w-28,56),12,UiKit.MUTED);rest.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	# The same card as the hover tooltip: on touch there is no hover, so the selected item shows it here.
+	var card=ITEM.card(cell.info,w-28);info.add_child(card);card.position=Vector2(14,10)

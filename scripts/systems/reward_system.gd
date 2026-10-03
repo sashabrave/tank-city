@@ -51,7 +51,7 @@ func place_sack(cell:Vector2i,content:Dictionary):
 		var card=preload("res://scripts/ui/drop_prompt.gd").new();card.arena=arena;node.add_child(card)
 		var glow=Color(LootCatalog.RARITY_COLORS[clampi(tier,0,3)])
 		Visuals.ring(node,glow if tier>0 else Color("cfd3a0"),.38)
-		var light=OmniLight3D.new();light.name="RarityGlow";visual.add_child(light);light.position.y=.25;light.omni_range=1.3;light.light_color=glow;light.light_energy=.9 if tier>0 else .35;light.shadow_enabled=false
+		var light=OmniLight3D.new();light.name="RarityGlow";visual.add_child(light);light.position.y=.25;light.omni_range=1.3;light.light_color=glow;light.light_energy=.6 if tier>0 else .3;light.shadow_enabled=false
 		light.add_to_group("pickup_lights")
 	else:
 		var olive=Color("6b6a45")

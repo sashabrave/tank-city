@@ -12,7 +12,8 @@ const BONUSES={
  "star":{"name":"Звезда","color":"f2cb64","shape":"star","rarity":2,"effect":"Неуязвимость, сокрушительный выстрел, разрушение бетона"}}
 static var WEAPONS=preload("res://scripts/weapon_catalog.gd").DATA
 const RARITY_NAMES=["Обычное","Редкое","Эпическое","Секретное"]
-const RARITY_COLORS=["cbd5df","55baff","bc82ff","ffd166"]
+## Pastel rarity colours (author, 2026-10-03): soft enough for the cosy look, still told apart at a glance.
+const RARITY_COLORS=["d3d9dc","8fc3e6","c4a8e8","eccf8c"]
 static func visual(parent: Node3D,id: String) -> Node3D:
 	var path="res://assets/models/bonuses_v6/bonus_"+id+".glb"
 	if ResourceLoader.exists(path):

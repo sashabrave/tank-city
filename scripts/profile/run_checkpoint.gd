@@ -1,6 +1,6 @@
 extends RefCounted
 const VERSION=1
-const RUN_KEYS=["run_seed","upgrade_history","soldier_hp","soldier_max_hp","damage_bonus","fire_multiplier","speed_multiplier","earned","kills","elapsed","weapon","rerolls_left","weapon_mods","recovery_bonus","run_bonus_levels","pending_recipes","vehicle_mods","pending_vehicle","visited_services","intercept_chance","route_choices","range_multiplier","healing_multiplier","ability_power_multiplier","ability_cooldown_multiplier","behavior_cards","tokens","burn_duration","kills_by","mercy_used","dry_offers","ammo_slots","ammo_active","ammo_bag","supplies","weapon_bag","best_hit","best_series","captured","damage_taken"]
+const RUN_KEYS=["run_seed","upgrade_history","soldier_hp","soldier_max_hp","damage_bonus","fire_multiplier","speed_multiplier","earned","kills","elapsed","weapon","rerolls_left","weapon_mods","recovery_bonus","run_bonus_levels","pending_recipes","vehicle_mods","pending_vehicle","visited_services","intercept_chance","route_choices","range_multiplier","healing_multiplier","ability_power_multiplier","ability_cooldown_multiplier","behavior_cards","tokens","burn_duration","kills_by","mercy_used","dry_offers","ammo_slots","ammo_active","ammo_bag","supplies","weapon_bag","weapon_rarity","weapon_stats","best_hit","best_series","captured","damage_taken"]
 ## Checkpoint fields: the fixed list plus every registry stat, so a new stat file is saved automatically.
 static func keys()->Array:
 	var result=RUN_KEYS.duplicate()

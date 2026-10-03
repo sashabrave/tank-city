@@ -73,10 +73,10 @@ static func equip_weapon(arena,index:int)->bool:
 	var run=arena.run
 	if index<0 or index>=run.weapon_bag.size():return false
 	var item:Dictionary=run.weapon_bag[index]
-	var old={"id":str(run.weapon)}
+	var old={"id":str(run.weapon),"rarity":int(run.weapon_rarity),"stats":run.weapon_stats.duplicate()}
 	if item.has("cell"):old["cell"]=item.cell
 	run.weapon_bag[index]=old
-	run.weapon=str(item.id)
+	run.weapon=str(item.id);run.weapon_rarity=int(item.get("rarity",0));run.weapon_stats=item.get("stats",{}).duplicate()
 	Ammo.ensure(run,run.weapon)
 	RunUpgrades.refresh_player(arena);refresh(arena);return true
 

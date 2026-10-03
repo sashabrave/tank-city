@@ -28,17 +28,19 @@ func run():
 	# Tap selects, a second tap equips (also what E and a double tap do).
 	cell(view,"bag:0").pressed.emit()
 	check(GP.selected=="bag:0" and Ammo.active(r)=="standard","first tap only selects")
-	cell(view,"bag:0").pressed.emit();await get_tree().process_frame
-	check(Ammo.active(r)=="burn" and r.ammo_bag.size()==1,"second tap loads the ammo; standard does not go to the bag")
+	# A second tap closes the menu; a double tap (on_activate) uses the item (2026-10-03).
+	cell(view,"bag:0").pressed.emit();check(GP.selected=="","second tap closes the action menu")
+	cell(view,"bag:0").on_activate.call("bag:0");await get_tree().process_frame
+	check(Ammo.active(r)=="burn" and r.ammo_bag.size()==1,"double tap loads the ammo; standard does not go to the bag")
 	# Equip another: the loaded one swaps back into the bag.
 	GP.selected="";view.refresh();await get_tree().process_frame
 	# Items keep their cells now (T-196): the cryo box is still in cell 1.
-	cell(view,"bag:1").pressed.emit();cell(view,"bag:1").pressed.emit();await get_tree().process_frame
+	cell(view,"bag:1").on_activate.call("bag:1");await get_tree().process_frame
 	check(Ammo.active(r)=="cryo" and r.ammo_bag.size()==1 and r.ammo_bag[0].type=="burn","equipping swaps with the loaded ammo")
 	# Tap-tap on the slot unloads it.
 	GP.selected="";view.refresh();await get_tree().process_frame
-	cell(view,"slot:0").pressed.emit();cell(view,"slot:0").pressed.emit();await get_tree().process_frame
-	check(Ammo.active(r)=="standard" and r.ammo_bag.size()==2,"tap-tap on the slot unloads to the backpack")
+	cell(view,"slot:0").on_activate.call("slot:0");await get_tree().process_frame
+	check(Ammo.active(r)=="standard" and r.ammo_bag.size()==2,"double tap on the slot unloads to the backpack")
 	# Drag: bag → slot and slot → bag.
 	var page=gear(view);page.body=Control.new()
 	var cryo_cell=-1
@@ -106,6 +108,13 @@ func run():
 	check(str(r.weapon)==in_hand,"dragging the gun in hand onto the spare swaps back")
 	var data=preload("res://scripts/profile/run_checkpoint.gd").upgrade({"run":{"weapon_bag":[{"id":"shotgun"},{"id":"nope"}]}})
 	check(data.run.weapon_bag.size()==1,"a saved run keeps valid spare weapons only")
+	# Rolled crate stats count while that gun is in hand.
+	var plain=CombatStats.weapon(arena,"rifle")
+	Backpack.add_weapon(arena,{"id":"rifle","rarity":2,"stats":{"damage":.2,"fire":.1}})
+	Backpack.equip_weapon(arena,r.weapon_bag.size()-1)
+	var rolled=CombatStats.weapon(arena,"rifle")
+	check(absf(rolled.damage/plain.damage-1.2)<.01 and rolled.interval<plain.interval,"a crate gun's rolled damage and fire rate apply in hand")
+	r.weapon=in_hand;r.weapon_stats={};r.weapon_rarity=0
 	r.weapon_bag.clear()
 	# Full backpack: unloading is refused, nothing is lost.
 	Backpack.equip(arena,0);r.pending_recipes.append({"id":"smg","category":"weapon"});r.ammo_bag.append(Ammo.roll("shock",0,1));r.ammo_bag.append(Ammo.roll("stun",0,2))

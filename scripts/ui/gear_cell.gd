@@ -11,6 +11,12 @@ var on_activate:Callable
 var on_drop:Callable   # (from_key:String, to_key:String)
 var on_discard:Callable
 var last_press:=-1000
+## Item card for the hover tooltip (scripts/ui/item_info.gd); empty — the plain text tooltip.
+var info:Dictionary={}
+## Set by a double tap so the press that follows it does not also toggle the menu.
+var skip_tap:=false
+func _make_custom_tooltip(_text:String)->Object:
+	return preload("res://scripts/ui/item_info.gd").tooltip(info) if not info.is_empty() else null
 const DOUBLE_MS:=350
 
 func _ready():
@@ -24,7 +30,7 @@ func _cell_input(event:InputEvent):
 		if event.button_index==MOUSE_BUTTON_LEFT:
 			var now=Time.get_ticks_msec()
 			if event.double_click or now-last_press<DOUBLE_MS:
-				last_press=-1000
+				last_press=-1000;skip_tap=true
 				if on_activate.is_valid():on_activate.call(key)
 			else:
 				last_press=now
