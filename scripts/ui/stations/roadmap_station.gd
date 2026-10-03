@@ -76,3 +76,5 @@ func detail(tab:String,id:String)->Dictionary:
 		return {"title":step[1],"icon":item.icon,"text":("Готово. " if step[2] else "")+step[3],"actions":[]}
 	return {"title":"","text":"","actions":[]}
 func act(_tab:String,_id:String,_action:String)->String:return ""
+## The station screen draws these steps as a vertical path (T-124).
+func path_layout()->bool:return true

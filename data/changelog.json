@@ -101,7 +101,8 @@
 					"Выживание начинается с «Вы попали под обстрел!»: стрелять и применять способности теперь можно, главное — уходить из красных меток",
 					"Иконка здоровья базы — миниатюра нашей машины-штаба",
 					"Звонок майора теперь большое окно с его портретом: «Взять» или «Позже» (тогда трубка звонит в углу)",
-					"Иконка «Напор»: золотая пуля разбивает серебряную (вместо ракеты)"
+					"Иконка «Напор»: золотая пуля разбивает серебряную (вместо ракеты)",
+					"«Развитие заставы» стал путём: вертикальная линия с вехами — пройденное зелёным с галочкой, следующая цель оранжевым, остальное серым"
 				]
 			},
 			"en": {
@@ -202,7 +203,8 @@
 					"Survival starts with «You are under fire!»: you can now shoot and use abilities, just leave the red markers",
 					"The base health icon is a miniature of our HQ vehicle",
 					"The major's call is now a big window with his portrait: «Answer» or «Later» (then the handset rings in the corner)",
-					"«Pressure» icon: a golden bullet smashes a silver one (instead of a rocket)"
+					"«Pressure» icon: a golden bullet smashes a silver one (instead of a rocket)",
+					"«Outpost progress» became a path: a vertical line of milestones — done in green with a tick, the next goal in orange, the rest greyed out"
 				]
 			}
 		},

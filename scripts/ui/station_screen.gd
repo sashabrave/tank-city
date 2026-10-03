@@ -121,6 +121,10 @@ func build():
 	var grouped=items.any(func(item):return item.has("group"))
 	var column=VBoxContainer.new();column.name="Items";scroll.add_child(column);column.add_theme_constant_override("separation",8)
 	var current_group=null;grid=null
+	# The roadmap is a path (T-124): vertical milestones on one line instead of a grid.
+	if provider.has_method("path_layout") and provider.path_layout():
+		milestones(column,items)
+		items=[]
 	for item in items:
 		if grouped and item.get("group")!=current_group:
 			current_group=item.get("group")
@@ -135,6 +139,45 @@ func build():
 		animate_cards=false
 	detail_box=UiKit.panel(panel,Vector2(778,96),Vector2(320,532),Color("2c352e"));detail_box.name="Detail"
 	render_detail()
+## Vertical milestones: a line through round nodes — done (filled, ✓), the next goal (orange, glowing) and
+## later steps (hollow, picture in grey and dimmed). A tap selects the step for the detail panel.
+func milestones(column:VBoxContainer,items:Array):
+	const ROW=96.0;const NODE=26.0;const X=24.0
+	var holder=Control.new();holder.name="Path";column.add_child(holder);holder.custom_minimum_size=Vector2(510,ROW*items.size()+8)
+	for i in range(items.size()):
+		var item=items[i];var status=str(item.get("status","later"));var y=i*ROW
+		if i<items.size()-1:
+			var segment=ColorRect.new();holder.add_child(segment);segment.mouse_filter=Control.MOUSE_FILTER_IGNORE
+			var node_top=(ROW-12-NODE)*.5
+			segment.position=Vector2(X+NODE*.5-2,y+node_top+NODE+2);segment.size=Vector2(4,ROW-NODE-4)
+			segment.color=Color("8fe895") if status=="done" else Color(1,1,1,.12)
+		var row=Button.new();holder.add_child(row);row.name="Item_"+str(item.id);row.position=Vector2(X+NODE+18,y);row.size=Vector2(510-X-NODE-26,ROW-12);row.focus_mode=Control.FOCUS_NONE
+		var chosen=str(item.id)==selected
+		var style=UiKit.style(Color("584a2c") if status=="goal" else Color(1,1,1,.04) if status=="done" else Color(0,0,0,.12),12,UiKit.ORANGE if chosen else Color(1,1,1,.1));style.set_border_width_all(2 if chosen else 1)
+		for state in ["normal","hover","pressed","focus"]:row.add_theme_stylebox_override(state,style)
+		var id=str(item.id)
+		row.pressed.connect(func():selected=id;notice="";build())
+		var node=Panel.new();holder.add_child(node);node.mouse_filter=Control.MOUSE_FILTER_IGNORE;node.position=Vector2(X,y+(ROW-12-NODE)*.5);node.size=Vector2(NODE,NODE)
+		var fill=Color("8fe895") if status=="done" else UiKit.ORANGE if status=="goal" else Color.TRANSPARENT
+		var ring=UiKit.style(fill,13,Color("8fe895") if status=="done" else UiKit.ORANGE if status=="goal" else Color(1,1,1,.3));ring.set_border_width_all(2)
+		node.add_theme_stylebox_override("panel",ring)
+		if status=="done":
+			var tick=UiKit.label(node,"✓",Vector2.ZERO,Vector2(NODE,NODE),15,Color("1b211d"));tick.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;tick.vertical_alignment=VERTICAL_ALIGNMENT_CENTER
+		if status=="goal":
+			var pulse=node.create_tween().set_loops();pulse.tween_property(node,"scale",Vector2.ONE*1.18,.6);pulse.tween_property(node,"scale",Vector2.ONE,.6);node.pivot_offset=node.size*.5
+		var art=TextureRect.new();row.add_child(art);art.mouse_filter=Control.MOUSE_FILTER_IGNORE;art.position=Vector2(10,8);art.size=Vector2(ROW-28,ROW-28)
+		art.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;art.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		art.texture=item.get("texture",UiKit.icon_texture(str(item.get("icon",""))))
+		if status=="later":
+			var grey=ShaderMaterial.new();grey.shader=GREY;art.material=grey;art.self_modulate=Color(.75,.75,.75,.45);art.set_meta("kit_layer",true)
+		var title=UiKit.label(row,str(item.title),Vector2(ROW,10),Vector2(row.size.x-ROW-10,26),18,UiKit.INK if status!="later" else UiKit.MUTED);title.clip_text=true
+		UiKit.label(row,str(item.get("caption","")),Vector2(ROW,40),Vector2(row.size.x-ROW-10,22),13,Color("8fe895") if status=="done" else UiKit.ORANGE if status=="goal" else Color(UiKit.MUTED,.7))
+static var GREY:Shader:
+	get:
+		if _grey==null:
+			_grey=Shader.new();_grey.code="shader_type canvas_item;\nvoid fragment(){vec4 c=texture(TEXTURE,UV);float l=dot(c.rgb,vec3(.299,.587,.114));COLOR=vec4(vec3(l),c.a)*COLOR;}"
+		return _grey
+static var _grey:Shader
 func card(item:Dictionary):
 	var b=Button.new();grid.add_child(b);b.name="Item_"+str(item.id);b.custom_minimum_size=Vector2(166,150);b.focus_mode=Control.FOCUS_NONE
 	var state=str(item.get("state","owned"))
