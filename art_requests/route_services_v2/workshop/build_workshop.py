@@ -668,78 +668,69 @@ def run_build(build_fn):
     save_master(a.master)
     log("built", len([o for o in bpy.data.objects if o.get("owner") == OWNER_TAG]), "objects")
 
-# Mechanic stop (vehicle repair). Faces -Y. Measured from mechanic/ref/parts.png and concept_simple.png.
-WR = 0.58                 # truck wheel radius (parts sheet: ≈ half the cab height)
-TY = 0.75                 # truck on the back half
-CAB_X0, CAB_X1, BED_X1 = -2.6, -1.3, 1.25
-TW = 1.75                 # truck width (Y)
+# HQ workshop stop: the command truck on a ramp under a canvas canopy. Faces -Y (truck nose to the camera).
+# Measured from workshop/ref/parts.png and concept_simple.png.
+CAN_X, CAN_Y0, CAN_Y1 = 2.0, -1.15, 1.45       # canopy half-width and depth span
+ROOF_Z = 2.95
 
-def wheel(m, x, y, r, w, name="Wheel"):
-    C(name + "_Tyre", r, w, (x, y, TILE_H + r), m["tyre"], 12, axis="Y", w=0.06)
-    C(name + "_Hub", r * 0.42, w + 0.04, (x, y, TILE_H + r), m["olive"], 10, axis="Y", w=0.02)
-    C(name + "_Cap", r * 0.15, w + 0.1, (x, y, TILE_H + r), m["metal"], 8, axis="Y")
+def canopy(m):
+    z = TILE_H
+    for x in (-CAN_X, CAN_X):
+        for y in (CAN_Y0, CAN_Y1):
+            B("Canopy_Post", (0.2, 0.2, ROOF_Z - 0.35), (x, y, z + (ROOF_Z - 0.35) / 2), m["wood"], 0.04)
+            B("Canopy_Foot", (0.3, 0.3, 0.14), (x, y, z + 0.07), m["iron"], 0.03)
+            B("Canopy_Bracket", (0.28, 0.28, 0.2), (x, y, z + ROOF_Z - 0.32), m["iron"], 0.03)
+    depth = CAN_Y1 - CAN_Y0 + 0.3; cy = (CAN_Y0 + CAN_Y1) / 2
+    B("Canopy_Top", (2.6, depth, 0.16), (0, cy, z + ROOF_Z + 0.22), m["canvas"], 0.06)
+    for s in (-1, 1):
+        B("Canopy_Slope", (1.05, depth, 0.16), (s * 1.72, cy, z + ROOF_Z - 0.02), m["canvas"], 0.06, rot=(0, s * math.radians(28), 0))
+    for x in (-0.7, 0.7):
+        B("Canopy_Lamp", (0.3, 0.1, 0.14), (x, CAN_Y0 - 0.16, z + ROOF_Z + 0.18), m["glow"], 0.03)
 
-def truck(m):
-    z = TILE_H; cz = z + WR + 0.2; half = TW / 2
-    B("Truck_Chassis", (BED_X1 - CAB_X0, TW - 0.5, 0.3), ((CAB_X0 + BED_X1) / 2, TY, z + WR + 0.05), m["iron"], 0.04)
-    for x in (CAB_X0 + 0.65, BED_X1 - 0.6):
+def ramp(m):
+    z = TILE_H
+    B("Ramp_Deck", (1.95, 2.3, 0.18), (0, 0.15, z + 0.09), m["concrete"], 0.04)
+    for s in (-1, 1):
+        B("Ramp_Slope", (1.95, 0.6, 0.18), (0, 0.15 + s * 1.4, z + 0.05), m["concrete"], 0.04, rot=(s * math.radians(-14), 0, 0))
+    for i in range(2):
         for s in (-1, 1):
-            wheel(m, x, TY + s * (half - 0.15), WR, 0.4, "Truck_Wheel")
-    B("Truck_Cab", (CAB_X1 - CAB_X0, TW, 1.55), ((CAB_X0 + CAB_X1) / 2, TY, cz + 0.78), m["olive"], 0.12)
-    B("Truck_Windscreen", (0.06, TW - 0.4, 0.55), (CAB_X0 - 0.01, TY, cz + 1.18), m["glass"], 0.03)
-    B("Truck_SideWindow", (0.65, 0.06, 0.5), ((CAB_X0 + CAB_X1) / 2 + 0.05, TY - half - 0.01, cz + 1.18), m["glass"], 0.03)
-    B("Truck_Grille", (0.06, 0.85, 0.4), (CAB_X0 - 0.02, TY, cz + 0.45), m["olive_dark"], 0.03)
+            B("Ramp_Chevron", (0.5, 0.14, 0.03), (s * 0.2, -1.05 + i * 0.32, z + 0.13), m["yellow"], 0, rot=(0, 0, s * math.radians(35)))
+
+def command_truck(m):
+    z = TILE_H + 0.18; y0 = 0.25; r = 0.45
+    for x in (-0.68, 0.68):
+        for dy in (-0.75, 0.75):
+            C("Truck_Tyre", r, 0.36, (x, y0 + dy, z + r), m["tyre"], 12, axis="X", w=0.06)
+            C("Truck_Hub", r * 0.45, 0.4, (x, y0 + dy, z + r), m["olive"], 8, axis="X")
+    B("Truck_Lower", (1.45, 2.4, 0.55), (0, y0, z + r + 0.25), m["olive"], 0.1)
+    B("Truck_Hood", (1.35, 0.7, 0.35), (0, y0 - 0.85, z + r + 0.65), m["olive"], 0.1)
+    B("Truck_Cabin", (1.4, 1.65, 0.85), (0, y0 + 0.35, z + r + 0.95), m["cream"], 0.1)
+    B("Truck_Windscreen", (1.1, 0.06, 0.38), (0, y0 - 0.48, z + r + 1.08), m["glass"], 0.03)
+    B("Truck_SideWin", (0.06, 0.45, 0.32), (-0.71, y0 - 0.05, z + r + 1.08), m["glass"], 0.02)
+    B("Truck_Grille", (0.8, 0.06, 0.3), (0, y0 - 1.21, z + r + 0.42), m["olive_dark"], 0.03)
+    B("Truck_Bumper", (1.5, 0.18, 0.2), (0, y0 - 1.25, z + r + 0.12), m["metal"], 0.04)
     for s in (-1, 1):
-        C("Truck_Headlight", 0.13, 0.08, (CAB_X0 - 0.03, TY + s * (half - 0.3), cz + 0.5), m["amber"], 10, axis="X")
-    for i in range(3):
-        B("Truck_RoofLight%d" % i, (0.12, 0.16, 0.08), (CAB_X0 + 0.35, TY - 0.35 + i * 0.35, cz + 1.6), m["amber"], 0.02)
-    B("Truck_Bumper", (0.22, TW + 0.1, 0.24), (CAB_X0 - 0.1, TY, cz + 0.1), m["metal"], 0.05)
-    bz = cz + 0.05
-    B("Bed_Floor", (BED_X1 - CAB_X1 - 0.05, TW, 0.16), ((CAB_X1 + BED_X1) / 2 + 0.02, TY, bz), m["olive_dark"], 0.03)
-    for s in (-1, 1):
-        B("Bed_Side", (BED_X1 - CAB_X1 - 0.05, 0.1, 0.38), ((CAB_X1 + BED_X1) / 2 + 0.02, TY + s * (half - 0.05), bz + 0.26), m["olive"], 0.03)
-    B("Bed_Tail", (0.1, TW, 0.38), (BED_X1 - 0.05, TY, bz + 0.26), m["olive"], 0.03)
-    B("Bed_Canvas", (1.05, TW - 0.2, 0.8), (CAB_X1 + 0.6, TY, bz + 0.5), m["canvas"], 0.14)
-    B("Bed_RedCan", (0.25, 0.08, 0.3), (CAB_X1 + 0.45, TY - half - 0.02, bz + 0.2), m["red"], 0.03)
+        C("Truck_Headlight", 0.11, 0.06, (s * 0.52, y0 - 1.23, z + r + 0.5), m["amber"], 10, axis="Y")
+    rz = z + r + 1.4
+    B("Truck_RoofBox", (0.6, 0.5, 0.18), (0.25, y0 + 0.6, rz + 0.09), m["olive_dark"], 0.04)
+    C("Dish_Mast", 0.05, 0.4, (-0.25, y0 + 0.3, rz + 0.2), m["metal"], 6)
+    dish = cylinder("Dish", 0.45, 0.14, segments=12, radius_top=0.12, location=(-0.25, y0 + 0.3, rz + 0.55))
+    dish.rotation_euler = (math.radians(-35), 0, math.radians(25)); assign(dish, m["cream"]); soft(dish, 0.02)
+    for i, x in enumerate((0.45, 0.6)):
+        C("Antenna%d" % i, 0.025, 0.7 - i * 0.15, (x, y0 + 0.95, rz + 0.35), m["iron"], 6)
+    B("Truck_Beacon", (0.14, 0.14, 0.1), (0.0, y0 + 0.95, rz + 0.05), m["red"], 0.02)
 
-def crane(m):
-    bx, by = BED_X1 - 0.45, TY - 0.1
-    bz = TILE_H + WR + 0.33
-    C("Crane_Turret", 0.32, 0.3, (bx, by, bz + 0.15), m["iron"], 10, w=0.03)
-    B("Crane_Mast", (0.34, 0.34, 1.6), (bx, by, bz + 1.1), m["yellow"], 0.06)
-    # boom from the mast top out to the right-front, over the buggy
-    tip = Vector((bx + 1.25, by - 0.55, bz + 2.55))   # concept: boom rises to the right, engine hangs beside the buggy
-    root = Vector((bx, by, bz + 1.85))
-    d = tip - root
-    boom = box("Crane_Boom", (d.length, 0.24, 0.24), location=(root + tip) / 2)
-    boom.rotation_euler = d.to_track_quat("X", "Z").to_euler()
-    assign(boom, m["yellow"]); soft(boom, 0.05)
-    C("Crane_Pin", 0.1, 0.36, tuple(root), m["iron"], 8, axis="Y")
-    C("Crane_Chain", 0.03, 0.55, (tip.x, tip.y, tip.z - 0.3), m["iron"], 6)
-    B("Crane_Hook", (0.14, 0.08, 0.14), (tip.x, tip.y, tip.z - 0.62), m["metal"], 0.02)
-    ez = tip.z - 1.02
-    B("Engine_Block", (0.6, 0.45, 0.42), (tip.x, tip.y, ez), m["olive_dark"], 0.05)
-    for i in range(3):
-        B("Engine_Fin%d" % i, (0.62, 0.48, 0.04), (tip.x, tip.y, ez + 0.08 + i * 0.1 - 0.1), m["metal"], 0.01)
-
-def buggy(m):
-    x, y = 0.75, -1.2; z = TILE_H + 0.35          # raised on the jack stands; concept: big, front-centre
-    # The buggy itself is the game's model (assets/models/vehicles_v6/buggy.glb), added in neutral colour by
-    # route_miniatures.gd on top of these jack stands.
-    for dx in (-0.7, 0.7):
-        B("Jack_Base", (0.4, 0.4, 0.06), (x + dx, y, TILE_H + 0.03), m["iron"], 0.02)
-        C("Jack_Leg", 0.16, 0.38, (x + dx, y, TILE_H + 0.22), m["orange"], 4, top=0.05)
-
-def toolchest(m):
-    x, y = -1.55, -1.45; z = TILE_H
-    B("Tool_Chest", (0.85, 0.55, 0.8), (x, y, z + 0.48), m["red"], 0.05)
-    for i in range(4):
-        B("Tool_Drawer%d" % i, (0.7, 0.04, 0.12), (x, y - 0.28, z + 0.3 + i * 0.16), m["metal"], 0.01)
-    for dx in (-0.35, 0.35):
-        C("Tool_Caster", 0.06, 0.06, (x + dx, y, z + 0.05), m["black"], 8, axis="Y")
-    B("Tool_Wrench", (0.5, 0.1, 0.04), (x, y, z + 0.9), m["metal"], 0.01)
+def pump(m):
+    x, y = 1.45, -1.25; z = TILE_H
+    B("Pump_Base", (0.5, 0.4, 0.1), (x, y, z + 0.05), m["iron"], 0.02)
+    B("Pump_Body", (0.42, 0.34, 1.1), (x, y, z + 0.65), m["orange"], 0.06)
+    B("Pump_Lamp", (0.2, 0.05, 0.1), (x, y - 0.18, z + 1.08), m["glow"], 0.02)
+    B("Pump_Panel", (0.26, 0.05, 0.3), (x, y - 0.18, z + 0.75), m["cream"], 0.02)
+    B("Pump_Nozzle", (0.08, 0.12, 0.25), (x - 0.16, y - 0.2, z + 0.55), m["black"], 0.02)
 
 def build(scene, m):
-    tile(m); truck(m); crane(m); buggy(m); toolchest(m)
+    # The truck itself is the game's HQ model (assets/models/base.glb), added in neutral colour by route_miniatures.gd.
+    tile(m); ramp(m); canopy(m); pump(m)
+    pine(m, -2.45, -0.35, 0.95)
 
 run_build(build)

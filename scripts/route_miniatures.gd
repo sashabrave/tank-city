@@ -377,7 +377,70 @@ const COMMAND_POST_MODEL:="res://assets/models/route/command_post_point.glb"
 static func stop_model(parent:Node3D,path:String,node_name:String)->bool:
 	if not ResourceLoader.exists(path):return false
 	var model:Node3D=load(path).instantiate();model.name=node_name;parent.add_child(model);model.position.y=-.08
+	library_surfaces(model)
+	# Stops that show our vehicles use the game's own models, toned to a neutral colour (author, 3 Oct).
+	match node_name:
+		"WorkshopPoint":game_vehicle(model,"base",1.35,Vector3(0,.54,-.25),0.0)
+		"MechanicPoint":game_vehicle(model,"res://assets/models/vehicles_v6/buggy.glb",3.2,Vector3(.75,.66,1.2),PI*.5)
 	return true
+## Blender stop materials → MaterialLibrary surfaces (data/materials.json), so the «Материалы» tool and the
+## shiny-metal setting drive these models like every other one. Sand, foliage, chalk and glowing parts stay as authored.
+const STOP_SURFACES={"metalpolished":"steel","tin":"steel","irondark":"gunmetal","gold":"brass",
+	"olive":"paint","olivedark":"paint","truckolive":"paint","truckolivedark":"paint","signolive":"paint","plankolive":"paint",
+	"orangepaint":"paint","yellowpaint":"paint","redpaint":"paint","amber":"paint","cream":"paint","jar":"paint",
+	"wood":"wood","wooddark":"wood","canvas":"fabric","sandbag":"fabric","canvasorange":"fabric","canvascream":"fabric",
+	"tyre":"rubber","black":"rubber","glass":"glass","bottle":"glass","concrete":"concrete","rock":"concrete"}
+static func library_surfaces(model:Node):
+	for mesh in model.find_children("*","MeshInstance3D",true,false):
+		for i in mesh.get_surface_override_material_count():
+			var mat=mesh.get_active_material(i)
+			if not mat is StandardMaterial3D or mat.emission_enabled:continue
+			var key=mat.resource_name.to_lower().trim_prefix("m_").replace("_","")
+			if key.begins_with("srf"):continue
+			var kind=str(STOP_SURFACES.get(key,""))
+			if kind=="":continue
+			mat=mat.duplicate();mat.resource_name="srf_"+kind;Visuals.cozy_material(mat);mesh.set_surface_override_material(i,mat)
+## A game vehicle placed in a stop diorama (positions in the stop's own units, y from the tile bottom).
+## "base" is the mobile HQ exactly as the battle builds it (Visuals.model + mobile_hq.gd).
+static func game_vehicle(parent:Node3D,path:String,scale_k:float,pos:Vector3,yaw:float):
+	var vehicle:Node3D
+	if path=="base":vehicle=Visuals.model("base",parent)
+	elif ResourceLoader.exists(path):vehicle=load(path).instantiate();parent.add_child(vehicle)
+	else:return
+	vehicle.name="GameVehicle";vehicle.scale=Vector3.ONE*scale_k;vehicle.position=pos;vehicle.rotation.y=yaw
+	neutral(vehicle)
+	# The HQ dresses itself in _ready (mobile_hq.gd): tone it again once those parts exist.
+	if vehicle.is_inside_tree():vehicle.get_tree().process_frame.connect(func():if is_instance_valid(vehicle):neutral(vehicle),CONNECT_ONE_SHOT)
+## Tones every material of a model towards a warm neutral grey: the camouflage reads as the same vehicle, but calm.
+## Glowing parts (lights, beacons) keep their colour. Textures are desaturated once and cached.
+static var neutral_cache:Dictionary={}
+static func neutral(node:Node,amount:=.72):
+	for mesh in node.find_children("*","MeshInstance3D",true,false):
+		for i in mesh.get_surface_override_material_count():
+			var source=mesh.get_active_material(i)
+			if not source is StandardMaterial3D or source.emission_enabled:continue
+			var key=str(source.get_instance_id())
+			if not neutral_cache.has(key):
+				var mat:StandardMaterial3D=source.duplicate()
+				mat.albedo_color=calm(mat.albedo_color,amount)
+				if mat.albedo_texture:mat.albedo_texture=calm_texture(mat.albedo_texture,amount)
+				neutral_cache[key]=mat
+			mesh.set_surface_override_material(i,neutral_cache[key])
+static func calm(c:Color,amount:float)->Color:
+	var grey=c.get_luminance();var warm=Color(grey*1.04,grey*1.0,grey*.92,c.a)
+	return c.lerp(warm,amount)
+static func calm_texture(texture:Texture2D,amount:float)->Texture2D:
+	var key=texture.resource_path+"|calm"
+	if neutral_cache.has(key):return neutral_cache[key]
+	var image:=texture.get_image()
+	if image==null:return texture
+	image=image.duplicate()
+	if image.is_compressed():image.decompress()
+	image.convert(Image.FORMAT_RGBA8)
+	for y in image.get_height():
+		for x in image.get_width():image.set_pixel(x,y,calm(image.get_pixel(x,y),amount))
+	var result=ImageTexture.create_from_image(image);neutral_cache[key]=result
+	return result
 ## Merchant stop: the military shop truck modelled in Blender (art_requests/merchant_point_v2, author pick 2 Oct).
 ## The model carries its own round tile at the common height (plinth -0.08, top 0.28); the boxes below are the
 ## fallback when the file is missing.
