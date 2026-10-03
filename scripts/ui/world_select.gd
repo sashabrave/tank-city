@@ -65,7 +65,7 @@ func card(panel:Control,i:int,pos:Vector2)->Button:
 	var biomes="все биомы, от леса до пепелища" if i==0 else preload("res://scripts/biome_catalog.gd").world_line(i+1) if i<3 else "все биомы вперемешку"
 	var line=UiKit.label(button,biomes,Vector2(14,296),Vector2(CARD.x-26,18),12,UiKit.MUTED);line.name="Biomes";line.clip_text=true
 	if not unlocked:
-		UiKit.label(button,"Пройди мир %d" % i if i<3 else "Пройди мир 1",Vector2(16,318),Vector2(CARD.x-32,24),15,UiKit.MUTED)
+		UiKit.label(button,("В полной версии" if i<3 and not Campaign.in_demo(i+1) else "Пройди мир %d" % i) if i<3 else "Пройди мир 1",Vector2(16,318),Vector2(CARD.x-32,24),15,UiKit.MUTED)
 	elif i<3:
 		var depth=clampi(int(Game.progression.counters.get("world_depth_%d" % (i+1),0)),0,Campaign.SIZES.size())
 		var pips=Control.new();button.add_child(pips);pips.position=Vector2(16,316);pips.mouse_filter=Control.MOUSE_FILTER_IGNORE

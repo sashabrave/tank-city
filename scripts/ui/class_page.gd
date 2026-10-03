@@ -12,7 +12,7 @@ var ability_area:=Rect2()
 
 func setup(owner,area:Vector2):
 	screen=owner;size=area
-	if viewed=="":viewed=screen.selected if screen.selected in ClassCatalog.ROSTER else Game.selected_class
+	if viewed=="":viewed=screen.selected if screen.selected in ClassCatalog.ROSTER or str(screen.selected).begins_with("concept_") else Game.selected_class
 	slot_focus=int(screen.get_meta("slot_focus",0))
 	build()
 
@@ -20,29 +20,92 @@ func build():
 	for child in get_children():child.queue_free()
 	class_tabs()
 	var y=100.0;var h=size.y-y
+	if viewed.begins_with("concept_"):concept_view(Vector2(0,y),Vector2(size.x,h));return
 	var a=190.0;var c=284.0;var gap=28.0;var b=size.x-a-c-gap*2
 	about(Vector2(0,y),Vector2(a,h))
 	level_column(Vector2(a+gap,y),Vector2(b,h))
 	abilities_column(Vector2(a+gap+b+gap,y),Vector2(c,h))
 
-## Classes as a row of tabs: portrait, name, level or unlock progress.
+const TAB_W:=164.0
+## Classes as a long scrolling ribbon of tabs (author, 2026-10-03): the five playable ones, then the classes in
+## development; «Все» at the end opens every class at once on one screen.
 func class_tabs():
-	var n=ClassCatalog.ROSTER.size();var w=(size.x-8*(n-1))/n
-	for i in range(n):
-		var id=ClassCatalog.ROSTER[i];var owned=id in Game.class_unlocks;var chosen=id==viewed
-		var b=Button.new();add_child(b);b.position=Vector2(i*(w+8),0);b.size=Vector2(w,76);b.name="Class_"+id;b.focus_mode=Control.FOCUS_ALL
-		var style=UiKit.style(Color("2c352e") if owned else Color("232a25"),12,UiKit.ORANGE if chosen else Color(1,1,1,.08));style.set_border_width_all(3 if chosen else 1)
-		for state in ["normal","hover","pressed","focus"]:b.add_theme_stylebox_override(state,style)
+	var ribbon=ScrollContainer.new();add_child(ribbon);ribbon.name="ClassRibbon";ribbon.position=Vector2.ZERO;ribbon.size=Vector2(size.x-64,84)
+	ribbon.vertical_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;ribbon.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_SHOW_NEVER
+	var row=Control.new();ribbon.add_child(row)
+	var ids=all_ids();row.custom_minimum_size=Vector2(ids.size()*(TAB_W+8)-8,76)
+	var tabs=[]
+	for i in range(ids.size()):
+		var b=class_tab(row,ids[i],Vector2(i*(TAB_W+8),0),Vector2(TAB_W,76));tabs.append(b)
+	UiKit.mark_h_tabs(tabs,ids.find(viewed))
+	# Keep the viewed class in sight.
+	var at=ids.find(viewed)
+	if at>=0:ribbon.set_deferred("scroll_horizontal",int(maxf(0,at*(TAB_W+8)-(ribbon.size.x-TAB_W)*.5)))
+	var all=UiKit.button(self,"Все",Vector2(size.x-56,0),Vector2(56,76),open_roster);all.name="AllClasses";all.add_theme_font_size_override("font_size",15);all.tooltip_text=Texts.render("Все классы на одном экране")
+	if is_instance_valid(screen) and screen.station_kind!="" and viewed in ClassCatalog.ROSTER:preload("res://scripts/ui/station_notices.gd").mark_item_seen(screen.station_kind,"shells",viewed)
+static func all_ids()->Array:
+	var ids=ClassCatalog.ROSTER.duplicate()
+	for i in range(ClassCatalog.CONCEPTS.size()):ids.append("concept_%d" % i)
+	return ids
+func class_tab(parent:Control,id:String,pos:Vector2,dims:Vector2)->Button:
+	var concept=id.begins_with("concept_");var owned=id in Game.class_unlocks;var chosen=id==viewed
+	var b=Button.new();parent.add_child(b);b.position=pos;b.size=dims;b.name="Class_"+id;b.focus_mode=Control.FOCUS_ALL
+	var style=UiKit.style(Color("2c352e") if owned else Color("1e2420") if concept else Color("232a25"),12,UiKit.ORANGE if chosen else Color(1,1,1,.08));style.set_border_width_all(3 if chosen else 1)
+	for state in ["normal","hover","pressed","focus"]:b.add_theme_stylebox_override(state,style)
+	var shell=id
+	b.pressed.connect(func():pick(shell))
+	var art=TextureRect.new();b.add_child(art);art.texture=preload("res://scripts/ui/class_gallery.gd").texture("recruit" if concept else id,true);art.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;art.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;art.position=Vector2(6,10);art.size=Vector2(52,56);art.mouse_filter=Control.MOUSE_FILTER_IGNORE;art.flip_h=preload("res://scripts/ui/gear_page.gd").DOLL_FACES_LEFT
+	UiKit.locked_preview(art,not owned)
+	var title=UiKit.label(b,class_name_of(id),Vector2(62,14),Vector2(dims.x-66,22),15,UiKit.INK if owned else UiKit.MUTED);title.mouse_filter=Control.MOUSE_FILTER_IGNORE;title.clip_text=true
+	var sub=UiKit.label(b,caption_of(id),Vector2(62,40),Vector2(dims.x-66,20),12,UiKit.ORANGE if id==Game.selected_class else UiKit.MUTED);sub.mouse_filter=Control.MOUSE_FILTER_IGNORE;sub.clip_text=true
+	return b
+func pick(id:String):
+	screen.selected=id;screen.notice="";viewed=id;screen.build()
+static func class_name_of(id:String)->String:
+	if id.begins_with("concept_"):return str(ClassCatalog.CONCEPTS[int(id.trim_prefix("concept_"))][0])
+	return Game.CLASSES[id].name
+static func caption_of(id:String)->String:
+	if id.begins_with("concept_"):return "в разработке"
+	var p=ClassCatalog.progress(id)
+	if id in Game.class_unlocks:return "Выбран · ур. %d" % ClassCatalog.level(id) if id==Game.selected_class else "ур. %d" % ClassCatalog.level(id)
+	return "можно открыть" if Game.can_select_class(id) else "%d / %d" % [p[0],p[1]]
+
+## Every class on one screen: playable ones first, then the ones in development; a tap opens the class.
+func open_roster():
+	var o=overlay("ClassRoster")
+	var w=minf(980.0,o.size.x-40);var h=minf(640.0,o.size.y-40)
+	var panel=UiKit.glass(o,((o.size-Vector2(w,h))*.5).round(),Vector2(w,h))
+	UiKit.accent(UiKit.label(panel,"Все классы",Vector2(22,14),Vector2(w-100,36),22))
+	UiKit.button(panel,"×",Vector2(w-62,14),Vector2(46,42),o.queue_free).name="Close"
+	var scroll=ScrollContainer.new();panel.add_child(scroll);scroll.position=Vector2(16,64);scroll.size=Vector2(w-32,h-80);scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
+	var grid=GridContainer.new();scroll.add_child(grid);var cols=maxi(2,int((w-32)/(TAB_W+40)));grid.columns=cols
+	grid.add_theme_constant_override("h_separation",10);grid.add_theme_constant_override("v_separation",10)
+	var cell=Vector2(floorf((w-32-14-(cols-1)*10)/cols),84)
+	for id in all_ids():
+		var holder=Control.new();grid.add_child(holder);holder.custom_minimum_size=cell
+		var b=class_tab(holder,id,Vector2.ZERO,cell);b.name="Roster_"+id
 		var shell=id
-		b.pressed.connect(func():screen.selected=shell;screen.notice="";screen.build())
-		var art=TextureRect.new();b.add_child(art);art.texture=preload("res://scripts/ui/class_gallery.gd").texture(id,true);art.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;art.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;art.position=Vector2(6,10);art.size=Vector2(52,56);art.mouse_filter=Control.MOUSE_FILTER_IGNORE;art.flip_h=preload("res://scripts/ui/gear_page.gd").DOLL_FACES_LEFT
-		UiKit.locked_preview(art,not owned)
-		var title=UiKit.label(b,Game.CLASSES[id].name,Vector2(62,14),Vector2(w-66,22),15,UiKit.INK if owned else UiKit.MUTED);title.mouse_filter=Control.MOUSE_FILTER_IGNORE;title.clip_text=true
-		var p=ClassCatalog.progress(id)
-		var caption=("Выбран · ур. %d" % ClassCatalog.level(id) if id==Game.selected_class else "ур. %d" % ClassCatalog.level(id)) if owned else ("можно открыть" if Game.can_select_class(id) else "%d / %d" % [p[0],p[1]])
-		var sub=UiKit.label(b,caption,Vector2(62,40),Vector2(w-66,20),12,UiKit.ORANGE if id==Game.selected_class else UiKit.MUTED);sub.mouse_filter=Control.MOUSE_FILTER_IGNORE;sub.clip_text=true
-	UiKit.mark_h_tabs(get_children().filter(func(c):return str(c.name).begins_with("Class_")),ClassCatalog.ROSTER.find(viewed))
-	if is_instance_valid(screen) and screen.station_kind!="":preload("res://scripts/ui/station_notices.gd").mark_item_seen(screen.station_kind,"shells",viewed)
+		for c in b.pressed.get_connections():b.pressed.disconnect(c.callable)
+		b.pressed.connect(func():o.queue_free();pick(shell))
+	# A tap on the dimmed background closes it.
+	o.get_child(0).mouse_filter=Control.MOUSE_FILTER_STOP
+	o.get_child(0).gui_input.connect(func(e):if e is InputEventMouseButton and e.pressed:o.queue_free())
+
+## A class in development: the sketch — role, numbers, the abilities it would get. Nothing to buy yet.
+func concept_view(pos:Vector2,area:Vector2):
+	var concept=ClassCatalog.CONCEPTS[int(viewed.trim_prefix("concept_"))]
+	var frame=UiKit.panel(self,pos,Vector2(190,209),Color(1,1,1,.04))
+	var doll=TextureRect.new();frame.add_child(doll);doll.texture=preload("res://scripts/ui/class_gallery.gd").texture("recruit",true);doll.flip_h=preload("res://scripts/ui/gear_page.gd").DOLL_FACES_LEFT;doll.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;doll.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;doll.position=Vector2(8,8);doll.size=frame.size-Vector2(16,16)
+	UiKit.locked_preview(doll,true)
+	var x=pos.x+218;var w=area.x-218
+	UiKit.accent(UiKit.label(self,str(concept[0]),Vector2(x,pos.y+4),Vector2(w,40),28))
+	UiKit.label(self,"«%s» · в разработке" % concept[1],Vector2(x,pos.y+44),Vector2(w,22),15,UiKit.MUTED)
+	UiKit.label(self,"Характеристики",Vector2(x,pos.y+92),Vector2(w,24),16)
+	UiKit.label(self,str(concept[2]),Vector2(x,pos.y+120),Vector2(w,26),17,UiKit.INK).name="ConceptStats"
+	UiKit.label(self,"Способности",Vector2(x,pos.y+168),Vector2(w,24),16)
+	UiKit.label(self,str(concept[3]),Vector2(x,pos.y+196),Vector2(w,26),17,UiKit.INK)
+	var note=UiKit.label(self,"Класс ещё в работе: цифры и способности — набросок, могут поменяться.",Vector2(x,pos.y+246),Vector2(w,48),14,UiKit.MUTED);note.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	var soon=UiKit.button(self,"В разработке",Vector2(area.x-284,pos.y+area.y-62),Vector2(284,62),func():pass);soon.disabled=true;soon.name="Take";soon.add_theme_font_size_override("font_size",22);UiKit.muted_locked_button(soon)
 
 ## Left column: the portrait and what the class is about.
 func about(pos:Vector2,area:Vector2):
@@ -342,7 +405,7 @@ func level_card(body:Control,pos:Vector2,dims:Vector2,n:int,status:String,left:b
 ## Esc closes the open list or path first, not the whole Barracks (T-189).
 func _input(event):
 	if not event.is_action_pressed("pause") or event.is_echo():return
-	for name in ["AbilityPopup","ClassPathView"]:
+	for name in ["AbilityPopup","ClassPathView","ClassRoster"]:
 		var o=get_node_or_null(name)
 		if o:o.queue_free();get_viewport().set_input_as_handled();return
 func act(ok:bool,message:String):

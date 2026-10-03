@@ -33,7 +33,9 @@ func run():
 	print("PASS graphs: 900 maps")
 	var p=Game.progression
 	check(not Campaign.unlocked(2) and not Campaign.infinite_unlocked(),"initial world locks")
-	p.complete_world(1);check(Campaign.unlocked(2) and Campaign.infinite_unlocked() and not Campaign.unlocked(3),"world unlock")
+	p.complete_world(1);check(not Campaign.unlocked(2) and Campaign.infinite_unlocked(),"demo: world 1 opens the endless front, world 2 stays closed")
+	Settings.values["dev_worlds"]=true  # the development switch restores the full chain
+	check(Campaign.unlocked(2) and Campaign.infinite_unlocked() and not Campaign.unlocked(3),"world unlock")
 	p.complete_world(2);check(Campaign.unlocked(3),"third world unlock")
 	var restored=load("res://scripts/progression/base_progression.gd").new();restored.restore(p.serialize().duplicate(true));check(restored.cleared_worlds==[1,2],"world persistence")
 	p.prepare_telegrams();p.choose_telegram(0);var id=p.telegram.id;var goal=p.telegram.goal;var remaining=p.telegram.runs_left;var currency=Game.credits

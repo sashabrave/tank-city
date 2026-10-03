@@ -149,7 +149,7 @@ func complete_world(id:int):
 	if Campaign.challenge_level()>0:counters["challenge_w%d" % id]=maxi(int(counters.get("challenge_w%d" % id,0)),Campaign.challenge_level())
 	if id not in cleared_worlds:
 		cleared_worlds.append(id)
-		Game.notifications.post("Мир %d завершён\n" % id+("Открыты мир 2 и бесконечный режим" if id==1 else "Открыт мир 3" if id==2 else "Гигабосс уничтожен"),"Командование","important")
+		Game.notifications.post("Мир %d завершён\n" % id+(("Открыты мир 2 и бесконечный режим" if Campaign.in_demo(2) else "Открыт бесконечный рубеж") if id==1 else "Открыт мир 3" if id==2 else "Гигабосс уничтожен"),"Командование","important")
 	event("world_clear_"+str(id),1,true)
 	Game.save_progress()
 func count(q:Dictionary)->int:

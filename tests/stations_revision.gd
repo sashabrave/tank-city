@@ -19,7 +19,15 @@ func run():
 	hub.open_station("fighter");await settle()
 	var view=screen(hub)
 	check(view!=null and view.find_child("StationPanel",true,false)!=null,"fighter station opens on the template")
-	check(view.provider.tabs().size()==4 and view.find_child("Page",true,false)!=null and view.find_children("Class_*","Button",true,false).size()==ClassCatalog.ROSTER.size(),"«Классы» is one page with the class column")
+	check(view.provider.tabs().size()==4 and view.find_child("Page",true,false)!=null and view.find_children("Class_*","Button",true,false).size()==ClassCatalog.ROSTER.size()+ClassCatalog.CONCEPTS.size(),"«Классы» is one page with the class ribbon (playable + in development)")
+	# The ribbon scrolls; «Все» opens every class on one screen, a concept shows its sketch.
+	var page=view.find_child("Page",true,false)
+	view.find_child("AllClasses",true,false).pressed.emit();await settle()
+	check(page.get_node_or_null("ClassRoster")!=null and page.get_node("ClassRoster").find_children("Roster_*","Button",true,false).size()==ClassCatalog.ROSTER.size()+ClassCatalog.CONCEPTS.size(),"«Все» lists every class")
+	page.get_node("ClassRoster").find_child("Roster_concept_0",true,false).pressed.emit();await settle()
+	page=view.find_child("Page",true,false)
+	check(page.find_child("ConceptStats",true,false)!=null and page.find_child("Take",true,false).disabled,"a class in development shows its sketch, nothing to take")
+	view.selected="recruit";view.build();await settle()
 	check(view.find_children("Slot_*","Button",true,false).size()==2 and view.find_child("Take",true,false)!=null and view.find_child("ClassPath",true,false)!=null,"one path button, two slot cells and the take button")
 	# Meta stage 4: no «Выучка» tab.
 	check(not view.provider.tabs().any(func(t):return t[0]=="training"),"no training tab")

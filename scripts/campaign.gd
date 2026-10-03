@@ -63,7 +63,12 @@ static func title(index:int)->String:
 	if daily:return "Забег дня · сектор %d · поле %d" % [cycle+1,index+1]
 	if endless:return "Бесконечный · сектор %d · поле %d" % [cycle+1,index+1]
 	return "%s · %s" % [BattleNames.current(),"Гигабосс" if is_final(index) else "Генерал" if index in BOSSES else "поле %d / %d" % [index+1,6]]
-static func unlocked(id:int)->bool:return id==1 or id-1 in Game.progression.cleared_worlds
+## Demo 0.8 (author, 2026-10-03): only world 1 and the endless front are playable; worlds 2–3 stay locked even
+## after the general. Developers open them with «Миры 2–3 · разработка» (test blueprint shop → Профиль).
+const DEMO_WORLDS:=1
+static func dev_worlds()->bool:return bool(Settings.values.get("dev_worlds",false))
+static func in_demo(id:int)->bool:return id<=DEMO_WORLDS or dev_worlds()
+static func unlocked(id:int)->bool:return in_demo(id) and (id==1 or id-1 in Game.progression.cleared_worlds)
 static func infinite_unlocked()->bool:return 1 in Game.progression.cleared_worlds
 static func service_options(seed_value:int,index:int)->Array:
 	# World 1 rows hold the two key stops — instructor and merchant; mechanic and workshop are route nodes.

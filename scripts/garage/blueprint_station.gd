@@ -30,7 +30,7 @@ func group_of(id:String)->String:
 func items(tab:String)->Array:
 	var result=[]
 	if tab=="profile":
-		for row in [["all_on","Все чертежи +","blueprint"],["all_off","Все чертежи −","lock"],["reset","Обнулить профиль","delete"]]:
+		for row in [["all_on","Все чертежи +","blueprint"],["all_off","Все чертежи −","lock"],["dev_worlds","Миры 2–3 · разработка: "+("вкл" if Campaign.dev_worlds() else "выкл"),"base"],["reset","Обнулить профиль","delete"]]:
 			result.append({"id":row[0],"title":row[1],"icon":row[2],"caption":"","state":"owned"})
 		return result
 	for id in ids(tab):
@@ -43,8 +43,8 @@ func purchasable(group:String,id:String)->bool:
 	return group in ["ability","hq","classes"] or (group=="research" and id in Game.BUILD_COST) or (group=="garage" and id.begins_with("vehicle_"))
 func detail(tab:String,id:String)->Dictionary:
 	if tab=="profile":
-		var texts={"all_on":"Открыть все чертежи во всех группах.","all_off":"Закрыть все чертежи, кроме стартовых.","reset":"Обнулить прогресс текущего мира: сплав, чертежи, станции и прокачку."}
-		return {"title":{"all_on":"Все чертежи +","all_off":"Все чертежи −","reset":"Обнулить профиль"}[id],"icon":"settings","text":texts[id],"actions":[{"id":"run","text":"Выполнить","enabled":true,"primary":id!="reset"}]}
+		var texts={"all_on":"Открыть все чертежи во всех группах.","all_off":"Закрыть все чертежи, кроме стартовых.","dev_worlds":"В демо закрыты миры 2–3. Переключатель открывает их для разработки (по-прежнему после прохождения предыдущего мира).","reset":"Обнулить прогресс текущего мира: сплав, чертежи, станции и прокачку."}
+		return {"title":{"all_on":"Все чертежи +","all_off":"Все чертежи −","dev_worlds":"Миры 2–3 · разработка","reset":"Обнулить профиль"}[id],"icon":"settings","text":texts[id],"actions":[{"id":"run","text":"Выполнить","enabled":true,"primary":id!="reset"}]}
 	var owned=DevUnlocks.owned(tab,id);var name=DevUnlocks.catalog(tab).get(id,{}).get("name",id)
 	var actions=[{"id":"toggle","text":"Закрыть чертёж" if owned else "Открыть чертёж","enabled":not base(tab,id),"primary":not owned}]
 	if purchasable(tab,id):
@@ -62,6 +62,7 @@ func act(tab:String,id:String,action:String)->String:
 			match id:
 				"all_on":Game.set_all_recipes(true);return "Все чертежи открыты"
 				"all_off":Game.set_all_recipes(false);return "Чертежи закрыты"
+				"dev_worlds":Settings.values["dev_worlds"]=not Campaign.dev_worlds();Settings.save();return "Миры 2–3: "+("открыты для разработки" if Campaign.dev_worlds() else "закрыты, как в демо")
 				"reset":
 					if screen:screen.reset_requested.emit()
 					return "Профиль обнулён"

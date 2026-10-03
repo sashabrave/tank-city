@@ -3,8 +3,8 @@ extends Control
 ## a short verdict appears, then the window closes by itself. E, Esc or a click skips straight to the end.
 ## The outcome is rolled by the merchant from the combat RNG; reels only use their own visual RNG.
 signal finished
-const SYMBOLS=["token","medkit","star1","star2","star3","skull"]
-const OUTCOME_SYMBOL={"tokens":"token","heal":"medkit","card0":"star1","card1":"star2","card2":"star3"}
+const SYMBOLS=["token","medkit","alloy","ammo","star2","star3","skull"]
+const OUTCOME_SYMBOL={"tokens":"token","heal":"medkit","alloy":"alloy","ammo":"ammo","card0":"star1","card1":"star2","card2":"star3"}
 const CELL=Vector2(150,150)
 const SPIN=.5
 const STAGGER=.17
@@ -74,7 +74,8 @@ func symbol(parent:Control,id:String)->Control:
 	elif id=="skull":
 		var miss=UiKit.label(box,"✕",Vector2.ZERO,CELL,84,Color("6c6f69"));miss.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;miss.vertical_alignment=VERTICAL_ALIGNMENT_CENTER
 	else:
-		var picture=UiKit.icon(box,id,CELL*.18,CELL*.64);picture.modulate=Color("2f3a33") if id=="token" else Color.WHITE
+		var key="ammo/explosive" if id=="ammo" and IconKit.has("ammo/explosive") else id
+		var picture=UiKit.icon(box,key,CELL*.18,CELL*.64);picture.modulate=Color("2f3a33") if id=="token" else Color.WHITE
 	return box
 func _process(delta):
 	if done:return

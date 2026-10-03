@@ -7,7 +7,9 @@ signal hub_requested
 const CARD_PRICES=[3,5,8,12]
 const SLOT_PRICE=2
 ## Slot machine outcomes and weights: nothing, tokens back, full heal, card of a tier.
-const SLOT_TABLE=[["empty",40],["tokens",20],["heal",10],["card0",18],["card1",9],["card2",3]]
+## Prizes (2026-10-03, author: refresh the line-up): fewer blanks, alloy and an ammo box join; plain common
+## cards are gone — a card is at least rare, an epic one is the jackpot.
+const SLOT_TABLE=[["empty",30],["tokens",18],["heal",8],["alloy",16],["ammo",14],["card1",10],["card2",4]]
 var arena
 var index=2
 var locker:Node3D
@@ -165,7 +167,7 @@ func describe(entry:Dictionary)->Dictionary:
 		"repair":return {"icon":"vehicle","title":"Ремонт машины","detail":"Восстанавливает броню техники полностью"}
 		"reroll":return {"icon":"reroll","title":"Переброс","detail":"+1 переброс карт на этот забег"}
 		"blueprint":return {"icon":"blueprint","title":"Чертёж · "+Game.recipe_name(entry.recipe),"detail":"Попадёт в рюкзак — его нужно донести до хаба"}
-		"slot":return {"icon":"slot_machine","title":"Игровой автомат","detail":"Ставка %d: пусто, жетоны назад, лечение или карта — иногда эпическая" % entry.price}
+		"slot":return {"icon":"slot_machine","title":"Игровой автомат","detail":"Ставка %d: жетоны, сплав, патроны, лечение или карта — иногда эпическая" % entry.price}
 	return {"icon":"token","title":entry.kind,"detail":""}
 func available(entry:Dictionary)->bool:
 	match entry.kind:
@@ -216,6 +218,15 @@ func play_slot()->String:
 	match result:
 		"tokens":arena.run.tokens+=SLOT_PRICE*2;return "Жетоны вернулись вдвойне"
 		"heal":heal_full();return "Полное лечение"
+		"alloy":
+			var amount=EncounterRules.chest_alloy(arena.room_index,1)
+			Game.earn(amount);arena.run.earned+=amount;return "Сплав: +%d" % amount
+		"ammo":
+			var types=Ammo.TYPES.filter(func(t):return Ammo.fits(t,str(arena.weapon)))
+			var type=types[arena.run.combat_rng.randi_range(0,types.size()-1)]
+			var item=Ammo.roll(type,1 if arena.run.combat_rng.randf()<.3 else 0,arena.run.combat_rng.randi())
+			arena.run.ammo_bag.append(item)  # like the ammo machine: one over the backpack limit until the next field
+			return Texts.render(Ammo.NAMES[type]+" патроны")+" · "+Texts.render("в рюкзак")
 		"card0","card1","card2":
 			var ids=RunUpgrades.roll(arena,1)
 			if ids.is_empty():last_slot="empty";return "Автомат: пусто"

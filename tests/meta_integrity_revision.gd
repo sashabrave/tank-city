@@ -161,7 +161,10 @@ func run():
 	Game.progression.event("boss_wins")
 	check(preload("res://scripts/wall_counter.gd").value()==8,"a boss win turns the wall to 8")
 	Game.progression.complete_world(1)
-	check(Campaign.unlocked(2) and road.steps("story")[3][2],"world 1 done: world 2 opens and the roadmap marks the general")
+	check(not Campaign.unlocked(2) and Campaign.infinite_unlocked() and road.steps("story")[3][2],"world 1 done: the endless front opens, world 2 stays closed in the demo, the roadmap marks the general")
+	Settings.values["dev_worlds"]=true
+	check(Campaign.unlocked(2) and not Campaign.unlocked(3),"the development switch opens world 2 (world 3 still needs world 2)")
+	Settings.values["dev_worlds"]=false
 	# Save round trip of everything the path touched.
 	var loadout=Game.class_loadout()
 	# A JSON snapshot right away: serialize_progress hands out the live arrays, which reset_upgrades clears.
