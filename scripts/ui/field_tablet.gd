@@ -441,7 +441,7 @@ func guide_page():
 	UiKit.label(content,"Энциклопедия",Vector2(22,18),Vector2(220,36),24)
 	var search=LineEdit.new();search.name="GuideSearch";content.add_child(search)
 	var search_x=250.0;var search_w=width-search_x-22-(190 if Texts.dev_enabled() else 0)
-	search.position=Vector2(search_x,16);search.size=Vector2(search_w,42);search.placeholder_text=Texts.localized("Поиск по статьям…");search.clear_button_enabled=true;Texts.set_text(search,guide_query);search.right_icon=UiKit.interface_icon("search")
+	search.position=Vector2(search_x,16);search.size=Vector2(search_w,42);search.placeholder_text=Texts.localized("Поиск по статьям…");search.clear_button_enabled=true;Texts.set_text(search,guide_query);var lens=UiKit.icon(search,"search",Vector2(search_w-34,11),Vector2(20,20));lens.texture=UiKit.interface_icon("search");lens.modulate=search.get_theme_color("font_placeholder_color");lens.visible=search.text=="";search.text_changed.connect(func(value):lens.visible=value=="")  # fixed 20 px (SVG rasterised at 3x); the clear button takes its place
 	search.add_theme_font_size_override("font_size",17);search.add_theme_color_override("font_color",UiKit.INK)
 	search.add_theme_stylebox_override("normal",UiKit.style(Color("1d2621"),8))
 	search.add_theme_stylebox_override("focus",UiKit.style(Color("1d2621"),8,UiKit.ORANGE))
