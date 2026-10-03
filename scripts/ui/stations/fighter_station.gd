@@ -1,7 +1,7 @@
 extends RefCounted
 ## «Казарма» (always available): classes and their abilities, general upgrades,
 ## field supply, backpack and rerolls. Class levels follow the class path (ClassCatalog.TRACK).
-const GENERAL=[["health","Здоровье","+2 HP за уровень"],["damage","Сила","+5% базового урона за уровень"],["mobility","Скорость","Прирост уменьшается с каждым уровнем"],["pressure","Напор","Шанс, что твой снаряд переживёт столкновение"]]
+const GENERAL=[["health","Здоровье","+2 HP за уровень"],["damage","Сила","+5% урона оружия и лап за уровень"],["mobility","Скорость","Прирост уменьшается с каждым уровнем"],["pressure","Напор","Шанс, что твой снаряд переживёт столкновение"]]
 const SUPPLY=[["heal","Сила лечения","upgrade/heal"],["supplies","Аптечки в передышках","upgrade/supplies"],["luck","Удача","upgrade/luck"]]
 func title()->String:return "Казарма"
 func subtitle()->String:return "Классы, улучшения, снабжение — на все вылазки."
@@ -34,7 +34,7 @@ func detail(tab:String,id:String)->Dictionary:
 		"shells":
 			if id.begins_with("concept_"):
 				var concept=ClassCatalog.CONCEPTS[int(id.trim_prefix("concept_"))]
-				return {"title":concept[0],"icon":"fighter","text":"«%s». Класс в разработке: цифры и способности — набросок." % concept[1],"lines":[concept[2],concept[3]],"actions":[]}
+				return {"title":concept[0],"icon":"fighter","text":"«%s». В разработке." % concept[1],"lines":[concept[2],concept[3]],"actions":[]}
 			# The «Классы» tab is drawn by scripts/ui/class_page.gd; this summary only feeds notices and old callers.
 			var owned=id in Game.class_unlocks;var level=ClassCatalog.level(id)
 			var actions=[]
@@ -43,15 +43,15 @@ func detail(tab:String,id:String)->Dictionary:
 			return {"title":Game.CLASSES[id].name,"icon":id,"text":"%s. %s" % [ClassCatalog.info(id).role,Game.CLASSES[id].desc],"lines":ClassCatalog.perk_lines(id),"actions":actions}
 		"general":
 			var row=GENERAL.filter(func(r):return r[0]==id)[0]
-			return {"title":row[1],"icon":"upgrade/"+id,"text":row[2]+". Действует во всех классах; бесплатный сброс возвращает всё вложенное.","rows":[["Уровень",Game.level(id),Game.level(id)+1]],"actions":[{"id":"buy","text":"Улучшить · %d ◈" % Game.cost(id),"enabled":Game.credits>=Game.cost(id),"primary":true},{"id":"reset","text":"Сбросить · вернуть %d ◈" % Game.shell_refund(),"enabled":Game.shell_refund()>0}]}
+			return {"title":row[1],"icon":"upgrade/"+id,"text":row[2]+".","rows":[["Уровень",Game.level(id),Game.level(id)+1]],"actions":[{"id":"buy","text":"Улучшить · %d ◈" % Game.cost(id),"enabled":Game.credits>=Game.cost(id),"primary":true},{"id":"reset","text":"Сбросить · вернуть %d ◈" % Game.shell_refund(),"enabled":Game.shell_refund()>0}]}
 		"supply":
 			var row=SUPPLY.filter(func(r):return r[0]==id)[0];var unlocked=Game.branch_unlocked(id);var level=Game.level(id);var cap=Game.upgrade_cap(id)
 			var action={"id":"buy","text":("Максимум" if level>=cap else "Улучшить · %d ◈" % Game.cost(id)) if unlocked else "Открыть · %d ◈" % Game.UNLOCK_COSTS[id],"enabled":(level<cap and Game.credits>=Game.cost(id)) if unlocked else Game.credits>=Game.UNLOCK_COSTS[id],"primary":true}
 			return {"title":row[1],"icon":row[2],"text":supply_text(id),"rows":[["Уровень",level,mini(level+1,cap)]],"actions":[action]}
 		"kit":
-			if id=="backpack":return {"title":"Рюкзак","icon":"inventory","text":"Ячейки рюкзака для чертежей и боеприпасов в вылазке.","rows":[["Ячейки",Backpack.capacity(),mini(Backpack.capacity()+1,Backpack.CELLS)]],"actions":[{"id":"buy","text":"Максимум" if Game.backpack_slots>=Backpack.MAX_BOUGHT else "Ячейка · %d ◈" % Game.bag_cost(),"enabled":Game.backpack_slots<Backpack.MAX_BOUGHT and Game.credits>=Game.bag_cost(),"primary":true}]}
+			if id=="backpack":return {"title":"Рюкзак","icon":"inventory","text":"Ячейки рюкзака в вылазке.","rows":[["Ячейки",Backpack.capacity(),mini(Backpack.capacity()+1,Backpack.CELLS)]],"actions":[{"id":"buy","text":"Максимум" if Game.backpack_slots>=Backpack.MAX_BOUGHT else "Ячейка · %d ◈" % Game.bag_cost(),"enabled":Game.backpack_slots<Backpack.MAX_BOUGHT and Game.credits>=Game.bag_cost(),"primary":true}]}
 			var known="reroll" in Game.research_unlocks
-			return {"title":"Перебросы","icon":"reroll","text":"Дополнительные перебросы карт на каждый забег." if known else "Нужен чертёж перебросов.","rows":[["За забег",3+Game.reroll_level,3+mini(Game.reroll_level+1,5)]],"actions":[{"id":"buy","text":"Максимум" if Game.reroll_level>=5 else "+1 · %d ◈" % Game.reroll_cost(),"enabled":known and Game.reroll_level<5 and Game.credits>=Game.reroll_cost(),"primary":true}]}
+			return {"title":"Перебросы","icon":"reroll","text":"Перебросы карт на забег." if known else "Нужен чертёж.","rows":[["За забег",3+Game.reroll_level,3+mini(Game.reroll_level+1,5)]],"actions":[{"id":"buy","text":"Максимум" if Game.reroll_level>=5 else "+1 · %d ◈" % Game.reroll_cost(),"enabled":known and Game.reroll_level<5 and Game.credits>=Game.reroll_cost(),"primary":true}]}
 	return {}
 func supply_text(id:String)->String:
 	match id:

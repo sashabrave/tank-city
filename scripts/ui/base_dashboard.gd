@@ -13,7 +13,7 @@ static func render(tablet):
 	var progress=[
 		["base","Станции",built,5],
 		["fighter","Классы",Game.class_unlocks.size(),ClassCatalog.ROSTER.size()],
-		["rifle","Оружие",Game.weapon_unlocks.size(),Game.LOOT.WEAPONS.size()],
+		["rifle","Оружие",Game.weapon_unlocks.size(),Game.LOOT.gun_ids().size()],
 		["vehicle","Техника",Game.garage.owned.size(),GarageCatalog.VEHICLES.size()],
 		["blueprint","Бонусы",Game.bonus_unlocks.size(),Game.LOOT.BONUSES.size()],
 		["quests","Задания сданы",p.claimed.size(),preload("res://scripts/progression/quest_catalog.gd").STORY.size()+preload("res://scripts/progression/quest_catalog.gd").INSTITUTE.size()+preload("res://scripts/progression/quest_catalog.gd").BRIEFINGS.size()],

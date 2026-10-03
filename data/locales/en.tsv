@@ -3118,3 +3118,18 @@ Q · есть сразу	Q · from the start
 Случайное событие — из штаба	Random event — from the HQ
 Выдать случайное оружие	Give a random weapon
 Выдать случайные боеприпасы	Give random ammo
+Лапы	Paws
+Рукопашная: удар лапой перед собой · урон растёт с «Силой»	Close combat: a paw strike ahead · damage grows with Strength
+Удар лапой / прикладом	Paw / gun butt strike
+Руки пусты — бьёшь лапой. Возьми оружие в «Снаряжении»	Hands empty — you strike with your paws. Take a weapon in Gear
+Руки пусты — бьёшь лапой. Возьми оружие из рюкзака.	Hands empty — you strike with your paws. Take a weapon from the backpack.
+Оружие в рюкзаке — руки пусты, бьёшь лапой	Weapon in the backpack — hands empty, paws it is
++5% урона оружия и лап за уровень	+5% weapon and paw damage per level
+«%s». В разработке.	«%s». In development.
+Ячейки рюкзака в вылазке.	Backpack cells in a run.
+Перебросы карт на забег.	Card rerolls per run.
+Нужен чертёж.	Needs a blueprint.
+Нажми — действия, дважды — надеть.	Tap — actions, double tap — equip.
+Сейф: чертёж не пропадёт при выбывании	Safe: the blueprint survives a knock-out
+Запасное оружие	Spare weapon
+Чертёж — донеси до хаба	Blueprint — bring it to the hub

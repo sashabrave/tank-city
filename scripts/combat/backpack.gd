@@ -9,7 +9,7 @@ const BASE_EXTRA=3
 const MAX_BOUGHT=5
 
 static func capacity()->int:return mini(CELLS,Game.backpack_slots+BASE_EXTRA)
-static func used(run)->int:return run.pending_recipes.size()+run.ammo_bag.size()+run.supplies.size()+run.weapon_bag.size()+(1 if holstered(run) else 0) if run!=null else 0
+static func used(run)->int:return run.pending_recipes.size()+run.ammo_bag.size()+run.supplies.size()+run.weapon_bag.size() if run!=null else 0
 static func free_cells(run)->int:return capacity()-used(run)
 static func full(run)->bool:return free_cells(run)<=0
 ## Items in cell order: blueprints, then ammo. Each entry {kind:"recipe"|"ammo", item}.
@@ -23,8 +23,6 @@ static func layout(run)->Array:
 	var cells=[];cells.resize(CELLS)
 	if run==null:return cells
 	var entries=[]
-	# The gun put away from the hands (index -1) keeps its cell first; it is still `run.weapon`.
-	if holstered(run):entries.append({"kind":"weapon","index":-1,"item":{"id":str(run.weapon),"rarity":int(run.weapon_rarity),"stats":run.weapon_stats,"cell":int(run.holster_cell)}})
 	for pair in [["recipe",run.pending_recipes],["ammo",run.ammo_bag],["supply",run.supplies],["weapon",run.weapon_bag]]:
 		for k in range(pair[1].size()):entries.append({"kind":pair[0],"index":k,"item":pair[1][k]})
 	var waiting=[]
@@ -47,8 +45,6 @@ static func place(run,from:int,to:int)->bool:
 	var b=cells[to]
 	a.item["cell"]=to
 	if b!=null:b.item["cell"]=from
-	if a.index==-1 and a.kind=="weapon":run.holster_cell=to
-	if b!=null and b.index==-1 and b.kind=="weapon":run.holster_cell=from
 	return true
 static func swap(run,a:int,b:int)->bool:return place(run,a,b)
 ## Cells whose blueprints survive a knock-out (card «Сейф рюкзака»): the first N open cells.
@@ -65,43 +61,37 @@ static func safe_order(run)->Array:
 		else:rest.append(e.item)
 	return [first+rest,count]
 
-## Hands empty (2026-10-03): the gun in hand goes into a backpack cell; the gear screen then keeps the tablet
-## open until a gun is taken in hand again. Any time, anywhere a run is on — the weapon stays `run.weapon`.
-static func holstered(run)->bool:return run!=null and run.get("holster_cell")!=null and int(run.holster_cell)>=0
+## Empty hands (2026-10-03): the gun goes into a backpack cell and the cat fights with its paws (the hidden
+## «paws» weapon: Space and V scratch, damage grows with «Сила»). Any time, anywhere a run is on; the tablet
+## closes as usual — the gear page only reminds to take a gun.
+static func holstered(run)->bool:return run!=null and str(run.weapon)==LootCatalog.PAWS
 static func holster(arena,cell:=-1)->bool:
 	var run=arena.run
 	if run==null or holstered(run) or full(run):return false
-	var cells=layout(run)
-	if cell<0 or cell>=capacity() or cells[cell]!=null:
-		cell=-1
-		for c in range(capacity()):
-			if cells[c]==null:cell=c;break
-	if cell<0:return false
-	run.holster_cell=cell
-	if is_instance_valid(arena.hud):arena.hud.refresh_ammo()
-	return true
-## The put-away gun back in hand (also before leaving the tablet for the hub or a restart).
-static func unholster(arena)->bool:
-	if not holstered(arena.run):return false
-	arena.run.holster_cell=-1;refresh(arena);return true
+	var item={"id":str(run.weapon),"rarity":int(run.weapon_rarity),"stats":run.weapon_stats.duplicate()}
+	if cell>=0 and cell<capacity() and layout(run)[cell]==null:item["cell"]=cell
+	run.weapon_bag.append(item)
+	run.weapon=LootCatalog.PAWS;run.weapon_rarity=0;run.weapon_stats={}
+	Ammo.ensure(run,run.weapon);RunUpgrades.refresh_player(arena);refresh(arena);return true
+## A gun waiting in the backpack while the paws fight (the reminder on the gear page and after the tablet).
+static func spare_gun(run)->bool:return run!=null and not run.weapon_bag.is_empty()
 ## A spare weapon into the backpack (weapon crates, the gun in hand dragged out); false when it is full.
 static func add_weapon(arena,item:Dictionary,cell:=-1)->bool:
 	var run=arena.run
-	if full(run) or str(item.get("id","")) not in Game.LOOT.WEAPONS:return false
+	if full(run) or not Game.LOOT.is_gun(str(item.get("id",""))):return false
 	var copy=item.duplicate(true)
 	if cell>=0 and cell<capacity() and layout(run)[cell]==null:copy["cell"]=cell
 	run.weapon_bag.append(copy);refresh(arena);return true
 ## Takes a backpack weapon in hand: the one in hand goes to that cell (a swap, so nothing is lost).
 static func equip_weapon(arena,index:int)->bool:
 	var run=arena.run
-	if index==-1:return unholster(arena)
 	if index<0 or index>=run.weapon_bag.size():return false
 	var item:Dictionary=run.weapon_bag[index]
 	var old={"id":str(run.weapon),"rarity":int(run.weapon_rarity),"stats":run.weapon_stats.duplicate()}
-	# Empty hands: the put-away gun stays in its own cell as an ordinary spare; the taken one frees its cell.
-	if holstered(run):old["cell"]=int(run.holster_cell);run.holster_cell=-1
-	elif item.has("cell"):old["cell"]=item.cell
-	run.weapon_bag[index]=old
+	if item.has("cell"):old["cell"]=item.cell
+	# Bare paws are not an item: the taken gun simply leaves its cell.
+	if holstered(run):run.weapon_bag.remove_at(index)
+	else:run.weapon_bag[index]=old
 	run.weapon=str(item.id);run.weapon_rarity=int(item.get("rarity",0));run.weapon_stats=item.get("stats",{}).duplicate()
 	Ammo.ensure(run,run.weapon)
 	RunUpgrades.refresh_player(arena);refresh(arena);return true

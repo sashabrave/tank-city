@@ -6,9 +6,11 @@
 			"ru": {
 				"title": "Демо: большое обновление",
 				"items": [
-					"Оружие можно снять в пустую ячейку рюкзака — руки пусты; планшет не закроется, пока не возьмёшь оружие в руки («Снять» под ячейкой «Оружие», перетаскивание или двойное нажатие). Последнее оружие выбросить нельзя.",
+					"Оружие можно убрать в пустую ячейку рюкзака — тогда кот бьёт лапой (Пробел), урон пока маленький и растёт с «Силой». V — удар лапой или прикладом в любой момент, с отдельной перезарядкой. Ячейка «Оружие» напоминает взять ствол.",
 					"В комнатах между полями боец держит и стреляет оружием из рук (ствол из ящика, обмен в рюкзаке), а не выбранным в хабе.",
 					"Патроны теперь везде называются «боеприпасы».",
+					"Характеристики меняются плавно: число пересчитывается десятыми, полоска доезжает — в снаряжении, принтере и на панели оружия в бою.",
+					"Меньше лишних пояснений в Казарме и снаряжении.",
 					"Песочница: в начале первой страницы админ-меню — «Выдать случайное оружие» и «Выдать случайные боеприпасы»; кнопки тянутся по ширине окна, характеристики — строками с −/+, вкладки не наезжают на «Выйти».",
 					"При уроне краснеет только боец или машина, свет фонаря и фар остаётся прежним.",
 					"Некоторые фонари на поле изредка помигивают.",
@@ -188,9 +190,11 @@
 			"en": {
 				"title": "Demo: the big update",
 				"items": [
-					"A weapon can be put into an empty backpack cell — hands empty; the tablet will not close until you take a weapon in hand (Unequip under the Weapon cell, drag or double tap). The last weapon cannot be thrown away.",
+					"A weapon can go into an empty backpack cell — then the cat strikes with its paws (Space); the damage is small for now and grows with Strength. V is a paw or gun-butt strike at any time with its own cooldown. The Weapon cell reminds you to take a gun.",
 					"In rooms between fields the hero holds and fires the gun in hand (a crate gun, a backpack swap), not the hub choice.",
 					"Ammo is now called «ammo» everywhere in Russian too (боеприпасы).",
+					"Stats change smoothly: numbers count in tenths and bars glide — in Gear, the printer and the battle weapon panel.",
+					"Fewer redundant explanations in the barracks and gear screens.",
 					"Sandbox: «Give a random weapon» and «Give random ammo» open the first admin page; buttons stretch to the window, stats are rows with −/+, tabs never overlap Exit.",
 					"On a hit only the soldier or vehicle turns red; flashlights and headlights keep their colour.",
 					"Some field lamps flicker now and then.",

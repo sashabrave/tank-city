@@ -11,6 +11,16 @@ const BONUSES={
  "vehicle":{"name":"Десант техники","color":"e8b957","shape":"diamond","rarity":2,"effect":"Доставка быстрее на 8%/ур."},
  "star":{"name":"Звезда","color":"f2cb64","shape":"star","rarity":2,"effect":"Неуязвимость, сокрушительный выстрел, разрушение бетона"}}
 static var WEAPONS=preload("res://scripts/weapon_catalog.gd").DATA
+## The bare paws (2026-10-03): an unarmed cat strikes with its claws; damage grows with «Сила». A hidden entry
+## of WEAPONS, so everything that reads the gun in hand keeps working; never found, bought, unlocked or listed.
+const PAWS:="paws"
+## Guns the player can own, find, buy and list — every weapon but the hidden paws.
+static func gun_ids()->Array:return WEAPONS.keys().filter(func(id):return not WEAPONS[id].get("hidden",false))
+static func guns()->Dictionary:
+	var result={}
+	for id in gun_ids():result[id]=WEAPONS[id]
+	return result
+static func is_gun(id:String)->bool:return id in WEAPONS and not WEAPONS[id].get("hidden",false)
 const RARITY_NAMES=["Обычное","Редкое","Эпическое","Секретное"]
 ## Pastel rarity colours (author, 2026-10-03): soft enough for the cosy look, still told apart at a glance.
 const RARITY_COLORS=["d3d9dc","8fc3e6","c4a8e8","eccf8c"]

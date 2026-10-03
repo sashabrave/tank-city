@@ -28,18 +28,9 @@ func _input(event):
 		if child.get("waiting_key")!=null and child.waiting_key!="":return
 	if event.is_action_pressed("pause") and not event.is_echo():get_viewport().set_input_as_handled();close()
 func close(with_resume:bool=true):
-	# Every way out leaves with a gun in hand (2026-10-03): with empty hands the tablet stays on the gear page;
-	# leaving for the hub or a restart quietly puts the gun back in hand.
+	# Empty hands are allowed (2026-10-03): the cat fights with its paws; a gun waiting in the backpack is recalled.
 	var run=context_arena.run if is_instance_valid(context_arena) and context_arena.get("run")!=null else null
-	if Backpack.holstered(run):
-		if with_resume:
-			refuse_empty_hands();return
-		Backpack.unholster(context_arena)
+	if with_resume and Backpack.holstered(run) and Backpack.spare_gun(run) and context_arena.has_method("toast"):
+		context_arena.toast(Texts.render("Руки пусты — бьёшь лапой. Возьми оружие в «Снаряжении»"))
 	get_tree().paused=paused_before;Game.reset_input();queue_free()
 	if with_resume and resume.is_valid():resume.call()
-func refuse_empty_hands():
-	Game.sound("ui_denied",self)
-	var GP=preload("res://scripts/ui/gear_page.gd");GP.warn_hands=true
-	for view in get_children():
-		if view.get("tab")!=null and view.has_method("refresh"):view.tab="inventory";view.refresh()
-	GP.warn_hands=false

@@ -13,8 +13,6 @@ const STATS=preload("res://scripts/ui/stat_snapshot.gd")
 const ITEM=preload("res://scripts/ui/item_info.gd")
 const INFO_H:=190.0
 static var selected:=""
-## Set by the tablet when it refuses to close with empty hands: the weapon cell pulses, the line explains.
-static var warn_hands:=false
 ## The class gallery art looks to the left; the doll is mirrored so it always faces right.
 const DOLL_FACES_LEFT:=true
 var view
@@ -112,20 +110,18 @@ func build_right()->float:
 	section("Оружие",0,y,2);section("Боеприпасы",2,y,2)
 	y+=LABEL+UNDER_LABEL
 	var weapon=str(arena.weapon) if is_instance_valid(arena) else Game.selected_weapon
-	var w:GearCell
+	var w=fixed_cell("weapon",col(0),y,Vector2(2*C+GAP,C),weapon,Game.LOOT.WEAPONS[weapon].name,"",false,"")
+	w.info=ITEM.of("weapon",{"id":weapon},arena,true)
 	if Backpack.holstered(run()):
-		# Hands empty (2026-10-03): an empty cell that only waits for a gun; the tablet does not close like this.
-		w=fixed_cell("weapon",col(0),y,Vector2(2*C+GAP,C),"","Руки пусты","Возьми оружие из рюкзака: перетащи сюда или нажми на него дважды.",false,"")
-		var hint=UiKit.label(w,"Руки пусты — возьми оружие",Vector2(8,0),Vector2(w.size.x-16,C),14,UiKit.ORANGE);hint.name="EmptyHands";hint.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;hint.vertical_alignment=VERTICAL_ALIGNMENT_CENTER;hint.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+		# Empty hands (2026-10-03): the paws fight (Space, V); the cell reminds to take a gun from the backpack.
+		var hint=UiKit.label(w,"Руки пусты — возьми оружие",Vector2(C*.9,0),Vector2(w.size.x-C*.9-8,C),14,UiKit.ORANGE);hint.name="EmptyHands";hint.vertical_alignment=VERTICAL_ALIGNMENT_CENTER;hint.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+		var picture=w.get_node_or_null("Art")
+		if picture:picture.size.x=C*.8
 		var frame=UiKit.style(Color(UiKit.ORANGE,.08),12,UiKit.ORANGE);frame.set_border_width_all(2)
 		for state in ["normal","hover","pressed","focus"]:w.add_theme_stylebox_override(state,frame)
-		if warn_hands and UiKit.motion_enabled():
-			var pulse=w.create_tween().set_loops(3);pulse.tween_property(w,"modulate",Color(1.35,1.15,.9),.18);pulse.tween_property(w,"modulate",Color.WHITE,.22)
 	else:
-		w=fixed_cell("weapon",col(0),y,Vector2(2*C+GAP,C),weapon,Game.LOOT.WEAPONS[weapon].name,"Нажми ещё раз — характеристики и улучшения.",false,"")
-		w.info=ITEM.of("weapon",{"id":weapon},arena,true)
 		# The gun in hand drags like any item (author, 2026-10-03): onto a backpack weapon to swap, or into a free
-		# cell — then the hands are empty until a gun is taken again (the tablet will not close before that).
+		# cell — then the hands are empty and the cat scratches with its paws.
 		w.item_kind="weapon";w.draggable=run()!=null
 	w.set_meta("inset",.08)
 	var slots:Array=run().ammo_slots if run()!=null else [Ammo.standard()]
@@ -149,12 +145,12 @@ func build_right()->float:
 		elif i<safe:
 			# «Сейф рюкзака» (T-196): an insured cell — a small shield in the corner, the rule in the tooltip.
 			var badge=UiKit.icon(cell,"shield",Vector2(C-26,6),Vector2(20,20));badge.name="Safe";badge.mouse_filter=Control.MOUSE_FILTER_IGNORE
-			var rule=Texts.render("Застрахованная ячейка: чертёж здесь не пропадёт при выбывании")
+			var rule=Texts.render("Сейф: чертёж не пропадёт при выбывании")
 			cell.tooltip_text=rule if cell.tooltip_text=="" else cell.tooltip_text+"\n"+rule
 	y+=2*C+GAP+GAP
 	# Discard zone: drag anything here; it lands on the field as an army sack.
 	var zone=GearCell.new();zone.name="DiscardZone";body.add_child(zone);zone.key="discard";zone.position=Vector2(right_x,y);zone.size=Vector2(4*C+3*GAP,40)
-	Texts.set_text(zone,"Перетащи сюда, чтобы выбросить мешком на поле" if Backpack.can_drop(arena) else "Выбросить можно только в бою");zone.disabled=not Backpack.can_drop(arena)
+	Texts.set_text(zone,"Выбросить" if Backpack.can_drop(arena) else "Выбросить можно только в бою");zone.disabled=not Backpack.can_drop(arena)
 	zone.add_theme_font_size_override("font_size",13);zone.on_drop=move
 	for state in ["normal","hover","disabled"]:
 		var style=UiKit.style(Color(1,1,1,.02),10,Color(1,1,1,.18));style.set_border_width_all(1)
@@ -221,7 +217,7 @@ func item_cell(key:String,x:float,y:float,entry,locked:bool)->GearCell:
 		art(cell,UiKit.trimmed(UiKit.icon_texture(gun)),.1)
 		var name_label=UiKit.label(cell,Texts.render(Game.LOOT.WEAPONS[gun].name),Vector2(4,C-20),Vector2(C-8,18),11 if C>=100 else 9,UiKit.INK);name_label.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;name_label.clip_text=true
 		cell.item_kind="weapon";cell.draggable=true;cell.info=ITEM.of("weapon",entry.item,arena)
-		cell.tooltip_text=Texts.render(Game.LOOT.WEAPONS[gun].name)+"\n"+Texts.render("Запасное оружие · ещё нажатие — взять в руки")
+		cell.tooltip_text=Texts.render(Game.LOOT.WEAPONS[gun].name)+"\n"+Texts.render("Запасное оружие")
 	elif entry.kind=="supply":
 		# Aid kit (T-115): tap twice / E / H heals.
 		art(cell,UiKit.trimmed(UiKit.icon_texture("heart")),.16)
@@ -232,7 +228,7 @@ func item_cell(key:String,x:float,y:float,entry,locked:bool)->GearCell:
 		var sheet=ITEM.blueprint_key(entry.item)
 		art(cell,UiKit.trimmed(UiKit.icon_texture(sheet if IconKit.has(sheet) else str(entry.item.get("id","")))),.1 if IconKit.has(sheet) else .16)
 		cell.item_kind="recipe";cell.draggable=true;cell.info=ITEM.of("recipe",entry.item,arena)
-		cell.tooltip_text=Texts.render(Game.recipe_name(entry.item))+"\n"+Texts.render("Чертёж — донеси до хаба, чтобы открыть")
+		cell.tooltip_text=Texts.render(Game.recipe_name(entry.item))+"\n"+Texts.render("Чертёж — донеси до хаба")
 	return cell
 
 # ── Gestures ───────────────────────────────────────────────────────────────────────────────────────────────
@@ -261,7 +257,7 @@ func activate(key:String):
 			"supply":
 				if Backpack.use_medkit(arena,e.index):done("")
 			"weapon":
-				if Backpack.equip_weapon(arena,e.index):warn_hands=false;done("Оружие в руках")
+				if Backpack.equip_weapon(arena,e.index):done("Оружие в руках")
 			"ammo":
 				if Backpack.equip(arena,e.index):done("Боеприпасы заряжены")
 				else:arena.toast(Texts.render("Эти боеприпасы не подходят к оружию"))
@@ -280,14 +276,14 @@ func move(from:String,to:String):
 	if to=="discard":discard(from);return
 	if from.begins_with("bag:") and to=="weapon":
 		var e=entry(from)
-		if e!=null and e.kind=="weapon" and Backpack.equip_weapon(arena,e.index):warn_hands=false;done("Оружие в руках")
+		if e!=null and e.kind=="weapon" and Backpack.equip_weapon(arena,e.index):done("Оружие в руках")
 		elif e!=null:arena.toast(Texts.render("Сюда кладётся только оружие"))
 		return
 	if from=="weapon" and to.begins_with("bag:"):
 		var e=entry(to)
 		if e!=null and e.kind=="weapon":
-			if Backpack.equip_weapon(arena,e.index):warn_hands=false;done("Оружие в руках")
-		elif e==null and Backpack.holster(arena,int(to.get_slice(":",1))):selected="";done("Оружие в рюкзаке — возьми другое в руки")
+			if Backpack.equip_weapon(arena,e.index):done("Оружие в руках")
+		elif e==null and Backpack.holster(arena,int(to.get_slice(":",1))):selected="";done("Оружие в рюкзаке — руки пусты, бьёшь лапой")
 		elif e==null:arena.toast(Texts.render("Рюкзак полон"))
 		return
 	if from.begins_with("bag:") and to.begins_with("slot:"):
@@ -322,8 +318,6 @@ func discard(key:String):
 			arena.toast(Texts.render("Нельзя выбросить последние боеприпасы — нечем будет воевать"));Game.sound("ui_denied",arena);return
 	if key.begins_with("bag:"):
 		var e=entry(key)
-		if e!=null and e.kind=="weapon" and e.index==-1:
-			arena.toast(Texts.render("Нельзя выбросить последнее оружие — сначала возьми в руки другое"));Game.sound("ui_denied",arena);return
 		ok=e!=null and Backpack.drop(arena,e.kind,e.index)
 	elif key.begins_with("slot:"):ok=Backpack.drop(arena,"slot",int(key.get_slice(":",1)))
 	if ok:selected="";done("Выброшено мешком рядом с бойцом")
@@ -378,11 +372,11 @@ func fill_info(info:Panel):
 	var w=info.size.x
 	var cell:GearCell=cells.get(selected) if selected!="" else null
 	if Backpack.holstered(run()):
-		UiKit.label(info,"Руки пусты. Возьми оружие из рюкзака: перетащи его на ячейку «Оружие» или нажми на него дважды. Без оружия планшет не закроется.",Vector2(14,10),Vector2(w-28,76),14,UiKit.ORANGE).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+		UiKit.label(info,"Руки пусты — бьёшь лапой. Возьми оружие из рюкзака.",Vector2(14,10),Vector2(w-28,76),14,UiKit.ORANGE).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 		if cell==null or cell.info.is_empty():return
 		var spare=ITEM.card(cell.info,w-28);info.add_child(spare);spare.position=Vector2(14,86);return
 	if cell==null or cell.info.is_empty():
-		UiKit.label(info,"Нажми на предмет — действия. Дважды — надеть или зарядить. Наведи — сравнение с надетым. Перетаскивай между ячейками.",Vector2(14,10),Vector2(w-28,76),13,UiKit.MUTED).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+		UiKit.label(info,"Нажми — действия, дважды — надеть.",Vector2(14,10),Vector2(w-28,76),13,UiKit.MUTED).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 		return
 	# The same card as the hover tooltip: on touch there is no hover, so the selected item shows it here.
 	var card=ITEM.card(cell.info,w-28);info.add_child(card);card.position=Vector2(14,10)

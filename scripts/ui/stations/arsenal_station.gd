@@ -8,7 +8,7 @@ func items(tab:String)->Array:
 	var result=[]
 	match tab:
 		"weapons":
-			for id in Game.LOOT.WEAPONS:
+			for id in Game.LOOT.gun_ids():
 				var owned=id in Game.weapon_unlocks;var level=Game.weapon_level(id)
 				var state="locked" if not owned else "active" if id==Game.selected_weapon else "max" if level>=Balance.CONFIG.economy.weapon_level_cap else "owned"
 				result.append({"id":id,"title":Game.LOOT.WEAPONS[id].name,"icon":Game.LOOT.WEAPONS[id].icon,"caption":"Нужен чертёж" if not owned else ("В бою · " if id==Game.selected_weapon else "")+"ур. %d / %d" % [level,Balance.CONFIG.economy.weapon_level_cap],"state":state})

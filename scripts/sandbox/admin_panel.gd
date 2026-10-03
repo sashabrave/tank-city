@@ -169,7 +169,7 @@ func gun_to_bag():
 	render()
 ## A random gun item of the chosen rarity with rolled stats (like a weapon crate).
 func random_gun()->Dictionary:
-	var ids=Game.LOOT.WEAPONS.keys();var span=[[0,.06],[.05,.12],[.1,.2],[.18,.3]][clampi(tier,0,3)]
+	var ids=Game.LOOT.gun_ids();var span=[[0,.06],[.05,.12],[.1,.2],[.18,.3]][clampi(tier,0,3)]
 	return {"id":ids[randi()%ids.size()],"rarity":tier,"stats":{"damage":snappedf(randf_range(span[0],span[1]),.01),"fire":snappedf(randf_range(span[0],span[1])*.6,.01)}}
 ## The item flies out of the HQ in an arc and lands on a free cell beside it (visual only, sandbox).
 func airdrop(content:Dictionary):

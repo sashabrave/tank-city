@@ -74,9 +74,6 @@ var weapon_bag:Array=[]
 ## The gun in hand as an item: rarity and rolled stats from a weapon crate ({"damage": share, "fire": share}).
 var weapon_rarity:=0
 var weapon_stats:Dictionary={}
-## Hands empty (2026-10-03): ≥0 — the gun `weapon` lies in this backpack cell instead of the hands. Only while the
-## gear screen is open: the tablet does not close until a gun is taken (Backpack.holster). Not saved.
-var holster_cell:=-1
 var last_player_shot=-10.0
 var dash_until=0.0
 var dash_ready_at=0.0

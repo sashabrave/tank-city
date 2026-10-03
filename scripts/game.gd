@@ -353,7 +353,7 @@ func apply_profile(data:Dictionary):
 			branch_unlocks.erase("rarity")
 			if "luck" not in branch_unlocks:branch_unlocks.append("luck")
 		shield_capacity_level=0;recovery_level=0
-		for id in LOOT.WEAPONS:
+		for id in LOOT.gun_ids():
 			if id!="pistol" and (id in data.get("weapon_unlocks",[]) or (id=="sniper" and "heavy" in data.get("weapon_unlocks",[]))):weapon_unlocks.append(id)
 		for id in LOOT.BONUSES:
 			if id!="heart" and id in data.get("bonus_unlocks",[]):bonus_unlocks.append(id)
@@ -422,7 +422,7 @@ func upgrade_bonus(id: String) -> bool:
 	if id not in bonus_unlocks or bonus_level(id)>=Balance.CONFIG.economy.bonus_level_cap or credits<price:return false
 	credits-=price;bonus_levels[id]=bonus_level(id)+1;save_progress();return true
 func recipe_catalog(category: String) -> Dictionary:
-	return GarageCatalog.recipes() if category=="garage" else HQCatalog.DATA if category=="hq" else AbilityCatalog.DATA if category=="ability" else LOOT.WEAPONS if category=="weapon" else LOOT.BONUSES if category=="bonus" else RESEARCH
+	return GarageCatalog.recipes() if category=="garage" else HQCatalog.DATA if category=="hq" else AbilityCatalog.DATA if category=="ability" else LOOT.guns() if category=="weapon" else LOOT.BONUSES if category=="bonus" else RESEARCH
 func recipe_owned(category: String) -> Array:
 	return garage.unlocks if category=="garage" else hq_unlocks if category=="hq" else ability_unlocks if category=="ability" else weapon_unlocks if category=="weapon" else bonus_unlocks if category=="bonus" else research_unlocks
 func roll_recipe(rng: RandomNumberGenerator,pending: Array,ground: Array=[],stage:int=0) -> Dictionary:
@@ -586,7 +586,7 @@ func set_all_recipes(unlocked:bool):
 	equipped_abilities=equipped_abilities.filter(func(id):return id in ability_unlocks)
 	if equipped_abilities.is_empty():equipped_abilities=["barrier"]
 	selected_ability=equipped_abilities[0]
-	weapon_unlocks=LOOT.WEAPONS.keys() if unlocked else ["pistol"]
+	weapon_unlocks=LOOT.gun_ids() if unlocked else ["pistol"]
 	bonus_unlocks=LOOT.BONUSES.keys() if unlocked else ["heart"]
 	research_unlocks=RESEARCH.keys() if unlocked else ["character"]
 	if selected_weapon not in weapon_unlocks:selected_weapon="pistol"

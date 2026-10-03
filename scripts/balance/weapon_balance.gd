@@ -17,6 +17,8 @@ extends Resource
 @export_range(0.01, 1, 0.01) var intercept: float = 0.8
 @export var icon: String = "pistol"
 @export_multiline var role: String = "Описание оружия"
+## Not a gun you find, buy or list (the bare paws of an unarmed cat): skipped by WeaponCatalog.ids().
+@export var hidden: bool = false
 
 func as_dict()->Dictionary:
-	return {"name":name, "rarity":rarity, "damage":damage, "interval":interval, "speed":speed, "range":range, "pellets":pellets, "burst":burst, "burst_gap":burst_gap, "pierce":pierce, "blast":blast, "intercept":intercept, "icon":icon, "role":role}
+	return {"name":name, "rarity":rarity, "damage":damage, "interval":interval, "speed":speed, "range":range, "pellets":pellets, "burst":burst, "burst_gap":burst_gap, "pierce":pierce, "blast":blast, "intercept":intercept, "icon":icon, "role":role, "hidden":hidden}

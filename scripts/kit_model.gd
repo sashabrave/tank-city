@@ -120,6 +120,10 @@ func play_death()->bool:
 func equip_weapon(id:String):
 	if not is_instance_valid(weapon_socket):return
 	var path="res://assets/models/infantry_v6/weapon_"+id+".glb"
+	# Bare paws (2026-10-03): nothing in the hands.
+	if id==LootCatalog.PAWS:
+		for child in weapon_socket.get_children():weapon_socket.remove_child(child);child.queue_free()
+		equipped_weapon=null;weapon_id=id;support_grip=null;muzzle=null;return
 	if not ResourceLoader.exists(path):return
 	for child in weapon_socket.get_children():
 		weapon_socket.remove_child(child);child.queue_free()

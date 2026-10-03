@@ -233,7 +233,7 @@ func show_sandbox():
 	sandbox_snapshot=Game.serialize_progress().duplicate(true)
 	sandbox_restore={"save":Game.save_enabled,"settings":Settings.persistence_enabled,"lighting":Settings.values.world_lighting,"world":Campaign.world,"endless":Campaign.endless}
 	Game.save_enabled=false;Settings.persistence_enabled=false
-	Game.weapon_unlocks=Game.LOOT.WEAPONS.keys();Game.class_unlocks=Game.CLASSES.keys()
+	Game.weapon_unlocks=Game.LOOT.gun_ids();Game.class_unlocks=Game.CLASSES.keys()
 	Campaign.configure(1)
 	clear_current()
 	run_arena=load("res://scenes/arena.tscn").instantiate();run_arena.sandbox=true;run_arena.run_seed=randi();run_arena.auto_pause_enabled=false

@@ -226,10 +226,10 @@ func settings():
 		y=672
 	else:
 		UiKit.label(body,"Нажми кнопку и новую клавишу. Esc — отмена. Занятые клавиши меняются местами.",Vector2(0,0),Vector2(700,46),14,UiKit.MUTED).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;y=55
-		for group in [["Движение",["north","south","west","east"]],["Бой и действия",["fire","interact","hide_trench","ammo_switch","use_medkit"]],["Способности",["class_ability","skill_1","ability","hq_ability"]]]:
+		for group in [["Движение",["north","south","west","east"]],["Бой и действия",["fire","interact","hide_trench","ammo_switch","use_medkit","melee"]],["Способности",["class_ability","skill_1","ability","hq_ability"]]]:
 			UiKit.label(body,group[0],Vector2(0,y),Vector2(700,30),15,UiKit.MUTED);y+=36
 			for action in group[1]:
-				UiKit.label(body,{"north":"Вверх / вперёд","south":"Вниз / назад","west":"Влево","east":"Вправо","fire":"Огонь","interact":"Выбрать / взаимодействовать","hide_trench":"Спрятаться в окопе","ammo_switch":"Сменить боеприпасы","use_medkit":"Аптечка из рюкзака","ability":"Гаджет","class_ability":"Навык класса","skill_1":"Второй навык класса","hq_ability":"Поддержка штаба"}[action],Vector2(0,y),Vector2(420,36),17)
+				UiKit.label(body,{"north":"Вверх / вперёд","south":"Вниз / назад","west":"Влево","east":"Вправо","fire":"Огонь","interact":"Выбрать / взаимодействовать","hide_trench":"Спрятаться в окопе","ammo_switch":"Сменить боеприпасы","use_medkit":"Аптечка из рюкзака","melee":"Удар лапой / прикладом","ability":"Гаджет","class_ability":"Навык класса","skill_1":"Второй навык класса","hq_ability":"Поддержка штаба"}[action],Vector2(0,y),Vector2(420,36),17)
 				var button=UiKit.button(body,OS.get_keycode_string(Settings.keys[action]),Vector2(440,y),Vector2(260,36),func():view.waiting_key=action;view.refresh())
 				if view.waiting_key==action:Texts.set_text(button,"Нажми клавишу…")
 				y+=46

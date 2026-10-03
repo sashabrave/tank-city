@@ -305,6 +305,9 @@ func player_pressure()->float:
 
 func fire_weapon(actor):
 	var weapon_id=arena.run.weapon;var data=arena.LOOT.WEAPONS[weapon_id]
+	# Empty hands (2026-10-03): Space scratches with the paws instead of a shot.
+	if weapon_id==LootCatalog.PAWS:
+		Melee.strike(arena,actor,actor.damage*arena.effects.modify("shot_damage",1.0,{"actor":actor}),true);return
 	volley(actor,data)
 	# Bursts (SMG): the rest of the pull follows on pausable timers in the facing of that moment.
 	for k in range(1,int(data.get("burst",1))):

@@ -1,7 +1,7 @@
 extends Node
 signal changed
 const PATH="user://settings.cfg"
-const DEFAULT_KEYS={"north":KEY_W,"south":KEY_S,"west":KEY_A,"east":KEY_D,"fire":KEY_SPACE,"interact":KEY_E,"hide_trench":KEY_C,"ability":KEY_F,"skill_1":KEY_1,"skill_2":KEY_NONE,"hq_ability":KEY_2,"class_ability":KEY_Q,"ammo_switch":KEY_R,"use_medkit":KEY_H}
+const DEFAULT_KEYS={"north":KEY_W,"south":KEY_S,"west":KEY_A,"east":KEY_D,"fire":KEY_SPACE,"interact":KEY_E,"hide_trench":KEY_C,"ability":KEY_F,"skill_1":KEY_1,"skill_2":KEY_NONE,"hq_ability":KEY_2,"class_ability":KEY_Q,"ammo_switch":KEY_R,"use_medkit":KEY_H,"melee":KEY_V}
 const DEFAULT_VALUES={"fullscreen":false,"vsync":true,"quality":1,"fps":60,"master":1.0,"music":0.8,"music_mood":"main","effects":0.8,"screen_controls":true,"biome_info":true,"language":"ru","ui_theme":"dark","shaders":true,"world_lighting":"day","light_budget":10,"atmosphere":true,"tilt_shift":true,"shader_style":"pastel","soft_shadows":true,"ambient_occlusion":true,"glow":true,"haze":true,"rim_light":true,"shiny_metal":true,"depth_light":true,"cinematic_light":true,"graphics_preset":"standard","sun_day":"random","sun_night":"random","weather":"random","ui_motion":true,"show_fps":true,"ui_glass":true,"ui_accent":"apricot","illustration_set":"gpt_image_2_5","input_scheme":"auto","render_scale":"auto","resolution":"auto","retina":true,"dev_worlds":false}
 const SHADER_STYLES=["pastel","cozy","golden","overcast"]
 const SHADER_OPTIONS=["soft_shadows","ambient_occlusion","glow","haze","rim_light","shiny_metal","depth_light","cinematic_light"]
@@ -208,7 +208,7 @@ func draw():
 	elif tab==3:
 		choice("Язык / Language","language",["Русский","English"],["ru","en"],0)
 	else:
-		var names={"north":"Вверх / карта вперёд","south":"Вниз / карта назад","west":"Влево","east":"Вправо","fire":"Стрелять","interact":"Выбрать / взаимодействовать","ability":"Гаджет","class_ability":"Навык класса","skill_1":"Второй навык класса","hq_ability":"Гаджет штаба"}
+		var names={"north":"Вверх / карта вперёд","south":"Вниз / карта назад","west":"Влево","east":"Вправо","fire":"Стрелять","interact":"Выбрать / взаимодействовать","ability":"Гаджет","class_ability":"Навык класса","skill_1":"Второй навык класса","hq_ability":"Гаджет штаба","melee":"Удар лапой / прикладом"}
 		var i=0
 		for action in names:
 			var x=(i%2)*430;var y=int(i/2.0)*58

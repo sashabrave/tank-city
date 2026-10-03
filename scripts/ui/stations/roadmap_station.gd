@@ -67,7 +67,7 @@ func steps(tab:String)->Array:
 				["apc","Свой БТР","apc" in Game.garage.owned,"Чертёж БТР — во второй половине пути мира 1."],
 				["tank","Свой танк","tank" in Game.garage.owned,"Самый редкий чертёж: сложные точки у генерала."]]
 		"arsenal":
-			var all=Game.LOOT.WEAPONS.keys();var owned=all.filter(func(id):return id in Game.weapon_unlocks).size()
+			var all=Game.LOOT.gun_ids();var owned=all.filter(func(id):return id in Game.weapon_unlocks).size()
 			var tuned=p.weapon_levels.values().filter(func(v):return int(v)>=1).size()
 			return [
 				["second_weapon","Второе оружие",owned>=2,"Чертежи оружия носят командиры и сундуки ★."],

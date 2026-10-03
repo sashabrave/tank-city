@@ -54,7 +54,7 @@ static func upgrade(data:Dictionary)->Dictionary:
 		for id in ["buggy","apc","tank"]:
 			if not run.vehicle_mods.get(id) is Dictionary:run.vehicle_mods[id]=defaults.vehicle_mods[id].duplicate()
 	if run.get("behavior_cards") is Array:run.behavior_cards=run.behavior_cards.filter(func(id):return UpgradeRegistry.has(str(id)))
-	if run.get("weapon_bag") is Array:run.weapon_bag=run.weapon_bag.filter(func(w):return w is Dictionary and str(w.get("id","")) in Game.LOOT.WEAPONS)
+	if run.get("weapon_bag") is Array:run.weapon_bag=run.weapon_bag.filter(func(w):return w is Dictionary and Game.LOOT.is_gun(str(w.get("id",""))))
 	return data
 static func valid(data:Dictionary)->bool:
 	if data.is_empty():return true

@@ -48,6 +48,7 @@ func _physics_process(delta):
 	for slot in range(Game.hero_loadout().size()):
 		if Input.is_action_just_pressed(Game.ability_action(slot)):skills.cast(slot)
 	if Game.wants_fire() and walker.turn_timer<=0 and fire_cooldown<=0:shoot()
+	if Input.is_action_just_pressed("melee"):Melee.swipe(avatar,self,weapon_id()==LootCatalog.PAWS,facing)
 
 ## The run behind the room (service rooms and the merchant keep the battle arena in `arena`).
 func run_arena():
@@ -60,6 +61,8 @@ func weapon_id()->String:
 ## The battle's shot: the gun in hand with its pellets, speed, range and damage (rarity and crate stats too).
 func shoot():
 	var id=weapon_id();var data=LOOT.WEAPONS[id]
+	# Empty hands: the paws scratch the air instead of a shot.
+	if id==LootCatalog.PAWS:fire_cooldown=data.interval;Melee.swipe(avatar,self,true,facing);return
 	var stats=CombatStats.weapon(run_arena(),id) if run_arena()!=null else {"damage":data.damage*Game.weapon_factor(id),"interval":data.interval}
 	if avatar.has_method("kick"):avatar.kick()
 	fire_cooldown=stats.interval

@@ -36,7 +36,7 @@ func near(avatar:Node3D)->bool:return avatar.global_position.distance_to(global_
 func roll_offers()->Array:
 	var index=int(room.get("index")) if room and "index" in room else int(arena.room_index)
 	var rng=RandomNumberGenerator.new();rng.seed=hash([int(arena.run_seed),index,"weapon_crate"])
-	var pool=Game.LOOT.WEAPONS.keys().filter(func(id):return id in Game.weapon_unlocks)
+	var pool=Game.LOOT.gun_ids().filter(func(id):return id in Game.weapon_unlocks)
 	if pool.is_empty():pool=[str(arena.weapon)]
 	var depth=clampf(float(Campaign.progress_index(index))/maxf(1.0,Campaign.SIZES.size()-1),0.0,1.0)
 	var result=[]

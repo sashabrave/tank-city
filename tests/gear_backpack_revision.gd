@@ -102,11 +102,11 @@ func run():
 	page.move("bag:%d" % gun_cell,"weapon")
 	check(str(r.weapon)==spare and r.weapon_bag.size()==1 and str(r.weapon_bag[0].id)==in_hand and Backpack.layout(r)[gun_cell].kind=="weapon","dragging the spare onto the weapon cell swaps the guns in place")
 	if free_cell>=0:
-		# Empty hands (2026-10-03): the gun in hand goes into a free cell; taking it back restores the hands.
+		# Empty hands (2026-10-03): the gun in hand goes into a free cell and the paws take over; taking it back.
 		page.move("weapon","bag:%d" % free_cell)
-		check(Backpack.holstered(r) and Backpack.layout(r)[free_cell].kind=="weapon" and Backpack.layout(r)[free_cell].index==-1,"the gun in hand goes into an empty cell: hands empty")
+		check(Backpack.holstered(r) and str(r.weapon)=="paws" and Backpack.layout(r)[free_cell].kind=="weapon" and str(Backpack.layout(r)[free_cell].item.id)==spare,"the gun in hand goes into an empty cell: paws in hand")
 		page.move("bag:%d" % free_cell,"weapon")
-		check(not Backpack.holstered(r) and str(r.weapon)==spare,"taking it back fills the hands")
+		check(not Backpack.holstered(r) and str(r.weapon)==spare and Backpack.layout(r)[free_cell]==null,"taking it back fills the hands and frees the cell")
 	page.move("weapon","bag:%d" % gun_cell)
 	check(str(r.weapon)==in_hand,"dragging the gun in hand onto the spare swaps back")
 	var data=preload("res://scripts/profile/run_checkpoint.gd").upgrade({"run":{"weapon_bag":[{"id":"shotgun"},{"id":"nope"}]}})
@@ -152,23 +152,43 @@ func run():
 		check(arena.room.pickups.size()==count and str(r.ammo_slots[std_slot].type)==Ammo.STANDARD,"the plain rounds cannot be thrown away")
 	r.weapon="";check(arena.ensure_armed() and str(r.weapon)==Game.selected_weapon,"no gun in hand: the HQ issues the chosen one")
 	r.weapon=gun_before;Ammo.ensure(r,gun_before)
-	# Empty hands and the tablet: closing is refused (the gear page stays and explains), the put-away gun cannot be
-	# thrown away, another spare taken in hand leaves the old one as an ordinary spare in its cell.
+	# Empty hands and the tablet (2026-10-03): the tablet closes; Space and V scratch with the paws; the paws
+	# deal the bare-hand damage grown by «Сила»; the model holds nothing.
 	while Backpack.free_cells(r)<2 and not r.ammo_bag.is_empty():r.ammo_bag.pop_back()
 	var tablet=get_tree().get_nodes_in_group("field_tablet")[0]
-	check(Backpack.holster(arena),"the gun can be put away any time")
-	var hand_cell=r.holster_cell
-	page.discard("bag:%d" % hand_cell)
-	check(Backpack.holstered(r) and str(r.weapon)==gun_before,"the put-away gun is the last one: it cannot be thrown away")
-	view.tab="fighter";tablet.close();await get_tree().process_frame
-	check(is_instance_valid(tablet) and not tablet.is_queued_for_deletion() and view.tab=="inventory","with empty hands the tablet does not close and shows the gear page")
-	check(cell(view,"weapon")!=null and cell(view,"weapon").get_node_or_null("EmptyHands")!=null,"the weapon cell says the hands are empty")
-	Backpack.add_weapon(arena,{"id":"smg" if gun_before!="smg" else "shotgun"})
+	check(Backpack.holster(arena) and str(r.weapon)=="paws","the gun can be put away any time")
+	view.tab="inventory";view.refresh();await get_tree().process_frame
+	check(cell(view,"weapon").get_node_or_null("EmptyHands")!=null,"the weapon cell reminds to take a gun")
+	tablet.close();await get_tree().process_frame
+	check(not is_instance_valid(tablet) or tablet.is_queued_for_deletion(),"with empty hands the tablet closes")
+	await get_tree().process_frame
+	check(arena.player.model.get("weapon_id")==null or arena.player.model.weapon_id=="paws","the cat holds nothing")
+	var level=Game.damage_level;Game.damage_level=0;var bare=Melee.damage(arena);Game.damage_level=4
+	check(absf(Melee.damage(arena)/bare-1.2)<.01,"«Сила» grows the bare-hand damage (+5% per level)")
+	Game.damage_level=level
+	arena.phase="combat"
+	var foe=arena.spawn_actor("soldier",arena.find_free_near(arena.player.cell+arena.player.facing),false,false,1)
+	foe.position=arena.player.position+Vector3(arena.player.facing.x,0,arena.player.facing.y)*1.0;var hp=foe.hp
+	arena.player.fire_cooldown=0;arena.player.shoot()
+	check(foe.hp<hp,"Space with empty hands scratches the enemy in front")
+	hp=foe.hp;arena.player.set_meta("melee_ready_at",0.0)
+	check(Melee.try(arena) and foe.hp<hp,"V strikes too")
+	check(not Melee.try(arena),"V has its own short cooldown")
+	foe.dead=true;arena.room.actors.erase(foe);foe.queue_free()
 	Backpack.equip_weapon(arena,r.weapon_bag.size()-1)
-	check(not Backpack.holstered(r) and Backpack.layout(r)[hand_cell].kind=="weapon" and str(Backpack.layout(r)[hand_cell].item.id)==gun_before,"taking another spare leaves the old gun in its cell")
-	Backpack.holster(arena);tablet.close(false)
-	check(not Backpack.holstered(r),"leaving for the hub puts the gun back in hand")
-	r.weapon=gun_before;r.weapon_bag.clear();Ammo.ensure(r,gun_before)
+	check(str(r.weapon)==gun_before and r.weapon_bag.is_empty(),"taking the gun back leaves no paws item behind")
+	# A gun in hand: V is a butt strike (melee, ×1.25 of the bare hand), Space stays an ordinary shot.
+	foe=arena.spawn_actor("soldier",arena.find_free_near(arena.player.cell+arena.player.facing),false,false,1)
+	foe.position=arena.player.position+Vector3(arena.player.facing.x,0,arena.player.facing.y)*1.0;foe.hp=99.0;foe.max_hp=99.0;foe.invulnerable=0
+	arena.player.set_meta("melee_ready_at",0.0);RunUpgrades.refresh_player(arena)
+	Melee.try(arena)
+	check(absf((99.0-foe.hp)-Melee.damage(arena)*Melee.BUTT)<.05,"with a gun V hits with the butt (%.2f)" % (99.0-foe.hp))
+	var bullets=arena.room.projectiles.size() if arena.room.get("projectiles")!=null else -1
+	foe.hp=99.0;arena.player.fire_cooldown=0;arena.player.shoot()
+	check(foe.hp==99.0 and (bullets<0 or arena.room.projectiles.size()>bullets),"with a gun Space shoots, it does not scratch")
+	foe.dead=true;arena.room.actors.erase(foe);foe.queue_free()
+	check(not "paws" in Game.LOOT.gun_ids() and not "paws" in Game.recipe_catalog("weapon"),"the paws are never listed, found or unlocked")
+	r.weapon=gun_before;r.weapon_bag.clear();Ammo.ensure(r,gun_before);arena.phase="paused"
 	await get_tree().process_frame;preload("res://scripts/ui/pause_tablet.gd").open(arena);await get_tree().create_timer(.4).timeout
 	view=get_tree().root.find_children("*","Control",true,false).filter(func(n):return n.get_script()==preload("res://scripts/ui/field_tablet.gd"))[0]
 	view.tab="inventory";view.refresh();await get_tree().process_frame

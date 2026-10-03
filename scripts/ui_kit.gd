@@ -233,6 +233,7 @@ const ART_GROUPS=["upgrades","stats","abilities","headquarters","garage","pickup
 static var icon_cache:Dictionary={}
 ## Memoised: several call sites refresh icons every frame; disk lookups happen once per id and set.
 static func icon_texture(id:String)->Texture2D:
+	if id==LootCatalog.PAWS:id="upgrade/damage"  # bare paws: the «Сила» glove
 	var key=Illustrations.current()+"|"+id
 	if not icon_cache.has(key):
 		# Drawn symbols (data/icon_kit.json) first; everything else goes through the old lookup.
