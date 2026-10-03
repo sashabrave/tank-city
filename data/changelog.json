@@ -1,53 +1,10 @@
 {
 	"entries": [
 		{
-			"date": "2026-10-02",
+			"date": "2026-10-03",
+			"version": "0.8.0",
 			"ru": {
-				"title": "Порядок в музыке",
-				"items": [
-					"Вся музыка собрана в «Главную тему»: 12 подтем со своими фанфарами и 19 отдельных треков играют вперемешку.",
-					"В настройках звука выбор станции: главная тема (все 12 подтем), ночная (шесть спокойных), дневная (шесть энергичных) или авто — по времени суток мира.",
-					"Радио стало проще: слева главная тема, подтемы и отдельные треки, справа их треки; видно, что играет и из какой подтемы.",
-					"Удалены старые чиповые треки, архив и неудачные черновики — игра стала легче.",
-					"Ночь стала по-настоящему тёмной и мягкой: луна и заполняющий свет слабее, особенно на светлом песке; прожекторы на мачтах светят узкими яркими пятнами; силуэты за краем поля темнее неба, ночные облака не светятся.",
-					"Силуэты по бокам поля стали объёмными: светотень, мягкий контурный свет, размер до двух раз больше; они заполняют пустые края экрана и уходят за них.",
-					"Поле боя стоит на земле цвета карты с мягкими холмами; по бокам — крупные абстрактные лоуполи-символы биома и войны (ели, скалы, барханы, ежи, снаряды, каски, ящики), спокойные по цвету.",
-					"Углы поля: прожекторов от одного до четырёх, в разных местах у угла и с разным поворотом; сами прожекторы проще. На бордюре меньше мусора, предметы стоят на нём и окрашены в цвет карты.",
-					"Карта мира: руины домов меньше, добавлены деревенские домики и арочный ангар.",
-					"Карта мира: W ведёт машину штаба вдоль дорог, под наклоном карты, а не строго вверх экрана; на дорогах прерывистая разметка, где-то свежая, где-то стёртая.",
-					"Карта мира: по краям вместо гор-пирамид — массивные ступенчатые плато с полосами пород и обломками у подножия.",
-					"К полю боя снизу ведёт широкий заезд-трапеция в цвет карты (80% ширины поля) с грунтовками налево и направо и следами шин; покрытие и детали под биом. Машина штаба заезжает из-за края экрана по широкой дуге, поднимается по насыпи с наклоном и потряхиванием на перепадах и плавно встаёт на место, а уезжает по другой дуге.",
-					"Начало боя по тактам: машина встала — боец выпрыгивает — строится стена. Неуязвимость в начале поля убрана.",
-					"Баланс: чертежи построек больше не теряются при гибели — штаб, стоянка и полигон открываются в первый час; генерал мира 1 слабее (600 здоровья вместо 700); испытания сложнее с каждой ступенью; уровень оружия даёт +4% урона вместо +1,5%.",
-					"Торговец на карте маршрута теперь — военная лавка: грузовик со свёрнутым тентом, полки с касками и патронами, столик, канистры и бочка."
-				]
-			},
-			"en": {
-				"title": "Music tidy-up",
-				"items": [
-					"All music forms one Main theme: 12 sub-themes with their own fanfares and 19 single tracks play shuffled.",
-					"Sound settings now pick a station: main theme (all 12 sub-themes), night (the six calmer), day (the six more energetic) or auto, following the world time of day.",
-					"The radio is simpler: main theme, sub-themes and single tracks on the left, their tracks on the right; you can see what is playing and from which sub-theme.",
-					"Old chip tracks, the archive and rejected drafts are removed, so the game is lighter.",
-					"Night is truly dark and soft now: the moon and fill light are weaker, especially on light sand; mast searchlights cast narrow bright pools; silhouettes beyond the field are darker than the sky, night clouds no longer glow.",
-					"Silhouettes beside the field are volumetric now: light and shade, a soft rim light, up to twice the size; they fill the empty screen sides and run past them.",
-					"The battle board stands on map-coloured ground with soft hills; beside it stand big abstract low-poly symbols of the biome and the war (pines, rocks, dunes, hedgehogs, shells, helmets, crates) in calm colours.",
-					"Field corners: one to four searchlights at varying spots near the corner and turned differently; the searchlights themselves are simpler. Less clutter on the rim; props stand on it in the map colour.",
-					"World map: smaller ruined houses, plus village cottages and an arched hangar.",
-					"World map: W drives the HQ truck along the roads, tilted with the map, not straight up the screen; roads have a dashed centre line, fresh on some, worn on others.",
-					"World map: the edges have massive terraced plateaus with rock strata and fallen blocks instead of pyramid mountains.",
-					"A wide map-coloured trapezoid entry (80% of the field width) leads up to the field from below, with dirt tracks to the left and right and tyre marks; surface and details follow the biome. The HQ truck drives in from off-screen in a wide arc, climbs the ramp tilting and jolting on the edges, parks smoothly, and leaves along the other arc.",
-					"Battle start in beats: the truck stops — the soldier hops out — the wall goes up. The start-of-field invulnerability is gone.",
-					"Balance: building blueprints are no longer lost on death — the HQ, garage and range open in the first hour; the world 1 general is weaker (600 health instead of 700); challenges get harder with every step; a weapon level gives +4% damage instead of +1.5%.",
-					"The merchant on the route map is now a military shop: a truck with its tarp rolled up, shelves of helmets and ammo, a little table, jerrycans and a barrel."
-				]
-			}
-		},
-		{
-			"date": "2026-10-02",
-			"version": "0.7.2",
-			"ru": {
-				"title": "Ночная полировка",
+				"title": "Демо: большое обновление",
 				"items": [
 					"При уроне краснеет только боец или машина, свет фонаря и фар остаётся прежним.",
 					"Некоторые фонари на поле изредка помигивают.",
@@ -162,11 +119,26 @@
 					"Песочница: новая вкладка «Снаряжение» — любые патроны любой редкости, рюкзак, аптечки, мешок, любая способность в любой слот и уровни класса для проверки вех.",
 					"Заголовки теперь набраны чистым Rubik, жирным и заглавными буквами, вместо «грязного» Rubik Dirt. Ими подписаны страницы планшета, станции, окна выбора, карточки усилений, этапы маршрута и итоги вылазки.",
 					"Смена фаз в бою («Волна 2», «Бой с генералом», «Командир») появляется ступеньками: слово за словом, каждое поднимается на место — как реплики в чате хаба.",
-					"Иконка игры крупнее: кот в каске и ствол танка во весь кадр, читается даже в маленьком размере."
+					"Иконка игры крупнее: кот в каске и ствол танка во весь кадр, читается даже в маленьком размере.",
+					"Вся музыка собрана в «Главную тему»: 12 подтем со своими фанфарами и 19 отдельных треков играют вперемешку.",
+					"В настройках звука выбор станции: главная тема (все 12 подтем), ночная (шесть спокойных), дневная (шесть энергичных) или авто — по времени суток мира.",
+					"Радио стало проще: слева главная тема, подтемы и отдельные треки, справа их треки; видно, что играет и из какой подтемы.",
+					"Удалены старые чиповые треки, архив и неудачные черновики — игра стала легче.",
+					"Ночь стала по-настоящему тёмной и мягкой: луна и заполняющий свет слабее, особенно на светлом песке; прожекторы на мачтах светят узкими яркими пятнами; силуэты за краем поля темнее неба, ночные облака не светятся.",
+					"Силуэты по бокам поля стали объёмными: светотень, мягкий контурный свет, размер до двух раз больше; они заполняют пустые края экрана и уходят за них.",
+					"Поле боя стоит на земле цвета карты с мягкими холмами; по бокам — крупные абстрактные лоуполи-символы биома и войны (ели, скалы, барханы, ежи, снаряды, каски, ящики), спокойные по цвету.",
+					"Углы поля: прожекторов от одного до четырёх, в разных местах у угла и с разным поворотом; сами прожекторы проще. На бордюре меньше мусора, предметы стоят на нём и окрашены в цвет карты.",
+					"Карта мира: руины домов меньше, добавлены деревенские домики и арочный ангар.",
+					"Карта мира: W ведёт машину штаба вдоль дорог, под наклоном карты, а не строго вверх экрана; на дорогах прерывистая разметка, где-то свежая, где-то стёртая.",
+					"Карта мира: по краям вместо гор-пирамид — массивные ступенчатые плато с полосами пород и обломками у подножия.",
+					"К полю боя снизу ведёт широкий заезд-трапеция в цвет карты (80% ширины поля) с грунтовками налево и направо и следами шин; покрытие и детали под биом. Машина штаба заезжает из-за края экрана по широкой дуге, поднимается по насыпи с наклоном и потряхиванием на перепадах и плавно встаёт на место, а уезжает по другой дуге.",
+					"Начало боя по тактам: машина встала — боец выпрыгивает — строится стена. Неуязвимость в начале поля убрана.",
+					"Баланс: чертежи построек больше не теряются при гибели — штаб, стоянка и полигон открываются в первый час; генерал мира 1 слабее (600 здоровья вместо 700); испытания сложнее с каждой ступенью; уровень оружия даёт +4% урона вместо +1,5%.",
+					"Торговец на карте маршрута теперь — военная лавка: грузовик со свёрнутым тентом, полки с касками и патронами, столик, канистры и бочка."
 				]
 			},
 			"en": {
-				"title": "Night polish",
+				"title": "Demo: the big update",
 				"items": [
 					"On a hit only the soldier or vehicle turns red; flashlights and headlights keep their colour.",
 					"Some field lamps flicker now and then.",
@@ -281,7 +253,22 @@
 					"Sandbox: new Equipment tab — any ammo of any rarity, backpack, medkits, a sack, any ability in any slot and class levels to check milestones.",
 					"Headings now use clean bold Rubik in capitals instead of the rough Rubik Dirt: tablet pages, stations, choice windows, upgrade cards, route stages and sortie results.",
 					"Battle phase titles («Wave 2», «General fight», «Commander») appear in steps, word after word rising into place, like lines in the hub chat.",
-					"The game icon is bolder: the helmeted cat and the tank barrel fill the frame, readable even when small."
+					"The game icon is bolder: the helmeted cat and the tank barrel fill the frame, readable even when small.",
+					"All music forms one Main theme: 12 sub-themes with their own fanfares and 19 single tracks play shuffled.",
+					"Sound settings now pick a station: main theme (all 12 sub-themes), night (the six calmer), day (the six more energetic) or auto, following the world time of day.",
+					"The radio is simpler: main theme, sub-themes and single tracks on the left, their tracks on the right; you can see what is playing and from which sub-theme.",
+					"Old chip tracks, the archive and rejected drafts are removed, so the game is lighter.",
+					"Night is truly dark and soft now: the moon and fill light are weaker, especially on light sand; mast searchlights cast narrow bright pools; silhouettes beyond the field are darker than the sky, night clouds no longer glow.",
+					"Silhouettes beside the field are volumetric now: light and shade, a soft rim light, up to twice the size; they fill the empty screen sides and run past them.",
+					"The battle board stands on map-coloured ground with soft hills; beside it stand big abstract low-poly symbols of the biome and the war (pines, rocks, dunes, hedgehogs, shells, helmets, crates) in calm colours.",
+					"Field corners: one to four searchlights at varying spots near the corner and turned differently; the searchlights themselves are simpler. Less clutter on the rim; props stand on it in the map colour.",
+					"World map: smaller ruined houses, plus village cottages and an arched hangar.",
+					"World map: W drives the HQ truck along the roads, tilted with the map, not straight up the screen; roads have a dashed centre line, fresh on some, worn on others.",
+					"World map: the edges have massive terraced plateaus with rock strata and fallen blocks instead of pyramid mountains.",
+					"A wide map-coloured trapezoid entry (80% of the field width) leads up to the field from below, with dirt tracks to the left and right and tyre marks; surface and details follow the biome. The HQ truck drives in from off-screen in a wide arc, climbs the ramp tilting and jolting on the edges, parks smoothly, and leaves along the other arc.",
+					"Battle start in beats: the truck stops — the soldier hops out — the wall goes up. The start-of-field invulnerability is gone.",
+					"Balance: building blueprints are no longer lost on death — the HQ, garage and range open in the first hour; the world 1 general is weaker (600 health instead of 700); challenges get harder with every step; a weapon level gives +4% damage instead of +1.5%.",
+					"The merchant on the route map is now a military shop: a truck with its tarp rolled up, shelves of helmets and ammo, a little table, jerrycans and a barrel."
 				]
 			}
 		},
