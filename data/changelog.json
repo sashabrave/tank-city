@@ -135,8 +135,9 @@
 					"Начало боя по тактам: машина встала — боец выпрыгивает — строится стена. Неуязвимость в начале поля убрана.",
 					"Баланс: чертежи построек больше не теряются при гибели — штаб, стоянка и полигон открываются в первый час; генерал мира 1 слабее (600 здоровья вместо 700); испытания сложнее с каждой ступенью; уровень оружия даёт +4% урона вместо +1,5%.",
 					"Торговец на карте маршрута теперь — военная лавка: грузовик со свёрнутым тентом, полки с касками и патронами, столик, канистры и бочка.",
-					"Тени в игре на 30% мягче по краям.",
-					"Земля вокруг поля и заезд больше не ловят грубые прямоугольные тени при низком солнце."
+					"Тени в игре пушистые: края заметно размыты — на поле, в хабе и на карте.",
+					"Земля вокруг поля и заезд больше не ловят грубые прямоугольные тени при низком солнце.",
+					"Заезд к полю — в цвет земли под полем, темнее поля и бордюра."
 				]
 			},
 			"en": {
@@ -271,8 +272,9 @@
 					"Battle start in beats: the truck stops — the soldier hops out — the wall goes up. The start-of-field invulnerability is gone.",
 					"Balance: building blueprints are no longer lost on death — the HQ, garage and range open in the first hour; the world 1 general is weaker (600 health instead of 700); challenges get harder with every step; a weapon level gives +4% damage instead of +1.5%.",
 					"The merchant on the route map is now a military shop: a truck with its tarp rolled up, shelves of helmets and ammo, a little table, jerrycans and a barrel.",
-					"Shadows in the game have 30% softer edges.",
-					"The ground around the field and the entry ramp no longer catch blocky rectangular shadows at a low sun."
+					"Shadows are fluffy now: clearly blurred edges on the field, in the hub and on the map.",
+					"The ground around the field and the entry ramp no longer catch blocky rectangular shadows at a low sun.",
+					"The field entry ramp is the colour of the ground under the board, darker than the field and the rim."
 				]
 			}
 		},

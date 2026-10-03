@@ -26,8 +26,8 @@ func build(arena,ground_node,seed_value:int):
 	x0=0.0
 	narrow=arena.grid_size*.8;wide=narrow*rng.randf_range(1.3,1.45)
 	var edge=Color(str(palette.get("edge","7d8270")));var floor=Color(str(palette.get("floor","9aa08a")))
-	# As close to the map colour as possible, so the apron does not stand out (author, 0.8).
-	var earth=floor.lerp(edge,.25).darkened(.03)
+	# The colour of the ground under the board (author): darker than the field and the rim.
+	var earth:Color=preload("res://scripts/backdrop_ground.gd").colors(palette,family)[0]
 	apron(earth)
 	match family:
 		"city":slabs(earth,rng)

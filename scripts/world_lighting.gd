@@ -26,7 +26,7 @@ const MOMENTS={
 const DAY_MOMENTS=["dawn","morning","noon","golden","sunset"]
 const NIGHT_MOMENTS=["dusk","moon","predawn"]
 ## Below this sun height, shadows fade towards LOW_SUN_SHADOW opacity so long stripes do not cover the field.
-const SOFTER=1.3  # shadow edge blur multiplier, author request (30% softer)
+const SOFTER=2.0  # shadow edge blur multiplier: fluffy, blurred shadows (author); needs the high filter quality
 const LOW_SUN=30.0
 const LOW_SUN_SHADOW=.55
 ## Battle-only moment; hub and route map keep the style sun. Deterministic per run and room,
