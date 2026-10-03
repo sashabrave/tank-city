@@ -14,6 +14,8 @@ var room:Node3D
 var arena
 var modal:Control
 var offers:Array=[]
+## Gun shown when there are no offers (previews and tests).
+var preview_gun:="rifle"
 static func place(parent:Node3D,context,at:Vector3)->Node3D:
 	var locker=load("res://scripts/weapon_locker.gd").new();locker.room=parent;locker.arena=context;locker.position=at;parent.add_child(locker);return locker
 func _ready():
@@ -25,12 +27,27 @@ func _ready():
 	Visuals.box(self,Vector3(0,.7,-.36),Vector3(1.1,.06,.5),olive.darkened(.1),"paint").rotation.x=-1.1
 	Visuals.box(self,Vector3(0,.72,0),Vector3(1.0,.04,.46),Color("c8b27a"),"fabric")
 	for dx in [-.5,.5]:Visuals.box(self,Vector3(dx,.45,.29),Vector3(.08,.5,.03),Color("6c777b"),"steel")
-	for i in range(3):
-		var gun=Visuals.model("weapon_"+["rifle","shotgun","smg"][i],self,Vector3(-.3+i*.3,.78,0));gun.rotation=Vector3(0,PI*.5,PI*.5);gun.scale=Vector3.ONE*.7
+	if arena:offers=roll_offers()
+	# One big gun on the straw (author, 3 Oct: three small ones read as litter) — the crate's first offer.
+	var shown=str(offers[0].id) if not offers.is_empty() else preview_gun
+	var gun=Visuals.model("weapon_"+shown,self,Vector3(0,.84,.02))
+	if gun:lay_gun(gun,shown)
 	Visuals.label3d(self,"Оружие · E",Vector3(0,1.4,0),Color("fff0ce"),24)
 	if room:preload("res://scripts/interaction_prompt.gd").attach(self,room,"Оружие",Vector3.ZERO,1.4)
-	if arena:offers=roll_offers()
 func near(avatar:Node3D)->bool:return avatar.global_position.distance_to(global_position)<1.4
+## Lays the gun on the straw whatever axes its model uses: the longest side along the crate, the next one up, the
+## flat side to the camera, leaning back a little; 0.9 of the crate's width long (handguns shorter), centred.
+const GUN_LENGTH:={"pistol":.5,"smg":.7}
+func lay_gun(gun:Node3D,gun_id:String):
+	var local=Visuals.mesh_bounds(gun,gun.transform.affine_inverse());var size=local.size
+	var axes=[0,1,2];axes.sort_custom(func(a,b):return size[a]>size[b])
+	var images=[Vector3.RIGHT,Vector3.UP,Vector3.BACK];var columns=[Vector3.ZERO,Vector3.ZERO,Vector3.ZERO]
+	for k in range(3):columns[axes[k]]=images[k]
+	var turn=Basis(columns[0],columns[1],columns[2])
+	if turn.determinant()<0:columns[axes[2]]=-columns[axes[2]];turn=Basis(columns[0],columns[1],columns[2])
+	gun.transform=Transform3D(Basis(Vector3.RIGHT,-.45)*turn*Basis.from_scale(Vector3.ONE*(float(GUN_LENGTH.get(gun_id,.9))/maxf(size[axes[0]],.05))),Vector3.ZERO)
+	var placed=Visuals.mesh_bounds(gun,Transform3D.IDENTITY);var center=placed.get_center()
+	gun.position=Vector3(-center.x,.74-placed.position.y,-center.z)
 
 ## Three offers {id, rarity, stats, price, sold} from the unlocked weapons, rolled once for this room.
 func roll_offers()->Array:
