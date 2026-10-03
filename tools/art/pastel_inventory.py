@@ -30,6 +30,13 @@ def paint(a, mask, target, keep_value=True):
         a[y, x, :3] = (r * 255, g * 255, b * 255)
     return a
 
+def silver(a, mask, light=.92):
+    """Light silver: keep the shading, drop the colour, lift the value a little."""
+    lum = a[..., :3] @ np.array([.3, .59, .11])
+    v = np.clip(lum * .82 + 255 * .2, 0, 255) * light / .92
+    for k, tint in enumerate((.99, 1.0, 1.02)):
+        a[..., k] = np.where(mask, np.clip(v * tint, 0, 255), a[..., k])
+
 def source(name):
     SRC.mkdir(parents=True, exist_ok=True)
     keep = SRC / name
@@ -59,8 +66,28 @@ def ammo():
         hsv = to_hsv(a)
         xx = np.mgrid[0:h, 0:w][1]
         stripe = (a[..., 3] > 30) & (xx > w * .56) & (hsv[..., 1] > .5) & (hsv[..., 2] > .3)
-        if stripe.sum() < 30: continue
-        a = paint(a, stripe, pastel(rgb(hexc)))
+        if stripe.sum() >= 30: a = paint(a, stripe, pastel(rgb(hexc)))
+        # The cartridge (author, 3 Oct): light silver casing, the tip in a calm pastel of the effect colour.
+        yy = np.mgrid[0:h, 0:w][0]
+        # The cartridge is the column of pixels standing above the box top; the box behind it is left alone.
+        solid = a[..., 3] > 30
+        # column tops: the cartridge columns reach far higher than the half-height box
+        tops = np.where(solid.any(axis=0), solid.argmax(axis=0), h)
+        bottom_all = h - 1 - solid[::-1].argmax(axis=0).max()
+        reach = (h - tops) / max(1, h - tops.min())
+        cols = reach > .72
+        cart = solid & cols[None, :]
+        ys = np.nonzero(cart)[0]
+        if len(ys):
+            top, bottom = ys.min(), ys.max()
+            nose = .42 if kind in ("cluster", "napalm") else .33
+            tip = cart & (yy < top + (bottom - top) * nose)
+            # only the warm brass of the casing, not the olive box behind it
+            brass = (hsv[..., 0] > .05) & (hsv[..., 0] < .17) & (hsv[..., 1] > .25)
+            casing = cart & ~tip & brass
+            silver(a, casing)
+            if kind != "standard": a = paint(a, tip & (hsv[..., 1] > .2), pastel(rgb(hexc), .3))
+            else: a = paint(a, tip & (hsv[..., 1] > .2), pastel(rgb("c98a5e"), .3))   # soft copper
         Image.fromarray(np.clip(a, 0, 255).astype("uint8")).save(SYM / name, optimize=True)
 
 if __name__ == "__main__":
