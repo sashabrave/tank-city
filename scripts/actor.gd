@@ -297,6 +297,8 @@ func _physics_process(delta):
 			var dir=arena.path_direction(self);set_facing(dir)
 			if turn_left==0:try_move(dir)
 		return
+	# T-152: no control while the room intro plays (HQ drive-in, hop-out, run to the start cell).
+	if player_owned and arena.get_meta("intro_lock",false):return
 	if player_owned:
 		if occupying_trench:
 			var aim=Game.direction()

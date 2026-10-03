@@ -1,5 +1,5 @@
 {
-	"next_id": 148,
+	"next_id": 155,
 	"tasks": [
 		{
 			"id": "T-001",
@@ -1856,6 +1856,97 @@
 			"source": "game",
 			"status": "review",
 			"title": "непонятная логика",
+			"type": "bug",
+			"version": "0.8.0"
+		},
+		{
+			"created": "2026-10-03",
+			"id": "T-148",
+			"note": "",
+			"priority": 2.0,
+			"scene": "hub",
+			"shot": "res://tasks/shots/T-148.png",
+			"source": "game",
+			"status": "backlog",
+			"title": "тут бы награды какие-то за достиежение этапов",
+			"type": "idea",
+			"version": "0.8.0"
+		},
+		{
+			"created": "2026-10-03",
+			"id": "T-149",
+			"note": "во вторых история какаято про рубеж 13 невнятная и то что один остался уже не катит вокруг движуха дроны летают и танки ездят уже на начальном экране. надо как-то придумать лайтово вселенную и к ней привзяать диалоги , чекни потом уже сделем походу)",
+			"priority": 2.0,
+			"scene": "hub",
+			"shot": "res://tasks/shots/T-149.png",
+			"source": "game",
+			"status": "backlog",
+			"title": "тут во первых кнопки слиплись",
+			"type": "bug",
+			"version": "0.8.0"
+		},
+		{
+			"created": "2026-10-03",
+			"id": "T-150",
+			"note": "",
+			"priority": 2.0,
+			"scene": "hub",
+			"shot": "res://tasks/shots/T-150.png",
+			"source": "game",
+			"status": "backlog",
+			"title": "в квестах табы вкладки должны быть горизонтальными",
+			"type": "bug",
+			"version": "0.8.0"
+		},
+		{
+			"created": "2026-10-03",
+			"id": "T-151",
+			"note": "",
+			"priority": 2.0,
+			"scene": "arena",
+			"shot": "res://tasks/shots/T-151.png",
+			"source": "game",
+			"status": "backlog",
+			"title": "вот тут текст разъехался",
+			"type": "bug",
+			"version": "0.8.0"
+		},
+		{
+			"created": "2026-10-03",
+			"id": "T-152",
+			"note": "я зажал кнопку и убежал во время анимации за пределы поля вообще",
+			"priority": 2.0,
+			"scene": "arena",
+			"shot": "res://tasks/shots/T-152.png",
+			"source": "game",
+			"status": "backlog",
+			"title": "отключить управление игроком до начала боя",
+			"type": "bug",
+			"version": "0.8.0"
+		},
+		{
+			"created": "2026-10-03",
+			"id": "T-153",
+			"note": "",
+			"priority": 2.0,
+			"scene": "arena",
+			"shot": "res://tasks/shots/T-153.png",
+			"source": "game",
+			"status": "backlog",
+			"title": "верни анимацию когда игрок выпрыгивает из машины на центральную клетку поля",
+			"type": "bug",
+			"version": "0.8.0"
+		},
+		{
+			"created": "2026-10-03",
+			"id": "T-154",
+			"note": "вроде все в нужную сторону но переосмысли",
+			"priority": 2,
+			"scene": "hub",
+			"shot": "res://tasks/shots/T-154.png",
+			"source": "game",
+			"status": "backlog",
+			"title": "ох первая итерация вроде норм но както мусорно и непонятно, переосмысли еще раз, картоки класов лучше расположить горизонтальными табавми а внизу самой нижней строкой две ячейки способнсотей и кнопка взять  (заблокировано /условие разблокировки)",
 			"type": "bug",
 			"version": "0.8.0"
 		}

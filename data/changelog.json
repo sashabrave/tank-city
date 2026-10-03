@@ -140,7 +140,8 @@
 					"Заезд к полю — в цвет земли под полем, темнее поля и бордюра; на нём ровные полосы следов шин без лишних плиток.",
 					"«Забег дня» и таблица «Топ» доступны с самого начала — отдельные кнопки под карточками миров.",
 					"Точки уведомлений по одному правилу: на вкладке, станции и в хабе точка горит, пока есть хоть один новый предмет, и гаснет, как только просмотрен последний.",
-					"Казарма → «Классы» переделана: слева столбик классов, справа шкала уровня с вехами (3 — слот 1, 5 — перк, 7 — Q сильнее, 10 — мастерство) и одна кнопка уровня, два слота способностей — Q всегда в слоте, в слот 1 одна из двух берётся тапом бесплатно — и четыре характеристики. Кукла в планшете по центру."
+					"Казарма → «Классы» переделана: слева столбик классов, справа шкала уровня с вехами (3 — слот 1, 5 — перк, 7 — Q сильнее, 10 — мастерство) и одна кнопка уровня, два слота способностей — Q всегда в слоте, в слот 1 одна из двух берётся тапом бесплатно — и четыре характеристики. Кукла в планшете по центру.",
+					"Во время заезда штаба и выхода бойца управление отключено: боец выпрыгивает, обегает стену и встаёт на клетку — тогда начинается бой."
 				]
 			},
 			"en": {
@@ -280,7 +281,8 @@
 					"The field entry ramp is the colour of the ground under the board, darker than the field and the rim, with smooth tyre-mark strips and no stray tiles.",
 					"The daily run and its «Top» table are open from the start — separate buttons under the world cards.",
 					"Notification dots follow one rule: on a tab, a station and in the hub a dot stays while any item is new and goes out as soon as the last one is viewed.",
-					"Barracks → «Classes» redone: a class column on the left; on the right a level track with milestones (3 — slot 1, 5 — perk, 7 — stronger Q, 10 — mastery) and one level button, two ability slots — Q always in, slot 1 takes one of two by a tap, free — and four stats. The tablet doll is centred."
+					"Barracks → «Classes» redone: a class column on the left; on the right a level track with milestones (3 — slot 1, 5 — perk, 7 — stronger Q, 10 — mastery) and one level button, two ability slots — Q always in, slot 1 takes one of two by a tap, free — and four stats. The tablet doll is centred.",
+					"Controls are off while the HQ drives in and the soldier hops out: he jumps, runs round the wall and takes his cell — then the fight begins."
 				]
 			}
 		},

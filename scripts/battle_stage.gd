@@ -29,6 +29,7 @@ static func stop(arena):
 	for t in arena.get_meta("stage_tweens",[]):
 		if t is Tween and t.is_valid():t.kill()
 	arena.set_meta("stage_tweens",[])
+	arena.set_meta("intro_lock",false)
 	# A cut-short intro must not leave the soldier hidden.
 	var actor=arena.get("player")
 	if is_instance_valid(actor) and actor.has_meta("stage_hidden"):actor.remove_meta("stage_hidden")
@@ -63,6 +64,7 @@ static func intro(arena):
 		# to the start cell — and the fight begins the moment he stops (the countdown is set to this sequence).
 		ramp_arrival(arena,hq,approach,rest,yaw)
 		var land=Vector2i(maxi(0,arena.base_cell.x-2),arena.base_cell.y)
+		arena.set_meta("intro_lock",true)
 		hop_and_run(arena,rest,land,ARRIVE_RAMP+BEAT)
 		build_bricks(arena,ARRIVE_RAMP+BEAT+HOP-BRICKS_AT,land)
 		arena.countdown=ARRIVE_RAMP+BEAT+HOP+RUN
@@ -100,7 +102,7 @@ static func ramp_arrival(arena,hq:Node3D,approach,rest:Vector3,yaw:float):
 	var bumps=[approach.front,approach.front+approach.LENGTH]
 	var drive=func(t:float):
 		if not is_instance_valid(hq):return
-		var d=t*length;var p=curve.sample_baked(d,true);var ahead=curve.sample_baked(minf(length,d+.9),true)
+		var d=t*length;var p=curve.sample_baked(d,true);var ahead=curve.sample_baked(minf(length,d+1.5),true)
 		var h=approach.path_height(p) if p.z>rest.z+.01 else rest.y
 		var h_ahead=approach.path_height(ahead) if ahead.z>rest.z+.01 else rest.y
 		var jolt=0.0
@@ -113,7 +115,7 @@ static func ramp_arrival(arena,hq:Node3D,approach,rest:Vector3,yaw:float):
 		hq.rotation.y=target if t<.01 or t>=1.0 else lerp_angle(hq.rotation.y,target,.22)
 		hq.rotation.x=0.0 if t>=1.0 else -atan2(h_ahead-h,maxf(.05,flat.length()))+jolt*.05*sin(t*120.0)
 	var tween=stage_tween(arena)
-	tween.tween_method(drive,0.0,1.0,ARRIVE_RAMP).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	tween.tween_method(drive,0.0,1.0,ARRIVE_RAMP).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)  # brakes into the turn
 	tween.tween_callback(func():
 		if not is_instance_valid(hq):return
 		hq.position=rest;hq.rotation=Vector3(0,yaw,0)
@@ -126,7 +128,8 @@ static func ramp_arrival(arena,hq:Node3D,approach,rest:Vector3,yaw:float):
 static func approach_curve(approach,s:float,rest:Vector3,forward:Vector3,arriving:bool)->Curve3D:
 	var track:Array=approach.get_meta("track_left" if s<0 else "track_right")
 	var points:Array=[]
-	for i in range(track.size()-1,0,-4):points.append(Vector3(track[i].x,0,track[i].z))
+	# From just past the screen edge (not the far end of the track): a shorter path keeps the turns gentle.
+	for i in range(16,0,-4):points.append(Vector3(track[i].x,0,track[i].z))
 	var lane=approach.lane(s)
 	points.append(Vector3(lane,0,approach.front+approach.LENGTH));points.append(Vector3(lane,0,approach.front+.1))
 	points.append(Vector3(rest.x,0,rest.z))
@@ -138,10 +141,10 @@ static func approach_curve(approach,s:float,rest:Vector3,forward:Vector3,arrivin
 		curve.set_point_in(i,-tangent);curve.set_point_out(i,tangent)
 	# Over the rim straight up/down the board; at the post the path runs along the HQ heading.
 	var top=curve.point_count-2 if arriving else 1
-	var up=Vector3(0,0,-1.4) if arriving else Vector3(0,0,1.4)
+	var up=Vector3(0,0,-1.1) if arriving else Vector3(0,0,1.1)
 	curve.set_point_in(top,-up*.7);curve.set_point_out(top,up)
-	if arriving:curve.set_point_in(curve.point_count-1,-forward*1.4)
-	else:curve.set_point_out(0,forward*1.4)
+	if arriving:curve.set_point_in(curve.point_count-1,-forward*2.4)
+	else:curve.set_point_out(0,forward*2.4)
 	return curve
 ## 0.8: the soldier hops out of the HQ onto `land` (next to the wall start), then runs in an arc round the
 ## outside of the barrier to his start cell. Model-only animation; the actor stands on the start cell.
@@ -181,6 +184,7 @@ static func hop_and_run(arena,from:Vector3,land:Vector2i,arrive:float):
 		follow.call()
 	tween.tween_method(run,0.0,1.0,RUN).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	tween.tween_callback(func():
+		arena.set_meta("intro_lock",false)
 		if is_instance_valid(model):model.position=home;model.rotation.y=turn
 		for i in range(marks.size()):
 			if is_instance_valid(marks[i]):marks[i].position=mark_home[i])
@@ -273,7 +277,7 @@ static func ramp_departure(arena,hq:Node3D,approach,rest:Vector3,yaw:float,s:flo
 	var fort=fort_walls(arena);var knocked={}
 	var drive=func(t:float):
 		if not is_instance_valid(hq):return
-		var d=t*length;var p=curve.sample_baked(d,true);var ahead=curve.sample_baked(minf(length,d+.9),true)
+		var d=t*length;var p=curve.sample_baked(d,true);var ahead=curve.sample_baked(minf(length,d+1.5),true)
 		var h=approach.path_height(p) if p.z>rest.z+.01 else rest.y
 		var h_ahead=approach.path_height(ahead) if ahead.z>rest.z+.01 else rest.y
 		var jolt=0.0

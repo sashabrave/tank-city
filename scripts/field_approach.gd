@@ -50,7 +50,7 @@ func path_height(p:Vector3)->float:
 	return ground_height(p.x,p.z)
 func ground_height(x:float,z:float)->float:return ground.height(x,z) if ground else -1.0
 ## Lane x on the apron for a side (-1 left, 1 right).
-func lane(side:float)->float:return side*narrow*.27
+func lane(side:float)->float:return side*narrow*.32  # wide enough for a gentle quarter turn into the post
 
 ## The trapezoid: top surface plus side skirts down to the ground, one mesh.
 func apron(color:Color):
