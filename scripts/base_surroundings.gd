@@ -41,25 +41,34 @@ static func route(parent:Node3D,length:float):
 		# Mountains: few and big, every 12–18 units, centres beyond the visible ground so they are cut by the edge.
 		var z=12.0-rng.randf_range(0,8)
 		while z>-length-14:
-			mountain(decor,Vector3(side*rng.randf_range(24.0,31.0),-.5,z),rng)
-			z-=rng.randf_range(12.0,18.0)
+			mountain(decor,Vector3(side*rng.randf_range(21.0,27.0),-.5,z),rng)
+			z-=rng.randf_range(11.0,16.0)
 		# Ruins: one block every 7–11 units on the inner belt.
 		z=8.0-rng.randf_range(0,5)
 		while z>-length-6:
 			ruin(decor,Vector3(side*rng.randf_range(12.0,16.5),-.45,z),rng,side)
 			z-=rng.randf_range(7.0,11.0)
 		if rng.randf()<.6:industry(decor,Vector3(side*rng.randf_range(11.5,13.0),-.45,-rng.randf_range(0,length)),rng)
-## A large pyramid with 4–6 faces, a smaller shoulder peak, a dark stratum band and a snow cap.
+## Massif (0.8): a big terraced plateau instead of a pyramid — three to four stacked faceted tiers with flat
+## tops, each a little off-centre and narrower, darker strata bands at the steps, a few fallen blocks at the foot.
 static func mountain(parent:Node3D,base:Vector3,rng:RandomNumberGenerator):
 	var mini=preload("res://scripts/route_miniatures.gd")
-	var rock=Color("8f9384").darkened(rng.randf_range(0,.14));var height=rng.randf_range(8.0,13.0);var radius=rng.randf_range(7.0,10.5)
-	var sides=rng.randi_range(4,6);var yaw=rng.randf()*TAU
-	var peak=mini.cylinder(parent,base,radius,height,rock,sides,.08);peak.rotation.y=yaw;peak.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	var shoulder_at=base+Vector3(rng.randf_range(-.6,.6)*radius,0,rng.randf_range(-.8,.8)*radius)
-	var shoulder=mini.cylinder(parent,shoulder_at,radius*.62,height*rng.randf_range(.45,.65),rock.darkened(.08),sides,.06);shoulder.rotation.y=yaw+.5;shoulder.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	var band=mini.cylinder(parent,base+Vector3(0,height*.28,0),radius*.73,.18,rock.darkened(.25),sides,radius*.71);band.rotation.y=yaw;band.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	var cap_h=height*.22
-	var cap=mini.cylinder(parent,base+Vector3(0,height-cap_h-.02,0),radius*cap_h/height+.05,cap_h+.04,Color("ecebe4"),sides,.06);cap.rotation.y=yaw;cap.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var rock=Color("9a9a8a").darkened(rng.randf_range(0,.12));var radius=rng.randf_range(7.5,11.0)
+	var sides=rng.randi_range(6,8);var yaw=rng.randf()*TAU
+	var tiers=rng.randi_range(3,4);var y=base.y;var center=base;var r=radius
+	for t in range(tiers):
+		var height=rng.randf_range(1.6,2.6)*(1.0 if t<tiers-1 else 1.3)
+		var tier=mini.cylinder(parent,Vector3(center.x,y,center.z),r,height,rock.darkened(.05*t),sides,r*rng.randf_range(.86,.94))
+		tier.rotation.y=yaw+t*.4;tier.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		# Strata band at the step: a thin darker ring just under the tier top.
+		var band=mini.cylinder(parent,Vector3(center.x,y+height-.32,center.z),r*.97,.16,rock.darkened(.22),sides,r*.95)
+		band.rotation.y=yaw+t*.4;band.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		y+=height;r*=rng.randf_range(.58,.74)
+		center+=Vector3(rng.randf_range(-.18,.18),0,rng.randf_range(-.18,.18))*radius
+	for k in range(rng.randi_range(2,4)):
+		var a=rng.randf()*TAU;var d=radius*rng.randf_range(1.0,1.2)
+		var boulder=Visuals.box(parent,base+Vector3(cos(a)*d,rng.randf_range(.3,.7),sin(a)*d),Vector3.ONE*rng.randf_range(1.0,2.0),rock.darkened(rng.randf_range(.05,.2)))
+		boulder.rotation=Vector3(rng.randf(),rng.randf()*TAU,rng.randf());boulder.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 static var facade_cache:={}
 static func facade(color:Color,brick:bool,burnt:float,seed_value:float)->ShaderMaterial:
 	var key="%s|%s|%.2f|%d" % [color.to_html(),brick,burnt,int(seed_value)%7]
