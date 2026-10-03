@@ -13,7 +13,7 @@ func run():
 		while hub.phase=="intro" and Time.get_ticks_msec()-started<3000:await get_tree().process_frame
 		assert(hub.phase=="combat" and hub.root.visible and hub.dpad.enabled)
 		assert(hub.avatar.position.is_equal_approx(Vector3(3,0,1)) and hub.cell==Vector2i(3,1))
-		assert(is_equal_approx(get_viewport().get_camera_3d().size,11.8))
+		assert(is_equal_approx(get_viewport().get_camera_3d().size,11.2))  # hub camera 5% closer (0.7.2)
 		if visit==0 and DisplayServer.get_name()!="headless":
 			RenderingServer.force_draw();get_viewport().get_texture().get_image().save_png("/tmp/printer_hub.png")
 			var cam=get_viewport().get_camera_3d();hub.root.hide();cam.size=4;cam.position+=hub.printer_pos+Vector3(0,.7,0)
