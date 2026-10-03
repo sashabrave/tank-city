@@ -1344,7 +1344,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-106.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "на этом экране уровень класса надо показывать на карточке класса",
 			"type": "polish",
 			"version": "0.7.2-pre"
@@ -1841,7 +1841,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-146.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "вот тут куклу игрока надо по центру блока расположит, сецчас съезала",
 			"type": "polish",
 			"version": "0.8.0"
@@ -1854,7 +1854,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-147.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "непонятная логика",
 			"type": "bug",
 			"version": "0.8.0"
