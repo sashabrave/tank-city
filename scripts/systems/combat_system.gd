@@ -24,7 +24,9 @@ func spawn_bullet(owner_actor,pos: Vector3,dir: Vector2i,damage: float,friendly:
 		bullet.pierce_left=int(arena.run.pierce)
 		# Бронебойные патроны: the bullet goes through more enemies (soldier's weapon only).
 		var ammo=Ammo.effective(arena)
-		if owner_actor.kind=="soldier" and ammo.type=="ap":bullet.pierce_left+=int(ammo.stats.get("pierce",1))+(1 if ammo.get("twist",false) else 0)
+		if owner_actor.kind=="soldier" and ammo.type=="ap":
+			bullet.pierce_left+=int(ammo.stats.get("pierce",1))+(1 if ammo.get("twist",false) else 0)
+			bullet.shield_pierce_chance=Ammo.shield_pierce(ammo)
 		# Выдержка: a volley after 1.5 s of silence is marked; every pellet of it keeps the bonus.
 		var run=arena.run
 		if "opening_shot" in run.behavior_cards and run.elapsed-run.last_player_shot>=1.5:run.opening_until=run.elapsed+.05
@@ -95,7 +97,10 @@ func bullet_hit(bullet) -> bool:
 		var hit=absf(pos.x-actor.position.x)<actor.footprint*.5-.1 and absf(pos.z-actor.position.z)<actor.footprint*.5-.1 if actor.footprint>1 else (absf(pos.x-actor.position.x)<.85 and absf(pos.z-actor.position.z)<.85) if actor.elite else arena.flat_distance(pos,actor.position)<(.30 if actor.kind in ["soldier","drone"] else .46)
 		if hit:
 			if not bullet.star_power and actor.blocks_shot(bullet.travel_direction):
-				arena.burst(pos,Color("9eb6c3"),.3);Game.sound("ricochet",arena);return true
+				if bullet.shield_pierce_chance<=0.0 or arena.combat_rng.randf()>=bullet.shield_pierce_chance:
+					arena.burst(pos,Color("9eb6c3"),.3);Game.sound("ricochet",arena);return true
+				# Armor-piercing round punched through the shield: a bright spark, then the hit lands.
+				arena.burst(pos,Color("ffe0a0"),.45);Game.sound("shield_hit",arena)
 			bullet.hit_actors.append(actor)
 			actor.resource_blast=Vector3.ZERO
 			var amount=actor.max_hp if bullet.star_power else bullet.damage

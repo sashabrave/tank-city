@@ -5,7 +5,7 @@
 [resource]
 script = ExtResource("1")
 id = "stun"
-title = "Контузия"
+title = "Контузящие патроны"
 category = "Оружие"
 family = "ammo"
 icon = "device_cooldown"
@@ -14,4 +14,4 @@ weight = 8
 max_stacks = 1
 modifiers = Array[Dictionary]([{"stat": "stun_chance", "op": "add", "value": 0.1}])
 preview = "stun"
-detail = "Шанс оглушить врага на 0,8 с: он не двигается и не стреляет. Босс втрое короче. Открывает усиления контузии."
+detail = "Патроны в слот: шанс оглушить врага — он не двигается и не стреляет. Босс оглушается втрое короче. Открывает усиления контузии."

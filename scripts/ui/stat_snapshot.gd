@@ -94,10 +94,14 @@ static func state(arena=null)->Array:
 		if left==0.0:continue
 		result.append({"icon":entries[id][0],"title":preload("res://scripts/ui/status_strip.gd").HINTS.get(id,id).get_slice(":",0),"value":"%s с" % UiKit.number(snappedf(left,.1)) if left>0 else "Активно","remaining":-1.0 if left<0 else clampf(left/maxf(left,float(totals.get(id,left))),0,1)})
 	var run=arena.run
-	if run.burn_chance>0:
-		result.append({"icon":"fire","title":"Поджог","value":"%d%% · урон ×%s · %s с" % [roundi(minf(CombatMods.CAPS.burn_chance,run.burn_chance)*100),UiKit.number(1.0+run.burn_power),UiKit.number(CombatMods.burn_time(run))]+(" · цепь" if "chain_fire" in run.behavior_cards else ""),"remaining":null})
-	if run.stun_chance>0:
-		result.append({"icon":"star","title":"Контузия","value":"%d%% · %s с" % [roundi(minf(CombatMods.CAPS.stun_chance,run.stun_chance)*100),UiKit.number(CombatMods.stun_time(run))]+(" · от крита" if "crit_stun" in run.behavior_cards else ""),"remaining":null})
+	# The loaded ammo carries its own chance (T-157: the line read «0%» with stun ammo in the slot).
+	var ammo=Ammo.effective(arena)
+	var ammo_stat=func(type:String,key:String)->float:return float(ammo.get("stats",{}).get(key,0.0)) if str(ammo.get("type",""))==type else 0.0
+	var burn=run.burn_chance+ammo_stat.call("burn","chance");var stun=run.stun_chance+ammo_stat.call("stun","chance")
+	if burn>0:
+		result.append({"icon":"fire","title":"Поджог","value":"%d%% · урон ×%s · %s с" % [roundi(minf(CombatMods.CAPS.burn_chance,burn)*100),UiKit.number(1.0+run.burn_power+ammo_stat.call("burn","power")),UiKit.number(CombatMods.burn_time(run))]+(" · цепь" if "chain_fire" in run.behavior_cards else ""),"remaining":null})
+	if stun>0:
+		result.append({"icon":"star","title":"Контузия","value":"%d%% · %s с" % [roundi(minf(CombatMods.CAPS.stun_chance,stun)*100),UiKit.number(CombatMods.stun_time(run,ammo))]+(" · от крита" if "crit_stun" in run.behavior_cards else ""),"remaining":null})
 	if run.shock_bonus>0:
 		result.append({"icon":"device_power","title":"ЭМИ","value":"+%d%% по технике" % roundi(minf(CombatMods.CAPS.shock_bonus,run.shock_bonus+run.shock_power)*100),"remaining":null})
 	if result.is_empty():result.append({"icon":"heart","title":"Без эффектов","value":"Эффекты пуль берутся картами в бою","remaining":null})

@@ -24,6 +24,16 @@ func run():
 	assert(get_tree().get_nodes_in_group("combat_effects").size()<=20);assert(get_tree().get_nodes_in_group("blast_lights").size()<=3)
 	await get_tree().create_timer(.08).timeout
 	if DisplayServer.get_name()!="headless":RenderingServer.force_draw();get_viewport().get_texture().get_image().save_png("/tmp/effect-lighting.png")
+	# T-188: switching day/night mid-game drops the cached tracer materials and re-captures reflections.
+	var lighting=scene.find_child("WorldLighting",true,false)
+	if lighting:
+		var was=Settings.values.world_lighting
+		EffectLighting.glow(Color.RED,false,true);assert(not EffectLighting.materials.is_empty())
+		Settings.values.world_lighting="night" if was=="day" else "day";lighting.apply()
+		await get_tree().process_frame;await get_tree().process_frame
+		assert(EffectLighting.materials.is_empty(),"day/night switch clears cached tracer materials")
+		Settings.values.world_lighting=was;lighting.apply()
+		print("PASS relight on day/night switch")
 	scene.queue_free();await get_tree().process_frame
 	assert(get_tree().get_nodes_in_group("projectile_lights").is_empty());assert(get_tree().get_nodes_in_group("blast_lights").is_empty())
 	print("PASS 50 projectiles, short red sniper tracer, bounded effect lights and cleanup");get_tree().quit()

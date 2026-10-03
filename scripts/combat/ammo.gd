@@ -142,8 +142,14 @@ static func describe(new_item:Dictionary)->String:
 	var parts=[]
 	for spec in STATS.get(new_item.type,[]):parts.append(Texts.render(spec[1])+" "+value_text(spec,float(new_item.stats.get(spec[0],0.0))))
 	if float(new_item.get("damage",0.0))>0:parts.append(Texts.render("урон пули")+" +%d%%" % roundi(new_item.damage*100))
+	if new_item.type=="ap":parts.append(Texts.render("щит пробивает с шансом")+" %d%%" % roundi(shield_pierce(new_item)*100))
 	if new_item.get("twist",false):parts.append(Texts.render(TWISTS.get(new_item.type,"")))
 	return " · ".join(parts)
+## Бронебойные vs the shield trooper's raised shield (T-156): a chance that grows with the box's armor stat
+## (rarity), about 30% on a common box up to ~55% on a legendary one.
+static func shield_pierce(item:Dictionary)->float:
+	if str(item.get("type",""))!="ap":return 0.0
+	return clampf(.2+float(item.get("stats",{}).get("armor",.1)),0.0,.6)
 ## Card strip data «old → new» (T-127): {from:{name,color,texture}, to:{…}, rest}. Same type: rarity names.
 static func swap_data(old:Dictionary,new_item:Dictionary,rest:String)->Dictionary:
 	var part=func(item:Dictionary)->Dictionary:

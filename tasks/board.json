@@ -1970,7 +1970,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-156.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "бронебойные патроны как будто должны щит щитовика пробивать ну хотя бы с шансом от прокачки",
 			"type": "bug",
 			"version": "0.8.0"
@@ -1983,7 +1983,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-157.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "не понял в карточках видел контузию как усиление от 0 до 10",
 			"type": "bug",
 			"version": "0.8.0"
@@ -2243,7 +2243,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-177.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "днем на светлых картах моего снаряда не видно",
 			"type": "bug",
 			"version": "0.8.0"
@@ -2386,7 +2386,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-188.png",
 			"source": "game",
-			"status": "backlog",
+			"status": "review",
 			"title": "кажется когда я переключаю тему во время игры то сохраняются как ба запеченые тени другого режима",
 			"type": "bug",
 			"version": "0.8.0"

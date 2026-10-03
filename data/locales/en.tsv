@@ -3031,3 +3031,5 @@ Q · есть сразу	Q · from the start
 Капремонт	Overhaul
 −%d %% к паузе между выстрелами	−%d%% delay between shots
 +%d брони и +%s урона	+%d armor and +%s damage
+щит пробивает с шансом	pierces shields with a chance of
+Патроны в слот: шанс оглушить врага — он не двигается и не стреляет. Босс оглушается втрое короче. Открывает усиления контузии.	Ammo for the slot: a chance to stun an enemy — it can't move or shoot. Bosses are stunned three times shorter. Unlocks concussion enhancements.

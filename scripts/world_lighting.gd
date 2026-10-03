@@ -59,8 +59,19 @@ func _ready():
 	call_deferred("refresh_materials")
 func refresh_materials():
 	Visuals.refresh_cozy_materials(get_parent())
+## Day/night switched while playing (T-188): the reflection probe captured once still held the old light, and
+## tracer materials cache their day/night strength. Re-capture and drop the caches.
+var last_night=null
+func relight():
+	EffectLighting.materials.clear();EffectLighting.trail_materials.clear()
+	for probe in get_parent().find_children("SceneReflection","ReflectionProbe",true,false):
+		probe.update_mode=ReflectionProbe.UPDATE_ALWAYS
+		get_tree().create_timer(.4,true).timeout.connect(func():if is_instance_valid(probe):probe.update_mode=ReflectionProbe.UPDATE_ONCE)
+	refresh_materials();update_lamps()
 func apply():
 	var night=Settings.values.get("world_lighting","day")=="night"
+	if last_night!=null and last_night!=night and is_inside_tree():relight.call_deferred()
+	last_night=night
 	environment.background_color=day_background.darkened(.78) if night else day_background
 	environment.ambient_light_source=Environment.AMBIENT_SOURCE_COLOR if night else Environment.AMBIENT_SOURCE_SKY
 	environment.ambient_light_color=Color("869fbc") if night else Color.WHITE

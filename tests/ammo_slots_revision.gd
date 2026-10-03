@@ -65,5 +65,9 @@ func run():
 	arena.combat.rocket_impact(rocket)
 	check(arena.get_children().any(func(n):return n.get_script()==preload("res://scripts/combat/napalm_patch.gd")),"napalm charge leaves a burning patch")
 	rocket.queue_free()
+	# T-156: armor-piercing rounds break through a raised riot shield with a chance that grows with rarity.
+	var ap_low=Ammo.roll("ap",0,7);var ap_high=Ammo.roll("ap",3,7)
+	check(Ammo.shield_pierce(ap_low)>=.25 and Ammo.shield_pierce(ap_high)>Ammo.shield_pierce(ap_low) and Ammo.shield_pierce(Ammo.roll("burn",0,1))==0.0,"AP shield chance grows with rarity, other ammo has none")
+	check(Ammo.describe(ap_high).contains("%d%%" % roundi(Ammo.shield_pierce(ap_high)*100)),"AP ammo describes its shield chance")
 	print("AMMO: %d failures" % failures)
 	get_tree().quit(1 if failures else 0)

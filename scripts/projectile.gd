@@ -15,6 +15,8 @@ var speed = 10.5
 var lifetime = 2.5
 var spent = false
 var pierce_left=0
+## Chance to go through a raised riot shield (Бронебойные, T-156).
+var shield_pierce_chance:=0.0
 var opening=false
 var piercing=false
 var star_power=false
@@ -42,7 +44,7 @@ func build_visual():
 	elif sniper_round or sniper_visual:kind="sniper";color=Color("ff263f")
 	elif orb:kind="orb";color=Color("ff8e40")
 	elif piercing or (is_instance_valid(owner_actor) and owner_actor.kind in ["tank","boss","apc","mortar"]):kind="shell"
-	var visual=EffectLighting.projectile_visual(self,kind,color)
+	var visual=EffectLighting.projectile_visual(self,kind,color,friendly and kind!="rocket")
 	# Enemy rounds flicker so they read as danger among friendly tracers.
 	if not friendly and visual.get_child_count()>1:blink_halo=visual.get_child(1)
 	if kind in ["sniper","orb","rocket"]:EffectLighting.projectile_light(self,color)
