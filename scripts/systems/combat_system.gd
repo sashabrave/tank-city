@@ -22,6 +22,9 @@ func spawn_bullet(owner_actor,pos: Vector3,dir: Vector2i,damage: float,friendly:
 	bullet.player_shot=owner_actor.player_owned
 	if friendly and owner_actor.player_owned and arena.run!=null:
 		bullet.pierce_left=int(arena.run.pierce)
+		# Бронебойные патроны: the bullet goes through more enemies (soldier's weapon only).
+		var ammo=Ammo.effective(arena)
+		if owner_actor.kind=="soldier" and ammo.type=="ap":bullet.pierce_left+=int(ammo.stats.get("pierce",1))+(1 if ammo.get("twist",false) else 0)
 		# Выдержка: a volley after 1.5 s of silence is marked; every pellet of it keeps the bonus.
 		var run=arena.run
 		if "opening_shot" in run.behavior_cards and run.elapsed-run.last_player_shot>=1.5:run.opening_until=run.elapsed+.05

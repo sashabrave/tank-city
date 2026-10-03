@@ -366,11 +366,12 @@ func refresh_ammo():
 	# Under the weapon name, next to the picture: round cells, then the active ammo's name in its colour.
 	ammo_row.position=Vector2(vehicle_label.position.x,vehicle_label.position.y+28)
 	for i in range(run.ammo_slots.size()):
-		var type=str(run.ammo_slots[i]);var on=i==run.ammo_active;var color=Color(Ammo.COLORS.get(type,"cfd3c8"))
+		var slot=run.ammo_slots[i];var type=str(slot.type) if slot is Dictionary else str(slot);var on=i==run.ammo_active;var color=Color(Ammo.COLORS.get(type,"cfd3c8"))
 		var cell=Panel.new();ammo_row.add_child(cell);cell.custom_minimum_size=Vector2(18,18);cell.size_flags_vertical=Control.SIZE_SHRINK_CENTER
 		var style=UiKit.style(color if on else Color(color,.28),9,Color.WHITE if on else Color(color,.6));style.set_border_width_all(2 if on else 1)
 		cell.add_theme_stylebox_override("panel",style)
 		cell.tooltip_text=Texts.render("Патроны")+": "+Texts.render(Ammo.NAMES.get(type,type))+(" · "+Texts.render("активные") if on else "")+(" · R" if run.ammo_slots.size()>1 else "")
+		if slot is Dictionary and type!=Ammo.STANDARD:cell.tooltip_text+="\n"+Ammo.describe(slot)
 		cell.gui_input.connect(func(event):
 			var tap=(event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT and event.pressed) or (event is InputEventScreenTouch and event.pressed)
 			if tap and Ammo.switch(arena):refresh_ammo())

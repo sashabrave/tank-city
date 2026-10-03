@@ -114,9 +114,11 @@ static func table(card:Panel,data:Dictionary,width:float,accent:Color):
 		var body=card.get_node_or_null(key)
 		if body:body.hide()
 	var y=240.0
+	# Two or more rows (ammo items with several rolled values) get a tighter rhythm so the note still fits.
+	var dense=data.rows.size()>=2;var step=50.0 if dense else 80.0
 	for row in data.rows:
-		var value=UiKit.label(card,str(row[0]),Vector2(16,y),Vector2(width-32,36),28,accent.lightened(.25));value.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;value.vertical_alignment=VERTICAL_ALIGNMENT_CENTER;value.name="RowValue"
-		var compare=RichTextLabel.new();compare.name="RowParam";card.add_child(compare);compare.position=Vector2(16,y+42);compare.size=Vector2(width-32,24)
+		var value=UiKit.label(card,str(row[0]),Vector2(16,y),Vector2(width-32,28 if dense else 36),21 if dense else 28,accent.lightened(.25));value.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;value.vertical_alignment=VERTICAL_ALIGNMENT_CENTER;value.name="RowValue"
+		var compare=RichTextLabel.new();compare.name="RowParam";card.add_child(compare);compare.position=Vector2(16,y+(27 if dense else 42));compare.size=Vector2(width-32,24)
 		compare.bbcode_enabled=true;compare.scroll_active=false;compare.fit_content=true;compare.mouse_filter=Control.MOUSE_FILTER_IGNORE;compare.autowrap_mode=TextServer.AUTOWRAP_OFF
 		compare.add_theme_font_override("normal_font",UiKit.field_font());compare.add_theme_font_override("bold_font",UiKit.bold_font());compare.add_theme_font_size_override("normal_font_size",15);compare.add_theme_font_size_override("bold_font_size",15)
 		compare.add_theme_color_override("default_color",UiKit.MUTED)
@@ -124,7 +126,7 @@ static func table(card:Panel,data:Dictionary,width:float,accent:Color):
 		var text="[center]%s" % name
 		if row.size()>=4:text+="   [color=#8d9589][s]%s[/s][/color]  →  [b][color=#f1eedb]%s[/color][/b]" % [Texts.render(str(row[2])),Texts.render(str(row[3]))]
 		compare.text=text+"[/center]"
-		y+=80
+		y+=step
 	var short=str(data.get("short","")).trim_suffix(".")
 	if short!="":
 		var note=UiKit.label(card,short,Vector2(22,y),Vector2(width-44,maxf(44,card.size.y-y-16)),14,UiKit.MUTED);note.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;note.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;note.vertical_alignment=VERTICAL_ALIGNMENT_TOP;note.name="ShortNote"

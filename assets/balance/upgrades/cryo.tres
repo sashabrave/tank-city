@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="UpgradeDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrades/upgrade_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "cryo"
+title = "Криогенные патроны"
+category = "Оружие"
+family = "ammo"
+icon = "freeze"
+tags = PackedStringArray("ammo")
+weight = 6
+max_stacks = 0
+detail = "Попадание замедляет врага, иногда замораживает. Значения зависят от редкости."

@@ -1,7 +1,8 @@
 extends Node
-## Ammo slots (T-109…T-111): standard ammo at start; a special ammo card loads its type (replacing over the
-## active one when the slots are full); improvements only while loaded; levels remembered; second slot from
-## the Arsenal and switching.
+## Ammo v2 (T-109…T-112): standard ammo at start; an ammo card is an item with rarity and rolled values that
+## goes into a slot (over standard, otherwise over the active ammo — the old one goes to the bag); the card
+## compares it with what it replaces; improvements only while loaded; classes (bullets / charges); the second
+## Arsenal slot and switching; the new effects reach combat.
 var failures=0
 func check(ok,message):
 	print("PASS " if ok else "FAIL ",message)
@@ -13,28 +14,38 @@ func run():
 	var arena=load("res://scenes/arena.tscn").instantiate();arena.run_seed=12;add_child(arena);arena.auto_pause_enabled=false;arena.set_physics_process(false)
 	await get_tree().create_timer(.8).timeout
 	var run=arena.run;Ammo.ensure(run,arena.weapon)
-	check(run.ammo_slots==["standard"] and Ammo.active(run)=="standard","starts with standard ammo")
+	check(Ammo.active(run)=="standard" and run.ammo_slots.size()==1,"starts with standard ammo")
+	# Rolls: rarity moves the values up, the same seed gives the same item.
+	var low=Ammo.roll("burn",0,7);var high=Ammo.roll("burn",3,7)
+	check(high.stats.chance>low.stats.chance and high.twist and not low.twist and high.damage>0,"rarer ammo rolls higher values, epic+ adds damage, legendary a twist")
+	check(Ammo.roll("cryo",1,99)==Ammo.roll("cryo",1,99),"same seed, same item")
+	check(Ammo.fits("explosive","pistol") and not Ammo.fits("explosive","rpg") and Ammo.fits("burn","rpg"),"bullets and charges classes")
 	var heat=UpgradeRegistry.get_def("burn_heat")
-	check(RunUpgrades.eligible(arena,UpgradeRegistry.get_def("burn")) and not RunUpgrades.eligible(arena,heat),"base ammo offered, its improvement not yet")
-	check(str(RunUpgrades.card(arena,{"id":"burn","tier":0}).short).contains("Зарядит"),"card says it loads the ammo")
-	RunUpgrades.apply(arena,"burn",0)
-	check(run.ammo_slots==["burn"] and Ammo.active(run)=="burn","incendiary ammo loaded over standard")
+	check(RunUpgrades.eligible(arena,UpgradeRegistry.get_def("burn")) and not RunUpgrades.eligible(arena,heat),"ammo card offered, its improvement not yet")
+	var card=RunUpgrades.card(arena,{"id":"burn","tier":2})
+	check(str(card.short).contains("Зарядит") and card.rows.size()>=2 and str(card.rows[0][0]).begins_with("↑"),"card loads it and shows rolled values as gains")
+	RunUpgrades.apply(arena,"burn",2)
+	check(Ammo.active(run)=="burn" and Ammo.item(run).rarity==2,"incendiary item loaded with its rarity")
 	check(RunUpgrades.eligible(arena,heat),"improvements of loaded ammo are offered")
-	RunUpgrades.apply(arena,"burn_heat",0);var power=run.burn_power;var chance=run.burn_chance
-	check(str(RunUpgrades.card(arena,{"id":"shock","tier":0}).short).contains("Заменит"),"card shows the replacement")
-	RunUpgrades.apply(arena,"shock",0)
-	check(run.ammo_slots==["shock"] and not RunUpgrades.eligible(arena,heat),"EMP replaces fire; fire improvements stop dropping")
-	check(RunUpgrades.eligible(arena,UpgradeRegistry.get_def("burn")),"fire can be loaded back later")
-	RunUpgrades.apply(arena,"burn",0)
-	check(Ammo.active(run)=="burn" and is_equal_approx(run.burn_power,power) and is_equal_approx(run.burn_chance,chance),"reloading fire keeps its level and does not stack its base again")
-	# Two slots from the Arsenal and switching.
+	card=RunUpgrades.card(arena,{"id":"cryo","tier":0})
+	check(str(card.short).contains("Заменит"),"card shows the replacement")
+	RunUpgrades.apply(arena,"cryo",0)
+	check(Ammo.active(run)=="cryo" and run.ammo_bag.size()==1 and run.ammo_bag[0].type=="burn","cryo replaces fire; the old ammo goes to the bag")
+	check(not RunUpgrades.eligible(arena,heat),"fire improvements stop dropping")
+	# Combat: cryo slows the target.
+	var enemy=arena.spawn_actor("soldier",Vector2i(4,3),false)
+	var bullet=load("res://scenes/projectile.tscn").instantiate();bullet.arena=arena;bullet.owner_actor=arena.player;bullet.friendly=true;bullet.damage=1.0;add_child(bullet)
+	CombatMods.outgoing(arena,bullet,enemy)
+	check(enemy.slow_time>0 and enemy.slow_factor>=.2,"cryo hit slows the enemy (%.2f)" % enemy.slow_factor)
+	bullet.queue_free()
+	# Two slots and switching.
 	Game.ammo_slot_weapons.append(arena.weapon);Ammo.ensure(run,arena.weapon)
 	check(run.ammo_slots.size()==2,"Arsenal second slot gives two cells")
-	RunUpgrades.apply(arena,"stun",0)
-	check("burn" in run.ammo_slots and "stun" in run.ammo_slots and Ammo.active(run)=="stun","two ammo types loaded, the new one active")
-	Ammo.switch(arena);check(Ammo.active(run)=="burn","switching makes the other type active")
+	RunUpgrades.apply(arena,"stun",1)
+	check(Ammo.types_loaded(run).has("cryo") and Ammo.active(run)=="stun","two ammo types loaded, the new one active")
+	Ammo.switch(arena);check(Ammo.active(run)=="cryo","switching makes the other type active")
 	arena.hud.refresh_ammo()
-	check(arena.hud.ammo_row!=null and arena.hud.ammo_row.get_child_count()==2,"HUD shows two ammo cells")
+	check(arena.hud.ammo_row!=null and arena.hud.ammo_row.get_child_count()>=2,"HUD shows the ammo cells")
 	Game.ammo_slot_weapons=[]
 	print("AMMO: %d failures" % failures)
 	get_tree().quit(1 if failures else 0)

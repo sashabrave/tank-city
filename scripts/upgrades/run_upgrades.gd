@@ -17,8 +17,9 @@ static func eligible(arena,def:UpgradeDef,tier:int=3)->bool:
 	if def.weight<=0 or def.min_tier>tier:return false
 	# Ammo (T-109): a base ammo card is offered while that type is not loaded (it can come back after being
 	# swapped out); its improvements only while it is loaded.
+	# Ammo items (T-112) fit the weapon's ammo class and can drop again with a better roll.
 	if def.id in Ammo.TYPES:
-		if Ammo.loaded(arena.run,def.id):return false
+		if not Ammo.fits(def.id,str(arena.weapon)):return false
 	elif def.max_stacks>0 and stacks(arena,def.id)>=def.max_stacks:return false
 	if (def.effect!=null or def.flag) and def.id in arena.run.behavior_cards:return false
 	if "abilities" in def.requires and arena.abilities.slots.is_empty():return false
@@ -84,16 +85,19 @@ static func roll(arena,count:int)->Array:return roll_offers(arena,count).map(fun
 static func apply(arena,id:String,tier:int,record:bool=true)->bool:
 	var def=UpgradeRegistry.get_def(id)
 	if def==null:push_error("Unknown upgrade: "+id);return false
-	# A base ammo card loads its type; taken again later (after a swap) it only reloads — the stats it gave stay.
-	var reload=id in Ammo.TYPES and stacks(arena,id)>0
-	if id in Ammo.TYPES:Ammo.load(arena.run,id)
-	if record:arena.run.upgrade_history.append({"id":id,"tier":tier})
-	if reload:
+	# An ammo card is an item with its own rolled values (T-112): it goes into a slot; the card's stat
+	# modifiers are not applied — the item carries the values.
+	if id in Ammo.TYPES:
+		Ammo.ensure(arena.run,str(arena.weapon))
+		var item=Ammo.roll(id,tier,Ammo.seed_for(arena,id,tier))
+		var old=Ammo.load_item(arena.run,item)
+		if not old.is_empty():arena.run.ammo_bag.append(old)
+		if record:arena.run.upgrade_history.append({"id":id,"tier":tier})
 		refresh_player(arena)
 		if is_instance_valid(arena.hud):arena.hud.refresh_ammo()
 		return true
+	if record:arena.run.upgrade_history.append({"id":id,"tier":tier})
 	apply_power(arena,def,Balance.tier_power(tier))
-	if id in Ammo.TYPES and is_instance_valid(arena.hud):arena.hud.refresh_ammo()
 	if record:
 		if def.effect!=null or def.flag:Game.progression.event("behavior_cards")
 		Game.progression.event("card_stack",stacks(arena,id),true)
@@ -223,6 +227,19 @@ static func card(arena,offer:Dictionary)->Dictionary:
 	# The card says what it does to the ammo slots (T-109).
 	var short=short_detail(def.detail)
 	if def.id in Ammo.TYPES:
-		var out=Ammo.replacing(arena.run,def.id)
-		short=(Texts.render("Заменит")+": "+Texts.render(Ammo.NAMES[out])+" → "+Texts.render(Ammo.NAMES[def.id])) if out!="" else (Texts.render("Зарядит")+": "+Texts.render(Ammo.NAMES[def.id]))
-	return {"rows":rows,"short":short,"category":FAMILIES.get(def.family,def.category),"title":def.title,"detail":detail,"icon":def.icon if def.icon!="" else def.id,"art_key":"upgrades/"+def.id,"heading":TIER_NAMES[tier],"color":Color(arena.LOOT.RARITY_COLORS[tier]),"disabled":false,"button":"Выбрать","family":def.family,"tier":tier,"stacks":stacks(arena,def.id)}
+		# The rolled item and how it compares with the ammo it replaces (or the same type already loaded).
+		Ammo.ensure(arena.run,str(arena.weapon))
+		var item=Ammo.roll(def.id,tier,Ammo.seed_for(arena,def.id,tier))
+		var out=Ammo.replacing(arena.run)
+		var same=arena.run.ammo_slots.filter(func(s):return s is Dictionary and s.type==def.id)
+		rows=Ammo.compare_rows(item,same[0] if not same.is_empty() else out)
+		var rank=func(r:int)->String:return Texts.render(Ammo.RARITY_NAMES[clampi(r,0,3)]).to_lower()
+		if not same.is_empty():short=Texts.render("Улучшит")+": "+rank.call(int(same[0].rarity))+" → "+rank.call(int(item.rarity))
+		elif not out.is_empty():short=Texts.render("Заменит")+": "+Texts.render(Ammo.NAMES[out.type])+" → "+Texts.render(Ammo.NAMES[def.id])
+		else:short=Texts.render("Зарядит")+": "+Texts.render(Ammo.NAMES[def.id])
+		if float(item.damage)>0:short+=" · "+Texts.render("урон пули")+" +%d%%" % roundi(item.damage*100)
+		if item.twist:short+=". "+Texts.render(Ammo.TWISTS[def.id])
+		detail=Ammo.describe(item)+"\n"+def.detail
+	var art="upgrades/"+def.id
+	if def.id in Ammo.ART:art=Ammo.ART[def.id]
+	return {"rows":rows,"short":short,"category":FAMILIES.get(def.family,def.category),"title":def.title,"detail":detail,"icon":def.icon if def.icon!="" else def.id,"art_key":art if def.id in Ammo.TYPES else "upgrades/"+def.id,"heading":TIER_NAMES[tier],"color":Color(arena.LOOT.RARITY_COLORS[tier]),"disabled":false,"button":"Выбрать","family":def.family,"tier":tier,"stacks":stacks(arena,def.id)}

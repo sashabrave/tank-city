@@ -91,7 +91,8 @@
 					"Иконка способности по центру кнопки; вкладки настроек помещаются и при свёрнутом меню планшета; задание «Первый трофей» засчитывает сплав, донесённый до штаба даже после выбывания; над Казармой мигает зелёная точка, когда есть что улучшить; у игры своя иконка — кот на танке",
 					"Сплав выпадает золотыми слитками трёх размеров (1, 5 и 10) в случайном наборе; в счётчик летит и при поражении высыпается одиночный слиток, в самом счётчике — стопка",
 					"Настройки экрана: разрешения окна в привычных точках (на Retina окно больше не открывается вдвое меньше); после «Применить» — «Оставить эти настройки?» с откатом через 15 секунд",
-					"Патроны: у оружия слот патронов — на старте обычные, спецпатроны (огонь, контузия, ЭМИ) заряжаются в слот или заменяют активные (карточка показывает, что на что), работает только активный тип, его улучшения выпадают, пока он заряжен, уровни помнятся до конца вылазки; второй слот — в Арсенале, переключение клавишей R"
+					"Патроны: у оружия слот патронов — на старте обычные, спецпатроны (огонь, контузия, ЭМИ) заряжаются в слот или заменяют активные (карточка показывает, что на что), работает только активный тип, его улучшения выпадают, пока он заряжен, уровни помнятся до конца вылазки; второй слот — в Арсенале, переключение клавишей R",
+					"Патроны стали предметами: у каждых редкость и случайные значения, карточка показывает, чем они лучше или хуже заряженных; новые типы — разрывные, бронебойные, рикошет и криогенные; патроны делятся на пули и заряды; легендарные получают особый эффект"
 				]
 			},
 			"en": {
@@ -182,7 +183,8 @@
 					"The ability icon is centred in its button; settings tabs fit with the tablet menu collapsed; «First trophy» counts alloy that reached the HQ even after a defeat; a green dot blinks over the Barracks when there is something to upgrade; the game has its own app icon — a cat on a tank",
 					"Alloy drops as gold bars of three sizes (1, 5 and 10) in a random mix; a single bar flies to the counter and spills out on defeat, the counter keeps the stack",
 					"Display settings: window sizes in usual points (on Retina the window no longer opens at half size); after Apply — «Keep these settings?» with a 15-second revert",
-					"Ammo: the weapon has an ammo slot — standard at start; special ammo (fire, concussion, EMP) loads into the slot or replaces the active one (the card shows what for what), only the active type works, its upgrades drop while it is loaded, levels are kept until the end of the sortie; the second slot is in the Arsenal, switch with R"
+					"Ammo: the weapon has an ammo slot — standard at start; special ammo (fire, concussion, EMP) loads into the slot or replaces the active one (the card shows what for what), only the active type works, its upgrades drop while it is loaded, levels are kept until the end of the sortie; the second slot is in the Arsenal, switch with R",
+					"Ammo became items: each has a rarity and random values, the card shows how it compares with what is loaded; new types — explosive, armour-piercing, ricochet and cryo; ammo splits into bullets and charges; legendary ones get a special effect"
 				]
 			}
 		},

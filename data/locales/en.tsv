@@ -2705,3 +2705,34 @@ Retina · полная чёткость	Retina · full sharpness
 Второй слот патронов открыт	Second ammo slot unlocked
 Слоты патронов: %d%s	Ammo slots: %d%s
  · R — сменить патроны в бою	 · R — switch ammo in battle
+Криогенные	Cryo
+Разрывные патроны	Explosive ammo
+Бронебойные патроны	Armour-piercing ammo
+Патроны-рикошет	Ricochet ammo
+Криогенные патроны	Cryo ammo
+Шанс поджога	Ignite chance
+Сила огня	Fire power
+Шанс оглушения	Stun chance
+Урон по технике	Damage to vehicles
+Шанс замкнуть технику	Short-circuit chance
+Радиус взрыва	Blast radius
+Урон взрыва	Blast damage
+Пробивает врагов	Pierces enemies
+Урон по броне	Armour damage
+Отскоков	Bounces
+Урон отскока	Bounce damage
+Замедление	Slow
+Шанс заморозить	Freeze chance
+урон пули	bullet damage
+Горящие враги поджигают соседей	Burning enemies ignite their neighbours
+Каждый крит оглушает	Every crit stuns
+Разряд перескакивает на соседнюю технику	The charge jumps to nearby vehicles
+Убитый враг тоже взрывается	A killed enemy explodes too
+Ещё +1 пробитие	+1 more pierce
+Ещё +1 отскок	+1 more bounce
+Замёрзший враг разлетается осколками	A frozen enemy shatters into shards
+Улучшит	Upgrades
+Обычные	Common
+Редкие	Rare
+Эпические	Epic
+Легендарные	Legendary

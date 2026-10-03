@@ -28,6 +28,9 @@ var parachute_left=0.0
 var parachute:Node3D
 var force_field:MeshInstance3D
 var stun_time=0.0
+## Cryo ammo: share of speed lost while slow_time runs.
+var slow_time=0.0
+var slow_factor=0.0
 ## Gas sleep (catnip cloud): works like a stun, reads as «Z z z» instead of stars.
 var sleep_time=0.0
 var shield_phase="ready"
@@ -200,6 +203,8 @@ func _physics_process(delta):
 	if arena.phase!="combat" and not (player_owned and arena.phase=="countdown"):return
 	if is_instance_valid(force_field):force_field.visible=arena.boss.shield_active()
 	stun_time=maxf(0,stun_time-delta)
+	slow_time=maxf(0,slow_time-delta)
+	if slow_time<=0:slow_factor=0.0
 	sleep_time=maxf(0,sleep_time-delta)
 	if not player_owned and not allied:CombatMods.tick_burn(self,delta)
 	if dead:return
@@ -245,7 +250,7 @@ func _physics_process(delta):
 	if not moving:arena.terrain.begin_slide(self)
 	if moving:
 		var target=quarter_destination if uses_quarter_steps() or terrain_sliding else arena.actor_world_pos(self,destination)
-		var next_position=position.move_toward(target,(minf(speed,Balance.speed_cap()) if player_owned else speed)*arena.terrain.speed_factor(self)*delta)
+		var next_position=position.move_toward(target,(minf(speed,Balance.speed_cap()) if player_owned else speed*(1.0-slow_factor))*arena.terrain.speed_factor(self)*delta)
 		if arena.can_stand(next_position,self):position=next_position
 		else:moving=false
 		if position.distance_to(quarter_destination if uses_quarter_steps() or terrain_sliding else arena.actor_world_pos(self,destination)) < .005:

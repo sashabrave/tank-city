@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="UpgradeDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/upgrades/upgrade_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "ricochet"
+title = "Патроны-рикошет"
+category = "Оружие"
+family = "ammo"
+icon = "damage"
+tags = PackedStringArray("ammo")
+weight = 6
+max_stacks = 0
+detail = "Пуля отскакивает в ближайшего врага. Значения зависят от редкости."

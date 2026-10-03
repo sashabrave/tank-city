@@ -31,29 +31,52 @@ static func outgoing(arena,bullet,target)->float:
 	if "last_stand" in run.behavior_cards:
 		var ratio=(shooter.hp/maxf(1.0,shooter.max_hp)) if in_vehicle else (run.soldier_hp/maxf(1.0,float(run.soldier_max_hp)))
 		if ratio<=.25:amount*=1.3
-	# Only the active ammo works (T-109): its effects and its improvement cards.
-	var ammo=Ammo.active(run)
-	var shock_on=ammo=="shock";var burn_on=ammo=="burn";var stun_on=ammo=="stun"
-	if is_machine(target.kind) and shock_on and run.shock_bonus>0:amount*=1.0+minf(CAPS.shock_bonus,run.shock_bonus+run.shock_power)
+	# Only the active ammo of the soldier's weapon works (T-109/T-112): its rolled values plus its improvement
+	# cards. Vehicles fire their own shells.
+	var ammo=Ammo.effective(arena) if not in_vehicle else Ammo.standard()
+	var type:String=ammo.type;var stats:Dictionary=ammo.stats;var twist:bool=ammo.get("twist",false)
+	amount*=1.0+float(ammo.get("damage",0.0))
+	if is_machine(target.kind):
+		if type=="shock":amount*=1.0+minf(CAPS.shock_bonus,float(stats.get("bonus",0.0))+run.shock_bonus+run.shock_power)
+		if type=="ap":amount*=1.0+float(stats.get("armor",0.0))
 	if run.stealth>0 and target.hp>=target.max_hp:amount*=1.0+minf(CAPS.stealth,run.stealth)*2.0
 	var rng=run.combat_rng
 	var crit=rng.randf()<crit_chance(arena)
 	if crit:
 		amount*=run.crit_damage+crit_overflow(arena)
 		arena.burst(target.position+Vector3.UP*.5,Color("ffd166"),.35)
-		if stun_on and "crit_stun" in run.behavior_cards:stun(target,stun_time(run))
-	if burn_on and run.burn_chance>0 and rng.randf()<minf(CAPS.burn_chance,run.burn_chance):ignite(target,bullet.damage,run)
-	if stun_on and run.stun_chance>0 and rng.randf()<minf(CAPS.stun_chance,run.stun_chance):stun(target,stun_time(run))
-	if shock_on and run.shock_bonus>0 and is_machine(target.kind):
-		arena.burst(target.position+Vector3.UP*.4,Color("86daec"),.25)
-		if "shock_short" in run.behavior_cards and rng.randf()<.25:stun(target,.6)
-		if "shock_arc" in run.behavior_cards:arc(arena,target,amount*.4)
+		if type=="stun" and ("crit_stun" in run.behavior_cards or twist):stun(target,stun_time(run,ammo))
+	match type:
+		"burn":
+			if rng.randf()<minf(CAPS.burn_chance,float(stats.get("chance",0.0))+run.burn_chance):ignite(target,bullet.damage,run,float(stats.get("power",0.0)))
+		"stun":
+			if rng.randf()<minf(CAPS.stun_chance,float(stats.get("chance",0.0))+run.stun_chance):stun(target,stun_time(run,ammo))
+		"shock":
+			if is_machine(target.kind):
+				arena.burst(target.position+Vector3.UP*.4,Color("86daec"),.25)
+				if rng.randf()<float(stats.get("jolt",0.0))+(.25 if "shock_short" in run.behavior_cards else 0.0):stun(target,.6)
+				if "shock_arc" in run.behavior_cards or twist:arc(arena,target,amount*.4)
+		"explosive":
+			# A small blast around the target; the target itself takes the bullet.
+			var radius=float(stats.get("radius",.6));var splash=amount*float(stats.get("splash",.3))
+			arena.burst(target.position+Vector3.UP*.3,Color("ff8a5a"),.45+radius*.4)
+			for other in arena.room.actors.duplicate():
+				if is_instance_valid(other) and other!=target and not other.dead and not other.player_owned and not other.allied and arena.flat_distance(other.position,target.position)<=radius:
+					other.take_damage(splash,other.position-target.position+Vector3(.01,0,.01),"","blast")
+		"ricochet":
+			ricochet(arena,bullet,target,amount*float(stats.get("bounce_damage",.5)),int(stats.get("bounces",1))+(1 if twist else 0))
+		"cryo":
+			target.slow_time=maxf(target.slow_time,2.0);target.slow_factor=maxf(target.slow_factor,float(stats.get("slow",.2)))
+			if rng.randf()<float(stats.get("freeze",0.0)):stun(target,1.0);target.set_meta("frozen_by_cryo",true)
+			arena.burst(target.position+Vector3.UP*.4,Color("bff3ff"),.25)
 	return amount
-static func stun_time(run)->float:return STUN_TIME+(run.stun_duration if run!=null else 0.0)
+static func stun_time(run,ammo:Dictionary={})->float:
+	var base=float(ammo.get("stats",{}).get("time",STUN_TIME)) if ammo.get("type","")=="stun" else STUN_TIME
+	return base+(run.stun_duration if run!=null else 0.0)
 static func burn_time(run)->float:return BURN_TIME+(run.burn_duration if run!=null else 0.0)
 ## Burn damage per second from the hit that lit it; «Жар» (station and cards) raises it.
-static func ignite(target,base_damage:float,run=null):
-	var power=1.0+(run.burn_power if run!=null else 0.0)
+static func ignite(target,base_damage:float,run=null,ammo_power:=0.0):
+	var power=1.0+ammo_power+(run.burn_power if run!=null else 0.0)
 	target.burn_time=maxf(target.burn_time,burn_time(run));target.burn_dps=maxf(target.burn_dps,base_damage*.35*power)
 ## «Разряд»: an EMP hit on a machine jolts other machines nearby.
 static func arc(arena,source,damage:float):
@@ -84,7 +107,16 @@ static func on_kill(arena,actor):
 		var player=arena.room.player
 		if is_instance_valid(player) and player.kind in GarageCatalog.VEHICLES and player.hp<player.max_hp:
 			player.hp=minf(player.max_hp,player.hp+run.field_repair);player.refresh_health()
-	if "chain_fire" in run.behavior_cards and actor.burn_time>0:
+	var ammo=Ammo.effective(arena);var twist:bool=ammo.get("twist",false)
+	if twist and ammo.type=="explosive":
+		arena.burst(actor.position+Vector3.UP*.3,Color("ff6a3a"),1.0)
+		for other in arena.room.actors.duplicate():
+			if is_instance_valid(other) and other!=actor and not other.dead and not other.player_owned and not other.allied and arena.flat_distance(other.position,actor.position)<1.2:other.take_damage(1.0,other.position-actor.position+Vector3(.01,0,.01),"","blast")
+	if twist and ammo.type=="cryo" and actor.has_meta("frozen_by_cryo"):
+		arena.burst(actor.position+Vector3.UP*.4,Color("dff8ff"),1.0)
+		for other in arena.room.actors.duplicate():
+			if is_instance_valid(other) and other!=actor and not other.dead and not other.player_owned and not other.allied and arena.flat_distance(other.position,actor.position)<1.4:other.take_damage(.8,Vector3.ZERO,"","blast")
+	if ("chain_fire" in run.behavior_cards or (twist and ammo.type=="burn")) and actor.burn_time>0:
 		arena.burst(actor.position,Color("ff8a3d"),1.1)
 		for other in arena.room.actors.duplicate():
 			if is_instance_valid(other) and other!=actor and not other.dead and not other.player_owned and not other.allied and arena.flat_distance(other.position,actor.position)<1.6:
@@ -105,3 +137,18 @@ static func tick_burn(actor,delta:float):
 			if is_instance_valid(other) and other!=actor and not other.dead and not other.player_owned and not other.allied and other.burn_time<=0 and arena.flat_distance(other.position,actor.position)<1.3:
 				# The spreading fire keeps its strength; dps already holds «Жар».
 				other.burn_time=maxf(other.burn_time,burn_time(arena.run));other.burn_dps=maxf(other.burn_dps,actor.burn_dps);break
+## Рикошет: the bullet hops to the nearest other enemy within 3.5 cells with part of its damage.
+static func ricochet(arena,bullet,target,damage:float,bounces:int):
+	var left=int(bullet.get_meta("bounces_left",bounces))
+	if left<=0 or damage<.05:return
+	var best=null;var best_d=3.5
+	for other in arena.room.actors:
+		if not is_instance_valid(other) or other==target or other.dead or other.player_owned or other.allied or other in bullet.hit_actors:continue
+		var d=arena.flat_distance(other.position,target.position)
+		if d<best_d:best=other;best_d=d
+	if best==null:return
+	var dir=(best.position-target.position);dir.y=0
+	var hop=arena.spawn_free_bullet(bullet.owner_actor,dir,damage,9.0,false)
+	hop.friendly=true;hop.player_shot=true;hop.position=target.position+dir.normalized()*.35+Vector3.UP*.55
+	hop.hit_actors=bullet.hit_actors.duplicate();hop.hit_actors.append(target);hop.set_meta("bounces_left",left-1)
+	arena.burst(target.position+Vector3.UP*.5,Color("c9a5ff"),.25)
