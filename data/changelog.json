@@ -173,7 +173,8 @@
 					"Пуля игрока днём — насыщенно-оранжевая с тёплым ободком (без чёрной обводки), хорошо видна на светлом полу; ночью — светло-золотая",
 					"Машина штаба сзади больше не пустая: дверь со стальными петлями, запасное колесо, лесенка, канистры в клетках, стальной бампер с буксирной петлёй и два высоких красных фонаря по углам. На карте маршрута, в мастерской штаба и у механика стоят настоящие машины игры в спокойном нейтральном цвете; точки прокачки нарисованы заново.",
 					"Оружие и патроны свободно перетаскиваются мышкой между руками, слотами и рюкзаком (оружие — тоже предмет рюкзака). Выброшенный предмет лежит на поле своей моделью со свечением редкости, при подходе — карточка: «E» взять/зарядить, «C» в рюкзак или «Нет места». Ящик патронов — короб с полосой цвета эффекта",
-					"Нельзя выбросить оружие из рук и обычные патроны — об этом скажет подсказка; если в бою нет оружия, штаб выдаёт выбранное, пустой слот патронов заряжается обычными"
+					"Нельзя выбросить оружие из рук и обычные патроны — об этом скажет подсказка; если в бою нет оружия, штаб выдаёт выбранное, пустой слот патронов заряжается обычными",
+					"Во всех комнатах прокачки и у торговца одна раскладка: ящик с оружием слева (три случайных ствола разной редкости с прибавками урона и темпа, за сплав, ствол уходит в рюкзак), автомат с аптечкой или патронами и место «Фортуна» справа — там бывает игровой автомат или ящик патронов."
 				]
 			},
 			"en": {
@@ -346,7 +347,8 @@
 					"The player's bullet by day is a saturated orange with a warm rim (no black outline), easy to see on light floors; golden at night",
 					"The HQ truck's rear is no longer bare: a door with steel hinges, a spare wheel, a ladder, jerrycans in cages, a steel bumper with a tow hook and two tall red tail lights on the corners. The route-map HQ workshop and mechanic show the real game vehicles in a calm neutral colour; the upgrade stops are redrawn.",
 					"Weapons and ammo drag freely between hands, slots and the backpack (a gun is a backpack item too). A dropped item lies on the field as its own model with a rarity glow; up close a card offers E to take/load and C to stash, or «No room». The ammo box is a can with a band in the effect colour",
-					"You can't throw away the gun in hand or the plain rounds — a hint says so; with no weapon in battle the HQ issues your chosen one, an empty ammo slot gets plain rounds"
+					"You can't throw away the gun in hand or the plain rounds — a hint says so; with no weapon in battle the HQ issues your chosen one, an empty ammo slot gets plain rounds",
+					"Every upgrade room and the merchant now share one layout: a weapon crate on the left (three random guns of different rarity with damage and fire-rate bonuses, bought for alloy, the gun goes into the backpack), a medkit or ammo machine and a «Fortune» spot on the right that may hold a slot machine or an ammo crate."
 				]
 			}
 		},

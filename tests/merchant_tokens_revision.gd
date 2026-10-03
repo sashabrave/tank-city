@@ -41,7 +41,7 @@ func run():
 	var card=shop.stock.map(func(e):return e.kind).find("card");var history=arena.run.upgrade_history.size();var price=shop.stock[card].price
 	check(shop.purchase(card) and arena.run.upgrade_history.size()==history+1 and arena.run.tokens==27-price,"card bought and applied")
 	var before=arena.run.tokens
-	shop.avatar.position=Vector3(2,0,0);shop.interact();await settle()
+	shop.avatar.position=RoomLayout.FORTUNE-Vector3(.8,0,0);shop.interact();await settle()  # the slot machine stands on the «Фортуна» spot
 	var reels=shop.find_child("SlotWindow",true,false)
 	check(reels!=null and reels.find_child("Reel2",true,false)!=null,"E at the machine opens the reel window at once")
 	var strip=reels.reels[0].strip.position.y

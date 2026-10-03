@@ -5,6 +5,8 @@ var arena
 var index=2
 var branch="vehicle"
 var vehicle="buggy"
+## RoomLayout nodes: {crate, machine, fortune, layout}.
+var spots:Dictionary={}
 var locker:Node3D
 var vendor:Node3D
 ## Price to take the mechanic's parked vehicle into the next field (T-011).
@@ -73,8 +75,10 @@ func _ready():
 	# Shooting and abilities work here like in the hub and in battle (T-158, T-185).
 	combat=preload("res://scripts/room_combat.gd").attach(self,avatar,walker,stand,root)
 	offers=arena.reward.service_offers(branch)
-	locker=preload("res://scripts/weapon_locker.gd").place(self,arena,Vector3(-3.4,0,0.5))
-	vendor=preload("res://scripts/ammo_vendor.gd").place(self,arena,Vector3(-3.4,0,2.4))
+	# Common room layout (RoomLayout): weapon crate, a vending machine and the «Фортуна» spot in the same places
+	# in every upgrade room and at the merchant.
+	spots=RoomLayout.furnish(self,arena,index,false)
+	locker=spots.crate;vendor=spots.machine
 ## The mechanic works on the player's vehicle: the one driven now, the one waiting for the next room, or the starting one.
 func current_vehicle()->String:
 	if is_instance_valid(arena.player) and arena.player.kind in GarageCatalog.VEHICLES:return arena.player.kind
@@ -104,13 +108,15 @@ func stand(p:Vector3)->bool:
 func at_exit()->bool:return claimed and avatar.position.distance_to(Vector3(dressing.EXIT_CELL.x,0,dressing.EXIT_CELL.y))<1.3
 func interact():
 	if is_instance_valid(modal):return
-	# The ammo machine and the weapon locker work before and after the choice.
-	if is_instance_valid(vendor) and vendor.near(avatar):
+	# The room spots (weapon crate, vending machine, fortune) work before and after the choice.
+	var spot=RoomLayout.near(spots,avatar)
+	if spot:
 		Game.reset_input();dpad.clear();dpad.enabled=false
-		vendor.open(root,func():Game.reset_input();dpad.clear();dpad.enabled=true;modal=null);modal=vendor.modal;return
-	if is_instance_valid(locker) and locker.near(avatar):
-		Game.reset_input();dpad.clear();dpad.enabled=false
-		locker.open(root,func():Game.reset_input();dpad.clear();dpad.enabled=true);modal=locker.modal;return
+		var done=func():Game.reset_input();dpad.clear();dpad.enabled=true;modal=null
+		if spot.has_method("use"):spot.use(root,done)
+		else:spot.open(root,done)
+		if "modal" in spot and is_instance_valid(spot.modal):modal=spot.modal
+		return
 	# The parked vehicle can be bought before and after the upgrade choice (T-119).
 	if near_vehicle():open_vehicle_offer();return
 	# Leave only from the exit zone (T-083): a stray E elsewhere does nothing.
