@@ -352,7 +352,7 @@ func begin_room(index: int):
 	get_node("WorldAtmosphere").battle_clouds(grid_size,Game.visual_run_seed+index*131)
 	get_node("WorldAtmosphere").apply()
 	var ambience=load("res://scripts/location_ambience.gd").new()
-	ambience.seed_value=Game.visual_run_seed;ambience.room_index=index;ambience.biome=room_palette().ambience;ambience.radius=grid_size*.5;add_child(ambience)
+	ambience.seed_value=Game.visual_run_seed;ambience.room_index=index;ambience.biome=room_palette().ambience;ambience.radius=grid_size*.5;ambience.palette=room_palette();add_child(ambience)
 	player=spawn_actor(carried_kind,Vector2i(base_cell.x,grid_size-2 if boss_room else grid_size-3),true,false,1,false,"",carried_origin,carried_zone)
 	player.salvaged=carried_salvaged
 	# A short spawn grace covers the arrival; the soldier shimmers and the HUD shows the chip.

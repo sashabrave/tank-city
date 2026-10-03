@@ -6,6 +6,8 @@ var miniature=false
 var room_index=0
 var elapsed=0.0
 var silhouettes:Array=[]
+## Biome entry of the room (floor, edge, vegetation): the floating islands use its colours and plants.
+var palette:Dictionary={}
 var cloud_material:ShaderMaterial
 var backdrop_materials:Array=[]
 func update_lighting():
@@ -37,6 +39,7 @@ func _ready():
 		make_shape(root,rng)
 		silhouettes.append({"node":root,"phase":rng.randf()*TAU,"scale":scale_value})
 	if not miniature:
+		var islands=preload("res://scripts/war_islands.gd").new();islands.name="WarIslands";islands.palette=palette;islands.radius=radius;islands.seed_value=seed_value+room_index*7109;add_child(islands);islands.build()
 		Game.sound_loop("ambience_"+biome,self)
 		var canvas=CanvasLayer.new();canvas.layer=0;add_child(canvas)
 		var cloud=ColorRect.new();cloud.mouse_filter=Control.MOUSE_FILTER_IGNORE;canvas.add_child(cloud);cloud.size=get_viewport().get_visible_rect().size
