@@ -293,7 +293,8 @@ func explode_shell(shell:Dictionary):
 	if not is_instance_valid(shell.node):return
 	var pos=shell.node.position;shell.node.queue_free()
 	arena.burst(pos+Vector3.UP*.3,Color("e78331"),shell.radius);Game.sound("explosion_heavy",arena)
-	if shell.get("big",false) and arena.has_method("shake"):arena.shake(.5)
+	var feel=arena.get_node_or_null("CombatFeel")
+	if shell.get("big",false) and feel:feel.shake(.5)
 	var player=arena.room.player
 	if is_instance_valid(player) and not player.dead and arena.flat_distance(pos,player.position)<shell.radius:player.take_damage(2 if shell.get("big",false) else 1,player.position-pos+Vector3(.01,0,.01),"","blast")
 	for cell in arena.room.walls.keys():
