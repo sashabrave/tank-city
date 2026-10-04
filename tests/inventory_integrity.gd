@@ -206,6 +206,16 @@ func gear_rules():
 	r.weapon=gun_before;r.weapon_bag.clear();Ammo.ensure(r,gun_before)
 	arena.phase="result";check(not Backpack.can_drop(arena),"no dropping outside battle")
 	check(InputMap.action_get_events("pause").any(func(e):return e is InputEventKey and e.physical_keycode==KEY_TAB),"Tab opens and closes the tablet")
+	# T-203: «Уничтожить» works anywhere (no floor needed): a backpack entry, a loaded slot (→ empty), the gun in hand (→ paws).
+	r.ammo_bag.clear();r.weapon_bag.clear();r.ammo_bag.append(Ammo.roll("burn",1,3));r.weapon_bag.append({"id":"rifle","rarity":1})
+	before=count(arena)
+	check(Backpack.destroy(arena,"ammo",0) and count(arena)==before-1 and r.ammo_bag.is_empty(),"destroy: a backpack item is gone")
+	check(Backpack.destroy(arena,"weapon",0) and r.weapon_bag.is_empty(),"destroy: a spare gun is gone")
+	r.ammo_slots[0]=Ammo.roll("cryo",1,4)
+	check(Backpack.destroy(arena,"slot",0) and Ammo.is_empty_slot(r.ammo_slots[0]),"destroy: a loaded slot becomes empty")
+	check(Backpack.destroy(arena,"hand") and str(r.weapon)=="paws","destroy: the gun in hand leaves the paws")
+	check(not Backpack.destroy(arena,"hand"),"destroy: the paws are not an item")
+	r.weapon=gun_before;Ammo.ensure(r,gun_before);r.ammo_slots[0]=Ammo.standard()
 	# Aid kits (T-115): at full health a heart goes into the backpack; H heals from it later.
 	arena.phase="combat"
 	r.supplies.clear();while Backpack.full(r) and not r.ammo_bag.is_empty():r.ammo_bag.pop_back()

@@ -121,9 +121,9 @@ func build_right()->float:
 	y=ability_block(y)
 	y=loadout_block(y)
 	y=backpack_block(y)+GAP
-	# Discard zone: drag anything here; it lands on the field as an army sack.
+	# Discard zone: drag anything here; it lands on the floor (field or room) — on the route map it is destroyed (T-202).
 	var zone=GearCell.new();zone.name="DiscardZone";body.add_child(zone);zone.key="discard";zone.position=Vector2(right_x,y);zone.size=Vector2(4*C+3*GAP,40)
-	Texts.set_text(zone,"Выбросить" if Backpack.can_drop(arena) else "Выбросить можно только в бою");zone.disabled=not Backpack.can_drop(arena)
+	Texts.set_text(zone,"Выбросить" if Backpack.can_drop(arena) or run()==null else "Уничтожить");zone.disabled=run()==null
 	zone.add_theme_font_size_override("font_size",13);zone.on_drop=move
 	for state in ["normal","hover","disabled"]:
 		var style=UiKit.style(Color(1,1,1,.02),10,Color(1,1,1,.18));style.set_border_width_all(1)
@@ -170,6 +170,7 @@ func loadout_block(y:float)->float:
 		# The gun in hand drags like any item (author, 2026-10-03): onto a backpack weapon to swap, or into a free
 		# cell — then the hands are empty and the cat scratches with its paws.
 		w.item_kind="weapon";w.draggable=run()!=null
+		if run()!=null:rarity_frame(w,int(run().weapon_rarity))
 	w.set_meta("inset",.08)
 	var slots:Array=run().ammo_slots if run()!=null else [Ammo.standard()]
 	for i in range(2):
@@ -222,6 +223,14 @@ func base_cell(key:String,x:float,y:float,size:Vector2,locked:bool)->GearCell:
 		if lock.texture==null:lock.queue_free();Texts.set_text(cell,"🔒")
 	cells[key]=cell
 	return cell
+## A gun's cell shows its rarity (T-225): the background and the frame softly tinted in the rarity colour
+## (LootCatalog.RARITY_COLORS, as on the item card); common guns keep the plain cell.
+static func rarity_frame(cell:Control,tier:int):
+	tier=clampi(tier,0,3)
+	if tier<=0:return
+	var color=Color(LootCatalog.RARITY_COLORS[tier])
+	var frame=UiKit.style(Color(color,.17),12,color);frame.set_border_width_all(2)
+	for state in ["normal","hover","pressed","focus"]:cell.add_theme_stylebox_override(state,frame)
 func art(cell:Control,texture:Texture2D,inset:=.12):
 	if texture==null:return
 	var picture=TextureRect.new();picture.name="Art";cell.add_child(picture);picture.texture=texture;picture.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;picture.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;picture.mouse_filter=Control.MOUSE_FILTER_IGNORE
@@ -259,8 +268,7 @@ func item_cell(key:String,x:float,y:float,entry,locked:bool)->GearCell:
 	elif entry.kind=="weapon":
 		# A spare gun for this run: double tap, «Взять» or a drag onto the weapon cell takes it in hand.
 		var gun=str(entry.item.get("id","pistol"));var tier=clampi(int(entry.item.get("rarity",0)),0,3)
-		var frame=UiKit.style(Color(1,1,1,.05),12,Color(LootCatalog.RARITY_COLORS[tier]) if tier>0 else Color(1,1,1,.16));frame.set_border_width_all(2 if tier>0 else 1)
-		for state in ["normal","hover","pressed","focus"]:cell.add_theme_stylebox_override(state,frame)
+		rarity_frame(cell,tier)
 		art(cell,UiKit.trimmed(UiKit.icon_texture(gun)),.1)
 		var name_label=UiKit.label(cell,Texts.render(Game.LOOT.WEAPONS[gun].name),Vector2(4,C-20),Vector2(C-8,18),11 if C>=100 else 9,UiKit.INK);name_label.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;name_label.clip_text=true
 		cell.item_kind="weapon";cell.draggable=true;cell.info=ITEM.of("weapon",entry.item,arena)
@@ -351,14 +359,15 @@ func move(from:String,to:String):
 		var a=int(from.get_slice(":",1));var b=int(to.get_slice(":",1))
 		if b<r.ammo_slots.size():
 			var keep=r.ammo_slots[a];r.ammo_slots[a]=r.ammo_slots[b];r.ammo_slots[b]=keep;r.ammo_active=b;done("")
+## Throw away (T-202): onto the floor of the field or the room the hero stands in; where there is no floor (the
+## route map) the item is destroyed after the same confirmation as «Уничтожить».
 func discard(key:String):
 	var r=run()
-	if r==null or not Backpack.can_drop(arena):
-		if is_instance_valid(arena):arena.toast(Texts.render("Выбросить можно только в бою"))
-		return
+	if r==null:return
 	var ok=false
 	# The gun in hand is not thrown away from its cell (put it into the backpack first); any loaded ammo can go.
 	if key=="weapon":arena.toast(Texts.render("Нельзя выбросить последнее оружие — нечем будет воевать"));Game.sound("ui_denied",arena);return
+	if not Backpack.can_drop(arena):confirm_destroy(key);return
 	if key.begins_with("slot:"):
 		var slot=r.ammo_slots[int(key.get_slice(":",1))] if int(key.get_slice(":",1))<r.ammo_slots.size() else null
 		if not slot is Dictionary or Ammo.is_empty_slot(slot):return
@@ -366,8 +375,48 @@ func discard(key:String):
 		var e=entry(key)
 		ok=e!=null and Backpack.drop(arena,e.kind,e.index)
 	elif key.begins_with("slot:"):ok=Backpack.drop(arena,"slot",int(key.get_slice(":",1)))
-	if ok:selected="";done("Выброшено мешком рядом с бойцом")
-func done(message:String):
+	if ok:selected="";done("Выброшено рядом с бойцом","drop")
+## «Уничтожить» (T-203): any item, after a confirmation; a slot becomes empty, the gun in hand leaves the paws.
+func destroy(key:String):
+	var r=run()
+	if r==null:return
+	var ok=false
+	if key=="weapon":ok=Backpack.destroy(arena,"hand")
+	elif key.begins_with("slot:"):ok=Backpack.destroy(arena,"slot",int(key.get_slice(":",1)))
+	elif key.begins_with("bag:"):
+		var e=entry(key)
+		ok=e!=null and Backpack.destroy(arena,e.kind,e.index)
+	if ok:selected="";done("Предмет уничтожен","destroy")
+## What a destroy would take away, for the confirmation: the item's name.
+func destroy_target(key:String)->String:
+	var r=run()
+	if r==null:return ""
+	if key=="weapon":return Texts.render(Game.LOOT.WEAPONS.get(str(r.weapon),{}).get("name",""))
+	if key.begins_with("slot:"):
+		var n=int(key.get_slice(":",1))
+		return item_name("ammo",r.ammo_slots[n]) if n<r.ammo_slots.size() and r.ammo_slots[n] is Dictionary else ""
+	var e=entry(key)
+	return item_name(e.kind,e.item) if e!=null else ""
+func confirm_destroy(key:String):
+	if view.get_node_or_null("DestroyConfirm"):return
+	var name=destroy_target(key)
+	if name=="":return
+	var dialog=DestroyDialog.new();dialog.name="DestroyConfirm";view.add_child(dialog);dialog.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);dialog.add_to_group("guide_confirmation")
+	var shade=ColorRect.new();dialog.add_child(shade);shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);shade.color=Color(0,0,0,.6)
+	var area=view.get_viewport_rect().size;var width=minf(520,area.x-40);var height=230.0
+	var box=UiKit.panel(dialog,(area-Vector2(width,height))*.5-view.global_position,Vector2(width,height))
+	UiKit.label(box,"Уничтожить предмет?",Vector2(24,20),Vector2(width-48,40),26)
+	var what=UiKit.label(box,name,Vector2(24,68),Vector2(width-48,30),20);what.clip_text=true;what.name="DestroyItem"
+	UiKit.label(box,"Пропадёт навсегда, вернуть нельзя.",Vector2(24,100),Vector2(width-48,30),17)
+	var cancel=UiKit.button(box,"Отмена",Vector2(width*.5+6,height-74),Vector2((width-60)*.5,50),dialog.queue_free,true);cancel.name="DestroyCancel"
+	var accept=UiKit.button(box,"Уничтожить",Vector2(24,height-74),Vector2((width-60)*.5,50),func():dialog.queue_free();destroy(key));accept.name="DestroyAccept"
+	cancel.grab_focus.call_deferred()
+## The confirmation closes on Esc / back like any window (and does not close the tablet under it).
+class DestroyDialog extends Control:
+	func _input(event):
+		if (event.is_action_pressed("pause") or event.is_action_pressed("ui_cancel")) and not event.is_echo():
+			get_viewport().set_input_as_handled();queue_free()
+func done(message:String,_sound:="equip"):
 	Game.sound("weapon_equip",arena if is_instance_valid(arena) else view)
 	if message!="" and is_instance_valid(arena):arena.toast(Texts.render(message))
 	view.refresh()
@@ -389,14 +438,16 @@ func popover():
 	var actions=actions_for(selected)
 	if actions.is_empty():return
 	var cell:Control=cells[selected]
-	var bw=104.0;var h=40.0;var pad=6.0
+	# A vertical list (T-203): one button per line, the main action first.
+	var bw=maxf(150.0,C*1.4);var h=36.0;var pad=6.0
 	var box=Panel.new();box.name="GearActions";body.add_child(box);box.z_index=5
-	box.size=Vector2(actions.size()*bw+(actions.size()+1)*pad,h+pad*2)
+	box.size=Vector2(bw+pad*2,actions.size()*h+(actions.size()+1)*pad)
 	box.add_theme_stylebox_override("panel",UiKit.style(Color("1d2420"),12,UiKit.ORANGE))
 	var x=clampf(cell.position.x+(cell.size.x-box.size.x)*.5,right_x,right_x+4*C+3*GAP-box.size.x)
 	box.position=Vector2(x,cell.position.y+cell.size.y+6)
 	for i in range(actions.size()):
-		var b=UiKit.button(box,actions[i][0],Vector2(pad+i*(bw+pad),pad),Vector2(bw,h),actions[i][1],i==0);b.add_theme_font_size_override("font_size",14);b.name="Act_%d" % i;b.clip_text=true
+		var b=UiKit.button(box,actions[i][0],Vector2(pad,pad+i*(h+pad)),Vector2(bw,h),actions[i][1],i==0);b.add_theme_font_size_override("font_size",14);b.name="Act_%d" % i;b.clip_text=true
+		if actions[i][0]=="Уничтожить":b.add_theme_color_override("font_color",Color("e0806b"));b.add_theme_color_override("font_hover_color",Color("f09a86"))
 	if UiKit.motion_enabled():
 		box.modulate.a=0;box.pivot_offset=Vector2(box.size.x*.5,0);box.scale=Vector2(.9,.9)
 		var t=box.create_tween().set_parallel();t.tween_property(box,"modulate:a",1.0,.12);t.tween_property(box,"scale",Vector2.ONE,.16).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
@@ -407,7 +458,9 @@ func actions_for(key:String)->Array:
 	if key.begins_with("bag:") and cell.item_kind=="weapon":actions.append(["Взять",func():activate(key)])
 	if key.begins_with("slot:") and cell.draggable:actions.append(["Снять",func():activate(key)])
 	if key=="weapon" and cell.draggable and run()!=null and not Backpack.full(run()):actions.append(["Снять",func():move("weapon","bag:-1")])
+	# Throw away onto the floor where there is one (field, room); destroy anything, after a confirmation (T-203).
 	if (key.begins_with("bag:") or key.begins_with("slot:")) and cell.draggable and Backpack.can_drop(arena):actions.append(["Выбросить",func():discard(key)])
+	if (key.begins_with("bag:") or key.begins_with("slot:") or key=="weapon") and cell.draggable and run()!=null:actions.append(["Уничтожить",func():confirm_destroy(key)])
 	return actions
 func refresh_info():
 	var info=body.get_node_or_null("GearInfo")
