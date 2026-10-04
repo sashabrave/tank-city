@@ -7,13 +7,13 @@ const ROSTER=["recruit","heavy","gunner","marksman","engineer"]
 const INFO={
 	"recruit":{"role":"Универсал · крит","family":"fire","modifiers":[{"stat":"crit_chance","op":"add","value":.05}],"unlock":{}},
 	"heavy":{"role":"Штурм · живучесть","family":"survival","modifiers":[{"stat":"soldier_max_hp","op":"add_round","value":1.0},{"stat":"soldier_hp","op":"add_round","value":1.0},{"stat":"guard_bullet","op":"add","value":.10}],
-		"unlock":{"event":"armor","goal":25,"text":"Уничтожь 25 единиц техники"}},
+		"unlock":{"event":"field_reached","goal":3,"text":"Дойди до поля 3 в вылазке"}},
 	"gunner":{"role":"Подрыв · спецбоеприпасы","family":"ammo","modifiers":[{"stat":"burn_power","op":"add","value":.25},{"stat":"guard_blast","op":"add","value":.15}],
 		"unlock":{"event":"barrel_kills","goal":10,"text":"Подорви бочками 10 врагов"}},
 	"marksman":{"role":"Разведка · засада","family":"recon","modifiers":[{"stat":"stealth","op":"add","value":.12},{"stat":"crit_damage","op":"add","value":.25}],
 		"unlock":{"event":"challenge_any","goal":3,"text":"Пройди 3 испытания"}},
 	"engineer":{"role":"Тыл · техника и дроны","family":"logistics","modifiers":[{"stat":"field_repair","op":"add","value":.3},{"stat":"marauder","op":"add","value":.10}],
-		"unlock":{"boss":true,"text":"Победи босса мира"}},
+		"unlock":{"event":"field_reached","goal":5,"text":"Дойди до поля 5 в вылазке"}},
 }
 ## Sketches, not balanced: two words, numbers and the abilities they would get.
 const CONCEPTS=[

@@ -19,7 +19,7 @@ func run():
 	for id in ["sniper","rpg","vehicle_tank","vehicle_apc","laser","airstrike"]:check(id in late or id in ids(2,4),"late world 1 can drop "+id)
 	check(not ("vehicle_tank" in ids(2,2)),"tank blueprint waits for the second half")
 	for id in Game.CLASSES:check(Game.class_world(id)==1,"shell available in world 1: "+id)
-	Game.progression.counters["armor"]=25;Game.progression.boss_classes=["recruit"];check(Game.can_select_class("heavy") and Game.can_select_class("engineer"),"classes open by goals in world 1")
+	Game.progression.counters["field_reached"]=5;check(Game.can_select_class("heavy") and Game.can_select_class("engineer"),"classes open by goals in world 1")
 	Campaign.configure(2)
 	check(not Campaign.unified_content() and Campaign.recipe_world()==2,"locked world 2 keeps its gating")
 	Campaign.configure(1)

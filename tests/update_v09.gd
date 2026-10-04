@@ -70,7 +70,7 @@ func run():
 		var model=Visuals.model(kind,owner);check(model.find_children("*","MeshInstance3D",true,false).size()>0,"model "+kind)
 	for id in Game.LOOT.BONUSES:check(Game.LOOT.visual(owner,id)!=null,"physical bonus "+id)
 	Game.built_workshops=["headquarters"];Game.credits=10000;check(Game.buy_special("rescue") and Game.rescue_level==1,"rescue purchase")
-	Game.progression.boss_classes=["recruit"];check(Game.select_class("engineer"),"class opens by goal")
+	Game.progression.counters["field_reached"]=5;check(Game.select_class("engineer"),"class opens by goal")
 	var path=Game.save_path;Game.save_path="/private/tmp/tank-v09-%d/profile.json" % Time.get_ticks_usec();Game.profiles.selected=true;Game.save_blocked=false;Game.save_enabled=true;Game.save_progress();Game.save_enabled=false;Game.reset_upgrades();Game.load_progress();Game.save_path=path
 	check(Game.selected_class=="engineer" and Game.rescue_level==1 and Game.ability_slots==2,"v09 persistence clamps legacy three slots to two")
 	arena.queue_free();owner.queue_free();await get_tree().process_frame

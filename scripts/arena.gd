@@ -310,6 +310,9 @@ func ensure_armed(at_start:=false)->bool:
 	return fixed
 func begin_room(index: int):
 	Game.progression.combat_entered=true
+	# The deepest field ever reached opens the demo classes (author, 2026-10-03): Штурмовик at field 3 (first
+	# third of the world), Инженер at field 5 (about two thirds). The sandbox never counts.
+	if not sandbox:Game.progression.event("field_reached",index+1,true)
 	ensure_armed(true)
 	if Campaign.daily:combat_rng.seed=DailyRun.room_seed(run_seed,Campaign.cycle,index)
 	effects.emit("room_start",{"index":index})
