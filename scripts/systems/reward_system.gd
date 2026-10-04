@@ -85,9 +85,21 @@ func dropped_item(visual:Node3D,content:Dictionary)->int:
 	if not content.get("supplies",[]).is_empty():
 		LootCatalog.visual(visual,"heart");return 0
 	var recipe:Dictionary=content.get("recipes",[{}])[0]
-	var board=Visuals.box(visual,Vector3(0,.04,0),Vector3(.3,.03,.4),Color("3f6fb0"),"paint");board.rotation.y=randf_range(-.4,.4)
-	Visuals.box(board,Vector3(0,.025,.0),Vector3(.24,.01,.3),Color("e8ecf2"))
-	return Game.TIERS.tier(str(recipe.get("id",""))) if recipe.has("id") else 0
+	var tier=Game.TIERS.tier(str(recipe.get("id",""))) if recipe.has("id") else 0
+	blueprint_model(visual,tier)
+	return tier
+## A blueprint lying on the ground: a half-unrolled blue sheet with white lines, the rest rolled up and tied
+## with a ribbon in the rarity colour. Readable from the battle camera as «бумага-чертёж», not a crate.
+static func blueprint_model(visual:Node3D,tier:int):
+	var root=Node3D.new();visual.add_child(root);root.rotation.y=randf_range(-.5,.5);root.scale=Vector3.ONE*1.3
+	var blue=Color("2f63b5")
+	var sheet=Visuals.box(root,Vector3(.06,.012,0),Vector3(.3,.012,.34),blue,"paint")
+	for i in range(3):Visuals.box(sheet,Vector3(-.02,.008,-.1+i*.1),Vector3(.2,.004,.012),Color("e6eef9"))
+	Visuals.box(sheet,Vector3(.07,.008,0),Vector3(.012,.004,.26),Color("e6eef9"))
+	var roll=MeshInstance3D.new();var tube=CylinderMesh.new();tube.top_radius=.075;tube.bottom_radius=.075;tube.height=.4;tube.radial_segments=14;roll.mesh=tube
+	roll.material_override=Visuals.material(blue.darkened(.12));roll.rotation.x=PI*.5;roll.position=Vector3(-.12,.075,0);root.add_child(roll)
+	var band=MeshInstance3D.new();var ring=CylinderMesh.new();ring.top_radius=.08;ring.bottom_radius=.08;ring.height=.05;ring.radial_segments=14;band.mesh=ring
+	band.material_override=Visuals.material(Color(LootCatalog.RARITY_COLORS[clampi(tier,0,3)]) if tier>0 else Color("d64a3a"));band.rotation.x=PI*.5;band.position=roll.position;root.add_child(band)
 func collect_pickup(pickup: Dictionary):
 	if pickup.kind=="item":return  # a single dropped item answers its card (E / C), not walking over it
 	if pickup.kind=="sack":
@@ -312,7 +324,9 @@ func chest_recipe()->Dictionary:
 func grant_chest_recipe(pickup:Dictionary):
 	if pickup.has("recipe_given"):return
 	pickup["recipe_given"]=chest_recipe()
-	if not pickup.recipe_given.is_empty() and not Backpack.stow(arena,pickup.recipe_given,"recipe"):pickup.recipe_given={}
+	# It drops on the ground next to the chest, like a gun or an ammo can (author, 4 Oct 2026): the player
+	# decides — C into the backpack, or leave it. Not picked up before leaving the field = gone.
+	if not pickup.recipe_given.is_empty():place_sack(arena.find_free_near(arena.grid_pos(pickup.node.position)),{"recipes":[pickup.recipe_given],"ammo":[]})
 
 func apply_secret(offer):
 	match offer.type:

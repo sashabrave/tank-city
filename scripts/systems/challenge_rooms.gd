@@ -24,6 +24,15 @@ const SURVIVE_SECONDS=[25,35,45]
 const SHELL_INTERVAL=[1.1,.8,.6]
 const SHELL_RADIUS=[1.2,1.4,1.6]
 const SHELL_FUSE=1.5
+## T-227: survival got livelier — grenadiers come in small groups and now and then a heavy shell lands with a
+## wide marker and a longer fuse.
+const SURVIVE_GRENADIERS=[1,2,2]
+const GRENADIER_EVERY=9.0
+const BIG_SHELL_EVERY=[11.0,9.0,7.0]
+const BIG_SHELL_SCALE=2.2
+const BIG_SHELL_FUSE=2.4
+var grenadier_timer=3.0
+var big_timer=6.0
 var progress=0.0
 var goal=0.0
 ## Hold: an enemy stands in the zone and the countdown is paused.
@@ -53,7 +62,7 @@ func reset():
 func start():
 	opened=false;rewarded=false;chest={}
 	arena.room.spawn_queue.clear();arena.room.wave_roster.clear();arena.room.wave_spawned=0;arena.room.upgrade_offers.clear()
-	progress=0.0;goal=0.0;shell_timer=1.5;wave_cycle=0
+	progress=0.0;goal=0.0;shell_timer=1.5;wave_cycle=0;grenadier_timer=3.0;big_timer=6.0
 	for shell in shells:
 		if is_instance_valid(shell.node):shell.node.queue_free()
 	shells.clear();zone=null
@@ -240,16 +249,30 @@ func tick_survive(delta:float):
 	shell_timer-=delta
 	if shell_timer<=0:
 		shell_timer=SHELL_INTERVAL[clampi(arena.room.difficulty,0,2)];mark_shell()
+	var level=clampi(arena.room.difficulty,0,2)
+	big_timer-=delta
+	if big_timer<=0 and goal-progress>BIG_SHELL_FUSE:big_timer=BIG_SHELL_EVERY[level];mark_shell(true)
+	grenadier_timer-=delta
+	if grenadier_timer<=0 and goal-progress>6.0:
+		grenadier_timer=GRENADIER_EVERY
+		for i in range(SURVIVE_GRENADIERS[level]):
+			arena.room.wave_roster.append({"kind":"grenadier","rank":0,"weapon":EnemyLoadouts.default_for("grenadier"),"state":"queued"});arena.room.spawn_queue.append("grenadier")
+		arena.room.spawn_timer=minf(arena.room.spawn_timer,.4)
 	for shell in shells.duplicate():
 		shell.time-=delta
-		if is_instance_valid(shell.node):shell.paint.albedo_color.a=lerpf(.5,.18,clampf(shell.time/SHELL_FUSE,0,1))
+		if is_instance_valid(shell.node):shell.paint.albedo_color.a=lerpf(.5,.18,clampf(shell.time/(BIG_SHELL_FUSE if shell.get("big",false) else SHELL_FUSE),0,1))
 		if shell.time<=0:explode_shell(shell)
 	if progress>=goal:
 		for shell in shells:
 			if is_instance_valid(shell.node):shell.node.queue_free()
-		shells.clear();complete(arena.world_pos(Vector2i(int(arena.room.grid_size/2),int(arena.room.grid_size/2)-1)))
+		shells.clear()
+		# The shelling stops and the grenadiers fall back: the field is calm for the reward.
+		arena.room.spawn_queue.clear()
+		for actor in arena.room.actors.duplicate():
+			if is_instance_valid(actor) and not actor.dead and not actor.player_owned and not actor.allied:arena.burst(actor.position+Vector3.UP*.4,Color("d8cfb4"),.4);actor.dead=true;arena.room.actors.erase(actor);actor.queue_free()
+		complete(arena.world_pos(Vector2i(int(arena.room.grid_size/2),int(arena.room.grid_size/2)-1)))
 ## Half of the shells aim near the player, the rest anywhere on the field; the HQ surroundings are never targeted.
-func mark_shell():
+func mark_shell(big:=false):
 	var rng=arena.run.combat_rng;var g=arena.room.grid_size;var cell=Vector2i.ZERO
 	for attempt in range(8):
 		if is_instance_valid(arena.room.player) and rng.randf()<.5:
@@ -257,21 +280,22 @@ func mark_shell():
 			cell=center+Vector2i(rng.randi_range(-2,2),rng.randi_range(-2,2))
 		else:cell=Vector2i(rng.randi_range(1,g-2),rng.randi_range(1,g-3))
 		if arena.inside(cell) and absi(cell.x-arena.room.base_cell.x)+absi(cell.y-arena.room.base_cell.y)>2:break
-	var radius=SHELL_RADIUS[clampi(arena.room.difficulty,0,2)]
+	var radius=SHELL_RADIUS[clampi(arena.room.difficulty,0,2)]*(BIG_SHELL_SCALE if big else 1.0)
 	var node=Node3D.new();arena.add_child(node);node.position=arena.world_pos(cell)
 	Visuals.ring(node,Color("d8453a"),radius)
 	# Filled danger disc; it grows more opaque as the fuse runs out.
 	var disc=MeshInstance3D.new();var shape=CylinderMesh.new();shape.top_radius=radius;shape.bottom_radius=radius;shape.height=.02;disc.mesh=shape;disc.position.y=.04
 	var paint=StandardMaterial3D.new();paint.albedo_color=Color(.85,.27,.23,.18);paint.transparency=BaseMaterial3D.TRANSPARENCY_ALPHA;paint.shading_mode=BaseMaterial3D.SHADING_MODE_UNSHADED
 	disc.material_override=paint;node.add_child(disc)
-	shells.append({"node":node,"time":SHELL_FUSE,"radius":radius,"paint":paint})
+	shells.append({"node":node,"time":BIG_SHELL_FUSE if big else SHELL_FUSE,"radius":radius,"paint":paint,"big":big})
 func explode_shell(shell:Dictionary):
 	shells.erase(shell)
 	if not is_instance_valid(shell.node):return
 	var pos=shell.node.position;shell.node.queue_free()
 	arena.burst(pos+Vector3.UP*.3,Color("e78331"),shell.radius);Game.sound("explosion_heavy",arena)
+	if shell.get("big",false) and arena.has_method("shake"):arena.shake(.5)
 	var player=arena.room.player
-	if is_instance_valid(player) and not player.dead and arena.flat_distance(pos,player.position)<shell.radius:player.take_damage(1,player.position-pos+Vector3(.01,0,.01),"","blast")
+	if is_instance_valid(player) and not player.dead and arena.flat_distance(pos,player.position)<shell.radius:player.take_damage(2 if shell.get("big",false) else 1,player.position-pos+Vector3(.01,0,.01),"","blast")
 	for cell in arena.room.walls.keys():
 		if arena.flat_distance(pos,arena.world_pos(cell))<shell.radius:arena.damage_wall(cell,2)
 

@@ -333,7 +333,7 @@ func show_recipe_draft():
 	var why=panel.get_node("Subtitle")
 	var given:Dictionary=arena.draft_pickup.get("recipe_given",{})
 	if given.is_empty():Texts.set_text(why,("Награда за командира. " if arena.room.boss_room else "")+"Возьми одну: трофей действует до конца вылазки")
-	else:Texts.set_text(why,Texts.render("Чертёж «%s» уже в рюкзаке — донеси его до хаба. И возьми одну карточку") % Texts.render(Game.recipe_name(given)))
+	else:Texts.set_text(why,Texts.render("Чертёж «%s» лежит рядом с сундуком — не забудь подобрать. А теперь возьми одну карточку") % Texts.render(Game.recipe_name(given)))
 	why.add_theme_font_size_override("font_size",14);why.add_theme_color_override("font_color",UiKit.MUTED);why.position.y=110;why.size.y=24;why.clip_text=true
 	for i in range(3):
 		var offer=arena.draft_pickup.offers[i];var special=offer.category in ["secret","alloy","upgrade","documents"]
@@ -362,7 +362,7 @@ func show_blueprint_reveal(recipe:Dictionary):
 	var art=UiKit.icon_texture(recipe.id);icon.texture=UiKit.trimmed(art if art else UiKit.icon_texture("recipe"))
 	UiKit.label(panel,LOOT.RARITY_NAMES[tier]+" · "+RECIPE_KINDS.get(str(recipe.category),"Чертёж"),Vector2(300,150),Vector2(600,26),16,color)
 	UiKit.label(panel,Game.recipe_name(recipe),Vector2(300,180),Vector2(600,50),34)
-	var note=UiKit.label(panel,"Чертёж уже в рюкзаке. Донеси его до хаба — там он откроется навсегда." if not recipe.get("duplicate",false) else "Уже открыт. Донеси в хаб и продай в урне за %d сплава." % Game.duplicate_price(recipe),Vector2(300,240),Vector2(600,60),18,UiKit.MUTED)
+	var note=UiKit.label(panel,"Чертёж выпал из сундука и лежит рядом. Подбери его в рюкзак и донеси до хаба — там он откроется навсегда." if not recipe.get("duplicate",false) else "Уже открыт. Донеси в хаб и продай в урне за %d сплава." % Game.duplicate_price(recipe),Vector2(300,240),Vector2(600,60),18,UiKit.MUTED)
 	note.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	var go=UiKit.button(panel,"К наградам",Vector2(300,350),Vector2(320,56),blueprint_seen,true)
 	go.focus_mode=Control.FOCUS_ALL;(func():if is_instance_valid(go):go.grab_focus()).call_deferred()
