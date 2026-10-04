@@ -5,7 +5,8 @@
 #   tools/run_tests.sh name1 name2 ...  — выбранные тесты
 # Параллельные Godot в одной папке мешают друг другу через кэш .godot, поэтому полный набор идёт в JOBS
 # потоков (по умолчанию 4), каждый в своей мгновенной APFS-копии проекта (cp -c, ~2 с, место не занимает).
-# Долгие тесты стартуют первыми. JOBS=1 — по одному, в самой папке проекта.
+# Долгие тесты стартуют первыми; у каждого потока свой временный HOME (user:// не общий и не авторский).
+# JOBS=1 — по одному, в самой папке проекта.
 # Упавший тест завершается сразу (scripts/test_guard.gd), зависший — по --test-timeout.
 # Итог: tmp/test_runs/<время>/summary.txt и по логу на тест. Код выхода 0, только если всё зелёное.
 cd "$(dirname "$0")/.."
@@ -46,12 +47,15 @@ else
     # Everything the game reads; no git history, builds, worktrees or temp files.
     for item in ${(f)"$(ls -A | grep -vxE '\.git|tmp|build|\.claude|landing|site|\.DS_Store')"}; do cp -cR "$item" $w/; done
     mkdir -p $w/tmp
+    # Own HOME per worker: user:// (profiles, credits, settings) is never shared between workers or with the
+    # author's real profile (audit 2026-10-03).
+    mkdir -p $clones/home$j
   done
   for j in $(seq 1 $jobs); do
     (
       # Each worker claims the next free test (mkdir is atomic), so the load balances itself.
       for n in $ordered; do
-        mkdir $clones/claims/$n 2>/dev/null && run_one $clones/w$j $n
+        mkdir $clones/claims/$n 2>/dev/null && HOME=$clones/home$j run_one $clones/w$j $n
       done > $out/summary_w$j.txt
     ) &
   done
