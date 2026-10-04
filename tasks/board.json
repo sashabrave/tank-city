@@ -3738,7 +3738,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-294.png",
 			"source": "game",
-			"status": "doing",
+			"status": "review",
 			"title": "турели у базы (бонусы) слишком сильные, надо замедлить их немножко.",
 			"type": "bug",
 			"version": "0.8.0"
@@ -3764,7 +3764,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-296.png",
 			"source": "game",
-			"status": "doing",
+			"status": "review",
 			"title": "гаджеты - лазер анимация красный тонкий луч. можнее чем у снайпера и пульсирующий резко",
 			"type": "bug",
 			"version": "0.8.0"
@@ -3790,7 +3790,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-298.png",
 			"source": "game",
-			"status": "doing",
+			"status": "review",
 			"title": "когда стреляет пп в хабе то блок какой-то подсвечивается глюком",
 			"type": "bug",
 			"version": "0.8.0"
@@ -3816,7 +3816,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-300.png",
 			"source": "game",
-			"status": "doing",
+			"status": "review",
 			"title": "в бою тоже когда стреляешь из ПП центральная клетка карты светится",
 			"type": "bug",
 			"version": "0.8.0"
@@ -3842,7 +3842,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-302.png",
 			"source": "game",
-			"status": "doing",
+			"status": "review",
 			"title": "дрон помощник летает ровно за игроком когда нет цели, и ровно за врагом когда он большой. Дай ему поведение похожее не разведку при покое. и смену позиций при атаке",
 			"type": "bug",
 			"version": "0.8.0"
@@ -3868,7 +3868,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-304.png",
 			"source": "game",
-			"status": "doing",
+			"status": "review",
 			"title": "почемуто мина не ставится во второй раз после кулдауна",
 			"type": "bug",
 			"version": "0.8.0"
@@ -3881,7 +3881,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-305.png",
 			"source": "game",
-			"status": "doing",
+			"status": "review",
 			"title": "а понял мина не ставится потому что уже стоит",
 			"type": "bug",
 			"version": "0.8.0"
@@ -3894,7 +3894,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-306.png",
 			"source": "game",
-			"status": "doing",
+			"status": "review",
 			"title": "у гранатомета модель снаряда замени на гранату как у врагов (сейчас ракетница)",
 			"type": "bug",
 			"version": "0.8.0"
@@ -3905,7 +3905,7 @@
 			"note": "Автор 4 окт. Выстрел (пули, дробь, очереди ПП, гранатомёт) — из точки Muzzle модели оружия, во всех режимах.",
 			"type": "bug",
 			"priority": 1,
-			"status": "doing",
+			"status": "review",
 			"version": "0.8.1",
 			"created": "2026-10-04",
 			"source": "chat",
