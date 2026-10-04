@@ -172,6 +172,10 @@ func actor_destroyed(actor):
 				for support in arena.room.actors.duplicate():
 					if not support.player_owned and not support.allied:support.dead=true;arena.room.actors.erase(support);support.queue_free()
 				arena.drop_recipe(actor.cell,{});Game.music_stinger("boss_victory");arena.toast("Победа! Забери сундук командира")
+				# T-261: fireworks over the field, the banner and the major on the radio.
+				preload("res://scripts/fireworks.gd").launch(arena,arena.room.grid_size)
+				if is_instance_valid(arena.presentation):arena.presentation.announce("Генерал повержен","Забери сундук — и на базу",1.8)
+				Game.notifications.post(Texts.render("Генерал повержен! Забирай сундук и возвращайся на базу — там ждут."),Texts.render("Майор Мурлыкин"),"important")
 		else:
 			arena.reward.drop_enemy_loot(actor)
 	if not actor.player_owned:leave_body(actor)

@@ -19,7 +19,8 @@ const CALLS={
 		[MAJOR,"Стоянка готова. Подбитую технику врага тоже можно занять."],
 	],
 	"general":[
-		[MAJOR,"У генерала щит на 60% и 30%. Разбей генератор на фланге."],
+		[MAJOR,"Генерал зовёт подкрепление, и пока оно живо, у него щит. Сначала отряд, потом генерал."],
+		[MAJOR,"Красная полоса — таран. Уйди с неё. И штаб не бросай."],
 	],
 	"first_haul":[
 		[MAJOR,"Сплав донёс — уже польза. В Казарме он превращается в здоровье и урон."],
@@ -45,9 +46,9 @@ const CALLS={
 		[MAJOR,"Захватил КП? Легендарное правило — это не карта, это характер. Держи его до конца вылазки."],
 	],
 	"general_down":[
-		[MAJOR,"Генерал повержен. Не верю, но рапорт подпишу."],
+		[MAJOR,"Генерал повержен. Весь Рубеж — 13 гудит: прошли как надо, молодцы."],
 		[SOLDIER,"Можно в отпуск?"],
-		[MAJOR,"Открыт бесконечный рубеж. На карточке мира — лестница испытаний. Вот твой отпуск."],
+		[MAJOR,"Новая цель: испытания на карточке мира и бесконечный рубеж. Вот твой отпуск."],
 	],
 	"ladder":[
 		[MAJOR,"Испытание взято. Враги злее, награда жирнее. Дальше — сам решай, насколько ты псих."],
@@ -77,6 +78,8 @@ var grow:=1.0
 static func due(hub)->String:
 	var p=Game.progression
 	var c=func(key:String)->int:return int(p.counters.get(key,0))
+	# The victory call jumps the queue (T-261): right after the general it rings first, not after older calls.
+	if "call_general_down" not in p.seen and 1 in p.cleared_worlds:return "general_down"
 	# Story order: the first unseen call whose moment has come rings next, one per hub visit.
 	for call in ORDER:
 		if "call_"+call in p.seen:continue
