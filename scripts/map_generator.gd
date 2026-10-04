@@ -38,7 +38,7 @@ static func generate(seed_value: int, room: int, reduce_obstacles:bool=true,size
 						if rows[tile.y][tile.x]==".":put(rows,tile,"C" if offset==Vector2i.ZERO else "B")
 		# Protect all three central firing lanes, with independently varied depth.
 		for x in range(middle-1,middle+2):
-			put(rows,Vector2i(x,rng.randi_range(2,width-4)),"C")
+			put(rows,Vector2i(x,rng.randi_range(2,width-5)),"C")
 		# Additional concrete on both flanks; reserve the open edge lanes.
 		for side in [0,1]:
 			for block in range(3+stage):
@@ -59,6 +59,7 @@ static func generate(seed_value: int, room: int, reduce_obstacles:bool=true,size
 			var start=rng.randi_range(2,middle);var end=mini(width-4,start+rng.randi_range(2,5))
 			for y in range(start,end+1):
 				for x in range(1,middle-1):put(rows,Vector2i(width-1-x,y),rows[y][x])
+		clear_base_front(rows)
 		if validate(rows):
 			if reduce_obstacles:thin_obstacles(rows,seed_value)
 			return {"seed":seed_value,"rows":rows,"name":"Рубеж %02d" % (room+1)}
@@ -75,6 +76,7 @@ static func generate(seed_value: int, room: int, reduce_obstacles:bool=true,size
 		put(fallback_rows,Vector2i(middle+side*2,width-5),"C")
 	put(fallback_rows,Vector2i(middle,width-1),"H")
 	flank_nets(fallback_rows,seed_value)
+	clear_base_front(fallback_rows)
 	if reduce_obstacles:thin_obstacles(fallback_rows,seed_value)
 	return {"seed":seed_value,"rows":fallback_rows,"name":"Рубеж %02d" % (room+1)}
 
@@ -85,6 +87,17 @@ static func flank_nets(rows:Array,seed_value:int):
 		for i in range(slots.size()-1,0,-1):
 			var j=rng.randi_range(0,i);var swap=slots[i];slots[i]=slots[j];slots[j]=swap
 		for i in range(slots.size()):put(rows,Vector2i(x,slots[i]),"N" if i<roundi(slots.size()*.75) else ".")
+
+## T-209: the 3×2 cells right in front of the HQ fortification (rows width-4 and width-3, the HQ column
+## and its two neighbours) never hold a block, net, trench or barrel. Enemies there see the base brick
+## directly and no longer shoot into an indestructible block between them and the HQ.
+static func base_front_cells(width:int)->Array:
+	var middle=int(width/2.0);var cells=[]
+	for y in [width-4,width-3]:
+		for x in range(middle-1,middle+2):cells.append(Vector2i(x,y))
+	return cells
+static func clear_base_front(rows:Array):
+	for cell in base_front_cells(rows.size()):put(rows,cell,".")
 
 static func put(rows: Array,p: Vector2i,value: String):
 	rows[p.y]=rows[p.y].substr(0,p.x)+value+rows[p.y].substr(p.x+1)

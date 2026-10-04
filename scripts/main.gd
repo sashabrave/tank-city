@@ -84,6 +84,9 @@ func show_map(index: int):
 	Game.music_context("map")
 	clear_current()
 	current=load("res://scripts/route_map.gd").new();current.available=index;current.run_context=run_arena
+	# T-218: a service node right before a service row stands in for that row on its road.
+	if is_instance_valid(run_arena) and index in Campaign.SERVICES and not run_arena.visited_services.has(index) and RoutePlan.skips_service_row(RoutePlan.build(run_arena.run_seed),index,route_choices):
+		run_arena.visited_services[index]=RoutePlan.ROW_REPLACED
 	current.needs_service=is_instance_valid(run_arena) and index in Campaign.SERVICES and not run_arena.visited_services.has(index)
 	current.ability_available=is_instance_valid(run_arena) and run_arena.abilities.selected!=""
 	current.wave_seed=run_arena.run_seed if is_instance_valid(run_arena) else Game.visual_run_seed

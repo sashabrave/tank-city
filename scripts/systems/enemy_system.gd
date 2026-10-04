@@ -327,6 +327,12 @@ func mortar_step(actor):
 func lob(actor,target:Vector3):
 	if is_instance_valid(actor.model) and actor.model.has_method("lob"):actor.model.lob(target)
 
+## Sniper aim (laser shown) and bullet speed. The room commander sniper (mini-boss) aims 35% faster
+## and fires a 40% faster round (T-210).
+const SNIPER_AIM=1.5
+const SNIPER_BULLET_SPEED=15.0
+const COMMANDER_SNIPER_AIM=.975
+const COMMANDER_SNIPER_BULLET_SPEED=21.0
 func sniper_step(actor,delta: float):
 	if not is_instance_valid(arena.room.player) or arena.room.player.dead or arena.abilities.cloak_time>0:return
 	actor.fire_cooldown-=delta
@@ -335,7 +341,7 @@ func sniper_step(actor,delta: float):
 		actor.sniper_line.visible=true
 		if actor.sniper_charge<=0:
 			var bullet=load("res://scenes/projectile.tscn").instantiate()
-			bullet.arena=arena;bullet.owner_actor=actor;bullet.sniper_round=true;bullet.damage=actor.damage;bullet.speed=15.0;bullet.lifetime=3.0
+			bullet.arena=arena;bullet.owner_actor=actor;bullet.sniper_round=true;bullet.damage=actor.damage;bullet.speed=COMMANDER_SNIPER_BULLET_SPEED if actor.elite else SNIPER_BULLET_SPEED;bullet.lifetime=3.0
 			bullet.travel_direction=(actor.sniper_target-actor.position).normalized()
 			bullet.position=actor.position+Vector3.UP*bullet.SNIPER_HEIGHT+bullet.travel_direction*.4
 			arena.add_child(bullet);arena.room.projectiles.append(bullet)
@@ -344,7 +350,7 @@ func sniper_step(actor,delta: float):
 			Game.weapon_sound(actor)
 	elif actor.fire_cooldown<=0:
 		actor.sniper_target=arena.room.player.position
-		actor.sniper_charge=1.5
+		actor.sniper_charge=COMMANDER_SNIPER_AIM if actor.elite else SNIPER_AIM
 		actor.model.rotation.y=atan2(-(actor.sniper_target-actor.position).x,-(actor.sniper_target-actor.position).z)
 		var diff=actor.sniper_target-actor.position
 		actor.sniper_line=Visuals.box(arena,(actor.position+actor.sniper_target)*.5+Vector3.UP*preload("res://scripts/projectile.gd").SNIPER_HEIGHT,Vector3(.035,.035,diff.length()),Color("f24436"))

@@ -761,6 +761,14 @@ func floating_number(pos: Vector3,amount: float):
 	tween.tween_property(number,"modulate:a",0.0,.75)
 	tween.chain().tween_callback(number.queue_free)
 
+## A short word rising over a point (the same motion as floating_number), e.g. «Уклон».
+func floating_word(pos: Vector3,text: String,color: Color):
+	var word=Visuals.label3d(self,text,pos+Vector3.UP*1.9,color,30)
+	var tween=create_tween().set_parallel(true)
+	tween.tween_property(word,"position:y",word.position.y+.8,.7)
+	tween.tween_property(word,"modulate:a",0.0,.7)
+	tween.chain().tween_callback(word.queue_free)
+
 func shred_net(cell: Vector2i):
 	return board.shred_net(cell)
 

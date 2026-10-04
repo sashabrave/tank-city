@@ -141,7 +141,9 @@ func _ready():
 			for next_id in info.next:
 				var target=plan[stage+1].filter(func(n):return n.id==next_id)[0]
 				var end=room_point(target,plan[stage+1].size())
-				if stage+1 in Campaign.SERVICES and RoutePlan.service_roads():pass
+				# A service node replaces the next service row on its road: straight to the next battles (T-218).
+				if stage+1 in Campaign.SERVICES and RoutePlan.service_roads() and RoutePlan.is_service(info):path_line(pos,end)
+				elif stage+1 in Campaign.SERVICES and RoutePlan.service_roads():pass
 				elif stage+1 in Campaign.SERVICES:
 					var side=-1 if (pos.x+end.x)*.5<=0 else 1
 					var camp=Vector3(side*3.25,0,stage_z(stage+1)+RoutePlan.STAGE_STEP)
@@ -179,7 +181,8 @@ func _ready():
 			Visuals.label3d(base,{"vehicle":"Техника","ability":"Способность","headquarters":"Штаб","merchant":"Торговец"}[branch],Vector3(0,.35,3.65),Color("f3eee0"),30).pixel_size=.025
 			if RoutePlan.service_roads() and service_stage<plan.size():
 				# Roads into the stop from neighbouring lanes of the previous stage, and out to the next stage.
-				for lane in RoutePlan.lane_span(i,choices.size(),plan[service_stage-1].size()):path_line(room_point(plan[service_stage-1][lane],plan[service_stage-1].size()),pos)
+				for lane in RoutePlan.lane_span(i,choices.size(),plan[service_stage-1].size()):
+					if not RoutePlan.is_service(plan[service_stage-1][lane]):path_line(room_point(plan[service_stage-1][lane],plan[service_stage-1].size()),pos)
 				for lane in RoutePlan.lane_span(i,choices.size(),plan[service_stage].size()):path_line(pos,room_point(plan[service_stage][lane],plan[service_stage].size()))
 			if service_stage==available and branch in RoutePlan.service_options_from(plan,available,route_choices,choices):fork_positions[branch]=pos;service_choices.append(branch)
 

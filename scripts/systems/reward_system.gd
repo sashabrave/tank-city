@@ -21,7 +21,8 @@ func drop_pickup(_cell: Vector2i,kind: String):
 	if candidates.is_empty():return
 	var cell=candidates[arena.run.combat_rng.randi_range(0,candidates.size()-1)]
 	if kind=="vehicle" and arena.unlocked_vehicle()=="":kind="repair" if "repair" in Game.bonus_unlocks else "heart"
-	if kind=="turret" and arena.room.room_index<2:kind="repair" if "repair" in Game.bonus_unlocks else "heart"
+	# Turrets join field drops from stage 3; the sandbox admin drop gives exactly what was asked (T-205).
+	if kind=="turret" and arena.room.room_index<2 and not arena.sandbox:kind="repair" if "repair" in Game.bonus_unlocks else "heart"
 	place_pickup(cell,kind)
 ## A field bonus on a given cell, parachuting down for `fall` seconds (also used when a thief drops one, T-072).
 func place_pickup(cell:Vector2i,kind:String,fall:=1.1):

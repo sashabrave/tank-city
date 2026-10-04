@@ -87,11 +87,13 @@ static func arc(arena,source,damage:float):
 static func stun(target,seconds:float):
 	target.stun_time=maxf(target.stun_time,seconds*(.3 if target.kind=="boss" else 1.0))
 ## Incoming damage to the player: dodge first, then protection by source ("bullet", "vehicle", "blast").
-## Returns -1 when the hit was dodged.
+## Returns DODGED when the dodge roll succeeded and LANDING during the landing cover (both negative).
+const DODGED=-1.0
+const LANDING=-2.0
 static func incoming(arena,amount:float,source:String)->float:
 	var run=arena.run
-	if source in ["bullet","vehicle"] and run.elapsed<run.landing_until:return -1.0
-	if source in ["bullet","vehicle"] and run.dodge>0 and run.combat_rng.randf()<minf(CAPS.dodge,run.dodge):return -1.0
+	if source in ["bullet","vehicle"] and run.elapsed<run.landing_until:return LANDING
+	if source in ["bullet","vehicle"] and run.dodge>0 and run.combat_rng.randf()<minf(CAPS.dodge,run.dodge):return DODGED
 	var guard={"bullet":run.guard_bullet,"vehicle":run.guard_vehicle,"blast":run.guard_blast}.get(source,0.0)
 	return amount*(1.0-minf(CAPS.guard,guard+dodge_overflow(arena)))
 ## Source of a bullet that hit the player: shells from machines count as vehicle fire.

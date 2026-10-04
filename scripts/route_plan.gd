@@ -41,9 +41,9 @@ static func build(seed_value:int)->Array:
 		for special in WORLD1_SPECIALS:
 			# One special point per stage: prefer a listed stage that has none yet.
 			var stage=special.stages[rng.randi_range(0,special.stages.size()-1)]
-			var open=special.stages.filter(func(s):return s<plan.size() and plan[s].all(func(n):return n.type=="battle"))
+			var open=special.stages.filter(func(s):return s<plan.size() and plan[s].all(func(n):return n.type=="battle") and special_allowed(plan,s))
 			if not open.is_empty() and stage not in open:stage=open[0]
-			if stage>=plan.size() or plan[stage].size()<2 or plan[stage].any(func(n):return n.type!="battle"):continue
+			if stage>=plan.size() or plan[stage].size()<2 or plan[stage].any(func(n):return n.type!="battle") or not special_allowed(plan,stage):continue
 			# Specials take an ordinary battle node, never another special.
 			var free=plan[stage].filter(func(n):return n.type=="battle")
 			if free.size()<2:continue
@@ -54,6 +54,22 @@ static func build(seed_value:int)->Array:
 			var node=plan[stage][rng.randi_range(0,plan[stage].size()-1)]
 			node.type=CHALLENGES[rng.randi_range(0,CHALLENGES.size()-1)]
 	return plan
+## T-218: two service stops never follow each other on any road; after a service comes a battle.
+## A service node may not stand right after a service row, nor next to another service node. A service
+## node right before a service row replaces that row on its road (skips_service_row), so its roads lead
+## straight to the battles of the next stage.
+static func is_service(node:Dictionary)->bool:return node_branch(node)!=""
+static func special_allowed(plan:Array,stage:int)->bool:
+	if stage<=0 or stage in Campaign.SERVICES or stage in Campaign.BOSSES:return false
+	for near in [stage-1,stage+1]:
+		if near>=0 and near<plan.size() and plan[near].any(func(n):return is_service(n)):return false
+	return true
+## Value stored in visited_services for a row that a service node replaced.
+const ROW_REPLACED="route"
+static func skips_service_row(plan:Array,stage:int,choices:Dictionary)->bool:
+	if not service_roads() or stage<=0 or stage>=plan.size() or stage not in Campaign.SERVICES:return false
+	if not (choices.has(stage-1) or choices.has(str(stage-1))):return false
+	return is_service(chosen(plan,stage-1,choices))
 static func chosen(plan:Array,stage:int,choices:Dictionary)->Dictionary:
 	var id=choices.get(stage,choices.get(str(stage),""))
 	for node in plan[stage]:

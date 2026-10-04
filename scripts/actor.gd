@@ -397,7 +397,10 @@ func take_damage(amount: float,blast:Vector3=Vector3.ZERO,vehicle_credit:String=
 	if player_owned and source!="" and arena.run!=null:
 		amount=CombatMods.incoming(arena,amount,source)
 		if amount<0:
-			arena.burst(position+Vector3.UP*.5,Color("d9f2ff"),.3);invulnerable=.25;return
+			arena.burst(position+Vector3.UP*.5,Color("d9f2ff"),.3);invulnerable=.25
+			# T-212: a successful dodge roll is visible, not just a missing damage number.
+			if amount==CombatMods.DODGED:arena.floating_word(position,"Уклон",Color("bfe9ff"))
+			return
 	if player_owned and arena.run!=null and amount>0:amount=arena.effects.modify("incoming_damage",amount,{"actor":self})
 	# Legendary «Второе дыхание»: once per field a lethal hit leaves 1 HP.
 	if player_owned and kind=="soldier" and arena.run!=null and hp-amount<=0 and arena.effects.modify("second_wind",0.0,{"actor":self})>0:
