@@ -65,6 +65,7 @@ static func intro(arena):
 		# The camera stays on the field. The HQ drives in; the soldier hops out over the barrier straight onto his
 		# start cell in front of the HQ (the third row of the field) — and the fight begins the moment he lands.
 		ramp_arrival(arena,hq,approach,rest,yaw)
+		vehicle_arrival(arena,approach,rest,yaw)
 		arena.set_meta("intro_lock",true)
 		hop_out(arena,rest,ARRIVE_RAMP+BEAT)
 		build_bricks(arena,ARRIVE_RAMP+BEAT+HOP-BRICKS_AT,arena.player.cell if is_instance_valid(arena.player) else Vector2i(-1,-1))
@@ -123,6 +124,29 @@ static func ramp_arrival(arena,hq:Node3D,approach,rest:Vector3,yaw:float):
 		arena.burst(rest,Color("d8cfb4"),.5)
 		for node in [arena.base_label,arena.base_bar]:
 			if is_instance_valid(node):node.visible=true;pop(node))
+## The hero's own vehicle follows the HQ along the same track (author, 4 Oct 2026) and turns off to its cell next
+## to the start; it stands there ready before the countdown ends.
+const VEHICLE_DELAY:=.45
+static func vehicle_arrival(arena,approach,rest:Vector3,yaw:float):
+	if not arena.has_meta("arriving_vehicle"):return
+	var wreck:Node3D=arena.get_meta("arriving_vehicle");arena.remove_meta("arriving_vehicle")
+	if not is_instance_valid(wreck):return
+	var goal=wreck.position;var turn=wreck.rotation.y;var offset=goal-rest
+	var curve=approach_curve(approach,side(arena),rest,Vector3(sin(yaw),0,cos(yaw)),true);var length=curve.get_baked_length()
+	wreck.visible=false
+	var drive=func(t:float):
+		if not is_instance_valid(wreck):return
+		var p=curve.sample_baked(t*length,true)+offset*smoothstep(.7,1.0,t)
+		var ahead=curve.sample_baked(minf(length,t*length+1.5),true)+offset*smoothstep(.7,1.0,minf(1.0,t+.05))
+		wreck.position=Vector3(p.x,approach.path_height(p) if p.z>goal.z+.01 else goal.y,p.z)
+		var flat=Vector2(ahead.x-p.x,ahead.z-p.z)
+		if flat.length()>.001 and t<.97:wreck.rotation.y=lerp_angle(wreck.rotation.y,atan2(flat.x,flat.y),.25)
+	var tween=stage_tween(arena,wreck);tween.tween_interval(VEHICLE_DELAY)
+	tween.tween_callback(func():if is_instance_valid(wreck):wreck.visible=true)
+	tween.tween_method(drive,0.0,1.0,ARRIVE_RAMP).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tween.tween_callback(func():
+		if not is_instance_valid(wreck):return
+		wreck.position=goal;wreck.rotation.y=turn;arena.burst(goal,Color("d8cfb4"),.35))
 ## Path between the HQ post and the field approach on one side: off-screen along that side's track, up its
 ## lane over the rim, then a quarter turn into the post along the final heading (arriving) — or the same
 ## way back out (leaving). Flat curve; heights come from FieldApproach.path_height.

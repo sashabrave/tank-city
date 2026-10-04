@@ -381,10 +381,13 @@ func begin_room(index: int):
 	get_node("WorldAtmosphere").apply()
 	var ambience=load("res://scripts/location_ambience.gd").new()
 	ambience.seed_value=Game.visual_run_seed;ambience.room_index=index;ambience.biome=room_palette().ambience;ambience.radius=grid_size*.5;ambience.palette=room_palette();add_child(ambience)
+	# The hero always hops out of the HQ on foot (author, 4 Oct 2026); his vehicle drives in behind the HQ and parks
+	# on a cell next to the start (BattleStage.vehicle_arrival) — board it with E when you like.
+	var arriving_vehicle=""
+	if carried_kind in GarageCatalog.VEHICLES:arriving_vehicle=carried_kind;carried_kind="soldier"
 	player=spawn_actor(carried_kind,Vector2i(base_cell.x,grid_size-2 if hq_off_field() else grid_size-3),true,false,1,false,"",carried_origin,carried_zone)
-	player.salvaged=carried_salvaged
+	if arriving_vehicle!="":park_arriving_vehicle(arriving_vehicle,carried_armor,carried_salvaged,carried_origin,carried_zone)
 	# No spawn grace since 0.8 (author: not needed for play, extra noise); the countdown covers the arrival.
-	if carried_kind!="soldier" and carried_armor>0:player.hp=minf(carried_armor,player.max_hp);player.refresh_health()
 	toast("Атакуй босса. При включении щита уничтожь светящийся генератор." if Campaign.is_final(room_index) else "Бой с генералом. Он зовёт подкрепление — пока оно живо, у генерала щит. Береги штаб." if boss_room else "")
 	preload("res://scripts/effect_warmup.gd").run(self)
 	# HQ arrives on an arc, the soldier steps out, the brick defence builds up; visual only.
@@ -398,6 +401,15 @@ func begin_room(index: int):
 		countdown=maxf(countdown,arrival)
 	if boss_room:drop_pickup(Vector2i(base_cell.x-3,grid_size-2),"vehicle")
 
+## The vehicle the hero brought (bought, captured or driven before) stands left or right of his start cell.
+func park_arriving_vehicle(kind:String,armor:float,salvaged:bool,origin:String,zone:int):
+	var start=player.cell;var cell=Vector2i(-99,-99)
+	for dx in ([-1,1] if preload("res://scripts/battle_stage.gd").side(self)<0 else [1,-1]):
+		if can_enter(start+Vector2i(dx,0)):cell=start+Vector2i(dx,0);break
+	if cell.x==-99:cell=find_free_near(start)
+	var full=vehicle.player_armor(kind,origin,zone)
+	var wreck=make_wreck(kind,cell,Vector2i.UP,false,armor if armor>0 else full,origin,zone)
+	wreck.salvaged=salvaged;set_meta("arriving_vehicle",wreck)
 ## The HQ stands on the field as a target in every fight except the final boss (T-260, author 4 Oct: the general
 ## fight keeps the HQ like a battle field, his reinforcements go for it).
 func hq_off_field()->bool:return boss_room and Campaign.is_final(room_index)

@@ -133,7 +133,9 @@ func checkpoint_rollback():
 	cp=JSON.parse_string(JSON.stringify(cp))
 	check(preload("res://scripts/profile/run_checkpoint.gd").valid(cp),"a JSON round-tripped checkpoint is valid")
 	var restored=load("res://scenes/arena.tscn").instantiate();restored.resume_checkpoint=cp;add_child(restored);freeze(restored)
-	check(restored.player.kind=="tank" and restored.player.vehicle_origin=="captured" and restored.player.hp==4.5,"a captured vehicle and its armor are restored")
+	# Author, 4 Oct 2026: the hero hops out on foot, his vehicle drives in and parks next to the start cell.
+	var parked=restored.wrecks.filter(func(w):return is_instance_valid(w) and w.kind=="tank" and w.vehicle_origin=="captured" and is_equal_approx(float(w.armor),4.5) and w.boardable)
+	check(restored.player.kind=="soldier" and parked.size()==1 and absi(parked[0].cell.x-restored.player.cell.x)==1 and parked[0].cell.y==restored.player.cell.y,"a captured vehicle and its armor are restored next to the start")
 	check(restored.run.visited_services.has(2),"service visits are restored")
 	restored.queue_free()
 	var invalid=cp.duplicate(true);invalid.abilities.levels.grenade.power=[]
@@ -167,7 +169,7 @@ func resume_fast():
 	if lanes.is_empty():print("RESUME FAST: no battle lane on stage 1 for this seed, room check skipped")
 	else:
 		main.enter_room(1,lanes[0]);await get_tree().process_frame
-		check(is_instance_valid(main.run_arena.player) and main.run_arena.player.kind=="buggy","entering the room restores the vehicle")
+		check(is_instance_valid(main.run_arena.player) and main.run_arena.player.kind=="soldier" and main.run_arena.wrecks.any(func(w):return is_instance_valid(w) and w.kind=="buggy" and w.boardable),"entering the room restores the vehicle (parked next to the start)")
 	main.queue_free();await get_tree().process_frame
 ## from endless_tablet_revision: the endless chain runs without the route map, the service choice is a checkpoint
 ## that resumes without the map, a service exits straight into battle, a new cycle resets rooms.

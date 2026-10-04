@@ -58,7 +58,8 @@
 					"Лазер — тонкий красный луч от ствола: ярче прицела снайпера и резко мигает.",
 					"Гранатомёт стреляет гранатами, похожими на вражеские, а не ракетами.",
 					"Дрон-помощник не висит за спиной: без цели облетает клетки вокруг героя, в бою каждые пару секунд заходит к врагу с другой стороны.",
-					"Турели у штаба стреляют реже (раз в 3,1 с вместо 2,4), а вторая турель, пока первая стоит, выпадает в пять раз реже."
+					"Турели у штаба стреляют реже (раз в 3,1 с вместо 2,4), а вторая турель, пока первая стоит, выпадает в пять раз реже.",
+					"Начало боя с техникой: герой всегда выпрыгивает из штаба пешком, а его машина подъезжает за штабом и встаёт на клетку рядом со стартом — садись, когда захочешь (E)."
 				]
 			},
 			"en": {
@@ -116,7 +117,8 @@
 					"The laser is a thin red beam from the barrel: brighter than the sniper's sight and sharply pulsing.",
 					"The grenade launcher fires grenades like the enemies' ones instead of rockets.",
 					"The helper drone no longer hangs behind you: with no target it scouts the cells around the hero, and in a fight it moves to another side of the enemy every couple of seconds.",
-					"HQ turrets fire less often (every 3.1 s instead of 2.4), and while one turret stands a second one drops five times less often."
+					"HQ turrets fire less often (every 3.1 s instead of 2.4), and while one turret stands a second one drops five times less often.",
+					"Starting a battle with a vehicle: the hero always hops out of the HQ on foot, and the vehicle drives in behind the HQ and parks next to the start cell — board it whenever you like (E)."
 				]
 			}
 		},
