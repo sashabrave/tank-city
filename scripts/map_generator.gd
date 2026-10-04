@@ -2,6 +2,8 @@ class_name BattleMapGenerator
 extends RefCounted
 
 const DIRS=[Vector2i.UP,Vector2i.RIGHT,Vector2i.DOWN,Vector2i.LEFT]
+## Share of battle fields mirrored left-right (T-271).
+const SYMMETRIC_SHARE:=.75
 
 ## size overrides the room's field width (sandbox); 0 keeps Campaign.SIZES.
 static func generate(seed_value: int, room: int, reduce_obstacles:bool=true,size:int=0) -> Dictionary:
@@ -24,7 +26,8 @@ static func generate(seed_value: int, room: int, reduce_obstacles:bool=true,size
 				if rng.randf()<.65:
 					var next=x+1 if side==0 else x-1
 					put(rows,Vector2i(next,band),"B")
-		for i in range(5+stage*2):
+		# Fewer lone blocks (T-271, author: fields felt «тесные и мусорные»).
+		for i in range(3+stage):
 			var p=Vector2i(rng.randi_range(1,width-2),rng.randi_range(2,width-4))
 			if p.x==middle:continue
 			if rows[p.y][p.x]==".":put(rows,p,"B" if rng.randf()<.7 else "N")
@@ -55,7 +58,12 @@ static func generate(seed_value: int, room: int, reduce_obstacles:bool=true,size
 		for i in range(2+stage):
 			var trench=Vector2i(rng.randi_range(1,width-2),rng.randi_range(2,width-5))
 			if rows[trench.y][trench.x]==".":put(rows,trench,"T")
-		if rng.randf()<.65:
+		# Symmetric fields (T-271): most fields mirror the left half onto the right, which reads as a designed
+		# position instead of scattered junk; the rest keep a partly mirrored band for variety.
+		if rng.randf()<SYMMETRIC_SHARE:
+			for y in range(width):
+				for x in range(0,middle):put(rows,Vector2i(width-1-x,y),rows[y][x])
+		elif rng.randf()<.65:
 			var start=rng.randi_range(2,middle);var end=mini(width-4,start+rng.randi_range(2,5))
 			for y in range(start,end+1):
 				for x in range(1,middle-1):put(rows,Vector2i(width-1-x,y),rows[y][x])
