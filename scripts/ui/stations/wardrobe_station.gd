@@ -2,7 +2,7 @@ extends RefCounted
 ## «Шкаф»: uniforms for the soldier, the player's cat model (PlayerModels); weapon skins come later.
 func title()->String:return "Шкаф"
 func subtitle()->String:return "Форма бойца. Новые комплекты выпадают в бою."
-func tabs()->Array:return [["uniform","Форма","fighter"],["model","Модель игрока","fighter"],["weapons","Оружие","damage"]]
+func tabs()->Array:return [["uniform","Форма","fighter"],["model","Модель","fighter"],["weapons","Оружие","damage"]]
 func items(tab:String)->Array:
 	var result=[]
 	if tab=="weapons":

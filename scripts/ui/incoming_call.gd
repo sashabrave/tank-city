@@ -58,6 +58,7 @@ func open_dialog():
 	for state in ["hover","pressed"]:take.add_theme_stylebox_override(state,lit)
 	for key in ["font_color","font_hover_color","font_pressed_color","font_focus_color"]:take.add_theme_color_override(key,Color("f4fbef"))
 	take.add_theme_color_override("icon_normal_color",Color("f4fbef"));take.add_theme_color_override("icon_hover_color",Color("f4fbef"))
+	take.add_theme_constant_override("h_separation",10);UiKit.icon_beside_text(take)
 	take.pivot_offset=take.size*.5
 	take.focus_mode=Control.FOCUS_ALL;take.grab_focus.call_deferred()
 	box.pivot_offset=box.size*.5;box.scale=Vector2.ONE*.94;box.modulate.a=0

@@ -727,7 +727,8 @@ func present_unlock():
 	var shade=ColorRect.new();build_menu.add_child(shade);shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);shade.color=Color(0,0,0,.55)
 	var panel=UiKit.panel(build_menu,(get_viewport().get_visible_rect().size-Vector2(680,390))*.5,Vector2(680,390))
 	UiKit.accent(UiKit.label(panel,"Новое открытие",Vector2(25,25),Vector2(630,40),29))
-	UiKit.icon(panel,recipe.id if recipe.category!="research" else "recipe",Vector2(25,90),Vector2(120,120))
+	# A building blueprint shows the same clipboard as in the backpack (T-223); other finds show the item itself.
+	UiKit.icon(panel,recipe.id if recipe.category!="research" else preload("res://scripts/ui/item_info.gd").blueprint_key(recipe),Vector2(25,90),Vector2(120,120))
 	UiKit.label(panel,Game.recipe_name(recipe),Vector2(165,98),Vector2(490,60),26)
 	var info=Game.recipe_catalog(recipe.category)[recipe.id]
 	UiKit.label(panel,info.get("description",info.get("effect",info.get("role","Доступно для постройки в хабе."))),Vector2(165,163),Vector2(470,95),17)

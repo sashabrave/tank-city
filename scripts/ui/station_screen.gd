@@ -150,10 +150,9 @@ func build():
 		# One rule (0.8.0): a station tab is lit while any of its items is new; plain screens keep «affordable».
 		var lit=provider.tab_dot(key) if provider.has_method("tab_dot") else preload("res://scripts/ui/station_notices.gd").tab_new(station_kind,key) if station_kind not in ["","roadmap"] else affordable_in(key)
 		if key!=tab and lit:UiKit.badge(b,"ready",0,"trailing")
-		# Long names shrink to fit beside the icon and the dot instead of running under it.
-		var room=tab_w-14-22-10-10-(26 if key!=tab and lit else 0);var font=b.get_theme_font("font");var fs=16
-		while fs>12 and font.get_string_size(Texts.render(tabs[i][1]),HORIZONTAL_ALIGNMENT_LEFT,-1,fs).x>room:fs-=1
-		b.add_theme_font_size_override("font_size",fs);b.clip_text=true
+		# One size for every tab (T-198): a long name keeps the font and fades out before the dot.
+		for inline in b.get_children():if inline.has_method("fit"):b.remove_child(inline);inline.queue_free()
+		UiKit.fade_text(b,tabs[i][1],26.0 if key!=tab and lit else 0.0)
 	# Tabs on top are horizontal tabs: Q / E walk them (T-178).
 	if top:UiKit.mark_h_tabs(tab_buttons,tabs.map(func(t):return t[0]).find(tab))
 	# A tab can draw its own page instead of cards + detail (Barracks → «Классы», 0.8.0).
@@ -294,11 +293,9 @@ func render_detail():
 		var text=UiKit.label(body,str(info.text),Vector2(16,y),Vector2(288,96),15,UiKit.MUTED);text.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 		# Height follows the text: a fixed 96 px left a hole under short descriptions and hid the lines below.
 		text.size.y=wrapped_height(text,288,15);y+=text.size.y+10
-	for row in info.get("rows",[]):
-		UiKit.label(body,str(row[0]),Vector2(16,y),Vector2(150,24),15)
-		var value="%s → %s" % [str(row[1]),str(row[2])] if str(row[1])!=str(row[2]) else str(row[1])
-		var cell=UiKit.label(body,value,Vector2(160,y),Vector2(144,24),15,UiKit.ORANGE if str(row[1])!=str(row[2]) else UiKit.INK);cell.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
-		y+=28
+	if not info.get("rows",[]).is_empty():
+		var table=rows_table(info.rows,15);body.add_child(table);table.position=Vector2(16,y);table.size.x=288
+		y+=info.rows.size()*28+4
 	for line in info.get("lines",[]):
 		var l=UiKit.label(body,str(line),Vector2(16,y),Vector2(288,24),14,UiKit.MUTED);l.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;l.size.y=maxf(24,wrapped_height(l,288,14));y+=l.size.y+2
 	body.custom_minimum_size.y=y
@@ -309,6 +306,16 @@ func render_detail():
 		bottom-=4
 	if notice!="":UiKit.label(content,notice,Vector2(16,detail_box.size.y-44),Vector2(288,28),15,Color("8fe895")).name="Notice"
 	UiKit.reveal(content,0,Vector2(18,0),.22)
+## «Было → станет» as a table (T-254): name · before · → · after, the numbers in aligned columns.
+static func rows_table(rows:Array,font_size:int)->GridContainer:
+	var grid=GridContainer.new();grid.columns=4;grid.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	grid.add_theme_constant_override("h_separation",8);grid.add_theme_constant_override("v_separation",4)
+	for spec in [[UiKit.INK,HORIZONTAL_ALIGNMENT_LEFT],[UiKit.MUTED,HORIZONTAL_ALIGNMENT_RIGHT],[UiKit.MUTED,HORIZONTAL_ALIGNMENT_CENTER],[UiKit.ORANGE,HORIZONTAL_ALIGNMENT_LEFT]]:
+		var cell=Label.new();grid.add_child(cell);cell.add_theme_font_override("font",UiKit.field_font());cell.add_theme_font_size_override("font_size",font_size)
+		cell.add_theme_color_override("font_color",spec[0]);cell.horizontal_alignment=spec[1];cell.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	grid.get_child(0).size_flags_horizontal=Control.SIZE_EXPAND_FILL
+	CARD_SCRIPT.fill_rows(grid,rows,UiKit.INK)
+	return grid
 ## Height of a wrapped label at its width (measured from the font: get_line_count() is 1 before layout).
 static func wrapped_height(label:Label,width:float,font_size:int)->float:
 	label.text_overrun_behavior=TextServer.OVERRUN_NO_TRIMMING;label.max_lines_visible=-1
@@ -433,10 +440,9 @@ func show_info():
 	if str(info.get("text",""))!="":
 		var text=UiKit.label(body,str(info.text),Vector2(0,by),Vector2(tw,40),17,UiKit.INK);text.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;text.name="InfoText"
 		text.size.y=wrapped_height(text,tw,17);by+=text.size.y+12
-	for row in info.get("rows",[]):
-		UiKit.label(body,str(row[0]),Vector2(0,by),Vector2(tw*.55,26),16)
-		var cell=UiKit.label(body,CARD_SCRIPT.row_value(row),Vector2(tw*.45,by),Vector2(tw*.55,26),16,UiKit.ORANGE if str(row[1])!=str(row[2]) else UiKit.INK);cell.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
-		by+=30
+	if not info.get("rows",[]).is_empty():
+		var table=rows_table(info.rows,16);body.add_child(table);table.name="InfoRows";table.position=Vector2(0,by);table.size.x=tw
+		by+=info.rows.size()*30+4
 	for line in info.get("lines",[]):
 		if str(line)=="":continue
 		var l=UiKit.label(body,str(line),Vector2(0,by),Vector2(tw,24),15,UiKit.MUTED);l.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;l.size.y=maxf(24,wrapped_height(l,tw,15));by+=l.size.y+4

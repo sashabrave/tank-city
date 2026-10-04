@@ -11,6 +11,8 @@ var palette:Dictionary={}
 ## Upgrade rooms (2026-10-03): the same biome ground and big shapes, but close around a small room — sides and
 ## back, smaller shapes, light clouds (fair weather). See room().
 var close:=false
+## Only the abstract shapes, placed by the owner through landscape() — no ground, clouds or sound (hub, T-248).
+var shapes_only:=false
 var cloud_material:ShaderMaterial
 var backdrop_materials:Array=[]
 func update_lighting():
@@ -26,6 +28,7 @@ func update_lighting():
 var weather=preload("res://assets/weather/default.tres")
 func _ready():
 	Settings.changed.connect(update_lighting)
+	if shapes_only:return
 	var rng=RandomNumberGenerator.new();rng.seed=seed_value+room_index*7109
 	# Battle: 7 per side spread past both ends so the empty left and right are filled; up to twice as big at
 	# random, the outer ones are cut by the screen edge. Miniatures (route map) keep the old small set.
@@ -79,6 +82,24 @@ static func room(parent:Node3D,arena,index:int,radius_value:=4.8)->Node3D:
 	var node=load("res://scripts/location_ambience.gd").new();node.name="RoomSurroundings"
 	node.seed_value=Game.visual_run_seed;node.room_index=index+300;node.biome=str(palette.get("ambience","forest"))
 	node.radius=radius_value;node.palette=palette;node.close=true;parent.add_child(node);return node
+## A group of the battle backdrop's abstract shapes at given spots [position, scale] (the hub's yard, T-248):
+## biome and war symbols, toned to the biome ground, low contrast. Visual only, own seed.
+static func landscape(parent:Node3D,palette:Dictionary,seed_value:int,spots:Array)->Node3D:
+	var node=load("res://scripts/location_ambience.gd").new();node.name="Landscape";node.shapes_only=true
+	node.biome=str(palette.get("ambience","forest"));node.palette=palette;parent.add_child(node)
+	var rng=RandomNumberGenerator.new();rng.seed=seed_value
+	var tones:Array=preload("res://scripts/backdrop_ground.gd").colors(palette,node.biome)
+	for spot in spots:
+		var root=Node3D.new();node.add_child(root);root.position=spot[0];root.scale=Vector3.ONE*float(spot[1])
+		var first=node.backdrop_materials.size()
+		node.symbol(root,rng)
+		var tone:Color=tones[0].lerp(tones[rng.randi()%tones.size()],.4)
+		for k in range(first,node.backdrop_materials.size()):
+			# A little more contrast than the battle backdrop: the hub looks at them from close by.
+			var mat:StandardMaterial3D=node.backdrop_materials[k];mat.set_meta("day_color",Color(mat.get_meta("day_color")).lerp(tone,.5))
+		node.silhouettes.append({"node":root,"phase":rng.randf()*TAU,"scale":float(spot[1]),"y":root.position.y})
+	node.update_lighting()
+	return node
 func mesh(parent,shape,pos,scale_value=Vector3.ONE):
 	var node=MeshInstance3D.new();node.mesh=shape;node.position=pos;node.scale=scale_value
 	var mat=StandardMaterial3D.new();mat.roughness=.9;mat.rim_enabled=true;mat.emission_enabled=true

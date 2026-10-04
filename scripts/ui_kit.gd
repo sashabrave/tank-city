@@ -44,6 +44,7 @@ static func glass(parent: Node,pos: Vector2,dimensions: Vector2,color=Color("242
 		widget.resized.connect(func():material.set_shader_parameter("panel_height",maxf(widget.size.y,1.0)))
 		material.set_shader_parameter("panel_height",maxf(dimensions.y,1.0))
 	else:s.bg_color=Color(color,.94)
+	settle_layer(widget,color)
 	return widget
 
 ## Turn an existing panel (scene or code) into frosted glass, the same look as glass() (T-042).
@@ -55,6 +56,55 @@ static func glassify(widget:Panel,color=Color("242d27")):
 		widget.resized.connect(func():material.set_shader_parameter("panel_height",maxf(widget.size.y,1.0)))
 		material.set_shader_parameter("panel_height",maxf(widget.size.y,1.0))
 	else:s.bg_color=Color(color,.94)
+	settle_layer(widget,color)
+
+## Window layers (T-238): only the first window is glass. A window opened over another one (the «i» card over a
+## station, a list over the tablet) is drawn solid and dark over a strong dim: glass reads the screen once per
+## canvas layer, so a second pane on the same layer showed the hub through the window under it.
+const STACK_DIM:=.62
+const STACKED_COLOR:=Color("1f2622")
+static func settle_layer(widget:Panel,color:Color):
+	widget.add_to_group("ui_glass")
+	widget.set_meta("glass_order",Time.get_ticks_usec())
+	# Positions and sizes are final only after layout: decide on the first draw.
+	widget.draw.connect(func():
+		if widget.get_meta("glass_layer_set",false):return
+		widget.set_meta("glass_layer_set",true)
+		if stacked(widget):make_stacked(widget,color)
+	,CONNECT_ONE_SHOT)
+## Another glass window drawn earlier covers most of this panel (or holds it): this one is a second layer.
+static func stacked(widget:Panel)->bool:
+	if not widget.is_inside_tree():return false
+	var mine:=widget.get_global_rect()
+	if mine.get_area()<=1.0:return false
+	for other in widget.get_tree().get_nodes_in_group("ui_glass"):
+		if other==widget or not is_instance_valid(other) or not other.is_visible_in_tree() or leaving(other):continue
+		if widget.is_ancestor_of(other) or float(other.get_meta("glass_order",0))>=float(widget.get_meta("glass_order",0)):continue
+		if other.is_ancestor_of(widget) or mine.intersection(other.get_global_rect()).get_area()>=mine.get_area()*.5:return true
+	return false
+## A window being rebuilt or closed (it or a parent is queued for deletion) is not under anything any more.
+static func leaving(node:Node)->bool:
+	while node!=null:
+		if node.is_queued_for_deletion():return true
+		node=node.get_parent()
+	return false
+static func make_stacked(widget:Panel,color:Color):
+	widget.set_meta("glass_stacked",true);widget.material=null
+	var s=widget.get_theme_stylebox("panel")
+	if s is StyleBoxFlat:
+		s=s.duplicate();s.bg_color=STACKED_COLOR.lerp(Color(color,1.0),.25);s.border_color=Color(1,1,1,.12)
+		s.shadow_color=Color(0,0,0,.45);s.shadow_size=18;widget.add_theme_stylebox_override("panel",s)
+	# The window's own dim (the nearest full-screen ColorRect drawn before it) gets darker, so the window under it recedes.
+	var node:Node=widget
+	for i in range(3):
+		var parent=node.get_parent()
+		if parent==null:return
+		var siblings=parent.get_children().slice(0,node.get_index());siblings.reverse()
+		for sibling in siblings:
+			if sibling is ColorRect and sibling.size.x>=widget.size.x:
+				sibling.color.a=maxf(sibling.color.a,STACK_DIM);return
+		if parent is ColorRect:parent.color.a=maxf(parent.color.a,STACK_DIM);return
+		node=parent
 ## Notification markers (design system). One meaning per colour, the same in 2D and in the world:
 ## news — something new not yet seen; ready — an action is affordable now; goal — where to go next.
 const NOTICE={"news":Color("ff6b57"),"ready":Color("8fe895"),"goal":Color("f1cf55")}
@@ -110,6 +160,38 @@ static func button(parent: Node,text: String,pos: Vector2,dimensions: Vector2,ca
 	if text=="Выбрать":widget.add_to_group("reward_choice")
 	return widget
 
+## Button text that does not fit (T-198): the font size stays, the text runs to the right edge (minus `reserve`
+## for a notice dot) and fades out there; the full name is the hint. Text that fits is left as it is.
+static func fade_text(button:Button,source:String,reserve:=0.0):
+	var old=button.get_node_or_null("FadeText")
+	if old:button.remove_child(old);old.queue_free()
+	Texts.set_text(button,source)
+	var box:StyleBox=button.get_theme_stylebox("normal")
+	var start=box.get_margin(SIDE_LEFT)
+	if button.icon:start+=float(button.get_theme_constant("icon_max_width") if button.expand_icon else button.icon.get_width())+button.get_theme_constant("h_separation")
+	var room=button.size.x-start-box.get_margin(SIDE_RIGHT)-reserve
+	var font=button.get_theme_font("font");var fs=button.get_theme_font_size("font_size")
+	if room<=0 or font.get_string_size(button.text,HORIZONTAL_ALIGNMENT_LEFT,-1,fs).x<=room:return
+	var full=button.text;button.text="";button.tooltip_text=full
+	var label=Label.new();label.name="FadeText";button.add_child(label);label.text=full;label.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	label.add_theme_font_override("font",font);label.add_theme_font_size_override("font_size",fs);label.add_theme_color_override("font_color",button.get_theme_color("font_color"))
+	label.position=Vector2(start,0);label.size=Vector2(room,button.size.y);label.vertical_alignment=VERTICAL_ALIGNMENT_CENTER;label.clip_text=true
+	var material=ShaderMaterial.new();material.shader=preload("res://shaders/ui/fade_edge.gdshader");label.material=material
+	material.set_shader_parameter("width",room);material.set_shader_parameter("fade",minf(32.0,room*.3))
+## Icon right beside the text, the pair centred in the button (T-240): Godot keeps a left icon at the edge.
+static func icon_beside_text(button:Button):
+	var place=func():
+		if not is_instance_valid(button) or button.icon==null:return
+		var font=button.get_theme_font("font");var fs=button.get_theme_font_size("font_size")
+		var icon_w=float(button.get_theme_constant("icon_max_width")) if button.expand_icon else float(button.icon.get_width())
+		var total=icon_w+button.get_theme_constant("h_separation")+font.get_string_size(button.text,HORIZONTAL_ALIGNMENT_LEFT,-1,fs).x
+		var left=maxf(8.0,floorf((button.size.x-total)*.5))
+		button.alignment=HORIZONTAL_ALIGNMENT_LEFT;button.icon_alignment=HORIZONTAL_ALIGNMENT_LEFT
+		for state in ["normal","hover","pressed","focus","disabled","hover_pressed"]:
+			if not button.has_theme_stylebox(state):continue
+			var box:StyleBox=button.get_theme_stylebox(state).duplicate();box.content_margin_left=left;box.content_margin_right=8
+			button.add_theme_stylebox_override(state,box)
+	place.call();button.resized.connect(place)
 static func icon(parent: Node,id: String,pos: Vector2,dimensions: Vector2) -> TextureRect:
 	var widget=TextureRect.new();widget.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;widget.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	widget.texture_filter=CanvasItem.TEXTURE_FILTER_LINEAR

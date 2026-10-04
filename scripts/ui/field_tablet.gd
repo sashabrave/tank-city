@@ -81,6 +81,8 @@ func refresh():
 	# Command centre: quests first, then a compact summary; loadout, radio and settings stay in the field tablet.
 	if manage:tabs=[tabs[2],["base","Сводка"],tabs[3],["guide","Энциклопедия"],["tech","Тех. информация"]]
 	tab_order=tabs.map(func(t):return t[0])
+	# The open section is being looked at (T-230): its own changes — an order just accepted — light no dot on it.
+	if tab!="notifications" and tab in tab_order and section_new(tab):mark_section(tab)
 	for i in range(tabs.size()):
 		var key=tabs[i][0]
 		var b=sidebar_button(tabs[i][1],key,80+i*(44 if manage or can_quit() else 48),40,func():tab=key;mark_section(key);refresh())

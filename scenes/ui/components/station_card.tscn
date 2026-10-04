@@ -274,11 +274,14 @@ text_overrun_behavior = 3
 clip_text = true
 max_lines_visible = 2
 
-[node name="Change" type="HBoxContainer" parent="Layout"]
+[node name="Rows" type="GridContainer" parent="Layout"]
 layout_mode = 2
 mouse_filter = 2
+theme_override_constants/h_separation = 6
+theme_override_constants/v_separation = 2
+columns = 4
 
-[node name="Name" type="Label" parent="Layout/Change"]
+[node name="Name" type="Label" parent="Layout/Rows"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 14
@@ -286,12 +289,25 @@ text = "Уровень"
 text_overrun_behavior = 3
 clip_text = true
 
-[node name="Value" type="Label" parent="Layout/Change"]
+[node name="Before" type="Label" parent="Layout/Rows"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.651, 0.667, 0.624, 1)
+theme_override_font_sizes/font_size = 14
+text = "1"
+horizontal_alignment = 2
+
+[node name="Arrow" type="Label" parent="Layout/Rows"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.651, 0.667, 0.624, 1)
+theme_override_font_sizes/font_size = 14
+text = "→"
+horizontal_alignment = 1
+
+[node name="After" type="Label" parent="Layout/Rows"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.596, 0.122, 1)
 theme_override_font_sizes/font_size = 14
-text = "0 → 1"
-horizontal_alignment = 2
+text = "2"
 
 [node name="Spacer" type="Control" parent="Layout"]
 layout_mode = 2
