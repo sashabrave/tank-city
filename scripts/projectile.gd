@@ -29,6 +29,10 @@ var flyer_round=false
 var hit_actors: Array=[]
 var blink_halo:Node3D
 var grove_cell:=Vector2i(-99,-99)
+## Lobbed charge (grenade launcher, T-268): flies in an arc over cover and bursts where it lands.
+var lobbed=false
+var lob_time:=0.0
+var lob_ground:=0.0
 
 func _ready():
 	if is_instance_valid(owner_actor) and owner_actor.has_method("pressure"):pressure=owner_actor.pressure()
@@ -49,11 +53,18 @@ func build_visual():
 	# Enemy rounds flicker so they read as danger among friendly tracers.
 	if not friendly and visual.get_child_count()>1:blink_halo=visual.get_child(1)
 	if kind in ["sniper","orb","rocket"]:EffectLighting.projectile_light(self,color)
+const LOB_HEIGHT:=2.2
 func _physics_process(delta):
 	if spent or not is_instance_valid(arena) or arena.phase not in ["combat","countdown"]: return
 	if rocket_radius>0:Game.sound_loop("rocket_flight",self)
 	if is_instance_valid(blink_halo):blink_halo.visible=fposmod(Time.get_ticks_msec()*.011+position.x,1.0)<.6
 	lifetime -= delta
+	if lobbed:
+		lob_time+=delta;position+=travel_direction*speed*delta
+		var total=lob_time+maxf(0,lifetime);position.y=lob_ground+sin(PI*clampf(lob_time/maxf(.01,total),0,1))*LOB_HEIGHT
+		if lifetime<=0 or not arena.inside(arena.grid_pos(position)):
+			position.y=lob_ground;arena.rocket_impact(self);consume()
+		return
 	if lifetime <= 0: consume(); return
 	# Sweep with short substeps so a fast bullet cannot skip a wall or actor.
 	var distance = speed*delta

@@ -331,6 +331,17 @@ func volley(actor,data:Dictionary):
 		bullet.travel_direction=bullet.travel_direction.rotated(Vector3.UP,spread);bullet.rotation.y=atan2(-bullet.travel_direction.x,-bullet.travel_direction.z)
 		bullet.speed=data.speed;bullet.lifetime=data.range*arena.run.range_multiplier/data.speed;bullet.piercing=data.pierce;bullet.rocket_radius=data.blast
 		if data.blast>0:bullet.scale=Vector3(2,2,2)
+		if str(arena.run.weapon)=="grenade_launcher":lob(actor,bullet,data)
+## Grenade launcher (T-268, author: «работает как РПГ»): the charge goes over cover in an arc and lands on the first
+## enemy in the line of fire within range, otherwise at full range. The RPG keeps its straight rocket.
+func lob(actor,bullet,data:Dictionary):
+	var reach=float(data.range)*arena.run.range_multiplier;var distance=reach
+	for enemy in arena.room.actors:
+		if not is_instance_valid(enemy) or enemy.dead or enemy.player_owned or enemy.allied:continue
+		var offset=enemy.position-actor.position;offset.y=0
+		var along=offset.dot(bullet.travel_direction)
+		if along>.5 and along<distance and (offset-bullet.travel_direction*along).length()<.6:distance=along
+	bullet.lobbed=true;bullet.lob_ground=bullet.position.y;bullet.lifetime=distance/bullet.speed
 func rocket_impact(bullet):
 	if not bullet.friendly and not arena.hq_off_field() and arena.flat_distance(bullet.position,arena.world_pos(arena.room.base_cell))<=bullet.rocket_radius:damage_base(bullet.damage)
 	arena.burst(bullet.position,Color("e8b957"),bullet.rocket_radius);Game.sound("boom",arena)
