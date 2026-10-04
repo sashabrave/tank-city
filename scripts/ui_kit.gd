@@ -260,7 +260,15 @@ static func press_bounce(button:Button):
 	button.button_up.connect(func():
 		if not motion_enabled() or not is_instance_valid(button):return
 		button.create_tween().tween_property(button,"scale",Vector2.ONE,.18).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT))
+## Content navigation has object art; small actions (close, arrows, pause…) remain line glyphs.
+const CONTENT_ICONS=["inventory","fighter","quests","notifications","guide","base","build","merchant","slot_machine","playlist","folder"]
+const CONTENT_SYMBOLS={"medkit":"medkit","blueprint":"blueprint","token":"token","vehicle":"jeep","rare":"clover_casing","legendary":"trophy"}
+static func is_drawn_icon(texture:Texture2D)->bool:
+	if texture is AtlasTexture:texture=texture.atlas
+	return texture!=null and texture.resource_path.ends_with(".png")
 static func interface_icon(id:String)->Texture2D:
+	if id in CONTENT_ICONS:return trimmed(load("res://assets/ui/content_icons/"+id+".png"))
+	if CONTENT_SYMBOLS.has(id):return trimmed(load(IconKit.ROOT+CONTENT_SYMBOLS[id]+".png"))
 	return load("res://assets/icons/interface_straight/"+id+".svg")
 ## Horizontal tabs filling a block: equal widths, 8 px gaps, the active one filled like settings tabs.
 ## tabs: [[key,title], …]; select(key) is called on press.
@@ -323,6 +331,7 @@ static func icon_texture(id:String)->Texture2D:
 		icon_cache[key]=texture
 	return icon_cache[key]
 static func icon_lookup(id:String)->Texture2D:
+	if id in CONTENT_ICONS:return interface_icon(id)
 	# Legendary rules keep their own golden pictures; a bare id (encyclopedia) finds them too.
 	if id.begins_with("legend_"):id="upgrades/"+id
 	# Station upgrade art (T-056): drawn GPT icons for the hub stations' general rows.

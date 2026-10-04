@@ -277,7 +277,7 @@ func item_cell(key:String,x:float,y:float,entry,locked:bool)->GearCell:
 		cell.tooltip_text=Texts.render(Game.LOOT.WEAPONS[gun].name)+"\n"+Texts.render("Запасное оружие")
 	elif entry.kind=="supply":
 		# Aid kit (T-115): tap twice / E / H heals.
-		art(cell,UiKit.trimmed(UiKit.icon_texture("heart")),.16)
+		art(cell,UiKit.trimmed(UiKit.icon_texture("medkit")),.16)
 		cell.item_kind="supply";cell.draggable=true;cell.info=ITEM.of("supply",entry.item,arena)
 		cell.tooltip_text=Texts.render("Аптечка")+"\n"+Texts.render("+%s здоровья · ещё нажатие или H — вылечиться") % str(snappedf(float(entry.item.get("heal",1.0)),.1))
 	else:

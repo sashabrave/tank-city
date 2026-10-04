@@ -56,7 +56,7 @@ static func of(kind:String,item:Dictionary,arena,equipped:=false)->Dictionary:
 			elif equipped:info.note="Заряжены"
 			elif not loaded.is_empty():info.note="Сравнение с заряженными"
 		"supply":
-			info.title="Аптечка";info.icon=UiKit.trimmed(UiKit.icon_texture("heart"))
+			info.title="Аптечка";info.icon=UiKit.trimmed(UiKit.icon_texture("medkit"))
 			info.summary="Лечит бойца сразу. H — использовать из рюкзака."
 			info.rows.append([Texts.render("Лечение"),"+"+UiKit.number(snappedf(float(item.get("heal",1.0)),.1)),"",0])
 			if is_instance_valid(arena) and arena.run!=null:info.rows.append([Texts.render("Здоровье"),"%s / %s" % [UiKit.number(snappedf(arena.run.soldier_hp,.1)),UiKit.number(snappedf(arena.run.soldier_max_hp,.1))],"",0])

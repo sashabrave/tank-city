@@ -56,5 +56,8 @@ func apply_node(node):
 		node.add_theme_stylebox_override(key,style)
 	for key in node.get_meta("theme_source_colors"):
 		var c:Color=node.get_meta("theme_source_colors")[key]
+		# Full-colour inventory objects must keep their steel/brass colours in either theme.
+		if node is Button and key.begins_with("icon_") and UiKit.is_drawn_icon(node.icon):
+			node.add_theme_color_override(key,Color(1,1,1,c.a));continue
 		if light and c.v>.5 and c.s<.5:c=Color(.20,.25,.20,c.a) if key!="font_disabled_color" else Color(.48,.52,.46,c.a)
 		node.add_theme_color_override(key,accent_map(c))

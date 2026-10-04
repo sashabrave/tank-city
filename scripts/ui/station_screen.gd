@@ -328,10 +328,10 @@ func perform(action:String):
 	if Game.credits>before:ResourceStrip.fly_reward("alloy",origin,Game.credits-before)
 	if message=="":return
 	Game.sound("upgrade",self);notice=message;changed.emit();build()
-## Tab icons come from the line set (Straight) whenever it has one, so tabs share size and weight;
-## full-colour artwork stays a fallback, trimmed to its visible pixels.
+## Subject tabs use the same drawn object as cards and inventory (icons v2, T-275); only actions use line glyphs.
 const TAB_LINE_ICONS={"repair":"build","heart":"medkit","health":"add"}
 static func tab_icon(id:String)->Texture2D:
+	if IconKit.has(id) or id in UiKit.CONTENT_ICONS:return UiKit.trimmed(UiKit.icon_texture(id))
 	var line=TAB_LINE_ICONS.get(id,id)
 	if ResourceLoader.exists("res://assets/icons/interface_straight/"+line+".svg"):return UiKit.interface_icon(line)
 	return UiKit.trimmed(UiKit.icon_texture(id))

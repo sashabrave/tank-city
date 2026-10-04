@@ -134,7 +134,9 @@ func sidebar_button(title:String,icon:String,y:float,height:float,callback:Calla
 		if style is StyleBoxFlat:
 			style.set_corner_radius_all(6);style.content_margin_left=8;style.content_margin_right=8;style.content_margin_top=5;style.content_margin_bottom=5
 		button.add_theme_stylebox_override(state,style)
-	var picture=UiKit.icon(button,icon,Vector2(18,(height-22)*.5),Vector2(22,22));picture.texture=UiKit.interface_icon("guide" if icon=="tech" else icon);picture.name="FixedIcon";picture.modulate=Color("20271f") if primary else UiKit.INK
+	var picture=UiKit.icon(button,icon,Vector2(15,(height-28)*.5),Vector2(28,28));picture.texture=UiKit.interface_icon("guide" if icon=="tech" else icon);picture.name="FixedIcon";picture.modulate=Color.WHITE if UiKit.is_drawn_icon(picture.texture) else Color("20271f") if primary else UiKit.INK
+	# Line glyphs keep their old 22 px weight inside the 28 px slot of drawn objects (T-275).
+	if not UiKit.is_drawn_icon(picture.texture):picture.position+=Vector2(3,3);picture.size=Vector2(22,22)
 	var label=UiKit.label(button,title,Vector2(52,0),Vector2(159,height),14 if primary else 16,Color("20271f") if primary else UiKit.INK);label.name="Caption";label.vertical_alignment=VERTICAL_ALIGNMENT_CENTER;label.clip_text=true
 	nav_buttons.append(button)
 	return button
@@ -344,7 +346,9 @@ func order_icon(event:String)->Control:
 		var region=AtlasTexture.new();region.atlas=sheet;region.region=Rect2(Vector2(index%4,int(index/4))*cell,cell);picture.texture=region
 	elif art!="":picture.texture=UiKit.trimmed(UiKit.icon_texture(art))
 	else:
-		picture.texture=UiKit.interface_icon("repeat" if event=="waves" else "quests");picture.modulate=UiKit.INK;picture.set_meta("line_icon",true)
+		picture.texture=UiKit.interface_icon("repeat" if event=="waves" else "quests")
+		# Drawn objects keep their colours; only line glyphs take the ink colour and the wider inset.
+		if not UiKit.is_drawn_icon(picture.texture):picture.modulate=UiKit.INK;picture.set_meta("line_icon",true)
 	return picture
 
 func orders_page():
