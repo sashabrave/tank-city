@@ -4,7 +4,6 @@ extends Node3D
 ## The node stands in for the hub towards hub_skills.gd, hub_ability_effect.gd and projectile.gd: it exposes
 ## the fields they read (avatar, facing, cell, moving, dummy…) and mirrors the room's walker every frame.
 ## The room keeps its own walking, modals and interaction; while a modal is open nothing here reacts.
-const LOOT=preload("res://scripts/loot_catalog.gd")
 var room:Node
 var avatar:Node3D
 var walker
@@ -54,34 +53,19 @@ func _physics_process(delta):
 func run_arena():
 	var owner_arena=room.get("arena") if is_instance_valid(room) else null
 	return owner_arena if is_instance_valid(owner_arena) and owner_arena.get("run")!=null else null
-func weapon_id()->String:
-	var a=run_arena()
-	var id=str(a.run.weapon) if a!=null else Game.selected_weapon
-	return id if id in LOOT.WEAPONS else "pistol"
-## The battle's shot: the gun in hand with its pellets, speed, range and damage (rarity and crate stats too).
-func shoot():
-	var id=weapon_id();var data=LOOT.WEAPONS[id]
-	# Empty hands: the paws scratch the air instead of a shot.
-	if id==LootCatalog.PAWS:fire_cooldown=data.interval;Melee.swipe(avatar,self,true,facing);return
-	var stats=CombatStats.weapon(run_arena(),id) if run_arena()!=null else {"damage":data.damage*Game.weapon_factor(id),"interval":data.interval}
-	if avatar.has_method("kick"):avatar.kick()
-	fire_cooldown=stats.interval
-	for i in range(data.pellets):
-		var bullet=load("res://scenes/projectile.tscn").instantiate()
-		bullet.sniper_visual=id=="sniper"
-		bullet.arena=self;bullet.friendly=true;bullet.speed=data.speed;bullet.damage=stats.damage
-		bullet.travel_direction=Vector3(facing.x,0,facing.y).rotated(Vector3.UP,(i-(data.pellets-1)*.5)*.1)
-		var muzzle=avatar.get("muzzle")
-		var height=muzzle.global_position.y-avatar.position.y if muzzle is Node3D and is_instance_valid(muzzle) else .55
-		bullet.position=avatar.position+bullet.travel_direction*.45+Vector3.UP*height
-		bullet.lifetime=data.range/data.speed
-		add_child(bullet);projectiles.append(bullet)
-	Game.fire_sound(str(id),avatar)
+func weapon_id()->String:return Gun.weapon_id(self)
+## The battle's shot (scripts/combat/gun.gd): the run's gun with its pellets, bursts, lob, blast, range and ammo.
+func shoot():fire_cooldown=Gun.trigger(self,avatar)
 
-## Bullets stop at the room's walls and at whatever the hero cannot walk through.
-func bullet_hit(bullet)->bool:
-	var p=bullet.position
-	if absf(p.x)>4.6 or p.z< -3.4 or p.z>5.0:return true
+## The room as a practice field for Gun: no targets yet; rounds stop at the room's walls and at whatever the
+## hero cannot walk through, charges burst there with the loaded ammo's extras.
+func bullet_hit(bullet)->bool:return Gun.practice_hit(self,bullet)
+func rocket_impact(bullet):Gun.practice_blast(self,bullet)
+func gun_targets()->Array:return []
+func gun_target_hit(_target,_amount:float):pass
+func gun_inside(p:Vector3)->bool:return absf(p.x)<=4.6 and p.z>=-3.4 and p.z<=5.0
+func gun_blocked(p:Vector3)->bool:
+	if not gun_inside(p):return true
 	return not can_stand.call(Vector3(snappedf(p.x,.25),0,snappedf(p.z,.25))) and absf(p.x)<3.2 and p.z>-2.2 and p.z<4.2
 
 ## Ability effects ask whether a cell is free (barrier placement, grenade flight).

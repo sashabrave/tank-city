@@ -20,6 +20,9 @@ func _physics_process(delta):
 	if seconds<=0:queue_free();return
 	if tick>0:return
 	tick=.5
-	for enemy in arena.room.actors:
+	# Practice fields (hub range, rooms) have no enemies: the patch only burns for the look.
+	var room=arena.get("room")
+	if room==null or not room.get("actors") is Array:return
+	for enemy in room.actors:
 		if is_instance_valid(enemy) and not enemy.dead and not enemy.player_owned and not enemy.allied and arena.flat_distance(enemy.position,position)<=radius:
 			CombatMods.ignite(enemy,damage,arena.run)

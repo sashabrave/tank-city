@@ -307,41 +307,9 @@ func player_pressure()->float:
 	var probability=CombatStats.probability(arena,actor.kind if is_instance_valid(actor) else "soldier",arena.run.weapon,actor.vehicle_origin if is_instance_valid(actor) else "owned")
 	return probability/(1-probability)
 
+## The hero's pull of the trigger: one shooting module for battle, hub and rooms (scripts/combat/gun.gd).
 func fire_weapon(actor):
-	var weapon_id=arena.run.weapon;var data=arena.LOOT.WEAPONS[weapon_id]
-	# Empty hands (2026-10-03): Space scratches with the paws instead of a shot.
-	if weapon_id==LootCatalog.PAWS:
-		Melee.strike(arena,actor,actor.damage*arena.effects.modify("shot_damage",1.0,{"actor":actor}),true);return
-	# No rounds loaded (T-197): the gun hits with its butt; a reminder now and then.
-	if Ammo.dry(arena.run):
-		if arena.toast_time<=0:arena.toast(Texts.render("Нет боеприпасов — удар прикладом. Заряди в «Снаряжении»"))
-		Melee.strike(arena,actor,Melee.damage(arena)*Melee.BUTT,false);return
-	volley(actor,data)
-	# Bursts (SMG): the rest of the pull follows on pausable timers in the facing of that moment.
-	for k in range(1,int(data.get("burst",1))):
-		arena.get_tree().create_timer(float(data.get("burst_gap",.07))*k,false).timeout.connect(func():
-			if is_instance_valid(actor) and not actor.dead and arena.phase=="combat" and arena.run.weapon==weapon_id:
-				volley(actor,data);Game.weapon_sound(actor))
-func volley(actor,data:Dictionary):
-	var multiplier=arena.effects.modify("shot_damage",1.0,{"actor":actor})
-	arena.effects.emit("shot",{"actor":actor})
-	for i in range(data.pellets):
-		var bullet=spawn_bullet(actor,actor.position,actor.facing,actor.damage*multiplier,true)
-		var spread=(i-(data.pellets-1)*.5)*.10
-		bullet.travel_direction=bullet.travel_direction.rotated(Vector3.UP,spread);bullet.rotation.y=atan2(-bullet.travel_direction.x,-bullet.travel_direction.z)
-		bullet.speed=data.speed;bullet.lifetime=data.range*arena.run.range_multiplier/data.speed;bullet.piercing=data.pierce;bullet.rocket_radius=data.blast
-		if data.blast>0:bullet.scale=Vector3(2,2,2)
-		if str(arena.run.weapon)=="grenade_launcher":lob(actor,bullet,data)
-## Grenade launcher (T-268, author: «работает как РПГ»): the charge goes over cover in an arc and lands on the first
-## enemy in the line of fire within range, otherwise at full range. The RPG keeps its straight rocket.
-func lob(actor,bullet,data:Dictionary):
-	var reach=float(data.range)*arena.run.range_multiplier;var distance=reach
-	for enemy in arena.room.actors:
-		if not is_instance_valid(enemy) or enemy.dead or enemy.player_owned or enemy.allied:continue
-		var offset=enemy.position-actor.position;offset.y=0
-		var along=offset.dot(bullet.travel_direction)
-		if along>.5 and along<distance and (offset-bullet.travel_direction*along).length()<.6:distance=along
-	bullet.lobbed=true;bullet.lob_ground=bullet.position.y;bullet.lifetime=distance/bullet.speed
+	Gun.fire(arena,actor)
 func rocket_impact(bullet):
 	if not bullet.friendly and not arena.hq_off_field() and arena.flat_distance(bullet.position,arena.world_pos(arena.room.base_cell))<=bullet.rocket_radius:damage_base(bullet.damage)
 	arena.burst(bullet.position,Color("e8b957"),bullet.rocket_radius);Game.sound("boom",arena)
@@ -352,26 +320,12 @@ func rocket_impact(bullet):
 		if is_instance_valid(enemy) and not enemy.dead and (enemy.player_owned or enemy.allied)!=bullet.friendly and enemy!=bullet.owner_actor and arena.flat_distance(bullet.position,enemy.position)<=bullet.rocket_radius:
 			var amount=enemy.max_hp if bullet.star_power else (CombatMods.outgoing(arena,bullet,enemy) if player_charge else bullet.damage)
 			enemy.take_damage(amount,Vector3.ZERO,bullet.vehicle_credit,"blast")
-	if player_charge:charge_effects(bullet)
+	if player_charge:Gun.charge_effects(arena,bullet,Ammo.effective(arena),arena.run.combat_rng,func(spot:Vector3,hit:float):grenade_explosion(spot,hit,true,.6))
 	for cell in arena.room.walls.keys():
 		if arena.flat_distance(bullet.position,arena.world_pos(cell))<=bullet.rocket_radius:
 			if bullet.star_power:arena.room.walls[cell].node.queue_free();arena.room.walls.erase(cell);arena.navigation.invalidate(cell)
 			else:arena.damage_wall(cell,bullet.damage)
 
-func charge_effects(bullet):
-	var ammo=Ammo.effective(arena);var stats:Dictionary=ammo.stats;var at=bullet.position;at.y=0
-	match str(ammo.type):
-		"cluster":
-			var count=int(stats.get("bomblets",3));var reach=1.6+(.6 if ammo.get("twist",false) else 0.0)
-			for i in range(count):
-				var angle=TAU*i/count+arena.run.combat_rng.randf_range(-.3,.3);var spot=at+Vector3(cos(angle),0,sin(angle))*arena.run.combat_rng.randf_range(.6,reach)
-				var hit=bullet.damage*float(stats.get("bomblet_damage",.3))
-				arena.get_tree().create_timer(.18+i*.07,false).timeout.connect(func():
-					if is_instance_valid(arena) and arena.phase=="combat":grenade_explosion(spot,hit,true,.6))
-		"napalm":
-			var patch=preload("res://scripts/combat/napalm_patch.gd").new();patch.arena=arena;patch.position=at
-			patch.radius=float(stats.get("fire_radius",.8));patch.seconds=float(stats.get("fire_time",2.5));patch.damage=bullet.damage*.6
-			arena.add_child(patch)
 ## Captured hull: beacon, pointer and one short hint while the soldier is on foot.
 const TROPHY_HINTS={"buggy":"Трофейный багги: подойди и займи","apc":"Трофейный БТР: подойди и займи","tank":"Трофейный танк: подойди и займи"}
 func mark_trophy(wreck):

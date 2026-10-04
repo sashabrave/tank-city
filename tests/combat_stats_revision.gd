@@ -129,6 +129,7 @@ func run():
 	await friendly_fire_checks()
 	await smg_burst_checks()
 	await difficulty_checks()
+	await gun_checks()
 	Game.reset_upgrades();Campaign.configure(1)
 	print("COMBAT STATS: %d failures" % failures)
 	get_tree().quit(1 if failures else 0)
@@ -227,4 +228,34 @@ func difficulty_checks():
 	var cp=preload("res://scripts/profile/run_checkpoint.gd").capture(null,0,"map",{})
 	check(cp.get("difficulty")=="hard","checkpoint carries the run difficulty")
 	Campaign.configure(1,true,true);check(Campaign.difficulty=="normal","daily run is always normal")
+	Game.reset_upgrades();Campaign.configure(1)
+
+# One hero, step U1: battle, hub and rooms shoot through Gun. Same weapon + class, no run cards → the same damage
+# and interval in the hub and in battle; the room uses the run's gun and its stats.
+func gun_checks():
+	Game.reset_upgrades();Campaign.configure(1)
+	Game.selected_class="marksman";Game.class_levels["marksman"]=4;Game.damage_level=2;Game.selected_weapon="sniper"
+	var arena=load("res://scenes/arena.tscn").instantiate();arena.run_seed=31;add_child(arena);arena.auto_pause_enabled=false;arena.set_physics_process(false)
+	await get_tree().process_frame
+	var run=arena.run;run.weapon="sniper";run.damage_bonus=0.0;run.fire_multiplier=1.0;run.range_multiplier=1.0;run.weapon_stats={}
+	run.weapon_mods["sniper"]={"damage":0.0,"interval":1.0,"intercept":0.0}
+	var hub=Gun.stats(null,"sniper");var battle=Gun.stats(arena)
+	check(is_equal_approx(hub.damage,battle.damage) and is_equal_approx(hub.interval,battle.interval),"Gun.stats: hub and battle agree (%.3f/%.3f, %.3f/%.3f)" % [hub.damage,battle.damage,hub.interval,battle.interval])
+	var bare=Game.LOOT.WEAPONS.sniper.damage*Game.weapon_factor("sniper")*(1+Game.damage_level*Game.DAMAGE_PER_LEVEL)
+	check(is_equal_approx(hub.damage,bare*CombatStats.class_weapon_multiplier("sniper")) and hub.damage>bare,"the hub gun carries the class multiplier and meta damage")
+	arena.player.apply_weapon()
+	check(is_equal_approx(arena.player.damage,battle.damage),"the battle hero's damage is Gun.stats")
+	check(Gun.stats(null,"smg").burst==3 and Gun.stats(null,"grenade_launcher").lob and Gun.stats(null,"rpg").blast>0 and not Gun.stats(null,"rpg").lob,"Gun.stats carries bursts, lob and blast")
+	# A room between fields keeps the battle arena: its gun is the run's, with the run's stats.
+	var room_script=GDScript.new();room_script.source_code="extends Node3D\nvar arena\nvar modal=null\n";room_script.reload()
+	var room=room_script.new();room.arena=arena;add_child(room)
+	var combat=preload("res://scripts/room_combat.gd").new();combat.room=room;combat.avatar=Node3D.new();room.add_child(combat);room.add_child(combat.avatar)
+	run.weapon="shotgun";run.weapon_stats={"damage":.2}
+	check(combat.weapon_id()=="shotgun" and Gun.run_of(combat)==arena,"the room shoots the run's gun")
+	check(is_equal_approx(Gun.stats(Gun.run_of(combat)).damage,CombatStats.weapon(arena,"shotgun").damage),"the room uses the run's gun stats (crate rolls too)")
+	# Practice fire: every pellet flies into the room field.
+	combat.facing=Vector2i.UP
+	Gun.fire(combat,combat.avatar)
+	check(combat.projectiles.size()==int(Game.LOOT.WEAPONS.shotgun.pellets),"room volley: every pellet flies (%d)" % combat.projectiles.size())
+	room.queue_free();arena.queue_free();await get_tree().process_frame
 	Game.reset_upgrades();Campaign.configure(1)

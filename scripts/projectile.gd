@@ -62,7 +62,7 @@ func _physics_process(delta):
 	if lobbed:
 		lob_time+=delta;position+=travel_direction*speed*delta
 		var total=lob_time+maxf(0,lifetime);position.y=lob_ground+sin(PI*clampf(lob_time/maxf(.01,total),0,1))*LOB_HEIGHT
-		if lifetime<=0 or not arena.inside(arena.grid_pos(position)):
+		if lifetime<=0 or not Gun.on_field(arena,position):
 			position.y=lob_ground;arena.rocket_impact(self);consume()
 		return
 	if lifetime <= 0: consume(); return

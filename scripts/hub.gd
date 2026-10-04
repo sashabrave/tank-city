@@ -1,5 +1,4 @@
 extends Node3D
-const LOOT=preload("res://scripts/loot_catalog.gd")
 signal start_requested
 signal gallery_requested
 signal sandbox_requested
@@ -604,36 +603,34 @@ func close_station():
 func shoot():
 	if phase=="intro":return
 	if is_instance_valid(build_menu):return
-	var controlled=training_tank if mounted else avatar
-	controlled.kick()
-	var data=LOOT.WEAPONS[Game.selected_weapon]
-	fire_cooldown=1.25 if mounted else data.interval
-	for i in range(1 if mounted else data.pellets):
-		var bullet=load("res://scenes/projectile.tscn").instantiate()
-		bullet.sniper_visual=not mounted and Game.selected_weapon=="sniper"
-		bullet.arena=self;bullet.friendly=true;bullet.speed=13 if mounted else data.speed;bullet.damage=3+Game.meta_damage() if mounted else data.damage*Game.weapon_factor(Game.selected_weapon)*(1+Game.damage_level*Game.DAMAGE_PER_LEVEL)
-		bullet.travel_direction=Vector3(facing.x,0,facing.y).rotated(Vector3.UP,0 if mounted else (i-(data.pellets-1)*.5)*.1)
-		var muzzle_height=controlled.muzzle.global_position.y-controlled.position.y if is_instance_valid(controlled.muzzle) else .55
-		bullet.position=controlled.position+bullet.travel_direction*.45+Vector3.UP*muzzle_height
-		bullet.lifetime=2.5 if mounted else data.range/data.speed
-		add_child(bullet);projectiles.append(bullet)
-	Game.fire_sound("vehicle_mg" if mounted else str(Game.selected_weapon),controlled if is_instance_valid(controlled) else self)
+	# On foot the hero shoots exactly as in battle (scripts/combat/gun.gd): the hub loadout, no run cards.
+	if not mounted:fire_cooldown=Gun.trigger(self,avatar);return
+	# The training tank keeps its own simple gun for now (step U4).
+	training_tank.kick()
+	fire_cooldown=1.25
+	var bullet=load("res://scenes/projectile.tscn").instantiate()
+	bullet.arena=self;bullet.friendly=true;bullet.speed=13;bullet.damage=3+Game.meta_damage()
+	bullet.travel_direction=Vector3(facing.x,0,facing.y)
+	var muzzle_height=training_tank.muzzle.global_position.y-training_tank.position.y if is_instance_valid(training_tank.muzzle) else .55
+	bullet.position=training_tank.position+bullet.travel_direction*.45+Vector3.UP*muzzle_height
+	bullet.lifetime=2.5
+	add_child(bullet);projectiles.append(bullet)
+	Game.fire_sound("vehicle_mg",training_tank)
 
-func bullet_hit(bullet) -> bool:
-	var pos=bullet.position
-	if "range" in Game.built_workshops and absf(pos.x-dummy.position.x)<.4 and absf(pos.z-dummy.position.z)<.4:
-		dummy_hits+=1;Texts.set_text(dummy_label,"−%.2f" % bullet.damage)
-		dummy.scale=Vector3(1.08,.94,1.08)
-		create_tween().tween_property(dummy,"scale",Vector3.ONE,.18)
-		return true
-	# The built yard extends the hub east to the range pen: shots there must reach the dummy.
-	if pos.x< -3 or pos.x>(YARD_EAST+1.5 if "yard" in Game.built_workshops else 8.0) or pos.z< -3 or pos.z>4:return true
+## The hub as a practice field for Gun: the range dummy takes hits, the hangar walls stop rounds.
+func bullet_hit(bullet)->bool:return Gun.practice_hit(self,bullet)
+func rocket_impact(bullet):Gun.practice_blast(self,bullet)
+func gun_targets()->Array:return [dummy] if "range" in Game.built_workshops and is_instance_valid(dummy) else []
+func gun_target_hit(_target,amount:float):
+	dummy_hits+=1;Texts.set_text(dummy_label,"−%.2f" % amount)
+	dummy.scale=Vector3(1.08,.94,1.08)
+	create_tween().tween_property(dummy,"scale",Vector3.ONE,.18)
+## The built yard extends the hub east to the range pen: shots there must reach the dummy.
+func gun_inside(pos:Vector3)->bool:return pos.x>=-3 and pos.x<=(YARD_EAST+1.5 if "yard" in Game.built_workshops else 8.0) and pos.z>=-3 and pos.z<=4
+func gun_blocked(pos:Vector3)->bool:
+	if not gun_inside(pos):return true
 	var p=Vector2i(roundi(pos.x),roundi(pos.z))
 	return p in [Vector2i(-2,-2),Vector2i(-1,-2),Vector2i(0,-1)] or p.y== -3
-
-
-
-
 
 ## Soft contact shadows under hub props («Глубина света»), rebuilt when stations change.
 func refresh_floor_ao():
