@@ -2,10 +2,11 @@ class_name RunUpgrades
 extends RefCounted
 ## Applies UpgradeDef cards to a run and derives card text and previews from the same modifiers.
 const PREVIEW_LABELS={"hp":["HP",""],"speed":["Скорость",""],"rate":["Темп"," /с"],"damage":["Урон",""],"intercept":["Перехват","%"],"range":["Дальность","%"],"healing":["Лечение","%"],"device_power":["Сила способностей","%"],"device_cooldown":["Перезарядка","%"],
-	"crit_chance":["Крит","%"],"crit_damage":["Крит-урон","%"],"dodge":["Уклонение","%"],"guard_bullet":["Защита от пуль","%"],"guard_blast":["Защита от взрывов","%"],"guard_vehicle":["Защита от техники","%"],
+	"crit_chance":["Крит","%"],"crit_damage":["Крит-урон","%"],"dodge":["Уклонение от пуль","%"],"guard_bullet":["Защита от пуль","%"],"guard_blast":["Защита от взрывов","%"],"guard_vehicle":["Защита от техники","%"],
 	"pierce":["Пробитие",""],"burn":["Поджог","%"],"burn_power":["Урон горения","%"],"burn_time":["Горение"," с"],"stun_time":["Оглушение"," с"],"shock":["По технике","%"],"stun":["Оглушение","%"],"stealth":["Маскировка","%"],"marauder":["Добыча","%"],"field_repair":["Ремонт за убийство",""],"luck":["Удача",""],"safe_slots":["Сейф рюкзака",""]}
-const FAMILIES={"fire":"Огневая мощь","survival":"Живучесть","ammo":"Спецбоеприпасы","recon":"Разведка","logistics":"Тыл"}
-const TIER_NAMES=["Обычное","Редкое","Эпическое","Легендарное"]
+const FAMILIES={"fire":"Огневая мощь","survival":"Живучесть","ammo":"Эффекты попадания","recon":"Разведка","logistics":"Тыл"}
+## Card rarity words (feminine: «карточка»), shown on the rarity plate of a card (T-242).
+const TIER_NAMES=["Обычная","Редкая","Эпическая","Легендарная"]
 ## Chance of rare / epic / legendary per stage band (progress index 0-1, 2-3, 4-5, 6+). Rarer cards appear
 ## rarely at the start; ★★ rooms and bosses use the next band; luck multiplies all three.
 const TIER_BANDS=[[.07,.012,.001],[.16,.04,.004],[.26,.08,.012],[.32,.12,.025],[.36,.16,.04]]
@@ -20,6 +21,8 @@ static func eligible(arena,def:UpgradeDef,tier:int=3)->bool:
 	# Ammo items (T-112) fit the weapon's ammo class and can drop again with a better roll.
 	if def.id in Ammo.TYPES:
 		if not Ammo.fits(def.id,str(arena.weapon)):return false
+		# A legendary box of this type is already loaded: nothing left to improve (T-243).
+		if int(Ammo.loaded_item(arena.run,def.id).get("rarity",-1))>=3:return false
 	elif def.max_stacks>0 and stacks(arena,def.id)>=def.max_stacks:return false
 	if (def.effect!=null or def.flag) and def.id in arena.run.behavior_cards:return false
 	if "abilities" in def.requires and arena.abilities.slots.is_empty():return false
@@ -45,6 +48,13 @@ static func roll_tier(arena)->int:
 	if value<(chances[2]+chances[1])*factor:return 2
 	if value<(chances[2]+chances[1]+chances[0])*factor:return 1
 	return 0
+## Rarity a card is actually given at. A base ammo card for the type already loaded is an upgrade (T-243):
+## at least one rarity above the loaded box, so the card never reads «обычные → обычные».
+static func offer_tier(arena,id:String,tier:int)->int:
+	if id in Ammo.TYPES:
+		var same=Ammo.loaded_item(arena.run,id)
+		if not same.is_empty():return mini(3,maxi(tier,int(same.get("rarity",0))+1))
+	return tier
 static func family_counts(arena)->Dictionary:
 	var counts={}
 	for entry in arena.run.upgrade_history:
@@ -53,13 +63,30 @@ static func family_counts(arena)->Dictionary:
 	return counts
 ## Weight after build attraction: every taken card of a family makes the family 35% likelier (up to ×3),
 ## the shell's favourite family ×1.5.
-static func attracted_weight(arena,def:UpgradeDef,counts:Dictionary)->float:
+static func attracted_weight(arena,def:UpgradeDef,counts:Dictionary,trophy:bool=false)->float:
+	if trophy:return trophy_weight(arena,def,counts)
 	var weight=float(def.weight)*minf(3.0,1.0+.35*int(counts.get(def.family,0)))
 	if ClassCatalog.info(Game.selected_class).family==def.family:weight*=1.5
 	return weight
+## Commander and boss chest (T-221): the trophy leans harder towards the build. Taken family: +60% per card, up to
+## ×5 (instead of +35%, ×3); the shell's family ×1.5; an improvement of the loaded ammo ×3, a better box of it ×2;
+## a box of another special type while one is loaded ×0.4 (incendiary loaded → fire, not concussion);
+## a card already taken ×1.5. Only the weights change — the draw still uses run.combat_rng.
+const TROPHY_PULL={"family_step":.6,"family_cap":5.0,"class":1.5,"loaded_improvement":3.0,"loaded_box":2.0,"other_box":.4,"taken":1.5}
+static func trophy_weight(arena,def:UpgradeDef,counts:Dictionary)->float:
+	var pull=TROPHY_PULL
+	var weight=float(def.weight)*minf(pull.family_cap,1.0+pull.family_step*int(counts.get(def.family,0)))
+	if ClassCatalog.info(Game.selected_class).family==def.family:weight*=pull["class"]
+	var special=Ammo.types_loaded(arena.run).filter(func(type):return type in Ammo.TYPES)
+	var own=Ammo.type_of(def.id)
+	if own!="" and def.id!=own and own in special:weight*=pull.loaded_improvement
+	elif def.id in Ammo.TYPES:weight*=pull.loaded_box if def.id in special else (pull.other_box if not special.is_empty() else 1.0)
+	if stacks(arena,def.id)>0:weight*=pull.taken
+	return weight
 ## Offers {id, tier}: each card rolls its own rarity, then a card that exists at that rarity is drawn
 ## without replacement. The first offer of a run holds a card of the shell's favourite family.
-static func roll_offers(arena,count:int)->Array:
+## trophy: a commander or boss chest — weights from trophy_weight (T-221).
+static func roll_offers(arena,count:int,trophy:bool=false)->Array:
 	var counts=family_counts(arena);var result=[];var taken=[]
 	var favourite=ClassCatalog.info(Game.selected_class).family
 	for slot in range(count):
@@ -71,11 +98,11 @@ static func roll_offers(arena,count:int)->Array:
 			if not themed.is_empty():pool=themed
 		if pool.is_empty():continue
 		var total=0.0
-		for def in pool:total+=attracted_weight(arena,def,counts)
+		for def in pool:total+=attracted_weight(arena,def,counts,trophy)
 		var pick=arena.run.combat_rng.randf()*total
 		var chosen=pool.back()
 		for def in pool:
-			pick-=attracted_weight(arena,def,counts)
+			pick-=attracted_weight(arena,def,counts,trophy)
 			if pick<0:chosen=def;break
 		taken.append(chosen.id);result.append({"id":chosen.id,"tier":maxi(tier,chosen.min_tier)})
 	arena.run.dry_offers=0 if result.any(func(offer):return offer.tier>=1) else arena.run.dry_offers+1
@@ -89,7 +116,8 @@ static func apply(arena,id:String,tier:int,record:bool=true)->bool:
 	# modifiers are not applied — the item carries the values.
 	if id in Ammo.TYPES:
 		Backpack.stow_all(arena,Ammo.ensure(arena.run,str(arena.weapon)))
-		var item=Ammo.roll(id,tier,Ammo.seed_for(arena,id,tier))
+		tier=offer_tier(arena,id,tier)
+		var item=Ammo.upgraded(Ammo.loaded_item(arena.run,id),Ammo.roll(id,tier,Ammo.seed_for(arena,id,tier)))
 		var old=Ammo.load_item(arena.run,item)
 		# The replaced ammo: backpack, else a sack on the field; with neither (a full backpack in a room) it stays
 		# in the backpack over the limit only as a last resort — merchant ammo cards need a free cell (available()).
@@ -221,7 +249,7 @@ static func short_detail(text:String)->String:
 	var cut=text.find(". ")
 	return text if cut<0 else text.substr(0,cut+1)
 static func card(arena,offer:Dictionary)->Dictionary:
-	var def=UpgradeRegistry.get_def(offer.id);var tier=int(offer.tier)
+	var def=UpgradeRegistry.get_def(offer.id);var tier=offer_tier(arena,str(offer.id),int(offer.tier))
 	var rows=card_rows(arena,def,tier)
 	var detail=preview_text(arena,offer.id,tier)
 	if def.detail!="":detail=def.detail if detail=="" else detail+"\n"+def.detail
@@ -231,7 +259,7 @@ static func card(arena,offer:Dictionary)->Dictionary:
 	if def.id in Ammo.TYPES:
 		# The rolled item and how it compares with the ammo it replaces (or the same type already loaded).
 		Ammo.ensure(arena.run,str(arena.weapon))
-		var item=Ammo.roll(def.id,tier,Ammo.seed_for(arena,def.id,tier))
+		var item=Ammo.upgraded(Ammo.loaded_item(arena.run,def.id),Ammo.roll(def.id,tier,Ammo.seed_for(arena,def.id,tier)))
 		var out=Ammo.replacing(arena.run)
 		var same=arena.run.ammo_slots.filter(func(s):return s is Dictionary and s.type==def.id)
 		rows=Ammo.compare_rows(item,same[0] if not same.is_empty() else out)

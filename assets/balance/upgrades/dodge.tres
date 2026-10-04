@@ -5,7 +5,7 @@
 [resource]
 script = ExtResource("1")
 id = "dodge"
-title = "Перекат"
+title = "Уклонение"
 category = "Герой"
 family = "survival"
 icon = "speed"

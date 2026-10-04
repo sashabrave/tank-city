@@ -5,7 +5,7 @@
 [resource]
 script = ExtResource("1")
 id = "crit_damage"
-title = "Разрывные"
+title = "Слабое место"
 detail = "Критические попадания бьют ещё сильнее."
 category = "Оружие"
 family = "fire"

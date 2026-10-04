@@ -10,6 +10,16 @@ static func weapon(arena=null,id:String="")->Array:
 	return result
 ## Rows grouped by what they are about; the dossier hides optional stats that are zero both at base and now.
 static func fighter(arena=null)->Array:
+	var groups=fighter_groups(arena)
+	var result=[]
+	for key in ["fire","survival","abilities","ammo","recon","logistics"]:
+		if groups[key].is_empty():continue
+		result.append({"group":"Способности" if key=="abilities" else RunUpgrades.FAMILIES[key]})
+		result.append_array(groups[key])
+	return result
+## The same rows by family key (fire, survival, abilities, ammo, recon, logistics): the gear page and the
+## «Вылазка» build block read one source.
+static func fighter_groups(arena=null)->Dictionary:
 	var run=arena.run if is_instance_valid(arena) else null
 	var health=row("Максимум здоровья",CombatStats.initial_health(),run.soldier_max_hp if run!=null else CombatStats.initial_health())
 	var speed=row("Скорость пешком",CombatStats.soldier_speed(),CombatStats.soldier_speed(run)," м/с")
@@ -32,12 +42,7 @@ static func fighter(arena=null)->Array:
 		groups.survival.append(row("Прочность штаба",float(arena.base_max_hp),float(arena.base_hp)))
 		groups.logistics.append(row("Перебросы",float(run.rerolls_left),float(run.rerolls_left)))
 		groups.logistics.append(row("Ячейки рюкзака",float(Backpack.capacity()),float(Backpack.capacity())))
-	var result=[]
-	for key in ["fire","survival","abilities","ammo","recon","logistics"]:
-		if groups[key].is_empty():continue
-		result.append({"group":"Способности" if key=="abilities" else RunUpgrades.FAMILIES[key]})
-		result.append_array(groups[key])
-	return result
+	return groups
 ## Every StatRegistry characteristic: base = what a run starts with (hub training included), current = now.
 ## A new stat file shows up here without UI changes.
 static func registry(arena=null)->Array:

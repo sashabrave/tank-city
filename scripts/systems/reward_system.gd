@@ -315,10 +315,10 @@ func chest_offers(_elite:bool=true)->Array:
 	var difficulty=2 if arena.room.boss_room else arena.room.difficulty
 	# Chest cards come from the same registry and rarity roll as wave offers, never below the room difficulty.
 	var result=[{"category":"alloy","id":"alloy","amount":EncounterRules.chest_alloy(arena.room.room_index,difficulty),"tier":0}]
-	for offer in RunUpgrades.roll_offers(arena,2):result.append({"category":"upgrade","id":offer.id,"tier":maxi(int(offer.tier),difficulty)})
+	for offer in RunUpgrades.roll_offers(arena,2,true):result.append({"category":"upgrade","id":offer.id,"tier":maxi(int(offer.tier),difficulty)})
 	return result
 ## The chest blueprint is its own reward (author, 4 Oct 2026): it no longer takes the place of a card. It is
-## rolled once per chest and goes straight into the backpack (or lies at the soldier's feet when it is full).
+## rolled once per chest and drops on the ground next to it.
 func chest_recipe()->Dictionary:
 	var difficulty=2 if arena.room.boss_room else arena.room.difficulty
 	var stage=Campaign.progress_index(arena.room_index)
@@ -334,6 +334,7 @@ func grant_chest_recipe(pickup:Dictionary):
 	if not pickup.recipe_given.is_empty():place_sack(arena.find_free_near(arena.grid_pos(pickup.node.position)),{"recipes":[pickup.recipe_given],"ammo":[]})
 
 func apply_secret(offer):
+	arena.run.trophies.append({"type":str(offer.type),"id":str(offer.id)})
 	match offer.type:
 		"weapon":
 			arena.run.weapon_mods[offer.id].damage+=.75

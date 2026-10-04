@@ -89,6 +89,18 @@ func run():
 		run.upgrade_history=[{"id":"burn","tier":0},{"id":"shock","tier":0},{"id":"stun","tier":0}]
 		for offer in RunUpgrades.roll_offers(arena,3):ammo_after+=int(UpgradeRegistry.get_def(offer.id).family=="ammo")
 	check(ammo_after>ammo_before,"taken family attracts its cards (%d → %d)" % [ammo_before,ammo_after])
+	# T-221: a commander/boss chest leans harder to the build — incendiary loaded: fire cards, not a concussion box.
+	var slots_before=run.ammo_slots.duplicate(true)
+	run.upgrade_history=[{"id":"burn","tier":0}];Ammo.ensure(run,arena.weapon);run.ammo_slots[0]=Ammo.roll("burn",0,3)
+	var pull=RunUpgrades.family_counts(arena)
+	var heat_def=UpgradeRegistry.get_def("burn_heat");var stun_box=UpgradeRegistry.get_def("stun")
+	check(RunUpgrades.attracted_weight(arena,heat_def,pull,true)>=2.9*RunUpgrades.attracted_weight(arena,heat_def,pull) and RunUpgrades.attracted_weight(arena,stun_box,pull,true)<RunUpgrades.attracted_weight(arena,stun_box,pull),"chest: fire improvement ×3+, other ammo box weaker")
+	var fire_wave=0;var fire_chest=0
+	for i in range(200):
+		for offer in RunUpgrades.roll_offers(arena,2):fire_wave+=int(Ammo.type_of(offer.id)=="burn")
+		for offer in RunUpgrades.roll_offers(arena,2,true):fire_chest+=int(Ammo.type_of(offer.id)=="burn")
+	check(fire_chest>fire_wave*1.5,"chest offers more fire cards with incendiary loaded (%d → %d)" % [fire_wave,fire_chest])
+	run.ammo_slots=slots_before;run.upgrade_history.clear()
 	Game.selected_class="recruit"
 	# Flag cards
 	RunUpgrades.apply(arena,"crit_stun",2)

@@ -292,6 +292,18 @@
 			"note": ""
 		},
 		{
+			"path": "res://assets/ui/icon_kit/symbols/boot_dodge.png",
+			"group": "Запас символов",
+			"context": "Нарисован, пока нигде не подключён",
+			"ids": [
+				"boot_dodge"
+			],
+			"names": [
+				"boot_dodge"
+			],
+			"note": ""
+		},
+		{
 			"path": "res://assets/ui/icon_kit/symbols/crossed_rifles.png",
 			"group": "Запас символов",
 			"context": "Нарисован, пока нигде не подключён",
@@ -638,7 +650,7 @@
 				"stats/shock_bonus"
 			],
 			"names": [
-				"ЭМИ-патроны",
+				"ЭМИ-боеприпасы",
 				"ЭМИ по технике"
 			],
 			"note": "Символ «bolt»"
@@ -668,20 +680,6 @@
 				"Защита от взрывов"
 			],
 			"note": "Символ «bomb_suit»"
-		},
-		{
-			"path": "res://assets/ui/icon_kit/symbols/boot_dodge.png",
-			"group": "Карточки забега",
-			"context": "Окно «Выбери усиление» между волнами; энциклопедия; сводка забега; Казарма → прокачка, принтер бойца",
-			"ids": [
-				"upgrades/dodge",
-				"stats/dodge"
-			],
-			"names": [
-				"Перекат",
-				"Уклонение"
-			],
-			"note": "Символ «boot_dodge»"
 		},
 		{
 			"path": "res://assets/ui/icon_kit/symbols/boot_wind.png",
@@ -716,7 +714,7 @@
 				"stats/crit_damage"
 			],
 			"names": [
-				"Разрывные",
+				"Слабое место",
 				"Крит-урон"
 			],
 			"note": "Символ «bullet_shatter»"
@@ -808,7 +806,7 @@
 				"stats/stun_chance"
 			],
 			"names": [
-				"Контузящие патроны",
+				"Контузящие боеприпасы",
 				"Контузия"
 			],
 			"note": "Символ «dizzy»"
@@ -834,7 +832,7 @@
 				"stats/burn_chance"
 			],
 			"names": [
-				"Зажигательные патроны",
+				"Зажигательные боеприпасы",
 				"Поджог"
 			],
 			"note": "Символ «flame»"
@@ -866,12 +864,16 @@
 		{
 			"path": "res://assets/ui/icon_kit/symbols/ghost_dash.png",
 			"group": "Карточки забега",
-			"context": "Окно «Выбери усиление» между волнами; энциклопедия; сводка забега",
+			"context": "Окно «Выбери усиление» между волнами; энциклопедия; сводка забега; Казарма → прокачка, принтер бойца",
 			"ids": [
-				"upgrades/ghost"
+				"upgrades/dodge",
+				"upgrades/ghost",
+				"stats/dodge"
 			],
 			"names": [
-				"Призрак"
+				"Уклонение",
+				"Призрак",
+				"Уклонение от пуль"
 			],
 			"note": "Символ «ghost_dash»"
 		},
@@ -1034,7 +1036,7 @@
 				"stats/pierce"
 			],
 			"names": [
-				"Бронебойные",
+				"Сквозной выстрел",
 				"Пробитие"
 			],
 			"note": "Символ «pierce»"
@@ -1419,7 +1421,7 @@
 				"upgrades/legend_ricochet"
 			],
 			"names": [
-				"Рикошет"
+				"Шальная пуля"
 			],
 			"note": ""
 		},
