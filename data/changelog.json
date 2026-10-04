@@ -6,7 +6,7 @@
 			"ru": {
 				"title": "Прохождение b497: чертежи, инвентарь, карточки, комнаты",
 				"items": [
-					"Чертежи: чертёж из сундука командира больше не занимает место карточки — он выпадает из сундука на землю (свёрнутый синий чертёж), его поздравляет отдельное окно «Новый чертёж!», а выбор остаётся из трёх: сплав и два усиления. Он лежит без таймера: подобрать — C, а у флага выхода он сам уйдёт в рюкзак (если рюкзак полон, игра спросит).",
+					"Чертежи: чертёж из сундука командира больше не занимает место карточки — он выпадает из сундука на землю (свёрнутый синий чертёж), его поздравляет отдельное окно «Новый чертёж!», а выбор остаётся из трёх: сплав и два усиления. Он лежит без таймера, как любой предмет: подобрать — C; не подобрал — остаётся на поле.",
 					"Чертежи Арсенала, Штаба и Стоянки выпадают рано: пока не получены, они лежат в любом сундуке командира с шансом 60%, даже на простых полях.",
 					"Важные чертежи (оружие, технологии штаба, машины, гаджеты, страховка, перебросы) выпадают примерно вдвое чаще мелких (бонусы поля, обвес машин, полигон).",
 					"Уйти «В хаб» из паузы на незачищенном поле — теперь поражение: игра переспрашивает и предупреждает о потерях. С зачищенного поля и с карты — без потерь, как раньше.",
@@ -56,7 +56,7 @@
 			"en": {
 				"title": "Playthrough b497: blueprints, inventory, cards, rooms",
 				"items": [
-					"Blueprints: a blueprint from the commander chest no longer takes a card's place — it drops out of the chest onto the ground (a rolled blue blueprint), a separate «New blueprint!» window celebrates it, and you still choose one of three: alloy and two boosts. It stays on the ground with no timer: C picks it up, and at the exit flag it goes into the backpack by itself (with a full backpack the game asks).",
+					"Blueprints: a blueprint from the commander chest no longer takes a card's place — it drops out of the chest onto the ground (a rolled blue blueprint), a separate «New blueprint!» window celebrates it, and you still choose one of three: alloy and two boosts. It stays on the ground with no timer, like any item: C picks it up; leave it and it stays on the field.",
 					"Arsenal, HQ and Garage blueprints come early: until you have them, any commander chest holds one with a 60% chance, even on simple fields.",
 					"Important blueprints (guns, HQ tech, vehicles, gadgets, insurance, rerolls) drop about twice as often as small ones (field bonuses, vehicle gear, the range).",
 					"Leaving to the hub from the pause on an uncleared field is now a defeat: the game asks first and warns about the losses. Leaving a cleared field or the map costs nothing, as before.",
