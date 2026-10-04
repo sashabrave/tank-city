@@ -30,6 +30,10 @@ var facing=Vector2i.UP
 var dressing
 var walker
 var vehicle_prompt
+## The mechanic's parked vehicle can still be bought (on foot, nothing bought yet).
+var vehicle_for_sale:=false
+## Yellow arrow over the station until the upgrade is taken, then green over the exit (T-226).
+var guide:Node3D
 var combat:Node3D
 ## The rooms are their route stops seen up close (author, 3 Oct), like the merchant: the stop's parts, bigger and
 ## more detailed, in daylight on a sand floor. Without the model file the old hangar dressing stays.
@@ -63,19 +67,15 @@ func _ready():
 		if not street:Visuals.model("workbench",self,Vector3(0,0,-1))
 		Visuals.model(vehicle,self,Vector3(2.2,.16,-1.2))
 		# T-011: when the soldier is on foot, the parked vehicle can be taken into the next field for alloy.
-		if not (is_instance_valid(arena.player) and arena.player.kind in GarageCatalog.VEHICLES) and arena.pending_vehicle=="":
-			Visuals.label3d(self,"%s · %d ◈ · E" % [GarageCatalog.VEHICLES.get(vehicle,{}).get("name",vehicle),VEHICLE_PRICES.get(vehicle,80)],Vector3(2.2,1.7,-.4),Color("ffe2a8"),24).name="TakeVehicleLabel"
-		Visuals.label3d(self,"Механик · E",Vector3(0,2,-1),Color("fff0ce"),28)
+		vehicle_for_sale=not (is_instance_valid(arena.player) and arena.player.kind in GarageCatalog.VEHICLES) and arena.pending_vehicle==""
 	elif branch=="headquarters":
 		# Street room: the HQ stands on the ramp under the canopy, its nose just behind the main spot.
 		Visuals.model("base",self,Vector3(0,.18,-2.6) if street else Vector3(0,0,-1))
-		Visuals.label3d(self,"Штаб · E",Vector3(0,2.6,-1),Color("fff0ce"),28)
-	elif street:
-		Visuals.label3d(self,"Инструктор · E",Vector3(0,2.3,-1),Color("fff0ce"),28)
-	else:
+	elif not street:
 		Visuals.box(self,Vector3(0,.35,-1),Vector3(1.4,.7,1.4),Color("717d79"))
 		var statue=Visuals.model("soldier",self,Vector3(0,.7,-1));statue.scale=Vector3.ONE*1.5;Visuals.tint_model(statue,Color("738982"))
-		Visuals.label3d(self,"Погладить статую · E",Vector3(0,3,-1),Color("fff0ce"),28)
+	# No standing signs over the station, the vehicle or the machines (T-226): the prompt on approach says what
+	# it is and what it costs; a yellow arrow shows where the upgrade is taken, then a green one the exit.
 	for i in range(Game.camp_level):
 		var kit=Node3D.new();add_child(kit);kit.position=Vector3([-2.4,-.8,.8,2.4][i],0,2)
 		arena.LOOT.visual(kit,"heart");Visuals.label3d(kit,"Аптечка",Vector3(0,1.1,0),Color("f6c5bc"),25);medkits.append(kit)
@@ -90,11 +90,12 @@ func _ready():
 	interact_button=UiKit.button(root,"Улучшение [E]",Vector2(size.x-330,size.y-170),Vector2(290,60),interact);interact_button.hide()
 	continue_button=UiKit.button(root,"В следующий бой →" if Campaign.endless else "На карту →",Vector2(size.x-330,size.y-90),Vector2(290,60),func():completed.emit(index),true);continue_button.disabled=true
 	UiKit.button(root,"Вернуться в хаб",Vector2(40,165),Vector2(250,48),func():hub_requested.emit())
-	preload("res://scripts/interaction_prompt.gd").attach(self,self,{"vehicle":"Механик","ability":"Инструктор","headquarters":"Штаб"}[branch],Vector3(0,0,-1),1.8,func():return not claimed)
+	preload("res://scripts/interaction_prompt.gd").attach(self,self,{"vehicle":"Механик · улучшение машины","ability":"Инструктор · улучшение способности","headquarters":"Штаб · модуль или припасы"}[branch],Vector3(0,0,-1),1.8,func():return not claimed)
 	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Выход на карту",Vector3(dressing.EXIT_CELL.x,0,dressing.EXIT_CELL.y),1.3,func():return claimed)
-	if has_node("TakeVehicleLabel"):
+	if vehicle_for_sale:
 		var vehicle_name=GarageCatalog.VEHICLES.get(vehicle,{}).get("name",vehicle)
-		vehicle_prompt=preload("res://scripts/interaction_prompt.gd").attach(self,self,Texts.render("Купить")+" %s · %d" % [Texts.render(vehicle_name),VEHICLE_PRICES.get(vehicle,80)],PARKED,1.6,func():return has_node("TakeVehicleLabel"))
+		vehicle_prompt=preload("res://scripts/interaction_prompt.gd").attach(self,self,Texts.render("Купить")+" %s · %d ◈" % [Texts.render(vehicle_name),VEHICLE_PRICES.get(vehicle,80)],PARKED,1.6,func():return vehicle_for_sale)
+	guide=preload("res://scripts/room_guide_arrow.gd").attach(self)
 	# Shooting and abilities work here like in the hub and in battle (T-158, T-185).
 	combat=preload("res://scripts/room_combat.gd").attach(self,avatar,walker,stand,root)
 	offers=arena.reward.service_offers(branch)
@@ -115,6 +116,7 @@ func current_vehicle()->String:
 func _physics_process(delta):
 	# Same as the hub: the on-screen pad only for touch play.
 	if is_instance_valid(dpad):dpad.visible=InputScheme.touch()
+	update_guide()
 	if not is_instance_valid(modal):collect_medkits()
 	if is_instance_valid(modal):
 		if Input.is_action_just_pressed("pause"):close_cards()
@@ -125,6 +127,10 @@ func _physics_process(delta):
 	walker.step(delta,Game.direction(),stand);moving=walker.moving;cell=walker.cell();facing=walker.facing
 	interact_button.disabled=claimed or avatar.position.distance_to(Vector3(0,0,-1))>1.8
 	if Game.wants_interact():interact()
+func update_guide():
+	if not is_instance_valid(guide):return
+	if claimed:guide.point(Vector3(dressing.EXIT_CELL.x+.25,0,dressing.EXIT_CELL.y),3.7,"ready")  # over the «Выход» sign
+	else:guide.point(Vector3(0,0,-1),3.3 if branch=="headquarters" else 2.6,"goal")
 ## Floor the hero may stand on: the room, minus the bench and the parked vehicle; the exit opens once claimed.
 func stand(p:Vector3)->bool:
 	var c=Vector2i(roundi(p.x),roundi(p.z))
@@ -250,7 +256,7 @@ func skip_choice():
 	if claimed:return
 	claimed=true;close_cards();continue_button.disabled=false;interact_button.disabled=true;dressing.set_open(true)
 
-func near_vehicle()->bool:return branch=="vehicle" and has_node("TakeVehicleLabel") and avatar.position.distance_to(PARKED)<1.6
+func near_vehicle()->bool:return branch=="vehicle" and vehicle_for_sale and avatar.position.distance_to(PARKED)<1.6
 ## Purchase window (T-119): the vehicle, what it gives, the price; «Купить» or «Отмена»; then a clear
 ## «Техника доставлена» with where it waits.
 func open_vehicle_offer():
@@ -271,8 +277,7 @@ func open_vehicle_offer():
 	var buy=UiKit.button(panel,"Купить · %d ◈" % price,Vector2(size.x-274,size.y-70),Vector2(250,48),func():
 		if Game.credits<price:return
 		Game.credits-=price;Game.save_progress();arena.pending_vehicle=vehicle;Game.sound("weapon_equip",self)
-		get_node("TakeVehicleLabel").name="BoughtVehicleLabel";get_node("BoughtVehicleLabel").queue_free()
-		Visuals.label3d(self,"Доставлено · ждёт на старте поля",Vector3(2.2,1.7,-.4),Color("bdf0b0"),24)
+		vehicle_for_sale=false
 		for child in panel.get_children():child.queue_free()
 		UiKit.icon(panel,vehicle,Vector2(24,24),Vector2(150,110))
 		UiKit.label(panel,"Техника доставлена",Vector2(190,28),Vector2(346,34),24,Color("bdf0b0"))

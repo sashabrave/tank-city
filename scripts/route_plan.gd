@@ -5,8 +5,10 @@ extends RefCounted
 const STAGE_STEP=11.2
 ## World 1: difficulty levels offered on each regular stage (0 simple, 1 ★, 2 ★★). Hard rooms appear later.
 const WORLD1_LEVELS=[[0,0,1],[0,1,1],[0,1,2],[0,1,2],[1,1,2],[1,2,2]]
-## World 1: service points mixed into regular stages as ordinary nodes, one per listed stage range.
-const WORLD1_SPECIALS=[{"type":"mechanic","stages":[1,2]},{"type":"workshop","stages":[3,4]},{"type":"command_post","stages":[4,5]}]
+## World 1: service points mixed into regular stages as ordinary nodes, one per listed stage range. Each one
+## appears only with its chance (T-235, 4 Oct: fewer upgrade stops on the map instead of the «no two services in a
+## row» rule, which crossed roads and let the player drive past the service row).
+const WORLD1_SPECIALS=[{"type":"mechanic","stages":[1,2],"chance":.5},{"type":"workshop","stages":[3,4],"chance":.5},{"type":"command_post","stages":[4,5],"chance":1.0}]
 const SERVICE_BRANCH={"mechanic":"vehicle","workshop":"headquarters","command_post":"legend"}
 ## Challenge rooms mixed into world 1 stages 2–6: one special point per stage in total. Types join this list as they are built.
 const CHALLENGES=["cache","hold","survive","maze"]
@@ -39,11 +41,13 @@ static func build(seed_value:int)->Array:
 	# Endless has no map, so its rooms stay battles.
 	if gradual() and not Campaign.endless:
 		for special in WORLD1_SPECIALS:
-			# One special point per stage: prefer a listed stage that has none yet.
+			# One special point per stage: prefer a listed stage that has none yet. Rolled every time (the same
+			# number of draws), so a missing stop does not shift the rest of the plan.
 			var stage=special.stages[rng.randi_range(0,special.stages.size()-1)]
-			var open=special.stages.filter(func(s):return s<plan.size() and plan[s].all(func(n):return n.type=="battle") and special_allowed(plan,s))
+			var appears=rng.randf()<float(special.get("chance",1.0))
+			var open=special.stages.filter(func(s):return s<plan.size() and plan[s].all(func(n):return n.type=="battle"))
 			if not open.is_empty() and stage not in open:stage=open[0]
-			if stage>=plan.size() or plan[stage].size()<2 or plan[stage].any(func(n):return n.type!="battle") or not special_allowed(plan,stage):continue
+			if not appears or stage>=plan.size() or plan[stage].size()<2 or plan[stage].any(func(n):return n.type!="battle"):continue
 			# Specials take an ordinary battle node, never another special.
 			var free=plan[stage].filter(func(n):return n.type=="battle")
 			if free.size()<2:continue
@@ -54,22 +58,8 @@ static func build(seed_value:int)->Array:
 			var node=plan[stage][rng.randi_range(0,plan[stage].size()-1)]
 			node.type=CHALLENGES[rng.randi_range(0,CHALLENGES.size()-1)]
 	return plan
-## T-218: two service stops never follow each other on any road; after a service comes a battle.
-## A service node may not stand right after a service row, nor next to another service node. A service
-## node right before a service row replaces that row on its road (skips_service_row), so its roads lead
-## straight to the battles of the next stage.
+## A route node that is a service stop (mechanic, HQ workshop, captured command post), not a battle.
 static func is_service(node:Dictionary)->bool:return node_branch(node)!=""
-static func special_allowed(plan:Array,stage:int)->bool:
-	if stage<=0 or stage in Campaign.SERVICES or stage in Campaign.BOSSES:return false
-	for near in [stage-1,stage+1]:
-		if near>=0 and near<plan.size() and plan[near].any(func(n):return is_service(n)):return false
-	return true
-## Value stored in visited_services for a row that a service node replaced.
-const ROW_REPLACED="route"
-static func skips_service_row(plan:Array,stage:int,choices:Dictionary)->bool:
-	if not service_roads() or stage<=0 or stage>=plan.size() or stage not in Campaign.SERVICES:return false
-	if not (choices.has(stage-1) or choices.has(str(stage-1))):return false
-	return is_service(chosen(plan,stage-1,choices))
 static func chosen(plan:Array,stage:int,choices:Dictionary)->Dictionary:
 	var id=choices.get(stage,choices.get(str(stage),""))
 	for node in plan[stage]:

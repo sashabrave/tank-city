@@ -8,19 +8,24 @@ const WEAPON_CRATE:=Vector3(-3.4,0,0.5)
 const MACHINE:=Vector3(-3.4,0,2.4)
 const FORTUNE:=Vector3(3.4,0,2.9)
 const EXIT:=Vector3(4,0,1)
-## Machines for the vending spot; the fortune spot holds a slot machine or an ammo loot box with this chance
-## (the merchant always has its slot machine there), otherwise a closed fortune booth.
+## Machines for the vending spot. The fortune spot (T-234, 4 Oct: the slot machine was too rare) holds the slot
+## machine, an ammo loot box or a closed booth with these weights; the merchant always has its slot machine there.
+## The ammo loot box never stands twice in one room: on the fortune spot it turns into the slot machine.
 const MACHINES:=["medkit","lootbox"]
-const FORTUNE_CHANCE:=.55
+const FORTUNE_WEIGHTS:={"slot":.5,"lootbox":.3,"closed":.2}
 
 ## What stands where in this room. Seeded by the run and the room only (own generator): the same room shows the
 ## same machines after a reload, and the combat RNG is not touched.
 static func plan(run_seed:int,index:int,merchant:bool)->Dictionary:
 	var rng=RandomNumberGenerator.new();rng.seed=hash([run_seed,index,"room_layout"])
 	var machine:String=MACHINES[rng.randi_range(0,MACHINES.size()-1)]
-	var fortune="slot" if merchant else "closed"
-	if not merchant and rng.randf()<FORTUNE_CHANCE:
-		fortune="slot" if machine=="lootbox" or rng.randf()<.5 else "lootbox"
+	var fortune="slot"
+	if not merchant:
+		var roll=rng.randf();var acc=0.0
+		for kind in FORTUNE_WEIGHTS:
+			acc+=float(FORTUNE_WEIGHTS[kind]);fortune=kind
+			if roll<acc:break
+		if fortune=="lootbox" and machine=="lootbox":fortune="slot"
 	return {"machine":machine,"fortune":fortune}
 
 ## Places the weapon crate, the vending machine and the fortune spot; returns them as {crate, machine, fortune}.
@@ -42,14 +47,8 @@ static func place_machine(room:Node3D,arena,kind:String,at:Vector3,fortune:=fals
 		"slot":node=preload("res://scripts/slot_machine.gd").place(room,arena,at)
 		"medkit":node=preload("res://scripts/medkit_vendor.gd").place(room,arena,at)
 		_:node=closed_fortune(room,at)
-	if fortune:
-		node.set_meta("fortune",true)
-		# The sign over the spot says what this place is, so a closed booth still reads as «luck lives here».
-		# A closed booth says so on the sign (T-216): «no fortune machine in this room», not a broken one.
-		if kind in ["slot","lootbox"]:Visuals.label3d(node,"Фортуна",Vector3(0,2.55,0),Color("ffd27a"),26).name="FortuneSign"
-		else:
-			var sign=Visuals.label3d(node,"Фортуна · сегодня закрыто",Vector3(0,2.55,0),Color("b9b3a2"),24);sign.name="FortuneSign"
-			if "prompt" in node and node.prompt:node.prompt.twin=sign;node.prompt.twin_searched=true
+	# No standing sign over the spot (T-226): each machine's prompt on approach names it and its price.
+	if fortune:node.set_meta("fortune",true)
 	return node
 
 ## A shuttered booth with a lamp: the fortune is closed in this room.

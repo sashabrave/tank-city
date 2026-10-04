@@ -13,6 +13,7 @@ const STATS:={"damage":["Урон",[[.0,.05],[.05,.12],[.12,.2],[.2,.3]]],"fire"
 var room:Node3D
 var arena
 var modal:Control
+var prompt
 var offers:Array=[]
 ## Gun shown when there are no offers (previews and tests).
 var preview_gun:="rifle"
@@ -32,8 +33,8 @@ func _ready():
 	var shown=str(offers[0].id) if not offers.is_empty() else preview_gun
 	var gun=Visuals.model("weapon_"+shown,self,Vector3(0,.84,.02))
 	if gun:lay_gun(gun,shown)
-	Visuals.label3d(self,"Оружие · E",Vector3(0,1.4,0),Color("fff0ce"),24)
-	if room:preload("res://scripts/interaction_prompt.gd").attach(self,room,"Оружие",Vector3.ZERO,1.4)
+	# No sign over the crate (T-226): the prompt on approach names it and the cheapest price.
+	if room:prompt=preload("res://scripts/interaction_prompt.gd").attach(self,room,"Ящик с оружием",Vector3.ZERO,1.4);refresh_prompt()
 func near(avatar:Node3D)->bool:return avatar.global_position.distance_to(global_position)<1.4
 ## Lays the gun on the straw whatever axes its model uses: the longest side along the crate, the next one up, the
 ## flat side to the camera, leaning back a little; 0.9 of the crate's width long (handguns shorter), centred.
@@ -93,27 +94,110 @@ func buy(i:int)->String:
 	return ""
 
 func use(ui_root:Control,done:Callable):open(ui_root,done)
+## The crate window (T-233): three offer cards in the reward-card style — rarity border, a big gun, the name —
+## and the numbers as bars next to the gun in hand: the bar is the offer, the white tick is the gun in hand, green
+## better, red worse. A purchase rebuilds the same window (it stays the room's modal, so world prompts stay hidden).
+const CARD_GAP:=16.0
+const BETTER:=Color("8fe895")
+const WORSE:=Color("e0806b")
+## Rows on the bars: [key of power(), label, unit].
+const ROWS:=[["dps","Огневая мощь",""],["shot","Урон",""],["rate","Темп"," /с"],["range","Дальность",""]]
 func open(ui_root:Control,done:Callable):
 	if offers.is_empty():offers=roll_offers()
-	modal=Control.new();modal.name="WeaponLockerMenu";ui_root.add_child(modal);modal.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);modal.add_to_group("selection_scope")
+	if not is_instance_valid(modal):
+		modal=Control.new();modal.name="WeaponLockerMenu";ui_root.add_child(modal);modal.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);modal.add_to_group("selection_scope")
+	else:
+		for child in modal.get_children():modal.remove_child(child);child.queue_free()
 	var shade=ColorRect.new();modal.add_child(shade);shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);shade.color=Color(0,0,0,.5)
-	var size=Vector2(640,130+offers.size()*92);var panel=UiKit.glass(modal,((ui_root.get_viewport_rect().size-size)*.5).round(),size)
-	UiKit.label(panel,"Ящик с оружием",Vector2(24,16),Vector2(400,34),24)
-	UiKit.label(panel,"Ствол уходит в рюкзак — перетащи его в слот оружия",Vector2(24,52),Vector2(590,22),14,UiKit.MUTED)
+	var screen=ui_root.get_viewport_rect().size
+	var card_w=clampf(floorf((screen.x-32-48-CARD_GAP*2)/3.0),190.0,250.0);var card_h=372.0
+	var size=Vector2(card_w*3+CARD_GAP*2+48,card_h+120);var panel=UiKit.glass(modal,((screen-size)*.5).round(),size);panel.name="Panel"
+	UiKit.label(panel,"Ящик с оружием",Vector2(24,16),Vector2(size.x-370,34),24)
+	var hint=UiKit.label(panel,"Ствол уходит в рюкзак — перетащи его в слот оружия",Vector2(24,52),Vector2(size.x-370,40),13,UiKit.MUTED);hint.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	var close=func():
 		if is_instance_valid(modal):modal.queue_free()
 		modal=null;done.call()
+	var hand=hand_gun();var base=power(str(hand.id),hand.stats)
+	hand_chip(panel,Vector2(size.x-66-268,14),hand)
+	# Bar scale per row: the strongest of the offers and the gun in hand fills the bar.
+	var values=[base]
+	for offer in offers:values.append(power(str(offer.id),offer.stats))
+	var top={}
+	for key in base:top[key]=values.reduce(func(m,v):return maxf(m,float(v[key])),0.0)
 	for i in range(offers.size()):
-		var offer:Dictionary=offers[i];var color=Color(LootCatalog.RARITY_COLORS[clampi(int(offer.rarity),0,3)])
-		var row=Panel.new();panel.add_child(row);row.position=Vector2(24,88+i*92);row.size=Vector2(size.x-48,80);row.name="Offer%d" % i
-		row.add_theme_stylebox_override("panel",UiKit.style(Color(color,.12),12,Color(color,.7)))
-		var icon=TextureRect.new();icon.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;icon.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;icon.mouse_filter=Control.MOUSE_FILTER_IGNORE
-		row.add_child(icon);icon.texture=UiKit.trimmed(UiKit.icon_texture(offer.id));icon.position=Vector2(10,8);icon.size=Vector2(110,64)
-		UiKit.label(row,Game.LOOT.WEAPONS[offer.id].name,Vector2(132,8),Vector2(260,28),19)
-		UiKit.label(row,Texts.render(LootCatalog.RARITY_NAMES[int(offer.rarity)])+" · "+describe(offer),Vector2(132,40),Vector2(300,24),14,color.lightened(.25))
-		var b=UiKit.button(row,"Куплено" if offer.sold else "%d ◈" % int(offer.price),Vector2(row.size.x-150,16),Vector2(136,48),func():
+		var card=offer_card(panel,i,Vector2(24+i*(card_w+CARD_GAP),96),Vector2(card_w,card_h),values[i+1],base,top)
+		var b=UiKit.button(card,"Куплено" if offers[i].sold else "Купить · %d ◈" % int(offers[i].price),Vector2(14,card_h-62),Vector2(card_w-28,48),func():
 			var reason=buy(i)
 			if reason!="" and is_instance_valid(arena):arena.toast(Texts.render(reason))
-			if is_instance_valid(modal):modal.queue_free();modal=null;open(ui_root,done),true)
-		b.name="Buy%d" % i;b.disabled=offer.sold or Game.credits<int(offer.price)
+			if is_instance_valid(modal):open(ui_root,done),true)
+		b.name="Buy%d" % i;b.disabled=offers[i].sold or Game.credits<int(offers[i].price)
 	var x=UiKit.button(panel,"",Vector2(size.x-66,14),Vector2(44,40),close);x.icon=UiKit.interface_icon("close");x.expand_icon=true;x.add_theme_constant_override("icon_max_width",18)
+	refresh_prompt()
+## The gun in hand: {id, rarity, stats} (stats are the rolled bonuses of a crate gun).
+func hand_gun()->Dictionary:
+	var run=arena.run if is_instance_valid(arena) and "run" in arena and arena.run!=null else null
+	var id=str(arena.weapon) if is_instance_valid(arena) and "weapon" in arena else Game.selected_weapon
+	if not Game.LOOT.WEAPONS.has(id):id=LootCatalog.PAWS
+	return {"id":id,"rarity":int(run.weapon_rarity) if run!=null else 0,"stats":run.weapon_stats.duplicate() if run!=null else {}}
+## Numbers compared on the bars: damage per shot (pellets included), shots a second, their product, range.
+func power(id:String,stats:Dictionary)->Dictionary:
+	var ctx=arena if is_instance_valid(arena) and "run" in arena and arena.run!=null else null
+	var w=CombatStats.weapon(ctx,id,{"item_stats":stats})
+	var shot=float(w.damage)*int(Game.LOOT.WEAPONS[id].get("pellets",1))
+	return {"dps":shot*float(w.rate),"shot":shot,"rate":float(w.rate),"range":float(w.range)}
+## Top-right reference: the gun in hand, with the white tick that marks it on every bar.
+func hand_chip(panel:Control,at:Vector2,hand:Dictionary):
+	var chip=Panel.new();panel.add_child(chip);chip.name="InHand";chip.position=at;chip.size=Vector2(258,62);chip.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	chip.add_theme_stylebox_override("panel",UiKit.style(Color(1,1,1,.05),12,Color(1,1,1,.16)))
+	var pic=TextureRect.new();chip.add_child(pic);pic.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;pic.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;pic.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	pic.texture=UiKit.trimmed(UiKit.icon_texture(str(hand.id)));pic.position=Vector2(10,9);pic.size=Vector2(70,44)
+	var tick=ColorRect.new();chip.add_child(tick);tick.color=Color.WHITE;tick.position=Vector2(92,9);tick.size=Vector2(3,14);tick.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	UiKit.label(chip,"В руках",Vector2(101,6),Vector2(130,18),12,UiKit.MUTED)
+	var tier=clampi(int(hand.rarity),0,3)
+	var name=UiKit.label(chip,Game.LOOT.WEAPONS[hand.id].name,Vector2(92,27),Vector2(130,26),16,Color(LootCatalog.RARITY_COLORS[tier]).lightened(.2) if tier>0 else UiKit.INK);name.clip_text=true
+## One offer as a card: rarity, picture, name, a verdict from firepower and four bars.
+func offer_card(panel:Control,i:int,at:Vector2,dimensions:Vector2,value:Dictionary,base:Dictionary,top:Dictionary)->Panel:
+	var offer:Dictionary=offers[i];var tier=clampi(int(offer.rarity),0,3);var color=Color(LootCatalog.RARITY_COLORS[tier])
+	var card=Panel.new();panel.add_child(card);card.name="Offer%d" % i;card.position=at;card.size=dimensions;card.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	var style=UiKit.style(Color("232c29").lerp(color,.10),14,color.darkened(.25));style.set_border_width_all(2)
+	if tier>=2:style.shadow_color=Color(color,.16 if tier==2 else .26);style.shadow_size=10 if tier==2 else 16
+	card.add_theme_stylebox_override("panel",style)
+	var stripe=ColorRect.new();card.add_child(stripe);stripe.color=color;stripe.position=Vector2(0,15);stripe.size=Vector2(6,24);stripe.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	UiKit.label(card,LootCatalog.RARITY_NAMES[tier],Vector2(18,14),Vector2(dimensions.x-32,24),14,color.lightened(.15) if tier>0 else UiKit.MUTED)
+	var pic=TextureRect.new();card.add_child(pic);pic.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;pic.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;pic.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	pic.texture=UiKit.trimmed(UiKit.icon_texture(str(offer.id)));pic.position=Vector2(22,44);pic.size=Vector2(dimensions.x-44,76)
+	var title=UiKit.label(card,Game.LOOT.WEAPONS[offer.id].name,Vector2(18,124),Vector2(dimensions.x-32,28),20,color.lightened(.2) if tier>0 else UiKit.INK);title.clip_text=true
+	# One verdict line from firepower: stronger / weaker than the gun in hand, or the same.
+	var change=percent(float(value.dps),float(base.dps))
+	var verdict="▲ "+Texts.render("Сильнее на %d%%" % change) if change>0 else "▼ "+Texts.render("Слабее на %d%%" % -change) if change<0 else "= "+Texts.render("Как в руках")
+	UiKit.label(card,verdict,Vector2(18,152),Vector2(dimensions.x-32,20),14,BETTER if change>0 else WORSE if change<0 else UiKit.MUTED)
+	for r in range(ROWS.size()):
+		stat_row(card,Vector2(18,184+r*31),dimensions.x-36,ROWS[r],float(value[ROWS[r][0]]),float(base[ROWS[r][0]]),float(top[ROWS[r][0]]))
+	if offer.sold:
+		for child in card.get_children():child.modulate=Color(1,1,1,.45)
+	return card
+## Change against the gun in hand in whole percent.
+static func percent(now:float,before:float)->int:
+	if before<=0.0:return 0
+	return roundi((now/before-1.0)*100.0)
+## One bar row: label, the offer's number and its change, then the bar with the hand's white tick.
+func stat_row(card:Control,at:Vector2,width:float,spec:Array,now:float,before:float,top:float):
+	var change=percent(now,before)
+	UiKit.label(card,spec[1],at,Vector2(width*.55,18),12,UiKit.MUTED)
+	var shown=UiKit.label(card,UiKit.number(snappedf(now,.01 if now<10 else .1))+spec[2],at,Vector2(width-58,18),13,UiKit.INK);shown.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
+	var delta=UiKit.label(card,("+%d%%" % change) if change>0 else ("−%d%%" % -change) if change<0 else "=",at,Vector2(width,18),12,BETTER if change>0 else WORSE if change<0 else UiKit.MUTED);delta.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
+	var track=Panel.new();card.add_child(track);track.position=at+Vector2(0,21);track.size=Vector2(width,6);track.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	track.add_theme_stylebox_override("panel",bar_style(Color(1,1,1,.1)))
+	var fill=Panel.new();track.add_child(fill);fill.size=Vector2(maxf(4.0,width*clampf(now/maxf(top,.001),0,1)),6);fill.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	fill.add_theme_stylebox_override("panel",bar_style(BETTER if change>0 else WORSE if change<0 else Color("d8d2bd")))
+	var tick=ColorRect.new();track.add_child(tick);tick.color=Color.WHITE;tick.size=Vector2(3,12);tick.position=Vector2(clampf(width*before/maxf(top,.001),0,width)-1.5,-3);tick.mouse_filter=Control.MOUSE_FILTER_IGNORE
+## A plain rounded bar (UiKit.style turns light and green fills into dark panels).
+static func bar_style(color:Color)->StyleBoxFlat:
+	var s=StyleBoxFlat.new();s.bg_color=color;s.set_corner_radius_all(3);return s
+## The world prompt says what the crate is and what it costs (T-226): the cheapest gun still for sale.
+func refresh_prompt():
+	if prompt==null:return
+	var left=offers.filter(func(o):return not o.sold)
+	if left.is_empty():prompt.caption=Texts.render("Ящик с оружием · всё куплено");return
+	var cheapest=left.reduce(func(m,o):return mini(m,int(o.price)),int(left[0].price))
+	prompt.caption=Texts.render("Ящик с оружием · стволы от %d ◈" % cheapest)

@@ -73,10 +73,10 @@ func run():
 			if stage<RoutePlan.WORLD1_LEVELS.size():
 				for level in plan[stage].filter(func(n):return n.type=="battle").map(func(n):return n.difficulty):
 					if level not in RoutePlan.WORLD1_LEVELS[stage]:levels_ok=false
-		specials_ok=specials_ok and found.get("mechanic",-1) in [1,2] and found.get("workshop",-1) in [3,4]
+		specials_ok=specials_ok and found.get("mechanic",1) in [1,2] and found.get("workshop",3) in [3,4]  # each appears only by its chance (T-235)
 	check(early_hard==0,"no ★★ rooms on the first two stages")
 	check(levels_ok,"battle difficulty follows the world 1 table")
-	check(specials_ok,"mechanic on stage 2–3 and workshop on stage 4–5 in every plan")
+	check(specials_ok,"mechanic only on stage 2–3 and workshop only on stage 4–5")
 	check(Campaign.service_options(1,2)==["ability","merchant"],"world 1 service row: instructor and merchant")
 	Campaign.configure(1,true)
 	check(RoutePlan.build(5).all(func(stage):return stage.all(func(n):return n.type=="battle")),"endless rooms stay battles")

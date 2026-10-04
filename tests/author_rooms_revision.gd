@@ -59,9 +59,44 @@ func run():
 	arena.run.tokens=5
 	check("полное лечение" in vendor.status().to_lower(),"medkit: what it does when usable")
 	check(vendor.buy() and arena.run.tokens==2,"medkit: heals for 3 tokens")
-	# T-216: a closed booth says so on its sign.
+	# T-216 / T-226: a closed booth says so on its prompt; no standing sign over any room spot.
 	var booth=RoomLayout.place_machine(second,arena,"closed",RoomLayout.FORTUNE,true)
-	check(booth.get_node("FortuneSign").text.contains("закрыто"),"closed fortune sign says «сегодня закрыто»")
+	check(booth.prompt.caption.contains("закрыто"),"closed fortune prompt says «сегодня закрыто»")
+	var signs=[]
+	for spot in second.spots.values()+[booth,vendor]:
+		if spot is Node:signs+=spot.find_children("*","Label3D",true,false).filter(func(l):return l.text.strip_edges()!="")
+	check(signs.is_empty(),"T-226: no standing signs over the crate and the machines (%d)" % signs.size())
+	check(not second.find_children("*","Label3D",false,false).any(func(l):return "· E" in l.text),"T-226: no «· E» signs over the station or the vehicle")
+	# T-226: green arrow to the exit once the upgrade is taken; yellow over the station before.
+	await get_tree().physics_frame;await get_tree().physics_frame
+	check(second.guide.visible and second.guide.kind=="ready" and absf(second.guide.position.x-float(second.dressing.EXIT_CELL.x))<.5,"T-226: green arrow over the exit after the choice")
+	var third=load("res://scripts/service_room.gd").new();third.arena=arena;third.branch="ability";third.index=3;add_child(third)
+	await get_tree().physics_frame;await get_tree().physics_frame
+	check(third.guide.visible and third.guide.kind=="goal" and third.guide.position==Vector3(0,0,-1),"T-226: yellow arrow over the instructor before the choice")
+	# T-233: the weapon crate window — three cards with bars against the gun in hand; T-232: it stays the room's
+	# window after a purchase, and the world prompts stay hidden while it is open.
+	Game.credits=1000
+	var crate=third.spots.crate
+	crate.offers=[{"id":"pistol","rarity":2,"stats":{"damage":.15,"fire":.1},"price":40,"sold":false},{"id":"pistol","rarity":0,"stats":{"damage":0.0,"fire":0.0},"price":40,"sold":false},{"id":"rifle","rarity":1,"stats":{"damage":.06,"fire":.05},"price":70,"sold":false}]
+	crate.refresh_prompt()
+	check(crate.prompt.caption.contains("40"),"crate prompt shows the cheapest price")
+	third.avatar.position=RoomLayout.WEAPON_CRATE+Vector3(.9,0,0);third.interact();await get_tree().process_frame
+	var window=third.modal
+	check(is_instance_valid(window) and window.name=="WeaponLockerMenu","E at the crate opens its window")
+	if is_instance_valid(window):
+		var cards=window.find_children("Offer*","Panel",true,false)
+		check(cards.size()==3,"three offer cards")
+		var bars=cards[0].find_children("*","Panel",true,false).size() if not cards.is_empty() else 0
+		check(bars>=8,"each card has bars (%d)" % bars)
+		var verdicts=window.find_children("*","Label",true,false).map(func(l):return l.text)
+		check(verdicts.any(func(t):return "Сильнее на" in t or "Stronger by" in t),"the better gun says how much stronger")
+		await get_tree().process_frame
+		check(not crate.prompt.panel.visible,"T-232: no E prompt over the open crate window")
+		for b in window.find_children("Buy0","Button",true,false):b.pressed.emit()
+		await get_tree().process_frame;await get_tree().process_frame
+		check(is_instance_valid(third.modal) and third.modal==window and crate.offers[0].sold,"after a purchase the same window stays open")
+		check(not crate.prompt.panel.visible,"T-232: still no E prompt after the purchase")
+	third.queue_free()
 	second.queue_free();arena.queue_free()
 	await get_tree().process_frame
 	# T-206 / T-219 in the Barracks.

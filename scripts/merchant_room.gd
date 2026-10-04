@@ -26,6 +26,7 @@ var interact_button:Button
 var stock:Array=[]
 var status_text=""
 var shop_revealed=false
+var guide:Node3D
 const COUNTER=RoomLayout.MAIN
 func _ready():
 	add_to_group("notification_context")
@@ -52,7 +53,10 @@ func _ready():
 	interact_button=UiKit.button(root,"Торговать [E]",Vector2(size.x-330,size.y-170),Vector2(290,60),interact);interact_button.hide()
 	UiKit.button(root,"Дальше →",Vector2(size.x-330,size.y-90),Vector2(290,60),func():completed.emit(index),true)
 	UiKit.button(root,"Вернуться в хаб",Vector2(40,165),Vector2(250,48),func():hub_requested.emit())
-	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Торговец",COUNTER,1.8,func():return true)
+	# No sign over the truck (T-226): the prompt says what is sold; a yellow arrow points at the counter until the
+	# shop has been opened once (the merchant has no exit gate — «Дальше» leads on).
+	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Торговец · карточки и припасы за жетоны",COUNTER,1.8,func():return true)
+	guide=preload("res://scripts/room_guide_arrow.gd").attach(self)
 	stock=roll_stock()
 	spots=RoomLayout.furnish(self,arena,index,true)
 	locker=spots.crate;vendor=spots.machine
@@ -73,7 +77,6 @@ func build_stall():
 		for i in range(2):Visuals.box(self,Vector3(3.6,.3,-.2+i*.45),Vector3(.38,.6,.22),olive,"paint")
 		var barrel=MeshInstance3D.new();var shape=CylinderMesh.new();shape.top_radius=.38;shape.bottom_radius=.38;shape.height=.9;barrel.mesh=shape;add_child(barrel)
 		barrel.position=Vector3(3.5,.45,-1.9);barrel.material_override=Visuals.surface_material(Color("5d6266"),"steel")
-		Visuals.label3d(self,"Торговец · E",COUNTER+Vector3(0,2.9,0),Color("fff0ce"),28)
 		return
 	var wood=Color("8a6a48");var cloth=Color("c9793f")
 	Visuals.box(self,COUNTER+Vector3(0,.45,0),Vector3(2.6,.9,.9),wood)
@@ -82,7 +85,6 @@ func build_stall():
 	for p in [Vector3(-2,0,-1.5),Vector3(3.7,0,-1.3)]:Visuals.box(self,p+Vector3(0,.3,0),Vector3(.6,.6,.6),Color("9c8156"))
 	Visuals.box(self,Vector3(-2.3,.6,.4),Vector3(.8,1.2,.6),Color("5b6770"))
 	Visuals.box(self,Vector3(-2.3,1.0,.71),Vector3(.55,.3,.02),Color("e5b34f"))
-	Visuals.label3d(self,"Торговец · E",COUNTER+Vector3(0,2.9,0),Color("fff0ce"),28)
 ## Stock entries: {kind, id, tier, price, sold}. Cards use UpgradeRegistry; the blueprint appears in 40% of visits.
 func roll_stock()->Array:
 	var rng=arena.run.combat_rng;var result=[]
@@ -102,6 +104,9 @@ func stand(p:Vector3)->bool:return p.x>=-3.01 and p.x<=3.01 and p.z>=-.01 and p.
 func _physics_process(delta):
 	# Same as the hub: the on-screen pad only for touch play.
 	if is_instance_valid(dpad):dpad.visible=InputScheme.touch()
+	if is_instance_valid(guide):
+		if shop_revealed:guide.hide_arrow()
+		else:guide.point(COUNTER,3.2,"goal")
 	if is_instance_valid(modal):
 		if Input.is_action_just_pressed("pause"):close_shop()
 		return
