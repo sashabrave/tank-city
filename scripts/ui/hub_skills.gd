@@ -21,7 +21,7 @@ func _process(delta):
 		var tile=support[i];tile.visible=i<loadout.size()
 		if not tile.visible:continue
 		var id=loadout[i];tile.position=Vector2((hero_count+i)*88,0);tile.get_node("Icon").texture=UiKit.trimmed(UiKit.icon_texture("headquarters/"+id))
-		var display=tile.get_node("CooldownDisplay");display.key_hint="";display.action="hq_ability" if id==Game.hq_active and HQCatalog.DATA[id].mode=="active" else "";display.queue_redraw();tile.tooltip_text=HQCatalog.DATA[id].name+" / в вылазке"
+		var display=tile.get_node("CooldownDisplay");display.key_hint="";display.action="";display.queue_redraw();tile.tooltip_text=HQCatalog.DATA[id].name+" / в вылазке"
 	for id in cooldowns:cooldowns[id]=maxf(0,cooldowns[id]-delta)
 	for id in active_times:active_times[id]=maxf(0,active_times[id]-delta)
 	visible=hub.phase=="combat"

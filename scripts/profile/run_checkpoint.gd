@@ -1,6 +1,6 @@
 extends RefCounted
 const VERSION=1
-const RUN_KEYS=["run_seed","upgrade_history","soldier_hp","soldier_max_hp","damage_bonus","fire_multiplier","speed_multiplier","earned","kills","elapsed","weapon","rerolls_left","weapon_mods","recovery_bonus","run_bonus_levels","pending_recipes","vehicle_mods","pending_vehicle","visited_services","intercept_chance","route_choices","range_multiplier","healing_multiplier","ability_power_multiplier","ability_cooldown_multiplier","behavior_cards","tokens","burn_duration","kills_by","mercy_used","dry_offers","ammo_slots","ammo_active","ammo_bag","supplies","weapon_bag","weapon_rarity","weapon_stats","best_hit","best_series","captured","damage_taken","trophies"]
+const RUN_KEYS=["run_seed","upgrade_history","soldier_hp","soldier_max_hp","damage_bonus","fire_multiplier","speed_multiplier","earned","kills","elapsed","weapon","rerolls_left","weapon_mods","recovery_bonus","run_bonus_levels","pending_recipes","vehicle_mods","pending_vehicle","visited_services","intercept_chance","route_choices","range_multiplier","healing_multiplier","ability_power_multiplier","ability_cooldown_multiplier","behavior_cards","tokens","burn_duration","kills_by","mercy_used","dry_offers","ammo_slots","ammo_active","ammo_bag","weapon_bag","weapon_rarity","weapon_stats","best_hit","best_series","captured","damage_taken","trophies"]
 ## Checkpoint fields: the fixed list plus every registry stat, so a new stat file is saved automatically.
 static func keys()->Array:
 	var result=RUN_KEYS.duplicate()
@@ -16,7 +16,7 @@ static func capture(arena,index:int,mode:String,choices:Dictionary)->Dictionary:
 	data.abilities={"slots":arena.abilities.slots.duplicate(),"selected":arena.abilities.selected,"levels":{}}
 	for id in arena.abilities.states:data.abilities.levels[id]=arena.abilities.states[id].level.duplicate()
 	data.abilities.levels[arena.abilities.selected]=arena.abilities.level.duplicate()
-	data.hq={"modules":arena.headquarters.modules.duplicate(),"active":arena.headquarters.active,"levels":arena.headquarters.levels.duplicate(),"basic_hp":arena.headquarters.basic_hp}
+	data.hq={"modules":arena.headquarters.modules.duplicate(),"levels":arena.headquarters.levels.duplicate(),"basic_hp":arena.headquarters.basic_hp}
 	var p=arena.player
 	if is_instance_valid(p):data.hero={"kind":p.kind,"hp":p.hp,"salvaged":p.salvaged,"origin":p.vehicle_origin,"zone":p.vehicle_zone}
 	elif not arena.resume_checkpoint.is_empty():data.hero=arena.resume_checkpoint.get("hero",{}).duplicate(true)
@@ -40,7 +40,9 @@ static func restore(arena,data:Dictionary):
 		for id in data.abilities.levels:arena.abilities.states[id]={"cooldown":0.0,"level":data.abilities.levels[id].duplicate()}
 		arena.abilities.selected="";arena.abilities.select(data.abilities.selected)
 	if not data.hq.is_empty():
-		for key in ["modules","active","levels","basic_hp"]:arena.headquarters.set(key,data.hq[key])
+		# Retired modules (before 4 Oct 2026) map onto the ones that absorbed them; the old active support joins the modules.
+		arena.headquarters.modules=HQCatalog.migrate_ids(([data.hq.active] if str(data.hq.get("active",""))!="" else [])+Array(data.hq.modules)).slice(0,maxi(1,Game.hq_slots))
+		arena.headquarters.levels=HQCatalog.migrate_levels(data.hq.levels);arena.headquarters.basic_hp=data.hq.basic_hp
 ## Completes a snapshot written by an older build: new RunState fields, weapons and vehicles get
 ## their defaults, removed weapons fall back to the first one. Structural damage is still rejected by valid().
 static func upgrade(data:Dictionary)->Dictionary:
@@ -56,6 +58,16 @@ static func upgrade(data:Dictionary)->Dictionary:
 		for id in ["buggy","apc","tank"]:
 			if not run.vehicle_mods.get(id) is Dictionary:run.vehicle_mods[id]=defaults.vehicle_mods[id].duplicate()
 	if run.get("behavior_cards") is Array:run.behavior_cards=run.behavior_cards.filter(func(id):return UpgradeRegistry.has(str(id)))
+	# Aid kits left the backpack (4 Oct 2026): the ones an old run carried heal the hero once, then are gone.
+	if run.has("supplies"):
+		var kits=run.supplies if run.supplies is Array else []
+		if number(run.get("soldier_hp")) and number(run.get("soldier_max_hp")):
+			for kit in kits:
+				if kit is Dictionary and number(kit.get("heal")):run.soldier_hp=minf(float(run.soldier_max_hp),float(run.soldier_hp)+float(kit.heal))
+		run.erase("supplies")
+	if run.get("pending_recipes") is Array:
+		for recipe in run.pending_recipes:
+			if recipe is Dictionary and recipe.get("category")=="hq" and recipe.get("id") is String:recipe.id=HQCatalog.current(recipe.id)
 	if run.get("weapon_bag") is Array:run.weapon_bag=run.weapon_bag.filter(func(w):return w is Dictionary and Game.LOOT.is_gun(str(w.get("id",""))))
 	return data
 static func valid(data:Dictionary)->bool:
@@ -120,7 +132,7 @@ static func valid(data:Dictionary)->bool:
 			for key in ["cooldown","power","utility"]:
 				if not number(level.get(key)):return false
 	if not data.hq.is_empty():
-		if not data.hq.get("modules") is Array or not data.hq.get("active") is String or not data.hq.get("levels") is Dictionary or not number(data.hq.get("basic_hp")):return false
+		if not data.hq.get("modules") is Array or not data.hq.get("active","") is String or not data.hq.get("levels") is Dictionary or not number(data.hq.get("basic_hp")):return false
 		for id in data.hq.modules:
 			if not id is String:return false
 		for value in data.hq.levels.values():

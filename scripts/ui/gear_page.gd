@@ -13,7 +13,7 @@ const STATS=preload("res://scripts/ui/stat_snapshot.gd")
 const ITEM=preload("res://scripts/ui/item_info.gd")
 const INFO_H:=190.0
 static var selected:=""
-## The kind of the item being moved or used («weapon», «ammo», «recipe», «supply»): its click plays when done.
+## The kind of the item being moved or used («weapon», «ammo», «recipe»): its click plays when done.
 var acting:=""
 ## The class gallery art looks to the left; the doll is mirrored so it always faces right.
 const DOLL_FACES_LEFT:=true
@@ -36,7 +36,6 @@ static func cell_size(_node:Node=null)->float:
 static func icon_key(kind:String,item:Dictionary)->String:
 	match kind:
 		"weapon":return str(item.get("id","pistol"))
-		"supply":return "heart"
 		"ammo":
 			var type=str(item.get("type",Ammo.STANDARD))
 			return "ammo/"+type if IconKit.has("ammo/"+type) else Ammo.ART.get(type,"stats/damage")
@@ -47,7 +46,6 @@ static func item_name(kind:String,item:Dictionary)->String:
 		"weapon":
 			var tier=clampi(int(item.get("rarity",0)),0,3)
 			return Texts.render(Game.LOOT.WEAPONS[str(item.get("id","pistol"))].name)+(" · "+Texts.render(LootCatalog.RARITY_NAMES[tier]) if tier>0 else "")
-		"supply":return Texts.render("Аптечка")
 		"ammo":return Texts.render(Ammo.NAMES.get(str(item.get("type","")),"")+" боеприпасы")
 	return Texts.render(Game.recipe_name(item))
 func _init(tablet):view=tablet;arena=tablet.arena if "arena" in tablet else null
@@ -274,11 +272,6 @@ func item_cell(key:String,x:float,y:float,entry,locked:bool)->GearCell:
 		var name_label=UiKit.label(cell,Texts.render(Game.LOOT.WEAPONS[gun].name),Vector2(4,C-20),Vector2(C-8,18),11 if C>=100 else 9,UiKit.INK);name_label.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;name_label.clip_text=true
 		cell.item_kind="weapon";cell.draggable=true;cell.info=ITEM.of("weapon",entry.item,arena)
 		cell.tooltip_text=Texts.render(Game.LOOT.WEAPONS[gun].name)+"\n"+Texts.render("Запасное оружие")
-	elif entry.kind=="supply":
-		# Aid kit (T-115): tap twice / E / H heals.
-		art(cell,UiKit.trimmed(UiKit.icon_texture("medkit")),.16)
-		cell.item_kind="supply";cell.draggable=true;cell.info=ITEM.of("supply",entry.item,arena)
-		cell.tooltip_text=Texts.render("Аптечка")+"\n"+Texts.render("+%s здоровья · ещё нажатие или H — вылечиться") % str(snappedf(float(entry.item.get("heal",1.0)),.1))
 	else:
 		# Blueprint series: the same clipboard, the silhouette tells the category (data/icon_kit.json «blueprint/…»).
 		var sheet=ITEM.blueprint_key(entry.item)
@@ -310,8 +303,6 @@ func activate(key:String):
 		var e=entry(key)
 		if e==null:return
 		match e.kind:
-			"supply":
-				if Backpack.use_medkit(arena,e.index):done("","")
 			"weapon":
 				if Backpack.equip_weapon(arena,e.index):done("Оружие в руках")
 			"ammo":
@@ -458,7 +449,6 @@ func popover():
 func actions_for(key:String)->Array:
 	var cell:GearCell=cells[key];var actions=[]
 	if key.begins_with("bag:") and cell.item_kind=="ammo":actions.append(["Надеть",func():activate(key)])
-	if key.begins_with("bag:") and cell.item_kind=="supply":actions.append(["Вылечиться",func():activate(key)])
 	if key.begins_with("bag:") and cell.item_kind=="weapon":actions.append(["Взять",func():activate(key)])
 	if key.begins_with("slot:") and cell.draggable:actions.append(["Снять",func():activate(key)])
 	if key=="weapon" and cell.draggable and run()!=null and not Backpack.full(run()):actions.append(["Снять",func():move("weapon","bag:-1")])

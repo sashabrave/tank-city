@@ -34,7 +34,12 @@
 					"У торговца появился выход — ворота справа, как в комнатах прокачки.",
 					"«Захваченный КП» — теперь такая же комната, как механик и инструктор: сейф у бункера с легендарными правилами, автоматы, выход.",
 					"Сундук испытания — как у генерала: три карточки редкостью выше; сплав высыпается сам.",
-					"Чертёж из сундука сразу попадает в рюкзак; на землю — только если рюкзак полон, с подсказкой."
+					"Чертёж из сундука сразу попадает в рюкзак; на землю — только если рюкзак полон, с подсказкой.",
+					"Штаб помогает сам — клавиши 2 больше нет. Модули: Аптечка (аптечка у штаба по таймеру), Броня (прочность), Ремонт (чинит штаб после 5 с без попаданий и твою машину рядом), Медпункт (новый: лечит героя рядом со штабом из запаса), Оборона (разряд по врагам у штаба: урон и оглушение), Купол (после попадания штаб несколько секунд неуязвим). Значки модулей с кольцом готовности видны над штабом, срабатывание всплывает подписью.",
+					"Аптечка штаба больше не «прыгает» таймером: если положить некуда или прежняя ещё лежит, следующая ждёт и появляется сразу, как станет можно.",
+					"Прежние модули штаба перешли в новые без потерь: Ремонтный импульс и Техснабжение → Ремонт, Эми-разряд и Активная защита → Оборона; уровни — по лучшему из слитых.",
+					"Клавиши V больше нет: без оружия или без боеприпасов Пробел бьёт лапой или прикладом, над героем — маленькая подсказка «Возьми оружие» / «Нет боеприпасов».",
+					"Аптечек в рюкзаке и клавиши H больше нет: аптечка лечит сразу при подборе, а при полном здоровье остаётся лежать."
 				]
 			},
 			"en": {
@@ -68,7 +73,12 @@
 					"The merchant now has an exit — a gate on the right, like the upgrade rooms.",
 					"The «Captured CP» is now a room like the mechanic and the instructor: a safe by the bunker with legendary rules, machines, an exit.",
 					"Challenge chests work like the general's: three cards of a higher rarity; alloy spills out by itself.",
-					"A blueprint from a chest goes straight into the backpack; it lies on the ground only when the backpack is full, with a hint."
+					"A blueprint from a chest goes straight into the backpack; it lies on the ground only when the backpack is full, with a hint.",
+					"The HQ helps on its own — no more key 2. Modules: Medkit (a medkit by the HQ on a timer), Armor (durability), Repair (fixes the HQ after 5 s without hits, and your vehicle nearby), Medical post (new: heals the hero near the HQ from a stock), Defence (a pulse at enemies near the HQ: damage and stun), Dome (after a hit the HQ is invulnerable for a few seconds). Module icons with a readiness ring show above the HQ; each trigger pops a caption.",
+					"The HQ medkit timer no longer jumps: if there is no room or the previous one still lies there, the next one waits and appears as soon as it can.",
+					"Old HQ modules moved into the new ones with nothing lost: Repair pulse and Tech supply → Repair, EMP burst and Active defence → Defence; levels take the best of the merged ones.",
+					"No more V key: with no weapon or no ammo, Space strikes with paws or the gun butt, and a small hint «Pick up a weapon» / «No ammo» shows over the hero.",
+					"No more medkits in the backpack and no H key: a medkit heals at once on pickup and stays on the ground at full health."
 				]
 			}
 		},

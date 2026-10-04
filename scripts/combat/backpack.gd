@@ -9,13 +9,13 @@ const BASE_EXTRA=3
 const MAX_BOUGHT=5
 
 static func capacity()->int:return mini(CELLS,Game.backpack_slots+BASE_EXTRA)
-static func used(run)->int:return run.pending_recipes.size()+run.ammo_bag.size()+run.supplies.size()+run.weapon_bag.size() if run!=null else 0
+static func used(run)->int:return run.pending_recipes.size()+run.ammo_bag.size()+run.weapon_bag.size() if run!=null else 0
 static func free_cells(run)->int:return capacity()-used(run)
 static func full(run)->bool:return free_cells(run)<=0
 ## Items in cell order: blueprints, then ammo. Each entry {kind:"recipe"|"ammo", item}.
 static func items(run)->Array:
 	if run==null:return []
-	return run.pending_recipes.map(func(r):return {"kind":"recipe","item":r})+run.ammo_bag.map(func(a):return {"kind":"ammo","item":a})+run.supplies.map(func(x):return {"kind":"supply","item":x})
+	return run.pending_recipes.map(func(r):return {"kind":"recipe","item":r})+run.ammo_bag.map(func(a):return {"kind":"ammo","item":a})
 
 ## Free layout (T-196): every item remembers its cell (item["cell"]); new items take the first free cell.
 ## Returns CELLS entries — null or {kind, index (in its own list), item}. Cells past capacity() are locked.
@@ -23,7 +23,7 @@ static func layout(run)->Array:
 	var cells=[];cells.resize(CELLS)
 	if run==null:return cells
 	var entries=[]
-	for pair in [["recipe",run.pending_recipes],["ammo",run.ammo_bag],["supply",run.supplies],["weapon",run.weapon_bag]]:
+	for pair in [["recipe",run.pending_recipes],["ammo",run.ammo_bag],["weapon",run.weapon_bag]]:
 		for k in range(pair[1].size()):entries.append({"kind":pair[0],"index":k,"item":pair[1][k]})
 	var waiting=[]
 	for e in entries:
@@ -62,7 +62,7 @@ static func safe_order(run)->Array:
 	return [first+rest,count]
 
 ## Empty hands (2026-10-03): the gun goes into a backpack cell and the cat fights with its paws (the hidden
-## «paws» weapon: Space and V scratch, damage grows with «Сила»). Any time, anywhere a run is on; the tablet
+## «paws» weapon: Space scratches, damage grows with «Сила»). Any time, anywhere a run is on; the tablet
 ## closes as usual — the gear page only reminds to take a gun.
 ## One rule for every item that has to go somewhere (audit 2026-10-03): the backpack if a cell is free, else a
 ## sack at the soldier's feet when there is a field; otherwise false and nothing changes — the caller must not
@@ -72,7 +72,6 @@ static func stow(arena,item:Dictionary,kind:="ammo")->bool:
 	if not full(run):
 		match kind:
 			"weapon":run.weapon_bag.append(item)
-			"supply":run.supplies.append(item)
 			"recipe":run.pending_recipes.append(item)
 			_:run.ammo_bag.append(item)
 		return true
@@ -80,7 +79,6 @@ static func stow(arena,item:Dictionary,kind:="ammo")->bool:
 		var content={"recipes":[],"ammo":[]}
 		match kind:
 			"weapon":content["weapons"]=[item]
-			"supply":content["supplies"]=[item]
 			"recipe":content.recipes.append(item)
 			_:content.ammo.append(item)
 		put_down(arena,content);arena.toast(Texts.render("Рюкзак полон — предмет лежит рядом"))
@@ -188,9 +186,6 @@ static func drop(arena,kind:String,index:int)->bool:
 		"ammo":
 			if index<0 or index>=run.ammo_bag.size():return false
 			content.ammo.append(run.ammo_bag[index]);run.ammo_bag.remove_at(index)
-		"supply":
-			if index<0 or index>=run.supplies.size():return false
-			content["supplies"]=[run.supplies[index]];run.supplies.remove_at(index)
 		"weapon":
 			if index<0 or index>=run.weapon_bag.size():return false
 			content["weapons"]=[run.weapon_bag[index]];run.weapon_bag.remove_at(index)
@@ -203,7 +198,7 @@ static func drop(arena,kind:String,index:int)->bool:
 	refresh(arena);return true
 ## Destroys an item for good (T-203, after a confirmation in the gear page; also a discard where there is no floor —
 ## the route map, T-202): a backpack entry leaves its cell, a loaded slot becomes empty (Ammo.EMPTY — the butt
-## strikes), the gun in hand leaves the paws. kind: recipe / ammo / supply / weapon (backpack lists), slot, hand.
+## strikes), the gun in hand leaves the paws. kind: recipe / ammo / weapon (backpack lists), slot, hand.
 static func destroy(arena,kind:String,index:=0)->bool:
 	var run=arena.run if is_instance_valid(arena) else null
 	if run==null:return false
@@ -214,9 +209,6 @@ static func destroy(arena,kind:String,index:=0)->bool:
 		"ammo":
 			if index<0 or index>=run.ammo_bag.size():return false
 			run.ammo_bag.remove_at(index)
-		"supply":
-			if index<0 or index>=run.supplies.size():return false
-			run.supplies.remove_at(index)
 		"weapon":
 			if index<0 or index>=run.weapon_bag.size():return false
 			run.weapon_bag.remove_at(index)
@@ -235,27 +227,10 @@ static func destroy(arena,kind:String,index:=0)->bool:
 	refresh(arena);return true
 ## Picks a sack up when everything fits; otherwise it stays and says so.
 static func pick_sack(arena,content:Dictionary)->bool:
-	var run=arena.run;var count=content.recipes.size()+content.ammo.size()+content.get("supplies",[]).size()+content.get("weapons",[]).size()
+	var run=arena.run;var count=content.recipes.size()+content.ammo.size()+content.get("weapons",[]).size()
 	if free_cells(run)<count:arena.toast(Texts.render("Рюкзак полон"));return false
-	run.pending_recipes.append_array(content.recipes);run.ammo_bag.append_array(content.ammo);run.supplies.append_array(content.get("supplies",[]));run.weapon_bag.append_array(content.get("weapons",[]))
+	run.pending_recipes.append_array(content.recipes);run.ammo_bag.append_array(content.ammo);run.weapon_bag.append_array(content.get("weapons",[]))
 	refresh(arena);return true
 static func refresh(arena):
 	if arena.has_method("ensure_armed") and arena.ensure_armed():RunUpgrades.refresh_player(arena)
 	if is_instance_valid(arena.hud):arena.hud.refresh_ammo()
-## Uses the first aid kit from the backpack (H, a tap in the gear screen). Does nothing at full health.
-static func use_medkit(arena,index:=0)->bool:
-	var run=arena.run
-	var kits=[]
-	for i in range(run.supplies.size()):
-		if str(run.supplies[i].get("type",""))=="medkit":kits.append(i)
-	if kits.is_empty():arena.toast(Texts.render("В рюкзаке нет аптечек"));return false
-	if run.soldier_hp>=run.soldier_max_hp-.01:arena.toast(Texts.render("Здоровье и так полное"));return false
-	var at=index if index in kits else kits[0]
-	var kit=run.supplies[at];run.supplies.remove_at(at)
-	var healed=minf(float(kit.get("heal",1.0))*run.healing_multiplier,run.soldier_max_hp-run.soldier_hp)
-	run.soldier_hp+=healed
-	var player=arena.room.player
-	if is_instance_valid(player) and player.kind=="soldier":player.hp=run.soldier_hp;player.refresh_health();arena.burst(player.position+Vector3.UP*.5,Color("ff6b6b"),.6)
-	Game.sound("heal",arena);arena.toast(Texts.render("Аптечка: +%s здоровья") % str(snappedf(healed,.1)))
-	refresh(arena);return true
-static func medkits(run)->int:return run.supplies.filter(func(x):return str(x.get("type",""))=="medkit").size() if run!=null else 0

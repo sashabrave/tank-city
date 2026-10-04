@@ -49,7 +49,7 @@ func run():
 	admin.tab="kit";admin.open_panel();admin.render();await settle()
 	admin.tier=2;admin.load_ammo("burn")
 	check(Ammo.item(arena.run).type=="burn" and Ammo.item(arena.run).rarity==2,"admin loads rolled ammo")
-	var used=Backpack.used(arena.run);admin.to_bag({"supplies":[{"type":"medkit","heal":3.0}]})
+	var used=Backpack.used(arena.run);admin.to_bag({"ammo":[Ammo.roll("burn",0,7)]})
 	check(Backpack.used(arena.run)==used+1,"admin fills the backpack")
 	admin.drop_sack();check(arena.room.pickups.any(func(p):return str(p.kind)=="sack"),"admin drops a sack")
 	admin.ability_slot=1;admin.set_ability("laser")

@@ -51,7 +51,8 @@ var look:=RandomNumberGenerator.new()
 ## an army sack picked up by walking over it. `ground` — a room floor (scripts/room_floor.gd, T-202), null on the field.
 func dress_pile(node:Node3D,content:Dictionary,ground=null)->Dictionary:
 	var visual=Node3D.new();node.add_child(visual)
-	var items=content.get("recipes",[]).size()+content.get("ammo",[]).size()+content.get("supplies",[]).size()+content.get("weapons",[]).size()
+	content.erase("supplies")  # aid kits are never backpack items (4 Oct 2026); an old pile drops them silently
+	var items=content.get("recipes",[]).size()+content.get("ammo",[]).size()+content.get("weapons",[]).size()
 	var card=null
 	if items==1:
 		var tier=dropped_item(visual,content)
@@ -87,8 +88,6 @@ func dropped_item(visual:Node3D,content:Dictionary)->int:
 		Visuals.box(can,Vector3(0,.255,0),Vector3(.38,.03,.22),Color("4f5340"),"paint")
 		Visuals.box(can,Vector3(0,.29,0),Vector3(.16,.025,.03),Color("9aa1a4"),"steel")
 		return int(box.get("rarity",0))
-	if not content.get("supplies",[]).is_empty():
-		LootCatalog.visual(visual,"heart");return 0
 	var recipe:Dictionary=content.get("recipes",[{}])[0]
 	var tier=Game.TIERS.tier(str(recipe.get("id",""))) if recipe.has("id") else 0
 	blueprint_model(visual,tier,look)
@@ -122,12 +121,10 @@ func collect_pickup(pickup: Dictionary):
 		"star":
 			arena.room.star_time=6+effective_bonus_level("star")*1.5;detail="Неуязвимость и мощный огонь · %d с" % int(arena.room.star_time)
 		"heart":
-			# Full health (T-115): the aid kit goes into the backpack for later, if there is a free cell.
-			var amount=float(pickup.get("hq_heal",Game.heal_amount()*bonus_strength("heart")))
-			if arena.run.soldier_hp>=arena.run.soldier_max_hp-.01 and is_instance_valid(arena.room.player) and arena.room.player.kind=="soldier" and not Backpack.full(arena.run):
-				arena.run.supplies.append({"type":"medkit","heal":amount})
-				arena.room.pickups.erase(pickup);preload("res://scripts/battle_stage.gd").vanish(pickup.node);Game.sound("pickup",arena)
-				arena.toast(Texts.render("Аптечка в рюкзаке · H — использовать"));Backpack.refresh(arena);return
+			# An aid kit heals on pickup (author, 4 Oct 2026: no aid kits in the backpack). At full health it stays
+			# on the ground for later; only the hero on foot takes it.
+			var amount=float(pickup.get("heal",Game.heal_amount()*bonus_strength("heart")))
+			if not is_instance_valid(arena.room.player) or arena.room.player.kind!="soldier" or arena.run.soldier_hp>=arena.run.soldier_max_hp-.01:return
 			var healed=minf(amount*arena.run.healing_multiplier,arena.run.soldier_max_hp-arena.run.soldier_hp)
 			arena.run.soldier_hp+=healed;detail="+%s здоровья" % str(snappedf(healed,.1))
 			if is_instance_valid(arena.room.player) and arena.room.player.kind=="soldier":arena.room.player.hp=arena.run.soldier_hp;arena.room.player.refresh_health()

@@ -127,7 +127,7 @@ func _process(_delta):
 	if refresh_elapsed<.05:return
 	refresh_elapsed=0.0
 	update_challenge_timer()
-	var hero_count=arena.abilities.slots.size();var total=hero_count+arena.headquarters.loadout().size()
+	var hero_count=arena.abilities.slots.size();var total=hero_count
 	var strip=root.get_node("Skills");strip.set_anchors_preset(Control.PRESET_TOP_LEFT);strip.position=Vector2((get_viewport().get_visible_rect().size.x-(total*88-12))*.5,get_viewport().get_visible_rect().size.y-112);strip.size=Vector2(maxi(0,hero_count*88-12),76)
 	for i in range(skill_buttons.size()):skill_buttons[i].visible=i<hero_count
 	var data=preload("res://scripts/ui/battle_snapshot.gd").capture(arena)

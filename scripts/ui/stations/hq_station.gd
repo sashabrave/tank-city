@@ -2,10 +2,11 @@ extends RefCounted
 ## «Штаб» (HQ blueprint): support technologies, base defence, insurance and the other buildings.
 const DEFENCE=[["base","Прочность базы","upgrade/base"],["turret","Союзные турели","upgrade/turret"]]
 const BUILDINGS=["weapons","yard","garage","range"]
-## Short card texts (T-254): what the technology does; its numbers are the card rows, not repeated here.
-const GIST={"hq_medbay":"Кладёт аптечку у штаба во время боя","hq_plating":"Дополнительная прочность штаба","hq_regen":"Сам чинит штаб. После попадания ждёт 6 с",
-	"hq_supply":"Привозит ремкомплект для транспорта","hq_interceptor":"Сбивает вражеский снаряд рядом со штабом","hq_tesla":"Бьёт током до трёх врагов рядом со штабом",
-	"hq_patch":"Клавиша 2: чинит штаб и лечит героя рядом","hq_field":"Клавиша 2: защищает штаб и героя рядом","hq_emp":"Клавиша 2: бьёт током и оглушает врагов рядом"}
+## Short card texts (T-254): what the module does; its numbers are the card rows, not repeated here.
+## Every module acts on its own (author, 4 Oct 2026) — there is no HQ key.
+const GIST={"hq_medbay":"Кладёт аптечку у штаба во время боя. Лежит одна: следующая — после подбора","hq_plating":"Дополнительная прочность штаба",
+	"hq_regen":"Чинит штаб, когда 5 с не было попаданий. Чинит и твою машину в 2 клетках от штаба","hq_medpost":"Лечит героя пешком в 3 клетках от штаба: по 1 здоровью из запаса, пустой запас перезаряжается",
+	"hq_tesla":"Враг в 3 клетках от штаба — разряд: урон и оглушение всем рядом, вражеские снаряды сгорают","hq_field":"После попадания в штаб — купол: штаб не получает урона, пока купол стоит"}
 func title()->String:return "Штаб"
 func subtitle()->String:return "Поддержка, оборона, страховка, постройки."
 func tabs()->Array:return [["tech","Технологии","base"],["defence","Оборона","repair"],["insurance","Страховка","alloy"],["build","Постройки","settings"]]
@@ -36,7 +37,7 @@ func detail(tab:String,id:String)->Dictionary:
 			var actions=[]
 			if known and id not in Game.hq_loadout():actions.append({"id":"equip","text":"Выбрать" if bought else "Купить и выбрать · %d ◈" % Game.hq_purchase_cost(id),"enabled":bought or Game.credits>=Game.hq_purchase_cost(id),"primary":true})
 			if known:actions.append({"id":"level","text":"Максимум" if level>=HQCatalog.cap() else "Уровень %d · %d ◈" % [level+1,HQCatalog.permanent_cost(id)],"enabled":level<HQCatalog.cap() and Game.credits>=HQCatalog.permanent_cost(id)})
-			var mode={"active":"Активная · клавиша 2","auto":"Автоматическая","passive":"Пассивная"}.get(info.mode,"")
+			var mode={"auto":"Автоматическая · срабатывает сама","passive":"Пассивная"}.get(info.mode,"")
 			var next=mini(level+1,HQCatalog.cap())
 			return {"title":info.name,"icon":"headquarters/"+id,"text":GIST.get(id,info.description) if known else "Чертёж технологии выпадает в сундуках.","rows":[["Уровень",level,next]]+HQCatalog.rows(id,level,next),"lines":[mode],"actions":actions}
 		"defence":

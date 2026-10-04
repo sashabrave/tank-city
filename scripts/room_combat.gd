@@ -47,7 +47,6 @@ func _physics_process(delta):
 	for slot in range(Game.hero_loadout().size()):
 		if Input.is_action_just_pressed(Game.ability_action(slot)):skills.cast(slot)
 	if Game.wants_fire() and walker.turn_timer<=0 and fire_cooldown<=0:shoot()
-	if Input.is_action_just_pressed("melee"):Melee.swipe(avatar,self,weapon_id()==LootCatalog.PAWS,facing)
 
 ## The run behind the room (service rooms and the merchant keep the battle arena in `arena`).
 func run_arena():

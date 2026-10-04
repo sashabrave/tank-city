@@ -16,7 +16,7 @@ const AMMO_EFFECT={
 	"napalm":"Напалм: на месте взрыва остаётся горящее пятно."}
 
 ## kind: "weapon" (a gun item or the one in hand), "ammo" (a box, or a loaded slot with equipped=true),
-## "supply", "recipe". Rows: [label, new value, equipped value or "", +1 better / -1 worse / 0].
+## "recipe". Rows: [label, new value, equipped value or "", +1 better / -1 worse / 0].
 static func of(kind:String,item:Dictionary,arena,equipped:=false)->Dictionary:
 	var info={"title":"","tier":0,"icon":null,"summary":"","rows":[],"note":""}
 	match kind:
@@ -55,11 +55,6 @@ static func of(kind:String,item:Dictionary,arena,equipped:=false)->Dictionary:
 			if item.get("twist",false):info.note=Texts.render(Ammo.TWISTS.get(type,""))
 			elif equipped:info.note="Заряжены"
 			elif not loaded.is_empty():info.note="Сравнение с заряженными"
-		"supply":
-			info.title="Аптечка";info.icon=UiKit.trimmed(UiKit.icon_texture("medkit"))
-			info.summary="Лечит бойца сразу. H — использовать из рюкзака."
-			info.rows.append([Texts.render("Лечение"),"+"+UiKit.number(snappedf(float(item.get("heal",1.0)),.1)),"",0])
-			if is_instance_valid(arena) and arena.run!=null:info.rows.append([Texts.render("Здоровье"),"%s / %s" % [UiKit.number(snappedf(arena.run.soldier_hp,.1)),UiKit.number(snappedf(arena.run.soldier_max_hp,.1))],"",0])
 		_:
 			info.title=Game.recipe_name(item);info.tier=Game.TIERS.tier(str(item.get("id","")))
 			var sheet=blueprint_key(item)

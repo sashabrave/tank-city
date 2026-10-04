@@ -118,12 +118,14 @@ func loot(pos:Vector3):
 	if kind=="":return
 	if kind=="alloy":
 		preload("res://scripts/resource_drop.gd").spawn(arena,pos,combat.randi_range(ALLOY[0],ALLOY[1]),"alloy");return
+	# An aid kit lies as itself and heals on pickup (no aid kits in the backpack since 4 Oct 2026).
+	if kind=="medkit":
+		arena.reward.place_pickup(arena.grid_pos(pos),"heart",0.0);arena.room.pickups.back()["heal"]=Game.heal_amount();return
 	var content={"recipes":[],"ammo":[]}
 	if kind=="ammo":
 		var types=Ammo.TYPES.filter(func(t):return Ammo.fits(t,str(arena.weapon)))
 		if types.is_empty():types=Ammo.TYPES
 		content.ammo=[Ammo.roll(types[combat.randi_range(0,types.size()-1)],1 if combat.randf()<.2 else 0,combat.randi())]
-	elif kind=="medkit":content["supplies"]=[{"type":"medkit","heal":Game.heal_amount()}]
 	else:
 		var locker=preload("res://scripts/weapon_locker.gd")
 		var pool=Game.LOOT.gun_ids().filter(func(id):return id in Game.weapon_unlocks)

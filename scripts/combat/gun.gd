@@ -49,16 +49,16 @@ static func trigger(field,shooter:Node3D)->float:
 static func fire(field,shooter:Node3D):
 	var battle=is_battle(field);var run_arena=run_of(field)
 	var id=weapon_id(field);var data:Dictionary=LOOT.WEAPONS[id]
-	# Empty hands (2026-10-03): Space scratches with the paws instead of a shot.
+	# Empty hands (2026-10-03): Space scratches with the paws instead of a shot (there is no separate strike key).
 	if id==LootCatalog.PAWS:
+		hint(field,shooter,"Возьми оружие")
 		if battle:Melee.strike(field,shooter,shooter.damage*field.effects.modify("shot_damage",1.0,{"actor":shooter}),true)
 		else:practice_strike(field,shooter,Melee.damage(run_arena),true)
 		return
-	# No rounds loaded (T-197): the gun hits with its butt; a reminder now and then.
+	# No rounds loaded (T-197): the gun hits with its butt; a small reminder over the hero now and then.
 	if run_arena!=null and Ammo.dry(run_arena.run):
-		if battle:
-			if field.toast_time<=0:field.toast(Texts.render("Нет боеприпасов — удар прикладом. Заряди в «Снаряжении»"))
-			Melee.strike(field,shooter,Melee.damage(field)*Melee.BUTT,false)
+		hint(field,shooter,"Нет боеприпасов")
+		if battle:Melee.strike(field,shooter,Melee.damage(field)*Melee.BUTT,false)
 		else:practice_strike(field,shooter,Melee.damage(run_arena)*Melee.BUTT,false)
 		return
 	volley(field,shooter,id)
@@ -69,6 +69,21 @@ static func fire(field,shooter:Node3D):
 				volley(field,shooter,id)
 				if battle:Game.weapon_sound(shooter)
 				else:Game.fire_sound(id,shooter))
+
+## The small hint of a strike instead of a shot (author, 4 Oct 2026): a short word rising over the hero, at most
+## once per HINT_PAUSE seconds — not the big toast. The same in battle, the hub and the rooms. Visual only.
+const HINT_PAUSE:=2.5
+static func hint(field:Node,shooter:Node3D,text:String):
+	if not is_instance_valid(shooter) or not shooter.is_inside_tree() or not field is Node3D:return
+	var now=Time.get_ticks_msec()
+	if now<int(shooter.get_meta("gun_hint_at",-100000))+int(HINT_PAUSE*1000):return
+	shooter.set_meta("gun_hint_at",now)
+	var word=Visuals.label3d(field,text,Vector3.ZERO,Color("ffe3a8"),26)
+	word.global_position=shooter.global_position+Vector3.UP*1.9
+	var t=word.create_tween().set_parallel(true)
+	t.tween_property(word,"position:y",word.position.y+.7,.9)
+	t.tween_property(word,"modulate:a",0.0,.5).set_delay(.5)
+	t.chain().tween_callback(word.queue_free)
 
 ## One volley: every pellet with its spread, speed, range, pierce and blast; the grenade launcher lobs.
 static func volley(field,shooter:Node3D,id:String):

@@ -75,7 +75,6 @@ var reroll_level=0
 var camp_level=0
 var hq_unlocks:Array=HQCatalog.DEFAULT_UNLOCKS.duplicate()
 var hq_modules:Array=[]
-var hq_active=""
 var hq_levels:Dictionary={}
 var hq_slots=1
 var pressure_level=0
@@ -216,7 +215,7 @@ func reset_upgrades() -> int:
 	if is_instance_valid(notifications):notifications.pending.clear()
 	garage=preload("res://scripts/garage/state.gd").new()
 	new_recipes.clear();duplicate_recipes.clear()
-	hq_unlocks=HQCatalog.DEFAULT_UNLOCKS.duplicate();hq_modules=[];hq_active="";hq_levels.clear();hq_slots=1;pressure_level=0
+	hq_unlocks=HQCatalog.DEFAULT_UNLOCKS.duplicate();hq_modules=[];hq_levels.clear();hq_slots=1;pressure_level=0
 	progression=preload("res://scripts/progression/base_progression.gd").new()
 	class_first_slots.clear();purchased_gadgets.clear();purchased_hq.clear();class_choices.clear();class_slots.clear();gadget="";superboss_defeated=false;cores=0;selected_class="recruit";class_unlocks=["recruit"];class_levels.clear();specializations.clear();ability_slots=1;equipped_abilities=["barrier"];rescue_level=0;shield_capacity_level=0
 	selected_weapon="pistol";world_difficulty="normal";backpack_slots=1;reroll_level=0;camp_level=0;research_unlocks.clear();built_workshops.clear()
@@ -232,7 +231,7 @@ func earn(amount: int):
 
 ## A detached deep copy (T-276): callers may edit it freely — the live profile is never touched through it.
 func serialize_progress()->Dictionary:
-	return {"skins":skins_owned.duplicate(),"skin":skin,"player_model":player_model,"stat_levels":stat_levels.duplicate(),"run_checkpoint":run_checkpoint,"duplicate_recipes":duplicate_recipes,"garage":garage.serialize(),"notifications":notification_history,"class_first_slots":class_first_slots,"purchased_gadgets":purchased_gadgets,"purchased_hq":purchased_hq,"class_choices":class_choices,"class_slots":class_slots,"gadget":gadget,"pressure_level":pressure_level,"headquarters":{"slots":hq_slots,"unlocks":hq_unlocks,"modules":hq_modules,"active":hq_active,"levels":hq_levels},"progression":progression.serialize(),"version":ProfileSchema.VERSION,"camp_level":camp_level,"selected_weapon":selected_weapon,"world_difficulty":world_difficulty,"backpack_slots":backpack_slots,"reroll_level":reroll_level,"research":research_unlocks,"built":built_workshops,"credits":credits,"health":health_level,"damage":damage_level,"luck":luck_level,"turret":turret_level,"rarity":rarity_level,"base":base_level,"heal":heal_level,"mobility":mobility_level,"recovery":recovery_level,"v09":{"class_levels":class_levels,"specializations":specializations,"cores":cores,"class":selected_class,"classes":class_unlocks,"superboss_defeated":superboss_defeated,"slots":ability_slots,"equipped":equipped_abilities,"rescue":rescue_level,"shield_capacity":shield_capacity_level},"abilities":ability_unlocks,"selected_ability":selected_ability,"branch_unlocks":branch_unlocks,"weapon_unlocks":weapon_unlocks,"ammo_slot_weapons":ammo_slot_weapons,"bonus_unlocks":bonus_unlocks,"bonus_levels":bonus_levels}.duplicate(true)
+	return {"skins":skins_owned.duplicate(),"skin":skin,"player_model":player_model,"stat_levels":stat_levels.duplicate(),"run_checkpoint":run_checkpoint,"duplicate_recipes":duplicate_recipes,"garage":garage.serialize(),"notifications":notification_history,"class_first_slots":class_first_slots,"purchased_gadgets":purchased_gadgets,"purchased_hq":purchased_hq,"class_choices":class_choices,"class_slots":class_slots,"gadget":gadget,"pressure_level":pressure_level,"headquarters":{"slots":hq_slots,"unlocks":hq_unlocks,"modules":hq_modules,"levels":hq_levels},"progression":progression.serialize(),"version":ProfileSchema.VERSION,"camp_level":camp_level,"selected_weapon":selected_weapon,"world_difficulty":world_difficulty,"backpack_slots":backpack_slots,"reroll_level":reroll_level,"research":research_unlocks,"built":built_workshops,"credits":credits,"health":health_level,"damage":damage_level,"luck":luck_level,"turret":turret_level,"rarity":rarity_level,"base":base_level,"heal":heal_level,"mobility":mobility_level,"recovery":recovery_level,"v09":{"class_levels":class_levels,"specializations":specializations,"cores":cores,"class":selected_class,"classes":class_unlocks,"superboss_defeated":superboss_defeated,"slots":ability_slots,"equipped":equipped_abilities,"rescue":rescue_level,"shield_capacity":shield_capacity_level},"abilities":ability_unlocks,"selected_ability":selected_ability,"branch_unlocks":branch_unlocks,"weapon_unlocks":weapon_unlocks,"ammo_slot_weapons":ammo_slot_weapons,"bonus_unlocks":bonus_unlocks,"bonus_levels":bonus_levels}.duplicate(true)
 
 ## Small UI state (seen badges, read messages, collapsed panels) does not need a disk write and a blinking
 ## save icon on every click (author, 4 Oct 2026): save_soon() marks the profile dirty and writes it quietly
@@ -278,23 +277,26 @@ func apply_profile(data:Dictionary):
 	progression=preload("res://scripts/progression/base_progression.gd").new()
 	if data is Dictionary:
 
-		duplicate_recipes=data.get("duplicate_recipes",[]).filter(func(r):return r.get("category","") in ["weapon","bonus","research","ability","hq","garage"] and r.get("id","") in recipe_catalog(r.category))
+		var spares=data.get("duplicate_recipes",[])
+		for r in spares:
+			if r is Dictionary and r.get("category","")=="hq":r["id"]=HQCatalog.current(str(r.get("id","")))  # merged HQ modules (4 Oct 2026)
+		duplicate_recipes=spares.filter(func(r):return r.get("category","") in ["weapon","bonus","research","ability","hq","garage"] and r.get("id","") in recipe_catalog(r.category))
 		notification_history=data.get("notifications",[]).slice(-150)
 		garage.restore(data.get("garage",{}))
 		progression.restore(data.get("progression",{}))
 		var hq=data.get("headquarters",{})
 		hq_slots=1;pressure_level=maxi(0,int(data.get("pressure_level",0)))
+		# HQ modules merged on 4 Oct 2026 (HQCatalog.MERGED): old ids map onto the new ones, levels keep the highest,
+		# the former active support (key 2) becomes an ordinary equipped module. Nothing bought is lost.
 		hq_unlocks=HQCatalog.DEFAULT_UNLOCKS.duplicate()
-		for id in hq.get("unlocks",[]):
-			if id in HQCatalog.DATA and id not in hq_unlocks:hq_unlocks.append(id)
-		hq_modules=[]
-		for id in hq.get("modules",["hq_medbay"]):
-			if id in hq_unlocks and HQCatalog.DATA[id].mode!="active" and id not in hq_modules and hq_modules.size()<2:hq_modules.append(id)
-		hq_active=str(hq.get("active",""))
-		if hq_active not in hq_unlocks or HQCatalog.DATA[hq_active].mode!="active":hq_active=""
+		for id in HQCatalog.migrate_ids(hq.get("unlocks",[])):
+			if id not in hq_unlocks:hq_unlocks.append(id)
+		var old_active=str(hq.get("active",""))
+		hq_modules=HQCatalog.migrate_ids(([old_active] if old_active!="" else [])+Array(hq.get("modules",["hq_medbay"]))).filter(func(id):return id in hq_unlocks)
 		normalize_hq()
+		var levels=HQCatalog.migrate_levels(hq.get("levels",{}))
 		hq_levels={}
-		for id in HQCatalog.DATA:hq_levels[id]=clampi(int(hq.get("levels",{}).get(id,0)),0,5)
+		for id in HQCatalog.DATA:hq_levels[id]=clampi(int(levels.get(id,0)),0,5)
 		ability_unlocks=["barrier","shield"]
 		var saved=data.get("abilities",[])
 		if saved is Array:
@@ -324,7 +326,7 @@ func apply_profile(data:Dictionary):
 		if selected_class not in CLASSES:selected_class="recruit"
 		class_first_slots=data.get("class_first_slots",class_unlocks.duplicate())
 		purchased_gadgets=data.get("purchased_gadgets",ability_unlocks.filter(func(id):return id in ["barrier","mine","laser","airstrike"]))
-		purchased_hq=data.get("purchased_hq",hq_unlocks.duplicate())
+		purchased_hq=HQCatalog.migrate_ids(data.get("purchased_hq",hq_unlocks.duplicate()))
 		superboss_defeated=bool(extra.get("superboss_defeated",false))
 		ability_slots=clampi(int(extra.get("slots",1)),1,2);rescue_level=clampi(int(extra.get("rescue",0)),0,10);shield_capacity_level=clampi(int(extra.get("shield_capacity",0)),0,2)
 		equipped_abilities=extra.get("equipped",[selected_ability]).filter(func(id):return id in ability_unlocks)
@@ -598,7 +600,6 @@ func set_recipe_unlocked(category:String,id:String,unlocked:bool):
 		owned.erase(id)
 		if category=="hq":
 			hq_modules.erase(id)
-			if hq_active==id:hq_active=""
 		if category=="weapon" and selected_weapon==id:selected_weapon="pistol"
 		if category=="ability":
 			equipped_abilities.erase(id)
@@ -610,7 +611,6 @@ func set_all_recipes(unlocked:bool):
 	garage.unlocks=GarageCatalog.recipes().keys() if unlocked else []
 	hq_unlocks=HQCatalog.DATA.keys() if unlocked else HQCatalog.DEFAULT_UNLOCKS.duplicate()
 	hq_modules=hq_modules.filter(func(id):return id in hq_unlocks)
-	if hq_active not in hq_unlocks:hq_active=""
 	ability_unlocks=AbilityCatalog.DATA.keys() if unlocked else ["barrier","shield"]
 	equipped_abilities=equipped_abilities.filter(func(id):return id in ability_unlocks)
 	if equipped_abilities.is_empty():equipped_abilities=["barrier"]
@@ -687,10 +687,10 @@ func ability_available(id:String)->bool:
 	if id in CLASS_SKILLS.values() or id in ["comrade","gas","field_repair"]:return false  # class-only abilities
 	return id in ability_unlocks
 
-func hq_loadout()->Array:return ([hq_active] if hq_active!="" else [])+hq_modules
+func hq_loadout()->Array:return hq_modules
 func normalize_hq():
 	hq_slots=1
-	hq_modules=hq_modules.slice(0,maxi(0,hq_slots-int(hq_active!="")))
+	hq_modules=hq_modules.slice(0,hq_slots)
 func buy_hq_slot()->bool:return false
 func equip_hq(id:String,slot:int=0)->bool:
 	if "headquarters" not in built_workshops or not HQCatalog.available(id):return false
@@ -699,14 +699,10 @@ func equip_hq(id:String,slot:int=0)->bool:
 		if credits<hq_purchase_cost(id):return false
 		credits-=hq_purchase_cost(id);purchased_hq.append(id)
 	if id in loadout:return true
-	if HQCatalog.DATA[id].mode=="active" and hq_active!="":loadout.erase(hq_active)
 	slot=clampi(slot,0,hq_slots-1)
 	if slot<loadout.size():loadout[slot]=id
 	else:loadout.append(id)
-	hq_active="";hq_modules=[]
-	for tech in loadout.slice(0,hq_slots):
-		if HQCatalog.DATA[tech].mode=="active":hq_active=tech
-		else:hq_modules.append(tech)
+	hq_modules=loadout.slice(0,hq_slots)
 	progression.event("equip_hq");save_progress();return true
 func upgrade_hq(id:String)->bool:
 	if "headquarters" not in built_workshops or not HQCatalog.available(id) or int(hq_levels.get(id,0))>=HQCatalog.cap() or credits<HQCatalog.permanent_cost(id):return false

@@ -3404,3 +3404,33 @@ Q · есть сразу	Q · from the start
 Донеси его до хаба — там он откроется навсегда.	Bring it to the hub — it unlocks there for good.
 Легендарное правило — только здесь	Legendary rule — only here
 Сейф КП · легендарное правило	CP safe · legendary rule
+Возьми оружие	Pick up a weapon
+Нет боеприпасов	No ammo
+Купол	Dome
+Медпункт	Medical post
+Медпункт +	Medical post +
+Ремонт +	Repair +
+Интервал	Interval
+Шаг	Step
+Ремонт за шаг	Repair per step
+Запас здоровья	Health stock
+Аптечка рядом со штабом каждые 90 с боя. Лежит одна; следующая — как только её подберут.	A medkit next to the HQ every 90 s of battle. One lies at a time; the next comes as soon as it is picked up.
+Штаб без попаданий 5 с — чинится по шагам. Чинит и твою машину в 2 клетках от штаба.	After 5 s without hits the HQ repairs in steps. It also repairs your vehicle within 2 cells of the HQ.
+Лечит героя в 3 клетках от штаба по 1 здоровью из запаса. Запас кончился — перезарядка.	Heals the hero within 3 cells of the HQ by 1 health from a stock. Stock empty — recharge.
+Враг в 3 клетках от штаба — разряд: урон и оглушение всем рядом, сбивает снаряды. Затем перезарядка.	An enemy within 3 cells of the HQ sets off a pulse: damage and stun to everyone near, enemy rounds shot down. Then a recharge.
+После попадания в штаб купол на 5 с: штаб не получает урона. Затем перезарядка.	After a hit on the HQ a dome rises for 5 s: the HQ takes no damage. Then a recharge.
+Ремонт: +%s каждые %s с	Repair: +%s every %s s
+Запас: %s · перезарядка %s с	Stock: %s · recharge %s s
+Урон: %s · оглушение %s с · %s с	Damage: %s · stun %s s · %s s
+Купол: %s с · перезарядка %s с	Dome: %s s · recharge %s s
+В Штабе → Технологии выбери модуль: в бою он срабатывает сам.	In HQ → Technologies pick a module: in battle it works on its own.
+Гаджет на [[ability]], приём класса на [[class_ability]]. Штаб помогает сам, без кнопки.	Gadget on [[ability]], class move on [[class_ability]]. The HQ helps on its own, no key needed.
+Автоматическая · срабатывает сама	Automatic · works on its own
+Кладёт аптечку у штаба во время боя. Лежит одна: следующая — после подбора	Drops a medkit near the HQ during battle. One at a time: the next after pickup
+Чинит штаб, когда 5 с не было попаданий. Чинит и твою машину в 2 клетках от штаба	Repairs the HQ after 5 s without hits. Also repairs your vehicle within 2 cells of the HQ
+Лечит героя пешком в 3 клетках от штаба: по 1 здоровью из запаса, пустой запас перезаряжается	Heals the hero on foot within 3 cells of the HQ: 1 health at a time from a stock; an empty stock recharges
+Враг в 3 клетках от штаба — разряд: урон и оглушение всем рядом, вражеские снаряды сгорают	An enemy within 3 cells of the HQ sets off a pulse: damage and stun to everyone near, enemy rounds burn up
+После попадания в штаб — купол: штаб не получает урона, пока купол стоит	After a hit on the HQ a dome rises: the HQ takes no damage while it stands
+Модули штаба выбираются и улучшаются на верстаке штаба. Кнопки у штаба нет: модуль срабатывает сам по своему правилу. Аптечка — аптечка у штаба по таймеру; Броня — прочность; Ремонт — чинит штаб после 5 с без попаданий и машину рядом; Медпункт — лечит героя рядом из запаса; Оборона — разряд по врагам у штаба; Купол — после попадания штаб недолго неуязвим. Значки модулей с кольцом готовности видны над штабом.	HQ modules are picked and upgraded at the HQ workbench. The HQ has no key: a module works on its own by its rule. Medkit — a medkit by the HQ on a timer; Armor — durability; Repair — repairs the HQ after 5 s without hits and a vehicle nearby; Medical post — heals the hero nearby from a stock; Defence — a pulse at enemies near the HQ; Dome — after a hit the HQ is briefly invulnerable. Module icons with a readiness ring show above the HQ.
+Аптечка лечит героя сразу при подборе (при полном здоровье остаётся лежать). Броня ремонтирует машину, в которой ты находишься. Ремонт базы восстанавливает штаб. Эти три эффекта лечат разные цели и не заменяют друг друга.	A medkit heals the hero at once on pickup (at full health it stays on the ground). Armor repairs the vehicle you are in. Base repair restores the HQ. These three heal different targets and do not replace each other.
+Пусть модуль штаба сработает в бою три раза.	Let an HQ module work in battle three times.

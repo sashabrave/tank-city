@@ -316,6 +316,30 @@
 			"note": ""
 		},
 		{
+			"path": "res://assets/ui/icon_kit/symbols/emp_dish.png",
+			"group": "Запас символов",
+			"context": "Нарисован, пока нигде не подключён",
+			"ids": [
+				"emp_dish"
+			],
+			"names": [
+				"emp_dish"
+			],
+			"note": ""
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/interceptor.png",
+			"group": "Запас символов",
+			"context": "Нарисован, пока нигде не подключён",
+			"ids": [
+				"interceptor"
+			],
+			"names": [
+				"interceptor"
+			],
+			"note": ""
+		},
+		{
 			"path": "res://assets/ui/icon_kit/symbols/invulnerable.png",
 			"group": "Запас символов",
 			"context": "Нарисован, пока нигде не подключён",
@@ -340,6 +364,18 @@
 			"note": ""
 		},
 		{
+			"path": "res://assets/ui/icon_kit/symbols/recipe.png",
+			"group": "Запас символов",
+			"context": "Нарисован, пока нигде не подключён",
+			"ids": [
+				"recipe"
+			],
+			"names": [
+				"recipe"
+			],
+			"note": ""
+		},
+		{
 			"path": "res://assets/ui/icon_kit/symbols/steering_bullet.png",
 			"group": "Запас символов",
 			"context": "Нарисован, пока нигде не подключён",
@@ -360,6 +396,18 @@
 			],
 			"names": [
 				"stopwatch"
+			],
+			"note": ""
+		},
+		{
+			"path": "res://assets/ui/icon_kit/symbols/supply.png",
+			"group": "Запас символов",
+			"context": "Нарисован, пока нигде не подключён",
+			"ids": [
+				"supply"
+			],
+			"names": [
+				"supply"
 			],
 			"note": ""
 		},
@@ -540,6 +588,30 @@
 			],
 			"names": [
 				"yard"
+			],
+			"note": ""
+		},
+		{
+			"path": "res://assets/ui/slot/alloy.png",
+			"group": "Игровой автомат",
+			"context": "Окно автомата у торговца: символы барабанов",
+			"ids": [
+				"alloy"
+			],
+			"names": [
+				"alloy"
+			],
+			"note": ""
+		},
+		{
+			"path": "res://assets/ui/slot/ammo.png",
+			"group": "Игровой автомат",
+			"context": "Окно автомата у торговца: символы барабанов",
+			"ids": [
+				"ammo"
+			],
+			"names": [
+				"ammo"
 			],
 			"note": ""
 		},
@@ -1186,6 +1258,18 @@
 			"note": "Символ «wrench_spark»"
 		},
 		{
+			"path": "res://assets/ui/icon_kit/symbols/blueprint.png",
+			"group": "Категории наград",
+			"context": "Значок категории в углу карточки награды (сундуки, чертежи, торговец)",
+			"ids": [
+				"category/blueprint"
+			],
+			"names": [
+				"Чертёж"
+			],
+			"note": "Символ «blueprint»"
+		},
+		{
 			"path": "res://assets/ui/icon_kit/symbols/cat_ability.png",
 			"group": "Категории наград",
 			"context": "Значок категории в углу карточки награды (сундуки, чертежи, торговец)",
@@ -1584,7 +1668,7 @@
 		{
 			"path": "res://assets/icons/interface_straight/close.svg",
 			"group": "Линейные значки",
-			"context": "Выбор мира, Доска задач, Окна станций (вкладки), Оружейный шкаф, Планшет, Торговец",
+			"context": "class_page, Выбор мира, Доска задач, Окна станций (вкладки), Оружейный шкаф, Планшет, Торговец",
 			"ids": [
 				"close"
 			],
@@ -2338,6 +2422,18 @@
 			"note": "Символ «mallet_stars»"
 		},
 		{
+			"path": "res://assets/ui/roadmap/all.png",
+			"group": "Развитие заставы",
+			"context": "Доска «Развитие заставы» в хабе: шаги целей",
+			"ids": [
+				"all"
+			],
+			"names": [
+				"all"
+			],
+			"note": ""
+		},
+		{
 			"path": "res://assets/ui/roadmap/all_built.png",
 			"group": "Развитие заставы",
 			"context": "Доска «Развитие заставы» в хабе: шаги целей",
@@ -2490,6 +2586,18 @@
 			],
 			"names": [
 				"general3"
+			],
+			"note": ""
+		},
+		{
+			"path": "res://assets/ui/roadmap/half.png",
+			"group": "Развитие заставы",
+			"context": "Доска «Развитие заставы» в хабе: шаги целей",
+			"ids": [
+				"half"
+			],
+			"names": [
+				"half"
 			],
 			"note": ""
 		},
@@ -2734,18 +2842,20 @@
 			"note": "Символ «alloy»"
 		},
 		{
-			"path": "res://assets/ui/icon_kit/symbols/blueprint.png",
+			"path": "res://assets/ui/icon_kit/symbols/bp_building.png",
 			"group": "Ресурсы",
-			"context": "Счётчик валют сверху, награды, итоги вылазки, торговец; Значок категории в углу карточки награды (сундуки, чертежи, торговец)",
+			"context": "Счётчик валют сверху, награды, итоги вылазки, торговец; Чертежи в рюкзаке (планшет → Снаряжение): один планшет, силуэт — категория",
 			"ids": [
+				"recipe",
 				"blueprint",
-				"category/blueprint"
+				"blueprint/research"
 			],
 			"names": [
+				"Рецепт",
 				"Чертёж",
-				"Чертёж"
+				"Чертёж постройки"
 			],
-			"note": "Символ «blueprint»"
+			"note": "Символ «bp_building»"
 		},
 		{
 			"path": "res://assets/ui/icon_kit/symbols/documents.png",
@@ -2760,18 +2870,6 @@
 				"Документы (ядро)"
 			],
 			"note": "Символ «documents»"
-		},
-		{
-			"path": "res://assets/ui/icon_kit/symbols/recipe.png",
-			"group": "Ресурсы",
-			"context": "Счётчик валют сверху, награды, итоги вылазки, торговец",
-			"ids": [
-				"recipe"
-			],
-			"names": [
-				"Рецепт"
-			],
-			"note": "Символ «recipe»"
 		},
 		{
 			"path": "res://assets/ui/icon_kit/symbols/token.png",
@@ -3369,33 +3467,9 @@
 				"headquarters/hq_field"
 			],
 			"names": [
-				"Защитный купол"
+				"Купол"
 			],
 			"note": "Символ «dome»"
-		},
-		{
-			"path": "res://assets/ui/icon_kit/symbols/emp_dish.png",
-			"group": "Технологии штаба",
-			"context": "Штаб в хабе; панель штаба в бою; чертежи",
-			"ids": [
-				"headquarters/hq_emp"
-			],
-			"names": [
-				"Эми-разряд"
-			],
-			"note": "Символ «emp_dish»"
-		},
-		{
-			"path": "res://assets/ui/icon_kit/symbols/interceptor.png",
-			"group": "Технологии штаба",
-			"context": "Штаб в хабе; панель штаба в бою; чертежи",
-			"ids": [
-				"headquarters/hq_interceptor"
-			],
-			"names": [
-				"Активная защита"
-			],
-			"note": "Символ «interceptor»"
 		},
 		{
 			"path": "res://assets/ui/icon_kit/symbols/medbay.png",
@@ -3405,7 +3479,7 @@
 				"headquarters/hq_medbay"
 			],
 			"names": [
-				"Медблок"
+				"Аптечка"
 			],
 			"note": "Символ «medbay»"
 		},
@@ -3417,7 +3491,7 @@
 				"headquarters/hq_plating"
 			],
 			"names": [
-				"Бронепанели"
+				"Броня"
 			],
 			"note": "Символ «plating»"
 		},
@@ -3426,10 +3500,10 @@
 			"group": "Технологии штаба",
 			"context": "Штаб в хабе; панель штаба в бою; чертежи",
 			"ids": [
-				"headquarters/hq_patch"
+				"headquarters/hq_medpost"
 			],
 			"names": [
-				"Ремонтный импульс"
+				"Медпункт"
 			],
 			"note": "Символ «pulse»"
 		},
@@ -3441,21 +3515,9 @@
 				"headquarters/hq_regen"
 			],
 			"names": [
-				"Ремонтный автомат"
+				"Ремонт"
 			],
 			"note": "Символ «robot_arm»"
-		},
-		{
-			"path": "res://assets/ui/icon_kit/symbols/supply.png",
-			"group": "Технологии штаба",
-			"context": "Штаб в хабе; панель штаба в бою; чертежи",
-			"ids": [
-				"headquarters/hq_supply"
-			],
-			"names": [
-				"Техснабжение"
-			],
-			"note": "Символ «supply»"
 		},
 		{
 			"path": "res://assets/ui/icon_kit/symbols/tesla.png",
@@ -3465,7 +3527,7 @@
 				"headquarters/hq_tesla"
 			],
 			"names": [
-				"Катушка Теслы"
+				"Оборона"
 			],
 			"note": "Символ «tesla»"
 		},
@@ -3588,18 +3650,6 @@
 				"3"
 			],
 			"note": "Символ «bp_bonus_r3»"
-		},
-		{
-			"path": "res://assets/ui/icon_kit/symbols/bp_building.png",
-			"group": "Чертежи",
-			"context": "Чертежи в рюкзаке (планшет → Снаряжение): один планшет, силуэт — категория",
-			"ids": [
-				"blueprint/research"
-			],
-			"names": [
-				"Чертёж постройки"
-			],
-			"note": "Символ «bp_building»"
 		},
 		{
 			"path": "res://assets/ui/icon_kit/symbols/bp_building_r0.png",

@@ -127,15 +127,17 @@ func run():
 		check(mismatched.is_empty(),"bench dots match availability at %d alloy %s" % [credits,str(mismatched)])
 	hub.queue_free();await settle()
 
-	# from headquarters: HQ rules — keys, blueprint gate, one hub slot, insurance, supply timer, Q heal and
-	# shield, regeneration, Tesla, interceptor, route cards, workbench level and save round trip.
+	# from headquarters: HQ rules (author, 4 Oct 2026) — no HQ key, every module acts by its own rule; blueprint gate,
+	# one hub slot, insurance, medkit timer, dome, repair, medical post, defence pulse, route cards, save round trip.
 	Game.reset_upgrades()
-	check(InputMap.has_action("hq_ability") and Settings.DEFAULT_KEYS.hq_ability==KEY_2 and Settings.DEFAULT_KEYS.class_ability==KEY_Q,"HQ support on 2, class ability on Q")
-	check(Game.hq_modules.is_empty() and HQCatalog.available("hq_medbay") and not HQCatalog.available("hq_tesla"),"a fresh profile knows only the starting HQ tech")
+	check(not InputMap.has_action("hq_ability") and not Settings.DEFAULT_KEYS.has("hq_ability") and Settings.DEFAULT_KEYS.class_ability==KEY_Q,"no HQ key: the HQ acts on its own; class ability on Q")
+	check(not Settings.DEFAULT_KEYS.has("melee") and not Settings.DEFAULT_KEYS.has("use_medkit"),"no V and no H: Space strikes, aid kits heal on pickup")
+	check(Game.hq_modules.is_empty() and HQCatalog.available("hq_medbay") and HQCatalog.available("hq_regen") and not HQCatalog.available("hq_tesla") and not HQCatalog.available("hq_medpost"),"a fresh profile knows only the starting HQ modules")
+	check(HQCatalog.DATA.values().all(func(d):return d.mode in ["auto","passive"]),"no active HQ support is left")
 	Game.credits=5000
 	check(not Game.build_workshop("headquarters"),"no HQ without its blueprint")
 	Game.research_unlocks.append("headquarters");check(Game.build_workshop("headquarters"),"the blueprint builds the HQ")
-	check(Game.equip_hq("hq_patch") and Game.equip_hq("hq_plating") and Game.hq_active=="" and Game.hq_modules==["hq_plating"],"one HQ slot in the hub: a new tech replaces the old one")
+	check(Game.equip_hq("hq_regen") and Game.equip_hq("hq_plating") and Game.hq_modules==["hq_plating"],"one HQ slot in the hub: a new module replaces the old one")
 	var arena=load("res://scenes/arena.tscn").instantiate();add_child(arena);arena.auto_pause_enabled=false;arena.phase="combat";arena.set_physics_process(false)
 	check(is_equal_approx(Game.death_loss_fraction(),.4),"death loses 40% without insurance")
 	Game.progression.insurance=1;check(is_equal_approx(Game.death_loss_fraction(),.35),"one insurance level: 35%")
@@ -143,26 +145,63 @@ func run():
 	check(not Game.buy_insurance(),"insurance stops at its cap");Game.progression.insurance=0
 	var h=arena.headquarters
 	check(arena.base_max_hp==8,"base has 8 HP")
-	h.modules=["hq_medbay","hq_plating"];h.active="hq_patch";h.room_started();check(arena.base_max_hp==8,"modules keep base HP at 8")
-	arena.phase="countdown";h.tick(100);var supply_ok=arena.pickups.is_empty()
-	arena.phase="combat";h.tick(89);supply_ok=supply_ok and arena.pickups.is_empty()
-	h.tick(1);supply_ok=supply_ok and arena.pickups.size()==1 and arena.pickups[0].kind=="heart"
-	h.tick(89);supply_ok=supply_ok and arena.pickups.size()==1
-	h.tick(1);supply_ok=supply_ok and arena.pickups.size()==2
-	arena.phase="upgrade";h.tick(300);supply_ok=supply_ok and arena.pickups.size()==2
-	arena.phase="combat";h.tick(90);supply_ok=supply_ok and arena.pickups.size()==3
-	check(supply_ok,"a medkit every 90 combat seconds, never in countdown or card picks")
-	var pickup=arena.pickups[0];arena.soldier_hp=1;arena.player.hp=1;arena.reward.collect_pickup(pickup);check(arena.soldier_hp>1,"the HQ medkit heals")
-	arena.base_hp=3;check(h.cast() and arena.base_hp==6 and not h.cast(),"Q patch repairs the base by 3 and goes on cooldown")
+	# Аптечка: every 90 combat seconds, one lying at a time; a blocked delivery waits «ready» instead of jumping to 1 s.
+	h.modules=["hq_medbay","hq_plating"];h.room_started();check(arena.base_max_hp==8,"modules keep base HP at 8")
+	arena.pickups.clear()
+	var hq_kits=func():return arena.pickups.filter(func(p):return p.get("hq_medkit",false))
+	arena.phase="countdown";h.tick(100);var supply_ok=hq_kits.call().is_empty()
+	arena.phase="combat";h.tick(89);supply_ok=supply_ok and hq_kits.call().is_empty()
+	h.tick(1);supply_ok=supply_ok and hq_kits.call().size()==1 and hq_kits.call()[0].kind=="heart"
+	arena.phase="upgrade";h.tick(300);supply_ok=supply_ok and hq_kits.call().size()==1
+	check(supply_ok,"a medkit after 90 combat seconds, never in countdown or card picks")
+	arena.phase="combat";h.tick(89.5);h.tick(1)
+	check(hq_kits.call().size()==1 and is_zero_approx(h.timers.hq_medbay),"one HQ medkit lies at a time: the next one waits ready")
+	h.tick(.5);h.tick(3)
+	check(is_zero_approx(h.timers.hq_medbay),"a blocked medkit timer stays ready, it does not jump back to 1 s")
+	var pickup=hq_kits.call()[0];arena.soldier_hp=1;arena.player.hp=1;arena.reward.collect_pickup(pickup)
+	check(arena.soldier_hp>1 and hq_kits.call().is_empty(),"the HQ medkit heals at once on pickup")
+	h.tick(.05);check(hq_kits.call().size()==1 and h.timers.hq_medbay>80,"the waiting medkit comes as soon as the old one is taken")
+	arena.soldier_hp=arena.soldier_max_hp;arena.player.hp=arena.soldier_hp;pickup=hq_kits.call()[0];arena.reward.collect_pickup(pickup)
+	check(hq_kits.call().size()==1,"at full health the medkit stays on the ground")
+	for kit in arena.pickups:kit.node.queue_free()
+	arena.pickups.clear()
+	# Купол: the hit that raises it lands, the next ones do not; after it the recharge.
 	Game.set_all_recipes(true);Game.progression.level=4
-	h.apply("hq_swap:hq_field:0",1);check(h.cooldown>=55,"swapping in the field shield starts a long cooldown");h.cooldown=0
-	check(h.cast(),"the field shield casts");var health=arena.base_hp;arena.combat.damage_base(1);check(arena.base_hp==health,"the shield absorbs base damage")
-	h.shield_time=0;arena.combat.damage_base(1);check(h.hit_delay==6,"a hit delays regeneration")
-	h.modules=["hq_regen"];h.timers.hq_regen=0;h.tick(1);var dented=arena.base_hp==health-1;h.tick(6);check(dented and arena.base_hp>health-1,"regeneration restores the base after the delay")
-	var foe=arena.spawn_actor("soldier",Vector2i(3,3),false);foe.set_physics_process(false);foe.position=h.origin()+Vector3(1,0,-1);var hp=foe.hp
-	check(h.trigger("hq_tesla") and (foe.dead or foe.hp<hp),"Tesla hits a nearby enemy")
+	h.modules=["hq_field"];h.room_started();var full=arena.base_hp
+	arena.combat.damage_base(1);check(arena.base_hp==full-1 and h.shield_time>=5,"the first hit raises the dome")
+	arena.combat.damage_base(2);arena.combat.damage_base(1);check(arena.base_hp==full-1,"under the dome the HQ takes no damage")
+	h.tick(5.1);check(h.shield_time<=0,"the dome falls after its time")
+	arena.combat.damage_base(1);check(arena.base_hp==full-2 and h.shield_time<=0 and h.timers.hq_field>0,"then it recharges: no dome on the next hit")
+	h.tick(HQCatalog.interval("hq_field",0)+.1);arena.combat.damage_base(1);check(h.shield_time>0,"recharged, the next hit raises it again")
+	# Ремонт: waits QUIET seconds after a hit, then repairs in steps.
+	h.modules=["hq_regen"];h.room_started();h.shield_time=0;arena.combat.damage_base(2);var dented=arena.base_hp
+	h.tick(1);var waited=arena.base_hp==dented;h.tick(4.1)
+	check(waited and arena.base_hp>dented,"repair waits 5 s without hits, then restores the base")
+	# Медпункт: heals the hero on foot near the HQ in portions from its stock, then recharges.
+	h.modules=["hq_medpost"];h.room_started();arena.run.soldier_max_hp=20.0;arena.soldier_hp=1.0;arena.player.hp=1.0
+	arena.player.position=h.origin()+Vector3(1,0,0)
+	h.tick(.01);var first=arena.soldier_hp
+	h.tick(.1);var paced=arena.soldier_hp==first
+	for i in range(40):h.tick(.2)
+	check(is_equal_approx(first,2.0) and paced,"the medical post heals 1 HP per portion, one portion per 0,6 s")
+	check(is_equal_approx(arena.soldier_hp,1.0+HQCatalog.medpost_stock(0)) and h.medpost_stock<=0,"it stops when the stock is empty")
+	var cooling=h.timers.hq_medpost;h.tick(cooling-1.0);var still=arena.soldier_hp
+	check(cooling>=39 and is_equal_approx(still,1.0+HQCatalog.medpost_stock(0)),"an empty stock recharges before healing again")
+	h.tick(1.1);h.tick(.01);check(arena.soldier_hp>still and h.medpost_stock>0,"after the recharge the stock refills and heals")
+	arena.player.position=h.origin()+Vector3(6,0,0);var far=arena.soldier_hp;h.tick(1);check(arena.soldier_hp==far,"far from the HQ the post does not heal")
+	# Оборона: an enemy close to the HQ sets off a pulse — damage and stun to everyone around, enemy rounds burnt.
+	h.modules=["hq_tesla"];h.room_started()
+	var foe=arena.spawn_actor("soldier",Vector2i(3,3),false);foe.set_physics_process(false);foe.position=h.origin()+Vector3(1,0,-1);foe.hp=99.0;foe.max_hp=99.0
+	var other=arena.spawn_actor("soldier",Vector2i(4,3),false);other.set_physics_process(false);other.position=h.origin()+Vector3(-2,0,-1);other.hp=99.0;other.max_hp=99.0
+	var away=arena.spawn_actor("soldier",Vector2i(5,3),false);away.set_physics_process(false);away.position=h.origin()+Vector3(0,0,-6);away.hp=99.0;away.max_hp=99.0
 	var bullet=load("res://scenes/projectile.tscn").instantiate();bullet.arena=arena;bullet.position=h.origin()+Vector3(1,0,0);arena.add_child(bullet);arena.projectiles.append(bullet)
-	check(h.trigger("hq_interceptor") and bullet.spent,"the interceptor stops a projectile")
+	h.tick(.05)
+	check(foe.hp<99 and other.hp<99 and foe.stun_time>0 and other.stun_time>0,"the defence pulse hits and stuns every enemy within 3 cells")
+	check(away.hp==99.0 and bullet.spent and h.timers.hq_tesla>=HQCatalog.interval("hq_tesla",0)-.1,"far enemies are spared, enemy rounds burnt, then a recharge")
+	var after=foe.hp;h.tick(1);check(foe.hp==after,"no second pulse while recharging")
+	for a in [foe,other,away]:
+		if is_instance_valid(a):a.dead=true;arena.actors.erase(a);a.queue_free()
+	check(not h.events.is_empty() and h.events.back().text=="Оборона","each trigger leaves a caption for the HUD")
 	var offers=arena.reward.service_offers("headquarters")
 	check(not offers.is_empty() and offers.all(func(o):return o.id.begins_with("hq_")),"the HQ service stop offers HQ cards")
 	arena.queue_free();await settle()
@@ -173,6 +212,22 @@ func run():
 	Game.save_path=dir.path_join("profile.json");Game.profiles.selected=true;Game.save_blocked=false;Game.save_enabled=true
 	var saved=Game.save_progress();Game.hq_unlocks=[];Game.hq_levels={};Game.load_progress()
 	check(saved and "hq_tesla" in Game.hq_unlocks and int(Game.hq_levels.get("hq_medbay",0))==1,"HQ techs and levels survive a save round trip")
+	# Migration of a profile from before 4 Oct 2026: merged modules, the old key-2 support becomes a module, levels keep the max.
+	var old=Game.serialize_progress()
+	old.headquarters={"slots":1,"unlocks":["hq_medbay","hq_plating","hq_patch","hq_emp","hq_field","hq_supply"],"modules":[],"active":"hq_field","levels":{"hq_patch":2,"hq_supply":3,"hq_regen":1,"hq_emp":1,"hq_interceptor":4,"hq_field":2}}
+	old.purchased_hq=["hq_medbay","hq_plating","hq_patch","hq_emp","hq_field","hq_interceptor"]
+	old.duplicate_recipes=[{"category":"hq","id":"hq_supply"}]
+	var checked=preload("res://scripts/profile/schema.gd").validate(old);check(checked.ok,"an old HQ profile validates")
+	Game.apply_profile(checked.data)
+	check("hq_regen" in Game.hq_unlocks and "hq_tesla" in Game.hq_unlocks and "hq_field" in Game.hq_unlocks and not Game.hq_unlocks.any(func(id):return id in HQCatalog.MERGED),"old unlocks map onto the merged modules")
+	check(Game.hq_modules==["hq_field"],"the old key-2 dome is now the equipped module")
+	check(int(Game.hq_levels.hq_regen)==3 and int(Game.hq_levels.hq_tesla)==4 and int(Game.hq_levels.hq_field)==2,"merged levels keep the highest")
+	check(Game.purchased_hq.size()==5 and "hq_regen" in Game.purchased_hq and "hq_tesla" in Game.purchased_hq,"purchases map without duplicates")
+	check(Game.duplicate_recipes.size()==1 and Game.duplicate_recipes[0].id=="hq_regen","a spare old blueprint maps too")
+	# Old run snapshot: aid kits in the backpack heal once, the old active support joins the HQ modules.
+	var snapshot={"run":{"soldier_hp":1.0,"soldier_max_hp":6.0,"supplies":[{"type":"medkit","heal":2.0},{"type":"medkit","heal":2.0}]}}
+	preload("res://scripts/profile/run_checkpoint.gd").upgrade(snapshot)
+	check(is_equal_approx(float(snapshot.run.soldier_hp),5.0) and not snapshot.run.has("supplies"),"old backpack aid kits heal once and are gone")
 	Game.save_enabled=false;Game.save_path=restore.path;Game.profiles.selected=restore.selected;Game.save_blocked=restore.blocked
 	for file in DirAccess.get_files_at(dir):DirAccess.remove_absolute(dir.path_join(file))
 	DirAccess.remove_absolute(dir)

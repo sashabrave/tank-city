@@ -1,26 +1,15 @@
 class_name Melee
 extends RefCounted
-## Close combat (2026-10-03): the cat scratches with its paws when the hands are empty (the hidden «paws» weapon,
-## Space like any shot) and anyone can strike with V — the paws, or the gun's butt when a gun is in hand.
+## Close combat (2026-10-03, no strike key since 4 Oct 2026): Space strikes when there is nothing to shoot —
+## the paws with empty hands, the gun's butt when the gun is dry (scripts/combat/gun.gd, Gun.fire).
 ## Damage is the bare-hand base grown by «Сила» (Казарма: +5% per level), the same factor guns build on.
 const REACH:=1.55       # metres in front of the soldier
 const ARC:=.55          # cos of the half-angle: about ±57° around the facing
-const COOLDOWN:=.45     # V strike, seconds
 const BUTT:=1.25        # a gun butt hits a bit harder than bare claws
 
 ## Bare-hand damage for the HUD, the tablet and the strike: the paws' base × class/«Сила»/run bonuses.
 static func damage(arena=null)->float:
 	return CombatStats.weapon(arena,LootCatalog.PAWS).damage
-static func armed(arena)->bool:return arena!=null and arena.get("run")!=null and LootCatalog.is_gun(str(arena.run.weapon))
-
-## V: a strike at any moment in battle, with its own short cooldown. False while it recovers.
-static func try(arena)->bool:
-	var player=arena.room.player
-	if not is_instance_valid(player) or player.dead or player.kind!="soldier" or arena.phase not in ["combat","countdown"]:return false
-	if float(player.get_meta("melee_ready_at",0.0))>arena.run.elapsed:return false
-	player.set_meta("melee_ready_at",arena.run.elapsed+COOLDOWN)
-	strike(arena,player,damage(arena)*(BUTT if armed(arena) else 1.0),not armed(arena))
-	return true
 
 ## Hits every enemy (and the wall) in a short arc in front of the actor; plays the swipe.
 static func strike(arena,actor,amount:float,claws:=true)->int:

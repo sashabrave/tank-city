@@ -47,7 +47,7 @@
 | armor_plate.png | garage/buggy_armor, garage/apc_armor, garage/tank_armor | Багги · Бронекомплект, БТР · Бронекомплект, Танк · Бронекомплект |
 | cannon.png | garage/buggy_gun, garage/apc_gun, garage/tank_gun | Багги · Орудие, БТР · Орудие, Танк · Орудие |
 
-## Запас символов (10)
+## Запас символов (14)
 
 Где: Нарисован, пока нигде не подключён
 
@@ -56,10 +56,14 @@
 | bomb.png | bomb | bomb |
 | boot_dodge.png | boot_dodge | boot_dodge |
 | crossed_rifles.png | crossed_rifles | crossed_rifles |
+| emp_dish.png | emp_dish | emp_dish |
+| interceptor.png | interceptor | interceptor |
 | invulnerable.png | invulnerable | invulnerable |
 | padlock.png | padlock | padlock |
+| recipe.png | recipe | recipe |
 | steering_bullet.png | steering_bullet | steering_bullet |
 | stopwatch.png | stopwatch | stopwatch |
+| supply.png | supply | supply |
 | tank_shell.png | tank_shell | tank_shell |
 | trench.png | trench | trench |
 | weapon_tune.png | weapon_tune | weapon_tune |
@@ -83,12 +87,14 @@
 | weapons.png | weapons | weapons |
 | yard.png | yard | yard |
 
-## Игровой автомат (6)
+## Игровой автомат (8)
 
 Где: Окно автомата у торговца: символы барабанов
 
 | Файл | id | Название |
 |---|---|---|
+| alloy.png | alloy | alloy |
+| ammo.png | ammo | ammo |
 | medkit.png | medkit | medkit |
 | skull.png | skull | skull |
 | star1.png | star1 | star1 |
@@ -147,12 +153,13 @@
 | vest.png | upgrades/guard_bullet, stats/guard_bullet | Бронежилет, Защита от пуль |
 | wrench_spark.png | upgrades/field_repair, stats/field_repair, abilities/field_repair | Ремонт на ходу, Полевой ремонт |
 
-## Категории наград (6)
+## Категории наград (7)
 
 Где: Значок категории в углу карточки награды (сундуки, чертежи, торговец)
 
 | Файл | id | Название |
 |---|---|---|
+| blueprint.png | category/blueprint | Чертёж |
 | cat_ability.png | category/ability | Способность |
 | cat_bonus.png | category/bonus | Бонус |
 | cat_hero.png | category/hero | Герой |
@@ -320,12 +327,13 @@
 |---|---|---|
 | mallet_stars.png | stats/stun_power | Оглушение |
 
-## Развитие заставы (25)
+## Развитие заставы (27)
 
 Где: Доска «Развитие заставы» в хабе: шаги целей
 
 | Файл | id | Название |
 |---|---|---|
+| all.png | all | all |
 | all_built.png | all_built | all_built |
 | apc.png | apc | apc |
 | buggy.png | buggy | buggy |
@@ -339,6 +347,7 @@
 | general1.png | general1 | general1 |
 | general2.png | general2 | general2 |
 | general3.png | general3 | general3 |
+| half.png | half | half |
 | hard.png | hard | hard |
 | headquarters.png | headquarters | headquarters |
 | level3.png | level3 | level3 |
@@ -366,16 +375,15 @@
 | rarity_legendary.png | rarity_legendary | rarity_legendary |
 | rarity_rare.png | rarity_rare | rarity_rare |
 
-## Ресурсы (5)
+## Ресурсы (4)
 
 Где: Счётчик валют сверху, награды, итоги вылазки, торговец
 
 | Файл | id | Название |
 |---|---|---|
 | alloy.png | alloy | Сплав |
-| blueprint.png | blueprint, category/blueprint | Чертёж |
+| bp_building.png | recipe, blueprint, blueprint/research | Рецепт, Чертёж, Чертёж постройки |
 | documents.png | documents, core | Документы, Документы (ядро) |
-| recipe.png | recipe | Рецепт |
 | token.png | token | Жетон |
 
 ## Способности (11)
@@ -447,23 +455,20 @@
 | veh_buggy.png | vehicle/buggy | Багги |
 | veh_tank.png | vehicle/tank | Танк |
 
-## Технологии штаба (9)
+## Технологии штаба (6)
 
 Где: Штаб в хабе; панель штаба в бою; чертежи
 
 | Файл | id | Название |
 |---|---|---|
-| dome.png | headquarters/hq_field | Защитный купол |
-| emp_dish.png | headquarters/hq_emp | Эми-разряд |
-| interceptor.png | headquarters/hq_interceptor | Активная защита |
-| medbay.png | headquarters/hq_medbay | Медблок |
-| plating.png | headquarters/hq_plating | Бронепанели |
-| pulse.png | headquarters/hq_patch | Ремонтный импульс |
-| robot_arm.png | headquarters/hq_regen | Ремонтный автомат |
-| supply.png | headquarters/hq_supply | Техснабжение |
-| tesla.png | headquarters/hq_tesla | Катушка Теслы |
+| dome.png | headquarters/hq_field | Купол |
+| medbay.png | headquarters/hq_medbay | Аптечка |
+| plating.png | headquarters/hq_plating | Броня |
+| pulse.png | headquarters/hq_medpost | Медпункт |
+| robot_arm.png | headquarters/hq_regen | Ремонт |
+| tesla.png | headquarters/hq_tesla | Оборона |
 
-## Чертежи (30)
+## Чертежи (29)
 
 Где: Чертежи в рюкзаке (планшет → Снаряжение): один планшет, силуэт — категория
 
@@ -479,7 +484,6 @@
 | bp_bonus_r1.png | blueprint/bonus/1 | 1 |
 | bp_bonus_r2.png | blueprint/bonus/2 | 2 |
 | bp_bonus_r3.png | blueprint/bonus/3 | 3 |
-| bp_building.png | blueprint/research | Чертёж постройки |
 | bp_building_r0.png | blueprint/research/0 | 0 |
 | bp_building_r1.png | blueprint/research/1 | 1 |
 | bp_building_r2.png | blueprint/research/2 | 2 |

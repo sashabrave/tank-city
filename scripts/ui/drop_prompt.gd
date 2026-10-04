@@ -32,11 +32,10 @@ func kind()->String:
 	var c:Dictionary=pickup.content
 	if not c.get("weapons",[]).is_empty():return "weapon"
 	if not c.get("ammo",[]).is_empty():return "ammo"
-	if not c.get("supplies",[]).is_empty():return "supply"
 	return "recipe"
 func item()->Dictionary:
 	var c:Dictionary=pickup.content
-	var list:Array={"weapon":c.get("weapons",[]),"ammo":c.get("ammo",[]),"supply":c.get("supplies",[]),"recipe":c.get("recipes",[])}[kind()]
+	var list:Array={"weapon":c.get("weapons",[]),"ammo":c.get("ammo",[]),"recipe":c.get("recipes",[])}[kind()]
 	return list[0] if not list.is_empty() else {}
 func refresh_card():
 	if pickup.is_empty():return
@@ -45,7 +44,7 @@ func refresh_card():
 	if old:old.free()
 	var card=preload("res://scripts/ui/item_info.gd").card(preload("res://scripts/ui/item_info.gd").of(kind(),item(),arena),236)
 	column.add_child(card);column.move_child(card,0)
-	Texts.set_text(use_text,{"weapon":"Взять в руки","ammo":"Зарядить","supply":"Вылечиться"}.get(kind(),"Подобрать"))
+	Texts.set_text(use_text,{"weapon":"Взять в руки","ammo":"Зарядить"}.get(kind(),"Подобрать"))
 
 ## The hero who can pick it up: the soldier on the field, or the room's walking hero.
 func hero()->Node3D:
@@ -104,10 +103,6 @@ func use():
 			if out.is_empty():remove()
 			else:replace({"recipes":[],"ammo":[out]})
 			Game.sound("inv_ammo",arena);arena.toast(Texts.render("Боеприпасы заряжены"))
-		"supply":
-			run.supplies.append(it)
-			if Backpack.use_medkit(arena,run.supplies.size()-1):remove()
-			else:run.supplies.pop_back()
 		_:stash()
 ## C: into the backpack, when there is room.
 func stash():

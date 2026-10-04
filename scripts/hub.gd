@@ -310,8 +310,6 @@ func _physics_process(delta):
 	if not mounted and avatar.position.distance_to(hq_bench_pos)<1.2:Texts.set_text(board_button,"Технологии [E]");board_button.disabled=moving
 	if not mounted and avatar.position.distance_to(recycling_pos)<1.3:Texts.set_text(board_button,"Продать [E]");board_button.disabled=moving
 	if Game.wants_fire() and turn_timer<=0 and fire_cooldown<=0:shoot()
-	# V: the same strike as in battle (2026-10-03) — here only its look, a gun butt.
-	if not mounted and Input.is_action_just_pressed("melee"):Melee.swipe(avatar,self,false,facing)
 	if Game.wants_interact():interact()
 
 ## Concrete yard, the range fence (open toward the hangar so vehicles can drive in), a sandbag berm and a

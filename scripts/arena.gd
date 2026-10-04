@@ -583,8 +583,6 @@ func _physics_process(delta):
 		for slot in range(abilities.slots.size()):
 			if Input.is_action_just_pressed(Game.ability_action(slot)):abilities.cast_slot(slot)
 		if Input.is_action_just_pressed("ammo_switch") and Ammo.switch(self):hud.refresh_ammo()
-		if Input.is_action_just_pressed("use_medkit"):Backpack.use_medkit(self)
-		if Input.is_action_just_pressed("melee"):Melee.try(self)
 		collect_nearby_pickups(delta)
 		return
 	if phase != "combat": return
@@ -592,10 +590,7 @@ func _physics_process(delta):
 	star_time=maxf(0,star_time-delta)
 	abilities.tick(delta)
 	headquarters.tick(delta)
-	if Input.is_action_just_pressed("hq_ability"):headquarters.cast()
 	if Input.is_action_just_pressed("ammo_switch") and Ammo.switch(self):hud.refresh_ammo()
-	if Input.is_action_just_pressed("use_medkit"):Backpack.use_medkit(self)
-	if Input.is_action_just_pressed("melee"):Melee.try(self)
 	for slot in range(abilities.slots.size()):
 		if Input.is_action_just_pressed(Game.ability_action(slot)):abilities.cast_slot(slot)
 	elapsed += delta

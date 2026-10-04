@@ -137,14 +137,13 @@ func render():
 				var kind=type;action(grid,Ammo.NAMES[type]+("" if Ammo.fits(type,arena.run.weapon) else " · не подходит"),func():load_ammo(kind))
 			header(grid,"Рюкзак · %d / %d" % [Backpack.used(arena.run),Backpack.capacity()])
 			action(grid,"Боеприпасы в рюкзак",func():to_bag({"ammo":[Ammo.roll(Ammo.TYPES[randi()%Ammo.TYPES.size()],tier,randi())]}))
-			action(grid,"Аптечка в рюкзак",func():to_bag({"supplies":[{"type":"medkit","heal":3.0}]}))
 			action(grid,"Мешок рядом",drop_sack)
 			action(grid,"Оружие в рюкзак",gun_to_bag)
-			action(grid,"Очистить рюкзак",func():arena.run.ammo_bag.clear();arena.run.supplies.clear();arena.run.weapon_bag.clear();Backpack.refresh(arena);render())
+			action(grid,"Очистить рюкзак",func():arena.run.ammo_bag.clear();arena.run.weapon_bag.clear();Backpack.refresh(arena);render())
 			header(grid,"Из штаба — с полётом на клетку у штаба")
 			action(grid,"Случайное оружие",func():airdrop({"recipes":[],"ammo":[],"weapons":[random_gun()]}))
 			action(grid,"Случайные боеприпасы",func():airdrop({"recipes":[],"ammo":[Ammo.roll(Ammo.TYPES[randi()%Ammo.TYPES.size()],tier,randi())]}))
-			action(grid,"Аптечка",func():airdrop({"recipes":[],"ammo":[],"supplies":[{"type":"medkit","heal":3.0}]}))
+			action(grid,"Аптечка",func():arena.reward.place_pickup(arena.find_free_near(arena.room.base_cell+Vector2i(0,-2)),"heart");render())
 			action(grid,"Сила способности +1",func():arena.abilities.level.power+=1.0;arena.toast("Сила: +%d" % int(arena.abilities.level.power)))
 			header(grid,"Уровень класса (%s · %d)" % [Game.CLASSES[Game.selected_class].name,ClassCatalog.level(Game.selected_class)])
 			for lv in [1,3,5,8,10,14,20]:
@@ -194,7 +193,7 @@ func load_ammo(type:String):
 	Backpack.refresh(arena);arena.toast(Texts.render("Боеприпасы")+": "+Texts.render(Ammo.NAMES[type]));render()
 func to_bag(content:Dictionary):
 	if Backpack.full(arena.run):arena.toast("Рюкзак полон");return
-	arena.run.ammo_bag.append_array(content.get("ammo",[]));arena.run.supplies.append_array(content.get("supplies",[]))
+	arena.run.ammo_bag.append_array(content.get("ammo",[]))
 	Backpack.refresh(arena);render()
 func gun_to_bag():
 	if not Backpack.add_weapon(arena,random_gun()):arena.toast("Рюкзак полон")
@@ -220,7 +219,7 @@ func airdrop(content:Dictionary):
 	tween.tween_callback(func():Game.sound("delivery_land",arena);arena.burst(dropped.node.position+Vector3.UP*.2,Color("eccf8c"),.35))
 	Game.sound("grenade_throw",arena);render()
 func drop_sack():
-	var content={"recipes":[],"ammo":[Ammo.roll(Ammo.TYPES[randi()%Ammo.TYPES.size()],tier,randi())],"supplies":[{"type":"medkit","heal":3.0}]}
+	var content={"recipes":[],"ammo":[Ammo.roll(Ammo.TYPES[randi()%Ammo.TYPES.size()],tier,randi()),Ammo.roll(Ammo.TYPES[randi()%Ammo.TYPES.size()],tier,randi())]}
 	arena.reward.place_sack(arena.find_free_near(arena.player.cell+Vector2i(1,0)),content);arena.toast("Мешок рядом")
 func set_ability(id:String):
 	var slots:Array=arena.abilities.slots

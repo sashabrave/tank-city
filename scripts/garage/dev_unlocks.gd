@@ -48,7 +48,6 @@ static func set_purchase(group:String,id:String,value:bool):
 		if group=="ability" and Game.gadget==id:Game.gadget=""
 		if group=="hq":
 			Game.hq_modules.erase(id)
-			if Game.hq_active==id:Game.hq_active=""
 		if group=="garage" and Game.garage.selected==id:Game.garage.selected=""
 	Game.save_progress()
 static func second_skill(id:String,value:bool):

@@ -76,8 +76,6 @@ var ammo_slots:Array=[{"type":"standard","rarity":0,"stats":{},"damage":0.0,"twi
 var ammo_active:=0
 ## Ammo items carried in the backpack (replaced or found), swapped in the gear screen.
 var ammo_bag:Array=[]
-## Supplies carried in the backpack (T-115): aid kits picked up at full health {type:"medkit", heal}.
-var supplies:Array=[]
 ## Spare weapons carried for this run (backpack items {id, rarity, stats}); the one in hand is `weapon`.
 var weapon_bag:Array=[]
 ## The gun in hand as an item: rarity and rolled stats from a weapon crate ({"damage": share, "fire": share}).

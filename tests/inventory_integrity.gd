@@ -12,11 +12,11 @@ func count(arena)->int:
 	if LootCatalog.is_gun(str(r.weapon)):n+=1
 	for s in r.ammo_slots:
 		if s is Dictionary and not Ammo.is_empty_slot(s):n+=1
-	n+=r.ammo_bag.size()+r.weapon_bag.size()+r.supplies.size()+r.pending_recipes.size()
+	n+=r.ammo_bag.size()+r.weapon_bag.size()+r.pending_recipes.size()
 	for p in arena.room.pickups:
 		if p.kind in ["item","sack"]:
 			var c=p.get("content",{})
-			n+=c.get("ammo",[]).size()+c.get("weapons",[]).size()+c.get("supplies",[]).size()+c.get("recipes",[]).size()
+			n+=c.get("ammo",[]).size()+c.get("weapons",[]).size()+c.get("recipes",[]).size()
 	return n
 func fill(r,to:int):
 	while Backpack.used(r)<to:r.ammo_bag.append(Ammo.roll("burn",0,Backpack.used(r)))
@@ -180,7 +180,7 @@ func gear_rules():
 	var merged=Ammo.load_item(r,Ammo.roll("burn",1,12))
 	check(merged.is_empty() and r.ammo_bag.size()==bag_before and Ammo.loaded(r,"burn"),"a second box of the same ammo merges into the loaded one")
 	r.ammo_slots=[Ammo.standard()];r.ammo_active=0;Ammo.ensure(r,str(r.weapon))
-	# Empty hands: paws deal the bare-hand damage grown by «Сила»; Space and V scratch.
+	# Empty hands: paws deal the bare-hand damage grown by «Сила»; Space scratches (there is no V since 4 Oct 2026).
 	while Backpack.free_cells(r)<2 and not r.ammo_bag.is_empty():r.ammo_bag.pop_back()
 	check(Backpack.holster(arena) and str(r.weapon)=="paws","the gun can be put away any time")
 	var level=Game.damage_level;Game.damage_level=0;var bare=Melee.damage(arena);Game.damage_level=4
@@ -191,18 +191,24 @@ func gear_rules():
 	foe.position=arena.player.position+Vector3(arena.player.facing.x,0,arena.player.facing.y)*1.0;var hp=foe.hp
 	arena.player.fire_cooldown=0;arena.player.shoot()
 	check(foe.hp<hp,"Space with empty hands scratches the enemy in front")
-	hp=foe.hp;arena.player.set_meta("melee_ready_at",0.0)
-	check(Melee.try(arena) and foe.hp<hp,"V strikes too")
-	check(not Melee.try(arena),"V has its own short cooldown")
+	check(not InputMap.has_action("melee") and not InputMap.has_action("use_medkit"),"no strike key V and no aid kit key H")
+	var hints=arena.get_children().filter(func(n):return n is Label3D and n.text==Texts.render("Возьми оружие"))
+	check(hints.size()==1,"empty hands: a small hint «Возьми оружие» over the hero")
+	arena.player.fire_cooldown=0;arena.player.shoot()
+	check(arena.get_children().filter(func(n):return n is Label3D and n.text==Texts.render("Возьми оружие")).size()==1,"the hint is rate-limited")
 	foe.dead=true;arena.room.actors.erase(foe);foe.queue_free()
 	Backpack.equip_weapon(arena,r.weapon_bag.size()-1)
 	check(str(r.weapon)==gun_before and r.weapon_bag.is_empty(),"taking the gun back leaves no paws item behind")
-	# A gun in hand: V is a butt strike (×BUTT of the bare hand), Space stays an ordinary shot.
+	# A gun in hand: a dry gun strikes with the butt (×BUTT of the bare hand) on Space, a loaded one shoots.
 	foe=arena.spawn_actor("soldier",arena.find_free_near(arena.player.cell+arena.player.facing),false,false,1)
 	foe.position=arena.player.position+Vector3(arena.player.facing.x,0,arena.player.facing.y)*1.0;foe.hp=99.0;foe.max_hp=99.0;foe.invulnerable=0
-	arena.player.set_meta("melee_ready_at",0.0);RunUpgrades.refresh_player(arena)
-	Melee.try(arena)
-	check(absf((99.0-foe.hp)-Melee.damage(arena)*Melee.BUTT)<.05,"with a gun V hits with the butt (%.2f)" % (99.0-foe.hp))
+	RunUpgrades.refresh_player(arena)
+	var loaded=r.ammo_slots.duplicate(true);var active_slot=r.ammo_active
+	for k in range(r.ammo_slots.size()):r.ammo_slots[k]=Ammo.empty()
+	arena.player.set_meta("gun_hint_at",-100000);arena.player.fire_cooldown=0;arena.player.shoot()
+	check(Ammo.dry(r) and absf((99.0-foe.hp)-Melee.damage(arena)*Melee.BUTT)<.05,"a dry gun on Space hits with the butt (%.2f)" % (99.0-foe.hp))
+	check(arena.get_children().any(func(n):return n is Label3D and n.text==Texts.render("Нет боеприпасов")),"a dry gun: a small hint «Нет боеприпасов»")
+	r.ammo_slots=loaded;r.ammo_active=active_slot
 	var bullets=arena.room.projectiles.size() if arena.room.get("projectiles")!=null else -1
 	foe.hp=99.0;arena.player.fire_cooldown=0;arena.player.shoot()
 	check(foe.hp==99.0 and (bullets<0 or arena.room.projectiles.size()>bullets),"with a gun Space shoots, it does not scratch")
@@ -235,17 +241,18 @@ func gear_rules():
 	check(ground.piles.is_empty() and r.ammo_bag.size()==2,"a sack on the room floor comes back when the hero walks over it")
 	room.free();r.ammo_bag.clear()
 	check(not Backpack.can_drop(arena),"no floor (route map): nothing to drop onto — the gear page destroys after a confirmation")
-	# Aid kits (T-115): at full health a heart goes into the backpack; H heals from it later.
+	# Aid kits (4 Oct 2026): never in the backpack — a heart heals on pickup; at full health it stays on the ground.
 	arena.phase="combat"
-	r.supplies.clear();while Backpack.full(r) and not r.ammo_bag.is_empty():r.ammo_bag.pop_back()
+	var used_before=Backpack.used(r)
 	r.soldier_hp=r.soldier_max_hp;arena.player.hp=r.soldier_hp
 	arena.reward.place_pickup(arena.grid_pos(arena.player.position),"heart",0.0)
 	var heart=arena.room.pickups.filter(func(p):return p.kind=="heart")[0]
 	arena.reward.collect_pickup(heart)
-	check(Backpack.medkits(r)==1,"full health: the aid kit goes into the backpack")
-	check(not Backpack.use_medkit(arena),"no use at full health")
+	check(heart in arena.room.pickups and Backpack.used(r)==used_before,"full health: the aid kit stays on the ground, not in the backpack")
 	r.soldier_hp=1.0;arena.player.hp=1.0
-	check(Backpack.use_medkit(arena) and r.soldier_hp>1.0 and Backpack.medkits(r)==0,"H heals from the backpack")
+	arena.reward.collect_pickup(heart)
+	check(r.soldier_hp>1.0 and not heart in arena.room.pickups and Backpack.used(r)==used_before,"hurt: the aid kit heals at once on pickup")
+	check(Backpack.items(r).all(func(e):return e.kind!="supply"),"no aid kit cell in the backpack")
 	arena.queue_free();await get_tree().process_frame
 ## from ammo_slots_revision: ammo items, rolls, classes, cards, slots, the vending machine price and odds, combat effects.
 func ammo_rules():

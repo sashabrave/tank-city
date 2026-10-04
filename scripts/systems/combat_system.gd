@@ -123,11 +123,12 @@ func attacker_of(bullet)->String:
 	var owner=bullet.get("owner_actor")
 	return str(owner.kind) if is_instance_valid(owner) and not owner.player_owned else ""
 func damage_base(amount: float):
-	if arena.hq_off_field() or arena.phase != "combat" or arena.headquarters.shield_time>0: return
+	if arena.hq_off_field() or arena.phase != "combat": return
+	# HQ modules see every hit first: «Купол» takes it while up; the first hit raises it and pauses «Ремонт».
+	if amount>0 and not arena.headquarters.hit(): return
 	if is_instance_valid(arena.base_model):
 		var alert=arena.base_model.get_node_or_null("BaseAlert")
 		if alert:alert.trigger()
-	arena.headquarters.hit_delay=6.0
 	arena.floating_number(arena.world_pos(arena.room.base_cell),-minf(arena.room.base_hp,amount))
 	arena.room.base_hp=maxf(0,arena.room.base_hp-amount)
 	if amount>0:arena.set_meta("base_hit_by",str(arena.get_meta("attacker","")) if str(arena.get_meta("attacker",""))!="" else "blast")

@@ -27,7 +27,7 @@
 | profiles_v19 | запись профиля, резервные копии, ошибки записи, слоты; рецепты и модель игрока переживают сохранение | save_integrity_revision, environment_v7, player_models_revision |
 | save_exit_revision | чекпоинты карты и комнаты, возобновление, устаревший чекпоинт, бесконечный режим без карты | run_checkpoint_v20, resume_fast_revision, ui_checkpoint_v20, endless_tablet_revision |
 | flow_full_loop | **полная петля** на свежем профиле во временной папке: хаб → карта → бой → смерть → итог → «В хаб». Чекпоинт очищен; сплав зачислен ровно один раз (заработано − потеря при смерти); чертёж в сейф-ячейке сохранён, остальной потерян; счётчики вылазок, смертей и доставленного выросли на одну вылазку; профиль на диске совпадает. Вторая петля — после загрузки профиля с диска | новый |
-| inventory_integrity | предметы не теряются: оружие, патроны, рюкзак, поле; ячейки и ёмкость рюкзака, аптечки, автомат патронов | gear_backpack_revision, ammo_slots_revision, tablet_v15 (ёмкость) |
+| inventory_integrity | предметы не теряются: оружие, патроны, рюкзак, поле; ячейки и ёмкость рюкзака, аптечка лечит при подборе (не в рюкзак), удар Пробелом без оружия и с пустым, автомат патронов | gear_backpack_revision, ammo_slots_revision, tablet_v15 (ёмкость) |
 | meta_integrity_revision | связность меты: развитие ↔ награды ↔ арт, классы, чертежи, станции; мир 1, гарантированные чертежи, счётчик на стене штаба | world1_content_revision, roadmap_rewards, guaranteed_blueprints, wall_counter_revision |
 | assets_integrity | всё грузится: сцены, JSON данных, каждый вариант звука, музыка и фанфары тем, коты и собаки v6 (риг, клипы, фонарь, бюджет, палитра), модели игрока, техника v6 (контракт узлов) | chip_audio, music_player_v2, music_expansion, infantry_v6_revision, vehicles_v6_revision |
 | localization_revision | переводы и общая система локализации; энциклопедия, видеозвонки, тексты дронов, планшет, сканирование guides | encyclopedia_feed_revision, video_call_revision, arrival_drones_text, tablet_content, technical_guides |
@@ -47,7 +47,7 @@
 | route_roads_revision | графы маршрута трёх миров, стратегии маршрута, мир 1 | route_strategy, worlds_v13, route_world1_revision |
 | route_alternation_revision | редкие точки прокачки, дороги не пересекаются, все точки достижимы, добыча ящиков на поле | — |
 | merchant_tokens_revision | торговец и жетоны, раскладка комнат, взять машину, гараж, переработка | room_layout_revision, take_vehicle_revision, garage_progression, recycling_v19 |
-| stations_revision | станции хаба, штаб, уведомления станций, точки доступности | headquarters, station_notices_revision, hub_refresh_cache |
+| stations_revision | станции хаба, штаб (каждый модуль по своему правилу, миграция старых модулей и аптечек рюкзака), уведомления станций, точки доступности | headquarters, station_notices_revision, hub_refresh_cache |
 | quests_revision | задания, прогресс, адаптивные маршруты, новости | progression_v16, adaptive_routes, hub_polish_v11 |
 | daily_run_revision | ежедневная вылазка и доска | daily_board_revision |
 | sandbox_revision | песочница, галерея, дев-магазин | gallery, dev_shop_v17 |
