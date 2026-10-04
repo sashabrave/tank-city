@@ -1,13 +1,9 @@
 extends Node3D
 ## The hub as a hangar inside a living camp. Visual only: its own RNG, nothing here touches gameplay.
 ## Hangar steel (columns, trusses, hanging lamps, storage racks), biome vegetation and cargo outside,
-## and random background scenes: convoys on the road, patrols, two cats chatting, a drone passing.
+## and random background scenes on the road in front: convoys and patrols (the range side stays calm).
 const ROAD_Z=6.6
 const GROUND_Y=-.72
-## Yard chat (T-270): the cats stop by the parking and come from the east edge, along the back row of the
-## apron (z -3.4) — behind the range sandbags and backstop, in front of the terminal.
-const CHAT_SPOT=Vector3(13.7,0,-3.4)
-const CHAT_EDGE_X=22.4
 const WIND=preload("res://assets/shaders/vegetation_wind.gdshader")
 var hub
 var rng:=RandomNumberGenerator.new()
@@ -146,11 +142,10 @@ func _process(delta):
 	next_scene-=delta
 	if next_scene>0 or busy>=2:return
 	next_scene=rng.randf_range(5,11)
-	var roll=rng.randf()
-	if roll<.35 and not convoy_on_road:convoy()
-	elif roll<.65:patrol()
-	elif roll<.85:chat()
-	else:drone()
+	# Only the road in front of the outpost lives (author, 4 Oct 2026): the right side with the range and the
+	# parking stays calm — no chatting cats there and no drone crossing the yard.
+	if rng.randf()<.5 and not convoy_on_road:convoy()
+	else:patrol()
 
 func cat(pos:Vector3,weapon:="rifle")->Node3D:
 	var m=Visuals.model("soldier",self,pos);m.equip_weapon(weapon)
@@ -182,35 +177,3 @@ func patrol():
 	group.position=Vector3(-17 if left else 19,GROUND_Y,ROAD_Z+1.25)
 	var tween=create_tween();tween.tween_property(group,"position:x",19.0 if left else -17.0,rng.randf_range(16,20))
 	tween.tween_callback(finish.bind(group))
-
-func chat():
-	# Two cats come along the back edge of the yard to the parked vehicle, stand around a while, then wander off.
-	# T-270: on the yard surface (y=0) and along a row with no props — at ground height they walked inside
-	# the concrete apron with only their helmets showing. They grow in and shrink out at the yard's east edge.
-	var group=Node3D.new();add_child(group);busy+=1
-	var spot=CHAT_SPOT;var edge=Vector3(CHAT_EDGE_X,0,spot.z)
-	var a=cat(Vector3.ZERO);var b=cat(Vector3(.8,0,0))
-	for m in [a,b]:
-		m.get_parent().remove_child(m);group.add_child(m);m.rotation.y=-PI*.5;m.preview_moving=true
-		if m.player:m.player.speed_scale=.62
-	group.position=edge;group.scale=Vector3.ONE*.01
-	var walk_in=edge.distance_to(spot)/2.1
-	var tween=create_tween()
-	tween.tween_property(group,"scale",Vector3.ONE,.35)
-	tween.parallel().tween_property(group,"position",spot,walk_in)
-	tween.tween_callback(func():
-		for m in [a,b]:m.preview_moving=false
-		a.rotation.y=-PI*.2;b.rotation.y=PI*.75)
-	tween.tween_interval(rng.randf_range(6,10))
-	tween.tween_callback(func():
-		for m in [a,b]:m.preview_moving=true;m.rotation.y=PI*.5)
-	tween.tween_property(group,"position",edge,walk_in*1.1)
-	tween.tween_property(group,"scale",Vector3.ONE*.01,.3)
-	tween.tween_callback(finish.bind(group))
-
-func drone():
-	var m=Visuals.model("flyer",self,Vector3(-16,3.2,rng.randf_range(-6,3)));busy+=1
-	var end=Vector3(18,3.4,m.position.z+rng.randf_range(-3,3))
-	m.rotation.y=-atan2(end.x-m.position.x,-(end.z-m.position.z))
-	var tween=create_tween();tween.tween_property(m,"position",end,rng.randf_range(7,9)).set_trans(Tween.TRANS_SINE)
-	tween.tween_callback(finish.bind(m))

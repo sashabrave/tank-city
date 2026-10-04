@@ -39,7 +39,8 @@
 					"Аптечка штаба больше не «прыгает» таймером: если положить некуда или прежняя ещё лежит, следующая ждёт и появляется сразу, как станет можно.",
 					"Прежние модули штаба перешли в новые без потерь: Ремонтный импульс и Техснабжение → Ремонт, Эми-разряд и Активная защита → Оборона; уровни — по лучшему из слитых.",
 					"Клавиши V больше нет: без оружия или без боеприпасов Пробел бьёт лапой или прикладом, над героем — маленькая подсказка «Возьми оружие» / «Нет боеприпасов».",
-					"Аптечек в рюкзаке и клавиши H больше нет: аптечка лечит сразу при подборе, а при полном здоровье остаётся лежать."
+					"Аптечек в рюкзаке и клавиши H больше нет: аптечка лечит сразу при подборе, а при полном здоровье остаётся лежать.",
+					"Хаб: правая часть с полигоном и стоянкой стала спокойной — там больше не ходят коты и не пролетает дрон. Колонны и патрули на дороге перед заставой остались."
 				]
 			},
 			"en": {
@@ -78,7 +79,8 @@
 					"The HQ medkit timer no longer jumps: if there is no room or the previous one still lies there, the next one waits and appears as soon as it can.",
 					"Old HQ modules moved into the new ones with nothing lost: Repair pulse and Tech supply → Repair, EMP burst and Active defence → Defence; levels take the best of the merged ones.",
 					"No more V key: with no weapon or no ammo, Space strikes with paws or the gun butt, and a small hint «Pick up a weapon» / «No ammo» shows over the hero.",
-					"No more medkits in the backpack and no H key: a medkit heals at once on pickup and stays on the ground at full health."
+					"No more medkits in the backpack and no H key: a medkit heals at once on pickup and stays on the ground at full health.",
+					"Hub: the right side with the range and parking is calm now — no cats wandering and no drone flying over. Convoys and patrols on the road in front of the outpost remain."
 				]
 			}
 		},
