@@ -196,14 +196,14 @@
 		],
 		"exit": [
 			"soldier",
-			15.0,
+			21.0,
 			1
 		],
 		"hero": [
-			15.0,
-			15.0,
+			21.0,
+			21.0,
 			10.0,
-			1.725,
+			1.95,
 			0.6,
 			0.666666666666667
 		],
@@ -546,14 +546,14 @@
 		],
 		"exit": [
 			"soldier",
-			15.0,
+			21.0,
 			1
 		],
 		"hero": [
-			15.0,
-			15.0,
+			21.0,
+			21.0,
 			10.0,
-			1.725,
+			1.95,
 			0.6,
 			0.666666666666667
 		],
@@ -807,8 +807,10 @@
 		"chests": [
 			[
 				{
-					"category": "ability",
-					"id": "laser"
+					"amount": 210,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
 				},
 				{
 					"category": "upgrade",
@@ -823,24 +825,64 @@
 			],
 			[
 				{
-					"category": "garage",
-					"id": "vehicle_apc"
+					"amount": 210,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
 				},
 				{
 					"category": "upgrade",
-					"id": "crit_chance",
+					"id": "crit_damage",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "health",
+					"id": "ricochet",
 					"tier": 2
 				}
 			],
 			[
 				{
-					"category": "ability",
-					"id": "laser"
+					"amount": 210,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
+				},
+				{
+					"category": "upgrade",
+					"id": "crew",
+					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "luck",
+					"tier": 2
+				}
+			],
+			[
+				{
+					"amount": 210,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
+				},
+				{
+					"category": "upgrade",
+					"id": "intercept",
+					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "landing",
+					"tier": 2
+				}
+			],
+			[
+				{
+					"amount": 210,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
 				},
 				{
 					"category": "upgrade",
@@ -849,39 +891,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "field_repair",
-					"tier": 2
-				}
-			],
-			[
-				{
-					"category": "hq",
-					"id": "hq_interceptor"
-				},
-				{
-					"category": "upgrade",
-					"id": "intercept",
-					"tier": 2
-				},
-				{
-					"category": "upgrade",
-					"id": "fire",
-					"tier": 2
-				}
-			],
-			[
-				{
-					"category": "hq",
-					"id": "hq_field"
-				},
-				{
-					"category": "upgrade",
-					"id": "intercept",
-					"tier": 2
-				},
-				{
-					"category": "upgrade",
-					"id": "opening_shot",
+					"id": "marauder",
 					"tier": 2
 				}
 			]
@@ -980,14 +990,14 @@
 		],
 		"exit": [
 			"soldier",
-			15.0,
+			21.0,
 			1
 		],
 		"hero": [
-			15.0,
-			15.0,
+			21.0,
+			21.0,
 			10.0,
-			1.725,
+			1.95,
 			0.6,
 			0.666666666666667
 		],
@@ -1012,7 +1022,7 @@
 			"...................",
 			"..................."
 		],
-		"rng_state": "-992553932017039738",
+		"rng_state": "-4014611286374332289",
 		"seed": 42,
 		"stage": 6,
 		"walls": [
@@ -1306,14 +1316,14 @@
 		],
 		"exit": [
 			"soldier",
-			15.0,
+			21.0,
 			1
 		],
 		"hero": [
-			15.0,
-			15.0,
+			21.0,
+			21.0,
 			10.0,
-			1.725,
+			1.95,
 			0.6,
 			0.666666666666667
 		],
@@ -1616,8 +1626,10 @@
 		"chests": [
 			[
 				{
-					"category": "garage",
-					"id": "vehicle_apc"
+					"amount": 385,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
 				},
 				{
 					"category": "upgrade",
@@ -1632,65 +1644,73 @@
 			],
 			[
 				{
-					"category": "ability",
-					"id": "laser"
+					"amount": 385,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
+				},
+				{
+					"category": "upgrade",
+					"id": "crew",
+					"tier": 2
 				},
 				{
 					"category": "upgrade",
 					"id": "fire",
 					"tier": 2
+				}
+			],
+			[
+				{
+					"amount": 385,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
 				},
 				{
 					"category": "upgrade",
-					"id": "ricochet",
+					"id": "crit_damage",
+					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "crew",
 					"tier": 2
 				}
 			],
 			[
 				{
-					"category": "hq",
-					"id": "hq_emp"
+					"amount": 385,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
 				},
 				{
 					"category": "upgrade",
-					"id": "intercept",
+					"id": "crew",
 					"tier": 2
-				},
-				{
-					"category": "upgrade",
-					"id": "landing",
-					"tier": 2
-				}
-			],
-			[
-				{
-					"category": "hq",
-					"id": "hq_field"
 				},
 				{
 					"category": "upgrade",
 					"id": "opening_shot",
 					"tier": 2
-				},
-				{
-					"category": "upgrade",
-					"id": "last_stand",
-					"tier": 2
 				}
 			],
 			[
 				{
-					"category": "hq",
-					"id": "hq_tesla"
+					"amount": 385,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
 				},
 				{
 					"category": "upgrade",
-					"id": "intercept",
+					"id": "crit_chance",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "dodge",
+					"id": "ricochet",
 					"tier": 2
 				}
 			]
@@ -1789,14 +1809,14 @@
 		],
 		"exit": [
 			"soldier",
-			15.0,
+			21.0,
 			1
 		],
 		"hero": [
-			15.0,
-			15.0,
+			21.0,
+			21.0,
 			10.0,
-			1.725,
+			1.95,
 			0.6,
 			0.666666666666667
 		],
@@ -1832,7 +1852,7 @@
 			"..............................",
 			".............................."
 		],
-		"rng_state": "-759061573781173892",
+		"rng_state": "-5116388085179112915",
 		"seed": 42,
 		"stage": 6,
 		"walls": [
@@ -1921,8 +1941,10 @@
 		"chests": [
 			[
 				{
-					"category": "garage",
-					"id": "vehicle_tank"
+					"amount": 610,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
 				},
 				{
 					"category": "upgrade",
@@ -1937,65 +1959,73 @@
 			],
 			[
 				{
-					"category": "ability",
-					"id": "laser"
+					"amount": 610,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
+				},
+				{
+					"category": "upgrade",
+					"id": "crew",
+					"tier": 2
 				},
 				{
 					"category": "upgrade",
 					"id": "fire",
 					"tier": 2
+				}
+			],
+			[
+				{
+					"amount": 610,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
 				},
 				{
 					"category": "upgrade",
-					"id": "ricochet",
+					"id": "crit_damage",
+					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "crew",
 					"tier": 2
 				}
 			],
 			[
 				{
-					"category": "hq",
-					"id": "hq_emp"
+					"amount": 610,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
 				},
 				{
 					"category": "upgrade",
-					"id": "intercept",
+					"id": "crew",
 					"tier": 2
-				},
-				{
-					"category": "upgrade",
-					"id": "landing",
-					"tier": 2
-				}
-			],
-			[
-				{
-					"category": "hq",
-					"id": "hq_field"
 				},
 				{
 					"category": "upgrade",
 					"id": "opening_shot",
 					"tier": 2
-				},
-				{
-					"category": "upgrade",
-					"id": "last_stand",
-					"tier": 2
 				}
 			],
 			[
 				{
-					"category": "hq",
-					"id": "hq_tesla"
+					"amount": 610,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
 				},
 				{
 					"category": "upgrade",
-					"id": "intercept",
+					"id": "crit_chance",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "dodge",
+					"id": "ricochet",
 					"tier": 2
 				}
 			]
@@ -2094,14 +2124,14 @@
 		],
 		"exit": [
 			"soldier",
-			15.0,
+			21.0,
 			1
 		],
 		"hero": [
-			15.0,
-			15.0,
+			21.0,
+			21.0,
 			10.0,
-			1.725,
+			1.95,
 			0.6,
 			0.666666666666667
 		],
@@ -2139,7 +2169,7 @@
 			"................................",
 			"................................"
 		],
-		"rng_state": "-759061573781173892",
+		"rng_state": "-5116388085179112915",
 		"seed": 42,
 		"stage": 6,
 		"walls": [
@@ -2228,8 +2258,10 @@
 		"chests": [
 			[
 				{
-					"category": "garage",
-					"id": "vehicle_tank"
+					"amount": 610,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
 				},
 				{
 					"category": "upgrade",
@@ -2244,65 +2276,73 @@
 			],
 			[
 				{
-					"category": "ability",
-					"id": "laser"
+					"amount": 610,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
+				},
+				{
+					"category": "upgrade",
+					"id": "crew",
+					"tier": 2
 				},
 				{
 					"category": "upgrade",
 					"id": "fire",
 					"tier": 2
+				}
+			],
+			[
+				{
+					"amount": 610,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
 				},
 				{
 					"category": "upgrade",
-					"id": "ricochet",
+					"id": "crit_damage",
+					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "crew",
 					"tier": 2
 				}
 			],
 			[
 				{
-					"category": "hq",
-					"id": "hq_emp"
+					"amount": 610,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
 				},
 				{
 					"category": "upgrade",
-					"id": "intercept",
+					"id": "crew",
 					"tier": 2
-				},
-				{
-					"category": "upgrade",
-					"id": "landing",
-					"tier": 2
-				}
-			],
-			[
-				{
-					"category": "hq",
-					"id": "hq_field"
 				},
 				{
 					"category": "upgrade",
 					"id": "opening_shot",
 					"tier": 2
-				},
-				{
-					"category": "upgrade",
-					"id": "last_stand",
-					"tier": 2
 				}
 			],
 			[
 				{
-					"category": "hq",
-					"id": "hq_tesla"
+					"amount": 610,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
 				},
 				{
 					"category": "upgrade",
-					"id": "intercept",
+					"id": "crit_chance",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "dodge",
+					"id": "ricochet",
 					"tier": 2
 				}
 			]
@@ -2401,14 +2441,14 @@
 		],
 		"exit": [
 			"soldier",
-			15.0,
+			21.0,
 			1
 		],
 		"hero": [
-			15.0,
-			15.0,
+			21.0,
+			21.0,
 			10.0,
-			1.725,
+			1.95,
 			0.6,
 			0.666666666666667
 		],
@@ -2449,7 +2489,7 @@
 			"...................................",
 			"..................................."
 		],
-		"rng_state": "-759061573781173892",
+		"rng_state": "-5116388085179112915",
 		"seed": 42,
 		"stage": 7,
 		"walls": [
@@ -2741,14 +2781,14 @@
 		],
 		"exit": [
 			"soldier",
-			15.0,
+			21.0,
 			1
 		],
 		"hero": [
-			15.0,
-			15.0,
+			21.0,
+			21.0,
 			10.0,
-			1.725,
+			1.95,
 			0.6,
 			0.666666666666667
 		],
@@ -3095,14 +3135,14 @@
 		],
 		"exit": [
 			"soldier",
-			15.0,
+			21.0,
 			1
 		],
 		"hero": [
-			15.0,
-			15.0,
+			21.0,
+			21.0,
 			10.0,
-			1.725,
+			1.95,
 			0.6,
 			0.666666666666667
 		],
@@ -3360,8 +3400,10 @@
 		"chests": [
 			[
 				{
-					"category": "garage",
-					"id": "vehicle_apc"
+					"amount": 210,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
 				},
 				{
 					"category": "upgrade",
@@ -3376,29 +3418,33 @@
 			],
 			[
 				{
-					"category": "hq",
-					"id": "hq_tesla"
+					"amount": 210,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
 				},
 				{
 					"category": "upgrade",
-					"id": "crit_damage",
+					"id": "opening_shot",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "range",
+					"id": "cryo",
 					"tier": 2
 				}
 			],
 			[
 				{
-					"category": "hq",
-					"id": "hq_tesla"
+					"amount": 210,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
 				},
 				{
 					"category": "upgrade",
-					"id": "crit_chance",
-					"tier": 3
+					"id": "crew",
+					"tier": 2
 				},
 				{
 					"category": "upgrade",
@@ -3408,33 +3454,37 @@
 			],
 			[
 				{
-					"category": "hq",
-					"id": "hq_interceptor"
+					"amount": 210,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
 				},
 				{
 					"category": "upgrade",
-					"id": "crew",
+					"id": "intercept",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "crit_damage",
+					"id": "ap",
 					"tier": 2
 				}
 			],
 			[
 				{
-					"category": "hq",
-					"id": "hq_field"
+					"amount": 210,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
 				},
 				{
 					"category": "upgrade",
-					"id": "crew",
+					"id": "damage",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "intercept",
+					"id": "burn",
 					"tier": 2
 				}
 			]
@@ -3533,14 +3583,14 @@
 		],
 		"exit": [
 			"soldier",
-			15.0,
+			21.0,
 			1
 		],
 		"hero": [
-			15.0,
-			15.0,
+			21.0,
+			21.0,
 			10.0,
-			1.725,
+			1.95,
 			0.6,
 			0.666666666666667
 		],
@@ -3565,7 +3615,7 @@
 			"...................",
 			"..................."
 		],
-		"rng_state": "1760350568083022095",
+		"rng_state": "-2512818069838136068",
 		"seed": 137,
 		"stage": 6,
 		"walls": [
@@ -3666,8 +3716,10 @@
 		"chests": [
 			[
 				{
-					"category": "research",
-					"id": "weapons"
+					"amount": 153,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
 				},
 				{
 					"category": "upgrade",
@@ -3682,8 +3734,10 @@
 			],
 			[
 				{
-					"category": "research",
-					"id": "weapons"
+					"amount": 153,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
 				},
 				{
 					"category": "upgrade",
@@ -3698,8 +3752,10 @@
 			],
 			[
 				{
-					"category": "research",
-					"id": "weapons"
+					"amount": 153,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
 				},
 				{
 					"category": "upgrade",
@@ -3714,8 +3770,10 @@
 			],
 			[
 				{
-					"category": "research",
-					"id": "weapons"
+					"amount": 153,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
 				},
 				{
 					"category": "upgrade",
@@ -3730,8 +3788,10 @@
 			],
 			[
 				{
-					"category": "research",
-					"id": "weapons"
+					"amount": 153,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
 				},
 				{
 					"category": "upgrade",
@@ -3839,14 +3899,14 @@
 		],
 		"exit": [
 			"soldier",
-			15.0,
+			21.0,
 			1
 		],
 		"hero": [
-			15.0,
-			15.0,
+			21.0,
+			21.0,
 			10.0,
-			1.725,
+			1.95,
 			0.6,
 			0.666666666666667
 		],
@@ -4155,8 +4215,10 @@
 		"chests": [
 			[
 				{
-					"category": "ability",
-					"id": "airstrike"
+					"amount": 385,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
 				},
 				{
 					"category": "upgrade",
@@ -4171,29 +4233,33 @@
 			],
 			[
 				{
-					"category": "hq",
-					"id": "hq_emp"
+					"amount": 385,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
 				},
 				{
 					"category": "upgrade",
-					"id": "crit_damage",
+					"id": "opening_shot",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "range",
+					"id": "cryo",
 					"tier": 2
 				}
 			],
 			[
 				{
-					"category": "garage",
-					"id": "vehicle_apc"
+					"amount": 385,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
 				},
 				{
 					"category": "upgrade",
-					"id": "crit_chance",
-					"tier": 3
+					"id": "crew",
+					"tier": 2
 				},
 				{
 					"category": "upgrade",
@@ -4203,33 +4269,37 @@
 			],
 			[
 				{
-					"category": "hq",
-					"id": "hq_field"
+					"amount": 385,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
 				},
 				{
 					"category": "upgrade",
-					"id": "crew",
+					"id": "intercept",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "crit_damage",
+					"id": "ap",
 					"tier": 2
 				}
 			],
 			[
 				{
-					"category": "ability",
-					"id": "laser"
+					"amount": 385,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
 				},
 				{
 					"category": "upgrade",
-					"id": "crew",
+					"id": "damage",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "intercept",
+					"id": "burn",
 					"tier": 2
 				}
 			]
@@ -4328,14 +4398,14 @@
 		],
 		"exit": [
 			"soldier",
-			15.0,
+			21.0,
 			1
 		],
 		"hero": [
-			15.0,
-			15.0,
+			21.0,
+			21.0,
 			10.0,
-			1.725,
+			1.95,
 			0.6,
 			0.666666666666667
 		],
@@ -4371,7 +4441,7 @@
 			"..............................",
 			".............................."
 		],
-		"rng_state": "1760350568083022095",
+		"rng_state": "-2512818069838136068",
 		"seed": 137,
 		"stage": 6,
 		"walls": [
@@ -4466,8 +4536,10 @@
 		"chests": [
 			[
 				{
-					"category": "ability",
-					"id": "airstrike"
+					"amount": 610,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
 				},
 				{
 					"category": "upgrade",
@@ -4482,29 +4554,33 @@
 			],
 			[
 				{
-					"category": "hq",
-					"id": "hq_emp"
+					"amount": 610,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
 				},
 				{
 					"category": "upgrade",
-					"id": "crit_damage",
+					"id": "opening_shot",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "range",
+					"id": "cryo",
 					"tier": 2
 				}
 			],
 			[
 				{
-					"category": "garage",
-					"id": "vehicle_tank"
+					"amount": 610,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
 				},
 				{
 					"category": "upgrade",
-					"id": "crit_chance",
-					"tier": 3
+					"id": "crew",
+					"tier": 2
 				},
 				{
 					"category": "upgrade",
@@ -4514,33 +4590,37 @@
 			],
 			[
 				{
-					"category": "hq",
-					"id": "hq_field"
+					"amount": 610,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
 				},
 				{
 					"category": "upgrade",
-					"id": "crew",
+					"id": "intercept",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "crit_damage",
+					"id": "ap",
 					"tier": 2
 				}
 			],
 			[
 				{
-					"category": "ability",
-					"id": "laser"
+					"amount": 610,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
 				},
 				{
 					"category": "upgrade",
-					"id": "crew",
+					"id": "damage",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "intercept",
+					"id": "burn",
 					"tier": 2
 				}
 			]
@@ -4639,14 +4719,14 @@
 		],
 		"exit": [
 			"soldier",
-			15.0,
+			21.0,
 			1
 		],
 		"hero": [
-			15.0,
-			15.0,
+			21.0,
+			21.0,
 			10.0,
-			1.725,
+			1.95,
 			0.6,
 			0.666666666666667
 		],
@@ -4684,7 +4764,7 @@
 			"................................",
 			"................................"
 		],
-		"rng_state": "1760350568083022095",
+		"rng_state": "-2512818069838136068",
 		"seed": 137,
 		"stage": 6,
 		"walls": [
@@ -4773,8 +4853,10 @@
 		"chests": [
 			[
 				{
-					"category": "ability",
-					"id": "airstrike"
+					"amount": 610,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
 				},
 				{
 					"category": "upgrade",
@@ -4789,29 +4871,33 @@
 			],
 			[
 				{
-					"category": "hq",
-					"id": "hq_emp"
+					"amount": 610,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
 				},
 				{
 					"category": "upgrade",
-					"id": "crit_damage",
+					"id": "opening_shot",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "range",
+					"id": "cryo",
 					"tier": 2
 				}
 			],
 			[
 				{
-					"category": "garage",
-					"id": "vehicle_tank"
+					"amount": 610,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
 				},
 				{
 					"category": "upgrade",
-					"id": "crit_chance",
-					"tier": 3
+					"id": "crew",
+					"tier": 2
 				},
 				{
 					"category": "upgrade",
@@ -4821,33 +4907,37 @@
 			],
 			[
 				{
-					"category": "hq",
-					"id": "hq_field"
+					"amount": 610,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
 				},
 				{
 					"category": "upgrade",
-					"id": "crew",
+					"id": "intercept",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "crit_damage",
+					"id": "ap",
 					"tier": 2
 				}
 			],
 			[
 				{
-					"category": "ability",
-					"id": "laser"
+					"amount": 610,
+					"category": "alloy",
+					"id": "alloy",
+					"tier": 0
 				},
 				{
 					"category": "upgrade",
-					"id": "crew",
+					"id": "damage",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "intercept",
+					"id": "burn",
 					"tier": 2
 				}
 			]
@@ -4946,14 +5036,14 @@
 		],
 		"exit": [
 			"soldier",
-			15.0,
+			21.0,
 			1
 		],
 		"hero": [
-			15.0,
-			15.0,
+			21.0,
+			21.0,
 			10.0,
-			1.725,
+			1.95,
 			0.6,
 			0.666666666666667
 		],
@@ -4994,7 +5084,7 @@
 			"...................................",
 			"..................................."
 		],
-		"rng_state": "1760350568083022095",
+		"rng_state": "-2512818069838136068",
 		"seed": 137,
 		"stage": 7,
 		"walls": [
