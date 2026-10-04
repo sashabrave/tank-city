@@ -168,7 +168,9 @@ func _ready():
 			else:MINI.battle(node,posmod(wave_seed+stage*3+info.lane*7,4),color,visited,info.difficulty)
 			if branch=="" and not skipped and not visited:MINI.live_weather(node,preload("res://scripts/systems/weather.gd").for_room(wave_seed,stage,route_choices.merged({stage:info.id},true)),preload("res://scripts/systems/weather.gd").rain_for(stage))
 			var caption={"vehicle":"Техника","headquarters":"Депо","legend":"Захваченный КП"}.get(branch,ChallengeRooms.TITLES.get(info.type,"Генерал" if stage in Campaign.BOSSES else "Поле боя"))  # no stage numbers (T-255)
-			Visuals.label3d(node,"✓ "+caption if visited else caption,Vector3(0,.35,3.65),Color("f3eee0"),30).pixel_size=.025
+			if branch=="legend" and not skipped and not visited:
+				caption="★ "+caption;highlight_legend(node)
+			Visuals.label3d(node,"✓ "+caption if visited else caption,Vector3(0,.35,3.65),Color("ffd27a") if branch=="legend" and not skipped else Color("f3eee0"),30).pixel_size=.025
 			if not visited and not skipped and branch=="":
 				for badge in range(info.difficulty):MINI.star(node,info.difficulty,badge)
 			if stage==available and info.id in reachable and not needs_service:MINI.border(node,Color("c6cfbc"))
@@ -587,3 +589,13 @@ func update_card():
 	Game.sound("route_select",Game)
 	var info=previews[target.id].get_meta("info") if target.has("id") else {}
 	node_card=preload("res://scripts/route_node_card.gd").open(self,target.pos,info,target.get("branch",""))
+
+## The captured command post changes the run with a legendary card (T-265, author: «выделить посильнее»): bigger,
+## a pulsing gold ring and a warm light so it reads from across the map.
+func highlight_legend(node:Node3D):
+	node.scale*=1.3
+	var ring=Visuals.ring(node,Color("ffcf5a"),3.1);ring.position.y=.06
+	ring.set_instance_shader_parameter("tint",Color("ffcf5a"));ring.set_instance_shader_parameter("urgency",.35)
+	var pulse=ring.create_tween().set_loops();pulse.tween_property(ring,"scale",Vector3.ONE*1.12,.8).set_trans(Tween.TRANS_SINE);pulse.tween_property(ring,"scale",Vector3.ONE,.8).set_trans(Tween.TRANS_SINE)
+	var glow=OmniLight3D.new();node.add_child(glow);glow.position=Vector3(0,3.0,0);glow.light_color=Color("ffd27a");glow.light_energy=2.2;glow.omni_range=6.0
+	Visuals.label3d(node,"легендарная карточка",Vector3(0,.35,4.6),Color("ffd27a"),22).pixel_size=.025

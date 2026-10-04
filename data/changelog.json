@@ -17,7 +17,8 @@
 					"Сложность мира на экране «Куда выдвигаемся»: Лёгкая, Обычная или Тяжёлая. На лёгкой у врагов на четверть меньше здоровья и урона, на тяжёлой — на четверть больше, а сплава за врагов и сундуки на 20% больше. Обычная — прежняя игра; выбор запоминается в профиле, забег дня всегда обычный.",
 					"Победа над генералом: фейерверк над полем, надпись «Генерал повержен» и сообщение майора. В хабе первым звонит майор: «прошли как надо, молодцы» и новая цель — испытания и бесконечный рубеж.",
 					"Гранатомёт стреляет навесом: граната перелетает укрытия и падает на первого врага на линии (или на полную дальность). РПГ по-прежнему бьёт прямой ракетой.",
-					"Страховка чертежей без чертежа пишет «Нужен чертёж» вместо «Улучшить · -1»."
+					"Страховка чертежей без чертежа пишет «Нужен чертёж» вместо «Улучшить · -1».",
+					"Карта маршрута: «Захваченный КП» с легендарной карточкой виден издалека — крупнее, золотое кольцо, свет и подпись."
 				]
 			},
 			"en": {
@@ -34,7 +35,8 @@
 					"World difficulty on the world select: Easy, Normal or Hard. On Easy enemies have a quarter less health and damage, on Hard a quarter more, and kills and chests give 20% more alloy. Normal is the game as before; the choice is kept in the profile, the daily run is always Normal.",
 					"Beating the general: fireworks over the field, a «General defeated» banner and a message from the major. Back in the hub the major calls first: well done, and the new goal — challenges and the endless line.",
 					"The grenade launcher now lobs: the grenade flies over cover and lands on the first enemy in line (or at full range). The RPG still fires a straight rocket.",
-					"Blueprint insurance without its blueprint shows «Blueprint needed» instead of «Upgrade · -1»."
+					"Blueprint insurance without its blueprint shows «Blueprint needed» instead of «Upgrade · -1».",
+					"Route map: the «Captured CP» with its legendary card stands out from afar — bigger, a gold ring, light and a caption."
 				]
 			}
 		},
