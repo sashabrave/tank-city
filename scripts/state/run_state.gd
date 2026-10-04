@@ -20,6 +20,8 @@ var rerolls_left=0
 var weapon_mods: Dictionary={}
 var recovery_bonus=0.0
 var run_bonus_levels:Dictionary={}
+## Chest trophies (secret rewards) taken this sortie: [{type, id}] — shown in the tablet build block (T-246).
+var trophies:Array=[]
 var lost_run=false
 var pending_recipes: Array=[]
 var vehicle_mods={"buggy":{"damage":0.0,"hp":0.0,"speed":1.0,"rate":1.0},"apc":{"damage":0.0,"hp":0.0,"speed":1.0,"rate":1.0},"tank":{"damage":0.0,"hp":0.0,"speed":1.0,"rate":1.0}}

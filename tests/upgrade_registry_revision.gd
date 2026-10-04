@@ -50,8 +50,31 @@ func run():
 	await effect_cards_checks()
 	await legend_rules_checks()
 	await feel_checks()
+	await build_block_checks()
 	Game.reset_upgrades();Campaign.configure(1)
 	print("UPGRADE REGISTRY: %d failures" % failures);get_tree().quit(1 if failures else 0)
+
+## T-246: everything that acts in a sortie reaches the tablet «Вылазка» build block — every registry card (by
+## family), the loaded ammo box, abilities, HQ modules, vehicle upgrades, chest trophies and the changed values.
+func build_block_checks():
+	Game.reset_upgrades();Campaign.configure(1)
+	var arena=new_arena(83);arena.phase="upgrade";arena.abilities.slots=["grenade"]
+	for def in UpgradeRegistry.all():RunUpgrades.apply(arena,def.id,maxi(def.min_tier,1))
+	arena.reward.apply_secret({"type":"weapon","id":"pistol"})
+	arena.vehicle.upgrade_at_service("buggy",0,{"id":"damage","tier":1})
+	var report=preload("res://scripts/ui/sortie_report.gd")
+	var data=report.snapshot(arena)
+	var shown=data.cards.map(func(c):return c.id)
+	var missing=UpgradeRegistry.all().filter(func(def):return def.id not in Ammo.TYPES and def.id not in shown).map(func(def):return def.id)
+	check(missing.is_empty(),"every card taken is listed in the build block %s" % str(missing))
+	check(data.ammo.size()>=1 and data.ammo.all(func(a):return str(a.type) in Ammo.TYPES),"the loaded ammo box is listed")
+	check(data.abilities.size()==1 and data.trophies.size()==1 and data.vehicles.size()==1,"abilities, chest trophy and vehicle upgrade are listed")
+	check(data.values.has("fire") and data.values.has("survival") and data.values.has("ammo"),"changed values per family: %s" % str(data.values.keys()))
+	check(not data.hq.is_empty() or arena.headquarters.loadout().is_empty(),"HQ modules in the loadout are listed")
+	var body=Control.new();add_child(body);report.build(body,data,true)
+	var block=body.find_child("BuildBlock",true,false)
+	check(block!=null and block.position.y<1.0,"the build block opens the page")
+	arena.abilities.slots=[];body.queue_free();arena.queue_free();await get_tree().process_frame
 
 func new_arena(seed_value:=-1):
 	var arena=load("res://scenes/arena.tscn").instantiate()

@@ -251,6 +251,20 @@ func ammo_rules():
 	RunUpgrades.apply(arena,"stun",1)
 	check(Ammo.types_loaded(run).has("cryo") and Ammo.active(run)=="stun","two ammo types loaded, the new one active")
 	Ammo.switch(arena);check(Ammo.active(run)=="cryo","switching makes the other type active")
+	# T-243: a card for the ammo already loaded is an upgrade — one rarity higher, no value goes down.
+	var loaded_shock={"type":"shock","rarity":0,"stats":{"bonus":.27,"jolt":.07},"damage":0.0,"twist":false}
+	run.ammo_slots[0]=loaded_shock.duplicate(true)
+	var upgrade_card=RunUpgrades.card(arena,{"id":"shock","tier":0})
+	check(int(upgrade_card.tier)==1 and str(upgrade_card.swap.action).contains("→") and not str(upgrade_card.swap.action).ends_with(Texts.render("обычные")),"loaded EMP: the card offers a rarer box (%s)" % upgrade_card.swap.action)
+	var never_lower=true
+	for row in upgrade_card.rows:never_lower=never_lower and float(str(row[3]).to_float())>=float(str(row[2]).to_float())
+	check(never_lower and not upgrade_card.rows.is_empty(),"upgrade card: every value after ≥ before")
+	RunUpgrades.apply(arena,"shock",0)
+	var shock_now=Ammo.loaded_item(run,"shock")
+	check(int(shock_now.rarity)==1 and float(shock_now.stats.jolt)>=.07 and float(shock_now.stats.bonus)>=.27,"taken: the loaded EMP is rare and kept its better values")
+	shock_now.rarity=3
+	check(not RunUpgrades.eligible(arena,UpgradeRegistry.get_def("shock")),"legendary EMP loaded: the EMP box card is no longer offered")
+	run.ammo_bag=run.ammo_bag.filter(func(a):return a.type!="standard")
 	# Ammo vending machine (T-116/T-159): tokens → a fitting rolled item at the crate price; odds add up, officer is richer.
 	Game.ammo_slot_weapons=[];Ammo.ensure(run,arena.weapon)
 	var holder=Node3D.new()

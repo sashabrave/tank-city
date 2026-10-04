@@ -5,7 +5,7 @@
 [resource]
 script = ExtResource("1")
 id = "pierce"
-title = "Бронебойные"
+title = "Сквозной выстрел"
 category = "Оружие"
 family = "fire"
 icon = "legendary"

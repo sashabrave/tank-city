@@ -23,7 +23,7 @@ static func configure(card:Panel,data:Dictionary,choose:Callable):
 	var stripe=ColorRect.new();stripe.name="CategoryStripe";card.add_child(stripe)
 	stripe.mouse_filter=Control.MOUSE_FILTER_IGNORE;stripe.position=Vector2(0,16);stripe.size=Vector2(9,48);stripe.color=data.color
 	var silhouette=TextureRect.new();silhouette.name="CategoryIcon";card.add_child(silhouette)
-	var symbol={"Огневая мощь":"weapon","Живучесть":"hero","Спецбоеприпасы":"bonus","Разведка":"ability","Тыл":"hq","Герой":"hero","Штаб":"hq","Оружие":"weapon","Способность":"ability","Транспорт":"vehicle","Чертёж":"blueprint","Бонус":"bonus","Тактика":"hero"}.get(category,"trophy")
+	var symbol={"Огневая мощь":"weapon","Живучесть":"hero","Эффекты попадания":"bonus","Разведка":"ability","Тыл":"hq","Герой":"hero","Штаб":"hq","Оружие":"weapon","Способность":"ability","Транспорт":"vehicle","Чертёж":"blueprint","Бонус":"bonus","Тактика":"hero"}.get(category,"trophy")
 	# Drawn category symbol (data/icon_kit.json «category/…»); the line silhouette tinted by rarity is the fallback.
 	var drawn=IconKit.symbol("category/"+symbol)
 	silhouette.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;silhouette.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
@@ -50,26 +50,37 @@ static func configure(card:Panel,data:Dictionary,choose:Callable):
 		if not button.disabled:button.grab_focus())
 	button.add_to_group("reward_choice");button.pressed.connect(choose)
 	if data.has("family"):minimal(card,data)
-## Run upgrade cards, mobile style: the whole card is the button; rarity reads from the border, glow and
-## 1-4 corner pips (no word); the family is a small chip; big icon, title and the old→new line in the middle.
+## Run upgrade cards, mobile style: the whole card is the button. Top-left: a filled plate with the rarity word
+## (T-242), the family chip right under it; big icon, title, then the ammo-card layout for values (T-251).
 const FAMILY_COLORS={"fire":Color("e8784a"),"survival":Color("7cc27a"),"ammo":Color("e0b44f"),"recon":Color("5fc7c0"),"logistics":Color("c4a878")}
+## Typography of every run card, taken from the ammo card (T-251): one accent line, «parameter … old → new» rows,
+## quiet notes. Sizes in px.
+const TYPE={"action":14,"param":14,"value":15,"note":13,"body":15,"row":30}
 static func minimal(card:Panel,data:Dictionary):
 	for key in ["Rarity","CategoryStripe","CategoryIcon","IconFrame"]:
 		var node=card.get_node_or_null(key)
 		if node:node.hide()
 	var width=card.size.x if card.size.x>0 else 280.0
-	var icon:TextureRect=card.get_node("Icon");icon.position=Vector2(width*.5-56,46);icon.size=Vector2(112,112)
+	var icon:TextureRect=card.get_node("Icon")
+	var tier=clampi(int(data.get("tier",0)),0,3)
+	# Rarity plate: the card's rarity colour, dark text — reads first, before the family.
+	var plate=Panel.new();plate.name="RarityPlate";card.add_child(plate);plate.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	# Drawn directly (UiKit.style/label remap light colours for the dark theme; the plate is meant to be bright).
+	var plate_style=StyleBoxFlat.new();plate_style.bg_color=data.color;plate_style.set_corner_radius_all(7)
+	plate.add_theme_stylebox_override("panel",plate_style)
+	var plate_text=UiKit.label(plate,str(data.get("heading","")),Vector2(10,1),Vector2(160,20),12)
+	plate_text.add_theme_font_override("font",UiKit.bold_font());plate_text.add_theme_color_override("font_color",Color("1d2420"))
+	plate.position=Vector2(14,14);plate.size=Vector2(UiKit.bold_font().get_string_size(Texts.render(str(data.get("heading",""))),HORIZONTAL_ALIGNMENT_LEFT,-1,12).x+20,22)
 	var chip=Panel.new();chip.name="FamilyChip";card.add_child(chip);chip.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	var family_color:Color=FAMILY_COLORS.get(data.family,UiKit.MUTED)
 	chip.add_theme_stylebox_override("panel",UiKit.style(Color(family_color,.16),10,Color(family_color,.5)))
 	var chip_text=UiKit.label(chip,data.category,Vector2(22,2),Vector2(160,20),12,family_color.lightened(.2))
 	var dot=Panel.new();chip.add_child(dot);dot.position=Vector2(9,8);dot.size=Vector2(7,7);dot.add_theme_stylebox_override("panel",UiKit.style(family_color,4,family_color))
-	chip.position=Vector2(14,14);chip.size=Vector2(chip_text.get_theme_font("font").get_string_size(Texts.render(data.category),HORIZONTAL_ALIGNMENT_LEFT,-1,12).x+32,24)
-	# One drawn symbol, no frame around it: rarity reads from the card border and its tinted background.
-	var tier=clampi(int(data.get("tier",0)),0,3)
+	chip.position=Vector2(14,42);chip.size=Vector2(chip_text.get_theme_font("font").get_string_size(Texts.render(data.category),HORIZONTAL_ALIGNMENT_LEFT,-1,12).x+32,24)
+	# One drawn symbol, no frame around it: rarity reads from the plate, the card border and its tinted background.
 	var full=UiKit.icon_texture(data.get("art_key",data.icon))
 	if full:icon.texture=UiKit.trimmed(full)
-	icon.position=Vector2(width*.5-62,50);icon.size=Vector2(124,124)
+	icon.position=Vector2(width*.5-56,66);icon.size=Vector2(112,112)
 	icon.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;icon.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
 	rarity_glow(card,data.color,tier)
 	var owned=mini(3,int(data.get("stacks",0)))
@@ -79,10 +90,14 @@ static func minimal(card:Panel,data:Dictionary):
 		chevrons.position=Vector2(0,18);chevrons.size=icon.size
 		chevrons.tooltip_text=Texts.render("Уже взято: %d") % owned
 	var title:Label=card.get_node("Title");title.position=Vector2(16,196);title.size=Vector2(width-32,34);title.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;title.vertical_alignment=VERTICAL_ALIGNMENT_CENTER
+	# A long name («Зажигательные боеприпасы») gets a smaller size instead of «…».
+	var title_size=title.get_theme_font_size("font_size");var title_width=title.get_theme_font("font").get_string_size(Texts.render(title.text).to_upper(),HORIZONTAL_ALIGNMENT_LEFT,-1,title_size).x+4
+	if title_width>title.size.x:title.add_theme_font_size_override("font_size",maxi(15,floori(title_size*title.size.x/title_width)))
 	for key in ["Description","NumericDescription"]:
 		var body=card.get_node_or_null(key)
 		if body:body.position=Vector2(18,240);body.size=Vector2(width-36,card.size.y-254)
-		if body is Label:body.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+		if body is Label:
+			body.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;body.add_theme_font_size_override("font_size",TYPE.body);body.add_theme_constant_override("line_spacing",2)
 	var rich=card.get_node_or_null("NumericDescription")
 	if rich is RichTextLabel:rich.text="[center]"+rich.text+"[/center]"
 	if not data.get("rows",[]).is_empty():table(card,data,width,family_color)
@@ -111,83 +126,42 @@ static func rarity_glow(card:Panel,color:Color,tier:int):
 	material.set_shader_parameter("motion",1.0 if UiKit.motion_enabled() else 0.0)
 	glow.material=material
 
-## Change view, centred on an 8 px rhythm: the change in large type, below it the parameter with the old
-## value struck through and the resulting one, then one short sentence. The long description is the tooltip.
+## Values of a card (T-251): every card uses the ammo-card layout — an accent line (what happens to the slots, or
+## the card's short sentence), then «parameter … old → new» rows. The long description is the tooltip.
 static func table(card:Panel,data:Dictionary,width:float,accent:Color):
 	for key in ["Description","NumericDescription"]:
 		var body=card.get_node_or_null(key)
 		if body:body.hide()
-	if data.has("swap") and data.swap.has("action"):ammo_table(card,data,width,accent);return
-	var y=240.0
-	# Two or more rows (ammo items with several rolled values) get a tighter rhythm so the note still fits.
-	var dense=data.rows.size()>=2;var step=(44.0 if data.has("swap") else 50.0) if dense else 80.0
-	for row in data.rows:
-		var value=UiKit.label(card,str(row[0]),Vector2(16,y),Vector2(width-32,28 if dense else 36),21 if dense else 28,accent.lightened(.25));value.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;value.vertical_alignment=VERTICAL_ALIGNMENT_CENTER;value.name="RowValue"
-		var compare=RichTextLabel.new();compare.name="RowParam";card.add_child(compare);compare.position=Vector2(16,y+(27 if dense else 42));compare.size=Vector2(width-32,24)
-		compare.bbcode_enabled=true;compare.scroll_active=false;compare.fit_content=true;compare.mouse_filter=Control.MOUSE_FILTER_IGNORE;compare.autowrap_mode=TextServer.AUTOWRAP_OFF
-		compare.add_theme_font_override("normal_font",UiKit.field_font());compare.add_theme_font_override("bold_font",UiKit.bold_font());compare.add_theme_font_size_override("normal_font_size",15);compare.add_theme_font_size_override("bold_font_size",15)
-		compare.add_theme_color_override("default_color",UiKit.MUTED)
-		var name=Texts.render(str(row[1]));name=name.left(1).to_upper()+name.substr(1)
-		var text="[center]%s" % name
-		if row.size()>=4:text+="   [color=#8d9589][s]%s[/s][/color]  →  [b][color=#f1eedb]%s[/color][/b]" % [Texts.render(str(row[2])),Texts.render(str(row[3]))]
-		compare.text=text+"[/center]"
-		# T-151: a long name with «old → new» shrinks to fit the card instead of running past its edge.
-		var plain=name+("   %s  →  %s" % [Texts.render(str(row[2])),Texts.render(str(row[3]))] if row.size()>=4 else "")
-		var needed=UiKit.bold_font().get_string_size(plain,HORIZONTAL_ALIGNMENT_LEFT,-1,15).x
-		if needed>width-36:
-			var size=maxi(11,floori(15.0*(width-36)/needed))
-			compare.add_theme_font_size_override("normal_font_size",size);compare.add_theme_font_size_override("bold_font_size",size)
-		y+=step
-	# Ammo cards (T-127): a strip «old ammo → new ammo» with their icons instead of words.
-	if data.has("swap"):
-		swap_strip(card,data.swap,y,width);y+=40
-		if data.swap.has("rest"):data=data.duplicate();data.short=data.swap.rest
-		else:return
-	var short=str(data.get("short","")).trim_suffix(".")
-	if short!="":
-		var note=UiKit.label(card,short,Vector2(22,y),Vector2(width-44,maxf(44,card.size.y-y-16)),14,UiKit.MUTED);note.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;note.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;note.vertical_alignment=VERTICAL_ALIGNMENT_TOP;note.name="ShortNote"
-		note.add_theme_constant_override("line_spacing",2)
-	card.tooltip_text=Texts.render(str(data.get("detail","")))
+	ammo_table(card,data,width,accent)
 ## Ammo card (T-194): what happens to the slots in one line, then the box's values as a quiet two-column
 ## list «parameter … value» (with «old → new» when the same ammo is already loaded), then bonuses.
 static func ammo_table(card:Panel,data:Dictionary,width:float,accent:Color):
 	var y=236.0
-	var action=UiKit.label(card,str(data.swap.action),Vector2(16,y),Vector2(width-32,40),14,accent.lightened(.3));action.name="AmmoAction"
-	action.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;action.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;action.vertical_alignment=VERTICAL_ALIGNMENT_CENTER
-	y+=46
+	var swap:Dictionary=data.get("swap",{})
+	var action_text=str(swap.get("action",str(data.get("short","")).trim_suffix(".")))
+	if action_text!="":
+		var action=UiKit.label(card,action_text,Vector2(16,y),Vector2(width-32,40),TYPE.action,accent.lightened(.3));action.name="AmmoAction"
+		action.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;action.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;action.vertical_alignment=VERTICAL_ALIGNMENT_CENTER
+		y+=46
 	for row in data.rows:
 		var name=Texts.render(str(row[1]));name=name.left(1).to_upper()+name.substr(1)
-		var label=UiKit.label(card,name,Vector2(20,y),Vector2(width*.55-20,24),14,UiKit.MUTED);label.clip_text=true;label.name="RowParam"
 		var value_text=Texts.render(str(row[3])) if row.size()>=4 else str(row[0])
 		if row.size()>=4 and str(row[2])!="—":value_text=Texts.render(str(row[2]))+" → "+value_text
-		var value=UiKit.label(card,value_text,Vector2(width*.55,y),Vector2(width*.45-20,24),15,UiKit.INK);value.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT;value.name="RowValue"
-		var line=ColorRect.new();card.add_child(line);line.position=Vector2(20,y+25);line.size=Vector2(width-40,1);line.color=Color(1,1,1,.06);line.mouse_filter=Control.MOUSE_FILTER_IGNORE
-		y+=30
-	var rest=str(data.swap.get("rest",""))
+		# The value takes what it needs; the parameter gets the rest of the line (T-243: «Шанс замкнуть техн…»).
+		var value_width=minf(width*.5,UiKit.field_font().get_string_size(value_text,HORIZONTAL_ALIGNMENT_LEFT,-1,TYPE.value).x+8)
+		var label=UiKit.label(card,name,Vector2(20,y),Vector2(width-40-value_width-6,24),TYPE.param,UiKit.MUTED);label.clip_text=true;label.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS;label.name="RowParam";label.tooltip_text=name
+		var value=UiKit.label(card,value_text,Vector2(width-20-value_width,y),Vector2(value_width,24),TYPE.value,UiKit.INK);value.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT;value.name="RowValue"
+		var line=ColorRect.new();line.name="RowLine";card.add_child(line);line.position=Vector2(20,y+25);line.size=Vector2(width-40,1);line.color=Color(1,1,1,.06);line.mouse_filter=Control.MOUSE_FILTER_IGNORE
+		y+=TYPE.row
+	var rest=str(swap.get("rest",""))
 	if rest!="":
-		var note=UiKit.label(card,rest,Vector2(20,y+4),Vector2(width-40,maxf(30,card.size.y-y-12)),13,accent.lightened(.2));note.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;note.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;note.name="ShortNote"
+		var note=UiKit.label(card,rest,Vector2(20,y+4),Vector2(width-40,maxf(30,card.size.y-y-12)),TYPE.note,accent.lightened(.2));note.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;note.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;note.name="ShortNote"
 	card.tooltip_text=Texts.render(str(data.get("detail","")))
-## «old → new» strip: small framed icons of both ammo and an arrow; «Зарядит» shows an empty slot on the left.
-static func swap_strip(card:Panel,swap:Dictionary,y:float,width:float):
-	var strip=HBoxContainer.new();strip.name="SwapStrip";card.add_child(strip);strip.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	strip.add_theme_constant_override("separation",8);strip.alignment=BoxContainer.ALIGNMENT_CENTER;strip.position=Vector2(12,y);strip.size=Vector2(width-24,32)
-	for part in [swap.get("from",{}),{"arrow":true},swap.get("to",{})]:
-		if part.get("arrow",false):
-			var arrow=Label.new();strip.add_child(arrow);arrow.text="→";arrow.add_theme_font_size_override("font_size",18);arrow.add_theme_color_override("font_color",UiKit.ORANGE);continue
-		var box=Panel.new();strip.add_child(box);box.custom_minimum_size=Vector2(30,30);box.mouse_filter=Control.MOUSE_FILTER_IGNORE
-		var color=Color(str(part.get("color","6f7a70")))
-		box.add_theme_stylebox_override("panel",UiKit.style(Color(color,.18),7,Color(color,.8)))
-		var tex=part.get("texture") as Texture2D
-		if tex:
-			var art=TextureRect.new();box.add_child(art);art.texture=tex;art.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;art.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;art.position=Vector2(3,3);art.size=Vector2(24,24);art.mouse_filter=Control.MOUSE_FILTER_IGNORE
-		var name=Label.new();strip.add_child(name);name.text=Texts.render(str(part.get("name","—")));name.add_theme_font_size_override("font_size",12);name.add_theme_color_override("font_color",color.lightened(.3))
-		# Both names share what is left after the two icons and the arrow; long ones end with «…».
-		name.clip_text=true;name.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS;name.custom_minimum_size.x=floorf((width-24-2*30-30-4*8)*.5)
 ## Vertical balance: the block from the icon to the last line sits in the middle of the space under the chip.
 static func balance(card:Panel):
 	var parts:Array=[card.get_node("Icon"),card.get_node("Title")]
 	for child in card.get_children():
-		if str(child.name).begins_with("RowValue") or str(child.name).begins_with("RowParam") or child.name in ["ShortNote","Description","NumericDescription"]:
+		if str(child.name).begins_with("RowValue") or str(child.name).begins_with("RowParam") or str(child.name).begins_with("RowLine") or child.name in ["AmmoAction","ShortNote","Description","NumericDescription"]:
 			if child.visible:parts.append(child)
 	var top=INF;var bottom=0.0
 	for part in parts:
@@ -196,7 +170,7 @@ static func balance(card:Panel):
 			height=part.get_theme_font("font").get_multiline_string_size(part.text,HORIZONTAL_ALIGNMENT_LEFT,part.size.x,part.get_theme_font_size("font_size")).y
 		elif part is RichTextLabel and not part.fit_content:height=part.get_content_height()
 		top=minf(top,part.position.y);bottom=maxf(bottom,part.position.y+height)
-	var area_top=44.0;var area_bottom=card.size.y-20.0
+	var area_top=72.0 if card.get_node_or_null("FamilyChip") else 44.0;var area_bottom=card.size.y-20.0
 	var shift=floorf(((area_bottom-area_top)-(bottom-top))*.5+area_top-top)
 	# Cards in one row share the smallest shift, so titles and values stay on common lines.
 	card.set_meta("balance_shift",maxf(0.0,shift));card.set_meta("balance_parts",parts)

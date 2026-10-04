@@ -60,6 +60,21 @@ static func roll(type:String,rarity:int,seed:int)->Dictionary:
 	# Epic and up: a second bonus — more bullet damage. Legendary adds the type's twist.
 	var damage=snappedf(rng.randf_range(.05,.12),.01) if rarity>=2 else 0.0
 	return {"type":type,"rarity":rarity,"stats":stats,"damage":damage,"twist":rarity>=3}
+## The loaded box of a type ({} when that type is not in a slot).
+static func loaded_item(run,type:String)->Dictionary:
+	for slot in run.ammo_slots:
+		if slot is Dictionary and str(slot.get("type",""))==type:return slot
+	return {}
+## A new box of the type already loaded upgrades it (T-243): every value keeps the better of the two, so the
+## card never shows «7% → 4%»; rarity, bullet damage and the twist only go up.
+static func upgraded(old:Dictionary,new_item:Dictionary)->Dictionary:
+	if old.is_empty() or str(old.get("type",""))!=str(new_item.get("type","")):return new_item
+	var result=new_item.duplicate(true)
+	for key in old.get("stats",{}):result.stats[key]=max(old.stats[key],result.stats.get(key,old.stats[key]))
+	result.rarity=maxi(int(old.get("rarity",0)),int(result.rarity))
+	result.damage=maxf(float(old.get("damage",0.0)),float(result.damage))
+	result.twist=bool(old.get("twist",false)) or bool(result.twist)
+	return result
 static func seed_for(arena,type:String,tier:int)->int:
 	return hash([arena.run.run_seed,arena.room.room_index,arena.room.wave,arena.run.upgrade_history.size(),type,tier])
 

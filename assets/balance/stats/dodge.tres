@@ -5,7 +5,7 @@
 [resource]
 script = ExtResource("1")
 id = "dodge"
-title = "Уклонение"
+title = "Уклонение от пуль"
 icon = "speed"
 family = "survival"
 order = 0

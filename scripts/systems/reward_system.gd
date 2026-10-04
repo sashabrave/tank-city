@@ -297,13 +297,14 @@ func chest_offers(_elite:bool=true)->Array:
 	var difficulty=2 if arena.room.boss_room else arena.room.difficulty
 	# Chest cards come from the same registry and rarity roll as wave offers, never below the room difficulty.
 	var result=[{"category":"alloy","id":"alloy","amount":EncounterRules.chest_alloy(arena.room.room_index,difficulty),"tier":0}]
-	for offer in RunUpgrades.roll_offers(arena,2):result.append({"category":"upgrade","id":offer.id,"tier":maxi(int(offer.tier),difficulty)})
+	for offer in RunUpgrades.roll_offers(arena,2,true):result.append({"category":"upgrade","id":offer.id,"tier":maxi(int(offer.tier),difficulty)})
 	var recipe=EncounterRules.guaranteed(Campaign.progress_index(arena.room_index),arena.run.pending_recipes)
 	if recipe.is_empty():recipe=EncounterRules.recipe(difficulty,arena.run.combat_rng,arena.run.pending_recipes,Campaign.progress_index(arena.room_index))
 	if not recipe.is_empty():result[0]=recipe
 	return result
 
 func apply_secret(offer):
+	arena.run.trophies.append({"type":str(offer.type),"id":str(offer.id)})
 	match offer.type:
 		"weapon":
 			arena.run.weapon_mods[offer.id].damage+=.75

@@ -47,13 +47,14 @@
 | armor_plate.png | garage/buggy_armor, garage/apc_armor, garage/tank_armor | Багги · Бронекомплект, БТР · Бронекомплект, Танк · Бронекомплект |
 | cannon.png | garage/buggy_gun, garage/apc_gun, garage/tank_gun | Багги · Орудие, БТР · Орудие, Танк · Орудие |
 
-## Запас символов (9)
+## Запас символов (10)
 
 Где: Нарисован, пока нигде не подключён
 
 | Файл | id | Название |
 |---|---|---|
 | bomb.png | bomb | bomb |
+| boot_dodge.png | boot_dodge | boot_dodge |
 | crossed_rifles.png | crossed_rifles | crossed_rifles |
 | invulnerable.png | invulnerable | invulnerable |
 | padlock.png | padlock | padlock |
@@ -95,7 +96,7 @@
 | star3.png | star3 | star3 |
 | token.png | token | token |
 
-## Карточки забега (45)
+## Карточки забега (44)
 
 Где: Окно «Выбери усиление» между волнами; энциклопедия; сводка забега; Казарма → прокачка, принтер бойца
 
@@ -103,25 +104,24 @@
 |---|---|---|
 | battery_bolt.png | upgrades/shock_overload, stats/shock_power | Перегрузка, Разряд |
 | bell.png | upgrades/crit_stun | Звон в ушах |
-| bolt.png | upgrades/shock, stats/shock_bonus | ЭМИ-патроны, ЭМИ по технике |
+| bolt.png | upgrades/shock, stats/shock_bonus | ЭМИ-боеприпасы, ЭМИ по технике |
 | bolt_arc.png | upgrades/shock_arc | Разряд |
 | bomb_suit.png | upgrades/guard_blast, stats/guard_blast | Сапёрный костюм, Защита от взрывов |
-| boot_dodge.png | upgrades/dodge, stats/dodge | Перекат, Уклонение |
 | boot_wind.png | upgrades/speed | Передвижение |
 | bullet_burst.png | upgrades/weapon_damage | Урон оружия |
-| bullet_shatter.png | upgrades/crit_damage, stats/crit_damage | Разрывные, Крит-урон |
+| bullet_shatter.png | upgrades/crit_damage, stats/crit_damage | Слабое место, Крит-урон |
 | bullet_vs_rocket.png | upgrades/intercept, pickups/pressure | Стабилизатор, Ярость |
 | bullets_fast.png | upgrades/fire | Темп огня |
 | burst.png | upgrades/damage | Сила атаки |
 | clover_casing.png | upgrades/luck, stats/luck | Счастливая гильза, Удача |
 | crew_hatch.png | upgrades/crew | Экипаж |
 | crosshair.png | upgrades/crit_chance, stats/crit_chance | Меткий глаз, Шанс крита |
-| dizzy.png | upgrades/stun, stats/stun_chance | Контузящие патроны, Контузия |
+| dizzy.png | upgrades/stun, stats/stun_chance | Контузящие боеприпасы, Контузия |
 | door_dash.png | upgrades/exit_dash | Смена позиции |
-| flame.png | upgrades/burn, stats/burn_chance | Зажигательные патроны, Поджог |
+| flame.png | upgrades/burn, stats/burn_chance | Зажигательные боеприпасы, Поджог |
 | flame_chain.png | upgrades/chain_fire | Цепная реакция |
 | flashbang.png | upgrades/stun_often | Частая контузия |
-| ghost_dash.png | upgrades/ghost | Призрак |
+| ghost_dash.png | upgrades/dodge, upgrades/ghost, stats/dodge | Уклонение, Призрак, Уклонение от пуль |
 | grapple.png | upgrades/boarding | Абордаж |
 | grenade_clock.png | upgrades/device_cooldown | Быстрые способности |
 | grenade_up.png | upgrades/device_power | Сила способностей |
@@ -134,7 +134,7 @@
 | magazine_fast.png | upgrades/weapon_fire | Скорострельность |
 | medkit.png | upgrades/healing | Медицина |
 | parachute.png | upgrades/landing | Десант |
-| pierce.png | upgrades/pierce, stats/pierce | Бронебойные, Пробитие |
+| pierce.png | upgrades/pierce, stats/pierce | Сквозной выстрел, Пробитие |
 | plug_spark.png | upgrades/shock_short | Замыкание |
 | safe.png | upgrades/safe, stats/safe_slots | Сейф, Сейф рюкзака |
 | sandbags.png | upgrades/fortress | Крепость |
@@ -186,7 +186,7 @@
 | legend_fury.png | upgrades/legend_fury | Ярость |
 | legend_iron_will.png | upgrades/legend_iron_will | Стальная воля |
 | legend_ram.png | upgrades/legend_ram | Таран |
-| legend_ricochet.png | upgrades/legend_ricochet | Рикошет |
+| legend_ricochet.png | upgrades/legend_ricochet | Шальная пуля |
 | legend_second_wind.png | upgrades/legend_second_wind | Второе дыхание |
 | legend_volley.png | upgrades/legend_volley | Залп |
 

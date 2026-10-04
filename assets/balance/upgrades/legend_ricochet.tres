@@ -6,7 +6,7 @@
 [resource]
 script = ExtResource("1")
 id = "legend_ricochet"
-title = "Рикошет"
+title = "Шальная пуля"
 category = "Тактика"
 family = "fire"
 icon = "legendary"
