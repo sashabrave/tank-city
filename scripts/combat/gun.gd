@@ -128,6 +128,21 @@ static func aim(field,shooter)->Vector2i:
 static func model_of(shooter)->Node3D:
 	return shooter.model if shooter.get("model") is Node3D else shooter
 
+## Where a shot leaves the barrel (2026-10-04, author: «снаряды вылетают из тела, а не из ствола»), in world space:
+## `spawn` — the round's start: the forward reach and the height of the shouldered gun's «Muzzle», but on the
+## shooter's own lane, so a round never drifts sideways off the cell line it aims along; `flash` — the barrel end
+## itself (muzzle flash, casing). The gun comes to the shoulder with the shot. Without a gun model: `forward`/`height`.
+static func muzzle(shooter:Node3D,facing:Vector2i,forward:=.39,height:=.55)->Dictionary:
+	var base:=shooter.global_position;var dir:=Vector3(facing.x,0,facing.y)
+	var model=model_of(shooter)
+	if is_instance_valid(model) and model.has_method("muzzle_point"):
+		var point:Vector3=model.muzzle_point()
+		if point!=Vector3.INF:
+			model.shoulder()
+			forward=clampf((point-base).dot(dir),.2,1.2);height=point.y-base.y
+	var spawn:=base+dir*forward+Vector3.UP*height
+	return {"spawn":spawn,"flash":spawn,"casing":spawn-dir*minf(.25,forward*.5)}
+
 ## Loaded ammo extras of a charge's blast (T-114), shared by every field: cluster scatters bomblets around the
 ## landing spot, napalm leaves a burning patch. `rng` is the fight's in battle, a visual one in practice;
 ## `blast` is the field's small-explosion function (position, damage).
@@ -158,12 +173,11 @@ static func practice_bullet(field,shooter:Node3D,facing:Vector2i,damage:float,id
 	var bullet=load("res://scenes/projectile.tscn").instantiate()
 	bullet.arena=field;bullet.friendly=true;bullet.player_shot=true;bullet.damage=damage;bullet.sniper_visual=id=="sniper"
 	bullet.direction=facing;bullet.travel_direction=Vector3(facing.x,0,facing.y)
-	var model=model_of(shooter);var height=.55
-	if is_instance_valid(model) and model.get("muzzle") is Node3D and is_instance_valid(model.muzzle):height=model.muzzle.global_position.y-shooter.global_position.y
-	bullet.position=shooter.position+Vector3(facing.x*.39,height,facing.y*.39)
+	var at=muzzle(shooter,facing)
+	bullet.position=field.to_local(at.spawn)
 	field.add_child(bullet);field.projectiles.append(bullet)
 	var feel=practice_feel(field)
-	feel.muzzle(null,bullet.global_position,bullet.travel_direction);feel.casing(shooter,bullet.travel_direction)
+	feel.muzzle(null,at.flash,bullet.travel_direction);feel.casing(shooter,bullet.travel_direction,at.casing)
 	return bullet
 ## Muzzle flashes and casings need a CombatFeel on the field; practice fields get a light one on first shot.
 static func practice_feel(field)->Node:

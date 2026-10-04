@@ -51,7 +51,14 @@
 					"Улучшения патронов («Жар», «Перегрузка»…) выпадают, как только тип заряжен, откуда бы ни пришёл ящик.",
 					"Экран итогов: оружие и вещи забега не исчезают, а по одной срываются из ячеек и падают за низ экрана, как монеты, — с наклоном и сносом в сторону.",
 					"Слитки сплава и бонусы на поле стали на 30% меньше.",
-					"Снайперка везде показывается своей нарисованной винтовкой, а не значком траектории."
+					"Снайперка везде показывается своей нарисованной винтовкой, а не значком траектории.",
+					"Снаряды вылетают из ствола, а не из тела бойца: с выстрелом оружие вскидывается к плечу, пуля, вспышка и гильза — у дула. Так стреляют и герой, и товарищ, и враги, в бою, в хабе и в комнатах.",
+					"Очередь из ПП больше не подсвечивает блок в центре карты (и в хабе): снаряд на один кадр рисовался не на своём месте.",
+					"Мина — круглая, с красной лампой: мигает медленно, пока взводится, и часто, когда готова. Повторное нажатие клавиши гаджета подрывает поставленную мину издалека; на плитке гаджета в это время горит «Подрыв». Своя мина больше не срабатывает под героем.",
+					"Лазер — тонкий красный луч от ствола: ярче прицела снайпера и резко мигает.",
+					"Гранатомёт стреляет гранатами, похожими на вражеские, а не ракетами.",
+					"Дрон-помощник не висит за спиной: без цели облетает клетки вокруг героя, в бою каждые пару секунд заходит к врагу с другой стороны.",
+					"Турели у штаба стреляют реже (раз в 3,1 с вместо 2,4), а вторая турель, пока первая стоит, выпадает в пять раз реже."
 				]
 			},
 			"en": {
@@ -102,7 +109,14 @@
 					"Ammo upgrades (Heat, Overload…) are offered as soon as the type is loaded, wherever the box came from.",
 					"Results screen: weapons and run items no longer just vanish — they tear out of their cells one by one and fall off the bottom of the screen like coins, tilting and drifting aside.",
 					"Alloy ingots and bonuses on the field are 30% smaller.",
-					"The sniper rifle shows its drawn rifle icon everywhere instead of the trajectory symbol."
+					"The sniper rifle shows its drawn rifle icon everywhere instead of the trajectory symbol.",
+					"Shots now leave the gun barrel, not the soldier's body: the gun comes up to the shoulder with each shot, and the bullet, flash and casing appear at the muzzle. This applies to the hero, the comrade and enemies, in battle, the hub and rooms.",
+					"SMG bursts no longer light up the block in the centre of the map (or in the hub): a round was drawn in the wrong place for one frame.",
+					"The mine is now round with a red lamp: it blinks slowly while arming and fast when ready. Press the gadget key again to detonate a placed mine remotely; the gadget tile shows «Detonate» meanwhile. Your own mine no longer goes off under the hero.",
+					"The laser is a thin red beam from the barrel: brighter than the sniper's sight and sharply pulsing.",
+					"The grenade launcher fires grenades like the enemies' ones instead of rockets.",
+					"The helper drone no longer hangs behind you: with no target it scouts the cells around the hero, and in a fight it moves to another side of the enemy every couple of seconds.",
+					"HQ turrets fire less often (every 3.1 s instead of 2.4), and while one turret stands a second one drops five times less often."
 				]
 			}
 		},

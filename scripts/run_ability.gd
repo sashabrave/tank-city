@@ -56,6 +56,19 @@ func interval() -> float:
 func power() -> float:return AbilityCatalog.DATA.get(selected,AbilityCatalog.DATA.barrier).power*arena.run.ability_power_multiplier*(1+level.power*Balance.CONFIG.combat.ability_power_step)
 func barrier_count() -> int:return mini(4,1+int(level.utility))
 func laser_walls() -> int:return mini(4,1+int(level.utility))
+func mine_limit() -> int:
+	var own=states.get("mine",{}).get("level",level) if selected!="mine" else level
+	return mini(5,1+int(own.utility))
+## Mines standing on the field (placed by this run, not yet blown).
+func live_mines()->Array:
+	mines=mines.filter(func(m):return is_instance_valid(m) and not m.is_queued_for_deletion())
+	return mines
+## The mine key blows a placed mine (T-295): while the gadget recharges, or when no more mines may be placed,
+## the next press detonates the oldest mine instead of being refused.
+func mine_detonates()->bool:
+	if "mine" not in slots or live_mines().is_empty():return false
+	var waiting=(cooldown if selected=="mine" else float(states.get("mine",{}).get("cooldown",0.0)))>0
+	return waiting or live_mines().size()>=mine_limit()
 func radius() -> float:return Balance.CONFIG.combat.grenade_radius+minf(1.0,level.utility*.25)
 func upgrade(id: String,tier: int):
 	if id not in level:return

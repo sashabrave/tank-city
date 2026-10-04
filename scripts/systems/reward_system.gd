@@ -454,7 +454,13 @@ func drop_enemy_loot(actor):
 		for id in Game.bonus_unlocks:
 			if id in ["heart","star"]:continue
 			for weight in range(Game.TIERS.weight(id,arena.room_index)):pool.append(id)
-		if not pool.is_empty():drop_pickup(actor.cell,pool[arena.run.combat_rng.randi_range(0,pool.size()-1)])
+		if not pool.is_empty():
+			var kind=pool[arena.run.combat_rng.randi_range(0,pool.size()-1)]
+			# A second turret is rare (T-294): with one standing, the turret roll holds only now and then.
+			if kind=="turret" and turret_standing() and arena.run.combat_rng.randf()>=Balance.CONFIG.combat.second_turret_drop_share:
+				pool=pool.filter(func(id):return id!="turret")
+				kind=pool[arena.run.combat_rng.randi_range(0,pool.size()-1)] if not pool.is_empty() else ""
+			if kind!="":drop_pickup(actor.cell,kind)
 	if not arena.room.boss_room and Game.TIERS.weight("star",arena.room_index)>0 and arena.run.combat_rng.randf()<Game.star_chance(arena.room.wave):drop_pickup(actor.cell,"star")
 	if arena.run.combat_rng.randf()<Game.heart_chance():drop_pickup(actor.cell,"heart")
 	drop_enemy_ammo(actor)
@@ -476,6 +482,10 @@ func drop_enemy_ammo(actor):
 	var cell=arena.grid_pos(safe_drop_position(actor.position))
 	if arena.room.pickups.any(func(p):return is_instance_valid(p.get("node")) and arena.grid_pos(p.node.position)==cell):cell=arena.find_free_near(cell)
 	place_sack(cell,{"recipes":[],"ammo":[item]})
+
+## A grenade turret of the player's already guards the HQ (or its bonus is waiting on the field).
+func turret_standing()->bool:
+	return arena.room.actors.any(func(a):return is_instance_valid(a) and a.allied and not a.dead and a.kind=="mortar") or arena.room.pickups.any(func(p):return p.get("kind","")=="turret")
 
 func skip_upgrade():
 	if arena.phase!="upgrade":return

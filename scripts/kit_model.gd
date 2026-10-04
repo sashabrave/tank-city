@@ -103,10 +103,30 @@ func _process(delta):
 	if skeleton:
 		var bone=skeleton.find_bone("spine")
 		if bone>=0:skeleton.set_bone_pose_rotation(bone,skeleton.get_bone_pose_rotation(bone)*Quaternion(Vector3.RIGHT,-recoil*.055))
-	if skeleton and not dying and kind in Visuals.INFANTRY:aim_weapon(delta)
+	if skeleton and not dying and kind in Visuals.INFANTRY:aim_weapon(delta);remember_muzzle()
 	elif skeleton and support_grip and kind!="shield":fit_support_hand()
 func kick():
 	recoil=1.0;aim_timer=1.1
+## The shot itself (2026-10-04, author: «снаряды вылетают из тела»): the gun comes to the shoulder at once, so
+## the round, the flash and the gun on screen meet at the barrel. Visual pose only.
+func shoulder():
+	aim_timer=maxf(aim_timer,1.1);aim_blend=1.0
+## Where the barrel ends when the gun is shouldered, in this model's space. Read live from the «Muzzle» part once the
+## aim pose has held for two frames (cached per body and gun); before that, the measured cat pose (×1.35 guns).
+static var aimed_muzzles:={}
+const AIMED_MUZZLE:={"pistol":Vector3(0,.475,-.326),"rifle":Vector3(0,.49,-.706),"shotgun":Vector3(0,.502,-.706),"smg":Vector3(0,.489,-.5),
+	"sniper":Vector3(0,.49,-.971),"grenade_launcher":Vector3(0,.493,-.572),"rpg":Vector3(0,.515,-.763),"mg":Vector3(0,.499,-.826)}
+var aimed_frames:=0
+func remember_muzzle():
+	aimed_frames=aimed_frames+1 if aim_blend>=.999 else 0
+	if aimed_frames>=3 and is_instance_valid(muzzle):aimed_muzzles[kind+"|"+weapon_id]=to_local(muzzle.global_position)
+## The shouldered barrel end in world space, or Vector3.INF without a gun.
+func muzzle_point()->Vector3:
+	if not is_instance_valid(muzzle):return Vector3.INF
+	var key=kind+"|"+weapon_id
+	if aimed_muzzles.has(key):return to_global(aimed_muzzles[key])
+	if AIMED_MUZZLE.has(weapon_id):return to_global(AIMED_MUZZLE[weapon_id])
+	return muzzle.global_position
 func flinch():
 	if not last_moving:play_once("hero_hit")
 func play_once(clip:String)->bool:

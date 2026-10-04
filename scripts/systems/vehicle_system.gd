@@ -47,10 +47,9 @@ func allied_flyer_step(actor,delta):
 		if not is_instance_valid(enemy) or enemy.dead or enemy.player_owned or enemy.allied:continue
 		var d=arena.flat_distance(actor.position,enemy.position)
 		if d<distance:target=enemy;distance=d
-	var destination=arena.room.player.position+Vector3(1,0,-1)
-	if target!=null:destination=target.position+Vector3(0,0,3)
+	var destination=arena.world_pos(flyer_spot(actor,target,delta))
 	# Along the grid like the enemy drones (T-274): one axis at a time, to the centre of a cell.
-	destination=arena.world_pos(arena.grid_pos(destination));destination.y=actor.position.y
+	destination.y=actor.position.y
 	var step=delta*actor.speed
 	if absf(destination.x-actor.position.x)>.01:actor.position.x=move_toward(actor.position.x,destination.x,step)
 	else:actor.position.z=move_toward(actor.position.z,destination.z,step)
@@ -59,6 +58,35 @@ func allied_flyer_step(actor,delta):
 		actor.fire_cooldown=1.1;var dir=(target.position-actor.position).normalized()
 		actor.model.aim(atan2(-dir.x,-dir.z),-.12);actor.model.kick()
 		var bullet=arena.spawn_bullet(actor,actor.position,Vector2i.UP,actor.damage,true);bullet.travel_direction=dir;bullet.flyer_round=true;bullet.position=actor.position+Vector3.UP*.9
+
+## Helper drone posts (T-302, author: «висит ровно за игроком / ровно за врагом»). At rest it scouts: every
+## SCOUT_HOLD seconds it moves to the next cell of a ring around the hero; in a fight it circles the target and
+## changes its side every ATTACK_HOLD seconds. A fixed cycle (no dice), each drone starting at its own place in it,
+## so the combat RNG is untouched.
+const SCOUT_SPOTS:=[Vector2i(1,-1),Vector2i(2,-1),Vector2i(1,1),Vector2i(-1,1),Vector2i(-2,0),Vector2i(-1,-2),Vector2i(1,-2),Vector2i(2,1)]
+const ATTACK_SPOTS:=[Vector2i(0,3),Vector2i(3,0),Vector2i(-2,2),Vector2i(0,-3),Vector2i(-3,0),Vector2i(2,-2),Vector2i(2,2),Vector2i(-2,-2)]
+const SCOUT_HOLD:=1.8
+const ATTACK_HOLD:=2.6
+func flyer_spot(actor,target,delta:float)->Vector2i:
+	var plan:Dictionary=actor.get_meta("scout_plan",{})
+	if plan.is_empty():
+		var order=int(arena.get_meta("scout_drones",0));arena.set_meta("scout_drones",order+1)
+		plan={"index":order*3,"timer":0.0,"mode":""}
+	var attacking=target!=null
+	var mode="attack" if attacking else "scout"
+	if plan.mode!=mode:plan.mode=mode;plan.timer=0.0
+	plan.timer-=delta
+	var anchor:Vector2i=arena.grid_pos(target.position) if attacking else arena.room.player.cell
+	var spots:Array=ATTACK_SPOTS if attacking else SCOUT_SPOTS
+	if plan.timer<=0:
+		plan.timer=ATTACK_HOLD if attacking else SCOUT_HOLD
+		# Next post of the cycle that lies on the field (the drone flies over cover, never off the board).
+		for i in range(spots.size()):
+			plan.index+=1
+			if arena.inside(anchor+spots[plan.index%spots.size()]):break
+	actor.set_meta("scout_plan",plan)
+	var spot:Vector2i=anchor+spots[plan.index%spots.size()]
+	return Vector2i(clampi(spot.x,0,arena.room.grid_size-1),clampi(spot.y,0,arena.room.grid_size-1))
 
 func summon_comrade(factor:float,utility:float):
 	var buddy=arena.spawn_actor("soldier",arena.find_free_near(arena.room.player.cell),false,true);buddy.companion=true;buddy.companion_factor=factor

@@ -173,7 +173,7 @@ func _process(_delta):
 	for i in range(skill_buttons.size()):
 		var button=skill_buttons[i];var skill=data.skills[i]
 		button.disabled=skill.disabled;Texts.set_text(button,"");button.tooltip_text=skill.hint
-		var display=button.get_node("CooldownDisplay");display.action=arena.abilities.action_for(i);display.progress=skill.progress;display.cooling=skill.cooling;display.remaining=skill.get("remaining",0.0);display.active=skill.active;display.queue_redraw()
+		var display=button.get_node("CooldownDisplay");display.action=arena.abilities.action_for(i);display.progress=skill.progress;display.cooling=skill.cooling;display.remaining=skill.get("remaining",0.0);display.active=skill.active;display.detonate=skill.get("detonate",false);display.queue_redraw()
 	# The digits wait for the arrival: they start once the soldier has landed (battle_stage.hop_out).
 	countdown.visible=data.phase=="countdown" and not arena.get_meta("intro_lock",false)
 	if countdown.visible:Texts.set_text(countdown,str(data.countdown))

@@ -32,18 +32,23 @@ func spawn_bullet(owner_actor,pos: Vector3,dir: Vector2i,damage: float,friendly:
 		if "opening_shot" in run.behavior_cards and run.elapsed-run.last_player_shot>=1.5:run.opening_until=run.elapsed+.05
 		bullet.opening=run.elapsed<=run.opening_until;run.last_player_shot=run.elapsed
 		bullet.sure_crit=run.elapsed<=run.sure_crit_until
-	var muzzle=2.15 if is_instance_valid(owner_actor) and owner_actor.kind=="boss" else .39
-	var muzzle_height=.55
-	if is_instance_valid(owner_actor.model) and owner_actor.model.get("muzzle")!=null:
-		muzzle_height=owner_actor.model.muzzle.global_position.y-owner_actor.position.y
-	bullet.position=pos+Vector3(dir.x*muzzle,muzzle_height,dir.y*muzzle)
+	# Rounds leave the barrel (Gun.muzzle): the shouldered gun's reach and height on the shooter's lane; the boss's
+	# three-gun volley and vehicles without a gun model keep their fixed muzzle. `pos` may sit off the actor (boss lanes).
+	var at:={}
+	if owner_actor.kind=="boss":
+		var spot=pos+Vector3(dir.x*2.15,.55,dir.y*2.15);at={"spawn":arena.to_global(spot),"flash":arena.to_global(spot),"casing":arena.to_global(spot)}
+	else:
+		at=Gun.muzzle(owner_actor,dir)
+		var lane=arena.to_global(pos)-owner_actor.global_position;lane.y=0
+		for key in at:at[key]+=lane
+	bullet.position=arena.to_local(at.spawn)
 	bullet.speed = 20.0 if owner_actor.kind=="buggy" else (13.0 if friendly else 7.5)
 	arena.add_child(bullet)
 	arena.room.projectiles.append(bullet)
 	var feel=arena.get_node_or_null("CombatFeel")
 	if feel:
-		feel.muzzle(owner_actor,bullet.global_position,bullet.travel_direction)
-		if owner_actor.player_owned and owner_actor.kind=="soldier":feel.casing(owner_actor,bullet.travel_direction)
+		feel.muzzle(owner_actor,at.flash,bullet.travel_direction)
+		if owner_actor.player_owned and owner_actor.kind=="soldier":feel.casing(owner_actor,bullet.travel_direction,at.casing)
 	return bullet
 
 func bullet_hit(bullet) -> bool:

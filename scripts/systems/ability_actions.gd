@@ -2,6 +2,9 @@ extends RefCounted
 ## Executes abilities. Cooldowns, loadout and upgrade levels stay in RunAbility.
 func execute(ability)->bool:
 	var arena=ability.arena
+	# Remote fuse (T-295): the mine key blows the oldest placed mine; no cooldown is spent.
+	if ability.selected=="mine" and ability.mine_detonates() and arena.phase in ["combat","countdown"] and is_instance_valid(arena.player) and not arena.player.dead:
+		var mine=ability.live_mines().pop_front();ability.mines.erase(mine);mine.detonate();return true
 	if ability.selected=="" or ability.cooldown>0 or arena.phase not in ["combat","countdown"] or not is_instance_valid(arena.player) or arena.player.dead:return false
 	var p=arena.player
 	if ability.selected=="field_repair":
@@ -42,9 +45,7 @@ func execute(ability)->bool:
 				if not is_instance_valid(enemy) or enemy.dead or enemy.player_owned or enemy.allied or enemy in hit:continue
 				if cell in arena.cells_for(enemy,arena.grid_pos(enemy.position) if enemy.kind=="flyer" else enemy.cell):
 					hit.append(enemy);enemy.take_damage(ability.power())
-		var beam=Visuals.box(arena,(p.position+end)*.5+Vector3.UP*.65,Vector3(.15,.15,maxf(.1,p.position.distance_to(end))),Color("79dbfa"))
-		beam.material_override=Visuals.material(Color("79dbfa"),true);beam.rotation.y=atan2(end.x-p.position.x,end.z-p.position.z)
-		arena.create_tween().tween_property(beam,"scale",Vector3.ZERO,.3).finished.connect(beam.queue_free)
+		laser_beam(arena,p,end)
 	elif ability.selected=="comrade":
 		if arena.actors.any(func(a):return is_instance_valid(a) and a.companion and not a.dead):arena.toast("Товарищ уже в бою");return false
 		arena.summon_comrade(ability.power(),ability.level.utility)
@@ -58,7 +59,30 @@ func execute(ability)->bool:
 	elif ability.selected in ["gas","mine","airstrike","dynamite"]:
 		if ability.selected=="mine":
 			ability.mines=ability.mines.filter(func(m):return is_instance_valid(m) and not m.is_queued_for_deletion())
-			if ability.mines.size()>=mini(5,1+int(ability.level.utility)):arena.toast("Лимит мин");return false
+			if ability.mines.size()>=ability.mine_limit():arena.toast("Лимит мин");return false
 		var effect=load("res://scripts/ability_effect.gd").new();effect.arena=arena;effect.kind=ability.selected;effect.power=ability.power();effect.utility=ability.level.utility;effect.position=p.position;arena.add_child(effect)
 		if ability.selected=="mine":ability.mines.append(effect)
 	ability.cooldown=ability.interval()+(ability.shield_time if ability.selected=="shield" else 0.0);ability.cooldown_totals[ability.selected]=ability.cooldown;Game.sound({"barrier":"barrier_deploy","grenade":"grenade_throw","laser":"laser_fire","shield":"shield_restore","cloak":"cloak","mine":"mine_arm","dynamite":"mine_arm","comrade":"delivery_land"}.get(ability.selected,"ability_generic"),p);return true
+
+## Gadget laser look (T-296): a thin red beam from the gun's muzzle, hotter than the sniper's sight, strobing hard
+## for half a second; a red flash where it stops. Visual only.
+const LASER_RED:=Color("ff2335")
+const LASER_SECONDS:=.5
+static var laser_core:ShaderMaterial
+static var laser_halo:ShaderMaterial
+func laser_beam(arena,p,end:Vector3):
+	if laser_core==null:
+		laser_core=ShaderMaterial.new();laser_core.shader=preload("res://shaders/fx/gadget_laser.gdshader");laser_core.set_shader_parameter("color",LASER_RED)
+		laser_halo=laser_core.duplicate();laser_halo.set_shader_parameter("halo",1.0)
+	var start:Vector3=arena.to_local(Gun.muzzle(p,p.facing).flash)
+	var stop=Vector3(end.x,start.y,end.z);var length=maxf(.1,start.distance_to(stop))
+	var beam=Node3D.new();beam.name="GadgetLaser";arena.add_child(beam);beam.position=(start+stop)*.5;beam.rotation.y=atan2(stop.x-start.x,stop.z-start.z)
+	var parts=[]
+	for spec in [[Vector3(.04,.04,length),laser_core],[Vector3(.17,.17,length),laser_halo]]:
+		var box=Visuals.box(beam,Vector3.ZERO,spec[0],LASER_RED);box.material_override=spec[1];box.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF;parts.append(box)
+	arena.burst(stop,LASER_RED,.3);arena.burst(start,LASER_RED.lightened(.3),.12)
+	var tween=beam.create_tween()
+	var burn=func(t:float):
+		for box in parts:box.set_instance_shader_parameter("age",t)
+	tween.tween_method(burn,0.0,1.0,LASER_SECONDS)
+	tween.tween_callback(beam.queue_free)

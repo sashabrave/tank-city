@@ -21,7 +21,7 @@ static func tracer(parent:Node3D,color:Color,size:Vector3):
 static func projectile_light(parent:Node3D,color:Color):
 	# Independent of the scenery budget: at most two tiny moving light pools.
 	if Settings.values.world_lighting!="night" or parent.get_tree().get_nodes_in_group("projectile_lights").size()>=2:return
-	var light=OmniLight3D.new();light.add_to_group("projectile_lights");light.light_color=color;light.light_energy=.55;light.omni_range=1.15;light.shadow_enabled=false;parent.add_child(light)
+	var light=OmniLight3D.new();light.name="ProjectileLight";light.add_to_group("projectile_lights");light.light_color=color;light.light_energy=.55;light.omni_range=1.15;light.shadow_enabled=false;parent.add_child(light)
 static func pickup(parent:Node3D,color:Color):
 	var pool=OmniLight3D.new();pool.name="PickupGlow";parent.add_child(pool);pool.position.y=.15;pool.omni_range=1.5;pool.light_color=color;pool.shadow_enabled=false;pool.light_volumetric_fog_energy=0.0
 	pool.add_to_group("pickup_lights")

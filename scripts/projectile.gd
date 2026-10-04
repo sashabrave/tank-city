@@ -51,14 +51,31 @@ func build_visual():
 	elif sniper_round or sniper_visual:kind="sniper";color=Color("ff263f")
 	elif orb:kind="orb";color=Color("ff8e40")
 	elif piercing or (is_instance_valid(owner_actor) and owner_actor.kind in ["tank","boss","apc","mortar"]):kind="shell"
-	var visual=EffectLighting.projectile_visual(self,kind,color,friendly and kind!="rocket")
-	# Enemy rounds flicker so they read as danger among friendly tracers.
-	if not friendly and visual.get_child_count()>1:blink_halo=visual.get_child(1)
-	if kind in ["sniper","orb","rocket"]:EffectLighting.projectile_light(self,color)
+	var visual:Node3D
+	if lobbed:
+		# Grenade launcher (T-306): the same hand grenade the enemies throw, tumbling along the arc; the round's
+		# ×2 blast scale is undone so it reads at the thrown grenade's size.
+		visual=preload("res://scripts/ordnance.gd").grenade(self,friendly)
+		visual.scale=Vector3.ONE/maxf(.01,scale.x)
+	else:
+		visual=EffectLighting.projectile_visual(self,kind,color,friendly and kind!="rocket")
+		# Enemy rounds flicker so they read as danger among friendly tracers.
+		if not friendly and visual.get_child_count()>1:blink_halo=visual.get_child(1)
+		if kind in ["sniper","orb","rocket"]:EffectLighting.projectile_light(self,color)
+	# T-298/T-300: a round built in the deferred flush after a burst timer (SMG) was drawn for one frame at the
+	# field's origin in full size — the centre cell of the map (or a hub block) flashed. The look and its light
+	# show from the next frame on, when the round's transform has reached the renderer.
+	visual.visible=false
+	var light=get_node_or_null("ProjectileLight")
+	if light:light.visible=false
+	get_tree().process_frame.connect(reveal.bind(visual,light),CONNECT_ONE_SHOT)
+func reveal(visual:Node3D,light:Node3D):
+	if is_instance_valid(visual):visual.visible=true
+	if is_instance_valid(light):light.visible=true
 const LOB_HEIGHT:=2.2
 func _physics_process(delta):
 	if spent or not is_instance_valid(arena) or arena.phase not in ["combat","countdown"]: return
-	if rocket_radius>0:Game.sound_loop("rocket_flight",self)
+	if rocket_radius>0 and not lobbed:Game.sound_loop("rocket_flight",self)
 	if is_instance_valid(blink_halo):blink_halo.visible=fposmod(Time.get_ticks_msec()*.011+position.x,1.0)<.6
 	lifetime -= delta
 	if lobbed:

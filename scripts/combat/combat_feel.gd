@@ -49,14 +49,15 @@ func muzzle(shooter,pos:Vector3,direction:Vector3):
 	var data=mesh("flash");var flash=MeshInstance3D.new();flash.mesh=data[0];flash.material_override=data[1];flash.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	arena.add_child(flash);flash.global_position=pos+direction*.08;flash.scale=Vector3.ONE*(1.6 if shooter!=null and UnitKinds.is_vehicle(shooter.kind) else 1.0)
 	var tween=flash.create_tween();tween.tween_property(flash,"scale",Vector3.ZERO,.06);tween.tween_callback(flash.queue_free)
-## A brass casing flies out to the right of the gun, bounces once and fades.
-func casing(shooter,direction:Vector3):
+## A brass casing flies out to the right of the gun (from `start`, the gun's ejection port), bounces once and fades.
+func casing(shooter,direction:Vector3,start:=Vector3.INF):
 	if casings.size()>=MAX_CASINGS:
 		var oldest=casings.pop_front()
 		if is_instance_valid(oldest):oldest.queue_free()
 	var data=mesh("casing");var shell=MeshInstance3D.new();shell.mesh=data[0];shell.material_override=data[1];shell.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	arena.add_child(shell);casings.append(shell)
-	var start=shooter.position+Vector3.UP*.5;shell.global_position=start
+	if start==Vector3.INF:start=shooter.global_position+Vector3.UP*.5
+	shell.global_position=start
 	var side=Vector3(-direction.z,0,direction.x).normalized()
 	var land=Vector3(start.x,0.02,start.z)+side*rng.randf_range(.3,.55)-direction*rng.randf_range(.0,.15)
 	var tween=shell.create_tween()

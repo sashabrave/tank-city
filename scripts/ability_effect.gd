@@ -7,12 +7,22 @@ var age=0.0
 var shot=0.0
 var fired=0
 var visual:Node3D
+var lamp:Node3D
 func _ready():
 	visual=Node3D.new();add_child(visual)
 	if kind=="gas":
 		visual.add_child(preload("res://scripts/gas_cloud.gd").new(1.5+utility*.35,int(position.x*31+position.z*17)))
 	elif kind=="mine":
-		Visuals.box(visual,Vector3(0,.08,0),Vector3(.55,.16,.55),Color("8d9855"));Visuals.ring(visual,Color("f1cb63"),.35)
+		# Round anti-tank mine (T-295, the arsenal icon): olive disc, ribbed rim, pressure cap and a red lamp that
+		# blinks slowly while arming and fast once armed. The yellow ring marks the player's own mine.
+		var ordnance=preload("res://scripts/ordnance.gd")
+		ordnance.part(visual,"cylinder",Vector3(0,.06,0),Vector3(.5,.12,.5),Color("7a8150"))
+		ordnance.part(visual,"cylinder",Vector3(0,.075,0),Vector3(.54,.035,.54),Color("62683f"))
+		ordnance.part(visual,"cylinder",Vector3(0,.135,0),Vector3(.3,.035,.3),Color("8f9760"))
+		ordnance.part(visual,"cylinder",Vector3(0,.165,0),Vector3(.13,.03,.13),Color("3b3f36"))
+		for i in range(6):ordnance.part(visual,"box",Vector3(cos(i*TAU/6)*.215,.135,sin(i*TAU/6)*.215),Vector3(.05,.02,.03),Color("4a4f33"),Vector3(0,-i*TAU/6,0))
+		lamp=ordnance.blink(visual,Vector3(.1,.19,-.1),2.0,.055);lamp.name="MineLamp"
+		Visuals.ring(visual,Color("f1cb63"),.35)
 	elif kind=="dynamite":
 		# Three red sticks taped together with a sparking fuse.
 		for i in range(3):Visuals.box(visual,Vector3((i-1)*.11,.09,0),Vector3(.1,.18,.42),Color("c8402f"))
@@ -46,9 +56,12 @@ func _physics_process(delta):
 		if spark:spark.scale=Vector3.ONE*(1.0+.6*absf(sin(age*24.0)));spark.position.y=.32-.18*minf(1.0,age/FUSE)
 		if age>=FUSE:blast();return
 	elif kind=="mine":
+		if is_instance_valid(lamp):lamp.blink_rate=2.0 if age<2 else 5.0
 		if age<2:return
+		# Enemies set it off by stepping on it; the hero and allies walk over their own mine (T-295: the hero blows
+		# it with the gadget key instead).
 		for actor in arena.actors:
-			if is_instance_valid(actor) and not actor.dead and not actor.allied and arena.flat_distance(position,actor.position)<.6:detonate();return
+			if is_instance_valid(actor) and not actor.dead and not actor.allied and not actor.player_owned and arena.flat_distance(position,actor.position)<.6:detonate();return
 	else:
 		visual.position.x+=delta*3;visual.get_node("Rotor").rotation.y+=delta*22
 		shot-=delta
@@ -92,5 +105,6 @@ func detonate():
 	for cell in cells:
 		arena.burst(arena.world_pos(cell),Color("ffc96b"),.4)
 		for actor in arena.actors.duplicate():
-			if is_instance_valid(actor) and not actor.dead and arena.grid_pos(actor.position)==cell:actor.take_damage(power)
+			# T-165 rule for explosives: the hero and allies caught in the cross take a small bite, enemies the mine.
+			if is_instance_valid(actor) and not actor.dead and arena.grid_pos(actor.position)==cell:actor.take_damage(1.0 if actor.player_owned or actor.allied else power,Vector3.ZERO,"","blast" if actor.player_owned or actor.allied else "")
 	Game.sound("boom",arena);queue_free()

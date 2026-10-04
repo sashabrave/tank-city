@@ -20,7 +20,11 @@ extends Resource
 @export_range(0.5,10,0.1) var grenade_radius:float=1.5
 @export_range(0.1,5,0.1) var grenade_fuse:float=1
 @export_range(0.01,1,0.01) var interception_base_scale:float=0.5
-@export_range(0.1,20,0.1) var allied_turret_interval:float=2.4
+## Seconds between shots of the HQ grenade turret from a field bonus (T-294: 2.4 → 3.1, two turrets were too strong).
+@export_range(0.1,20,0.1) var allied_turret_interval:float=3.1
+## While a turret already stands, a «Турель» roll from enemy loot is kept only this share of the time (otherwise
+## re-rolled among the other bonuses), so a second turret is rare (T-294).
+@export_range(0,1,0.01) var second_turret_drop_share:float=0.2
 @export_group("Пределы характеристик")
 ## Абсолютный предел скорости техники и бойца игрока, клеток в секунду.
 @export_range(1,15,0.1) var player_speed_cap:float=5.2
