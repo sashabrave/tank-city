@@ -37,7 +37,10 @@ var guide:Node3D
 var combat:Node3D
 ## The rooms are their route stops seen up close (author, 3 Oct), like the merchant: the stop's parts, bigger and
 ## more detailed, in daylight on a sand floor. Without the model file the old hangar dressing stays.
-const ROOM_MODELS={"vehicle":"res://assets/models/route/mechanic_room.glb","ability":"res://assets/models/route/training_room.glb","headquarters":"res://assets/models/route/workshop_room.glb"}
+const ROOM_MODELS={"vehicle":"res://assets/models/route/mechanic_room.glb","ability":"res://assets/models/route/training_room.glb","headquarters":"res://assets/models/route/workshop_room.glb","legend":"res://assets/models/route/command_post_point.glb"}
+## «Захваченный КП» is a walk-in room too (author, 4 Oct 2026): the route point model up close, the legendary
+## rules at its main spot (scripts/legend_stop.gd as the window), the exit opens after the choice.
+const LEGEND_MODEL_SCALE:=1.45
 var street=false
 ## The HQ depot on the route is this room with branch "headquarters" (T-215): walk to the HQ, then the cards.
 ## Without HQ technologies it still refuels: base repair, a reroll or a token box (moved from depot_stop.gd).
@@ -62,12 +65,15 @@ func _ready():
 		preload("res://scripts/room_lights.gd").build(self,-4.5)
 	if street:
 		var stop:Node3D=load(ROOM_MODELS[branch]).instantiate();stop.name="StopModel";add_child(stop)
+		if branch=="legend":stop.scale=Vector3.ONE*LEGEND_MODEL_SCALE;stop.position=Vector3(0,0,-2.0)
 		preload("res://scripts/route_miniatures.gd").library_surfaces(stop)
 	if branch=="vehicle":
 		if not street:Visuals.model("workbench",self,Vector3(0,0,-1))
 		Visuals.model(vehicle,self,Vector3(2.2,.16,-1.2))
 		# T-011: when the soldier is on foot, the parked vehicle can be taken into the next field for alloy.
-		vehicle_for_sale=not (is_instance_valid(arena.player) and arena.player.kind in GarageCatalog.VEHICLES) and arena.pending_vehicle==""
+		# T-284: the same vehicle already yours — a sign «Уже есть» over it; a different one — «Купить и заменить».
+		vehicle_for_sale=owned_vehicle()!=vehicle
+		if not vehicle_for_sale:Visuals.label3d(self,"Уже есть",PARKED+Vector3(0,1.6,0),Color("bdf0b0"),30)
 	elif branch=="headquarters":
 		# Street room: the HQ stands on the ramp under the canopy, its nose just behind the main spot.
 		Visuals.model("base",self,Vector3(0,.18,-2.6) if street else Vector3(0,0,-1))
@@ -85,22 +91,23 @@ func _ready():
 	preload("res://scripts/room_floor.gd").attach(self,arena)
 	var canvas=CanvasLayer.new();add_child(canvas);root=Control.new();canvas.add_child(root);root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);root.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	var heading_plate=UiKit.glass(root,Vector2(25,25),Vector2(590,120),Color("242d27ed"));heading_plate.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	UiKit.accent(UiKit.label(root,{"vehicle":"Полевой механик","ability":"Подготовка бойца","headquarters":"Депо штаба"}[branch],Vector2(40,30),Vector2(800,60),32))
-	UiKit.label(root,{"vehicle":"Модификация транспорта","ability":"Модификация способности","headquarters":"Модуль штаба или припасы на вылазку"}[branch],Vector2(40,100),Vector2(1000,40),18)
+	UiKit.accent(UiKit.label(root,{"vehicle":"Полевой механик","ability":"Подготовка бойца","headquarters":"Депо штаба","legend":"Захваченный КП"}[branch],Vector2(40,30),Vector2(800,60),32))
+	UiKit.label(root,{"vehicle":"Модификация транспорта","ability":"Модификация способности","headquarters":"Модуль штаба или припасы на вылазку","legend":"Легендарное правило — только здесь"}[branch],Vector2(40,100),Vector2(1000,40),18)
 	var size=get_viewport().get_visible_rect().size
 	dpad=load("res://scripts/touch_controls.gd").new();root.add_child(dpad);dpad.apply_movement_layout()
 	interact_button=UiKit.button(root,"Улучшение [E]",Vector2(size.x-330,size.y-170),Vector2(290,60),interact);interact_button.hide()
 	continue_button=UiKit.button(root,"В следующий бой →" if Campaign.endless else "На карту →",Vector2(size.x-330,size.y-90),Vector2(290,60),func():completed.emit(index),true);continue_button.disabled=true
 	UiKit.button(root,"Вернуться в хаб",Vector2(40,165),Vector2(250,48),func():hub_requested.emit())
-	preload("res://scripts/interaction_prompt.gd").attach(self,self,{"vehicle":"Механик · улучшение машины","ability":"Инструктор · улучшение способности","headquarters":"Штаб · модуль или припасы"}[branch],Vector3(0,0,-1),1.8,func():return not claimed)
+	preload("res://scripts/interaction_prompt.gd").attach(self,self,{"vehicle":"Механик · улучшение машины","ability":"Инструктор · улучшение способности","headquarters":"Штаб · модуль или припасы","legend":"Сейф КП · легендарное правило"}[branch],Vector3(0,0,-1),1.8,func():return not claimed)
 	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Выход на карту",Vector3(dressing.EXIT_CELL.x,0,dressing.EXIT_CELL.y),1.3,func():return claimed)
 	if vehicle_for_sale:
 		var vehicle_name=GarageCatalog.VEHICLES.get(vehicle,{}).get("name",vehicle)
-		vehicle_prompt=preload("res://scripts/interaction_prompt.gd").attach(self,self,Texts.render("Купить")+" %s · %d ◈" % [Texts.render(vehicle_name),VEHICLE_PRICES.get(vehicle,80)],PARKED,1.6,func():return vehicle_for_sale)
+		vehicle_prompt=preload("res://scripts/interaction_prompt.gd").attach(self,self,Texts.render(buy_word())+" %s · %d ◈" % [Texts.render(vehicle_name),VEHICLE_PRICES.get(vehicle,80)],PARKED,1.6,func():return vehicle_for_sale)
 	guide=preload("res://scripts/room_guide_arrow.gd").attach(self)
 	# Shooting and abilities work here like in the hub and in battle (T-158, T-185).
 	combat=preload("res://scripts/room_combat.gd").attach(self,avatar,walker,stand,root)
-	offers=arena.reward.service_offers(branch)
+	pick_ability()
+	offers=arena.reward.service_offers(branch) if branch!="legend" else []
 	supplies=branch=="headquarters" and offers.is_empty()
 	if supplies:offers=DEPOT_SUPPLIES.duplicate(true)
 	# Common room layout (RoomLayout): weapon crate, a vending machine and the «Фортуна» spot in the same places
@@ -164,15 +171,12 @@ func interact():
 		create_tween().tween_interval(.8).finished.connect(salute.queue_free)
 	# No class ability yet (T-186): a short word from the instructor and alloy instead of upgrade cards.
 	if branch=="ability" and Game.class_loadout().is_empty():early_reward();return
+	if branch=="legend":open_legend();return
 	modal=preload("res://scenes/ui/service_rewards.tscn").instantiate();root.add_child(modal);modal.add_to_group("selection_scope")
 	var panel=modal.get_node("Panel")
 	Texts.set_text(panel.get_node("Heading"),"Депо · Штаб" if branch=="headquarters" else "Модификация · "+({"buggy":"Багги","apc":"БТР","tank":"Танк"}[vehicle] if branch=="vehicle" else arena.abilities.NAMES.get(arena.abilities.selected,"Способность")))
 	panel.get_node("CloseButton").pressed.connect(close_cards)
 	if offers.is_empty():UiKit.label(panel,"Сначала открой и возьми способность в хабе",Vector2(25,155),Vector2(870,50),22)
-	if branch=="ability":
-		for slot in range(arena.abilities.slots.size()):
-			var id=arena.abilities.slots[slot]
-			UiKit.button(panel,arena.abilities.NAMES[id],Vector2(25+slot*290,66),Vector2(280,32),func():arena.abilities.select(id);close_cards();interact()).add_theme_font_size_override("font_size",14)
 	for i in range(3):
 		if i>=offers.size():panel.get_node("Card"+str(i+1)).hide();continue
 		if branch=="headquarters":
@@ -196,15 +200,24 @@ func interact():
 					var now=float(mods.get("rate",1.0))
 					description=UiKit.change_text("Темп",roundf(100.0/now),roundf(100.0/maxf(.7,now-.04*n)),"%")
 				"speed":description=UiKit.change_text("Скорость",minf(Balance.speed_cap(),tuning.player_speed*arena.speed_multiplier*mods.speed),minf(Balance.speed_cap(),tuning.player_speed*arena.speed_multiplier*minf(1.25,mods.speed+.04*n)))
-		var view={"category":"Транспорт" if branch=="vehicle" else "Способность","title":title,"detail":description,"icon":{"rate":"garage/%s_gun" % vehicle,"overhaul":"pickups/vehicle_repair"}.get(offer.id,offer.id),"heading":LootCatalog.RARITY_NAMES[offer.tier],"color":Color(LootCatalog.RARITY_COLORS[offer.tier])}
+		var icon={"rate":"garage/%s_gun" % vehicle,"overhaul":"pickups/vehicle_repair"}.get(offer.id,offer.id)
+		if branch=="ability":icon="abilities/"+str(arena.abilities.selected)  # the card shows whose parameter it is (T-283)
+		var view={"category":"Транспорт" if branch=="vehicle" else "Способность","title":title,"detail":description,"icon":icon,"heading":LootCatalog.RARITY_NAMES[offer.tier],"color":Color(LootCatalog.RARITY_COLORS[offer.tier])}
 		preload("res://scripts/ui/choice_card.gd").configure(panel.get_node("Card"+str(i+1)),view,func():claim(i))
 	var reroll=panel.get_node("RerollButton");Texts.set_text(reroll,"Переброс · осталось %d" % arena.rerolls_left);reroll.pressed.connect(reroll_cards)
 	reroll.disabled=arena.rerolls_left<=0 or supplies
 	reroll.position.x=25;reroll.size.x=540
 	UiKit.button(panel,"Отказаться",Vector2(590,reroll.position.y),Vector2(320,44),ask_skip)
+## One ability per visit (T-282, author): the instructor works on a random one of the hero's abilities (Q or gadget);
+## no tabs to switch — a reroll may land on another one.
+func pick_ability():
+	if branch!="ability" or arena.abilities.slots.is_empty():return
+	var slots=arena.abilities.slots
+	arena.abilities.select(slots[arena.run.combat_rng.randi_range(0,slots.size()-1)])
 func reroll_cards():
 	if claimed or arena.rerolls_left<=0 or supplies:return
 	arena.rerolls_left-=1
+	pick_ability()
 	offers=arena.reward.service_offers(branch)
 	close_cards();interact()
 func claim(i: int):
@@ -259,6 +272,18 @@ func skip_choice():
 	if claimed:return
 	claimed=true;close_cards();continue_button.disabled=false;interact_button.disabled=true;dressing.set_open(true)
 
+## The vehicle the hero takes into the next field: the one driven now or one already bought here; "" on foot.
+func owned_vehicle()->String:
+	if arena.pending_vehicle in GarageCatalog.VEHICLES:return str(arena.pending_vehicle)
+	if is_instance_valid(arena.player) and arena.player.kind in GarageCatalog.VEHICLES:return str(arena.player.kind)
+	return ""
+func buy_word()->String:return "Купить и заменить" if owned_vehicle()!="" else "Купить"
+## The captured post's safe: three legendary cards (or none); either way the post closes and the exit opens.
+func open_legend():
+	var post=preload("res://scripts/legend_stop.gd").new();post.arena=arena;post.index=index;root.add_child(post);modal=post
+	post.done.connect(func():
+		modal=null;claimed=true;continue_button.disabled=false;interact_button.disabled=true;dressing.set_open(true)
+		Game.reset_input();dpad.clear();dpad.enabled=true)
 func near_vehicle()->bool:return branch=="vehicle" and vehicle_for_sale and avatar.position.distance_to(PARKED)<1.6
 ## Purchase window (T-119): the vehicle, what it gives, the price; «Купить» or «Отмена»; then a clear
 ## «Техника доставлена» with where it waits.
@@ -273,11 +298,12 @@ func open_vehicle_offer():
 		modal=null;Game.reset_input();dpad.clear();dpad.enabled=true
 	var picture=UiKit.icon(panel,vehicle,Vector2(24,24),Vector2(150,110))
 	UiKit.label(panel,str(info.get("name",vehicle)),Vector2(190,24),Vector2(346,34),24)
-	var text=UiKit.label(panel,"Техника ждёт на старте следующего поля: садишься в неё сразу. Броня и урон — как у твоей машины в гараже.",Vector2(190,62),Vector2(346,80),14,UiKit.MUTED);text.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	var owned=owned_vehicle();var replace_note=(Texts.render(" Заменит твою машину: %s.") % Texts.render(str(GarageCatalog.VEHICLES.get(owned,{}).get("name",owned)))) if owned!="" else ""
+	var text=UiKit.label(panel,Texts.render("Техника ждёт на старте следующего поля: садишься в неё сразу. Броня и урон — как у твоей машины в гараже.")+replace_note,Vector2(190,62),Vector2(346,80),14,UiKit.MUTED);text.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	var cost=UiKit.label(panel,"%d ◈" % price,Vector2(24,150),Vector2(150,30),22,UiKit.ORANGE if Game.credits>=price else Color("ff8a7a"));cost.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
 	if Game.credits<price:UiKit.label(panel,Texts.render("Не хватает %d ◈") % (price-Game.credits),Vector2(190,150),Vector2(346,30),15,Color("ff8a7a"))
 	UiKit.button(panel,"Отмена",Vector2(24,size.y-70),Vector2(250,48),close)
-	var buy=UiKit.button(panel,"Купить · %d ◈" % price,Vector2(size.x-274,size.y-70),Vector2(250,48),func():
+	var buy=UiKit.button(panel,Texts.render(buy_word())+" · %d ◈" % price,Vector2(size.x-274,size.y-70),Vector2(250,48),func():
 		if Game.credits<price:return
 		Game.credits-=price;Game.save_progress();arena.pending_vehicle=vehicle;Game.sound("weapon_equip",self)
 		vehicle_for_sale=false

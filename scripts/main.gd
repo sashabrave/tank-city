@@ -135,11 +135,7 @@ func show_service(branch: String,index: int):
 ## A service placed on the route as an ordinary node: after it the next stage opens.
 func show_node_service(branch:String,index:int):
 	Game.progression.event("visit_"+branch)
-	if branch=="legend" and is_instance_valid(current) and "root" in current:
-		var post=preload("res://scripts/legend_stop.gd").new();post.arena=run_arena;post.index=index
-		current.root.add_child(post)
-		post.done.connect(func():run_arena.run.route_choices=route_choices;show_map(index+1))
-		return
+	# The captured post (branch "legend") and the HQ depot are walk-in rooms like the mechanic's (author, 4 Oct 2026).
 	# The HQ depot (branch "headquarters") is a walk-in room like the mechanic's (T-215), not cards over the map.
 	clear_current();current=load("res://scripts/service_room.gd").new();current.arena=run_arena;current.index=index;current.branch=branch;add_child(current)
 	current.hub_requested.connect(show_hub)

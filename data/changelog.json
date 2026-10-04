@@ -28,7 +28,13 @@
 					"У бойца одна способность класса — на Q. Второй слот и клавиша «1» убраны. С 8 уровня класса открывается вторая способность, с 14 — третья: в Казарме выбираешь, какая стоит на Q. Гаджет на F и поддержка штаба остаются.",
 					"Путь класса переделан: каждый уровень даёт здоровье и одну из пяти характеристик класса, на 4, 10 и 18 уровнях — «рывок», на 5, 11, 16 и 20 — перки, которые действуют всегда. Стрелок: «Выдержка», «Глаз-алмаз» (каждый 5-й выстрел — крит), «Кураж» (убийство критом ускоряет стрельбу), «Последний рубеж» (при малом здоровье все выстрелы критуют). Штурмовик: «Бронежилет», «Крепость», «Отдача» (удар по бойцу оглушает пехоту рядом), «Второе дыхание». Инженер: «Ремонт на ходу», «Запасливый», «Абордаж», «Мастерская на колёсах».",
 					"Окно «Все уровни» устроено как «Развитие заставы»: дорожка и ровные карточки в одну колонку, главы по 5 уровней, сверху — девиз класса и пять характеристик «сейчас → к 20».",
-					"Если во втором слоте сохранения стояла способность, остаётся только та, что была на Q."
+					"Если во втором слоте сохранения стояла способность, остаётся только та, что была на Q.",
+					"Инструктор улучшает одну способность за визит — случайную из твоих, без вкладок; переброс может выпасть на другую. На карточках — настоящий параметр способности: урон гранаты, неуязвимость щита, прочность дрона и т.д.",
+					"Механик: если такая машина у тебя уже есть — над ней табличка «Уже есть»; другая машина продаётся как «Купить и заменить».",
+					"У торговца появился выход — ворота справа, как в комнатах прокачки.",
+					"«Захваченный КП» — теперь такая же комната, как механик и инструктор: сейф у бункера с легендарными правилами, автоматы, выход.",
+					"Сундук испытания — как у генерала: три карточки редкостью выше; сплав высыпается сам.",
+					"Чертёж из сундука сразу попадает в рюкзак; на землю — только если рюкзак полон, с подсказкой."
 				]
 			},
 			"en": {
@@ -56,7 +62,13 @@
 					"The fighter has one class ability, on Q. The second slot and the «1» key are gone. The second class ability opens at class level 8 and the third at 14: choose in the Barracks which one sits on Q. The gadget on F and the HQ support stay.",
 					"The class path is reworked: every level gives health and one of the class's five stats, levels 4, 10 and 18 are a «burst», and levels 5, 11, 16 and 20 give perks that are always on. Rifleman: Composure, Eagle eye (every 5th shot crits), Swagger (a crit kill speeds up fire), Last stand (all shots crit at low health). Stormtrooper: Body armour, Fortress, Recoil (a hit on the fighter stuns nearby infantry), Second wind. Engineer: Repairs on the move, Hoarder, Boarding, Workshop on wheels.",
 					"The «All levels» window now looks like «Outpost progress»: a track with even cards in one column, chapters of 5 levels, and the class motto with five stats «now → at 20» on top.",
-					"A save with an ability in the second slot keeps only the one that was on Q."
+					"A save with an ability in the second slot keeps only the one that was on Q.",
+					"The instructor upgrades one ability per visit — a random one of yours, no tabs; a reroll may land on another. Cards show the ability's real parameter: grenade damage, shield invulnerability, drone durability and so on.",
+					"Mechanic: if you already have that vehicle a sign says «Already yours»; a different one is sold as «Buy and replace».",
+					"The merchant now has an exit — a gate on the right, like the upgrade rooms.",
+					"The «Captured CP» is now a room like the mechanic and the instructor: a safe by the bunker with legendary rules, machines, an exit.",
+					"Challenge chests work like the general's: three cards of a higher rarity; alloy spills out by itself.",
+					"A blueprint from a chest goes straight into the backpack; it lies on the ground only when the backpack is full, with a hint."
 				]
 			}
 		},

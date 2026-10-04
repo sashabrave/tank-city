@@ -320,18 +320,11 @@ func drop_reward():
 	arena.reward.drop_recipe(cell,{"elite":true})
 	var pickup=arena.room.pickups.back();pickup["offers"]=reward_offers(arena.room.difficulty)
 	arena.toast("Засада отбита · забери награду")
-## ★ simple: alloy and common cards; ★ rare cards or a blueprint; ★★ epic cards, extra alloy or a rare blueprint.
+## Challenge chest like the general's (T-281, author): three upgrade cards one rarity step above the room
+## difficulty (★★ — epic). Alloy pours out as plain alloy and a blueprint drops beside the chest when it opens
+## (RewardSystem.open_recipe_draft), so no alloy card and no blueprint card here.
 func reward_offers(difficulty:int)->Array:
-	var rng=arena.run.combat_rng
-	var cards=RunUpgrades.roll_offers(arena,2)
-	var tier=clampi(difficulty,0,2)
+	var tier=mini(2,clampi(difficulty,0,2)+1)
 	var result=[]
-	for offer in cards:result.append({"category":"upgrade","id":offer.id,"tier":maxi(tier,int(offer.tier))})
-	var extra={"category":"alloy","id":"alloy","amount":EncounterRules.chest_alloy(arena.room.room_index,difficulty),"tier":0}
-	if difficulty>=2:extra={"category":"alloy","id":"alloy","amount":extra.amount+Game.DOC_ALLOY,"tier":2}
-	if difficulty>=1:
-		var recipe=EncounterRules.recipe(difficulty,rng,arena.run.pending_recipes,Campaign.progress_index(arena.room.room_index))
-		if not recipe.is_empty() and (difficulty==1 or rng.randf()<.5):extra=recipe
-	result.insert(0,extra)
-	while result.size()<3:result.append({"category":"alloy","id":"alloy","amount":EncounterRules.chest_alloy(arena.room.room_index,difficulty),"tier":0})
-	return result.slice(0,3)
+	for offer in RunUpgrades.roll_offers(arena,3,true):result.append({"category":"upgrade","id":offer.id,"tier":maxi(tier,int(offer.tier))})
+	return result

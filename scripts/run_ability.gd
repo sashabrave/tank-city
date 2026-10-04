@@ -56,10 +56,19 @@ func upgrade(id: String,tier: int):
 	if id not in level:return
 	arena.run.upgrade_history.append({"id":selected,"detail":{"cooldown":"Перезарядка","power":"Мощность","utility":"Эффективность"}.get(id,id),"tier":tier})
 	level[id]+=Balance.tier_power(tier)
+## What «Прочность / урон» means for each ability (T-283).
+const POWER_LABELS={"grenade":"Урон гранаты","laser":"Урон лазера","comrade":"Сила товарища","shield":"Неуязвимость","cloak":"Невидимость","ally_drone":"Прочность дрона","barrier":"Прочность ежа","mine":"Урон мины","gas":"Сон в облаке","dynamite":"Урон взрыва","airstrike":"Урон удара"}
+const POWER_UNITS={"cloak":" с","gas":" с"}
 func description(id: String,tier: int) -> String:
 	var n=Balance.tier_power(tier)
 	if id=="cooldown":return "Кулдаун %.1f → %.1f с" % [interval(),maxf(5,interval()*pow(Balance.CONFIG.combat.ability_cooldown_multiplier,n))]
-	if id=="power":return "Сила / HP / длительность %.1f → %.1f" % [power(),power()+AbilityCatalog.DATA[selected].power*Balance.CONFIG.combat.ability_power_step*n]
+	if id=="power":
+		# The parameter this ability's power really drives (T-283), not a generic «сила / HP / длительность».
+		var after=power()+AbilityCatalog.DATA[selected].power*Balance.CONFIG.combat.ability_power_step*n
+		var label=POWER_LABELS.get(selected,"Сила")
+		if selected=="shield":return UiKit.change_text(label,shield_duration(),minf(8.0,after+level.utility*.5)," с")
+		if selected=="field_repair":return "%s %s → %s · %s %s → %s" % [Texts.render("Броня машины"),UiKit.number(snappedf(power(),.1)),UiKit.number(snappedf(after,.1)),Texts.render("здоровье пешком"),UiKit.number(snappedf(power()/3,.1)),UiKit.number(snappedf(after/3,.1))]
+		return UiKit.change_text(label,snappedf(power(),.1),snappedf(after,.1),POWER_UNITS.get(selected,""))
 	return {"barrier":"Лимит блоков %d → %d" % [barrier_count(),mini(4,barrier_count()+int(n))],"grenade":"Радиус +0,25 клетки; запал короче","laser":"Пробивает ещё один бетон (до 4)","gas":"Больше площадь облака","ally_drone":"Лимит помощников +1 (до 3)","mine":"Дальность креста и лимит мин +1","dynamite":"Дальность взрыва +1 клетка (до 6)","airstrike":"Больше залпов; уровень 3 — ракеты","cloak":"Дольше невидимость; уровень 3 — пули насквозь","comrade":"Быстрее высадка и движение товарища","shield":"Неуязвимость +0,5 с (до 8 с)"}.get(selected,"")
 func cast() -> bool:
 	return actions.execute(self)

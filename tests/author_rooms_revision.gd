@@ -135,8 +135,13 @@ func run():
 	for branch in special:
 		var node=special[branch]
 		main.test_jump(int(node.stage),false,str(node.id));await get_tree().process_frame
-		if branch=="legend":check(main.current.has_method("travel_to_room") and main.current.root.get_children().any(func(c):return c.get_script()==preload("res://scripts/legend_stop.gd")),"dev jump: captured post opens over the map")
-		else:check(main.current.get_script()==preload("res://scripts/service_room.gd") and main.current.branch==branch,"dev jump: %s node opens its room" % branch)
+		check(main.current.get_script()==preload("res://scripts/service_room.gd") and main.current.branch==branch,"dev jump: %s node opens its room (the captured post too)" % branch)
+		if branch=="legend":
+			main.current.avatar.position=Vector3(0,0,-.2);main.current.interact();await get_tree().process_frame
+			var post=main.current.root.get_children().filter(func(c):return c.get_script()==preload("res://scripts/legend_stop.gd"))
+			check(not post.is_empty(),"captured post: E at the safe opens the legendary cards")
+			if not post.is_empty():post[0].finish();await get_tree().process_frame
+			check(main.current.claimed and main.current.dressing.open,"captured post: after the choice the exit opens")
 	var stop=Campaign.SERVICES[0];var stop_branch=Campaign.service_options(Game.visual_run_seed,stop)[0]
 	main.test_jump_service(stop,false,stop_branch);await get_tree().process_frame
 	var expected=preload("res://scripts/merchant_room.gd") if stop_branch=="merchant" else preload("res://scripts/service_room.gd")

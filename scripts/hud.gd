@@ -366,7 +366,9 @@ func show_blueprint_reveal(recipe:Dictionary):
 	var art=UiKit.icon_texture(recipe.id);icon.texture=UiKit.trimmed(art if art else UiKit.icon_texture("recipe"))
 	UiKit.label(panel,LOOT.RARITY_NAMES[tier]+" · "+RECIPE_KINDS.get(str(recipe.category),"Чертёж"),Vector2(300,150),Vector2(600,26),16,color)
 	UiKit.label(panel,Game.recipe_name(recipe),Vector2(300,180),Vector2(600,50),34)
-	var note=UiKit.label(panel,"Чертёж выпал из сундука и лежит рядом. Подбери его в рюкзак и донеси до хаба — там он откроется навсегда." if not recipe.get("duplicate",false) else "Уже открыт. Донеси в хаб и продай в урне за %d сплава." % Game.duplicate_price(recipe),Vector2(300,240),Vector2(600,60),18,UiKit.MUTED)
+	var stowed=bool(arena.draft_pickup.get("recipe_stowed",false))
+	var where="Чертёж уже в рюкзаке." if stowed else "Рюкзак полон — чертёж лежит у сундука, освободи ячейку и подбери (C)."
+	var note=UiKit.label(panel,Texts.render(where)+" "+(Texts.render("Донеси его до хаба — там он откроется навсегда.") if not recipe.get("duplicate",false) else Texts.render("Уже открыт. Донеси в хаб и продай в урне за %d сплава.") % Game.duplicate_price(recipe)),Vector2(300,240),Vector2(600,60),18,UiKit.MUTED)
 	note.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	var go=UiKit.button(panel,"К наградам",Vector2(300,350),Vector2(320,56),blueprint_seen,true)
 	go.focus_mode=Control.FOCUS_ALL;(func():if is_instance_valid(go):go.grab_focus()).call_deferred()

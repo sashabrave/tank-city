@@ -58,6 +58,10 @@ func _ready():
 	# No sign over the truck (T-226): the prompt says what is sold; a yellow arrow points at the counter until the
 	# shop has been opened once (the merchant has no exit gate — «Дальше» leads on).
 	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Торговец · карточки и припасы за жетоны",COUNTER,1.8,func():return true)
+	# An exit gate like in every upgrade room (T-285): always open here, E at the gate leads on to the map.
+	exit_parts=preload("res://scripts/service_dressing.gd").build_gate(self,EXIT_CELL);preload("res://scripts/service_dressing.gd").paint_gate(exit_parts,true)
+	for chevron in exit_parts.arrows:chevron.modulate.a=.6
+	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Выход на карту",Vector3(EXIT_CELL.x,0,EXIT_CELL.y),1.3,func():return true)
 	guide=preload("res://scripts/room_guide_arrow.gd").attach(self)
 	stock=roll_stock()
 	spots=RoomLayout.furnish(self,arena,index,true)
@@ -102,12 +106,17 @@ func roll_stock()->Array:
 		if not recipe.is_empty():result.append({"kind":"blueprint","recipe":recipe,"price":10,"sold":false})
 	return result
 
-func stand(p:Vector3)->bool:return p.x>=-3.01 and p.x<=3.01 and p.z>=-.01 and p.z<=4.01
+const EXIT_CELL=Vector2i(4,1)
+var exit_parts:Dictionary={}
+func stand(p:Vector3)->bool:
+	if absf(p.z-EXIT_CELL.y)<.3 and p.x>=2.75 and p.x<=EXIT_CELL.x+.01:return true
+	return p.x>=-3.01 and p.x<=3.01 and p.z>=-.01 and p.z<=4.01
+func at_exit()->bool:return avatar.position.distance_to(Vector3(EXIT_CELL.x,0,EXIT_CELL.y))<1.3
 func _physics_process(delta):
 	# Same as the hub: the on-screen pad only for touch play.
 	if is_instance_valid(dpad):dpad.visible=InputScheme.touch()
 	if is_instance_valid(guide):
-		if shop_revealed:guide.hide_arrow()
+		if shop_revealed:guide.point(Vector3(EXIT_CELL.x+.25,0,EXIT_CELL.y),3.7,"ready")
 		else:guide.point(COUNTER,3.2,"goal")
 	if is_instance_valid(modal):
 		if Input.is_action_just_pressed("pause"):close_shop()
@@ -125,6 +134,7 @@ func interact():
 	# The common room spots: weapon crate, vending machine, fortune (RoomLayout).
 	var spot=RoomLayout.near(spots,avatar)
 	if spot:use_spot(spot);return
+	if at_exit():completed.emit(index);set_physics_process(false);return
 	if avatar.position.distance_to(COUNTER)>2.2:return
 	Game.reset_input();dpad.clear();dpad.enabled=false
 	open_shop()

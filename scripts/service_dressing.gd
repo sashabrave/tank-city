@@ -113,19 +113,29 @@ func shell():
 		var strip=Visuals.box(self,Vector3(x,2.3,-3.6),Vector3(1.2,.08,.06),Color("d9ecff"));strip.material_override=Visuals.material(Color("d9ecff"),true);strip.material_override.emission_energy_multiplier=1.6
 
 func exit_gate():
-	var at=Vector3(EXIT_CELL.x+.45,0,EXIT_CELL.y)
-	for side in [-1,1]:Visuals.box(self,at+Vector3(0,1.1,side*.62),Vector3(.24,2.2,.2),Color("6c756b"),"steel")
-	Visuals.box(self,at+Vector3(0,2.26,0),Vector3(.3,.22,1.5),Color("6c756b"),"steel")
+	var parts=build_gate(self,EXIT_CELL)
+	gate_lamp=parts.lamp;gate_light=parts.light;arrows=parts.arrows
+## The exit gate on cell (posts, striped beam, lamp, floor chevrons, «Выход»), shared with the merchant (T-285).
+static func build_gate(parent:Node3D,cell:Vector2i)->Dictionary:
+	var at=Vector3(cell.x+.45,0,cell.y)
+	for side in [-1,1]:Visuals.box(parent,at+Vector3(0,1.1,side*.62),Vector3(.24,2.2,.2),Color("6c756b"),"steel")
+	Visuals.box(parent,at+Vector3(0,2.26,0),Vector3(.3,.22,1.5),Color("6c756b"),"steel")
 	for i in range(5):
-		var z=-.5+i*.25;var band=Visuals.box(self,at+Vector3(0,2.26,z),Vector3(.32,.1,.12),Color("e0b13a") if i%2==0 else Color("2c2f30"))
+		var z=-.5+i*.25;var band=Visuals.box(parent,at+Vector3(0,2.26,z),Vector3(.32,.1,.12),Color("e0b13a") if i%2==0 else Color("2c2f30"))
 		band.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	gate_lamp=Visuals.box(self,at+Vector3(-.12,2.5,0),Vector3(.18,.16,.18),Color("e2493b"));gate_lamp.material_override=Visuals.material(Color("e2493b"),true);gate_lamp.material_override.emission_energy_multiplier=2.5
-	gate_light=OmniLight3D.new();add_child(gate_light);gate_light.position=at+Vector3(-.5,2.2,0);gate_light.light_color=Color("ff5a44");gate_light.light_energy=1.2;gate_light.omni_range=3.2;gate_light.shadow_enabled=false
-	# Floor chevrons toward the gate.
+	var lamp=Visuals.box(parent,at+Vector3(-.12,2.5,0),Vector3(.18,.16,.18),Color("e2493b"));lamp.material_override=Visuals.material(Color("e2493b"),true);lamp.material_override.emission_energy_multiplier=2.5
+	var light=OmniLight3D.new();parent.add_child(light);light.position=at+Vector3(-.5,2.2,0);light.light_color=Color("ff5a44");light.light_energy=1.2;light.omni_range=3.2;light.shadow_enabled=false
+	var chevrons=[]
 	for i in range(3):
-		var chevron=Visuals.label3d(self,"›",Vector3(1.2+i*.9,.03,EXIT_CELL.y),Color("e0b13a"),90)
-		chevron.billboard=BaseMaterial3D.BILLBOARD_DISABLED;chevron.rotation_degrees=Vector3(-90,0,0);chevron.outline_size=0;chevron.modulate.a=.35;arrows.append(chevron)
-	var sign=Visuals.label3d(self,"Выход",at+Vector3(-.2,2.85,0),Color("dfe8dd"),26);sign.outline_size=4
+		var chevron=Visuals.label3d(parent,"›",Vector3(cell.x-2.8+i*.9,.03,cell.y),Color("e0b13a"),90)
+		chevron.billboard=BaseMaterial3D.BILLBOARD_DISABLED;chevron.rotation_degrees=Vector3(-90,0,0);chevron.outline_size=0;chevron.modulate.a=.35;chevrons.append(chevron)
+	var sign=Visuals.label3d(parent,"Выход",at+Vector3(-.2,2.85,0),Color("dfe8dd"),26);sign.outline_size=4
+	return {"lamp":lamp,"light":light,"arrows":chevrons}
+## Green gate: lamp and light of an open exit.
+static func paint_gate(parts:Dictionary,open:bool):
+	var color=Color("63d97a") if open else Color("e2493b")
+	parts.lamp.material_override.albedo_color=color;parts.lamp.material_override.emission=color
+	parts.light.light_color=color.lightened(.1)
 
 func set_open(value:bool):
 	open=value

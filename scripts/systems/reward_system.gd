@@ -336,9 +336,14 @@ func chest_recipe()->Dictionary:
 func grant_chest_recipe(pickup:Dictionary):
 	if pickup.has("recipe_given"):return
 	pickup["recipe_given"]=chest_recipe()
-	# It drops on the ground next to the chest, like a gun or an ammo can (author, 4 Oct 2026): the player
-	# decides — C into the backpack. No timer; left behind, it goes with the room like any other item.
-	if not pickup.recipe_given.is_empty():place_sack(arena.find_free_near(arena.grid_pos(pickup.node.position)),{"recipes":[pickup.recipe_given],"ammo":[]})
+	# Straight into the backpack (author, 4 Oct 2026, playthrough b558); only with a full backpack it lies next to the
+	# chest — no timer, C picks it up once a cell is free.
+	if pickup.recipe_given.is_empty():return
+	if not Backpack.full(arena.run):
+		arena.run.pending_recipes.append(pickup.recipe_given);pickup["recipe_stowed"]=true;Backpack.refresh(arena)
+	else:
+		place_sack(arena.find_free_near(arena.grid_pos(pickup.node.position)),{"recipes":[pickup.recipe_given],"ammo":[]})
+		arena.toast(Texts.render("Рюкзак полон — чертёж лежит у сундука"))
 
 func apply_secret(offer):
 	arena.run.trophies.append({"type":str(offer.type),"id":str(offer.id)})
