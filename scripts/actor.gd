@@ -266,7 +266,8 @@ func _physics_process(delta):
 		if kind == "soldier": model.position.y = absf(sin(Time.get_ticks_msec()*.016))*.015
 	else: model.position.y = 0
 	if not moving:arena.terrain.begin_slide(self)
-	health_label.visible=player_owned or not arena.nets.has(arena.grid_pos(position))
+	# Hidden while the hero is still inside the HQ during the arrival (battle_stage: stage_hidden).
+	health_label.visible=(player_owned or not arena.nets.has(arena.grid_pos(position))) and not has_meta("stage_hidden")
 	if kind=="mortar":
 		arena.mortar_step(self)
 		return

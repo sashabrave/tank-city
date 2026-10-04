@@ -155,11 +155,12 @@ static func hop_out(arena,from:Vector3,arrive:float):
 	var model:Node3D=actor.model;var home=model.position;var turn=model.rotation.y
 	model.visible=false;set_marks(actor,false);actor.set_meta("stage_hidden",true)
 	# The selection ring and the health bar travel with the soldier from the hop on (author).
-	var marks:Array=actor.get_children().filter(func(c):return c!=model and (c is MeshInstance3D or c is Sprite3D or c is Label3D))
+	var marks:Array=marks_of(actor)
 	var mark_home:Array=marks.map(func(c):return c.position)
+	# The marks ride with the hero in the air too: the bar stays over his head, the ring under his feet.
 	var follow=func():
 		if not is_instance_valid(model):return
-		var shift=model.position-home;shift.y=0.0
+		var shift=model.position-home
 		for i in range(marks.size()):
 			if is_instance_valid(marks[i]):marks[i].position=mark_home[i]+shift
 	var start=home+(from-actor.position)
@@ -297,12 +298,14 @@ static func scatter(arena,cell:Vector2i,direction:Vector3):
 	Game.sound("wall_crumble",arena)
 
 ## Ring, health bar and labels that belong to the actor but not to its model follow the model's visibility.
+## The hero's marks — selection ring, health bar (health_bar_3d is a plain Node3D), labels — appear and hide
+## together with the hero during the staging (author, 2026-10-03: the bar hung in the air before he landed).
+static func marks_of(actor)->Array:
+	return actor.get_children().filter(func(c):return c!=actor.model and c is Node3D and not c is Light3D and not c is Camera3D)
 static func set_marks(actor,shown:bool):
-	for child in actor.get_children():
-		if child==actor.model or not child is Node3D:continue
-		if child is MeshInstance3D or child is Sprite3D or child is Label3D:
-			child.visible=shown
-			if shown:pop(child,.18)
+	for child in marks_of(actor):
+		child.visible=shown
+		if shown:pop(child,.18)
 
 ## Small appear/disappear helpers so props never just blink in or out.
 static func pop(node:Node3D,duration:=.22):
