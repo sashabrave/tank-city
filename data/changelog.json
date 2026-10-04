@@ -18,7 +18,8 @@
 					"Победа над генералом: фейерверк над полем, надпись «Генерал повержен» и сообщение майора. В хабе первым звонит майор: «прошли как надо, молодцы» и новая цель — испытания и бесконечный рубеж.",
 					"Гранатомёт стреляет навесом: граната перелетает укрытия и падает на первого врага на линии (или на полную дальность). РПГ по-прежнему бьёт прямой ракетой.",
 					"Страховка чертежей без чертежа пишет «Нужен чертёж» вместо «Улучшить · -1».",
-					"Карта маршрута: «Захваченный КП» с легендарной карточкой виден издалека — крупнее, золотое кольцо, свет и подпись."
+					"Карта маршрута: «Захваченный КП» с легендарной карточкой виден издалека — крупнее, золотое кольцо, свет и подпись.",
+					"Звук оружия: в хабе, на полигоне и в комнатах каждый ствол звучит своим выстрелом (раньше всегда пистолет). В бою твои выстрелы громче и больше не теряются в шуме: при перегрузке первыми стихают фоновые звуки, попадания тише выстрелов."
 				]
 			},
 			"en": {
@@ -36,7 +37,8 @@
 					"Beating the general: fireworks over the field, a «General defeated» banner and a message from the major. Back in the hub the major calls first: well done, and the new goal — challenges and the endless line.",
 					"The grenade launcher now lobs: the grenade flies over cover and lands on the first enemy in line (or at full range). The RPG still fires a straight rocket.",
 					"Blueprint insurance without its blueprint shows «Blueprint needed» instead of «Upgrade · -1».",
-					"Route map: the «Captured CP» with its legendary card stands out from afar — bigger, a gold ring, light and a caption."
+					"Route map: the «Captured CP» with its legendary card stands out from afar — bigger, a gold ring, light and a caption.",
+					"Weapon sound: in the hub, on the range and in rooms every gun plays its own shot (it was always the pistol). In battle your shots are louder and no longer get lost: background sounds give way first, impacts sit under gunfire."
 				]
 			}
 		},

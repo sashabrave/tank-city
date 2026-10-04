@@ -416,8 +416,15 @@ func weapon_sound(actor):
 	elif actor.companion and actor.kind=="soldier":weapon=actor.companion_weapon
 	elif actor.enemy_weapon!="":weapon=actor.enemy_weapon
 	else:weapon={"buggy":"vehicle_mg","apc":"vehicle_mg","tank":"tank","boss":"boss","flyer":"vehicle_mg","mortar":"mortar","sniper":"sniper"}.get(actor.kind,"rifle")
-	sound("fire_"+weapon,actor)
-	if weapon in ["shotgun","sniper","tank"]:sound("weapon_mechanism",actor)
+	fire_sound(weapon,actor,actor.player_owned or actor.companion)
+## One gunshot for a weapon id in every mode — battle, hub range, upgrade rooms, sandbox (T-269: the hub and rooms
+## always played the pistol). Own shots are marked so the mixer never drops them for background noise.
+func fire_sound(weapon:String,source:Node,own:=true):
+	if weapon=="" or weapon==LootCatalog.PAWS:return
+	var id="fire_"+weapon
+	if sound_enabled and audio().banks.has(id):audio().play(id,source,own)
+	else:sound("shot",source)
+	if weapon in ["shotgun","sniper","tank"]:sound("weapon_mechanism",source)
 
 func unlock_or_equip_ability(id: String) -> bool:
 	if "weapons" not in built_workshops:return false

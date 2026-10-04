@@ -84,3 +84,7 @@ assets/models/vegetation содержит 15 GLB. Редактируемая с�
 Светильники v1: tools/build_lights_v1.py (Blender, палитра v6) → environment_v7/light_mast, light_tripod, light_wall, light_block. Лампы смотрят в −Z Godot. BaseSurroundings.lamp: на земле мачта, на блоке тренога (STANDS задаёт якорь света); WorldLighting.floodlight: на блоке наблочный прожектор, wall=true — настенный (стены хаба). Один SpotLight на светильник. Проверка lights_v1_visual (оконная, ночь).
 
 Музыка: фоновые плееры идут в шину TankCityMusicBed (отправка в TankCityMusic), фанфары — прямо в TankCityMusic. Пока играет фанфара, шина фона опускается до MusicController.FANFARE_DUCK (−22 дБ) быстро и возвращается медленно. Фанфара «commander» использует стартовый мотив боевой темы. Профиль: progression.counters.runs (+1 в begin_run) и play_seconds (Game._process, только при выбранном профиле); карточка профиля показывает оба. audio_recovery падает на контекстах map/miniboss/hub и без этих правок.
+
+## Звук выстрелов (T-269, 4 октября 2026)
+
+Выстрел любого оружия — `Game.fire_sound(weapon, source, own)`: в бою, на полигоне хаба, в комнатах и в песочнице один и тот же звук `fire_<оружие>`. Микшер (`scripts/audio_controller.gd`): до 40 голосов; при переполнении вырезается самый старый фоновый звук, свои выстрелы героя (`own`) и звуки интерфейса сохраняются; одного события не больше 4 копий одновременно. Громкость: свой выстрел −15 дБ (по центру), чужие −20 (танк/босс −18) с ослаблением по расстоянию до −10 дБ, попадания −23.

@@ -613,7 +613,7 @@ func shoot():
 		bullet.position=controlled.position+bullet.travel_direction*.45+Vector3.UP*muzzle_height
 		bullet.lifetime=2.5 if mounted else data.range/data.speed
 		add_child(bullet);projectiles.append(bullet)
-	Game.sound("shot",self)
+	Game.fire_sound("vehicle_mg" if mounted else str(Game.selected_weapon),controlled if is_instance_valid(controlled) else self)
 
 func bullet_hit(bullet) -> bool:
 	var pos=bullet.position

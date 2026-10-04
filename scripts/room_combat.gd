@@ -76,7 +76,7 @@ func shoot():
 		bullet.position=avatar.position+bullet.travel_direction*.45+Vector3.UP*height
 		bullet.lifetime=data.range/data.speed
 		add_child(bullet);projectiles.append(bullet)
-	Game.sound("shot",self)
+	Game.fire_sound(str(id),avatar)
 
 ## Bullets stop at the room's walls and at whatever the hero cannot walk through.
 func bullet_hit(bullet)->bool:
