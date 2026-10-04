@@ -38,18 +38,20 @@ var hub_skills:Control
 var training_barriers:Array=[]
 ## Outdoor yard to the right of the hangar, through the gap between the racks (row y=0): the parking spot
 ## and a fenced range with the dummy. Vehicles can drive out there too; the camera slides to follow.
-const YARD_PARK=Vector3(11,0,-2)
+const YARD_PARK=Vector3(12,0,-2)  # T-270: one cell right of the passage exit
 ## T-010: the range is a long lane — fire from the marked spot, the target stands far away behind sandbags.
 const YARD_DUMMY=Vector3(21,0,-2)
 const FIRING_SPOT=Vector3(15,0,-2)
 const YARD_EAST=22
 ## Motor pool terminal next to the parking bay (T-014).
-const GARAGE_TERMINAL=Vector3(11,0,-3)
+const GARAGE_TERMINAL=Vector3(12,0,-3)
 ## Rectangular test track in the south of the yard (centre, half extents) and the guard booth cell.
-const TRACK_CENTER=Vector3(16.3,0,1.9)
+const TRACK_CENTER=Vector3(16.3,0,.9)  # T-270: a cell up, clear of the south barriers
 ## Half extents of the rectangular track.
 const TRACK_RADII=Vector2(5.3,1.35)
 const BOOTH_CELL=Vector2i(10,3)
+## Tyre stacks on the track infield stand on whole cells, and those cells are not walkable (T-270).
+const TYRE_CELLS=[Vector2i(15,1),Vector2i(17,1)]
 var camera_base:=Vector3.INF
 var camera_tilt:Node
 var yard_gate:Node3D
@@ -468,7 +470,8 @@ func test_track(yard:Node3D):
 		var cone=MeshInstance3D.new();var shape=CylinderMesh.new();shape.top_radius=.02;shape.bottom_radius=.1;shape.height=.26;cone.mesh=shape
 		cone.position=track_point(t)+Vector3(0,.16,0);cone.material_override=Visuals.material(Color("ff8a3d"));yard.add_child(cone)
 	var ramp=Visuals.box(yard,track_point(.45)+Vector3(0,.09,0),Vector3(.8,.08,.46),Color("b8a47c"));ramp.rotation.z=.16
-	for p in [TRACK_CENTER+Vector3(-.9,0,0),TRACK_CENTER+Vector3(1.0,0,0)]:
+	for c in TYRE_CELLS:
+		var p=Vector3(c.x,0,c.y)
 		for i in range(2):
 			var tyre=MeshInstance3D.new();var torus=TorusMesh.new();torus.inner_radius=.12;torus.outer_radius=.26;tyre.mesh=torus
 			tyre.position=p+Vector3(0,.07+i*.13,0);tyre.material_override=Visuals.material(Color("2a2c2a") if i==0 else Color("cf613f"));yard.add_child(tyre)
@@ -501,7 +504,8 @@ func passage(yard:Node3D):
 ## flag at the entrance, a container on the ground behind the range.
 func yard_dressing(yard:Node3D):
 	var block=Color("a2a596")
-	for x in [11.0,12.3,13.6,14.9,16.2,17.5,18.8,20.1,21.4]:Visuals.box(yard,Vector3(x,.25,3.55),Vector3(1.1,.5,.35),block)
+	# South row low (T-270): the camera looks over it, so a tall block would hide the soldier walking along row 3.
+	for x in [11.0,12.3,13.6,14.9,16.2,17.5,18.8,20.1,21.4]:Visuals.box(yard,Vector3(x,.15,3.55),Vector3(1.1,.3,.35),block)
 	for z in [.2,1.5,2.8]:Visuals.box(yard,Vector3(YARD_EAST+.65,.25,z),Vector3(.35,.5,1.1),block)
 	for dx in [-.55,.55]:Visuals.box(yard,YARD_PARK+Vector3(dx,.012,0),Vector3(.06,.012,1.5),Color("e8e2d0"))
 	Visuals.box(yard,YARD_PARK+Vector3(0,.012,.72),Vector3(1.16,.012,.06),Color("e8e2d0"))
@@ -540,7 +544,7 @@ func hub_free(p: Vector2i) -> bool:
 		# Yard: the rack gap (x 8-9 only on row 0), then open concrete x 10..YARD_EAST, y -3..3 except the target pen and booth.
 		if p.x<=9:return p.y==0
 		var d=Vector2i(roundi(YARD_DUMMY.x),roundi(YARD_DUMMY.z))
-		return p.x<=YARD_EAST and p.y>=-3 and p.y<=3 and p not in [d,d+Vector2i(0,-1),d+Vector2i(0,1),d+Vector2i(1,0)] and p!=BOOTH_CELL and p!=Vector2i(roundi(GARAGE_TERMINAL.x),roundi(GARAGE_TERMINAL.z))
+		return p.x<=YARD_EAST and p.y>=-3 and p.y<=3 and p not in [d,d+Vector2i(0,-1),d+Vector2i(0,1),d+Vector2i(1,0)] and p!=BOOTH_CELL and p not in TYRE_CELLS and p!=Vector2i(roundi(GARAGE_TERMINAL.x),roundi(GARAGE_TERMINAL.z))
 	if p.x< -4 or p.y< -2 or p.y>4:return false
 	# Command centre (left edge), crates by the back wall, the range pad and the arsenal spot. The retired
 	# workbench cells (character at 0,-1 and bonuses at -3,-1) are walkable floor now.
