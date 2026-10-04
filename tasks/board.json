@@ -3686,7 +3686,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-290.png",
 			"source": "game",
-			"status": "doing",
+			"status": "review",
 			"title": "при открытии окна диалога звонка надо кнопку !дальше\" делать сразу в фокусе",
 			"type": "bug",
 			"version": "0.8.0"
@@ -3699,7 +3699,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-291.png",
 			"source": "game",
-			"status": "doing",
+			"status": "review",
 			"title": "на экране связи новые сообщения тоже надо показывать точкой уведомление в углу блока",
 			"type": "bug",
 			"version": "0.8.0"
@@ -3751,7 +3751,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-295.png",
 			"source": "game",
-			"status": "doing",
+			"status": "review",
 			"title": "гаджеты",
 			"type": "bug",
 			"version": "0.8.0"
@@ -3777,7 +3777,7 @@
 			"scene": "hub",
 			"shot": "res://tasks/shots/T-297.png",
 			"source": "game",
-			"status": "doing",
+			"status": "review",
 			"title": "поднять количество уровней прокачки бонусам до 5",
 			"type": "bug",
 			"version": "0.8.0"
@@ -3803,7 +3803,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-299.png",
 			"source": "game",
-			"status": "doing",
+			"status": "review",
 			"title": "способности базы надо показывать в том же ряду где иконки способностей. но круглые в самом конце списка",
 			"type": "bug",
 			"version": "0.8.0"
@@ -3855,7 +3855,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-303.png",
 			"source": "game",
-			"status": "doing",
+			"status": "review",
 			"title": "обнови песочницу - добавь смену способности штаба",
 			"type": "bug",
 			"version": "0.8.0"

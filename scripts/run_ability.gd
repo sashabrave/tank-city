@@ -37,6 +37,11 @@ func tick(delta):
 	shield_time=maxf(0,shield_time-delta)
 func block_hit()->bool:return shield_time>0
 func shield_duration()->float:return minf(8.0,power()+level.utility*.5)
+## Key of a slot by what stands in it: the Arsenal gadget — F, any other ability — Q. The HUD tile label and the
+## battle input both use it (the sandbox fills slots after the HUD is built; Game.ability_action only knew the class).
+func action_for(index:int)->String:
+	if index<slots.size():return "ability" if str(slots[index])==str(Game.gadget) and str(slots[index]) not in Game.class_loadout() else "class_ability"
+	return Game.ability_action(index)
 func cast_slot(index:int)->bool:
 	if index<0 or index>=slots.size():return false
 	select(slots[index])
