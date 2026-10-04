@@ -99,7 +99,7 @@ static func due(hub)->String:
 
 static func mark_seen(call:String):
 	if "call_"+call not in Game.progression.seen:Game.progression.seen.append("call_"+call)
-	Game.save_progress()
+	Game.save_soon()
 
 func _ready():
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);mouse_filter=Control.MOUSE_FILTER_STOP

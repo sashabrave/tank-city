@@ -48,7 +48,7 @@ static func mark_item_seen(kind:String,tab:String,id:String):
 	if key not in Game.progression.seen:Game.progression.seen.append(key);changed=true
 	var viewed:Array=viewed_affordable(kind)
 	if tab+":"+id in actionable(kind) and tab+":"+id not in viewed:viewed.append(tab+":"+id);changed=true
-	if changed:Game.save_progress()
+	if changed:Game.save_soon()
 
 ## Affordable items already selected. Items that stopped being affordable drop out, so they turn new again
 ## when the player can afford them once more.
@@ -71,7 +71,7 @@ static func mark_all_seen(kind:String):
 		var key=seen_key(kind,i.id)
 		if key not in Game.progression.seen:Game.progression.seen.append(key)
 	Game.progression.viewed_updates["station:"+kind]=actionable(kind)
-	Game.save_progress()
+	Game.save_soon()
 static func has_dot(kind:String)->bool:
 	return scan(kind).any(func(i):return item_new(kind,i.id,i.status))
 

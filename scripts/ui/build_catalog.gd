@@ -13,7 +13,7 @@ static func preview(parent:Node,id:String,pos:Vector2,size:Vector2):
 	var texture=TextureRect.new();parent.add_child(texture);texture.texture=image(id);texture.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;texture.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;texture.position=pos;texture.size=size;texture.mouse_filter=Control.MOUSE_FILTER_IGNORE;return texture
 static func fresh(id:String)->bool:return id in Game.research_unlocks and "build:"+id not in Game.progression.seen
 static func mark(id:String):
-	if "build:"+id not in Game.progression.seen:Game.progression.seen.append("build:"+id);Game.save_progress()
+	if "build:"+id not in Game.progression.seen:Game.progression.seen.append("build:"+id);Game.save_soon()
 static func dot(parent:Control,_pos:=Vector2.ZERO):return UiKit.badge(parent,"news")
 static func open_bench(hub,id:String):
 	mark(id)
@@ -30,5 +30,5 @@ static func item_dot(card:Control,id:String,item:String,pos:Vector2):
 	if key in Game.progression.seen:return
 	var badge=dot(card,pos)
 	card.mouse_entered.connect(func():
-		if key not in Game.progression.seen:Game.progression.seen.append(key);Game.save_progress()
+		if key not in Game.progression.seen:Game.progression.seen.append(key);Game.save_soon()
 		badge.hide())

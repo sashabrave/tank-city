@@ -33,7 +33,7 @@ func unseen_done()->Array:
 	return result
 func mark_seen():
 	for id in unseen_done():Game.progression.seen.append("roadmap:"+str(id))
-	Game.save_progress()
+	Game.save_soon()
 func steps(tab:String)->Array:
 	var p=Game.progression
 	match tab:

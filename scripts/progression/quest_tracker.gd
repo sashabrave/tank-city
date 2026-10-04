@@ -29,7 +29,7 @@ func _process(delta):
 	if state==signature:return
 	signature=state
 	for child in content.get_children():content.remove_child(child);child.queue_free()
-	var toggle=UiKit.button(content,("▸ " if p.tracker_collapsed else "▾ ")+"Задачи · %d" % quests.size(),Vector2.ZERO,Vector2(0,28),func():p.tracker_collapsed=not p.tracker_collapsed;Game.save_progress();signature="";delay=0)
+	var toggle=UiKit.button(content,("▸ " if p.tracker_collapsed else "▾ ")+"Задачи · %d" % quests.size(),Vector2.ZERO,Vector2(0,28),func():p.tracker_collapsed=not p.tracker_collapsed;Game.save_soon();signature="";delay=0)
 	toggle.custom_minimum_size=Vector2(0,28)
 	toggle.add_theme_font_size_override("font_size",12)
 	for name in ["normal","hover","pressed","focus"]:

@@ -36,7 +36,7 @@ func click_down(from:int):
 	t.tween_callback(func():
 		label.text=str(value());label.position.x=0;label.scale=Vector3.ONE*1.35
 		Game.sound("rare_reveal",self)
-		Game.progression.counters["wall_shown"]=value();Game.save_progress())
+		Game.progression.counters["wall_shown"]=value();Game.save_soon())
 	t.tween_property(label,"scale",Vector3.ONE,.6).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	t.tween_interval(4.0)
 	t.tween_callback(func():clicking=false;clock=SHOWN)

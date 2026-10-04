@@ -232,7 +232,17 @@ func earn(amount: int):
 func serialize_progress()->Dictionary:
 	return {"skins":skins_owned.duplicate(),"skin":skin,"player_model":player_model,"stat_levels":stat_levels.duplicate(),"run_checkpoint":run_checkpoint,"duplicate_recipes":duplicate_recipes,"garage":garage.serialize(),"notifications":notification_history,"class_first_slots":class_first_slots,"purchased_gadgets":purchased_gadgets,"purchased_hq":purchased_hq,"class_second_slots":class_second_slots,"class_choices":class_choices,"class_slots":class_slots,"gadget":gadget,"pressure_level":pressure_level,"headquarters":{"slots":hq_slots,"unlocks":hq_unlocks,"modules":hq_modules,"active":hq_active,"levels":hq_levels},"progression":progression.serialize(),"version":ProfileSchema.VERSION,"camp_level":camp_level,"selected_weapon":selected_weapon,"backpack_slots":backpack_slots,"reroll_level":reroll_level,"research":research_unlocks,"built":built_workshops,"credits":credits,"health":health_level,"damage":damage_level,"luck":luck_level,"turret":turret_level,"rarity":rarity_level,"base":base_level,"heal":heal_level,"mobility":mobility_level,"recovery":recovery_level,"v09":{"class_levels":class_levels,"specializations":specializations,"cores":cores,"class":selected_class,"classes":class_unlocks,"superboss_defeated":superboss_defeated,"slots":ability_slots,"equipped":equipped_abilities,"rescue":rescue_level,"shield_capacity":shield_capacity_level},"abilities":ability_unlocks,"selected_ability":selected_ability,"branch_unlocks":branch_unlocks,"weapon_unlocks":weapon_unlocks,"ammo_slot_weapons":ammo_slot_weapons,"bonus_unlocks":bonus_unlocks,"bonus_levels":bonus_levels}
 
-func save_progress()->bool:
+## Small UI state (seen badges, read messages, collapsed panels) does not need a disk write and a blinking
+## save icon on every click (author, 4 Oct 2026): save_soon() marks the profile dirty and writes it quietly
+## after SOFT_SAVE_DELAY, or together with the next real save, or on quit / focus loss.
+const SOFT_SAVE_DELAY=10.0
+var soft_save_pending=false
+func save_soon():
+	if not save_enabled or soft_save_pending:return
+	soft_save_pending=true
+	get_tree().create_timer(SOFT_SAVE_DELAY,true,false,true).timeout.connect(func():if soft_save_pending:save_progress(true))
+func save_progress(quiet:=false)->bool:
+	soft_save_pending=false
 	if not save_enabled or not profiles.selected:return true
 	if save_blocked:return false
 	var data=serialize_progress() if run_save_baseline.is_empty() else run_save_baseline.duplicate(true)
@@ -241,7 +251,7 @@ func save_progress()->bool:
 	save_error="" if result.ok else result.error
 	# Our own snapshot failing validation is a code bug: make it loud instead of silently keeping an old file.
 	if not result.ok:push_error("Profile save failed: "+str(result.error))
-	else:save_indicator().pulse()
+	elif not quiet:save_indicator().pulse()
 	return result.ok
 var save_icon:CanvasLayer
 func save_indicator()->CanvasLayer:
@@ -748,4 +758,4 @@ func quit_game():
 	get_tree().quit()
 func _notification(what):
 	# Cmd+Q, closing the window, hiding the app or a phone call: flush before the OS may kill the process.
-	if what in [NOTIFICATION_WM_CLOSE_REQUEST,NOTIFICATION_APPLICATION_PAUSED,NOTIFICATION_APPLICATION_FOCUS_OUT,NOTIFICATION_WM_GO_BACK_REQUEST]:save_progress();Settings.save()
+	if what in [NOTIFICATION_WM_CLOSE_REQUEST,NOTIFICATION_APPLICATION_PAUSED,NOTIFICATION_APPLICATION_FOCUS_OUT,NOTIFICATION_WM_GO_BACK_REQUEST]:save_progress(true);Settings.save()

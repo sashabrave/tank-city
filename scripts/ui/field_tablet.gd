@@ -395,7 +395,7 @@ func messages_page():
 	for i in range(Game.notification_history.size()-1,-1,-1):
 		var entry=Game.notification_history[i]
 		if Game.notifications.category(entry)!=message_tab or quest_echo(entry):continue
-		var card=preload("res://scripts/ui/message_card.gd").new();card.entry=entry;box.add_child(card);card.read_requested.connect(func():entry.read=true;Game.save_progress();refresh())
+		var card=preload("res://scripts/ui/message_card.gd").new();card.entry=entry;box.add_child(card);card.read_requested.connect(func():entry.read=true;Game.save_soon();refresh())
 	if box.get_child_count()==0:UiKit.label(box,"Пока нет сообщений",Vector2.ZERO,Vector2(500,40),16,UiKit.MUTED)
 	UiKit.reveal_list(box)
 	UiKit.button(content,"Прочитать эту вкладку",Vector2(22,518),Vector2(300,40),func():Game.notifications.mark_all(message_tab);refresh()).add_theme_font_size_override("font_size",16)
@@ -605,7 +605,7 @@ func section_new(key:String)->bool:
 	return value!="" and str(Game.progression.viewed_updates.get(viewed_key(key),""))!=value
 func mark_section(key:String):
 	Game.progression.view_section(key)
-	Game.progression.viewed_updates[viewed_key(key)]=signature(key);Game.save_progress()
+	Game.progression.viewed_updates[viewed_key(key)]=signature(key);Game.save_soon()
 
 func expand_layout(parent:Node,factor:float):
 	for child in parent.get_children():

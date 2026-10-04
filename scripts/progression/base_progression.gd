@@ -190,7 +190,7 @@ func toggle_track(id:String):
 	else:
 		if tracked.size()>=3:tracked.pop_front()
 		tracked.append(id)
-	Game.save_progress()
+	Game.save_soon()
 
 func notices()->Array:
 	var result=[]
@@ -221,7 +221,7 @@ func view_quest_updates(filter:String):
 		if filter=="institute" and q not in QUESTS.INSTITUTE:continue
 		for id in ["quest:"+q.id,"ready:"+q.id]:
 			if id in notices() and id not in seen:seen.append(id)
-	Game.save_progress()
+	Game.save_soon()
 func build_targets()->Array:
 	var result=[]
 	for q in quests("available"):
@@ -233,7 +233,7 @@ func mark_seen():
 	viewed_updates["operations"]=operations_signature()
 	for id in notices():
 		if id not in seen:seen.append(id)
-	Game.save_progress()
+	Game.save_soon()
 
 func accept_quest(id:String)->bool:
 	if id in accepted or not quests("available").any(func(q):return q.id==id):return false
@@ -256,4 +256,4 @@ func view_section(section:String):
 	if section=="base":
 		for id in notices():
 			if (str(id).begins_with("base:")== (section=="base")) and id not in seen:seen.append(id)
-	Game.save_progress()
+	Game.save_soon()
