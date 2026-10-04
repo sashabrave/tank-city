@@ -21,7 +21,7 @@ signal info_pressed
 @onready var new_badge:PanelContainer=$Layout/Head/Names/Badges/NewBadge
 @onready var info:Button=$Layout/Head/Info
 @onready var gist:Label=$Layout/Gist
-@onready var change:HBoxContainer=$Layout/Change
+@onready var rows_grid:GridContainer=$Layout/Rows
 @onready var action:Button=$Layout/Action
 @onready var progress:ProgressBar=$Layout/Progress
 var action_id=""
@@ -41,7 +41,7 @@ func _ready():
 	action.focus_entered.connect(func():if focus_style:add_theme_stylebox_override("panel",focus_style))
 	action.focus_exited.connect(func():if idle_style:add_theme_stylebox_override("panel",idle_style))
 	# Prices («140 ◈») and «было → станет» rows draw the currency icon inline, as UiKit labels do.
-	for widget in [action,$Layout/Change/Value,level]:
+	for widget in [action,level]:
 		var inline=preload("res://scripts/ui/currency_icons.gd").new();widget.add_child(inline)
 
 ## item: {id,title,icon,texture?,caption,level?,cap?}; detail: the station's detail(tab,id);
@@ -67,15 +67,11 @@ func setup(item:Dictionary,detail:Dictionary,look:Dictionary):
 	var text=str(detail.get("text",""))
 	gist.visible=text!=""
 	if gist.visible:Texts.set_text(gist,text)
-	var row=main_row(detail.get("rows",[]))
+	# «Было → станет» in aligned columns (T-254): the level and the parameter it improves, two rows at most.
 	var lines:Array=detail.get("lines",[]).filter(func(l):return str(l)!="")
-	change.visible=not row.is_empty() or not lines.is_empty()
-	var value:Label=$Layout/Change/Value
-	if not row.is_empty():
-		Texts.set_text($Layout/Change/Name,str(row[0]));Texts.set_text(value,row_value(row));value.show()
-		if str(row[1])==str(row[2]):value.add_theme_color_override("font_color",title.get_theme_color("font_color"))
-	elif not lines.is_empty():
-		Texts.set_text($Layout/Change/Name,str(lines[0]));value.hide()
+	var shown=card_rows(detail.get("rows",[]))
+	if shown.is_empty() and not lines.is_empty():shown=[[str(lines[0])]]
+	fill_rows(rows_grid,shown,title.get_theme_color("font_color"))
 	var main=main_action(detail.get("actions",[]));var caption=str(item.get("caption",""))
 	if main.is_empty():
 		# Nothing to do here: the caption («Нужен чертёж», «Построено») sits in the button's place, not twice.
@@ -115,6 +111,34 @@ static func main_row(rows:Array)->Array:
 	for row in rows:
 		if str(row[1])!=str(row[2]):return row
 	return rows[0] if not rows.is_empty() else []
+## Card rows (T-254): «Уровень» and the main parameter it improves (the first other row that changes), at most two.
+static func card_rows(rows:Array)->Array:
+	var level=rows.filter(func(r):return str(r[0])=="Уровень")
+	var others=rows.filter(func(r):return str(r[0])!="Уровень")
+	var result=level.slice(0,1)
+	var param=main_row(others)
+	if not param.is_empty():result.append(param)
+	return result
+## Fills a 4-column grid (name · before · → · after). The first four children are the row template (set in the
+## scene); further rows are copies of it. A row that does not change shows its value in the «after» column only;
+## a one-element row is a plain line across the name column.
+static func fill_rows(grid:GridContainer,rows:Array,ink:Color):
+	var template=grid.get_children().slice(0,4)
+	for extra in grid.get_children().slice(4):grid.remove_child(extra);extra.queue_free()
+	grid.visible=not rows.is_empty()
+	if rows.is_empty():return
+	var accent=template[3].get_theme_color("font_color")
+	for i in range(rows.size()):
+		var cells=template if i==0 else template.map(func(c):var copy=c.duplicate();grid.add_child(copy);return copy)
+		var row:Array=rows[i]
+		Texts.set_text(cells[0],str(row[0]))
+		if row.size()<3:
+			for c in cells.slice(1):c.text=""
+			continue
+		var changes=str(row[1])!=str(row[2])
+		Texts.set_text(cells[1],str(row[1]) if changes else "");cells[2].text="→" if changes else ""
+		Texts.set_text(cells[3],str(row[2]))
+		cells[3].add_theme_color_override("font_color",accent if changes else ink)
 static func row_value(row:Array)->String:
 	return "%s → %s" % [str(row[1]),str(row[2])] if str(row[1])!=str(row[2]) else str(row[1])
 ## Two lines at most and never «…» or a word split in the middle: the size goes down until the longest word fits.

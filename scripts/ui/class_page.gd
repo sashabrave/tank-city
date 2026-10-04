@@ -15,6 +15,9 @@ const LIST_W:=212.0
 const GAP:=16.0
 const HERO_H:=236.0
 const ITEM_H:=58.0
+## Doll column of the class block (T-199): the doll on top, the story under it, scrolling.
+const DOLL_W:=150.0
+const DOLL_H:=150.0
 
 func setup(owner,area:Vector2):
 	screen=owner;size=area
@@ -57,7 +60,8 @@ static func all_ids()->Array:
 func class_tab(parent:Control,id:String,pos:Vector2,dims:Vector2)->Button:
 	var concept=id.begins_with("concept_");var owned=id in Game.class_unlocks;var chosen=id==viewed
 	var b=Button.new();parent.add_child(b);b.position=pos;b.size=dims;b.name="Class_"+id;b.focus_mode=Control.FOCUS_ALL
-	var style=UiKit.style(Color("2c352e") if owned else Color("1e2420") if concept else Color("232a25"),12,UiKit.ORANGE if chosen else Color(1,1,1,.08));style.set_border_width_all(3 if chosen else 1)
+	# Quiet list (T-239): flat rows, only the viewed class has a frame.
+	var style=UiKit.style(Color("2c352e") if owned else Color("1e2420") if concept else Color("232a25"),12,UiKit.ORANGE if chosen else Color(1,1,1,0));style.set_border_width_all(2 if chosen else 0)
 	for state in ["normal","hover","pressed","focus"]:b.add_theme_stylebox_override(state,style)
 	var shell=id
 	b.pressed.connect(func():pick(shell))
@@ -67,8 +71,8 @@ func class_tab(parent:Control,id:String,pos:Vector2,dims:Vector2)->Button:
 	var tx=art_w+14;var lamp=26.0
 	var title=UiKit.label(b,class_name_of(id),Vector2(tx,dims.y*.5-21),Vector2(dims.x-tx-lamp,22),15,UiKit.INK if owned else UiKit.MUTED);title.mouse_filter=Control.MOUSE_FILTER_IGNORE;title.clip_text=true
 	var sub=UiKit.label(b,caption_of(id),Vector2(tx,dims.y*.5+2),Vector2(dims.x-tx-8,18),12,UiKit.ORANGE if id==Game.selected_class else UiKit.MUTED);sub.mouse_filter=Control.MOUSE_FILTER_IGNORE;sub.clip_text=true
-	# A class that just became available carries a green lamp until it is viewed once (T-219).
-	if not concept and not owned and not chosen and Game.can_select_class(id) and preload("res://scripts/ui/station_notices.gd").is_new("fighter","shells",id):UiKit.badge(b,"ready")
+	# A class that can be opened carries the green dot until it is opened (T-224; was: until viewed once).
+	if not concept and not owned and Game.can_select_class(id):UiKit.badge(b,"ready")
 	return b
 func pick(id:String):
 	screen.selected=id;screen.notice="";viewed=id;screen.build()
@@ -123,15 +127,30 @@ func concept_view(pos:Vector2,area:Vector2):
 ## bar and the next price, the four key stats as large bars, the class's own stats in one line, two ability cells.
 func hero(pos:Vector2,area:Vector2):
 	var id=viewed;var owned=id in Game.class_unlocks;var level=ClassCatalog.level(id)
-	var back=UiKit.panel(self,pos,area,Color(1,1,1,.04));back.name="Hero";back.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	var frame=UiKit.panel(self,pos+Vector2(12,12),Vector2(150,area.y-24),Color(1,1,1,.04));frame.name="Portrait";frame.mouse_filter=Control.MOUSE_FILTER_PASS
+	var back=block(pos,area);back.name="Hero"
+	# Doll column (T-199): the doll, then the story, strengths and weaknesses under it; the column scrolls with the
+	# wheel or a drag like the fighter column in «Снаряжение» (no visible bar), so no line is cut off.
 	var bio:Array=ClassCatalog.BIO.get(id,["","",""])
-	frame.tooltip_text="%s\n\n+ %s\n− %s" % [Texts.localized(bio[0]),Texts.localized(bio[1]),Texts.localized(bio[2])]
+	# The column fades out at its bottom edge (a gradient mask clips it), so the story reads as «more below», not cut.
+	var mask=TextureRect.new();add_child(mask);mask.name="PortraitMask";mask.position=pos+Vector2(12,12);mask.size=Vector2(DOLL_W,area.y-24);mask.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	var fade=Gradient.new();fade.set_color(0,Color.WHITE);fade.set_color(1,Color(1,1,1,0));fade.add_point(1.0-34.0/mask.size.y,Color.WHITE)
+	var ramp=GradientTexture2D.new();ramp.gradient=fade;ramp.fill_from=Vector2(0,0);ramp.fill_to=Vector2(0,1);ramp.width=4;ramp.height=64
+	mask.texture=ramp;mask.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;mask.stretch_mode=TextureRect.STRETCH_SCALE;mask.clip_children=CanvasItem.CLIP_CHILDREN_ONLY
+	var column=ScrollContainer.new();mask.add_child(column);column.name="Portrait";column.position=Vector2.ZERO;column.size=mask.size
+	column.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;column.vertical_scroll_mode=ScrollContainer.SCROLL_MODE_SHOW_NEVER
+	var body=Control.new();body.name="PortraitBody";column.add_child(body);body.mouse_filter=Control.MOUSE_FILTER_PASS
 	# The full-body doll, facing right like every doll in the interface (author).
-	var portrait=TextureRect.new();frame.add_child(portrait);portrait.name="Doll";portrait.texture=preload("res://scripts/ui/class_gallery.gd").texture(id,true);portrait.flip_h=preload("res://scripts/ui/gear_page.gd").DOLL_FACES_LEFT;portrait.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;portrait.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;portrait.position=Vector2(8,8);portrait.size=frame.size-Vector2(16,16);portrait.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	var portrait=TextureRect.new();body.add_child(portrait);portrait.name="Doll";portrait.texture=preload("res://scripts/ui/class_gallery.gd").texture(id,true);portrait.flip_h=preload("res://scripts/ui/gear_page.gd").DOLL_FACES_LEFT;portrait.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;portrait.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;portrait.position=Vector2.ZERO;portrait.size=Vector2(DOLL_W,DOLL_H);portrait.mouse_filter=Control.MOUSE_FILTER_PASS
 	UiKit.locked_preview(portrait,not owned)
+	var by=DOLL_H+10
+	for part in [[bio[0],UiKit.MUTED,""],[bio[1],Color("8fe895"),"+ "],[bio[2],Color("e3a08f"),"− "]]:
+		if str(part[0])=="":continue
+		var line=UiKit.label(body,str(part[2])+str(part[0]),Vector2(0,by),Vector2(DOLL_W,40),13,part[1]);line.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;line.mouse_filter=Control.MOUSE_FILTER_PASS
+		line.set_meta("no_fit",true);line.size.y=preload("res://scripts/ui/station_screen.gd").wrapped_height(line,DOLL_W,13);by+=line.size.y+6
+	line_names(body)
+	body.custom_minimum_size=Vector2(DOLL_W,by+28)  # room to scroll the last line out of the fade
 	const ABIL_W:=236.0
-	var x=pos.x+178;var w=area.x-178-ABIL_W-28
+	var x=pos.x+12+DOLL_W+20;var w=area.x-(12+DOLL_W+20)-ABIL_W-28
 	var name_label=UiKit.label(self,Game.CLASSES[id].name,Vector2(x,pos.y+8),Vector2(w,36),26);UiKit.accent(name_label);name_label.name="ClassName"
 	UiKit.label(self,ClassCatalog.info(id).role,Vector2(x,pos.y+44),Vector2(w,20),15,UiKit.MUTED).name="Role"
 	var extra=UiKit.label(self,own_stats_line(id),Vector2(x,pos.y+66),Vector2(w,18),13,Color("8fe895"));extra.name="OwnStats"
@@ -157,6 +176,27 @@ func hero(pos:Vector2,area:Vector2):
 		var fill=Panel.new();track.add_child(fill);fill.mouse_filter=Control.MOUSE_FILTER_IGNORE;fill.size=Vector2(col*share,10);fill.add_theme_stylebox_override("panel",bar_style(Color(UiKit.INK,.78) if owned else Color(UiKit.MUTED,.55),5))
 	abilities_cells(Vector2(pos.x+area.x-ABIL_W-12,pos.y),Vector2(ABIL_W,area.y))
 
+## Bio lines in the doll column are named for tests and the typography audit.
+static func line_names(body:Control):
+	var k=0
+	for child in body.get_children():
+		if child is Label:child.name="Bio_%d" % k;k+=1
+## Section heading inside the class page (T-239): one size and colour for «Способности», «Путь класса», «Как открыть».
+func section(pos:Vector2,text:String)->Label:
+	return UiKit.label(self,text,pos,Vector2(260,22),15,UiKit.MUTED)
+## A quiet block (T-239): a faint fill, no frame — the class and its path read as two areas, not boxes in boxes.
+func block(pos:Vector2,area:Vector2)->Panel:
+	var back=Panel.new();add_child(back);back.position=pos;back.size=area;back.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	var s=StyleBoxFlat.new();s.bg_color=Color(1,1,1,.035);s.set_corner_radius_all(12);back.add_theme_stylebox_override("panel",s)
+	return back
+## A text-only action inside a block («Все уровни»): accent text, no frame, so it does not compete with the main buttons.
+func link_button(text:String,pos:Vector2,dims:Vector2,callback:Callable)->Button:
+	var b=UiKit.button(self,text,pos,dims,callback);b.add_theme_font_size_override("font_size",14)
+	var flat=StyleBoxFlat.new();flat.bg_color=Color(1,1,1,0);flat.set_corner_radius_all(10);flat.content_margin_left=10;flat.content_margin_right=10
+	var hover=flat.duplicate();hover.bg_color=Color(1,1,1,.06)
+	b.add_theme_stylebox_override("normal",flat);b.add_theme_stylebox_override("hover",hover);b.add_theme_stylebox_override("pressed",hover)
+	for key in ["font_color","font_hover_color","font_pressed_color"]:b.add_theme_color_override(key,UiKit.ORANGE)
+	return b
 ## The class's own numbers (start bonus + level growth) in one line: «Шанс крита 5,4% · Крит-урон 152%».
 static func own_stats_line(id:String)->String:
 	var parts=[]
@@ -193,7 +233,7 @@ static func class_rows(id:String)->Array:
 func abilities_cells(pos:Vector2,area:Vector2):
 	var id=viewed;var owned=id in Game.class_unlocks
 	ability_area=Rect2(pos+Vector2(0,6),area)
-	UiKit.label(self,"Способности",pos+Vector2(0,10),Vector2(area.x,24),16)
+	section(pos+Vector2(0,12),"Способности")
 	var layout=Game.class_slot_layout(id) if owned else []
 	slot_focus=clampi(slot_focus,0,1)
 	var gap=16.0;var cell=(area.x-gap)*.5;var top=40.0
@@ -226,10 +266,9 @@ func abilities_cells(pos:Vector2,area:Vector2):
 ## a rail filled up to the current level, the upgrade button, the total to the next ability (T-211), «Выбрать».
 func path_strip(pos:Vector2,area:Vector2):
 	var id=viewed;var level=ClassCatalog.level(id)
-	var back=UiKit.panel(self,pos,area,Color(1,1,1,.04));back.name="PathStrip";back.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	var head=UiKit.label(self,"Путь класса",pos+Vector2(16,12),Vector2(300,24),16)
-	var head_w=head.get_theme_font("font").get_string_size(Texts.render("Путь класса"),HORIZONTAL_ALIGNMENT_LEFT,-1,16).x
-	var more=UiKit.button(self,"Все уровни",pos+Vector2(16+head_w+16,8),Vector2(140,30),open_path);more.name="ClassPath";more.add_theme_font_size_override("font_size",14);more.tooltip_text=Texts.localized("Все 20 уровней с ростом характеристик")
+	var back=block(pos,area);back.name="PathStrip"
+	section(pos+Vector2(16,12),"Путь класса")
+	var more=link_button("Все уровни",pos+Vector2(area.x-16-140,6),Vector2(140,32),open_path);more.name="ClassPath";more.alignment=HORIZONTAL_ALIGNMENT_RIGHT;more.tooltip_text=Texts.localized("Все 20 уровней с ростом характеристик")
 	var marks=ClassCatalog.TRACK.keys();marks.sort()
 	var left=pos.x+64.0;var right=pos.x+area.x-64.0;var step=(right-left)/(marks.size()-1)
 	var cy=pos.y+84.0;var start=pos.x+20.0
@@ -301,21 +340,21 @@ static func total_to(id:String,target:int)->int:
 ## A locked class (T-208): what to do to open it, big, with progress; nothing cut off.
 func unlock_panel(pos:Vector2,area:Vector2):
 	var id=viewed;var unlock=ClassCatalog.info(id).unlock;var p=ClassCatalog.progress(id);var ready=Game.can_select_class(id)
-	var back=UiKit.panel(self,pos,area,Color(1,1,1,.04));back.name="UnlockPanel";back.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	UiKit.label(self,"Как открыть",pos+Vector2(20,16),Vector2(area.x-40,22),16,UiKit.MUTED)
-	var goal=UiKit.label(self,str(unlock.get("text","")),pos+Vector2(20,44),Vector2(area.x-40,40),26,UiKit.INK);goal.name="UnlockText";goal.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	var back=block(pos,area);back.name="UnlockPanel"
+	section(pos+Vector2(16,12),"Как открыть")
+	var goal=UiKit.label(self,str(unlock.get("text","")),pos+Vector2(16,44),Vector2(area.x-32,40),26,UiKit.INK);goal.name="UnlockText";goal.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	# The goal is as tall as its text (two lines in a long translation); the bar follows it.
-	goal.size.y=preload("res://scripts/ui/station_screen.gd").wrapped_height(goal,area.x-40,26)
+	goal.size.y=preload("res://scripts/ui/station_screen.gd").wrapped_height(goal,area.x-32,26)
 	var by=pos.y+44+goal.size.y+14
-	var bar_w=area.x-40-120
-	var track=Panel.new();add_child(track);track.name="UnlockBar";track.mouse_filter=Control.MOUSE_FILTER_IGNORE;track.position=Vector2(pos.x+20,by+8);track.size=Vector2(bar_w,14);track.add_theme_stylebox_override("panel",bar_style(Color(1,1,1,.08),7))
+	var bar_w=area.x-32-124
+	var track=Panel.new();add_child(track);track.name="UnlockBar";track.mouse_filter=Control.MOUSE_FILTER_IGNORE;track.position=Vector2(pos.x+16,by+8);track.size=Vector2(bar_w,14);track.add_theme_stylebox_override("panel",bar_style(Color(1,1,1,.08),7))
 	var share=clampf(float(p[0])/maxf(1.0,float(p[1])),0,1)
 	if share>0:
 		var fill=Panel.new();track.add_child(fill);fill.mouse_filter=Control.MOUSE_FILTER_IGNORE;fill.size=Vector2(maxf(14,bar_w*share),14);fill.add_theme_stylebox_override("panel",bar_style(Color("8fe895") if ready else UiKit.ORANGE,7))
-	var count=UiKit.label(self,"%d / %d" % [p[0],p[1]],Vector2(pos.x+area.x-128,by),Vector2(108,28),22,Color("8fe895") if ready else UiKit.INK);count.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT;count.name="UnlockCount"
-	var note=UiKit.label(self,"Условие выполнено — класс можно открыть." if ready else "Открытие бесплатное: выполни условие в вылазке, и класс станет доступен здесь.",Vector2(pos.x+20,by+36),Vector2(area.x-40,40),15,Color("8fe895") if ready else UiKit.MUTED);note.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;note.name="UnlockNote"
-	var more=UiKit.button(self,"Все уровни",pos+Vector2(16,area.y-62),Vector2(200,48),open_path);more.name="ClassPath";more.add_theme_font_size_override("font_size",16);more.tooltip_text=Texts.localized("Все 20 уровней с ростом характеристик")
-	take_button(pos+Vector2(area.x-252,area.y-62),Vector2(236,48))
+	var count=UiKit.label(self,"%d / %d" % [p[0],p[1]],Vector2(pos.x+area.x-124,by),Vector2(108,28),22,Color("8fe895") if ready else UiKit.INK);count.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT;count.name="UnlockCount"
+	var note=UiKit.label(self,"Условие выполнено — класс можно открыть." if ready else "Открытие бесплатное: выполни условие в вылазке, и класс станет доступен здесь.",Vector2(pos.x+16,by+36),Vector2(area.x-32,40),15,Color("8fe895") if ready else UiKit.MUTED);note.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;note.name="UnlockNote"
+	var more=link_button("Все уровни",pos+Vector2(area.x-16-140,6),Vector2(140,32),open_path);more.name="ClassPath";more.alignment=HORIZONTAL_ALIGNMENT_RIGHT;more.tooltip_text=Texts.localized("Все 20 уровней с ростом характеристик")
+	take_button(pos+Vector2(area.x-252,area.y-60),Vector2(236,44))
 
 ## «Выбран» / «Выбрать» / «Открыть и выбрать» / «Закрыто».
 func take_button(pos:Vector2,dims:Vector2)->Button:

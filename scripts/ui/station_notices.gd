@@ -63,7 +63,12 @@ static func item_new(kind:String,full_id:String,status:String)->bool:
 	if seen_key(kind,full_id) not in Game.progression.seen:return true
 	return status in ["buy","upgrade"] and full_id not in viewed_affordable(kind)
 static func tab_new(kind:String,tab:String)->bool:
+	if kind=="fighter" and tab=="shells" and class_ready():return true
 	return scan(kind).any(func(i):return i.tab==tab and item_new(kind,i.id,i.status))
+## A class whose condition is met and that is not opened yet (T-224): an action available now, so its card, the
+## «Классы» tab and the Barracks carry the green dot until the class is opened — seen or not.
+static func class_ready()->bool:
+	return ClassCatalog.ROSTER.any(func(id):return id not in Game.class_unlocks and Game.can_select_class(id))
 ## Every item of a station as viewed (profile migrations, tests).
 static func mark_all_seen(kind:String):
 	for i in scan(kind):
@@ -73,6 +78,7 @@ static func mark_all_seen(kind:String):
 	Game.progression.viewed_updates["station:"+kind]=actionable(kind)
 	Game.save_soon()
 static func has_dot(kind:String)->bool:
+	if kind=="fighter" and class_ready():return true
 	return scan(kind).any(func(i):return item_new(kind,i.id,i.status))
 
 ## First run: whatever the profile already has is not news.

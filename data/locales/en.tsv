@@ -3277,3 +3277,33 @@ Q · есть сразу	Q · from the start
 Рюкзак полон. Освободи ячейку (выброси или уничтожь предмет) и подбери чертёж — иначе он останется здесь.	The backpack is full. Free a cell (drop or destroy an item) and pick up the blueprint — otherwise it stays here.
 Вернуться	Go back
 Уйти без чертежа	Leave without the blueprint
+Кладёт аптечку у штаба во время боя	Drops a medkit near HQ during battle
+Дополнительная прочность штаба	Extra HQ durability
+Сам чинит штаб. После попадания ждёт 6 с	Repairs HQ on its own. Waits 6 s after a hit
+Привозит ремкомплект для транспорта	Delivers a repair kit for vehicles
+Сбивает вражеский снаряд рядом со штабом	Shoots down an enemy shell near HQ
+Бьёт током до трёх врагов рядом со штабом	Shocks up to three enemies near HQ
+Клавиша 2: чинит штаб и лечит героя рядом	Key 2: repairs HQ and heals the hero nearby
+Клавиша 2: защищает штаб и героя рядом	Key 2: shields HQ and the hero nearby
+Клавиша 2: бьёт током и оглушает врагов рядом	Key 2: shocks and stuns enemies nearby
+Лимит за поле	Limit per field
+Ремонт	Repair
+Прочность базы во всех вылазках	Base durability in every sortie
+Урон союзных турелей	Allied turret damage
+Больше здоровья у всех классов.	More health for every class.
+Сильнее оружие и лапы у всех классов.	Stronger weapons and paws for every class.
+Быстрее бег; каждый уровень даёт чуть меньше.	Faster running; each level gives a little less.
+Шанс, что твой снаряд переживёт столкновение.	Chance that your shot survives a collision.
+Сильнее лечат сердца и ремонт брони.	Hearts heal and armour repairs more.
+Аптечки у механика и на передышках.	Medkits at the mechanic and at rest stops.
+Чаще редкие карточки и награды, больше дропа, чуть выше крит.	Rarer cards and rewards more often, more drops, slightly higher crit.
+Сердце	Heart
+Аптечки	Medkits
+Шанс сердца	Heart chance
+Больше места для добычи в вылазке.	More room for loot in a sortie.
+Можно переиграть выбор карточек в забеге.	Lets you reroll card choices in a run.
+Улучшение машины на все вылазки.	Vehicle upgrade for every sortie.
+Улучшения	Upgrades
+Модель	Model
+Армия	Army
+В Казарме открой «Улучшения» и купи здоровье.	In the Barracks open «Upgrades» and buy health.

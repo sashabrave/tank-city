@@ -4,7 +4,7 @@ extends RefCounted
 ## A step: [id, title, done(bool), hint]. Adding a goal is adding a row to steps().
 func title()->String:return "Развитие заставы"
 func subtitle()->String:return "Что уже сделано и куда идти дальше"
-func tabs()->Array:return [["story","Поход","quests"],["ladder","Испытания","rare"],["base","Застава","build"],["army","Бойцы и техника","fighter"],["arsenal","Арсенал","damage"]]
+func tabs()->Array:return [["story","Поход","quests"],["ladder","Испытания","rare"],["base","Застава","build"],["army","Армия","fighter"],["arsenal","Арсенал","damage"]]
 func counter(key:String)->int:return int(Game.progression.counters.get(key,0))
 ## Alloy for reaching a step (T-148, 0.8.0), claimed by hand in the detail panel. Trophies and a collectibles
 ## cabinet are planned on top of this later (board).

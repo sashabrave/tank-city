@@ -27,3 +27,18 @@ static func stat(id:String,level:float)->String:
 		"hq_patch":return "Ремонт: %s · %s с" % [UiKit.number(3+level*.6),UiKit.number(interval(id,level))]
 		"hq_field":return "Защита: %s с · откат %s с" % [UiKit.number(minf(8,5+level*.5)),UiKit.number(interval(id,level))]
 	return "Урон: %s · %s с" % [UiKit.number(4+level*.6),UiKit.number(interval(id,level))]
+## Station card rows (T-254): the parameters a level improves, [name, at level a, at level b].
+static func rows(id:String,a:float,b:float)->Array:
+	var sec=func(v):return UiKit.number(v)+" с"
+	var every=["Интервал",sec.call(interval(id,a)),sec.call(interval(id,b))]
+	var cooldown=["Перезарядка",sec.call(interval(id,a)),sec.call(interval(id,b))]
+	match id:
+		"hq_plating":return [["Прочность штаба","+"+UiKit.number(3+a*2),"+"+UiKit.number(3+b*2)]]
+		"hq_medbay":return [every]
+		"hq_supply":return [every,["Лимит за поле",str(1+int(a/3)),str(1+int(b/3))]]
+		"hq_regen":return [["Ремонт",UiKit.number(.5+a*.25),UiKit.number(.5+b*.25)],every]
+		"hq_interceptor":return [every]
+		"hq_tesla":return [["Урон",UiKit.number(1.5+a*.35),UiKit.number(1.5+b*.35)],every]
+		"hq_patch":return [["Ремонт",UiKit.number(3+a*.6),UiKit.number(3+b*.6)],cooldown]
+		"hq_field":return [["Защита",sec.call(minf(8,5+a*.5)),sec.call(minf(8,5+b*.5))],cooldown]
+	return [["Урон",UiKit.number(4+a*.6),UiKit.number(4+b*.6)],cooldown]

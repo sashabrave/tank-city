@@ -21,6 +21,7 @@ func _ready():
 	road()
 	vegetation(biome)
 	cargo()
+	landscape(biome)
 
 ## Bare structural steel (library surface «steel»), light enough to read as metal without bright reflections.
 func steel()->Color:return Color("848b90")
@@ -122,6 +123,12 @@ func vegetation(biome:Dictionary):
 				mesh.set_surface_override_material(surface,mat)
 		placed+=1
 
+## Behind the range (T-248): the battle backdrop's abstract shapes of the biome, so the yard's far side is not bare.
+const LANDSCAPE=[[Vector3(12.2,0,-5.3),1.2],[Vector3(14.8,0,-6.0),1.9],[Vector3(17.6,0,-5.2),1.1],[Vector3(20.2,0,-6.3),2.2],
+	[Vector3(23.2,0,-5.4),1.4],[Vector3(25.6,0,-3.6),1.8],[Vector3(13.2,0,-8.4),2.4],[Vector3(16.8,0,-8.8),2.8],[Vector3(22.0,0,-9.0),3.0],[Vector3(27.0,0,-7.4),2.6],[Vector3(28.4,0,.8),2.2]]
+func landscape(biome:Dictionary):
+	var spots=LANDSCAPE.map(func(s):return [s[0]+Vector3(rng.randf_range(-.5,.5),GROUND_Y,rng.randf_range(-.4,.4)),float(s[1])*rng.randf_range(.85,1.15)])
+	preload("res://scripts/location_ambience.gd").landscape(self,biome,rng.randi(),spots)
 func cargo():
 	for p in [Vector3(-9.5,GROUND_Y,-4.5),Vector3(-10.5,GROUND_Y,1.5),Vector3(21,GROUND_Y,-4.5),Vector3(12.5,GROUND_Y,4.6)]:
 		var pile=load("res://assets/models/environment_v7/tarp_%d.glb" % rng.randi_range(0,2)).instantiate()
