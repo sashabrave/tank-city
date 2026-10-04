@@ -11,9 +11,12 @@ const ARRIVE_RAMP=2.3
 const LEAVE_RAMP=1.8
 ## Pause between the arrival beats: HQ stops, soldier hops out, wall rises.
 const BEAT=.25
-## Soldier hop out of the HQ and the run round the barrier to the start cell (0.8).
-const HOP=.4
-const RUN=.75
+## Soldier hop out of the HQ straight onto his start cell in front of the HQ and the barrier (author,
+## 2026-10-03: no run round the wall any more); the fight begins the moment he lands.
+const HOP=.55
+const HOP_HEIGHT=1.25
+## The 3-2-1 countdown starts when the soldier lands (author, 2026-10-03), not with the HQ arrival.
+const COUNT_AFTER_LANDING=3.0
 const STEP_OUT=.3
 const BRICKS_AT=.5
 ## Defence wall assembly pace: 1.2 = 20% slower than before.
@@ -59,15 +62,13 @@ static func intro(arena):
 	var rest=hq.position;var yaw=hq.rotation.y;var s=side(arena)
 	var approach=arena.find_child("FieldApproach",true,false)
 	if approach and approach.has_meta("track_right"):
-		# 0.8: the camera stays on the field (no swoop after the HQ). The HQ drives in; the soldier hops out to
-		# the cell left of the HQ, the wall starts building from there, he runs round the outside of the barrier
-		# to the start cell — and the fight begins the moment he stops (the countdown is set to this sequence).
+		# The camera stays on the field. The HQ drives in; the soldier hops out over the barrier straight onto his
+		# start cell in front of the HQ (the third row of the field) — and the fight begins the moment he lands.
 		ramp_arrival(arena,hq,approach,rest,yaw)
-		var land=Vector2i(maxi(0,arena.base_cell.x-2),arena.base_cell.y)
 		arena.set_meta("intro_lock",true)
-		hop_and_run(arena,rest,land,ARRIVE_RAMP+BEAT)
-		build_bricks(arena,ARRIVE_RAMP+BEAT+HOP-BRICKS_AT,land)
-		arena.countdown=ARRIVE_RAMP+BEAT+HOP+RUN
+		hop_out(arena,rest,ARRIVE_RAMP+BEAT)
+		build_bricks(arena,ARRIVE_RAMP+BEAT+HOP-BRICKS_AT,arena.player.cell if is_instance_valid(arena.player) else Vector2i(-1,-1))
+		arena.countdown=ARRIVE_RAMP+BEAT+HOP+COUNT_AFTER_LANDING
 		return
 	if is_instance_valid(arena.presentation):arena.presentation.swoop_in(s)
 	# The curve ends level with the rest point, so its last tangent is the final heading: no turn on the spot.
@@ -146,14 +147,13 @@ static func approach_curve(approach,s:float,rest:Vector3,forward:Vector3,arrivin
 	if arriving:curve.set_point_in(curve.point_count-1,-forward*2.4)
 	else:curve.set_point_out(0,forward*2.4)
 	return curve
-## 0.8: the soldier hops out of the HQ onto `land` (next to the wall start), then runs in an arc round the
-## outside of the barrier to his start cell. Model-only animation; the actor stands on the start cell.
-static func hop_and_run(arena,from:Vector3,land:Vector2i,arrive:float):
+## The soldier hops out of the HQ in one high arc over the barrier onto his start cell. Model-only animation;
+## the actor stands on the start cell all along. Unlocks control on landing.
+static func hop_out(arena,from:Vector3,arrive:float):
 	var actor=arena.player
-	if not is_instance_valid(actor) or not is_instance_valid(actor.model):return
+	if not is_instance_valid(actor) or not is_instance_valid(actor.model):arena.set_meta("intro_lock",false);return
 	var model:Node3D=actor.model;var home=model.position;var turn=model.rotation.y
 	model.visible=false;set_marks(actor,false);actor.set_meta("stage_hidden",true)
-	var to_local=func(p:Vector3)->Vector3:return home+(p-actor.position)
 	# The selection ring and the health bar travel with the soldier from the hop on (author).
 	var marks:Array=actor.get_children().filter(func(c):return c!=model and (c is MeshInstance3D or c is Sprite3D or c is Label3D))
 	var mark_home:Array=marks.map(func(c):return c.position)
@@ -162,30 +162,23 @@ static func hop_and_run(arena,from:Vector3,land:Vector2i,arrive:float):
 		var shift=model.position-home;shift.y=0.0
 		for i in range(marks.size()):
 			if is_instance_valid(marks[i]):marks[i].position=mark_home[i]+shift
-	var start=to_local.call(from);var landing=to_local.call(arena.world_pos(land))
-	# Outside the barrier: up past the wall's corner, then across to the start cell.
-	var corner=to_local.call(arena.world_pos(Vector2i(land.x,actor.cell.y)))+Vector3(-.35,0,-.35)
+	var start=home+(from-actor.position)
 	var tween=stage_tween(arena,actor);tween.tween_interval(arrive)
 	tween.tween_callback(func():
 		if not is_instance_valid(model):return
 		if is_instance_valid(actor):actor.remove_meta("stage_hidden")
-		model.visible=true;model.position=start;model.scale=Vector3.ONE*.75
+		model.visible=true;model.position=start;model.scale=Vector3.ONE*.75;model.rotation.y=turn
 		set_marks(actor,true);follow.call())
 	var hop=func(t:float):
-		if is_instance_valid(model):model.position=start.lerp(landing,t)+Vector3.UP*sin(t*PI)*.75;follow.call()
+		if is_instance_valid(model):model.position=start.lerp(home,t)+Vector3.UP*sin(t*PI)*HOP_HEIGHT;follow.call()
 	tween.tween_method(hop,0.0,1.0,HOP).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	tween.parallel().tween_property(model,"scale",Vector3.ONE,HOP*.8)
-	tween.tween_callback(func():if is_instance_valid(actor):arena.burst(actor.position+(landing-home),Color("d8cfb4"),.25))
-	var run=func(t:float):
-		if not is_instance_valid(model):return
-		var p=bezier(landing,corner,home,t);var ahead=bezier(landing,corner,home,minf(1.0,t+.05))-p
-		model.position=p+Vector3.UP*absf(sin(t*PI*5.0))*.06
-		model.rotation.y=atan2(ahead.x,ahead.z) if t<.97 and ahead.length()>.001 else turn
-		follow.call()
-	tween.tween_method(run,0.0,1.0,RUN).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	tween.tween_callback(func():
 		arena.set_meta("intro_lock",false)
-		if is_instance_valid(model):model.position=home;model.rotation.y=turn
+		if is_instance_valid(actor):arena.burst(actor.position,Color("d8cfb4"),.3)
+		if is_instance_valid(model):
+			model.position=home;model.rotation.y=turn
+			var squash=stage_tween(arena,model);squash.tween_property(model,"scale",Vector3(1.12,.86,1.12),.06);squash.tween_property(model,"scale",Vector3.ONE,.14).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 		for i in range(marks.size()):
 			if is_instance_valid(marks[i]):marks[i].position=mark_home[i])
 ## The soldier (or his vehicle) leaves the HQ and takes the start cell.

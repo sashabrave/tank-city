@@ -387,9 +387,13 @@ func begin_room(index: int):
 	preload("res://scripts/effect_warmup.gd").run(self)
 	# HQ arrives on an arc, the soldier steps out, the brick defence builds up; visual only.
 	preload("res://scripts/battle_stage.gd").intro(self)
+	var arrival=countdown
 	if challenges.active():challenges.start();phase="combat"
 	elif sandbox and not sandbox_waves and not boss_room:room.spawn_queue.clear();room.wave_roster.clear();phase="combat"
-	else:start_wave(0)
+	else:
+		start_wave(0)
+		# The first wave waits for the arrival plus its 3-2-1 after the landing (battle_stage), not the plain delay.
+		countdown=maxf(countdown,arrival)
 	if boss_room:drop_pickup(Vector2i(base_cell.x-3,grid_size-2),"vehicle")
 
 func world_pos(cell: Vector2i) -> Vector3:

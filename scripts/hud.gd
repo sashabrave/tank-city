@@ -169,7 +169,8 @@ func _process(_delta):
 		var button=skill_buttons[i];var skill=data.skills[i]
 		button.disabled=skill.disabled;Texts.set_text(button,"");button.tooltip_text=skill.hint
 		var display=button.get_node("CooldownDisplay");display.progress=skill.progress;display.cooling=skill.cooling;display.remaining=skill.get("remaining",0.0);display.active=skill.active;display.queue_redraw()
-	countdown.visible=data.phase=="countdown"
+	# The digits wait for the arrival: they start once the soldier has landed (battle_stage.hop_out).
+	countdown.visible=data.phase=="countdown" and not arena.get_meta("intro_lock",false)
 	if countdown.visible:Texts.set_text(countdown,str(data.countdown))
 	if not data.player.is_empty():
 		var player=data.player
