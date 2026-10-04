@@ -7,6 +7,8 @@ extends Control
 ##   detail(tab,id)->{title,icon,text,rows:[[name,before,after]],lines:[String],actions:[{id,text,enabled,primary}]},
 ##   act(tab,id,action)->String (message shown on success, "" when nothing happened).
 ##   Optional: tabs_on_top()->bool, page_for(tab)->Control (a page drawn instead of cards + detail), tab_dot(tab).
+## Hub stations (card_mode) draw no detail panel: each item is a card scene (scenes/ui/components/station_card.tscn)
+## with its main action and level bar (item.level / item.cap); «i» opens the full detail with every action in a popup.
 signal closed
 signal changed
 var provider
@@ -17,6 +19,10 @@ var panel:Panel
 var grid:GridContainer
 var detail_box:Control
 var animate_cards=true
+## Item shown in the «i» popup ("" when closed); the popup is rebuilt with the screen, so it survives a purchase.
+var info_id=""
+var info_popup:Control
+var scroll_memory={}
 ## Hub station id (fighter, arsenal, hq, garage, wardrobe) for seen-aware «Новое» chips; empty elsewhere.
 var station_kind=""
 const STATE_COLORS={"locked":Color("3a3f39"),"ready":Color("584a2c"),"owned":Color("2f3b33"),"active":Color("3f5a3f"),"max":Color("2f3b33")}
@@ -79,7 +85,7 @@ func purchase_action(id:String)->Dictionary:
 func status_chip(parent:Control,kind:String,pos:Vector2)->Control:
 	var spec:Array=STATUS.get(kind,STATUS.owned)
 	var chip=PanelContainer.new();chip.name="Status";parent.add_child(chip);chip.position=pos;chip.mouse_filter=Control.MOUSE_FILTER_PASS
-	chip.tooltip_text=Texts.localized({"locked":"Нужен чертёж или предыдущий шаг","soon":"Появится в следующих обновлениях","buy":"Хватает ресурсов — можно купить","short":"Не хватает ресурсов","owned":"Уже есть","upgrade":"Можно улучшить сейчас","upgrade_short":"На улучшение пока не хватает","active":"Используется сейчас","max":"Прокачано до предела","new":"Открыто недавно","done":"Цель достигнута","goal":"Ближайшая цель этого направления","later":"Откроется после следующей цели"}.get(kind,""))
+	chip.tooltip_text=Texts.localized(STATUS_TIPS.get(kind,""))
 	var box=UiKit.style(Color(spec[1],.16),5,Color(spec[1],.5));box.content_margin_left=6;box.content_margin_right=6;box.content_margin_top=1;box.content_margin_bottom=1
 	chip.add_theme_stylebox_override("panel",box)
 	var label=Label.new();chip.add_child(label);Texts.set_text(label,spec[0]);label.add_theme_font_size_override("font_size",11);label.add_theme_color_override("font_color",spec[1].lightened(.15))
@@ -92,10 +98,15 @@ func _ready():
 	get_viewport().size_changed.connect(fit)
 	build()
 func _unhandled_input(event):
-	if event.is_action_pressed("pause"):get_viewport().set_input_as_handled();closed.emit()
+	if not event.is_action_pressed("pause"):return
+	get_viewport().set_input_as_handled()
+	# Esc closes the «i» popup first, the station on the next press.
+	if info_id!="":close_info()
+	else:closed.emit()
 ## Q / E walk the horizontal tabs (T-178), taken before the GUI so E does not press the focused button.
 func _input(event):
 	if get_tree().get_nodes_in_group("selection_scope").back()!=self and not is_ancestor_of(get_tree().get_nodes_in_group("selection_scope").back()):return
+	if info_id!="":return  # tabs stay put under the «i» popup
 	var step=UiKit.tab_step(event)
 	if step!=0 and UiKit.cycle_h_tabs(self,step):get_viewport().set_input_as_handled()
 func fit():
@@ -104,6 +115,10 @@ func fit():
 	var factor=minf(1.0,minf((available.x-24)/panel.size.x,(available.y-24)/panel.size.y))
 	panel.scale=Vector2.ONE*factor;panel.position=(available-panel.size*factor)*.5
 func build():
+	# Card stations keep their scroll position across a purchase (the screen is rebuilt).
+	if is_instance_valid(panel):
+		var cards=panel.get_node_or_null("Cards")
+		if cards:scroll_memory[tab]=cards.scroll_vertical
 	for child in get_children():child.queue_free()
 	var shade=ColorRect.new();add_child(shade);shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);shade.color=Color(0,0,0,.42)
 	panel=UiKit.glass(self,Vector2.ZERO,Vector2(1120,650),Color("242d27"));panel.name="StationPanel";fit()
@@ -113,7 +128,7 @@ func build():
 	var close=UiKit.button(panel,"",Vector2(1046,16),Vector2(52,44),func():closed.emit());close.icon=UiKit.interface_icon("close");close.expand_icon=true;close.add_theme_constant_override("icon_max_width",20);close.name="Close"
 	# The item shown in the detail panel counts as viewed before the dots are drawn (T-179): its «Новое» and,
 	# with the last one, the tab dot go out at once.
-	if selected=="" and not provider.has_method("page_for"):
+	if selected=="" and not provider.has_method("page_for") and not card_mode():
 		var first_items=provider.items(tab)
 		if not first_items.is_empty():selected=str(first_items[0].id)
 	if selected!="" and station_kind not in ["","roadmap"]:preload("res://scripts/ui/station_notices.gd").mark_item_seen(station_kind,tab,str(selected))
@@ -125,7 +140,7 @@ func build():
 	for i in range(tabs.size()):
 		var key=tabs[i][0]
 		var tab_w=(area.size.x-(tabs.size()-1)*8.0)/tabs.size() if top else 190.0
-		var b=UiKit.button(panel,tabs[i][1],Vector2(22+i*(tab_w+8),88) if top else Vector2(22,96+i*54),Vector2(tab_w,46),func():tab=key;selected="";notice="";animate_cards=true;build(),key==tab);b.name="Tab_"+key
+		var b=UiKit.button(panel,tabs[i][1],Vector2(22+i*(tab_w+8),88) if top else Vector2(22,96+i*54),Vector2(tab_w,46),func():tab=key;selected="";notice="";info_id="";animate_cards=true;build(),key==tab);b.name="Tab_"+key
 		tab_buttons.append(b)
 		b.icon=tab_icon(str(tabs[i][2])) if tabs[i].size()>2 else null;
 		for state in ["normal","hover","pressed","disabled"]:
@@ -147,6 +162,9 @@ func build():
 		if page:
 			page.name="Page";panel.add_child(page);page.position=area.position;page.setup(self,area.size)
 			return  # the page shows its own feedback (the notice line overlapped the class bio)
+	if card_mode():
+		info_cards(area)
+		return
 	var detail_w=320.0;var list_w=area.size.x-detail_w-16
 	var scroll=ScrollContainer.new();panel.add_child(scroll);scroll.position=area.position;scroll.size=Vector2(list_w,area.size.y);scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
 	var items=provider.items(tab)
@@ -313,3 +331,123 @@ static func tab_icon(id:String)->Texture2D:
 ## Exact-colour rounded bar (UiKit.style maps light colours to theme surfaces, which turned the green fill dark).
 static func bar_style(color:Color,radius:int)->StyleBoxFlat:
 	var b=StyleBoxFlat.new();b.bg_color=color;b.set_corner_radius_all(radius);return b
+## Hub stations (author, 0.8.x): medium cards that carry the gist, the main «было → станет» row and their own
+## action; a small «i» opens the full card in a popup. No detail panel. The roadmap keeps its path, screens
+## without a station id (test blueprint shop) keep cards + detail.
+func card_mode()->bool:
+	return station_kind in ["fighter","arsenal","hq","garage","wardrobe"] and not (provider.has_method("path_layout") and provider.path_layout())
+const CARD_MIN_W=240.0
+const CARD_GAP=12.0
+func info_cards(area:Rect2):
+	var scroll=ScrollContainer.new();scroll.name="Cards";panel.add_child(scroll);scroll.position=area.position;scroll.size=area.size
+	scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
+	var inner=area.size.x-14  # room for the scroll bar
+	var items=provider.items(tab)
+	var grouped=items.any(func(item):return item.has("group"))
+	# Responsive grid (author): 2–4 columns from the width (cards at least CARD_MIN_W), never more columns than the
+	# largest group has cards, and the cards stretch to fill the row — no empty strip on the right.
+	var biggest={}
+	for item in items:biggest[item.get("group","")]=int(biggest.get(item.get("group",""),0))+1
+	var cols=maxi(2,mini(clampi(int((inner+CARD_GAP)/(CARD_MIN_W+CARD_GAP)),2,4),biggest.values().max() if not biggest.is_empty() else 2))
+	var column=VBoxContainer.new();column.name="Items";scroll.add_child(column);column.add_theme_constant_override("separation",8);column.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+	var current_group=null;grid=null
+	for item in items:
+		if grouped and item.get("group")!=current_group:
+			current_group=item.get("group")
+			var header=UiKit.label(column,str(current_group),Vector2.ZERO,Vector2(inner,24),15,UiKit.MUTED);header.custom_minimum_size=Vector2(inner,24)
+			grid=null
+		if grid==null:
+			grid=GridContainer.new();column.add_child(grid);grid.columns=cols
+			grid.add_theme_constant_override("h_separation",int(CARD_GAP));grid.add_theme_constant_override("v_separation",int(CARD_GAP))
+		info_card(item).custom_minimum_size.x=floorf((inner-(cols-1)*CARD_GAP)/cols)  # equal columns
+	if animate_cards:
+		for child in column.get_children():
+			if child is GridContainer:UiKit.reveal_list(child)
+		animate_cards=false
+	if scroll_memory.get(tab,0)>0:
+		var keep=int(scroll_memory[tab])
+		get_tree().process_frame.connect(func():if is_instance_valid(scroll):scroll.scroll_vertical=keep,CONNECT_ONE_SHOT)
+	# Result of the last action: top right, beside the close button (the detail panel that showed it is gone).
+	if notice!="":
+		var line=UiKit.label(panel,notice,Vector2(560,26),Vector2(474,28),16,Color("8fe895"));line.name="Notice";line.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
+	if info_id!="":show_info()
+const CARD_SCENE=preload("res://scenes/ui/components/station_card.tscn")
+const CARD_SCRIPT=preload("res://scripts/ui/components/station_card.gd")
+const STATUS_TIPS={"locked":"Нужен чертёж или предыдущий шаг","soon":"Появится в следующих обновлениях","buy":"Хватает ресурсов — можно купить","short":"Не хватает ресурсов","owned":"Уже есть","upgrade":"Можно улучшить сейчас","upgrade_short":"На улучшение пока не хватает","active":"Используется сейчас","max":"Прокачано до предела","new":"Открыто недавно","done":"Цель достигнута","goal":"Ближайшая цель этого направления","later":"Откроется после следующей цели"}
+## One card from the editable scene (scenes/ui/components/station_card.tscn); the screen only supplies data.
+func info_card(item:Dictionary)->Control:
+	var id=str(item.id);var info:Dictionary=provider.detail(tab,id)
+	var kind=status(item);var spec:Array=STATUS[kind]
+	var card=CARD_SCENE.instantiate();grid.add_child(card)
+	var fresh=station_kind not in ["","roadmap"] and kind not in ["locked","soon","done","goal","later"] and preload("res://scripts/ui/station_notices.gd").item_new(station_kind,tab+":"+id,kind)
+	var main=CARD_SCRIPT.main_action(info.get("actions",[]))
+	card.setup(item,info,{"kind":kind,"label":spec[0],"chip":spec[1],"bg":spec[2],"border":spec[3],"tooltip":Texts.localized(STATUS_TIPS.get(kind,"")),
+		"new_label":STATUS.new[0] if fresh else "","new_chip":STATUS.new[1],"short":not main.is_empty() and not main.get("enabled",true) and lacks_funds(str(main.get("text","")))})
+	card.action_pressed.connect(func(action):act_on(id,action))
+	card.info_pressed.connect(func():open_info(id))
+	return card
+func action_button(parent:Control,action:Dictionary,id:String,pos:Vector2,dims:Vector2)->Button:
+	var enabled=action.get("enabled",true);var aid=str(action.id)
+	var b=UiKit.button(parent,str(action.text),pos,dims,func():act_on(id,aid),action.get("primary",false) and enabled)
+	b.name="Action_"+aid;b.disabled=not enabled;UiKit.muted_locked_button(b);b.clip_text=true
+	# Not enough alloy / documents: the price in the disabled button turns red.
+	if not enabled and lacks_funds(str(action.text)):b.add_theme_color_override("font_disabled_color",Color(STATUS.short[1],.9))
+	return b
+func act_on(id:String,action:String):
+	selected=id
+	if station_kind!="":preload("res://scripts/ui/station_notices.gd").mark_item_seen(station_kind,tab,id)
+	perform(action)
+func open_info(id:String):
+	selected=id
+	if station_kind!="":preload("res://scripts/ui/station_notices.gd").mark_item_seen(station_kind,tab,id)
+	info_id=id;notice="";show_info()
+func close_info():
+	info_id=""
+	if is_instance_valid(info_popup):info_popup.queue_free()
+	build()  # the «Новое» chip of the viewed card goes out
+## The full card: big picture, title, status, the whole description, every «было → станет» row and line, every action.
+func show_info():
+	if is_instance_valid(info_popup):info_popup.queue_free()
+	var id=info_id
+	var current=provider.items(tab).filter(func(i):return str(i.id)==id)
+	if current.is_empty():info_id="";return
+	var item:Dictionary=current[0];var kind=status(item);var info:Dictionary=provider.detail(tab,id)
+	var o=Control.new();o.name="InfoPopup";add_child(o);o.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);o.add_to_group("selection_scope");o.z_index=60
+	info_popup=o
+	var dim=ColorRect.new();o.add_child(dim);dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);dim.color=Color(0,0,0,.45);dim.mouse_filter=Control.MOUSE_FILTER_STOP
+	dim.gui_input.connect(func(e):if e is InputEventMouseButton and e.pressed:close_info())
+	const W=640.0
+	var box=UiKit.glass(o,Vector2.ZERO,Vector2(W,200));box.name="Info"
+	var close=UiKit.button(box,"",Vector2(W-68,16),Vector2(52,44),close_info);close.icon=UiKit.interface_icon("close");close.expand_icon=true;close.add_theme_constant_override("icon_max_width",20);close.name="InfoClose"
+	var picture=UiKit.icon(box,str(info.get("icon",item.get("icon",id))),Vector2(24,24),Vector2(120,120))
+	if info.has("texture"):picture.texture=info.texture
+	elif item.has("texture"):picture.texture=item.texture
+	UiKit.locked_preview(picture,kind in ["locked","soon"])
+	var heading=UiKit.label(box,str(info.get("title",item.title)),Vector2(164,26),Vector2(W-164-84,64),24);UiKit.accent(heading);heading.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;heading.name="InfoTitle"
+	heading.size.y=clampf(wrapped_height(heading,W-164-84,24),34,66)
+	var chip_y=heading.position.y+heading.size.y+6
+	status_chip(box,kind,Vector2(164,chip_y))
+	UiKit.label(box,str(item.get("caption","")),Vector2(164,chip_y+26),Vector2(W-164-24,22),15,UiKit.MUTED)
+	var y=maxf(160.0,chip_y+60)
+	var body=Control.new();var by=0.0;var tw=W-48-12
+	if str(info.get("text",""))!="":
+		var text=UiKit.label(body,str(info.text),Vector2(0,by),Vector2(tw,40),17,UiKit.INK);text.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;text.name="InfoText"
+		text.size.y=wrapped_height(text,tw,17);by+=text.size.y+12
+	for row in info.get("rows",[]):
+		UiKit.label(body,str(row[0]),Vector2(0,by),Vector2(tw*.55,26),16)
+		var cell=UiKit.label(body,CARD_SCRIPT.row_value(row),Vector2(tw*.45,by),Vector2(tw*.55,26),16,UiKit.ORANGE if str(row[1])!=str(row[2]) else UiKit.INK);cell.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
+		by+=30
+	for line in info.get("lines",[]):
+		if str(line)=="":continue
+		var l=UiKit.label(body,str(line),Vector2(0,by),Vector2(tw,24),15,UiKit.MUTED);l.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;l.size.y=maxf(24,wrapped_height(l,tw,15));by+=l.size.y+4
+	body.custom_minimum_size=Vector2(tw,by)
+	var scroll=ScrollContainer.new();scroll.name="InfoScroll";box.add_child(scroll);scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.position=Vector2(24,y);scroll.size=Vector2(W-48,minf(by,320));scroll.add_child(body)
+	y+=scroll.size.y+16
+	for action in info.get("actions",[]):
+		var b=action_button(box,action,id,Vector2(24,y),Vector2(W-48,48));b.add_theme_font_size_override("font_size",17);y+=56
+	if notice!="":
+		UiKit.label(box,notice,Vector2(24,y),Vector2(W-48,26),16,Color("8fe895")).name="InfoNotice";y+=32
+	box.size.y=y+12
+	var k=panel.scale.x if is_instance_valid(panel) else 1.0
+	box.scale=Vector2(k,k);box.position=(get_viewport_rect().size-box.size*k)*.5

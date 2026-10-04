@@ -11,13 +11,13 @@ func items(tab:String)->Array:
 			for id in Game.LOOT.gun_ids():
 				var owned=id in Game.weapon_unlocks;var level=Game.weapon_level(id)
 				var state="locked" if not owned else "active" if id==Game.selected_weapon else "max" if level>=Balance.CONFIG.economy.weapon_level_cap else "owned"
-				result.append({"id":id,"title":Game.LOOT.WEAPONS[id].name,"icon":Game.LOOT.WEAPONS[id].icon,"caption":"Нужен чертёж" if not owned else ("В бою · " if id==Game.selected_weapon else "")+"ур. %d / %d" % [level,Balance.CONFIG.economy.weapon_level_cap],"state":state})
+				result.append({"id":id,"title":Game.LOOT.WEAPONS[id].name,"icon":Game.LOOT.WEAPONS[id].icon,"caption":"Нужен чертёж" if not owned else ("В бою · " if id==Game.selected_weapon else "")+"ур. %d / %d" % [level,Balance.CONFIG.economy.weapon_level_cap],"state":state,"level":level,"cap":Balance.CONFIG.economy.weapon_level_cap})
 			# T-114: the electric cannon is planned for charges; shown as «В разработке».
 			result.append({"id":"concept_tesla","title":"Электропушка","icon":"shock","caption":"В разработке","soon":true,"group":"В разработке"})
 		"bonuses":
 			for id in Game.LOOT.BONUSES:
 				var owned=id in Game.bonus_unlocks;var level=Game.bonus_level(id)
-				result.append({"id":id,"title":Game.LOOT.BONUSES[id].name,"icon":id,"caption":"Нужен чертёж" if not owned else "ур. %d / %d" % [level,Balance.CONFIG.economy.bonus_level_cap],"state":"locked" if not owned else "max" if level>=Balance.CONFIG.economy.bonus_level_cap else "owned"})
+				result.append({"id":id,"title":Game.LOOT.BONUSES[id].name,"icon":id,"caption":"Нужен чертёж" if not owned else "ур. %d / %d" % [level,Balance.CONFIG.economy.bonus_level_cap],"state":"locked" if not owned else "max" if level>=Balance.CONFIG.economy.bonus_level_cap else "owned","level":level,"cap":Balance.CONFIG.economy.bonus_level_cap})
 		"gadgets":
 			for id in GADGETS:
 				var known=id in Game.ability_unlocks;var bought=id in Game.purchased_gadgets

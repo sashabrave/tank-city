@@ -1,0 +1,324 @@
+[gd_scene load_steps=17 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/components/station_card.gd" id="1_card"]
+[ext_resource type="Texture2D" path="res://assets/icons/interface_straight/about.svg" id="2_info"]
+
+[sub_resource type="StyleBoxFlat" id="Style_card"]
+content_margin_left = 12.0
+content_margin_top = 12.0
+content_margin_right = 12.0
+content_margin_bottom = 10.0
+bg_color = Color(0.184, 0.231, 0.2, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.278, 0.322, 0.29, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="Style_focus"]
+content_margin_left = 12.0
+content_margin_top = 12.0
+content_margin_right = 12.0
+content_margin_bottom = 10.0
+bg_color = Color(0.184, 0.231, 0.2, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 0.596, 0.122, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="Style_badge"]
+content_margin_left = 6.0
+content_margin_top = 1.0
+content_margin_right = 6.0
+content_margin_bottom = 1.0
+bg_color = Color(0.949, 0.639, 0.227, 0.16)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.949, 0.639, 0.227, 0.5)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="Style_info"]
+bg_color = Color(0.188, 0.22, 0.2, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.678, 0.714, 0.643, 1)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+
+[sub_resource type="StyleBoxFlat" id="Style_info_hover"]
+bg_color = Color(0.259, 0.294, 0.251, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 0.596, 0.122, 1)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+
+[sub_resource type="StyleBoxFlat" id="Style_button"]
+content_margin_left = 10.0
+content_margin_right = 10.0
+bg_color = Color(0.188, 0.22, 0.2, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.678, 0.714, 0.643, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="Style_button_hover"]
+content_margin_left = 10.0
+content_margin_right = 10.0
+bg_color = Color(0.259, 0.294, 0.251, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 0.596, 0.122, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="Style_button_pressed"]
+content_margin_left = 10.0
+content_margin_right = 10.0
+bg_color = Color(0.843, 0.522, 0.176, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="Style_button_disabled"]
+content_margin_left = 10.0
+content_margin_right = 10.0
+bg_color = Color(0.65, 0.68, 0.62, 0.12)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="Style_primary"]
+content_margin_left = 10.0
+content_margin_right = 10.0
+bg_color = Color(1, 0.596, 0.122, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.678, 0.714, 0.643, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="Style_primary_hover"]
+content_margin_left = 10.0
+content_margin_right = 10.0
+bg_color = Color(1, 0.816, 0.502, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 0.596, 0.122, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="Style_progress_track"]
+bg_color = Color(1, 1, 1, 0.12)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="Style_progress_fill"]
+bg_color = Color(1, 0.596, 0.122, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="Style_progress_max"]
+bg_color = Color(0.561, 0.71, 0.604, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[node name="StationCard" type="PanelContainer"]
+custom_minimum_size = Vector2(220, 200)
+offset_right = 256.0
+offset_bottom = 214.0
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("Style_card")
+script = ExtResource("1_card")
+focus_style = SubResource("Style_focus")
+primary_style = SubResource("Style_primary")
+primary_hover_style = SubResource("Style_primary_hover")
+max_fill_style = SubResource("Style_progress_max")
+primary_font_color = Color(0.125, 0.153, 0.122, 1)
+short_font_color = Color(0.816, 0.439, 0.361, 0.9)
+
+[node name="Layout" type="VBoxContainer" parent="."]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+
+[node name="Head" type="HBoxContainer" parent="Layout"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 12
+
+[node name="Icon" type="TextureRect" parent="Layout/Head"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_vertical = 0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Names" type="VBoxContainer" parent="Layout/Head"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_constants/separation = 2
+
+[node name="Title" type="Label" parent="Layout/Head/Names"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+text = "Удача"
+autowrap_mode = 2
+
+[node name="Level" type="Label" parent="Layout/Head/Names"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.651, 0.667, 0.624, 1)
+theme_override_font_sizes/font_size = 13
+text = "ур. 0 / 5"
+text_overrun_behavior = 3
+clip_text = true
+
+[node name="Badges" type="HFlowContainer" parent="Layout/Head/Names"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/h_separation = 6
+theme_override_constants/v_separation = 4
+
+[node name="Badge" type="PanelContainer" parent="Layout/Head/Names/Badges"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("Style_badge")
+
+[node name="Text" type="Label" parent="Layout/Head/Names/Badges/Badge"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 11
+text = "Можно улучшить"
+
+[node name="NewBadge" type="PanelContainer" parent="Layout/Head/Names/Badges"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("Style_badge")
+
+[node name="Text" type="Label" parent="Layout/Head/Names/Badges/NewBadge"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 11
+text = "Новое"
+
+[node name="Info" type="Button" parent="Layout/Head"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+size_flags_vertical = 0
+tooltip_text = "Подробнее"
+focus_mode = 0
+theme_override_constants/icon_max_width = 18
+theme_override_styles/normal = SubResource("Style_info")
+theme_override_styles/hover = SubResource("Style_info_hover")
+theme_override_styles/pressed = SubResource("Style_info_hover")
+icon = ExtResource("2_info")
+icon_alignment = 1
+expand_icon = true
+
+[node name="Gist" type="Label" parent="Layout"]
+custom_minimum_size = Vector2(0, 38)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.651, 0.667, 0.624, 1)
+theme_override_font_sizes/font_size = 13
+theme_override_constants/line_spacing = -1
+text = "Чаще редкие карточки и награды, больше дропа, чуть выше крит."
+autowrap_mode = 3
+text_overrun_behavior = 3
+clip_text = true
+max_lines_visible = 2
+
+[node name="Change" type="HBoxContainer" parent="Layout"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Name" type="Label" parent="Layout/Change"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 14
+text = "Уровень"
+text_overrun_behavior = 3
+clip_text = true
+
+[node name="Value" type="Label" parent="Layout/Change"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.596, 0.122, 1)
+theme_override_font_sizes/font_size = 14
+text = "0 → 1"
+horizontal_alignment = 2
+
+[node name="Spacer" type="Control" parent="Layout"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="Action" type="Button" parent="Layout"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_disabled_color = Color(0.65, 0.69, 0.61, 0.65)
+theme_override_colors/font_hover_color = Color(0.945, 0.933, 0.859, 1)
+theme_override_colors/font_pressed_color = Color(0.125, 0.153, 0.122, 1)
+theme_override_font_sizes/font_size = 15
+theme_override_styles/normal = SubResource("Style_button")
+theme_override_styles/hover = SubResource("Style_button_hover")
+theme_override_styles/pressed = SubResource("Style_button_pressed")
+theme_override_styles/disabled = SubResource("Style_button_disabled")
+text = "Открыть · 140 ◈"
+clip_text = true
+
+[node name="Progress" type="ProgressBar" parent="Layout"]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/background = SubResource("Style_progress_track")
+theme_override_styles/fill = SubResource("Style_progress_fill")
+max_value = 5.0
+value = 2.0
+show_percentage = false

@@ -6,6 +6,7 @@
 			"ru": {
 				"title": "Демо: большое обновление",
 				"items": [
+					"Станции (Казарма, Арсенал, Штаб, Стоянка, Шкаф): вместо маленьких значков и большой панели справа — карточки с описанием, главным изменением «было → станет», своей кнопкой покупки и полоской прокачки. Кнопка «i» открывает карточку целиком со всеми действиями.",
 					"Оружие можно убрать в пустую ячейку рюкзака — тогда кот бьёт лапой (Пробел), урон пока маленький и растёт с «Силой». V — удар лапой или прикладом в любой момент, с отдельной перезарядкой. Ячейка «Оружие» напоминает взять ствол.",
 					"В комнатах между полями боец держит и стреляет оружием из рук (ствол из ящика, обмен в рюкзаке), а не выбранным в хабе.",
 					"Патроны теперь везде называются «боеприпасы».",
@@ -219,6 +220,7 @@
 			"en": {
 				"title": "Demo: the big update",
 				"items": [
+					"Stations (Barracks, Arsenal, HQ, Parking, Wardrobe): instead of small icons and a big panel on the right, cards with the description, the main «before → after» change, their own buy button and an upgrade bar. The «i» button opens the full card with every action.",
 					"A weapon can go into an empty backpack cell — then the cat strikes with its paws (Space); the damage is small for now and grows with Strength. V is a paw or gun-butt strike at any time with its own cooldown. The Weapon cell reminds you to take a gun.",
 					"In rooms between fields the hero holds and fires the gun in hand (a crate gun, a backpack swap), not the hub choice.",
 					"Ammo is now called «ammo» everywhere in Russian too (боеприпасы).",

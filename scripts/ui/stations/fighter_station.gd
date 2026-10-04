@@ -26,10 +26,10 @@ func items(tab:String)->Array:
 		"supply":
 			for row in SUPPLY:
 				var unlocked=Game.branch_unlocked(row[0])
-				result.append({"id":row[0],"title":row[1],"icon":row[2],"caption":"ур. %d / %d" % [Game.level(row[0]),Game.upgrade_cap(row[0])] if unlocked else "Открыть · %d ◈" % Game.UNLOCK_COSTS[row[0]],"state":"owned" if unlocked else "ready"})
+				result.append({"id":row[0],"title":row[1],"icon":row[2],"caption":"ур. %d / %d" % [Game.level(row[0]),Game.upgrade_cap(row[0])] if unlocked else "Открыть · %d ◈" % Game.UNLOCK_COSTS[row[0]],"state":"owned" if unlocked else "ready","level":Game.level(row[0]) if unlocked else 0,"cap":Game.upgrade_cap(row[0])})
 		"kit":
-			result.append({"id":"backpack","title":"Рюкзак","icon":"inventory","caption":"%d / %d ячеек" % [Backpack.capacity(),Backpack.CELLS],"state":"max" if Game.backpack_slots>=Backpack.MAX_BOUGHT else "owned"})
-			result.append({"id":"reroll","title":"Перебросы","icon":"reroll","caption":"+%d за забег" % Game.reroll_level if "reroll" in Game.research_unlocks else "Нужен чертёж","state":"locked" if "reroll" not in Game.research_unlocks else "owned"})
+			result.append({"id":"backpack","title":"Рюкзак","icon":"inventory","caption":"%d / %d ячеек" % [Backpack.capacity(),Backpack.CELLS],"state":"max" if Game.backpack_slots>=Backpack.MAX_BOUGHT else "owned","level":Game.backpack_slots,"cap":Backpack.MAX_BOUGHT})
+			result.append({"id":"reroll","title":"Перебросы","icon":"reroll","caption":"+%d за забег" % Game.reroll_level if "reroll" in Game.research_unlocks else "Нужен чертёж","state":"locked" if "reroll" not in Game.research_unlocks else "owned","level":Game.reroll_level,"cap":5})
 	return result
 func detail(tab:String,id:String)->Dictionary:
 	match tab:

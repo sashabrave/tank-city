@@ -11,14 +11,14 @@ func items(tab:String)->Array:
 		"tech":
 			for id in HQCatalog.DATA:
 				var info=HQCatalog.DATA[id];var known=HQCatalog.available(id);var level=int(Game.hq_levels.get(id,0))
-				result.append({"id":id,"title":info.name,"icon":"headquarters/"+id,"caption":"Нужен чертёж" if not known else ("Выбрана · " if id in Game.hq_loadout() else "")+"ур. %d / %d" % [level,HQCatalog.cap()],"state":"locked" if not known else "active" if id in Game.hq_loadout() else "owned" if id in Game.purchased_hq else "ready"})
+				result.append({"id":id,"title":info.name,"icon":"headquarters/"+id,"caption":"Нужен чертёж" if not known else ("Выбрана · " if id in Game.hq_loadout() else "")+"ур. %d / %d" % [level,HQCatalog.cap()],"state":"locked" if not known else "active" if id in Game.hq_loadout() else "owned" if id in Game.purchased_hq else "ready","level":level,"cap":HQCatalog.cap()})
 		"defence":
 			for row in DEFENCE:
 				var unlocked=Game.branch_unlocked(row[0])
-				result.append({"id":row[0],"title":row[1],"icon":row[2],"caption":"ур. %d / %d" % [Game.level(row[0]),Game.upgrade_cap(row[0])] if unlocked else "Открыть · %d ◈" % Game.UNLOCK_COSTS[row[0]],"state":"owned" if unlocked else "ready"})
+				result.append({"id":row[0],"title":row[1],"icon":row[2],"caption":"ур. %d / %d" % [Game.level(row[0]),Game.upgrade_cap(row[0])] if unlocked else "Открыть · %d ◈" % Game.UNLOCK_COSTS[row[0]],"state":"owned" if unlocked else "ready","level":Game.level(row[0]) if unlocked else 0,"cap":Game.upgrade_cap(row[0])})
 		"insurance":
-			result.append({"id":"alloy","title":"Страховка сплава","icon":"upgrade/insurance_alloy","caption":"%d / %d" % [Game.progression.insurance,Balance.CONFIG.economy.insurance_cap],"state":"owned"})
-			result.append({"id":"rescue","title":"Страховка чертежей","icon":"upgrade/insurance_blueprint","caption":"%d / 10" % Game.rescue_level if "rescue" in Game.research_unlocks else "Нужен чертёж","state":"owned" if "rescue" in Game.research_unlocks else "locked"})
+			result.append({"id":"alloy","title":"Страховка сплава","icon":"upgrade/insurance_alloy","caption":"%d / %d" % [Game.progression.insurance,Balance.CONFIG.economy.insurance_cap],"state":"owned","level":Game.progression.insurance,"cap":Balance.CONFIG.economy.insurance_cap})
+			result.append({"id":"rescue","title":"Страховка чертежей","icon":"upgrade/insurance_blueprint","caption":"%d / 10" % Game.rescue_level if "rescue" in Game.research_unlocks else "Нужен чертёж","state":"owned" if "rescue" in Game.research_unlocks else "locked","level":Game.rescue_level,"cap":10})
 		"build":
 			for id in BUILDINGS:
 				var built=id in Game.built_workshops;var known=Game.building_known(id);var blocker=Game.building_blocker(id)

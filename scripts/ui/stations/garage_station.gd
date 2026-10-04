@@ -13,7 +13,7 @@ func items(tab:String)->Array:
 		for kind in GarageCatalog.VEHICLES:
 			for branch in GarageCatalog.BRANCHES:
 				var id=kind+"_"+branch;var unlocked=id in g.unlocks
-				result.append({"id":id,"title":GarageCatalog.BRANCHES[branch].name,"group":GarageCatalog.VEHICLES[kind].name,"icon":"garage/"+id,"caption":"ур. %d / %d" % [g.level(kind,branch),g.cap(kind)] if unlocked else "Нужен чертёж","state":"owned" if unlocked and kind in g.owned else "locked"})
+				result.append({"id":id,"title":GarageCatalog.BRANCHES[branch].name,"group":GarageCatalog.VEHICLES[kind].name,"icon":"garage/"+id,"caption":"ур. %d / %d" % [g.level(kind,branch),g.cap(kind)] if unlocked else "Нужен чертёж","state":"owned" if unlocked and kind in g.owned else "locked","level":g.level(kind,branch),"cap":g.cap(kind)})
 	return result
 func detail(tab:String,id:String)->Dictionary:
 	var g=Game.garage
