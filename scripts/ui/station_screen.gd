@@ -287,7 +287,10 @@ static func wrapped_height(label:Label,width:float,font_size:int)->float:
 	var font=label.get_theme_font("font");var text=Texts.render(label.text)
 	return ceilf(font.get_multiline_string_size(text,HORIZONTAL_ALIGNMENT_LEFT,width-4,font_size).y)+6
 func perform(action:String):
+	var before=Game.credits;var origin=ResourceStrip.reward_origin(get_viewport())
 	var message=str(provider.act(tab,selected,action))
+	# Alloy paid out here (roadmap rewards) flies into the resource strip (T-207).
+	if Game.credits>before:ResourceStrip.fly_reward("alloy",origin,Game.credits-before)
 	if message=="":return
 	Game.sound("upgrade",self);notice=message;changed.emit();build()
 ## Tab icons come from the line set (Straight) whenever it has one, so tabs share size and weight;

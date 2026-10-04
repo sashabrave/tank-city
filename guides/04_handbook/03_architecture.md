@@ -6,10 +6,10 @@
 Автозагрузки (глобальное состояние и сервисы)
   └─ main.gd — поток экранов
        ├─ hub.gd (хаб-база, станции, постройки)
-       ├─ route_map.gd (карта маршрута, депо, выбор точки)
+       ├─ route_map.gd (карта маршрута, выбор точки)
        ├─ arena.gd (координатор боя) → systems/* + state/*
        ├─ service_room.gd / merchant_room.gd (комнаты прокачки и торговец, общая раскладка room_layout.gd)
-       ├─ depot_stop.gd / legend_stop.gd (депо и «Захваченный КП» поверх карты)
+       ├─ legend_stop.gd («Захваченный КП» поверх карты; депо штаба — service_room.gd, branch "headquarters")
        └─ UI-оверлеи: field_tablet (планшет), station_screen, video_call, run_result, loading_screen, loading_veil
 Данные: assets/balance/**/*.tres, data/*.json (changelog, encyclopedia, materials, icon_kit, icon_catalog), data/locales/en.tsv
 ```
@@ -33,7 +33,7 @@
 
 ## Поток экранов (`main.gd`)
 
-`start_run` → `show_map(0)` → `enter_room(i)`: либо бой (создаётся или переиспользуется `run_arena`), либо точка маршрута (`show_node_service`: комната механика, депо или КП поверх карты), либо остановка между этапами (`show_service`: инструктор или торговец). `run_arena` живёт весь забег и уходит из дерева, пока открыта карта. `resume_run` восстанавливает забег из `Game.run_checkpoint`: при продолжении в карту поле боя не строится (`Arena.defer_room`), переход идёт под `loading_veil`. `show_sandbox` — отдельная арена с админ-панелью, прогресс в песочнице не сохраняется.
+`start_run` → `show_map(0)` → `enter_room(i)`: либо бой (создаётся или переиспользуется `run_arena`), либо точка маршрута (`show_node_service`: комната механика или депо штаба, КП — поверх карты), либо остановка между этапами (`show_service`: инструктор или торговец). `run_arena` живёт весь забег и уходит из дерева, пока открыта карта. `resume_run` восстанавливает забег из `Game.run_checkpoint`: при продолжении в карту поле боя не строится (`Arena.defer_room`), переход идёт под `loading_veil`. `show_sandbox` — отдельная арена с админ-панелью, прогресс в песочнице не сохраняется.
 
 ## Бой: координатор и системы
 

@@ -301,6 +301,13 @@ func show_result(won:bool,reason:String):
 
 func show_departure():
 	if Campaign.endless:arena.depart_room();return
+	# Stash (T-214): the exit is open from the start, so the window says what is left behind instead of «cleared».
+	if arena.room.mode=="cache" and not arena.challenges.rewarded:
+		var ambush=arena.challenges.opened
+		var stash=modal_base("Тайник","Засада ещё идёт" if ambush else "Тайник не открыт","Отбейся — после засады выпадет сундук с наградой." if ambush else "Сундук в центре поля. Откроешь — засада ветеранов, за неё сундук с наградой. Можно уйти и без него.",315)
+		UiKit.button(stash,"Вернуться к тайнику",Vector2(30,190),Vector2(410,66),func():arena.return_to_field(),true)
+		UiKit.button(stash,"Уйти без награды",Vector2(465,190),Vector2(445,66),func():arena.depart_room())
+		return
 	var panel=modal_base("Поле боя зачищено","Путь открыт","Можно вернуться и собрать оставшиеся бонусы.",315)
 	UiKit.button(panel,"Вернуться на поле",Vector2(30,190),Vector2(410,66),func():arena.return_to_field())
 	UiKit.button(panel,"Пойти дальше",Vector2(465,190),Vector2(445,66),func():arena.depart_room(),true)

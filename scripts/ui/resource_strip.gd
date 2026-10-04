@@ -112,3 +112,19 @@ func fly_pickup(kind:String,from:Vector2):
 		icon.scale=Vector2.ONE*lerpf(1.15,.7,progress),0.0,1.0,.65).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 	tween.tween_callback(func():
 		if is_instance_valid(icon):icon.queue_free())
+
+## A reward paid out at once (roadmap steps, quests, orders — T-207): a short stream of bars flies from the
+## button to the counter, more bars for bigger sums. Presentation only; the alloy is already granted.
+func fly_reward(kind:String,from:Vector2,amount:int):
+	if amount<=0:return
+	var count=clampi(2+amount/25,3,10)
+	for i in range(count):
+		# Fixed fan around the button (no RNG: visuals never touch game randomness).
+		var spread=Vector2(cos(i*2.4)*18.0,sin(i*2.4)*10.0)
+		if i==0:fly_pickup(kind,from)
+		else:get_tree().create_timer(i*.06).timeout.connect(func():fly_pickup(kind,from+spread))
+## Screen point to start a reward flight from: the focused button, else the mouse.
+func reward_origin(viewport:Viewport)->Vector2:
+	var owner=viewport.gui_get_focus_owner()
+	if owner is Button and owner.is_visible_in_tree():return owner.get_global_rect().get_center()
+	return viewport.get_mouse_position()

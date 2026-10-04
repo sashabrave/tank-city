@@ -3177,3 +3177,27 @@ Q · есть сразу	Q · from the start
 Цветная подсветка сзади, у каждой комнаты своя.	Coloured back light, its own per room.
 Пыль, листья, ночные светлячки.	Dust, leaves, night fireflies.
 Уклон	Dodged
+Аптечка · полное лечение за %d жетона	Medkit · full heal for %d tokens
+здоровье полное	health is full
+нужно %d жетона, есть %d	need %d tokens, have %d
+Нужно %d жетона, есть %d	Need %d tokens, have %d
+Закрыто · автомат удачи в другой комнате	Closed · the luck machine is in another room
+Сегодня закрыто — загляни в другую комнату	Closed today — try another room
+Фортуна · сегодня закрыто	Fortune · closed today
+Засада ещё идёт	The ambush is still on
+Тайник не открыт	The stash is still closed
+Отбейся — после засады выпадет сундук с наградой.	Fight them off — a reward chest drops after the ambush.
+Сундук в центре поля. Откроешь — засада ветеранов, за неё сундук с наградой. Можно уйти и без него.	The chest is in the middle of the field. Open it and veterans ambush you; beat them for a reward chest. You can also leave without it.
+Вернуться к тайнику	Back to the stash
+Уйти без награды	Leave without a reward
+Открой сундук в центре — будет засада и награда	Open the chest in the middle — an ambush, then a reward
+Депо штаба	HQ depot
+Модуль штаба или припасы на вылазку	An HQ module or supplies for the sortie
+Не взял улучшение	No upgrade taken
+Карточку можно взять только здесь: после отказа выбор пропадёт.	The card can only be taken here: once you decline, the choice is gone.
+Выбрать карточку	Pick a card
+Уйти без улучшения	Leave without an upgrade
+Не взял правило	No rule taken
+Легендарное правило можно взять только здесь: после ухода КП закроется.	The legendary rule can only be taken here: the post closes once you leave.
+Выбрать правило	Pick a rule
+Уйти без правила	Leave without a rule

@@ -200,7 +200,15 @@
 					"Выход из хаба: ровные стрелки-шевроны на жёлтой плите ведут в ворота, жёлтые панели на столбах мягко мигают, как лампы входа",
 					"Комнаты механика, инструктора и мастерской штаба выглядят как их точки на карте вблизи: грузовик с краном и подъёмник, палатка с мишенью, навес с машиной штаба и заправкой.",
 					"Автоматы в комнатах стали ярче и дружелюбнее, как в казино: аптечный автомат со светящимся крестом, автомат боеприпасов с куполом цветных капсул и ручкой, игровой автомат с аркой бегущих огней.",
-					"В ящике с оружием лежит один крупный ствол — тот, что продаётся в этом ящике первым, — вместо трёх мелких."
+					"В ящике с оружием лежит один крупный ствол — тот, что продаётся в этом ящике первым, — вместо трёх мелких.",
+					"Аптечный автомат в комнатах говорит, что сделает и почему не срабатывает: «полное лечение за 3 жетона», «здоровье полное» или «нужно 3 жетона, есть 0» — прямо в подсказке у автомата.",
+					"Закрытая «Фортуна» подписана «Фортуна · сегодня закрыто»: в этой комнате автомата удачи нет, он встретится в другой.",
+					"Тайник объясняет себя: на входе — «Открой сундук в центре — будет засада и награда», выход срабатывает только после пары шагов в поле, а окно выхода говорит «Тайник не открыт» с выбором «Вернуться к тайнику» или «Уйти без награды».",
+					"Депо штаба — теперь комната, как у механика и инструктора: заходишь, подходишь к штабу, и только тогда карточки. Без технологий штаба там те же припасы: ремонт, заправка или ящик жетонов.",
+					"Отказ от карточки в комнатах улучшений и на «Захваченном КП» спрашивает «Не взял улучшение — уйти?», по умолчанию — вернуться к выбору.",
+					"Казарма: после покупки 3-го уровня ячейка способности открывается сразу, без перезахода.",
+					"Сплав из наград «Развития заставы» и заданий летит в верхний счётчик ресурсов.",
+					"Класс, который только что можно открыть, горит зелёной лампочкой на плашке в Казарме, пока его не посмотришь."
 				]
 			},
 			"en": {
@@ -400,7 +408,15 @@
 					"Hub exit: neat chevrons on the yellow plate lead into the gate, the yellow panels on the pillars softly pulse like entrance lamps",
 					"The mechanic, instructor and HQ workshop rooms now look like their map stops up close: a crane truck and a lift, a tent with a target board, a canopy over the HQ vehicle with a fuel pump.",
 					"Room machines are brighter and friendlier, casino style: a medkit machine with a glowing cross, an ammo gacha with a dome of coloured capsules and a crank, a slot machine with an arch of chaser lights.",
-					"The weapon crate shows one big gun — the crate's first offer — instead of three tiny ones."
+					"The weapon crate shows one big gun — the crate's first offer — instead of three tiny ones.",
+					"The medkit machine in rooms says what it does and why it won't work: «full heal for 3 tokens», «health is full» or «need 3 tokens, have 0» — right in its prompt.",
+					"A closed «Fortune» booth now reads «Fortune · closed today»: this room has no luck machine, another one will.",
+					"The stash explains itself: on entry «Open the chest in the middle — an ambush, then a reward»; the exit only triggers after a few steps into the field, and its window says «The stash is still closed» with «Back to the stash» or «Leave without a reward».",
+					"The HQ depot is now a room like the mechanic's and the instructor's: walk in, go to the HQ, then the cards. Without HQ technologies it offers the same supplies: repair, fuel or a token box.",
+					"Declining a card in upgrade rooms and at the «Captured CP» asks «No upgrade taken — leave?», defaulting to back to the choice.",
+					"Barracks: after buying level 3 the ability cell opens at once, no reopening needed.",
+					"Alloy from «Outpost progress» rewards and quests flies into the resource counter at the top.",
+					"A class that just became available glows with a green lamp on its plate in the Barracks until you look at it."
 				]
 			}
 		},

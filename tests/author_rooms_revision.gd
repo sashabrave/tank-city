@@ -1,0 +1,92 @@
+extends Node3D
+## Author's board, 3 Oct (T-206/207/213–217/219): the medkit machine says why it can't heal, a closed fortune
+## booth says «сегодня закрыто», the stash explains itself and its exit, the HQ depot is a walk-in room with the
+## supply fallback, leaving a card choice asks first, the class page refreshes on a level purchase, a newly
+## available class carries a green lamp, and reward alloy flies into the strip. Profile/settings writes are off.
+var errors=0
+func check(value:bool,message:String):
+	if value:print("PASS ",message)
+	else:errors+=1;push_error("FAIL: "+message)
+func _ready():call_deferred("run")
+func run():
+	Game.save_enabled=false;Settings.persistence_enabled=false;Game.sound_enabled=false;Game.reset_upgrades()
+	Engine.set_meta("hub_calls_off",true)
+	var arena=load("res://scenes/arena.tscn").instantiate();add_child(arena);arena.auto_pause_enabled=false;arena.begin_room(1)
+	await get_tree().process_frame
+	# T-214: the stash window says what is left behind, not «поле зачищено».
+	arena.room.mode="cache";arena.challenges.rewarded=false;arena.challenges.opened=false
+	arena.hud.show_departure();await get_tree().process_frame
+	var texts=arena.hud.modal.find_children("*","Label",true,false).map(func(l):return l.text)
+	check(texts.any(func(t):return str(t).to_lower()=="тайник не открыт"),"stash departure says the stash is still closed")
+	check(arena.hud.modal.find_children("*","Button",true,false).any(func(b):return b.text=="Вернуться к тайнику"),"stash departure offers to go back")
+	arena.hud.close_modal();arena.room.mode="battle"
+	remove_child(arena)
+	# T-215: the depot is the service room with branch headquarters; without HQ technologies it refuels.
+	var room=load("res://scripts/service_room.gd").new();room.arena=arena;room.branch="headquarters";room.index=2;add_child(room)
+	await get_tree().process_frame
+	check(room.modal==null,"depot: no cards before walking to the HQ")
+	if room.offers.is_empty() or room.supplies:
+		room.supplies=true;room.offers=room.DEPOT_SUPPLIES.duplicate(true)
+	room.avatar.position=Vector3(0,0,0);room.interact();await get_tree().process_frame
+	check(is_instance_valid(room.modal),"depot: E at the HQ opens the cards")
+	# T-217: «Отказаться» asks first; «stay» keeps the choice open.
+	room.ask_skip();await get_tree().process_frame
+	var confirm=room.modal.get_node_or_null("SkipConfirm")
+	check(confirm!=null,"skip asks for confirmation")
+	if confirm:confirm.close(false)
+	await get_tree().process_frame
+	check(not room.claimed and is_instance_valid(room.modal),"«Выбрать карточку» keeps the cards")
+	if room.supplies:
+		var hp=arena.headquarters.basic_hp;room.claim(0)
+		check(arena.headquarters.basic_hp==hp+1 and room.claimed,"depot supply «Ремонт штаба» applies")
+	else:
+		room.claim(0);check(room.claimed,"depot HQ card claimed")
+	room.queue_free()
+	var second=load("res://scripts/service_room.gd").new();second.arena=arena;second.branch="vehicle";second.index=3;add_child(second)
+	await get_tree().process_frame
+	second.avatar.position=Vector3(0,0,0);second.interact();await get_tree().process_frame
+	second.ask_skip();await get_tree().process_frame
+	second.modal.get_node("SkipConfirm").close(true);await get_tree().process_frame
+	check(second.claimed and second.dressing.open,"«Уйти без улучшения» opens the exit")
+	# T-213: the medkit machine says what a press does, and answers a refused press on the prompt.
+	var vendor=preload("res://scripts/medkit_vendor.gd").place(second,arena,Vector3(-3.4,0,2.4))
+	await get_tree().process_frame
+	arena.run.soldier_hp=arena.run.soldier_max_hp
+	check("здоровье полное" in vendor.status().to_lower(),"medkit: full health is shown before the press")
+	check(not vendor.buy() and vendor.prompt.flash_time>0,"medkit: a refused press flashes the reason")
+	arena.run.soldier_hp=1.0;arena.run.tokens=0
+	check("нужно 3 жетона" in vendor.status().to_lower(),"medkit: missing tokens are shown")
+	arena.run.tokens=5
+	check("полное лечение" in vendor.status().to_lower(),"medkit: what it does when usable")
+	check(vendor.buy() and arena.run.tokens==2,"medkit: heals for 3 tokens")
+	# T-216: a closed booth says so on its sign.
+	var booth=RoomLayout.place_machine(second,arena,"closed",RoomLayout.FORTUNE,true)
+	check(booth.get_node("FortuneSign").text.contains("закрыто"),"closed fortune sign says «сегодня закрыто»")
+	second.queue_free();arena.queue_free()
+	await get_tree().process_frame
+	# T-206 / T-219 in the Barracks.
+	var hub=load("res://scenes/hub.tscn").instantiate();add_child(hub);await get_tree().create_timer(1.0).timeout
+	hub.phase="combat"
+	Game.credits=100000;Game.selected_class="recruit";Game.class_unlocks=["recruit"];Game.class_levels["recruit"]=1
+	Game.progression.counters["field_reached"]=3
+	hub.open_station("fighter");await get_tree().create_timer(.3).timeout
+	var page=hub.build_menu.find_child("Page",true,false)
+	check(page.find_child("Class_heavy",true,false).get_node_or_null("Badge")!=null,"new available class has a green lamp")
+	check(page.find_child("Class_recruit",true,false).get_node_or_null("Badge")==null,"owned class has no lamp")
+	check(page.get_node("SlotTitle_0").text!=Texts.render("Граната") and ClassCatalog.level("recruit")==2,"level 2: ability slot still locked")
+	page.open_path();await get_tree().process_frame
+	var buy=page.find_child("Buy_3",true,false)
+	check(buy!=null,"level 3 buy button in the path")
+	if buy:buy.pressed.emit()
+	await get_tree().process_frame;await get_tree().process_frame
+	# The rebuilt page's nodes (the old ones are freed by now): no «С 3 уровня» cell left.
+	var locked=page.get_children().any(func(n):return n is Label and n.text.begins_with("С 3"))
+	check(ClassCatalog.level("recruit")==3 and not locked,"level 3 purchase unlocks the ability cell at once")
+	check(page.get_node_or_null("ClassPathView")!=null,"the path stays open after the purchase")
+	# T-207: claiming roadmap/quest alloy launches flights into the strip.
+	var flights=ResourceStrip.pickup_flights.filter(is_instance_valid).size()
+	ResourceStrip.fly_reward("alloy",Vector2(400,400),80)
+	await get_tree().create_timer(.4).timeout
+	check(ResourceStrip.pickup_flights.filter(is_instance_valid).size()>flights,"reward alloy flies to the strip")
+	print("DONE errors=",errors)
+	get_tree().quit(1 if errors>0 else 0)

@@ -45,7 +45,11 @@ static func place_machine(room:Node3D,arena,kind:String,at:Vector3,fortune:=fals
 	if fortune:
 		node.set_meta("fortune",true)
 		# The sign over the spot says what this place is, so a closed booth still reads as «luck lives here».
-		Visuals.label3d(node,"Фортуна",Vector3(0,2.55,0),Color("ffd27a"),26).name="FortuneSign"
+		# A closed booth says so on the sign (T-216): «no fortune machine in this room», not a broken one.
+		if kind in ["slot","lootbox"]:Visuals.label3d(node,"Фортуна",Vector3(0,2.55,0),Color("ffd27a"),26).name="FortuneSign"
+		else:
+			var sign=Visuals.label3d(node,"Фортуна · сегодня закрыто",Vector3(0,2.55,0),Color("b9b3a2"),24);sign.name="FortuneSign"
+			if "prompt" in node and node.prompt:node.prompt.twin=sign;node.prompt.twin_searched=true
 	return node
 
 ## A shuttered booth with a lamp: the fortune is closed in this room.

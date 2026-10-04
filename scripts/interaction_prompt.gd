@@ -12,6 +12,11 @@ var action="interact"
 ## shows, so the two don't stack (T-166).
 var twin:Label3D
 var twin_searched=false
+## A short reason shown in place of the caption after a refused press (T-213): «Здоровье полное», «Нужно 3 жетона».
+## Toasts in the rooms go to the technical log only, so the prompt itself answers the press.
+var flash_text:=""
+var flash_time:=0.0
+const FLASH_COLOR:=Color("ff8a7a")
 static func attach(parent:Node3D,world_context:Node,text:String,at:Vector3=Vector3.ZERO,reach:float=1.65,condition:Callable=Callable()):
 	var prompt=load("res://scripts/interaction_prompt.gd").new();prompt.context=world_context;prompt.caption=text;prompt.position=at;prompt.radius=reach;prompt.enabled_check=condition;parent.add_child(prompt);return prompt
 func _ready():
@@ -28,6 +33,9 @@ func _ready():
 	panel.modulate.a=0
 	if "Окоп" in caption:
 		panel.size=Vector2(46,44);text_label.hide()
+## Shows text over the prompt for a moment, tinted, then the caption returns.
+func flash(text:String,seconds:=2.2):
+	flash_text=text;flash_time=seconds;amount=maxf(amount,.6)
 func tapped(event:InputEvent):
 	var tap=(event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT and not event.pressed) or (event is InputEventScreenTouch and not event.pressed)
 	if not tap or amount<.5:return
@@ -53,6 +61,8 @@ func _process(delta):
 			if other.enabled_check.is_valid() and not other.enabled_check.call():continue
 			var distance=observer.global_position.distance_to(other.global_position)
 			if distance<other.radius and (distance<observer.global_position.distance_to(global_position)-.001 or (is_equal_approx(distance,observer.global_position.distance_to(global_position)) and other.get_instance_id()<get_instance_id())):active=false;amount=0;break
+	flash_time=maxf(0.0,flash_time-delta)
+	if flash_time>0 and not active:flash_time=0.0
 	amount=move_toward(amount,1.0 if active else 0.0,delta*7)
 	if not twin_searched:
 		twin_searched=true
@@ -63,12 +73,14 @@ func _process(delta):
 	panel.modulate.a=amount;panel.visible=amount>0 and is_visible_in_tree() and is_instance_valid(camera)
 	if panel.visible:
 		var compact=is_instance_valid(observer) and "hidden_in_trench" in observer and observer.hidden_in_trench and "Окоп" in caption
-		Texts.set_text(text_label,caption)
+		var shown=flash_text if flash_time>0 else caption
+		Texts.set_text(text_label,shown)
+		text_label.add_theme_color_override("font_color",FLASH_COLOR if flash_time>0 else Color("f2f1df"))
 		action="hide_trench" if compact else "interact"
 		var glyph=InputScheme.glyph(action);var keyed=glyph!=""
 		Texts.set_text(key_label,glyph);key_label.get_parent().visible=keyed
 		var inset=48.0 if keyed else 16.0
-		var width=clampf(text_label.get_theme_font("font").get_string_size(Texts.render(caption),HORIZONTAL_ALIGNMENT_LEFT,-1,17).x+inset+18,90,360)
+		var width=clampf(text_label.get_theme_font("font").get_string_size(Texts.render(shown),HORIZONTAL_ALIGNMENT_LEFT,-1,17).x+inset+18,90,420)
 		panel.size=Vector2(46 if "Окоп" in caption else width,44)
 		text_label.position.x=inset;text_label.size=Vector2(panel.size.x-inset-10,34)
 		panel.scale=Vector2.ONE*(.42 if compact else 1.0)

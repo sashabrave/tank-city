@@ -601,7 +601,8 @@ func _physics_process(delta):
 	if challenges.active():challenges.tick(delta)
 	if room_cleared and is_instance_valid(flag) and is_instance_valid(player):
 		var near=flat_distance(player.position,flag.position)<1.1
-		if not near:flag_armed=true
+		# The stash starts on its open exit (T-214): it arms only after a real step into the field, not a twitch.
+		if not near and (room.mode!="cache" or flat_distance(player.position,flag.position)>2.4):flag_armed=true
 		if near and flag_armed:open_flag()
 	if not room_cleared and spawn_queue.is_empty() and enemy_count()==0 and grenades.is_empty() and not challenges.blocks_waves() and not (sandbox and not sandbox_waves and not boss_room):
 		finish_wave()

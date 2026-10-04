@@ -58,6 +58,8 @@ func class_tab(parent:Control,id:String,pos:Vector2,dims:Vector2)->Button:
 	UiKit.locked_preview(art,not owned)
 	var title=UiKit.label(b,class_name_of(id),Vector2(62,14),Vector2(dims.x-66,22),15,UiKit.INK if owned else UiKit.MUTED);title.mouse_filter=Control.MOUSE_FILTER_IGNORE;title.clip_text=true
 	var sub=UiKit.label(b,caption_of(id),Vector2(62,40),Vector2(dims.x-66,20),12,UiKit.ORANGE if id==Game.selected_class else UiKit.MUTED);sub.mouse_filter=Control.MOUSE_FILTER_IGNORE;sub.clip_text=true
+	# A class that just became available carries a green lamp until it is viewed once (T-219).
+	if not concept and not owned and not chosen and Game.can_select_class(id) and preload("res://scripts/ui/station_notices.gd").is_new("fighter","shells",id):UiKit.badge(b,"ready")
 	return b
 func pick(id:String):
 	screen.selected=id;screen.notice="";viewed=id;screen.build()
@@ -394,8 +396,9 @@ func level_card(body:Control,pos:Vector2,dims:Vector2,n:int,status:String,left:b
 			if Game.upgrade_class(id,false):
 				Game.sound("upgrade",self);set_meta("just_reached",n);screen.notice="Уровень %d" % n;screen.changed.emit()
 				var old=get_node_or_null("ClassPathView")
-				if old:old.queue_free()
-				open_path()
+				if old:remove_child(old);old.queue_free()
+				# The page under the path refreshes too (T-206): a level-3 purchase unlocks the ability cell at once.
+				build();open_path()
 		,short<=0)
 		b.name="Buy_%d" % n;b.disabled=short>0;UiKit.muted_locked_button(b)
 	else:

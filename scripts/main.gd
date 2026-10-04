@@ -143,12 +143,7 @@ func show_node_service(branch:String,index:int):
 		current.root.add_child(post)
 		post.done.connect(func():run_arena.run.route_choices=route_choices;show_map(index+1))
 		return
-	if branch=="headquarters" and is_instance_valid(current) and "root" in current:
-		# Depot pit stop: cards over the map, then the next stage opens.
-		var stop=preload("res://scripts/depot_stop.gd").new();stop.arena=run_arena;stop.index=index
-		current.root.add_child(stop)
-		stop.done.connect(func():run_arena.run.route_choices=route_choices;show_map(index+1))
-		return
+	# The HQ depot (branch "headquarters") is a walk-in room like the mechanic's (T-215), not cards over the map.
 	clear_current();current=load("res://scripts/service_room.gd").new();current.arena=run_arena;current.index=index;current.branch=branch;add_child(current)
 	current.hub_requested.connect(show_hub)
 	current.completed.connect(func(_completed):run_arena.run.route_choices=route_choices;show_map(index+1))

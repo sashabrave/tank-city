@@ -80,6 +80,8 @@ func start_cache():
 	chest={"kind":"cache","node":node,"visual":visual}
 	arena.room.pickups.append(chest)
 	arena.toast("Тайник. Откроешь — будет засада. Можно уйти через выход")
+	# Say it on screen like the other challenges (T-214): the toast alone goes to the log only.
+	if is_instance_valid(arena.presentation):arena.presentation.announce("Тайник","Открой сундук в центре — будет засада и награда",1.6)
 func nearest_cache()->Dictionary:
 	if arena.room.mode!="cache" or chest.is_empty() or opened or not is_instance_valid(chest.get("node")) or not is_instance_valid(arena.room.player):return {}
 	return chest if arena.flat_distance(arena.room.player.position,chest.node.position)<1.6 else {}

@@ -35,6 +35,10 @@ var combat:Node3D
 ## more detailed, in daylight on a sand floor. Without the model file the old hangar dressing stays.
 const ROOM_MODELS={"vehicle":"res://assets/models/route/mechanic_room.glb","ability":"res://assets/models/route/training_room.glb","headquarters":"res://assets/models/route/workshop_room.glb"}
 var street=false
+## The HQ depot on the route is this room with branch "headquarters" (T-215): walk to the HQ, then the cards.
+## Without HQ technologies it still refuels: base repair, a reroll or a token box (moved from depot_stop.gd).
+const DEPOT_SUPPLIES=[{"id":"repair","title":"Ремонт штаба","detail":"Прочность базы +1 до конца забега","icon":"repair"},{"id":"refuel","title":"Заправка","detail":"Перебросы карточек +1","icon":"reroll"},{"id":"tokens","title":"Ящик жетонов","detail":"Жетоны +4 для торговца","icon":"token"}]
+var supplies=false
 func _ready():
 	add_to_group("notification_context")
 	vehicle=current_vehicle()
@@ -79,8 +83,8 @@ func _ready():
 	walker=preload("res://scripts/room_walker.gd").new(avatar)
 	var canvas=CanvasLayer.new();add_child(canvas);root=Control.new();canvas.add_child(root);root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);root.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	var heading_plate=UiKit.glass(root,Vector2(25,25),Vector2(590,120),Color("242d27ed"));heading_plate.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	UiKit.accent(UiKit.label(root,{"vehicle":"Полевой механик","ability":"Подготовка бойца","headquarters":"Мастерская штаба"}[branch],Vector2(40,30),Vector2(800,60),32))
-	UiKit.label(root,{"vehicle":"Модификация транспорта","ability":"Модификация способности","headquarters":"Модуль или усиление на вылазку"}[branch],Vector2(40,100),Vector2(1000,40),18)
+	UiKit.accent(UiKit.label(root,{"vehicle":"Полевой механик","ability":"Подготовка бойца","headquarters":"Депо штаба"}[branch],Vector2(40,30),Vector2(800,60),32))
+	UiKit.label(root,{"vehicle":"Модификация транспорта","ability":"Модификация способности","headquarters":"Модуль штаба или припасы на вылазку"}[branch],Vector2(40,100),Vector2(1000,40),18)
 	var size=get_viewport().get_visible_rect().size
 	dpad=load("res://scripts/touch_controls.gd").new();root.add_child(dpad);dpad.apply_movement_layout()
 	interact_button=UiKit.button(root,"Улучшение [E]",Vector2(size.x-330,size.y-170),Vector2(290,60),interact);interact_button.hide()
@@ -94,6 +98,8 @@ func _ready():
 	# Shooting and abilities work here like in the hub and in battle (T-158, T-185).
 	combat=preload("res://scripts/room_combat.gd").attach(self,avatar,walker,stand,root)
 	offers=arena.reward.service_offers(branch)
+	supplies=branch=="headquarters" and offers.is_empty()
+	if supplies:offers=DEPOT_SUPPLIES.duplicate(true)
 	# Common room layout (RoomLayout): weapon crate, a vending machine and the «Фортуна» spot in the same places
 	# in every upgrade room and at the merchant.
 	spots=RoomLayout.furnish(self,arena,index,false)
@@ -151,7 +157,7 @@ func interact():
 	if branch=="ability" and Game.class_loadout().is_empty():early_reward();return
 	modal=preload("res://scenes/ui/service_rewards.tscn").instantiate();root.add_child(modal);modal.add_to_group("selection_scope")
 	var panel=modal.get_node("Panel")
-	panel.get_node("Heading").text="Модификация · "+({"buggy":"Багги","apc":"БТР","tank":"Танк"}[vehicle] if branch=="vehicle" else "Штаб" if branch=="headquarters" else arena.abilities.NAMES.get(arena.abilities.selected,"Способность"))
+	Texts.set_text(panel.get_node("Heading"),"Депо · Штаб" if branch=="headquarters" else "Модификация · "+({"buggy":"Багги","apc":"БТР","tank":"Танк"}[vehicle] if branch=="vehicle" else arena.abilities.NAMES.get(arena.abilities.selected,"Способность")))
 	panel.get_node("CloseButton").pressed.connect(close_cards)
 	if offers.is_empty():UiKit.label(panel,"Сначала открой и возьми способность в хабе",Vector2(25,155),Vector2(870,50),22)
 	if branch=="ability":
@@ -161,7 +167,8 @@ func interact():
 	for i in range(3):
 		if i>=offers.size():panel.get_node("Card"+str(i+1)).hide();continue
 		if branch=="headquarters":
-			preload("res://scripts/ui/choice_card.gd").configure(panel.get_node("Card"+str(i+1)),arena.headquarters.card(offers[i]),func():claim(i));continue
+			var card=arena.headquarters.card(offers[i]) if not supplies else {"category":"Депо","title":offers[i].title,"detail":offers[i].detail,"icon":offers[i].icon,"heading":"","color":Color(LootCatalog.RARITY_COLORS[0]),"disabled":false,"button":"Выбрать"}
+			preload("res://scripts/ui/choice_card.gd").configure(panel.get_node("Card"+str(i+1)),card,func():claim(i));continue
 		var offer=offers[i];var n=Balance.tier_power(offer.tier)
 		var title={"damage":"Урон транспорта","hp":"Броня транспорта","speed":"Передвижение","rate":"Скорострельность","overhaul":"Капремонт","power":"Прочность / урон","cooldown":"Перезарядка","utility":"Особенность"}[offer.id]
 		var description=arena.abilities.description(offer.id,offer.tier) if branch=="ability" else {"damage":"+%.2f урона" % ((.15 if vehicle=="buggy" else 1.0)*n),"hp":"+%d брони" % roundi(3*n),"speed":"+%.1f %% скорости машины" % (4*n),"rate":"−%d %% к паузе между выстрелами" % roundi(4*n),"overhaul":"+%d брони и +%s урона" % [roundi(1.5*n),UiKit.number(snappedf((.08 if vehicle=="buggy" else .5)*n,.01))]}[offer.id]
@@ -183,17 +190,22 @@ func interact():
 		var view={"category":"Транспорт" if branch=="vehicle" else "Способность","title":title,"detail":description,"icon":{"rate":"garage/%s_gun" % vehicle,"overhaul":"pickups/vehicle_repair"}.get(offer.id,offer.id),"heading":LootCatalog.RARITY_NAMES[offer.tier],"color":Color(LootCatalog.RARITY_COLORS[offer.tier])}
 		preload("res://scripts/ui/choice_card.gd").configure(panel.get_node("Card"+str(i+1)),view,func():claim(i))
 	var reroll=panel.get_node("RerollButton");Texts.set_text(reroll,"Переброс · осталось %d" % arena.rerolls_left);reroll.pressed.connect(reroll_cards)
-	reroll.disabled=arena.rerolls_left<=0
+	reroll.disabled=arena.rerolls_left<=0 or supplies
 	reroll.position.x=25;reroll.size.x=540
-	UiKit.button(panel,"Отказаться",Vector2(590,reroll.position.y),Vector2(320,44),skip_choice)
+	UiKit.button(panel,"Отказаться",Vector2(590,reroll.position.y),Vector2(320,44),ask_skip)
 func reroll_cards():
-	if claimed or arena.rerolls_left<=0:return
+	if claimed or arena.rerolls_left<=0 or supplies:return
 	arena.rerolls_left-=1
 	offers=arena.reward.service_offers(branch)
 	close_cards();interact()
 func claim(i: int):
 	if claimed or i<0 or i>=offers.size():return
-	arena.reward.apply_service_reward(branch,vehicle,index,offers[i])
+	if supplies:
+		match str(offers[i].id):
+			"repair":arena.headquarters.basic_hp+=1
+			"refuel":arena.rerolls_left+=1
+			"tokens":arena.run.tokens+=4
+	else:arena.reward.apply_service_reward(branch,vehicle,index,offers[i])
 	Game.sound("upgrade",self);claimed=true;close_cards();continue_button.disabled=false;interact_button.disabled=true;dressing.set_open(true)
 ## Alloy instead of an ability upgrade, while the class has no ability yet.
 func early_reward():
@@ -229,6 +241,11 @@ func collect_medkits():
 			if is_instance_valid(arena.player) and arena.player.kind=="soldier":arena.player.hp=arena.soldier_hp;arena.player.refresh_health()
 			medkits.erase(kit);kit.queue_free();Game.sound("pickup",self)
 
+## «Отказаться» asks first (T-217): the card can only be taken here, so leaving empty-handed is a choice.
+func ask_skip():
+	if claimed or not is_instance_valid(modal):return
+	if modal.has_node("SkipConfirm"):return
+	preload("res://scripts/ui/skip_confirm.gd").open(modal,skip_choice)
 func skip_choice():
 	if claimed:return
 	claimed=true;close_cards();continue_button.disabled=false;interact_button.disabled=true;dressing.set_open(true)

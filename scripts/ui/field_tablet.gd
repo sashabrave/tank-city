@@ -263,11 +263,17 @@ func quest_message(q:Dictionary,count:int,news:bool,ready:bool,done:bool)->Contr
 		paint.call()
 		pin.pressed.connect(func():p.toggle_track(q.id);paint.call())
 	if actions and taken:
+		var claim_ref:Array=[]
 		var claim=UiKit.button(bubble,"Забрать награду",Vector2(14,196),Vector2(bw-28,40),func():
+			# The reward bars fly from the button into the resource strip (T-207).
+			var origin=claim_ref[0].get_global_rect().get_center() if not claim_ref.is_empty() and is_instance_valid(claim_ref[0]) else get_viewport().get_mouse_position()
 			UiKit.leave(row,func():
+				var before=Game.credits
 				if order:p.claim_telegram()
 				else:p.claim(q)
+				if Game.credits>before:ResourceStrip.fly_reward("alloy",origin,Game.credits-before)
 				refresh()),ready)
+		claim_ref.append(claim)
 		claim.name="Claim";claim.disabled=count<q.goal;UiKit.muted_locked_button(claim)
 		if order:UiKit.button(bubble,"Отказаться от приказа",Vector2(14,244),Vector2(bw-28,40),func():p.abandon_telegram();refresh()).add_theme_font_size_override("font_size",17)
 	elif actions:
