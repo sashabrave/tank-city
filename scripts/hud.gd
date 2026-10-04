@@ -292,7 +292,16 @@ func _show_upgrades_now():
 
 func show_pause():
 	close_modal()
-	preload("res://scripts/ui/pause_tablet.gd").open(arena,arena.pause_battle,arena.leave)
+	preload("res://scripts/ui/pause_tablet.gd").open(arena,arena.pause_battle,retreat)
+## «В хаб» from the pause (author, 4 Oct 2026): leaving a field that is not cleared counts as a defeat — the
+## same losses as being knocked out. A cleared field (or the sandbox) is left freely, as before.
+func retreat():
+	if arena.room_cleared or arena.sandbox or arena.phase=="result":arena.leave();return
+	var root=Control.new();root.name="RetreatConfirm";root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);add_child(root)
+	var dialog=preload("res://scripts/ui/skip_confirm.gd").open(root,func():arena.finish_run(false,"Отступление с поля"),{"heading":"Уйти с поля?","body":"Поле не зачищено: уход засчитается как поражение. Часть сплава и чертежи вне сейфа и без страховки пропадут.","stay_text":"Остаться","leave_text":"Уйти — поражение"})
+	dialog.tree_exited.connect(func():
+		if is_instance_valid(root):root.queue_free()
+		if is_instance_valid(arena) and arena.phase=="paused":show_pause())
 
 ## Run summary: rows arrive one by one like a ladder — numbers count up, bars fill, each row clicks;
 ## blueprints are shown as backpack cards (lost ones dimmed). Records get a badge.
@@ -314,12 +323,17 @@ func show_departure():
 	UiKit.button(panel,"Пойти дальше",Vector2(465,190),Vector2(445,66),func():arena.depart_room(),true)
 
 func show_recipe_draft():
+	# A blueprint from the chest gets its own celebration first (author, 4 Oct 2026), then the cards.
+	var fresh:Dictionary=arena.draft_pickup.get("recipe_given",{})
+	if not fresh.is_empty() and not arena.draft_pickup.get("recipe_seen",false):show_blueprint_reveal(fresh);return
 	var difficulty=2 if arena.room.boss_room else arena.room.difficulty
-	var panel=choice_screen("chest_screen","Сундук "+EncounterRules.STARS[difficulty],"Выбери награду",EncounterRules.reward_text(difficulty)+". Один предмет на выбор.")
+	var panel=choice_screen("chest_screen","Сундук "+EncounterRules.STARS[difficulty],"Выбери награду",EncounterRules.reward_text(difficulty)+". Одна карточка на выбор.")
 	panel.get_node("ReturnButton").pressed.connect(func():arena.pause_battle())
 	# What these cards are (T-170): one line under the heading, small, above the cards.
 	var why=panel.get_node("Subtitle")
-	Texts.set_text(why,("Награда за командира. " if arena.room.boss_room else "")+"Возьми одну: чертёж откроется, когда донесёшь его до хаба, трофей действует до конца вылазки")
+	var given:Dictionary=arena.draft_pickup.get("recipe_given",{})
+	if given.is_empty():Texts.set_text(why,("Награда за командира. " if arena.room.boss_room else "")+"Возьми одну: трофей действует до конца вылазки")
+	else:Texts.set_text(why,Texts.render("Чертёж «%s» уже в рюкзаке — донеси его до хаба. И возьми одну карточку") % Texts.render(Game.recipe_name(given)))
 	why.add_theme_font_size_override("font_size",14);why.add_theme_color_override("font_color",UiKit.MUTED);why.position.y=110;why.size.y=24;why.clip_text=true
 	for i in range(3):
 		var offer=arena.draft_pickup.offers[i];var special=offer.category in ["secret","alloy","upgrade","documents"]
@@ -338,6 +352,28 @@ func show_recipe_draft():
 	add_skip(panel,arena.reward.skip_chest)
 	animate_choices(panel)
 
+const RECIPE_KINDS={"research":"Постройка","weapon":"Оружие","bonus":"Бонус поля","ability":"Гаджет","hq":"Технология штаба","garage":"Транспорт"}
+func show_blueprint_reveal(recipe:Dictionary):
+	var panel=modal_base("Сундук командира","Новый чертёж!","",440)
+	var tier=Game.TIERS.tier(recipe.id);var color=Color(LOOT.RARITY_COLORS[tier])
+	var glow=Panel.new();panel.add_child(glow);glow.position=Vector2(60,140);glow.size=Vector2(200,200)
+	var style=StyleBoxFlat.new();style.bg_color=Color(color,.16);style.border_color=color;style.set_border_width_all(3);style.set_corner_radius_all(18);glow.add_theme_stylebox_override("panel",style)
+	var icon=TextureRect.new();glow.add_child(icon);icon.position=Vector2(24,24);icon.size=Vector2(152,152);icon.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;icon.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	var art=UiKit.icon_texture(recipe.id);icon.texture=UiKit.trimmed(art if art else UiKit.icon_texture("recipe"))
+	UiKit.label(panel,LOOT.RARITY_NAMES[tier]+" · "+RECIPE_KINDS.get(str(recipe.category),"Чертёж"),Vector2(300,150),Vector2(600,26),16,color)
+	UiKit.label(panel,Game.recipe_name(recipe),Vector2(300,180),Vector2(600,50),34)
+	var note=UiKit.label(panel,"Чертёж уже в рюкзаке. Донеси его до хаба — там он откроется навсегда." if not recipe.get("duplicate",false) else "Уже открыт. Донеси в хаб и продай в урне за %d сплава." % Game.duplicate_price(recipe),Vector2(300,240),Vector2(600,60),18,UiKit.MUTED)
+	note.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	var go=UiKit.button(panel,"К наградам",Vector2(300,350),Vector2(320,56),blueprint_seen,true)
+	go.focus_mode=Control.FOCUS_ALL;(func():if is_instance_valid(go):go.grab_focus()).call_deferred()
+	Game.sound("rare_reveal",arena)
+	panel.pivot_offset=panel.size*.5;panel.scale=Vector2(.82,.82);panel.modulate.a=0
+	var pop=panel.create_tween().set_parallel();pop.tween_property(panel,"scale",Vector2.ONE,.32).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT);pop.tween_property(panel,"modulate:a",1.0,.18)
+	glow.pivot_offset=glow.size*.5
+	var pulse=glow.create_tween().set_loops();pulse.tween_property(glow,"scale",Vector2.ONE*1.05,.7);pulse.tween_property(glow,"scale",Vector2.ONE,.7)
+
+func blueprint_seen():
+	arena.draft_pickup["recipe_seen"]=true;show_recipe_draft()
 
 func add_skip(panel:Panel,callback:Callable):
 	var reroll=panel.get_node("RerollButton")

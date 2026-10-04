@@ -17,7 +17,7 @@ static func weapon(arena=null,id:String="",changes:Dictionary={})->Dictionary:
 	var run=arena.run if arena!=null else null
 	var mods={"damage":0.0,"interval":1.0,"intercept":0.0} if run==null else run.weapon_mods[id]
 	var bonus=(0.0 if run==null else run.damage_bonus)+changes.get("damage_bonus",0.0)
-	var damage=class_weapon_multiplier(id)*data.damage*Game.weapon_factor(id)*(1+Game.damage_level*.05+bonus*.3+mods.damage+changes.get("weapon_damage",0.0))
+	var damage=class_weapon_multiplier(id)*data.damage*Game.weapon_factor(id)*(1+Game.damage_level*Game.DAMAGE_PER_LEVEL+bonus*.3+mods.damage+changes.get("weapon_damage",0.0))
 	var interval=maxf(Balance.CONFIG.combat.minimum_fire_interval,data.interval*(1.0 if run==null else run.fire_multiplier)*mods.interval*changes.get("fire",1.0)*changes.get("weapon_fire",1.0))
 	# Rolled stats of the gun in hand (weapon crate items, 2026-10-03): +damage share and +fire-rate share.
 	var rolled:Dictionary=changes.get("item_stats",run.weapon_stats if run!=null and id==str(run.weapon) else {})

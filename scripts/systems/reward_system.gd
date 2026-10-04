@@ -239,6 +239,7 @@ func open_recipe_draft(pickup: Dictionary):
 		pop.tween_property(v,"scale",Vector3(1.15,.8,1.15),.08);pop.tween_property(v,"scale",Vector3(.9,1.25,.9),.12);pop.tween_property(v,"scale",Vector3.ONE*.95,.18)
 		arena.burst(pickup.node.position+Vector3.UP*.6,Color("ffd56a"),.6)
 	if pickup.offers.is_empty():pickup.offers=chest_offers(pickup.get("elite",true))
+	grant_chest_recipe(pickup)
 	arena.room.draft_pickup=pickup;arena.room.previous_phase=arena.phase;arena.phase="paused";Game.reset_input();arena.hud.show_recipe_draft()
 func reroll_recipe_draft():
 	if arena.phase!="paused" or arena.room.draft_pickup.is_empty() or arena.run.rerolls_left<=0:return
@@ -298,10 +299,20 @@ func chest_offers(_elite:bool=true)->Array:
 	# Chest cards come from the same registry and rarity roll as wave offers, never below the room difficulty.
 	var result=[{"category":"alloy","id":"alloy","amount":EncounterRules.chest_alloy(arena.room.room_index,difficulty),"tier":0}]
 	for offer in RunUpgrades.roll_offers(arena,2):result.append({"category":"upgrade","id":offer.id,"tier":maxi(int(offer.tier),difficulty)})
-	var recipe=EncounterRules.guaranteed(Campaign.progress_index(arena.room_index),arena.run.pending_recipes)
-	if recipe.is_empty():recipe=EncounterRules.recipe(difficulty,arena.run.combat_rng,arena.run.pending_recipes,Campaign.progress_index(arena.room_index))
-	if not recipe.is_empty():result[0]=recipe
 	return result
+## The chest blueprint is its own reward (author, 4 Oct 2026): it no longer takes the place of a card. It is
+## rolled once per chest and goes straight into the backpack (or lies at the soldier's feet when it is full).
+func chest_recipe()->Dictionary:
+	var difficulty=2 if arena.room.boss_room else arena.room.difficulty
+	var stage=Campaign.progress_index(arena.room_index)
+	var recipe=EncounterRules.guaranteed(stage,arena.run.pending_recipes)
+	if recipe.is_empty():recipe=EncounterRules.first_building(arena.run.combat_rng,arena.run.pending_recipes)
+	if recipe.is_empty():recipe=EncounterRules.recipe(difficulty,arena.run.combat_rng,arena.run.pending_recipes,stage)
+	return recipe
+func grant_chest_recipe(pickup:Dictionary):
+	if pickup.has("recipe_given"):return
+	pickup["recipe_given"]=chest_recipe()
+	if not pickup.recipe_given.is_empty() and not Backpack.stow(arena,pickup.recipe_given,"recipe"):pickup.recipe_given={}
 
 func apply_secret(offer):
 	match offer.type:

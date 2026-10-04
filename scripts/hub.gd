@@ -607,7 +607,7 @@ func shoot():
 	for i in range(1 if mounted else data.pellets):
 		var bullet=load("res://scenes/projectile.tscn").instantiate()
 		bullet.sniper_visual=not mounted and Game.selected_weapon=="sniper"
-		bullet.arena=self;bullet.friendly=true;bullet.speed=13 if mounted else data.speed;bullet.damage=3+Game.meta_damage() if mounted else data.damage*Game.weapon_factor(Game.selected_weapon)*(1+Game.damage_level*.05)
+		bullet.arena=self;bullet.friendly=true;bullet.speed=13 if mounted else data.speed;bullet.damage=3+Game.meta_damage() if mounted else data.damage*Game.weapon_factor(Game.selected_weapon)*(1+Game.damage_level*Game.DAMAGE_PER_LEVEL)
 		bullet.travel_direction=Vector3(facing.x,0,facing.y).rotated(Vector3.UP,0 if mounted else (i-(data.pellets-1)*.5)*.1)
 		var muzzle_height=controlled.muzzle.global_position.y-controlled.position.y if is_instance_valid(controlled.muzzle) else .55
 		bullet.position=controlled.position+bullet.travel_direction*.45+Vector3.UP*muzzle_height

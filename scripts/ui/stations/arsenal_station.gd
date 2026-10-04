@@ -28,7 +28,7 @@ func detail(tab:String,id:String)->Dictionary:
 	match tab:
 		"weapons":
 			var info=Game.LOOT.WEAPONS[id];var owned=id in Game.weapon_unlocks;var level=Game.weapon_level(id);var cap=Balance.CONFIG.economy.weapon_level_cap
-			var factor=1.0+level*.015;var next=1.0+mini(level+1,cap)*.015
+			var factor=1.0+level*.04;var next=1.0+mini(level+1,cap)*.04  # same as Game.weapon_factor
 			var actions=[]
 			if owned and id!=Game.selected_weapon:actions.append({"id":"take","text":"Взять в бой","primary":true})
 			if owned:actions.append({"id":"level","text":"Максимум" if level>=cap else "Уровень %d · %d ◈" % [level+1,Game.weapon_upgrade_cost(id)],"enabled":level<cap and Game.credits>=Game.weapon_upgrade_cost(id)})

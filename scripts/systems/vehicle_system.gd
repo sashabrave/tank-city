@@ -58,7 +58,7 @@ func allied_flyer_step(actor,delta):
 func summon_comrade(factor:float,utility:float):
 	var buddy=arena.spawn_actor("soldier",arena.find_free_near(arena.room.player.cell),false,true);buddy.companion=true;buddy.companion_factor=factor
 	var weapons=arena.LOOT.gun_ids();buddy.companion_weapon=weapons[arena.run.combat_rng.randi_range(0,weapons.size()-1)];var data=arena.LOOT.WEAPONS[buddy.companion_weapon]
-	buddy.max_hp=maxf(1,arena.run.soldier_max_hp*factor);buddy.hp=buddy.max_hp;buddy.speed=3.8*.8*(1+utility*.1);buddy.damage=data.damage*(1+Game.damage_level*.05+arena.run.damage_bonus*.3)*factor;buddy.fire_interval=data.interval
+	buddy.max_hp=maxf(1,arena.run.soldier_max_hp*factor);buddy.hp=buddy.max_hp;buddy.speed=3.8*.8*(1+utility*.1);buddy.damage=data.damage*(1+Game.damage_level*Game.DAMAGE_PER_LEVEL+arena.run.damage_bonus*.3)*factor;buddy.fire_interval=data.interval
 	buddy.parachute_left=maxf(1,3-utility*.3);buddy.model.position.y=5;Visuals.equip_model(buddy.model,buddy.companion_weapon)
 	buddy.parachute=Node3D.new();buddy.model.add_child(buddy.parachute)
 	Visuals.parachute(buddy.parachute,1.7,.95)

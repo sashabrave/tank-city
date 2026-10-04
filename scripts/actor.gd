@@ -152,6 +152,9 @@ func _ready():
 	if player_owned:speed=minf(speed,Balance.speed_cap())
 	model = Visuals.model(BossCatalog.encounter(arena.run_seed,arena.room_index).model if kind=="boss" else EnemyLoadouts.model_for(kind,enemy_weapon),self,Vector3.ZERO,"cat" if player_owned or allied else "dog",player_owned)
 	if player_owned or UnitKinds.is_vehicle(kind):preload("res://scripts/world_lighting.gd").headlights(model,kind!="soldier")
+	elif UnitKinds.is_infantry(kind) and not allied and kind!="sniper" and enemy_weapon not in ["pistol","sniper"]:
+		preload("res://scripts/world_lighting.gd").headlights(model,false)
+		var lamp=preload("res://scripts/enemy_lamp.gd").new();add_child(lamp);lamp.setup(model.get_node("HeadlightRig"),get_instance_id())
 	if kind=="shield":
 		shield_visual=Visuals.named_part(model,"shield_panel_pivot");shield_rest=shield_visual.basis
 		shield_visual.basis=shield_rest*Basis(Vector3.RIGHT,.5)

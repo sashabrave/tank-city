@@ -179,7 +179,7 @@ func gear_rules():
 	while Backpack.free_cells(r)<2 and not r.ammo_bag.is_empty():r.ammo_bag.pop_back()
 	check(Backpack.holster(arena) and str(r.weapon)=="paws","the gun can be put away any time")
 	var level=Game.damage_level;Game.damage_level=0;var bare=Melee.damage(arena);Game.damage_level=4
-	check(absf(Melee.damage(arena)/bare-1.2)<.01,"«Сила» grows the bare-hand damage (+5% per level)")
+	check(absf(Melee.damage(arena)/bare-(1.0+4*Game.DAMAGE_PER_LEVEL))<.01,"«Сила» grows the bare-hand damage (+10% per level)")
 	Game.damage_level=level
 	arena.phase="combat"
 	var foe=arena.spawn_actor("soldier",arena.find_free_near(arena.player.cell+arena.player.facing),false,false,1)

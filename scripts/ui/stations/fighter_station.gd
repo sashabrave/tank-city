@@ -1,7 +1,7 @@
 extends RefCounted
 ## «Казарма» (always available): classes and their abilities, general upgrades,
 ## field supply, backpack and rerolls. Class levels follow the class path (ClassCatalog.TRACK).
-const GENERAL=[["health","Здоровье","+2 HP за уровень"],["damage","Сила","+5% урона оружия и лап за уровень"],["mobility","Скорость","Прирост уменьшается с каждым уровнем"],["pressure","Напор","Шанс, что твой снаряд переживёт столкновение"]]
+const GENERAL=[["health","Здоровье","+3 HP за уровень"],["damage","Сила","+10% урона оружия и лап за уровень"],["mobility","Скорость","Прирост уменьшается с каждым уровнем"],["pressure","Напор","Шанс, что твой снаряд переживёт столкновение"]]
 const SUPPLY=[["heal","Сила лечения","upgrade/heal"],["supplies","Аптечки в передышках","upgrade/supplies"],["luck","Удача","upgrade/luck"]]
 func title()->String:return "Казарма"
 func subtitle()->String:return "Классы, улучшения, снабжение — на все вылазки."
@@ -45,7 +45,12 @@ func detail(tab:String,id:String)->Dictionary:
 			return {"title":Game.CLASSES[id].name,"icon":id,"text":"%s. %s" % [ClassCatalog.info(id).role,Game.CLASSES[id].desc],"lines":ClassCatalog.perk_lines(id),"actions":actions}
 		"general":
 			var row=GENERAL.filter(func(r):return r[0]==id)[0]
-			return {"title":row[1],"icon":"upgrade/"+id,"text":row[2]+".","rows":[["Уровень",Game.level(id),Game.level(id)+1]],"actions":[{"id":"buy","text":"Улучшить · %d ◈" % Game.cost(id),"enabled":Game.credits>=Game.cost(id),"primary":true},{"id":"reset","text":"Сбросить · вернуть %d ◈" % Game.shell_refund(),"enabled":Game.shell_refund()>0}]}
+			var level=Game.level(id);var rows=[["Уровень",level,level+1]]
+			if id=="health":rows.append(["Здоровье","+%d" % (level*Game.HEALTH_PER_LEVEL),"+%d" % ((level+1)*Game.HEALTH_PER_LEVEL)])
+			if id=="damage":rows.append(["Урон оружия","+%d%%" % roundi(level*Game.DAMAGE_PER_LEVEL*100),"+%d%%" % roundi((level+1)*Game.DAMAGE_PER_LEVEL*100)])
+			var next_mark=(level/Game.MILESTONE_EVERY+1)*Game.MILESTONE_EVERY
+			var milestone=Texts.render("Каждые %d уровней — +1 переброс карточек на вылазку. Следующая веха — ур. %d") % [Game.MILESTONE_EVERY,next_mark]
+			return {"title":row[1],"icon":"upgrade/"+id,"text":row[2]+". "+milestone+".","rows":rows,"actions":[{"id":"buy","text":"Улучшить · %d ◈" % Game.cost(id),"enabled":Game.credits>=Game.cost(id),"primary":true},{"id":"reset","text":"Сбросить · вернуть %d ◈" % Game.shell_refund(),"enabled":Game.shell_refund()>0}]}
 		"supply":
 			var row=SUPPLY.filter(func(r):return r[0]==id)[0];var unlocked=Game.branch_unlocked(id);var level=Game.level(id);var cap=Game.upgrade_cap(id)
 			var action={"id":"buy","text":("Максимум" if level>=cap else "Улучшить · %d ◈" % Game.cost(id)) if unlocked else "Открыть · %d ◈" % Game.UNLOCK_COSTS[id],"enabled":(level<cap and Game.credits>=Game.cost(id)) if unlocked else Game.credits>=Game.UNLOCK_COSTS[id],"primary":true}

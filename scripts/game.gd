@@ -601,7 +601,16 @@ func set_all_recipes(unlocked:bool):
 	if selected_weapon not in weapon_unlocks:selected_weapon="pistol"
 	save_progress()
 
-func health_upgrade_bonus()->int:return health_level*2
+func health_upgrade_bonus()->int:return health_level*HEALTH_PER_LEVEL
+## Hub upgrades felt too small (author, 4 Oct 2026): «Сила» +10% weapon damage per level (was 5%), health +3
+## (was 2), and every 5 levels of a general branch is a milestone: +1 card reroll per sortie.
+const DAMAGE_PER_LEVEL=.10
+const HEALTH_PER_LEVEL=3
+const MILESTONE_EVERY=5
+func branch_milestones()->int:
+	var total=0
+	for branch in ["health","damage","mobility","pressure"]:total+=level(branch)/MILESTONE_EVERY
+	return total
 
 func cost(branch:String)->int:return nice_price(ceili(raw_cost(branch)*1.2))
 ## Permanent upgrades are limited by price and fixed caps from economy.tres; there is no base level gate.
