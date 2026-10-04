@@ -6,8 +6,6 @@ extends Node3D
 ## Several items at once still drop as a sack that is picked up by walking over it.
 const REACH:=1.15
 var arena
-## The room floor this item lies on (scripts/room_floor.gd, T-202); null — the battle field.
-var ground=null
 var pickup:Dictionary={}
 var chip:PanelContainer
 var use_key
@@ -46,17 +44,14 @@ func refresh_card():
 	column.add_child(card);column.move_child(card,0)
 	Texts.set_text(use_text,{"weapon":"Взять в руки","ammo":"Зарядить"}.get(kind(),"Подобрать"))
 
-## The hero who can pick it up: the soldier on the field, or the room's walking hero.
+## The hero who can pick it up: the soldier on the field (a battle or a room between fields — one field engine).
 func hero()->Node3D:
-	if ground!=null:return ground.hero() if is_instance_valid(ground) else null
 	return arena.room.player if is_instance_valid(arena) else null
 static func flat(a:Vector3,b:Vector3)->float:return Vector2(a.x-b.x,a.z-b.z).length()
 func near()->bool:
 	var player=hero()
 	if not is_instance_valid(player):return false
-	if ground!=null:
-		if not ground.can_pick():return false
-	elif not (player.kind=="soldier" and not player.dead and arena.phase in ["combat","countdown"]):return false
+	if not (player.kind=="soldier" and not player.dead and arena.phase in ["combat","countdown"]):return false
 	return flat(player.global_position,global_position)<REACH and nearest()
 ## A dropped item's card is open: the room's own E (mechanic, crate, exit) waits (T-202).
 static func engaged(node:Node)->bool:
@@ -109,12 +104,9 @@ func stash():
 	if Backpack.full(arena.run):arena.toast(Texts.render("Рюкзак полон"));Game.sound("ui_denied",arena);return
 	if Backpack.pick_sack(arena,pickup.content):Game.sound(GearCell.click_for(kind()),arena);remove()
 func remove():
-	if ground!=null:ground.take_away(pickup);return
 	arena.room.pickups.erase(pickup);preload("res://scripts/battle_stage.gd").vanish(pickup.node)
 ## The item swaps with what was in hand: the old one now lies here.
 func replace(content:Dictionary):
 	content["weapons"]=content.get("weapons",[]).filter(func(w):return LootCatalog.is_gun(str(w.get("id",""))))
-	if ground!=null:
-		var spot=pickup.node.position;remove();ground.place(content,spot);return
 	var at=arena.grid_pos(pickup.node.position)
 	remove();arena.reward.place_sack(at,content)

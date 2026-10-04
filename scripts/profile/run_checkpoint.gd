@@ -18,7 +18,10 @@ static func capture(arena,index:int,mode:String,choices:Dictionary)->Dictionary:
 	data.abilities.levels[arena.abilities.selected]=arena.abilities.level.duplicate()
 	data.hq={"modules":arena.headquarters.modules.duplicate(),"levels":arena.headquarters.levels.duplicate(),"basic_hp":arena.headquarters.basic_hp}
 	var p=arena.player
-	if is_instance_valid(p):data.hero={"kind":p.kind,"hp":p.hp,"salvaged":p.salvaged,"origin":p.vehicle_origin,"zone":p.vehicle_zone}
+	# After an upgrade room the field's hero is the room's walker; the vehicle he brought waits for the next field.
+	var kept:Dictionary=arena.service.carried if arena.get("service")!=null else {}
+	if not kept.is_empty():data.hero=kept.duplicate(true)
+	elif is_instance_valid(p):data.hero={"kind":p.kind,"hp":p.hp,"salvaged":p.salvaged,"origin":p.vehicle_origin,"zone":p.vehicle_zone}
 	elif not arena.resume_checkpoint.is_empty():data.hero=arena.resume_checkpoint.get("hero",{}).duplicate(true)
 	return data
 static func integer_keys(source:Dictionary)->Dictionary:

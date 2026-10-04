@@ -251,16 +251,14 @@ func gun_checks():
 	arena.player.apply_weapon()
 	check(is_equal_approx(arena.player.damage,battle.damage),"the battle hero's damage is Gun.stats")
 	check(Gun.stats(null,"smg").burst==3 and Gun.stats(null,"grenade_launcher").lob and Gun.stats(null,"rpg").blast>0 and not Gun.stats(null,"rpg").lob,"Gun.stats carries bursts, lob and blast")
-	# A room between fields keeps the battle arena: its gun is the run's, with the run's stats.
-	var room_script=GDScript.new();room_script.source_code="extends Node3D\nvar arena\nvar modal=null\n";room_script.reload()
-	var room=room_script.new();room.arena=arena;add_child(room)
-	var combat=preload("res://scripts/room_combat.gd").new();combat.room=room;combat.avatar=Node3D.new();room.add_child(combat);room.add_child(combat.avatar)
-	run.weapon="shotgun";run.weapon_stats={"damage":.2}
-	check(combat.weapon_id()=="shotgun" and Gun.run_of(combat)==arena,"the room shoots the run's gun")
-	check(is_equal_approx(Gun.stats(Gun.run_of(combat)).damage,CombatStats.weapon(arena,"shotgun").damage),"the room uses the run's gun stats (crate rolls too)")
-	# Practice fire: every pellet flies into the room field.
-	combat.facing=Vector2i.UP
-	Gun.fire(combat,combat.avatar)
-	check(combat.projectiles.size()==int(Game.LOOT.WEAPONS.shotgun.pellets),"room volley: every pellet flies (%d)" % combat.projectiles.size())
-	room.queue_free();arena.queue_free();await get_tree().process_frame
+	# A room between fields is the same arena (one field engine): the hero there is the arena's soldier with the
+	# run's gun and the run's stats, and a volley is the battle's volley.
+	var room=load("res://scripts/service_room.gd").new();room.branch="vehicle";arena.begin_service(2,room)
+	run.weapon="shotgun";run.weapon_stats={"damage":.2};RunUpgrades.refresh_player(arena)
+	check(room.avatar==arena.player and Gun.weapon_id(arena)=="shotgun" and Gun.is_battle(arena),"the room shoots the run's gun on the arena")
+	check(is_equal_approx(arena.player.damage,CombatStats.weapon(arena,"shotgun").damage) and is_equal_approx(arena.player.damage,Gun.stats(arena).damage),"the room uses the run's gun stats (crate rolls too)")
+	arena.player.facing=Vector2i.UP;var flying=arena.projectiles.size()
+	arena.fire_weapon(arena.player)
+	check(arena.projectiles.size()-flying==int(Game.LOOT.WEAPONS.shotgun.pellets),"room volley: every pellet flies (%d)" % (arena.projectiles.size()-flying))
+	arena.queue_free();await get_tree().process_frame
 	Game.reset_upgrades();Campaign.configure(1)

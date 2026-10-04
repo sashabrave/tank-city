@@ -53,11 +53,12 @@ func run():
 	arena.hud._show_upgrades_now();await get_tree().create_timer(1.2).timeout;await shot("upgrade_cards")
 	await clear()
 	# Service rooms: the field mechanic and the merchant (dusk light of the rooms).
-	arena=arena_scene(4);await get_tree().create_timer(.8).timeout;remove_child(arena);arena.auto_pause_enabled=false
+	# One field engine: the rooms are the run arena in service mode with the room as its playground.
 	for branch in ["vehicle","merchant"]:
+		arena=arena_scene(4);await get_tree().create_timer(.8).timeout
 		var room=load("res://scripts/merchant_room.gd" if branch=="merchant" else "res://scripts/service_room.gd").new()
 		if branch!="merchant":room.branch=branch
-		room.arena=arena;room.index=2;add_child(room)
+		arena.begin_service(2,room)
 		await get_tree().create_timer(1.4).timeout;await shot("room_"+("mechanic" if branch=="vehicle" else "merchant"))
 		await clear()
 	# World boss, golden light.

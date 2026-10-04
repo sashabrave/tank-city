@@ -46,6 +46,8 @@ static func allowed(entry:Dictionary)->Array:
 ## Weather of the context's current room, or "" outside battle.
 static func pick(context:Node)->String:
 	if context==null or not context.has_method("room_palette") or not "room_index" in context:return ""
+	# Rooms between fields (the arena in service mode) stay in fair weather.
+	if context.get("cozy_light")==true:return ""
 	return for_room(context.run_seed,int(context.room_index),context.run.route_choices if "run" in context and context.run else {})
 ## Weather of room `index` of a run (the route map shows the same weather the battle will have).
 static func for_room(run_seed:int,index:int,choices:Dictionary={})->String:

@@ -8,6 +8,13 @@ func check(value:bool,message:String):
 	if value:print("PASS ",message)
 	else:errors+=1;push_error("FAIL: "+message)
 func _ready():call_deferred("run")
+## One field engine: an upgrade room is the run's arena in service mode with the room as its playground.
+func open_room(arena,branch:String,index:int):
+	var room=load("res://scripts/service_room.gd").new();room.branch=branch
+	arena.begin_service(index,room);return room
+func ground(main):
+	var node=main.current.get("playground") if is_instance_valid(main.current) else null
+	return node if node!=null and is_instance_valid(node) else null
 func run():
 	Game.save_enabled=false;Settings.persistence_enabled=false;Game.sound_enabled=false;Game.reset_upgrades()
 	Engine.set_meta("hub_calls_off",true)
@@ -20,14 +27,13 @@ func run():
 	check(texts.any(func(t):return str(t).to_lower()=="тайник не открыт"),"stash departure says the stash is still closed")
 	check(arena.hud.modal.find_children("*","Button",true,false).any(func(b):return b.text=="Вернуться к тайнику"),"stash departure offers to go back")
 	arena.hud.close_modal();arena.room.mode="battle"
-	remove_child(arena)
 	# T-215: the depot is the service room with branch headquarters; without HQ technologies it refuels.
-	var room=load("res://scripts/service_room.gd").new();room.arena=arena;room.branch="headquarters";room.index=2;add_child(room)
+	var room=open_room(arena,"headquarters",2)
 	await get_tree().process_frame
 	check(room.modal==null,"depot: no cards before walking to the HQ")
 	if room.offers.is_empty() or room.supplies:
 		room.supplies=true;room.offers=room.DEPOT_SUPPLIES.duplicate(true)
-	room.avatar.position=Vector3(0,0,0);room.interact();await get_tree().process_frame
+	room.place_hero(Vector3(0,0,0));room.interact();await get_tree().process_frame
 	check(is_instance_valid(room.modal),"depot: E at the HQ opens the cards")
 	# T-217: «Отказаться» asks first; «stay» keeps the choice open.
 	room.ask_skip();await get_tree().process_frame
@@ -41,10 +47,9 @@ func run():
 		check(arena.headquarters.basic_hp==hp+1 and room.claimed,"depot supply «Ремонт штаба» applies")
 	else:
 		room.claim(0);check(room.claimed,"depot HQ card claimed")
-	room.queue_free()
-	var second=load("res://scripts/service_room.gd").new();second.arena=arena;second.branch="vehicle";second.index=3;add_child(second)
+	var second=open_room(arena,"vehicle",3)
 	await get_tree().process_frame
-	second.avatar.position=Vector3(0,0,0);second.interact();await get_tree().process_frame
+	second.place_hero(Vector3(0,0,0));second.interact();await get_tree().process_frame
 	second.ask_skip();await get_tree().process_frame
 	second.modal.get_node("SkipConfirm").close(true);await get_tree().process_frame
 	check(second.claimed and second.dressing.open,"«Уйти без улучшения» opens the exit")
@@ -70,7 +75,7 @@ func run():
 	# T-226: green arrow to the exit once the upgrade is taken; yellow over the station before.
 	await get_tree().physics_frame;await get_tree().physics_frame
 	check(second.guide.visible and second.guide.kind=="ready" and absf(second.guide.position.x-float(second.dressing.EXIT_CELL.x))<.5,"T-226: green arrow over the exit after the choice")
-	var third=load("res://scripts/service_room.gd").new();third.arena=arena;third.branch="ability";third.index=3;add_child(third)
+	var third=open_room(arena,"ability",3)
 	await get_tree().physics_frame;await get_tree().physics_frame
 	check(third.guide.visible and third.guide.kind=="goal" and third.guide.position==Vector3(0,0,-1),"T-226: yellow arrow over the instructor before the choice")
 	# T-233: the weapon crate window — three cards with bars against the gun in hand; T-232: it stays the room's
@@ -80,7 +85,7 @@ func run():
 	crate.offers=[{"id":"pistol","rarity":2,"stats":{"damage":.15,"fire":.1},"price":40,"sold":false},{"id":"pistol","rarity":0,"stats":{"damage":0.0,"fire":0.0},"price":40,"sold":false},{"id":"rifle","rarity":1,"stats":{"damage":.06,"fire":.05},"price":70,"sold":false}]
 	crate.refresh_prompt()
 	check(crate.prompt.caption.contains("40"),"crate prompt shows the cheapest price")
-	third.avatar.position=RoomLayout.WEAPON_CRATE+Vector3(.9,0,0);third.interact();await get_tree().process_frame
+	third.place_hero(RoomLayout.WEAPON_CRATE+Vector3(.9,0,0));third.interact();await get_tree().process_frame
 	var window=third.modal
 	check(is_instance_valid(window) and window.name=="WeaponLockerMenu","E at the crate opens its window")
 	if is_instance_valid(window):
@@ -96,8 +101,7 @@ func run():
 		await get_tree().process_frame;await get_tree().process_frame
 		check(is_instance_valid(third.modal) and third.modal==window and crate.offers[0].sold,"after a purchase the same window stays open")
 		check(not crate.prompt.panel.visible,"T-232: still no E prompt after the purchase")
-	third.queue_free()
-	second.queue_free();arena.queue_free()
+	arena.queue_free()
 	await get_tree().process_frame
 	# T-206 / T-219 in the Barracks.
 	var hub=load("res://scenes/hub.tscn").instantiate();add_child(hub);await get_tree().create_timer(1.0).timeout
@@ -135,17 +139,17 @@ func run():
 	for branch in special:
 		var node=special[branch]
 		main.test_jump(int(node.stage),false,str(node.id));await get_tree().process_frame
-		check(main.current.get_script()==preload("res://scripts/service_room.gd") and main.current.branch==branch,"dev jump: %s node opens its room (the captured post too)" % branch)
+		check(ground(main)!=null and ground(main).get_script()==preload("res://scripts/service_room.gd") and ground(main).branch==branch and main.current==main.run_arena,"dev jump: %s node opens its room (the captured post too)" % branch)
 		if branch=="legend":
-			main.current.avatar.position=Vector3(0,0,-.2);main.current.interact();await get_tree().process_frame
-			var post=main.current.root.get_children().filter(func(c):return c.get_script()==preload("res://scripts/legend_stop.gd"))
+			ground(main).place_hero(Vector3(0,0,-.2));ground(main).interact();await get_tree().process_frame
+			var post=ground(main).root.get_children().filter(func(c):return c.get_script()==preload("res://scripts/legend_stop.gd"))
 			check(not post.is_empty(),"captured post: E at the safe opens the legendary cards")
 			if not post.is_empty():post[0].finish();await get_tree().process_frame
-			check(main.current.claimed and main.current.dressing.open,"captured post: after the choice the exit opens")
+			check(ground(main).claimed and ground(main).dressing.open,"captured post: after the choice the exit opens")
 	var stop=Campaign.SERVICES[0];var stop_branch=Campaign.service_options(Game.visual_run_seed,stop)[0]
 	main.test_jump_service(stop,false,stop_branch);await get_tree().process_frame
 	var expected=preload("res://scripts/merchant_room.gd") if stop_branch=="merchant" else preload("res://scripts/service_room.gd")
-	check(main.current.get_script()==expected and main.current.index==stop,"dev jump: the stop between stages opens its room")
+	check(ground(main)!=null and ground(main).get_script()==expected and ground(main).index==stop,"dev jump: the stop between stages opens its room")
 	var route=load("res://scripts/route_map.gd").new();route.wave_seed=42;add_child(route);await get_tree().process_frame
 	var events=[];route.dev_service_requested.connect(func(stage,progress,branch):events.append([stage,progress,branch]))
 	for i in range(200):

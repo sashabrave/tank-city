@@ -7,9 +7,10 @@
   └─ main.gd — поток экранов
        ├─ hub.gd (хаб-база, станции, постройки)
        ├─ route_map.gd (карта маршрута, выбор точки)
-       ├─ arena.gd (координатор боя) → systems/* + state/*
-       ├─ service_room.gd / merchant_room.gd (комнаты прокачки и торговец, общая раскладка room_layout.gd)
-       ├─ legend_stop.gd («Захваченный КП» поверх карты; депо штаба — service_room.gd, branch "headquarters")
+       ├─ arena.gd (одно поле: координатор боя) → systems/* + state/*
+       │    └─ режим service (systems/service_field.gd) + площадка playground.gd:
+       │         service_room.gd (механик, инструктор, депо, «Захваченный КП» с окном legend_stop.gd)
+       │         merchant_room.gd (торговец); общая раскладка room_layout.gd — guides/02_development/07_one_world.md
        └─ UI-оверлеи: field_tablet (планшет), station_screen, video_call, run_result, loading_screen, loading_veil
 Данные: assets/balance/**/*.tres, data/*.json (changelog, encyclopedia, materials, icon_kit, icon_catalog), data/locales/en.tsv
 ```

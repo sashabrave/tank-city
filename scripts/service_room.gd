@@ -1,10 +1,8 @@
-extends Node3D
-signal completed(index: int)
-signal hub_requested
-var arena
-## Warm, cozy light in every visit (world_lighting.gd COZY_MOMENTS), day/night setting aside.
-var cozy_light:=true
-var index=2
+extends "res://scripts/playground.gd"
+## Upgrade room between fields (mechanic, instructor, HQ depot, captured command post) as a playground on the run's
+## Arena (one field engine, guides/02_development/07_one_world.md): the room's dressing, its main spot, the common
+## RoomLayout spots, the parked vehicle and the exit gate. The hero, shooting, abilities and the drop floor are the
+## arena's. Open with arena.begin_service(index, room) (main.show_service / show_node_service).
 var branch="vehicle"
 var vehicle="buggy"
 ## RoomLayout nodes: {crate, machine, fortune, layout}.
@@ -14,27 +12,20 @@ var vendor:Node3D
 ## Price to take the mechanic's parked vehicle into the next field (T-011).
 const VEHICLE_PRICES={"buggy":60,"apc":110,"tank":180}
 const PARKED=Vector3(2.2,0,-1.2)
-var avatar: Node3D
-var cell=Vector2i(0,3)
-var destination=Vector3(0,0,3)
-var moving=false
-var root: Control
-var dpad: Control
-var interact_button: Button
-var continue_button: Button
-var modal: Control
+var interact_button:Button
+var continue_button:Button
 var claimed=false
 var offers: Array=[]
+## Aid kits on the floor (Game.camp_level of them): the arena's own «heart» pickups.
 var medkits: Array=[]
-var facing=Vector2i.UP
 var dressing
-var walker
 var vehicle_prompt
 ## The mechanic's parked vehicle can still be bought (on foot, nothing bought yet).
 var vehicle_for_sale:=false
 ## Yellow arrow over the station until the upgrade is taken, then green over the exit (T-226).
 var guide:Node3D
-var combat:Node3D
+## The instructor's stands as real practice targets on the field (scripts/systems/service_field.gd spawn_target).
+var targets:Array=[]
 ## The rooms are their route stops seen up close (author, 3 Oct), like the merchant: the stop's parts, bigger and
 ## more detailed, in daylight on a sand floor. Without the model file the old hangar dressing stays.
 const ROOM_MODELS={"vehicle":"res://assets/models/route/mechanic_room.glb","ability":"res://assets/models/route/training_room.glb","headquarters":"res://assets/models/route/workshop_room.glb","legend":"res://assets/models/route/command_post_point.glb"}
@@ -45,11 +36,15 @@ var street=false
 ## The HQ depot on the route is this room with branch "headquarters" (T-215): walk to the HQ, then the cards.
 ## Without HQ technologies it still refuels: base repair, a reroll or a token box (moved from depot_stop.gd).
 const DEPOT_SUPPLIES=[{"id":"repair","title":"Ремонт штаба","detail":"Прочность базы +1 до конца забега","icon":"repair"},{"id":"refuel","title":"Заправка","detail":"Перебросы карточек +1","icon":"reroll"},{"id":"tokens","title":"Ящик жетонов","detail":"Жетоны +4 для торговца","icon":"token"}]
+## Stands of the training yard (training_room.glb): practice targets stand on them.
+const TARGET_STANDS=[Vector3(2.3,0,-1.2),Vector3(3.85,0,-2.85)]
 var supplies=false
+## The main spot (station) and the parked vehicle's bay take their floor cells; in the training yard the near
+## stand is a practice target (an actor, solid by itself) instead of a blocked cell.
+func blocked_floor()->Array:return [Vector2i(0,-1)] if branch=="ability" else [Vector2i(0,-1),Vector2i(2,-1)]
+func exit_open()->bool:return claimed
 func _ready():
-	add_to_group("notification_context")
 	vehicle=current_vehicle()
-	Visuals.setup_world(self,11.4,Vector3.ZERO)
 	street=ResourceLoader.exists(ROOM_MODELS[branch])
 	var positions=[]
 	for x in range(-4,5):
@@ -82,30 +77,16 @@ func _ready():
 		var statue=Visuals.model("soldier",self,Vector3(0,.7,-1));statue.scale=Vector3.ONE*1.5;Visuals.tint_model(statue,Color("738982"))
 	# No standing signs over the station, the vehicle or the machines (T-226): the prompt on approach says what
 	# it is and what it costs; a yellow arrow shows where the upgrade is taken, then a green one the exit.
-	for i in range(Game.camp_level):
-		var kit=Node3D.new();add_child(kit);kit.position=Vector3([-2.4,-.8,.8,2.4][i],0,2)
-		arena.LOOT.visual(kit,"heart");Visuals.label3d(kit,"Аптечка",Vector3(0,1.1,0),Color("f6c5bc"),25);medkits.append(kit)
-	avatar=Visuals.model("soldier",self,destination,"cat",true)
-	walker=preload("res://scripts/room_walker.gd").new(avatar)
-	# One inventory everywhere (T-202): items thrown away here lie on the room floor and can be picked up again.
-	preload("res://scripts/room_floor.gd").attach(self,arena)
-	var canvas=CanvasLayer.new();add_child(canvas);root=Control.new();canvas.add_child(root);root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);root.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	var heading_plate=UiKit.glass(root,Vector2(25,25),Vector2(590,120),Color("242d27ed"));heading_plate.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	UiKit.accent(UiKit.label(root,{"vehicle":"Полевой механик","ability":"Подготовка бойца","headquarters":"Депо штаба","legend":"Захваченный КП"}[branch],Vector2(40,30),Vector2(800,60),32))
-	UiKit.label(root,{"vehicle":"Модификация транспорта","ability":"Модификация способности","headquarters":"Модуль штаба или припасы на вылазку","legend":"Легендарное правило — только здесь"}[branch],Vector2(40,100),Vector2(1000,40),18)
+	continue_button=build_ui({"vehicle":"Полевой механик","ability":"Подготовка бойца","headquarters":"Депо штаба","legend":"Захваченный КП"}[branch],{"vehicle":"Модификация транспорта","ability":"Модификация способности","headquarters":"Модуль штаба или припасы на вылазку","legend":"Легендарное правило — только здесь"}[branch],"В следующий бой →" if Campaign.endless else "На карту →",func():leave())
+	continue_button.disabled=true
 	var size=get_viewport().get_visible_rect().size
-	dpad=load("res://scripts/touch_controls.gd").new();root.add_child(dpad);dpad.apply_movement_layout()
 	interact_button=UiKit.button(root,"Улучшение [E]",Vector2(size.x-330,size.y-170),Vector2(290,60),interact);interact_button.hide()
-	continue_button=UiKit.button(root,"В следующий бой →" if Campaign.endless else "На карту →",Vector2(size.x-330,size.y-90),Vector2(290,60),func():completed.emit(index),true);continue_button.disabled=true
-	UiKit.button(root,"Вернуться в хаб",Vector2(40,165),Vector2(250,48),func():hub_requested.emit())
 	preload("res://scripts/interaction_prompt.gd").attach(self,self,{"vehicle":"Механик · улучшение машины","ability":"Инструктор · улучшение способности","headquarters":"Штаб · модуль или припасы","legend":"Сейф КП · легендарное правило"}[branch],Vector3(0,0,-1),1.8,func():return not claimed)
 	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Выход на карту",Vector3(dressing.EXIT_CELL.x,0,dressing.EXIT_CELL.y),1.3,func():return claimed)
 	if vehicle_for_sale:
 		var vehicle_name=GarageCatalog.VEHICLES.get(vehicle,{}).get("name",vehicle)
 		vehicle_prompt=preload("res://scripts/interaction_prompt.gd").attach(self,self,Texts.render(buy_word())+" %s · %d ◈" % [Texts.render(vehicle_name),VEHICLE_PRICES.get(vehicle,80)],PARKED,1.6,func():return vehicle_for_sale)
 	guide=preload("res://scripts/room_guide_arrow.gd").attach(self)
-	# Shooting and abilities work here like in the hub and in battle (T-158, T-185).
-	combat=preload("res://scripts/room_combat.gd").attach(self,avatar,walker,stand,root)
 	pick_ability()
 	offers=arena.reward.service_offers(branch) if branch!="legend" else []
 	supplies=branch=="headquarters" and offers.is_empty()
@@ -114,46 +95,39 @@ func _ready():
 	# in every upgrade room and at the merchant.
 	spots=RoomLayout.furnish(self,arena,index,false)
 	locker=spots.crate;vendor=spots.machine
+## The hero is on the field: aid kits lie as the field's own «heart» pickups, the instructor's stands take hits.
+func field_ready():
+	for i in range(Game.camp_level):
+		medkits.append(arena.reward.place_supply(Vector3([-2.4,-.8,.8,2.4][i],0,2),"heart"))
+	if branch=="ability":
+		for at in TARGET_STANDS:targets.append(arena.service.spawn_target(at))
 ## The mechanic works on the player's vehicle: the one driven now, the one waiting for the next room, or the starting one.
 func current_vehicle()->String:
-	if is_instance_valid(arena.player) and arena.player.kind in GarageCatalog.VEHICLES:return arena.player.kind
-	if arena.pending_vehicle in GarageCatalog.VEHICLES:return arena.pending_vehicle
-	var saved=str(arena.resume_checkpoint.get("hero",{}).get("kind",""))
-	if saved in GarageCatalog.VEHICLES:return saved
+	var kind=arena.hero_kind()
+	if kind in GarageCatalog.VEHICLES:return kind
 	var start=Game.garage.starting_vehicle()
 	return start if start in GarageCatalog.VEHICLES else "buggy"
-func _physics_process(delta):
-	# Same as the hub: the on-screen pad only for touch play.
-	if is_instance_valid(dpad):dpad.visible=InputScheme.touch()
+func _process(delta):
+	super(delta)
 	update_guide()
-	if not is_instance_valid(modal):collect_medkits()
-	if is_instance_valid(modal):
-		if Input.is_action_just_pressed("pause"):close_cards()
-		return
-	if Input.is_action_just_pressed("pause"):preload("res://scripts/ui/pause_tablet.gd").open(self,Callable(),func():hub_requested.emit());return
-	# The kit model walks only when told (T-045): idle while standing, walk cycle while moving.
-	if "preview_moving" in avatar:avatar.preview_moving=moving;avatar.preview_speed=3.4
-	walker.step(delta,Game.direction(),stand);moving=walker.moving;cell=walker.cell();facing=walker.facing
-	interact_button.disabled=claimed or avatar.position.distance_to(Vector3(0,0,-1))>1.8
-	if Game.wants_interact():interact()
+	if is_instance_valid(avatar):interact_button.disabled=claimed or avatar.position.distance_to(Vector3(0,0,-1))>1.8
 func update_guide():
 	if not is_instance_valid(guide):return
 	if claimed:guide.point(Vector3(dressing.EXIT_CELL.x+.25,0,dressing.EXIT_CELL.y),3.7,"ready")  # over the «Выход» sign
 	else:guide.point(Vector3(0,0,-1),3.3 if branch=="headquarters" else 2.6,"goal")
-## Floor the hero may stand on: the room, minus the bench and the parked vehicle; the exit opens once claimed.
-func stand(p:Vector3)->bool:
-	var c=Vector2i(roundi(p.x),roundi(p.z))
-	if claimed and absf(p.z-dressing.EXIT_CELL.y)<.3 and p.x>=2.75 and p.x<=dressing.EXIT_CELL.x+.01:return true
-	return p.x>=-3.01 and p.x<=3.01 and p.z>=-2.01 and p.z<=4.01 and c not in [Vector2i(0,-1),Vector2i(2,-1)]
-func at_exit()->bool:return claimed and avatar.position.distance_to(Vector3(dressing.EXIT_CELL.x,0,dressing.EXIT_CELL.y))<1.3
+func at_exit()->bool:return claimed and is_instance_valid(avatar) and avatar.position.distance_to(Vector3(dressing.EXIT_CELL.x,0,dressing.EXIT_CELL.y))<1.3
+## Off to the map (or the next battle): the same completion signal as ever, once.
+func leave():
+	if not claimed:return
+	set_process(false);completed.emit(index)
 func interact():
 	if preload("res://scripts/ui/drop_prompt.gd").engaged(self):return
-	if is_instance_valid(modal):return
+	if window_open() or not is_instance_valid(avatar):return
 	# The room spots (weapon crate, vending machine, fortune) work before and after the choice.
 	var spot=RoomLayout.near(spots,avatar)
 	if spot:
-		Game.reset_input();dpad.clear();dpad.enabled=false
-		var done=func():Game.reset_input();dpad.clear();dpad.enabled=true;modal=null
+		Game.reset_input()
+		var done=func():Game.reset_input();modal=null
 		if spot.has_method("use"):spot.use(root,done)
 		else:spot.open(root,done)
 		if "modal" in spot and is_instance_valid(spot.modal):modal=spot.modal
@@ -162,10 +136,10 @@ func interact():
 	if near_vehicle():open_vehicle_offer();return
 	# Leave only from the exit zone (T-083): a stray E elsewhere does nothing.
 	if claimed:
-		if at_exit():completed.emit(index);set_physics_process(false)
+		if at_exit():leave()
 		return
 	if avatar.position.distance_to(Vector3(0,0,-1))>1.8:return
-	Game.reset_input();dpad.clear();dpad.enabled=false
+	Game.reset_input()
 	if branch=="ability":
 		var salute=Visuals.box(avatar,Vector3(.27,.85,-.1),Vector3(.12,.38,.12),Color("a4ad85"));salute.rotation.z=-.8
 		create_tween().tween_interval(.8).finished.connect(salute.queue_free)
@@ -228,7 +202,11 @@ func claim(i: int):
 			"refuel":arena.rerolls_left+=1
 			"tokens":arena.run.tokens+=4
 	else:arena.reward.apply_service_reward(branch,vehicle,index,offers[i])
-	Game.sound("upgrade",self);claimed=true;close_cards();continue_button.disabled=false;interact_button.disabled=true;dressing.set_open(true)
+	Game.sound("upgrade",self);close_cards();open_exit()
+## The choice is made (taken, skipped or the early reward): the gate turns green and its cell opens on the field.
+func open_exit():
+	claimed=true;continue_button.disabled=false;interact_button.disabled=true;dressing.set_open(true)
+	if arena.peaceful():arena.service.unblock(dressing.EXIT_CELL)
 ## Alloy instead of an ability upgrade, while the class has no ability yet.
 func early_reward():
 	var amount=EncounterRules.chest_alloy(arena.room_index,1)
@@ -243,7 +221,7 @@ func early_reward():
 	var coin=UiKit.icon(prize,"alloy",Vector2(w*.5+32,14),Vector2(52,52))
 	var ok=UiKit.button(box,"Ок",Vector2(28,h-28-58),Vector2(w-56,58),func():
 		Game.earn(amount);arena.run.earned+=amount;Game.sound("upgrade",self)
-		claimed=true;close_cards();continue_button.disabled=false;interact_button.disabled=true;dressing.set_open(true),true);ok.name="Ok"
+		close_cards();open_exit(),true);ok.name="Ok"
 	ok.focus_mode=Control.FOCUS_ALL
 	(func():if is_instance_valid(ok) and ok.is_inside_tree():ok.grab_focus()).call_deferred()
 	if UiKit.motion_enabled():
@@ -251,17 +229,7 @@ func early_reward():
 		prize.position.y=60;prize.modulate.a=0
 		var t=prize.create_tween().set_parallel();t.tween_property(prize,"position:y",136.0,.45).set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT).set_delay(.15);t.tween_property(prize,"modulate:a",1.0,.2).set_delay(.15)
 		coin.pivot_offset=coin.size*.5;t.tween_property(coin,"scale",Vector2(-1,1),.18).set_delay(.6);t.chain().tween_property(coin,"scale",Vector2.ONE,.18)
-func close_cards():
-	if is_instance_valid(modal):modal.get_parent().remove_child(modal);modal.queue_free();modal=null
-	Game.reset_input();dpad.clear();dpad.enabled=true
-
-func collect_medkits():
-	if arena.soldier_hp>=arena.soldier_max_hp:return
-	for kit in medkits.duplicate():
-		if avatar.position.distance_to(kit.position)<.6:
-			arena.soldier_hp=minf(arena.soldier_max_hp,arena.soldier_hp+Game.heal_amount()*Game.bonus_power("heart"))
-			if is_instance_valid(arena.player) and arena.player.kind=="soldier":arena.player.hp=arena.soldier_hp;arena.player.refresh_health()
-			medkits.erase(kit);kit.queue_free();Game.sound("pickup",self)
+func close_cards():close_window()
 
 ## «Отказаться» asks first (T-217): the card can only be taken here, so leaving empty-handed is a choice.
 func ask_skip():
@@ -270,33 +238,27 @@ func ask_skip():
 	preload("res://scripts/ui/skip_confirm.gd").open(modal,skip_choice)
 func skip_choice():
 	if claimed:return
-	claimed=true;close_cards();continue_button.disabled=false;interact_button.disabled=true;dressing.set_open(true)
+	close_cards();open_exit()
 
-## The vehicle the hero takes into the next field: the one driven now or one already bought here; "" on foot.
-func owned_vehicle()->String:
-	if arena.pending_vehicle in GarageCatalog.VEHICLES:return str(arena.pending_vehicle)
-	if is_instance_valid(arena.player) and arena.player.kind in GarageCatalog.VEHICLES:return str(arena.player.kind)
-	return ""
+## The vehicle the hero takes into the next field: the one driven before the room or one already bought here; "" on foot.
+func owned_vehicle()->String:return arena.service.vehicle_kind()
 func buy_word()->String:return "Купить и заменить" if owned_vehicle()!="" else "Купить"
 ## The captured post's safe: three legendary cards (or none); either way the post closes and the exit opens.
 func open_legend():
 	var post=preload("res://scripts/legend_stop.gd").new();post.arena=arena;post.index=index;root.add_child(post);modal=post
 	post.done.connect(func():
-		modal=null;claimed=true;continue_button.disabled=false;interact_button.disabled=true;dressing.set_open(true)
-		Game.reset_input();dpad.clear();dpad.enabled=true)
-func near_vehicle()->bool:return branch=="vehicle" and vehicle_for_sale and avatar.position.distance_to(PARKED)<1.6
+		modal=null;open_exit();Game.reset_input())
+func near_vehicle()->bool:return branch=="vehicle" and vehicle_for_sale and is_instance_valid(avatar) and avatar.position.distance_to(PARKED)<1.6
 ## Purchase window (T-119): the vehicle, what it gives, the price; «Купить» or «Отмена»; then a clear
 ## «Техника доставлена» with where it waits.
 func open_vehicle_offer():
 	var price=int(VEHICLE_PRICES.get(vehicle,80));var info=GarageCatalog.VEHICLES.get(vehicle,{})
-	Game.reset_input();dpad.clear();dpad.enabled=false
+	Game.reset_input()
 	modal=Control.new();modal.name="VehicleOffer";root.add_child(modal);modal.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);modal.add_to_group("selection_scope")
 	var shade=ColorRect.new();modal.add_child(shade);shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);shade.color=Color(0,0,0,.5)
 	var size=Vector2(560,300);var panel=UiKit.glass(modal,((root.get_viewport_rect().size-size)*.5).round(),size)
-	var close=func():
-		if is_instance_valid(modal):modal.queue_free()
-		modal=null;Game.reset_input();dpad.clear();dpad.enabled=true
-	var picture=UiKit.icon(panel,vehicle,Vector2(24,24),Vector2(150,110))
+	var close=func():close_window()
+	UiKit.icon(panel,vehicle,Vector2(24,24),Vector2(150,110))
 	UiKit.label(panel,str(info.get("name",vehicle)),Vector2(190,24),Vector2(346,34),24)
 	var owned=owned_vehicle();var replace_note=(Texts.render(" Заменит твою машину: %s.") % Texts.render(str(GarageCatalog.VEHICLES.get(owned,{}).get("name",owned)))) if owned!="" else ""
 	var text=UiKit.label(panel,Texts.render("Техника ждёт на старте следующего поля: садишься в неё сразу. Броня и урон — как у твоей машины в гараже.")+replace_note,Vector2(190,62),Vector2(346,80),14,UiKit.MUTED);text.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART

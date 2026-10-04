@@ -155,25 +155,19 @@ static func unequip(arena,slot:int)->bool:
 	if not item is Dictionary or item.type==Ammo.EMPTY or full(run):return false
 	run.ammo_bag.append(item);run.ammo_slots[slot]=Ammo.empty()
 	refresh(arena);return true
-## Where a dropped item lands (T-202, one inventory everywhere): the battle field with the soldier on it, or the
-## floor of the walk-in room the hero stands in (service rooms, the merchant — scripts/room_floor.gd, group
-## «item_floor»). null on the route map and when no run is on: there a discard destroys the item instead.
+## Where a dropped item lands (T-202, one inventory everywhere): the arena's field with the hero on it — a battle
+## or a room between fields (one field engine: the rooms are the arena in service mode). null on the route map and
+## when no run is on: there a discard destroys the item instead.
 static func floor_of(arena):
 	if not is_instance_valid(arena):return null
 	if arena.get("phase") in ["combat","countdown","paused","upgrade"] and arena.is_inside_tree() and is_instance_valid(arena.room.player):return arena
-	var tree=Engine.get_main_loop() as SceneTree
-	if tree==null:return null
-	for node in tree.get_nodes_in_group("item_floor"):
-		if is_instance_valid(node) and node.is_inside_tree() and node.get("arena")==arena and node.has_method("drop_items"):return node
 	return null
-## Can a drop happen right now: a battle with the soldier on the field, or a walk-in room.
+## Can a drop happen right now: a field (battle or room) with the hero on it.
 static func can_drop(arena)->bool:return floor_of(arena)!=null
 ## Puts a pile of items on the floor at the hero's feet (a sack, or the item itself when it is one).
 static func put_down(arena,content:Dictionary)->bool:
-	var ground=floor_of(arena)
-	if ground==null:return false
-	if ground==arena:arena.reward.place_sack(arena.grid_pos(arena.room.player.position),content)
-	else:ground.drop_items(content)
+	if floor_of(arena)==null:return false
+	arena.reward.place_sack(arena.grid_pos(arena.room.player.position),content)
 	return true
 ## Drops a bag entry (or a loaded ammo slot) as an army sack next to the soldier.
 static func drop(arena,kind:String,index:int)->bool:

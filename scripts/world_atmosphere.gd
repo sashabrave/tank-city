@@ -54,11 +54,14 @@ func apply():
 		haze.material.set_shader_parameter("haze_color",Color(weather.haze).darkened(.6) if night else Color(weather.haze))
 	# Readability first: haze only hints at depth (it washed out the field before).
 	haze.material.set_shader_parameter("amount",(float(style.get("haze_amount",.3))+float(weather.get("haze_add",0.0)))*(.8 if night else 1.0)*.55)
-func battle_clouds(grid_size:int,seed_value:int):
+## No edge clouds (the rooms between fields keep fair weather around them).
+func clear_clouds():
 	for entry in drifters:
 		clouds.erase(entry.node)
 		if is_instance_valid(entry.node):entry.node.queue_free()
 	drifters.clear()
+func battle_clouds(grid_size:int,seed_value:int):
+	clear_clouds()
 	var rng=RandomNumberGenerator.new();rng.seed=hash([seed_value,"edge_clouds"])
 	drift_span=grid_size+44.0
 	for side in [-1.0,1.0]:

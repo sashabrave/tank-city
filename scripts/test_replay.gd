@@ -19,7 +19,7 @@ func _ready():
 	arena.presentation.heading.modulate.a=0;arena.presentation.caption.modulate.a=0
 	arena.replay=self;arena.phase="paused";arena.spawn_queue.clear();next()
 func next():
-	if is_instance_valid(service):service.queue_free();service=null;arena.show();arena.hud.show()
+	if is_instance_valid(service):arena.end_service();service=null
 	if cursor>=events.size():
 		var progress=arena.hud.root.get_node_or_null("ReplayProgress")
 		if progress:progress.queue_free()
@@ -47,7 +47,10 @@ func next():
 func open_service(branch:String,index:int):
 	if branch=="ability" and arena.abilities.slots.is_empty():
 		arena.abilities.slots.append("shield");arena.abilities.select("shield")
-	arena.hud.close_modal();arena.hide();arena.hud.hide()
-	service=load("res://scripts/service_room.gd").new();service.arena=arena;service.branch=branch;service.index=index;main.add_child(service)
-	service.cell=Vector2i(0,0);service.destination=Vector3.ZERO;service.avatar.position=Vector3.ZERO;service.interact()
-	service.completed.connect(func(_index):next());service.hub_requested.connect(func():arena.replay=null;service.queue_free();main.show_hub();queue_free())
+	arena.hud.close_modal()
+	# The room is the arena itself in service mode (one field engine); the replay goes on after it.
+	service=load("res://scripts/merchant_room.gd").new() if branch=="merchant" else load("res://scripts/service_room.gd").new()
+	if branch!="merchant":service.branch=branch
+	arena.begin_service(index,service)
+	service.place_hero(Vector3.ZERO);service.interact()
+	service.completed.connect(func(_index):arena.end_service();service=null;next());service.hub_requested.connect(func():arena.replay=null;main.show_hub();queue_free())

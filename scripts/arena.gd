@@ -248,6 +248,13 @@ var flow=preload("res://scripts/systems/flow_system.gd").new(self)
 ## Run event bus: card effects react to events and adjust live values (see scripts/upgrades/run_effects.gd).
 var effects=preload("res://scripts/upgrades/run_effects.gd").new(self)
 var challenges=preload("res://scripts/systems/challenge_rooms.gd").new(self)
+## Non-combat rooms on this same field (upgrade rooms, merchant): room.mode "service" (scripts/systems/service_field.gd).
+var service=preload("res://scripts/systems/service_field.gd").new(self)
+## The playground standing on the field in service mode (scripts/playground.gd), null in battle.
+var playground:Node3D=null
+## Rooms between fields are lit in warm cozy daylight (world_lighting.gd COZY_MOMENTS).
+var cozy_light:bool:
+	get:return room.mode=="service" and is_instance_valid(playground)
 
 var resume_checkpoint:Dictionary={}
 ## Sandbox (test field from the hub): overrides applied by begin_room; the admin panel sets them.
@@ -312,6 +319,9 @@ func ensure_armed(at_start:=false)->bool:
 	return fixed
 func begin_room(index: int):
 	Game.progression.combat_entered=true
+	playground=null
+	if is_instance_valid(hud):hud.service_mode(false)
+	preload("res://scripts/systems/service_field.gd").frame_camera(camera,camera.size)
 	# The deepest field ever reached opens the demo classes (author, 2026-10-03): Штурмовик at field 3 (first
 	# third of the world), Инженер at field 5 (about two thirds). The sandbox never counts.
 	if not sandbox:Game.progression.event("field_reached",index+1,true)
@@ -331,6 +341,10 @@ func begin_room(index: int):
 		var hero=resume_checkpoint.hero
 		carried_kind=hero.kind;carried_armor=hero.hp;carried_salvaged=hero.salvaged;carried_origin=hero.origin;carried_zone=int(hero.zone)
 	resume_checkpoint={}
+	# Out of an upgrade room: the hero walked there on foot; his vehicle from the field before comes to this one.
+	var kept=service.take_carried()
+	if not kept.is_empty():
+		carried_kind=str(kept.kind);carried_armor=float(kept.hp);carried_salvaged=bool(kept.salvaged);carried_origin=str(kept.origin);carried_zone=int(kept.zone)
 	if pending_vehicle!="":carried_kind=pending_vehicle;carried_armor=0;carried_salvaged=false;carried_origin="owned";pending_vehicle=""
 	# Drop references to the previous room's HQ before freeing it: a boss room builds no label or bar,
 	# and a stale typed reference to a freed node crashes the exported build.
@@ -412,7 +426,22 @@ func park_arriving_vehicle(kind:String,armor:float,salvaged:bool,origin:String,z
 	wreck.salvaged=salvaged;set_meta("arriving_vehicle",wreck)
 ## The HQ stands on the field as a target in every fight except the final boss (T-260, author 4 Oct: the general
 ## fight keeps the HQ like a battle field, his reinforcements go for it).
-func hq_off_field()->bool:return boss_room and Campaign.is_final(room_index)
+func hq_off_field()->bool:return room.mode=="service" or (boss_room and Campaign.is_final(room_index))
+## Rooms between fields (service mode): nothing hurts the hero there.
+func peaceful()->bool:return room.mode=="service"
+## Enters a playground (upgrade room, merchant) on this field: see scripts/systems/service_field.gd.
+func begin_service(index:int,ground:Node3D):
+	ground.index=index
+	service.begin(index,ground)
+## Leaves the room: the playground goes, the hero's vehicle is kept for the next field.
+func end_service():
+	service.finish()
+## The hero's kind for the route map and checkpoints: the carried vehicle after a room, the field's hero otherwise.
+func hero_kind()->String:
+	if pending_vehicle in GarageCatalog.VEHICLES:return str(pending_vehicle)
+	if not service.carried.is_empty():return str(service.carried.kind)
+	if is_instance_valid(player):return str(player.kind)
+	return str(resume_checkpoint.get("hero",{}).get("kind",""))
 
 func world_pos(cell: Vector2i) -> Vector3:
 	var center=(grid_size-1)*.5
@@ -580,6 +609,7 @@ func _unhandled_input(event):
 		pause_battle()
 
 func _physics_process(delta):
+	if room.mode=="service":service.tick(delta);return
 	if phase=="combat" and run!=null:effects.emit("tick",{"delta":delta})
 	if phase == "countdown":
 		var before=ceili(countdown)
@@ -693,6 +723,7 @@ func nearest_wreck():
 	return vehicle.nearest_wreck()
 
 func interact():
+	if room.mode=="service":service.interact();return
 	if phase not in ["combat","countdown"] or not is_instance_valid(player) or player.moving: return
 	var recipe=nearest_recipe()
 	if not recipe.is_empty():open_recipe_draft(recipe);return

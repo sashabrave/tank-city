@@ -31,14 +31,14 @@ func run_test():
 	check(arena.room.room_index==next_room and arena.wave==0 and arena.phase=="countdown" and arena.room.generators.is_empty(),"new room initializes encounter")
 	await get_tree().process_frame
 	check(not is_instance_valid(old_player),"previous player scene released")
-	var service=load("res://scripts/service_room.gd").new();service.arena=arena;service.index=4;service.branch="vehicle";add_child(service);service.set_physics_process(false)
+	var service=load("res://scripts/service_room.gd").new();service.branch="vehicle";arena.begin_service(4,service);service.set_process(false)
 	# The mechanic upgrades the vehicle the hero drives or will get (buggy when none).
 	# The run seed is random here: take the damage card so the check does not depend on the draw.
 	service.offers=[{"id":"damage","tier":0}]+service.offers
 	var kind=service.vehicle;var before=arena.vehicle_mods[kind].damage;service.claim(0);var after=arena.vehicle_mods[kind].damage;service.claim(0)
 	check(after>before and arena.vehicle_mods[kind].damage==after,"service reward remains one-time")
 	check(arena.pending_vehicle==kind,"service delivery staged in run state")
-	service.queue_free();arena.queue_free();await get_tree().process_frame
+	arena.queue_free();await get_tree().process_frame
 	var fresh=load("res://scenes/arena.tscn").instantiate();add_child(fresh);fresh.auto_pause_enabled=false;fresh.set_physics_process(false)
 	check(fresh.damage_bonus==0 and fresh.pending_recipes.is_empty() and fresh.vehicle_mods.apc.damage==0,"new run isolates previous run data")
 	check(Game.damage_level==0 and Game.research_unlocks==profile_research,"run upgrades do not leak into permanent profile")

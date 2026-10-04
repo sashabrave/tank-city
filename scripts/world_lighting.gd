@@ -37,7 +37,10 @@ const COZY_MOMENTS=["golden","sunset","dawn"]
 static func cozy_room(context)->bool:return context!=null and context.get("cozy_light")==true
 static func moment(context:Node,night:bool)->Dictionary:
 	if cozy_room(context):
-		var pick=RandomNumberGenerator.new();pick.seed=hash([Game.visual_run_seed,int(context.get("index") if context.get("index")!=null else 0),"cozy_sun"])
+		# The room's own index: a playground on the arena (one field engine) or a room node itself.
+		var ground=context.get("playground")
+		var at=ground.index if ground!=null and is_instance_valid(ground) else context.get("index")
+		var pick=RandomNumberGenerator.new();pick.seed=hash([Game.visual_run_seed,int(at if at!=null else 0),"cozy_sun"])
 		var cozy:Dictionary=MOMENTS[COZY_MOMENTS[pick.randi_range(0,COZY_MOMENTS.size()-1)]].duplicate()
 		# Warm colours of a low sun; the height itself is lifted by the shared rule in apply() (min_sun).
 		var rise=pick.randf_range(Vector2(cozy.elevation).x,Vector2(cozy.elevation).y)+20.0
@@ -244,7 +247,8 @@ func depth_light(on:bool,night:=false):
 	sun.light_color=sun.light_color.lerp(Color("ffd6a8"),.15);sun.light_energy*=1.06
 	# Light floors (sand, pale concrete) washed out in daylight and read flat: the lighter the floor, the lower
 	# the exposure and fill and the firmer the contrast and sun shadows. Mid and dark biomes stay as they are.
-	if get_parent().has_method("room_palette"):
+	# A room between fields keeps its own sand floor: the field's biome floor does not grade it.
+	if get_parent().has_method("room_palette") and not cozy_room(get_parent()):
 		var lum=Color(get_parent().room_palette().floor).get_luminance()
 		var k=clampf((lum-.56)/.14,0.0,1.0)
 		environment.tonemap_exposure*=1.0-.13*k;environment.ambient_light_energy*=1.0-.18*k

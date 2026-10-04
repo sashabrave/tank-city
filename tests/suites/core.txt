@@ -33,6 +33,7 @@ quests_revision
 daily_run_revision
 sandbox_revision
 author_rooms_revision
+one_field_revision
 # Интерфейс
 esc_windows
 settings_display_revision

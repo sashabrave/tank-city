@@ -112,7 +112,7 @@ func run():
 		main.run_arena.auto_pause_enabled=false;main.run_arena.set_physics_process(false)
 		main.show_map(1);await settle()
 		main.enter_room(1,mechanic[0].id);await settle()
-		main.current.completed.emit(1);await settle()
+		main.run_arena.playground.completed.emit(1);await settle()
 		check(main.current.get_script()==load("res://scripts/route_map.gd") and main.current.needs_service,"after the mechanic the service row comes next")
 	if is_instance_valid(main.run_arena):main.run_arena.free()
 	main.queue_free();await settle()

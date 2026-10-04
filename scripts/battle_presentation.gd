@@ -96,6 +96,13 @@ func _process(delta):
 	var phase=arena.phase;var base=arena.grid_size+5.0
 	heading.visible=phase!="paused";caption.visible=phase!="paused"
 	if phase=="paused":return
+	# A room between fields (service mode): the fixed room frame, no overview swings, no tilt.
+	if arena.peaceful():
+		var cam:Camera3D=arena.camera;var h=cam.h_offset;var v=cam.v_offset
+		preload("res://scripts/systems/service_field.gd").frame_camera(cam,preload("res://scripts/systems/service_field.gd").CAMERA_SIZE)
+		cam.h_offset=h;cam.v_offset=v
+		view=NORMAL.duplicate();focus=Vector3.ZERO;last_phase=phase
+		return
 	var overview=phase in ["upgrade","map","result"] or (phase=="countdown" and arena.countdown>.85)
 	var goal:Dictionary=(OVERVIEW if overview else NORMAL).duplicate()
 	# Between waves the field leans a few degrees toward the cursor or a drag; never in combat.

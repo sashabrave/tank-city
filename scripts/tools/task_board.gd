@@ -78,7 +78,11 @@ static func scene_name()->String:
 	if tree==null or tree.current_scene==null:return ""
 	var scene=tree.current_scene
 	for child in scene.get_children():
-		if child.get_script() and child.get_script().resource_path.get_file() in ["hub.gd","arena.gd","route_map.gd","merchant_room.gd","service_room.gd"]:return child.get_script().resource_path.get_file().get_basename()
+		if child.get_script() and child.get_script().resource_path.get_file() in ["hub.gd","arena.gd","route_map.gd"]:
+			# A room between fields is the arena with a playground on it (one field engine): name the room.
+			var ground=child.get("playground")
+			if ground!=null and is_instance_valid(ground) and ground.get_script():return ground.get_script().resource_path.get_file().get_basename()
+			return child.get_script().resource_path.get_file().get_basename()
 	return scene.name
 ## Tasks that need the author: "decide" — open questions; "check" — work waiting in «Проверить».
 static func for_me(kind:String)->Array:

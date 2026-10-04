@@ -13,9 +13,10 @@ func _ready():
 func advance():
 	var next=arena.room_index+1
 	if next in Campaign.SERVICES:
-		var service=load("res://scripts/service_room.gd").new();service.arena=arena;service.index=next;service.branch="vehicle";add_child(service)
-		for kit in service.medkits.duplicate():service.avatar.position=kit.position;service.collect_medkits()
-		service.claim(0);service.queue_free()
+		# The room is the arena itself in service mode; its aid kits are the field's «heart» pickups.
+		var service=load("res://scripts/service_room.gd").new();service.branch="vehicle";arena.begin_service(next,service)
+		for kit in service.medkits.duplicate():service.place_hero(kit.node.position);arena.collect_nearby_pickups(0.0)
+		service.claim(0);arena.end_service()
 	arena.begin_room(next)
 func _physics_process(_delta):
 	if finished:return

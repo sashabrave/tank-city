@@ -39,6 +39,15 @@ func place_pickup(cell:Vector2i,kind:String,fall:=1.1):
 	var chute=parachute(visual,Color(info.color))
 	arena.room.pickups.append({"node":node,"visual":visual,"kind":kind,"land_at":arena.run.elapsed+fall,"chute":chute})
 
+## A bonus already lying on the floor (aid kits of an upgrade room): the same pickup as a field drop, without the
+## parachute and without the field's 25-second lifetime. Returns its pickup entry.
+func place_supply(at:Vector3,kind:String)->Dictionary:
+	var node=Node3D.new();arena.add_child(node);node.position=Vector3(at.x,0,at.z)
+	var visual=arena.LOOT.visual(node,kind);visual.scale=Vector3.ONE*BONUS_MODEL_SCALE;visual.position.y=.45
+	Visuals.ring(node,Color(arena.LOOT.BONUSES[kind].color),.42)
+	var entry={"node":node,"visual":visual,"kind":kind}
+	arena.room.pickups.append(entry)
+	return entry
 ## The one parachute of the game (Visuals.parachute) over a falling bonus.
 ## The visual may be scaled down (BONUS_MODEL_SCALE): the canopy is scaled back so it keeps its size and height.
 func parachute(visual:Node3D,_tint:Color)->Node3D:
@@ -53,8 +62,8 @@ func place_sack(cell:Vector2i,content:Dictionary):
 var look:=RandomNumberGenerator.new()
 ## Dresses a pile of dropped items under `node` and returns its pickup entry {node, visual, kind, content, blocked}.
 ## One item: the item itself with a glow in its rarity colour and the E / C card (author, 2026-10-03); several —
-## an army sack picked up by walking over it. `ground` — a room floor (scripts/room_floor.gd, T-202), null on the field.
-func dress_pile(node:Node3D,content:Dictionary,ground=null)->Dictionary:
+## an army sack picked up by walking over it. The same on a battle field and in a room between fields (T-202).
+func dress_pile(node:Node3D,content:Dictionary)->Dictionary:
 	var visual=Node3D.new();node.add_child(visual)
 	content.erase("supplies")  # aid kits are never backpack items (4 Oct 2026); an old pile drops them silently
 	var items=content.get("recipes",[]).size()+content.get("ammo",[]).size()+content.get("weapons",[]).size()
@@ -62,7 +71,7 @@ func dress_pile(node:Node3D,content:Dictionary,ground=null)->Dictionary:
 	if items==1:
 		var tier=dropped_item(visual,content)
 		# Not picked up by walking over: a small card offers E (use now) and C (into the backpack).
-		card=preload("res://scripts/ui/drop_prompt.gd").new();card.arena=arena;card.ground=ground;node.add_child(card)
+		card=preload("res://scripts/ui/drop_prompt.gd").new();card.arena=arena;node.add_child(card)
 		var glow=Color(LootCatalog.RARITY_COLORS[clampi(tier,0,3)])
 		Visuals.ring(node,glow if tier>0 else Color("cfd3a0"),.38)
 		var light=OmniLight3D.new();light.name="RarityGlow";visual.add_child(light);light.position.y=.25;light.omni_range=1.3;light.light_color=glow;light.light_energy=.6 if tier>0 else .3;light.shadow_enabled=false

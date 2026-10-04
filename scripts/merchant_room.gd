@@ -1,36 +1,24 @@
-extends Node3D
-## Merchant stop: spend run tokens on cards, healing, rerolls or a blueprint at the counter. The room follows the
-## common RoomLayout: weapon crate on the left, a vending machine at the front left, the slot machine on the
-## «Фортуна» spot (scripts/slot_machine.gd). Stock comes from the run's combat RNG.
-signal completed(index: int)
-signal hub_requested
+extends "res://scripts/playground.gd"
+## Merchant stop as a playground on the run's Arena (one field engine, guides/02_development/07_one_world.md): spend
+## run tokens on cards, healing, rerolls or a blueprint at the counter. The room follows the common RoomLayout:
+## weapon crate on the left, a vending machine at the front left, the slot machine on the «Фортуна» spot
+## (scripts/slot_machine.gd). Stock comes from the run's combat RNG. The hero, shooting, abilities and the drop
+## floor are the arena's. Open with arena.begin_service(index, shop) (main.show_service).
 const CARD_PRICES=[3,5,8,12]
-var arena
-## Warm, cozy light in every visit (world_lighting.gd COZY_MOMENTS), day/night setting aside.
-var cozy_light:=true
-var index=2
 var locker:Node3D
 var vendor:Node3D
 ## RoomLayout nodes: {crate, machine, fortune, layout}.
 var spots:Dictionary={}
-var avatar:Node3D
-var cell=Vector2i(0,3)
-var destination=Vector3(0,0,3)
-var moving=false
-var walker
-var facing=Vector2i.UP
-var root:Control
-var dpad:Control
-var modal:Control
 var interact_button:Button
 var stock:Array=[]
 var status_text=""
 var shop_revealed=false
 var guide:Node3D
 const COUNTER=RoomLayout.MAIN
+## The truck and its counter take the back of the floor: the hero walks z = 0…4.
+func floor_back()->int:return 0
+func exit_open()->bool:return true
 func _ready():
-	add_to_group("notification_context")
-	Visuals.setup_world(self,11.4,Vector3.ZERO)
 	var positions=[]
 	for x in range(-4,5):
 		for z in range(-3,5):positions.append(Vector3(x,0,z))
@@ -40,21 +28,9 @@ func _ready():
 	# Cozy surroundings and fixed decorative lights, the same as the upgrade rooms (2026-10-03).
 	preload("res://scripts/location_ambience.gd").room(self,arena,index,4.9)
 	preload("res://scripts/room_lights.gd").build(self,-3.55)
-	avatar=Visuals.model("soldier",self,destination,"cat",true)
-	walker=preload("res://scripts/room_walker.gd").new(avatar)
-	# One inventory everywhere (T-202): items thrown away here lie on the room floor and can be picked up again.
-	preload("res://scripts/room_floor.gd").attach(self,arena)
-	var canvas=CanvasLayer.new();add_child(canvas);root=Control.new();canvas.add_child(root);root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);root.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	# Shooting and abilities like in the hub and in battle (T-185).
-	preload("res://scripts/room_combat.gd").attach(self,avatar,walker,stand,root)
-	var heading=UiKit.glass(root,Vector2(25,25),Vector2(590,120),Color("242d27ed"));heading.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	UiKit.accent(UiKit.label(root,"Торговец",Vector2(40,30),Vector2(800,60),32))
-	UiKit.label(root,"Жетоны с врагов меняются здесь на усиления",Vector2(40,100),Vector2(1000,40),18)
+	build_ui("Торговец","Жетоны с врагов меняются здесь на усиления","Дальше →",func():leave())
 	var size=get_viewport().get_visible_rect().size
-	dpad=load("res://scripts/touch_controls.gd").new();root.add_child(dpad);dpad.apply_movement_layout()
 	interact_button=UiKit.button(root,"Торговать [E]",Vector2(size.x-330,size.y-170),Vector2(290,60),interact);interact_button.hide()
-	UiKit.button(root,"Дальше →",Vector2(size.x-330,size.y-90),Vector2(290,60),func():completed.emit(index),true)
-	UiKit.button(root,"Вернуться в хаб",Vector2(40,165),Vector2(250,48),func():hub_requested.emit())
 	# No sign over the truck (T-226): the prompt says what is sold; a yellow arrow points at the counter until the
 	# shop has been opened once (the merchant has no exit gate — «Дальше» leads on).
 	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Торговец · карточки и припасы за жетоны",COUNTER,1.8,func():return true)
@@ -98,7 +74,8 @@ func roll_stock()->Array:
 		var tier=clampi(int(offer.tier),0,CARD_PRICES.size()-1)
 		result.append({"kind":"card","id":offer.id,"tier":tier,"price":CARD_PRICES[tier],"sold":false})
 	result.append({"kind":"heal","price":3,"sold":false})
-	if arena.room.player!=null and is_instance_valid(arena.room.player) and arena.room.player.kind in GarageCatalog.VEHICLES:
+	# The vehicle the hero brought from the last field waits outside (service_field.carried) and can be repaired.
+	if carried_vehicle()!="":
 		result.append({"kind":"repair","price":3,"sold":false})
 	result.append({"kind":"reroll","price":2,"sold":false})
 	if rng.randf()<.4:
@@ -106,42 +83,35 @@ func roll_stock()->Array:
 		if not recipe.is_empty():result.append({"kind":"blueprint","recipe":recipe,"price":10,"sold":false})
 	return result
 
-const EXIT_CELL=Vector2i(4,1)
 var exit_parts:Dictionary={}
-func stand(p:Vector3)->bool:
-	if absf(p.z-EXIT_CELL.y)<.3 and p.x>=2.75 and p.x<=EXIT_CELL.x+.01:return true
-	return p.x>=-3.01 and p.x<=3.01 and p.z>=-.01 and p.z<=4.01
-func at_exit()->bool:return avatar.position.distance_to(Vector3(EXIT_CELL.x,0,EXIT_CELL.y))<1.3
-func _physics_process(delta):
-	# Same as the hub: the on-screen pad only for touch play.
-	if is_instance_valid(dpad):dpad.visible=InputScheme.touch()
+## The hero's own vehicle from the last field ("" when he came on foot).
+func carried_vehicle()->String:
+	var kind=str(arena.service.carried.get("kind",""))
+	return kind if kind in GarageCatalog.VEHICLES else ""
+func at_exit()->bool:return is_instance_valid(avatar) and avatar.position.distance_to(Vector3(EXIT_CELL.x,0,EXIT_CELL.y))<1.3
+## On to the map: the same completion signal as ever, once.
+func leave():
+	set_process(false);completed.emit(index)
+func _process(delta):
+	super(delta)
 	if is_instance_valid(guide):
 		if shop_revealed:guide.point(Vector3(EXIT_CELL.x+.25,0,EXIT_CELL.y),3.7,"ready")
 		else:guide.point(COUNTER,3.2,"goal")
-	if is_instance_valid(modal):
-		if Input.is_action_just_pressed("pause"):close_shop()
-		return
-	if Input.is_action_just_pressed("pause"):preload("res://scripts/ui/pause_tablet.gd").open(self,Callable(),func():hub_requested.emit());return
-	# The kit model walks only when told (T-045): idle while standing, walk cycle while moving.
-	if "preview_moving" in avatar:avatar.preview_moving=moving;avatar.preview_speed=3.4
-	walker.step(delta,Game.direction(),stand)
-	moving=walker.moving;cell=walker.cell();facing=walker.facing
-	interact_button.disabled=avatar.position.distance_to(COUNTER)>2.2 and RoomLayout.near(spots,avatar)==null
-	if Game.wants_interact():interact()
+	if is_instance_valid(avatar):interact_button.disabled=avatar.position.distance_to(COUNTER)>2.2 and RoomLayout.near(spots,avatar)==null
 func interact():
 	if preload("res://scripts/ui/drop_prompt.gd").engaged(self):return
-	if is_instance_valid(modal):return
+	if window_open() or not is_instance_valid(avatar):return
 	# The common room spots: weapon crate, vending machine, fortune (RoomLayout).
 	var spot=RoomLayout.near(spots,avatar)
 	if spot:use_spot(spot);return
-	if at_exit():completed.emit(index);set_physics_process(false);return
+	if at_exit():leave();return
 	if avatar.position.distance_to(COUNTER)>2.2:return
-	Game.reset_input();dpad.clear();dpad.enabled=false
+	Game.reset_input()
 	open_shop()
 ## Opens a RoomLayout spot with the controls released, and gives them back when it closes.
 func use_spot(spot:Node3D):
-	Game.reset_input();dpad.clear();dpad.enabled=false
-	var done=func():Game.reset_input();dpad.clear();dpad.enabled=true;modal=null
+	Game.reset_input()
+	var done=func():Game.reset_input();modal=null
 	if spot.has_method("use"):spot.use(root,done)
 	else:spot.open(root,done)
 	if "modal" in spot and is_instance_valid(spot.modal):modal=spot.modal
@@ -278,7 +248,7 @@ func describe(entry:Dictionary)->Dictionary:
 func available(entry:Dictionary)->bool:
 	match entry.kind:
 		"heal":return arena.run.soldier_hp<arena.run.soldier_max_hp
-		"repair":return is_instance_valid(arena.room.player) and arena.room.player.hp<arena.room.player.max_hp
+		"repair":return carried_vehicle()!="" and float(arena.service.carried.get("hp",0.0))<arena.service.vehicle_full_armor()
 		"blueprint":return not Backpack.full(arena.run)
 		# An ammo card pushes the loaded ammo into the backpack (audit 2026-10-03): it needs a free cell here.
 		"card":return not (str(entry.get("id","")) in Ammo.TYPES and Backpack.full(arena.run))
@@ -291,7 +261,7 @@ func purchase(i:int)->bool:
 	match entry.kind:
 		"card":RunUpgrades.apply(arena,entry.id,entry.tier);status_text="Куплено: "+UpgradeRegistry.get_def(entry.id).title
 		"heal":heal_full();status_text="Боец вылечен"
-		"repair":arena.room.player.hp=arena.room.player.max_hp;arena.room.player.refresh_health();status_text="Машина отремонтирована"
+		"repair":arena.service.carried.hp=arena.service.vehicle_full_armor();status_text="Машина отремонтирована"
 		"reroll":arena.run.rerolls_left+=1;status_text="Переброс добавлен"
 		"blueprint":arena.run.pending_recipes.append(entry.recipe);status_text="Чертёж в рюкзаке"
 		"slot":status_text=spots.fortune.play() if is_instance_valid(spots.get("fortune")) and spots.fortune.has_method("play") else ""
@@ -305,8 +275,8 @@ func purchase(i:int)->bool:
 func pull_lever()->bool:
 	var machine=spots.get("fortune")
 	if not is_instance_valid(machine) or not machine.has_method("pull"):return false
-	Game.reset_input();dpad.clear();dpad.enabled=false
-	var line=machine.pull(root,func():modal=null;Game.reset_input();dpad.clear();dpad.enabled=true)
+	Game.reset_input()
+	var line=machine.pull(root,func():modal=null;Game.reset_input())
 	if line=="":status_text="Автомату нужно %d жетона" % machine.PRICE;return false
 	status_text=line;modal=machine.modal
 	return true
@@ -315,4 +285,4 @@ func heal_full():
 	if is_instance_valid(arena.room.player) and arena.room.player.kind=="soldier":arena.room.player.hp=arena.run.soldier_hp;arena.room.player.refresh_health()
 func close_shop(restore_controls:bool=true):
 	if is_instance_valid(modal):modal.get_parent().remove_child(modal);modal.queue_free();modal=null
-	if restore_controls:Game.reset_input();dpad.clear();dpad.enabled=true
+	if restore_controls:Game.reset_input()

@@ -90,10 +90,7 @@ func show_map(index: int):
 	current.route_choices=route_choices
 	current.hero_weapon=run_arena.weapon if is_instance_valid(run_arena) else Game.selected_weapon
 	if not is_instance_valid(run_arena) and Game.garage.starting_vehicle()!="":current.hero_kind=Game.garage.starting_vehicle()
-	if is_instance_valid(run_arena):
-		if run_arena.pending_vehicle!="":current.hero_kind=run_arena.pending_vehicle
-		elif is_instance_valid(run_arena.player):current.hero_kind=run_arena.player.kind
-		elif not run_arena.resume_checkpoint.get("hero",{}).is_empty():current.hero_kind=str(run_arena.resume_checkpoint.hero.kind)
+	if is_instance_valid(run_arena) and run_arena.hero_kind()!="":current.hero_kind=run_arena.hero_kind()
 	add_child(current)
 	Game.checkpoint_run(run_arena,index,"map",route_choices)
 	current.dev_requested.connect(test_jump);current.test_requested.connect(test_jump);current.dev_service_requested.connect(test_jump_service);current.route_selected.connect(enter_room);current.hub_requested.connect(show_hub);current.service_requested.connect(show_service)
@@ -125,21 +122,27 @@ func show_service(branch: String,index: int):
 	if not is_instance_valid(run_arena) or run_arena.visited_services.has(index):return
 	if branch=="ability" and run_arena.abilities.slots.is_empty():
 		run_arena.abilities.slots.append("shield");run_arena.abilities.select("shield")
-	clear_current()
-	if branch=="merchant":current=load("res://scripts/merchant_room.gd").new()
-	else:current=load("res://scripts/service_room.gd").new();current.branch=branch
-	current.arena=run_arena;current.index=index;add_child(current)
-	current.hub_requested.connect(show_hub)
-	current.completed.connect(func(completed_index):run_arena.visited_services[completed_index]=branch;show_map(completed_index))
+	var ground=enter_playground(branch,index)
+	ground.completed.connect(func(completed_index):run_arena.visited_services[completed_index]=branch;run_arena.end_service();show_map(completed_index))
 
 ## A service placed on the route as an ordinary node: after it the next stage opens.
 func show_node_service(branch:String,index:int):
 	Game.progression.event("visit_"+branch)
 	# The captured post (branch "legend") and the HQ depot are walk-in rooms like the mechanic's (author, 4 Oct 2026).
 	# The HQ depot (branch "headquarters") is a walk-in room like the mechanic's (T-215), not cards over the map.
-	clear_current();current=load("res://scripts/service_room.gd").new();current.arena=run_arena;current.index=index;current.branch=branch;add_child(current)
-	current.hub_requested.connect(show_hub)
-	current.completed.connect(func(_completed):run_arena.run.route_choices=route_choices;show_map(index+1))
+	var ground=enter_playground(branch,index)
+	ground.completed.connect(func(_completed):run_arena.run.route_choices=route_choices;run_arena.end_service();show_map(index+1))
+
+## One field engine (guides/02_development/07_one_world.md): a room between fields is the run's own arena in
+## service mode with the room as its playground — the same hero, gun, abilities, HUD and inventory as in battle.
+func enter_playground(branch:String,index:int)->Node3D:
+	clear_current()
+	var ground:Node3D=load("res://scripts/merchant_room.gd").new() if branch=="merchant" else load("res://scripts/service_room.gd").new()
+	if branch!="merchant":ground.branch=branch
+	current=run_arena;add_child(run_arena)
+	run_arena.begin_service(index,ground)
+	ground.hub_requested.connect(show_hub)
+	return ground
 
 ## Dev map jump to any route node (battle, challenge, mechanic, depot, captured post). Service nodes enter through
 ## show_node_service, exactly like a normal entry from the map.

@@ -45,20 +45,20 @@ func run():
 	main.show_map(1);await settle();main.show_map(2);await settle()
 	# from take_vehicle_revision: on foot at the mechanic, buying the parked vehicle costs alloy and waits for the next field.
 	arena.pending_vehicle="";main.show_service("vehicle",2);await get_tree().create_timer(.5).timeout
-	var garage_room=main.current;Game.credits=500
+	var garage_room=main.run_arena.playground;Game.credits=500
 	check(garage_room.vehicle_for_sale and garage_room.vehicle_prompt!=null,"on foot the parked vehicle is offered")
 	var vehicle_price=int(garage_room.VEHICLE_PRICES.get(garage_room.vehicle,80))
-	garage_room.avatar.position=garage_room.PARKED+Vector3(-.8,0,.6);garage_room.interact();await settle()
+	garage_room.place_hero(garage_room.PARKED+Vector3(-.2,0,.95));garage_room.interact();await settle()
 	for b in garage_room.modal.find_children("*","Button",true,false):
 		if b.text.contains("Купить"):b.pressed.emit()
 	await settle()
 	check(arena.pending_vehicle==garage_room.vehicle and Game.credits==500-vehicle_price,"taking the vehicle costs alloy and waits at the next field")
 	arena.pending_vehicle=""
 	main.show_service("merchant",2);await settle()
-	var shop=main.current
+	var shop=main.run_arena.playground
 	# from room_layout_revision: the common room layout keeps crate, machine and «Фортуна» in place, off the floor.
 	check(shop.spots.has("crate") and is_instance_valid(shop.spots.crate) and shop.spots.crate.position==RoomLayout.WEAPON_CRATE and is_instance_valid(shop.spots.machine) and shop.spots.machine.position==RoomLayout.MACHINE and is_instance_valid(shop.spots.fortune) and shop.spots.fortune.position==RoomLayout.FORTUNE,"merchant: crate, machine and fortune spot in their places")
-	check(not shop.stand(RoomLayout.WEAPON_CRATE) and not shop.stand(RoomLayout.FORTUNE),"merchant: spots are outside the walking floor")
+	check(arena.walls.has(arena.grid_pos(RoomLayout.WEAPON_CRATE)) and arena.walls.has(arena.grid_pos(RoomLayout.FORTUNE)) and not arena.can_stand(RoomLayout.WEAPON_CRATE,arena.player),"merchant: spots stand on solid cells of the field")
 	# from room_layout_revision: the weapon crate sells three rolled guns into the backpack for alloy, each once.
 	var crate=shop.spots.crate
 	check(crate.offers.size()==3 and crate.offers.all(func(o):return o.id in Game.LOOT.WEAPONS and o.stats.has("damage")),"three rolled guns with stats")
@@ -75,8 +75,8 @@ func run():
 	# The room hero holds and fires the run's gun, not the hub's choice (2026-10-03).
 	var room_gun="shotgun" if Game.selected_weapon!="shotgun" else "smg"
 	arena.run.weapon=room_gun;await get_tree().physics_frame;await get_tree().physics_frame
-	var room_combat=shop.get_node("RoomCombat")
-	check(room_combat.weapon_id()==room_gun and shop.avatar.weapon_id==room_gun,"the room hero holds the run's gun")
+	RunUpgrades.refresh_player(arena)
+	check(shop.avatar==arena.player and Gun.weapon_id(arena)==room_gun and arena.player.model.weapon_id==room_gun,"the room hero is the arena's hero and holds the run's gun")
 	arena.run.weapon=Game.selected_weapon if Game.selected_weapon in Game.LOOT.WEAPONS else "pistol"
 	check(shop.stock.any(func(e):return e.kind=="card") and shop.find_child("SlotMachine",true,false)!=null,"stock has cards; the slot machine stands apart")
 	var heal=shop.stock.map(func(e):return e.kind).find("heal")
@@ -85,7 +85,7 @@ func run():
 	var card=shop.stock.map(func(e):return e.kind).find("card");var history=arena.run.upgrade_history.size();var price=shop.stock[card].price
 	check(shop.purchase(card) and arena.run.upgrade_history.size()==history+1 and arena.run.tokens==27-price,"card bought and applied")
 	var before=arena.run.tokens
-	shop.avatar.position=RoomLayout.FORTUNE-Vector3(.8,0,0);shop.interact();await settle()  # the slot machine stands on the «Фортуна» spot
+	shop.place_hero(RoomLayout.FORTUNE-Vector3(1.15,0,0));shop.interact();await settle()  # the slot machine stands on the «Фортуна» spot
 	var reels=shop.find_child("SlotWindow",true,false)
 	check(reels!=null and reels.find_child("Reel2",true,false)!=null,"E at the machine opens the reel window at once")
 	var strip=reels.reels[0].strip.position.y
@@ -99,8 +99,8 @@ func run():
 	check(arena.run.tokens-before in [-4,0,4],"each pull costs 2 or pays back double")
 	arena.run.tokens=0
 	check(not shop.pull_lever(),"no tokens, no play")
-	shop.avatar.position=Vector3(0,0,3)
-	shop.interact_button.disabled=false;shop.avatar.position=shop.COUNTER+Vector3(0,0,1);shop.interact();await settle()
+	shop.place_hero(Vector3(0,0,3))
+	shop.interact_button.disabled=false;shop.place_hero(shop.COUNTER+Vector3(0,0,1));shop.interact();await settle()
 	# The window itself, not the «MerchantShop» mesh inside the truck model (it matched this check before T-264).
 	check(is_instance_valid(shop.modal) and shop.modal.name=="MerchantShop","shop window opens at the counter")
 	# T-264: offers are big cards with a buy button each; «Перебросить» spends a run reroll on the unsold cards.

@@ -227,19 +227,22 @@ func gear_rules():
 	check(Backpack.destroy(arena,"hand") and str(r.weapon)=="paws","destroy: the gun in hand leaves the paws")
 	check(not Backpack.destroy(arena,"hand"),"destroy: the paws are not an item")
 	r.weapon=gun_before;Ammo.ensure(r,gun_before);r.ammo_slots[0]=Ammo.standard()
-	# T-202: a walk-in room has a floor like the field: a throw lands there, a sack comes back by walking over it.
-	var room=FakeRoom.new();add_child(room);room.avatar=Node3D.new();room.add_child(room.avatar)
-	var ground=preload("res://scripts/room_floor.gd").attach(room,arena)
-	check(Backpack.floor_of(arena)==ground and Backpack.can_drop(arena),"outside battle the room floor takes thrown items")
+	# T-202 + one field engine: a room between fields is the arena's own field in service mode — a throw lands
+	# there exactly like in battle, its E / C card answers the arena's hero, a sack comes back by walking over it.
+	var room=load("res://scripts/merchant_room.gd").new();arena.begin_service(2,room)
+	check(Backpack.floor_of(arena)==arena and Backpack.can_drop(arena),"in a room between fields the arena's floor takes thrown items")
 	r.ammo_bag.clear();r.ammo_bag.append(Ammo.roll("burn",1,3));r.ammo_bag.append(Ammo.roll("stun",1,3))
-	check(Backpack.drop(arena,"ammo",0) and ground.piles.size()==1 and ground.piles[0].kind=="item","a thrown item lies on the room floor as itself")
-	var prompt=ground.piles[0].node.get_children().filter(func(n):return n.get_script()==preload("res://scripts/ui/drop_prompt.gd"))
-	check(prompt.size()==1 and prompt[0].ground==ground,"its E / C card works with the room hero")
-	prompt[0].stash();check(ground.piles.is_empty() and r.ammo_bag.size()==2,"C puts it back into the backpack")
-	ground.drop_items({"recipes":[],"ammo":r.ammo_bag.duplicate()});r.ammo_bag.clear()
-	room.avatar.position=Vector3(2,0,0);ground._process(0.0);room.avatar.position=ground.piles[0].node.position;ground._process(0.0)
-	check(ground.piles.is_empty() and r.ammo_bag.size()==2,"a sack on the room floor comes back when the hero walks over it")
-	room.free();r.ammo_bag.clear()
+	var piles=arena.room.pickups.size()
+	check(Backpack.drop(arena,"ammo",0) and arena.room.pickups.size()==piles+1 and arena.room.pickups.back().kind=="item","a thrown item lies on the room floor as itself")
+	var pile=arena.room.pickups.back()
+	var prompt=pile.node.get_children().filter(func(n):return n.get_script()==preload("res://scripts/ui/drop_prompt.gd"))
+	check(prompt.size()==1 and prompt[0].hero()==arena.player and arena.player==room.avatar,"its E / C card works with the room hero (the arena's hero)")
+	prompt[0].stash();check(not pile in arena.room.pickups and r.ammo_bag.size()==2,"C puts it back into the backpack")
+	arena.reward.place_sack(arena.grid_pos(arena.player.position)+Vector2i(1,0),{"recipes":[],"ammo":r.ammo_bag.duplicate()});r.ammo_bag.clear()
+	var sack=arena.room.pickups.back();sack.blocked=false
+	room.place_hero(sack.node.position);arena.collect_nearby_pickups(0.0)
+	check(not sack in arena.room.pickups and r.ammo_bag.size()==2,"a sack on the room floor comes back when the hero walks over it")
+	arena.end_service();arena.phase="result";r.ammo_bag.clear()
 	check(not Backpack.can_drop(arena),"no floor (route map): nothing to drop onto — the gear page destroys after a confirmation")
 	# Aid kits (4 Oct 2026): never in the backpack — a heart heals on pickup; at full health it stays on the ground.
 	arena.phase="combat"
@@ -336,7 +339,3 @@ func ammo_rules():
 	check(Ammo.shield_pierce(ap_low)>=.25 and Ammo.shield_pierce(ap_high)>Ammo.shield_pierce(ap_low) and Ammo.shield_pierce(Ammo.roll("burn",0,1))==0.0,"AP shield chance grows with rarity, other ammo has none")
 	check(Ammo.describe(ap_high).contains("%d%%" % roundi(Ammo.shield_pierce(ap_high)*100)),"AP ammo describes its shield chance")
 	arena.queue_free();await get_tree().process_frame
-## A walk-in room as the floor sees it: a walking hero and maybe a window.
-class FakeRoom extends Node3D:
-	var avatar:Node3D
-	var modal:Control

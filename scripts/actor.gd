@@ -214,6 +214,8 @@ func _physics_process(delta):
 	sleep_time=maxf(0,sleep_time-delta)
 	if not player_owned and not allied:CombatMods.tick_burn(self,delta)
 	if dead:return
+	# Practice targets stand still: statuses (burn, slow, sleep) tick, no brain, no shots.
+	if has_meta("practice_target"):return
 	if not player_owned and not allied and (stun_time>0 or arena.freeze_time>0):return
 	if player_owned and not has_meta("stage_hidden"):
 		model.visible=arena.abilities.cloak_time<=0 or fmod(arena.abilities.cloak_time,.25)<.15
@@ -401,6 +403,8 @@ func take_damage(amount: float,blast:Vector3=Vector3.ZERO,vehicle_credit:String=
 		amount=arena.boss.limit_damage(self,amount)
 		if amount<=0:return
 	if dead or invulnerable > 0 or hidden_in_trench or (player_owned and arena.star_time>0): return
+	# Rooms between fields (one field engine, service mode): own blasts and stray hits never hurt the hero there.
+	if (player_owned or allied) and arena.has_method("peaceful") and arena.peaceful():return
 	if player_owned and arena.abilities.cloak_time>0 and arena.abilities.cloak_ghost:return
 	if player_owned and arena.abilities.block_hit():arena.burst(position,Color("86daec"),.5);Game.sound("shield_hit",self);return
 	if player_owned and occupying_trench:amount*=.5
@@ -443,6 +447,8 @@ func take_damage(amount: float,blast:Vector3=Vector3.ZERO,vehicle_credit:String=
 		var hit_feel=arena.get_node_or_null("CombatFeel")
 		if hit_feel:hit_feel.shake(.3);hit_feel.hit_stop(.04)
 	else:Game.sound("hit_body" if UnitKinds.is_infantry(kind) else "hit_metal",self)
+	# A practice target (the instructor's stands) takes every hit like an enemy and never falls: it refills.
+	if hp<=0 and has_meta("practice_target"):hp=max_hp;arena.burst(position+Vector3.UP*.6,Color("fff2c4"),.45)
 	refresh_health()
 	if hp>0 and is_instance_valid(model) and model.has_method("flinch"):model.flinch()
 	arena.burst(position+Vector3.UP*.4,Color("ffbd61"),.3)

@@ -2,22 +2,22 @@ class_name Gun
 extends RefCounted
 ## One hero, one gun (step U1, 2026-10-04): the battle, the hub range and the rooms between fields shoot through
 ## this module. A mode only provides the floor — the «field» the shots fly over:
-##   battle  — the Arena: real enemies, walls, generators (CombatSystem.bullet_hit/rocket_impact);
-##   practice — the hub and the rooms (RoomCombat): training targets and their own wall test.
+##   battle  — the Arena: real enemies, walls, generators (CombatSystem.bullet_hit/rocket_impact). The rooms between
+##             fields are the same Arena in service mode (one field engine): their shots are battle shots;
+##   practice — the hub: training targets and its own wall test (until the hub moves onto the arena, step 2).
 ## A field exposes `projectiles`, `phase`, `facing`, `bullet_hit(bullet)`, `rocket_impact(bullet)`; a practice field
 ## also `gun_targets()` (nodes that take hits), `gun_target_hit(target, amount)`, `gun_blocked(pos)` (walls and props
 ## stop a round) and `gun_inside(pos)` (the floor a lobbed charge may fly over).
-## Its run (arena with `run`) is the field itself in battle, `run_arena()` in a room and none in the hub.
+## Its run (arena with `run`) is the field itself; none in the hub.
 const LOOT=preload("res://scripts/loot_catalog.gd")
 const SPREAD:=.10            # radians between pellets
 const LOB_WEAPON:="grenade_launcher"
 const TARGET_REACH:=.4       # half-size of a training target's hit box
 const PRACTICE_SEED:=4100    # visual-only randomness of practice fields
 
-## The run behind a field: the battle arena itself, the room's run arena, or null in the hub.
+## The run behind a field: the arena itself (battle or a room between fields), or null in the hub.
 static func run_of(field):
 	if field==null:return null
-	if field.has_method("run_arena"):return field.run_arena()
 	return field if field.get("run")!=null else null
 static func is_battle(field)->bool:return field!=null and run_of(field)==field
 ## The gun in hand: the run's weapon (crate gun, swap in the backpack), otherwise the hub loadout.
@@ -36,7 +36,7 @@ static func stats(run_arena=null,id:="")->Dictionary:
 		"speed":float(data.speed),"blast":float(data.blast),"pierce":bool(data.pierce),"lob":id==LOB_WEAPON},true)
 	return result
 
-## Practice pull of the trigger (hub, rooms): the shot plus the recoil; returns the cooldown till the next one.
+## Practice pull of the trigger (the hub): the shot plus the recoil; returns the cooldown till the next one.
 static func trigger(field,shooter:Node3D)->float:
 	var id=weapon_id(field)
 	fire(field,shooter)
@@ -122,7 +122,7 @@ static func on_field(field,pos:Vector3)->bool:
 	if field.has_method("gun_inside"):return field.gun_inside(pos)
 	return not field.has_method("inside") or field.inside(field.grid_pos(pos))
 
-## The facing of the shot: the actor's own in battle, the field's (hub, room walker) in practice.
+## The facing of the shot: the actor's own in battle, the field's (the hub walker) in practice.
 static func aim(field,shooter)->Vector2i:
 	return shooter.facing if shooter.get("facing") is Vector2i else field.facing
 static func model_of(shooter)->Node3D:
@@ -161,9 +161,9 @@ static func charge_effects(field,bullet,ammo:Dictionary,rng:RandomNumberGenerato
 			patch.radius=float(stats.get("fire_radius",.8));patch.seconds=float(stats.get("fire_time",2.5));patch.damage=bullet.damage*.6
 			field.add_child(patch)
 
-# --- Practice fields (hub range, rooms) ---------------------------------------------------------------------------
+# --- Practice fields (the hub range) ---------------------------------------------------------------------------
 
-## The loaded ammo of the room's run (hub: standard rounds).
+## The loaded ammo of the practice field's run (the hub: standard rounds).
 static func practice_ammo(field)->Dictionary:
 	var run_arena=run_of(field)
 	return Ammo.effective(run_arena) if run_arena!=null else Ammo.standard()
