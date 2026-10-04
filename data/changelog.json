@@ -13,7 +13,8 @@
 					"Дрон-помощник инженера летает по клеткам, по вертикали и горизонтали, как вражеские дроны.",
 					"Оружие в лапах стало крупнее.",
 					"Сундук командира: сплав высыпается на поле сам, а выбор — из трёх карточек улучшений. В карточках после боя больше нет смены оружия: оружие — в ящике с оружием и в автоматах.",
-					"Генерал мира переделан: ходит активнее, бьёт тараном по линии (красная полоса — уйди с неё), на 75/50/25% здоровья зовёт отряд, и пока отряд жив, у генерала щит. Генераторов больше нет. Штаб стоит на поле, как в обычном бою, — его нужно защищать. Здоровья у генерала примерно на 15% меньше."
+					"Генерал мира переделан: ходит активнее, бьёт тараном по линии (красная полоса — уйди с неё), на 75/50/25% здоровья зовёт отряд, и пока отряд жив, у генерала щит. Генераторов больше нет. Штаб стоит на поле, как в обычном бою, — его нужно защищать. Здоровья у генерала примерно на 15% меньше.",
+					"Сложность мира на экране «Куда выдвигаемся»: Лёгкая, Обычная или Тяжёлая. На лёгкой у врагов на четверть меньше здоровья и урона, на тяжёлой — на четверть больше, а сплава за врагов и сундуки на 20% больше. Обычная — прежняя игра; выбор запоминается в профиле, забег дня всегда обычный."
 				]
 			},
 			"en": {
@@ -26,7 +27,8 @@
 					"The engineer's helper drone flies along the grid, vertically and horizontally, like enemy drones.",
 					"Guns look bigger in the hero's paws.",
 					"Commander's chest: alloy spills onto the field by itself and you choose from three upgrade cards. Post-battle cards no longer offer a weapon swap: guns come from the weapon crate and machines.",
-					"The world general is reworked: he moves more, rams along a line (red stripe — step aside), calls a squad at 75/50/25% health and is shielded while it lives. No more generators. The HQ stands on the field like in a regular battle and must be defended. The general has about 15% less health."
+					"The world general is reworked: he moves more, rams along a line (red stripe — step aside), calls a squad at 75/50/25% health and is shielded while it lives. No more generators. The HQ stands on the field like in a regular battle and must be defended. The general has about 15% less health.",
+					"World difficulty on the world select: Easy, Normal or Hard. On Easy enemies have a quarter less health and damage, on Hard a quarter more, and kills and chests give 20% more alloy. Normal is the game as before; the choice is kept in the profile, the daily run is always Normal."
 				]
 			}
 		},

@@ -89,6 +89,10 @@ func fighter():
 	report.build(body,report.snapshot(arena) if live else Game.progression.last_run,live)
 	if live:
 		var y=body.custom_minimum_size.y
+		# World difficulty of this run (T-266), one short line; the sandbox has none.
+		if not arena.sandbox:
+			var level=UiKit.label(body,"Сложность мира: %s" % Campaign.difficulty_name(),Vector2(0,y),Vector2(690,28),15,UiKit.MUTED);level.name="WorldDifficulty"
+			y+=34
 		for line in STATS.status(arena):
 			UiKit.label(body,line,Vector2(0,y),Vector2(690,44),15).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 			y+=48

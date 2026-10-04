@@ -23,8 +23,21 @@ static func challenge_open(id:int)->int:
 	if id not in Game.progression.cleared_worlds:return 0
 	return mini(3,int(Game.progression.counters.get("challenge_w%d" % id,0))+1)
 static func reward_multiplier()->float:return CHALLENGE_REWARD[clampi(challenge_level(),0,3)]
+## World difficulty (T-266): chosen on the world select and kept in the profile (Game.world_difficulty). Enemy
+## health and damage ×0.75 / ×1 / ×1.25; hard pays 20% more alloy for kills and chests, easy pays the same.
+## «normal» changes nothing. The daily run is always normal (one field for everyone); the sandbox ignores it.
+const DIFFICULTIES=["easy","normal","hard"]
+const DIFFICULTY_NAMES={"easy":"Лёгкая","normal":"Обычная","hard":"Тяжёлая"}
+const DIFFICULTY_ENEMY={"easy":.75,"normal":1.0,"hard":1.25}
+const DIFFICULTY_ALLOY={"easy":1.0,"normal":1.0,"hard":1.2}
+## Difficulty of the current run; configure() resets it, main sets it from the profile after the world is chosen.
+static var difficulty="normal"
+static func difficulty_id(value)->String:return str(value) if str(value) in DIFFICULTIES else "normal"
+static func enemy_multiplier()->float:return float(DIFFICULTY_ENEMY[difficulty_id(difficulty)])
+static func alloy_multiplier()->float:return float(DIFFICULTY_ALLOY[difficulty_id(difficulty)])
+static func difficulty_name(value=difficulty)->String:return DIFFICULTY_NAMES[difficulty_id(value)]
 static func configure(id:int,infinite:bool=false,is_daily:bool=false):
-	world=clampi(id,1,3);endless=infinite or is_daily;cycle=0;daily=is_daily;daily_key=DailyRun.today_key() if is_daily else "";challenge=0
+	world=clampi(id,1,3);endless=infinite or is_daily;cycle=0;daily=is_daily;daily_key=DailyRun.today_key() if is_daily else "";challenge=0;difficulty="normal"
 	var hp=CombatStats.initial_health()
 	var weapon=Game.LOOT.WEAPONS[Game.selected_weapon]
 	var stats=CombatStats.weapon()

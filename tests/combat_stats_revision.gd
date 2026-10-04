@@ -128,6 +128,7 @@ func run():
 	await grenadier_checks()
 	await friendly_fire_checks()
 	await smg_burst_checks()
+	await difficulty_checks()
 	Game.reset_upgrades();Campaign.configure(1)
 	print("COMBAT STATS: %d failures" % failures)
 	get_tree().quit(1 if failures else 0)
@@ -195,3 +196,35 @@ func smg_burst_checks():
 	var stats=CombatStats.weapon(arena,"smg")
 	check(is_equal_approx(stats.rate,3.0/stats.interval),"rate counts every shot of the burst")
 	arena.queue_free();await get_tree().process_frame
+
+# T-266: world difficulty scales hostile health and damage once at spawn (×0.75 / ×1 / ×1.25), hard pays
+# 20% more alloy, normal is today's game; allies are untouched; an old profile without the field loads as normal.
+func difficulty_checks():
+	Game.reset_upgrades();Campaign.configure(1)
+	check(Campaign.difficulty=="normal" and Game.world_difficulty=="normal","normal by default")
+	var arena=load("res://scenes/arena.tscn").instantiate();arena.run_seed=23;add_child(arena);arena.auto_pause_enabled=false;arena.set_physics_process(false)
+	var stats={};var column=1
+	for id in ["normal","hard","easy"]:
+		Campaign.difficulty=id
+		var foe=arena.spawn_actor("tank",Vector2i(column,1),false);foe.set_physics_process(false)
+		var ally=arena.spawn_actor("soldier",Vector2i(column,3),false,true);ally.set_physics_process(false)
+		stats[id]={"hp":foe.max_hp,"damage":foe.damage,"ally":ally.max_hp,"kill":EncounterRules.kill_alloy("tank",1,3),"chest":EncounterRules.chest_alloy(3,2)}
+		column+=2
+	Campaign.difficulty="normal"
+	check(is_equal_approx(stats.hard.hp,stats.normal.hp*1.25) and is_equal_approx(stats.hard.damage,stats.normal.damage*1.25),"hard: enemy health and damage ×1.25")
+	check(is_equal_approx(stats.easy.hp,stats.normal.hp*.75) and is_equal_approx(stats.easy.damage,stats.normal.damage*.75),"easy: enemy health and damage ×0.75")
+	check(stats.normal.ally==stats.hard.ally and stats.normal.ally==stats.easy.ally,"allies are not scaled")
+	check(stats.easy.kill==stats.normal.kill and stats.easy.chest==stats.normal.chest,"easy keeps alloy")
+	check(absi(stats.hard.kill-roundi(stats.normal.kill*1.2))<=1 and absi(stats.hard.chest-roundi(stats.normal.chest*1.2))<=1 and stats.hard.chest>stats.normal.chest,"hard: alloy ×1.2 (%d→%d, %d→%d)" % [stats.normal.kill,stats.hard.kill,stats.normal.chest,stats.hard.chest])
+	arena.queue_free();await get_tree().process_frame
+	# Profile and checkpoint.
+	Game.world_difficulty="hard";var profile=Game.serialize_progress()
+	check(preload("res://scripts/profile/schema.gd").validate(profile).ok and profile.world_difficulty=="hard","profile keeps the difficulty")
+	Game.world_difficulty="normal";Game.apply_profile(profile);check(Game.world_difficulty=="hard","difficulty restored from the profile")
+	profile.erase("world_difficulty");Game.apply_profile(profile);check(Game.world_difficulty=="normal","old profile without the field loads as normal")
+	profile.world_difficulty="brutal";Game.apply_profile(profile);check(Game.world_difficulty=="normal","unknown difficulty falls back to normal")
+	Campaign.difficulty="hard"
+	var cp=preload("res://scripts/profile/run_checkpoint.gd").capture(null,0,"map",{})
+	check(cp.get("difficulty")=="hard","checkpoint carries the run difficulty")
+	Campaign.configure(1,true,true);check(Campaign.difficulty=="normal","daily run is always normal")
+	Game.reset_upgrades();Campaign.configure(1)

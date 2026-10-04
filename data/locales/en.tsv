@@ -3310,3 +3310,10 @@ Q · есть сразу	Q · from the start
 Эпическая карточка	Epic card
 Жетоны вдвойне	Double tokens
 Особые боеприпасы	Special ammo
+Сложность	Difficulty
+Лёгкая	Easy
+Тяжёлая	Hard
+Сложность мира: %s	World difficulty: %s
+Враги: здоровье и урон −25%. Сплав как обычно.	Enemies: health and damage −25%. Alloy as usual.
+Враги и сплав без изменений.	Enemies and alloy unchanged.
+Враги: здоровье и урон +25%. Сплав за врагов и сундуки +20%.	Enemies: health and damage +25%. Alloy from kills and chests +20%.

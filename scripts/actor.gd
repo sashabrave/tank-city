@@ -130,6 +130,9 @@ func _ready():
 		max_hp=Campaign.boss_health()*BossCatalog.encounter(arena.run_seed,arena.room_index).hp;hp=max_hp
 		speed=BossCatalog.encounter(arena.run_seed,arena.room_index).speed
 		if arena.twin_boss:fire_interval=3.5;radial_timer=9.0+arena.actors.size()*4
+	# World difficulty (T-266): hostile units only, once at spawn; bosses and commanders included.
+	if not player_owned and not allied and Campaign.enemy_multiplier()!=1.0:
+		max_hp*=Campaign.enemy_multiplier();hp=max_hp;damage*=Campaign.enemy_multiplier()
 	if kind=="mortar":
 		fire_interval=Balance.CONFIG.combat.allied_turret_interval if allied else tuning.enemy_interval
 		fire_cooldown=1.0 if allied else 4.0

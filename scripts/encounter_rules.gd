@@ -8,12 +8,12 @@ static func reward_text(level:int)->String:
 	return ["Обычные усиления","Чертёж в сундуке · редкие усиления","Редкий чертёж · эпические усиления"][difficulty(level)]
 static func chest_alloy(stage:int,level:int)->int:
 	var full=Balance.CONFIG.economy.chest_alloy+Campaign.progress_index(stage)*Balance.CONFIG.economy.chest_alloy_per_room
-	return roundi(full*[.3,.65,1.0][difficulty(level)])
+	return roundi(full*[.3,.65,1.0][difficulty(level)]*Campaign.alloy_multiplier())
 static func kill_alloy(kind:String,rank:int,stage:int,commander:bool=false,level:int=0)->int:
 	var amount=int(KILL_ALLOY.get(kind,KILL_ALLOY.get("soldier",1)))  # a new kind without its own price pays like a soldier
 	if rank>=2:amount=ceili(amount*(2.0 if rank==3 else 1.5))
 	if commander:amount+=[3+stage,5+stage*2,8+stage*3][difficulty(level)]
-	return roundi(amount*Balance.CONFIG.economy.kill_alloy_scale*(1+(Campaign.world-1)*.35+(Campaign.cycle*.15 if Campaign.endless else 0))*Campaign.reward_multiplier())
+	return roundi(amount*Balance.CONFIG.economy.kill_alloy_scale*(1+(Campaign.world-1)*.35+(Campaign.cycle*.15 if Campaign.endless else 0))*Campaign.reward_multiplier()*Campaign.alloy_multiplier())
 static func recipe_pool(level:int,pending:Array,stage:int,include_owned:bool=false)->Array:
 	if level==0:return []
 	var options=[]

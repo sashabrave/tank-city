@@ -20,7 +20,8 @@ func _ready():
 	var dim=ColorRect.new();add_child(dim);dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);dim.color=Color(0,0,0,.6)
 	var size_total=Vector2(CARD.x*4+18*3+52,CARD.y+150)
 	var panel=UiKit.glass(self,(get_viewport_rect().size-size_total)*.5,size_total);panel.name="WorldPanel"
-	UiKit.accent(UiKit.label(panel,"Куда выдвигаемся",Vector2(26,20),Vector2(600,42),28))
+	UiKit.accent(UiKit.label(panel,"Куда выдвигаемся",Vector2(26,20),Vector2(340,42),28))
+	difficulty_row(panel,Vector2(380,22))
 	UiKit.button(panel,"×",Vector2(size_total.x-72,17),Vector2(56,46),func():cancelled.emit())
 	if OS.is_debug_build():UiKit.button(panel,"unlock-dev",Vector2(size_total.x-250,22),Vector2(160,38),unlock_worlds).add_theme_font_size_override("font_size",13)
 	cards.clear()
@@ -122,6 +123,21 @@ func unlock_worlds():
 	for child in get_children():
 		remove_child(child);child.queue_free()
 	_ready()
+
+## World difficulty (T-266): one switch for every world, kept in the profile, applied when the run starts.
+const DIFFICULTY_HINTS={"easy":"Враги: здоровье и урон −25%. Сплав как обычно.","normal":"Враги и сплав без изменений.","hard":"Враги: здоровье и урон +25%. Сплав за врагов и сундуки +20%."}
+func difficulty_row(panel:Control,pos:Vector2):
+	var old=panel.get_node_or_null("Difficulty")
+	if old:panel.remove_child(old);old.queue_free()
+	var row=Control.new();row.name="Difficulty";panel.add_child(row);row.position=pos;row.size=Vector2(410,40);row.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	UiKit.label(row,"Сложность",Vector2(0,10),Vector2(90,22),14,UiKit.MUTED)
+	var tabs=Campaign.DIFFICULTIES.map(func(id):return [id,Campaign.difficulty_name(id)])
+	var buttons=UiKit.tab_row(row,Vector2(92,0),318,tabs,Campaign.difficulty_id(Game.world_difficulty),func(id):set_difficulty(panel,pos,id),40)
+	for b in buttons:b.tooltip_text=Texts.render(DIFFICULTY_HINTS[str(b.name).trim_prefix("Tab_")])
+func set_difficulty(panel:Control,pos:Vector2,id:String):
+	if id==Game.world_difficulty:return
+	Game.world_difficulty=Campaign.difficulty_id(id);Game.save_progress();Game.sound("ui_confirm",self)
+	difficulty_row(panel,pos)
 
 func challenge_for(world:int)->int:return int(ladder.get(world,0))
 ## Three round steps I II III under the progress pips, and one line on what the chosen step adds.

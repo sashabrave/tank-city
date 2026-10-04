@@ -87,7 +87,7 @@ static func service_options_from(plan:Array,stage:int,choices:Dictionary,options
 static func point(node:Dictionary,count:int)->Vector3:
 	return Vector3((node.lane-(count-1)*.5)*6.5,0,-node.stage*STAGE_STEP)
 static func chest_alloy(stage:int,elite:bool)->int:
-	var full=Balance.CONFIG.economy.chest_alloy+Campaign.progress_index(stage)*Balance.CONFIG.economy.chest_alloy_per_room
+	var full=roundi((Balance.CONFIG.economy.chest_alloy+Campaign.progress_index(stage)*Balance.CONFIG.economy.chest_alloy_per_room)*Campaign.alloy_multiplier())
 	return full if elite else maxi(15,roundi(full*.3))
 static func reward_text(stage:int,elite:bool)->String:
 	return "%d ◈ / чертёж / секрет" % chest_alloy(stage,true) if elite else "%d ◈ / малое усиление" % chest_alloy(stage,false)
