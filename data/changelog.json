@@ -24,7 +24,11 @@
 					"Новые рисунки интерфейса: оружие, боеприпасы, чертежи, улучшения, постройки и разделы планшета нарисованы заново в едином стиле. Здоровье — красное кошачье сердце, у аптечки в рюкзаке своя картинка, а цветные значки не темнеют в светлой теме.",
 					"Площадка у ангара: трасса стоит на клетку выше, стоянка — на клетку правее; южные блоки ниже и больше не закрывают бойца, а коты-прохожие ходят по площадке целиком, а не по шею в бетоне.",
 					"Торговец показывает товар крупными карточками, как выбор усиления после волны: картинка, редкость, что даёт, а снизу кнопка с ценой в жетонах или причиной, почему купить нельзя. Кнопка «Перебросить карточки» тратит те же перебросы, что и карточки после волны, и меняет непроданные карточки усилений.",
-					"В хабе и в комнатах между боями оружие стреляет ровно как в бою: тот же урон (с бонусом класса), очереди ПП, навесной гранатомёт, взрывы ракет и эффекты заряженных боеприпасов, вспышка у ствола и гильзы."
+					"В хабе и в комнатах между боями оружие стреляет ровно как в бою: тот же урон (с бонусом класса), очереди ПП, навесной гранатомёт, взрывы ракет и эффекты заряженных боеприпасов, вспышка у ствола и гильзы.",
+					"У бойца одна способность класса — на Q. Второй слот и клавиша «1» убраны. С 8 уровня класса открывается вторая способность, с 14 — третья: в Казарме выбираешь, какая стоит на Q. Гаджет на F и поддержка штаба остаются.",
+					"Путь класса переделан: каждый уровень даёт здоровье и одну из пяти характеристик класса, на 4, 10 и 18 уровнях — «рывок», на 5, 11, 16 и 20 — перки, которые действуют всегда. Стрелок: «Выдержка», «Глаз-алмаз» (каждый 5-й выстрел — крит), «Кураж» (убийство критом ускоряет стрельбу), «Последний рубеж» (при малом здоровье все выстрелы критуют). Штурмовик: «Бронежилет», «Крепость», «Отдача» (удар по бойцу оглушает пехоту рядом), «Второе дыхание». Инженер: «Ремонт на ходу», «Запасливый», «Абордаж», «Мастерская на колёсах».",
+					"Окно «Все уровни» устроено как «Развитие заставы»: дорожка и ровные карточки в одну колонку, главы по 5 уровней, сверху — девиз класса и пять характеристик «сейчас → к 20».",
+					"Если во втором слоте сохранения стояла способность, остаётся только та, что была на Q."
 				]
 			},
 			"en": {
@@ -48,7 +52,11 @@
 					"New interface art: weapons, ammo, blueprints, upgrades, buildings and tablet sections are redrawn in one style. Health is a red cat heart, the backpack medkit has its own picture, and colour icons no longer darken in the light theme.",
 					"Outpost yard: the test track sits one cell higher and the parking one cell to the right; the south barriers are lower and no longer hide the soldier, and passing cats walk on the yard instead of neck-deep in concrete.",
 					"The merchant shows his goods as big cards, like the upgrade choice after a wave: picture, rarity, what it does, and a button below with the price in tokens or the reason you can't buy it. «Reroll cards» spends the same rerolls as the cards after a wave and swaps the unsold upgrade cards.",
-					"In the hub and in the rooms between battles guns now fire exactly as in battle: the same damage (with the class bonus), SMG bursts, the lobbing grenade launcher, rocket blasts and loaded ammo effects, muzzle flash and casings."
+					"In the hub and in the rooms between battles guns now fire exactly as in battle: the same damage (with the class bonus), SMG bursts, the lobbing grenade launcher, rocket blasts and loaded ammo effects, muzzle flash and casings.",
+					"The fighter has one class ability, on Q. The second slot and the «1» key are gone. The second class ability opens at class level 8 and the third at 14: choose in the Barracks which one sits on Q. The gadget on F and the HQ support stay.",
+					"The class path is reworked: every level gives health and one of the class's five stats, levels 4, 10 and 18 are a «burst», and levels 5, 11, 16 and 20 give perks that are always on. Rifleman: Composure, Eagle eye (every 5th shot crits), Swagger (a crit kill speeds up fire), Last stand (all shots crit at low health). Stormtrooper: Body armour, Fortress, Recoil (a hit on the fighter stuns nearby infantry), Second wind. Engineer: Repairs on the move, Hoarder, Boarding, Workshop on wheels.",
+					"The «All levels» window now looks like «Outpost progress»: a track with even cards in one column, chapters of 5 levels, and the class motto with five stats «now → at 20» on top.",
+					"A save with an ability in the second slot keeps only the one that was on Q."
 				]
 			}
 		},

@@ -1,6 +1,7 @@
 extends Node3D
-## Class abilities (0.8.0 class path): own Q per class without repeats, abilities open at levels 1/7/14,
-## two slots from level 7, any unlocked ability goes into any slot (free, swaps), saved in the profile.
+## Class abilities (class path, 4 Oct 2026): own Q per class without repeats, abilities open at levels 3/8/14,
+## ONE slot (Q): from level 8 any unlocked class ability may sit on it (free), saved in the profile; an old profile
+## with a second slot keeps what was on Q.
 ## Profile and settings writes stay disabled.
 var failures=0
 func check(ok,message):
@@ -18,21 +19,28 @@ func run():
 	Game.class_levels.recruit=2
 	check(Game.class_loadout()==["grenade"],"level 3: Q in the first slot")
 	Game.class_levels.recruit=7
-	check(ClassCatalog.level("recruit")==8 and Game.class_loadout()==["grenade","comrade"],"level 8: second ability in the second slot")
-	check(not Game.set_class_slot("recruit",1,"mine"),"the third ability is closed before level 14")
+	check(ClassCatalog.level("recruit")==8 and Game.class_loadout()==["grenade"] and ClassCatalog.slot_count("recruit")==1,"level 8: still one slot, Q keeps the grenade")
+	check(not Game.set_class_slot("recruit",1,"comrade"),"there is no second slot")
+	check(not Game.set_class_slot("recruit",0,"mine"),"the third ability is closed before level 14")
+	check(Game.set_class_slot("recruit",0,"comrade") and Game.class_loadout()==["comrade"],"level 8: the second ability can take Q")
 	Game.class_levels.recruit=13
-	check(Game.set_class_slot("recruit",1,"mine") and Game.class_loadout()==["grenade","mine"],"level 14: any unlocked ability into a slot")
-	check(Game.set_class_slot("recruit",0,"mine") and Game.class_loadout()==["mine","grenade"],"putting the other slot's ability swaps them")
-	check(not Game.set_class_slot("recruit",1,"laser"),"a foreign ability is refused")
-	check(Game.set_class_slot("recruit",1,"") and Game.class_slot_layout("recruit")==["mine",""] and Game.class_loadout()==["mine"],"a slot can be emptied")
-	Game.set_class_slot("recruit",1,"grenade")
+	check(Game.set_class_slot("recruit",0,"mine") and Game.class_loadout()==["mine"],"level 14: the third ability can take Q")
+	check(not Game.set_class_slot("recruit",0,"laser"),"a foreign ability is refused")
+	check(Game.set_class_slot("recruit",0,"") and Game.class_slot_layout("recruit")==[""] and Game.class_loadout().is_empty(),"Q can be emptied")
+	Game.set_class_slot("recruit",0,"mine")
 	Game.purchased_gadgets=["mine","barrier"];Game.ability_unlocks.append("mine");Game.gadget="mine"
-	check(not Game.hero_loadout().count("mine")>1,"a gadget equal to a slot is not doubled")
+	check(not Game.hero_loadout().count("mine")>1,"a gadget equal to Q is not doubled")
+	check(Game.ability_action(0)=="class_ability" and Game.ability_action(1)=="ability","Q, then F: no second class key")
 	var data=Game.serialize_progress()
-	check(data.class_slots.get("recruit")==["mine","grenade"],"slots are in the profile")
+	check(data.class_slots.get("recruit")==["mine"] and not data.has("class_second_slots"),"Q is in the profile, no second slot")
 	data.class_slots={"recruit":["laser","grenade"]}
 	Game.apply_profile(data.duplicate(true))
-	check(Game.class_loadout()[0]=="grenade","loading drops abilities the class does not have")
+	check(Game.class_loadout()==["grenade"],"loading drops abilities the class does not have")
+	# Migration: a profile from the two-slot days keeps what was on Q and drops slot «1».
+	data.class_slots={"recruit":["comrade","mine"],"heavy":["","barrier"]}
+	Game.apply_profile(data.duplicate(true))
+	check(Game.class_slots.get("recruit")==["comrade"] and not Game.class_slots.has("heavy") and Game.class_loadout()==["comrade"],"old two-slot profile keeps Q only")
+	check(not InputMap.has_action("skill_1") and not Settings.keys.has("skill_1"),"no key for a second class ability")
 	var station=load("res://scripts/ui/stations/fighter_station.gd").new()
 	check(station.page_for("shells")!=null,"Barracks «Классы» is the class page")
 	await class_milestone_checks()
@@ -46,7 +54,7 @@ func arena_for(stored:int):
 	var arena=load("res://scenes/arena.tscn").instantiate();arena.run_seed=9;add_child(arena);arena.set_physics_process(false);arena.auto_pause_enabled=false
 	return arena
 
-# from class_milestones: 20 levels on a geometric price ladder; perk at 5, stronger Q at 10, mastery; one-time refund of «Выучка».
+# from class_milestones: 20 levels on a geometric price ladder; growth every level, perks at 5/11/16/20; one-time refund of «Выучка».
 func class_milestone_checks():
 	Game.reset_upgrades();Campaign.configure(1)
 	check(ClassCatalog.level("recruit")==1 and Game.class_upgrade_cost("recruit",false)==100,"a class starts at level 1, the next level costs 100")
@@ -54,20 +62,22 @@ func class_milestone_checks():
 	for stored in range(7):total+=roundi(100.0*pow(1.32,stored))
 	check(total>1700 and total<2100,"levels 1→8 cost ≈1900 in total (%d)" % total)
 	Game.class_levels.recruit=19;check(Game.class_upgrade_cost("recruit",false)==-1 and ClassCatalog.level("recruit")==20,"level 20 is the top")
-	var low=arena_for(3);var crit_low=low.run.crit_chance;low.queue_free();await get_tree().process_frame
-	var mid=arena_for(4);check(mid.run.crit_chance>crit_low+.05,"level 5: the perk adds crit on top of the growth");mid.queue_free();await get_tree().process_frame
-	var q8=arena_for(8);var p8=q8.abilities.states.grenade.level.power;q8.queue_free();await get_tree().process_frame
-	var q9=arena_for(9);check(p8==0.0 and q9.abilities.states.grenade.level.power==1.0,"level 10: Q starts one power step higher");q9.queue_free();await get_tree().process_frame
-	check(ClassCatalog.growth("recruit")[0][1]>0 and ClassCatalog.growth_line("recruit").contains("здоровья"),"levels grow the class stats")
-	Game.selected_class="heavy";Game.class_unlocks.append("heavy");Game.class_levels.heavy=3
-	check(is_equal_approx(CombatStats.class_weapon_multiplier("shotgun"),1.0),"shotgun bonus is closed before the perk")
-	Game.class_levels.heavy=4;check(is_equal_approx(CombatStats.class_weapon_multiplier("shotgun"),1.1),"shotgun bonus is the level 5 perk")
-	check(ClassCatalog.perk_lines("heavy")[1].ends_with("(закрыто)"),"locked mastery is marked")
+	var low=arena_for(3);var crit_low=low.run.crit_chance;var flags_low=low.run.behavior_cards.duplicate();low.queue_free();await get_tree().process_frame
+	var mid=arena_for(4);check("opening_shot" not in flags_low and "opening_shot" in mid.run.behavior_cards,"level 5: «Выдержка» is on for good");mid.queue_free();await get_tree().process_frame
+	var start=arena_for(0);var crit_start=start.run.crit_chance;start.queue_free();await get_tree().process_frame
+	check(crit_low>crit_start,"levels grow the class's own stats (crit %.3f → %.3f)" % [crit_start,crit_low])
+	check(float(ClassCatalog.totals("recruit",5).crit_chance)>0 and ClassCatalog.growth_line("recruit").contains("здоровья"),"levels grow the class stats")
+	Game.selected_class="heavy";Game.class_unlocks.append("heavy");Game.class_levels.heavy=1
+	var heavy=arena_for(1);check(is_zero_approx(heavy.run.close_damage),"level 2: no close-range damage yet");heavy.queue_free();await get_tree().process_frame
+	heavy=arena_for(2);check(heavy.run.close_damage>0,"level 3: Штурмовик grows «урон вблизи»");heavy.queue_free();await get_tree().process_frame
+	heavy=arena_for(4);var guard=heavy.run.guard_bullet;heavy.queue_free();await get_tree().process_frame
+	check(guard>=.10+.12,"level 5: «Бронежилет» adds +12%% bullet guard on top of the start (%.3f)" % guard)
+	check(ClassCatalog.perk_lines("heavy")[1].ends_with("(закрыто)"),"a locked perk is marked")
 	var data=Game.serialize_progress();var dodge=StatRegistry.get_def("dodge")
 	data.stat_levels={"dodge":2};data.class_second_slots=["recruit"];data.credits=100
 	Game.apply_profile(data.duplicate(true))
 	var expected=100+dodge.cost_base+(dodge.cost_base+dodge.cost_step)+2500
-	check(Game.credits==expected and Game.stat_levels.is_empty() and Game.class_second_slots.is_empty(),"«Выучка» and the old slot are refunded")
+	check(Game.credits==expected and Game.stat_levels.is_empty() and not Game.serialize_progress().has("class_second_slots"),"«Выучка» and the old slot are refunded")
 	var again=Game.serialize_progress();Game.apply_profile(again.duplicate(true))
 	check(Game.credits==expected,"refund happens once")
 

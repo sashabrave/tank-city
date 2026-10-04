@@ -78,7 +78,7 @@ func run():
 	for id in ClassCatalog.ROSTER:
 		check(Game.CLASSES.has(id) and ClassCatalog.INFO.has(id),"class %s is in CLASSES and INFO" % id)
 		check(ClassCatalog.BIO.has(id) and ClassCatalog.BIO[id].size()==3,"class %s has a three-part bio" % id)
-		check(ClassCatalog.GROWTH.has(id) and ClassCatalog.PERKS.has(id) and ClassCatalog.PERKS[id].size()==2,"class %s has growth and two perks" % id)
+		check(ClassCatalog.PATHS.has(id) and ClassCatalog.PATHS[id].stats.size()==5 and ClassCatalog.perks(id).size()==4,"class %s has a path: five stats and four perks" % id)
 		check(Game.CLASS_SKILLS.has(id) and Game.CLASS_CHOICES.has(id),"class %s has its Q and choices" % id)
 		for ability in ClassCatalog.abilities(id):
 			check(AbilityCatalog.DATA.has(ability),"class %s ability %s exists" % [id,ability])
@@ -87,15 +87,17 @@ func run():
 		if unlock.has("event"):check(written(found,str(unlock.event)),"class %s unlock counter «%s» is written" % [id,unlock.event])
 		var stats=[]
 		for m in ClassCatalog.INFO[id].modifiers:stats.append(str(m.stat))
-		for g in ClassCatalog.GROWTH[id]:stats.append(str(g[0]))
-		for perk in ClassCatalog.PERKS[id]:
-			for m in perk[1] if perk.size()>1 and perk[1] is Array else []:stats.append(str(m.stat))
+		for stat in ClassCatalog.PATHS[id].stats:
+			if ClassCatalog.STATS[stat].has("field"):stats.append(str(ClassCatalog.STATS[stat].field))
+		for perk in ClassCatalog.perks(id):
+			if perk.has("card"):check(UpgradeRegistry.has(str(perk.card)),"class %s perk «%s» reuses a real card" % [id,perk.title])
+			if perk.has("effect"):check(ResourceLoader.exists(str(perk.effect)),"class %s perk «%s» has its effect script" % [id,perk.title])
 		var probe=RunState.new()
 		for stat in stats:check(stat in probe,"class %s stat «%s» is a run field" % [id,stat])
 		for text in ClassCatalog.BIO[id]:
 			if not english(str(text)):warn("class %s bio line has no English: %s" % [id,str(text).left(40)])
 	check(ClassCatalog.MAX_LEVEL==20,"class path has 20 levels")
-	for lv in ClassCatalog.ABILITY_LEVELS+[5,12]:check(ClassCatalog.TRACK.has(lv),"class track marks level %d" % lv)
+	for lv in ClassCatalog.ABILITY_LEVELS+ClassCatalog.PERK_LEVELS:check(not ClassCatalog.milestone("recruit",lv).is_empty(),"class path marks level %d" % lv)
 
 	# ── Blueprints, buildings, stations ─────────────────────────────────────────────────────────────────
 	var obtainable={}

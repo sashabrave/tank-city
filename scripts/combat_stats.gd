@@ -1,11 +1,7 @@
 class_name CombatStats
 extends RefCounted
 ## Shared calculations for actors, workshop/tablet values and card previews.
-static func class_weapon_multiplier(id:String)->float:
-	if Game.selected_class=="heavy" and id=="shotgun" and ClassCatalog.perk_on("heavy",0):return 1.1
-	if Game.selected_class=="marksman" and id=="sniper" and ClassCatalog.perk_on("marksman",0):return 1.15
-	return 1.0
-## Every class level adds health (ClassCatalog.hp_per_level, T-098) and the class's own stats (ClassCatalog.GROWTH).
+## Every class level adds health (ClassCatalog.hp_per_level, T-098) and one of the class's own stats (ClassCatalog.PATHS).
 static func initial_health()->float:return Balance.CONFIG.combat.hero_health+Game.health_upgrade_bonus()+Game.class_health_bonus()+Game.class_level()*ClassCatalog.hp_per_level(Game.selected_class)
 static func initial_speed_multiplier()->float:return Game.mobility_multiplier()*(.95 if Game.selected_class=="heavy" else 1.0)
 static func soldier_speed(run=null,extra:float=0.0)->float:
@@ -17,7 +13,7 @@ static func weapon(arena=null,id:String="",changes:Dictionary={})->Dictionary:
 	var run=arena.run if arena!=null else null
 	var mods={"damage":0.0,"interval":1.0,"intercept":0.0} if run==null else run.weapon_mods[id]
 	var bonus=(0.0 if run==null else run.damage_bonus)+changes.get("damage_bonus",0.0)
-	var damage=class_weapon_multiplier(id)*data.damage*Game.weapon_factor(id)*(1+Game.damage_level*Game.DAMAGE_PER_LEVEL+bonus*.3+mods.damage+changes.get("weapon_damage",0.0))
+	var damage=data.damage*Game.weapon_factor(id)*(1+Game.damage_level*Game.DAMAGE_PER_LEVEL+bonus*.3+mods.damage+changes.get("weapon_damage",0.0))
 	var interval=maxf(Balance.CONFIG.combat.minimum_fire_interval,data.interval*(1.0 if run==null else run.fire_multiplier)*mods.interval*changes.get("fire",1.0)*changes.get("weapon_fire",1.0))
 	# Rolled stats of the gun in hand (weapon crate items, 2026-10-03): +damage share and +fire-rate share.
 	var rolled:Dictionary=changes.get("item_stats",run.weapon_stats if run!=null and id==str(run.weapon) else {})
@@ -36,19 +32,14 @@ static func probability(arena=null,kind:String="soldier",weapon_id:String="",ori
 	return chance
 
 static func shell_preview(id:String)->Dictionary:
-	# Class stat bonuses come from ClassCatalog start modifiers and unlocked perks; only flat HP shows here.
+	# Class stat bonuses come from ClassCatalog start modifiers; only flat HP shows here (the path grows health per level).
 	var extra_hp=0.0
-	var modifiers=ClassCatalog.info(id).modifiers.duplicate()
-	var perks=ClassCatalog.PERKS.get(id,[])
-	for n in range(perks.size()):
-		if ClassCatalog.perk_on(id,n):modifiers+=perks[n][1]
-	for modifier in modifiers:
+	for modifier in ClassCatalog.info(id).modifiers:
 		if modifier.stat=="soldier_max_hp":extra_hp+=float(modifier.value)
 	var weapon_id=Game.selected_weapon
-	var factor=1.1 if id=="heavy" and weapon_id=="shotgun" and ClassCatalog.perk_on(id,0) else 1.15 if id=="marksman" and weapon_id=="sniper" and ClassCatalog.perk_on(id,0) else 1.0
 	return {
 		"health":Balance.CONFIG.combat.hero_health+Game.health_upgrade_bonus()+(ClassCatalog.level(id)-1)*ClassCatalog.hp_per_level(id)+extra_hp,
 		"speed":minf(Balance.speed_cap(),Balance.CONFIG.combat.hero_speed*Game.mobility_multiplier()*(.95 if id=="heavy" else 1.0)),
-		"damage":weapon().damage/class_weapon_multiplier(weapon_id)*factor,
+		"damage":weapon().damage,
 		"pressure":clampf(Game.LOOT.WEAPONS[weapon_id].intercept*Balance.CONFIG.combat.interception_base_scale+Game.shell_pressure_bonus(),Balance.CONFIG.combat.interception_floor,Balance.CONFIG.combat.interception_cap)*100
 	}

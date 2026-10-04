@@ -282,7 +282,9 @@ func _ready():
 	add_child(hud)
 	presentation=load("res://scripts/battle_presentation.gd").new();presentation.arena=self;add_child(presentation)
 	pending_vehicle=Game.garage.starting_vehicle()
-	if not resume_checkpoint.is_empty():preload("res://scripts/profile/run_checkpoint.gd").restore(self,resume_checkpoint)
+	if not resume_checkpoint.is_empty():
+		preload("res://scripts/profile/run_checkpoint.gd").restore(self,resume_checkpoint)
+		ClassCatalog.add_perk_cards(run)  # a snapshot from before a perk was bought still gets its behaviour
 	if defer_room:return
 	begin_room(int(resume_checkpoint.index) if not resume_checkpoint.is_empty() else 0)
 

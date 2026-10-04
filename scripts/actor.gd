@@ -481,8 +481,6 @@ func shield_pose(offset:Vector3,basis:Basis,time:float):
 func blocks_shot(travel: Vector3) -> bool:
 	return kind=="shield" and shield_phase=="active" and travel.normalized().dot(Vector3(facing.x,0,facing.y))<-.7
 
-func class_weapon_multiplier()->float:
-	return CombatStats.class_weapon_multiplier(arena.weapon)
 func pressure()->float:
 	if companion:return arena.player_pressure()*companion_factor
 	if player_owned:return arena.player_pressure()

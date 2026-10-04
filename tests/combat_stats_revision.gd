@@ -242,7 +242,7 @@ func gun_checks():
 	var hub=Gun.stats(null,"sniper");var battle=Gun.stats(arena)
 	check(is_equal_approx(hub.damage,battle.damage) and is_equal_approx(hub.interval,battle.interval),"Gun.stats: hub and battle agree (%.3f/%.3f, %.3f/%.3f)" % [hub.damage,battle.damage,hub.interval,battle.interval])
 	var bare=Game.LOOT.WEAPONS.sniper.damage*Game.weapon_factor("sniper")*(1+Game.damage_level*Game.DAMAGE_PER_LEVEL)
-	check(is_equal_approx(hub.damage,bare*CombatStats.class_weapon_multiplier("sniper")) and hub.damage>bare,"the hub gun carries the class multiplier and meta damage")
+	check(is_equal_approx(hub.damage,bare) and hub.damage>Game.LOOT.WEAPONS.sniper.damage,"the hub gun carries meta damage (no class weapon multiplier since the 4 Oct path)")
 	arena.player.apply_weapon()
 	check(is_equal_approx(arena.player.damage,battle.damage),"the battle hero's damage is Gun.stats")
 	check(Gun.stats(null,"smg").burst==3 and Gun.stats(null,"grenade_launcher").lob and Gun.stats(null,"rpg").blast>0 and not Gun.stats(null,"rpg").lob,"Gun.stats carries bursts, lob and blast")

@@ -50,11 +50,10 @@ func inventory_legacy():
 	# Everything below the weapon bars flows from their real height (no fixed gap under compact rows).
 	var shift=95+bars.content_height()+6-288
 	UiKit.label(body,"Серый — база · оранжевый + · красный −",Vector2(225,288+shift),Vector2(475,28),12,UiKit.MUTED)
-	UiKit.label(body,"Способности",Vector2(225,326+shift),Vector2(210,28),17)
-	var abilities=Game.class_loadout()
-	for i in range(2):
-		var id=abilities[i] if i<abilities.size() else ""
-		cell(body,Vector2(225+i*85,362+shift),id,AbilityCatalog.DATA.get(id,{}).get("name","Второй навык класса"),AbilityCatalog.DATA.get(id,{}).get("description","Открывается в «Казарме»: уровень класса 5, затем 2500 сплава."),i>=abilities.size(),Vector2(76,76))
+	UiKit.label(body,"Способность Q",Vector2(225,326+shift),Vector2(190,28),17)
+	# One class slot (4 Oct 2026): the ability on Q.
+	var abilities=Game.class_loadout();var id=abilities[0] if not abilities.is_empty() else ""
+	cell(body,Vector2(225,362+shift),id,AbilityCatalog.DATA.get(id,{}).get("name","Способность класса"),AbilityCatalog.DATA.get(id,{}).get("description","Открывается в «Казарме» на 3 уровне класса."),abilities.is_empty(),Vector2(76,76))
 	UiKit.label(body,"Гаджет",Vector2(425,326+shift),Vector2(110,28),17)
 	cell(body,Vector2(425,362+shift),Game.gadget,AbilityCatalog.DATA.get(Game.gadget,{}).get("name","Гаджет"),AbilityCatalog.DATA.get(Game.gadget,{}).get("description","Выбирается в «Арсенале» → Гаджеты."),Game.gadget=="",Vector2(76,76))
 	UiKit.label(body,"Штаб",Vector2(540,326+shift),Vector2(140,28),17)
@@ -224,10 +223,10 @@ func settings():
 		y=672
 	else:
 		UiKit.label(body,"Нажми кнопку и новую клавишу. Esc — отмена. Занятые клавиши меняются местами.",Vector2(0,0),Vector2(700,46),14,UiKit.MUTED).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;y=55
-		for group in [["Движение",["north","south","west","east"]],["Бой и действия",["fire","interact","hide_trench","ammo_switch","use_medkit","melee"]],["Способности",["class_ability","skill_1","ability","hq_ability"]]]:
+		for group in [["Движение",["north","south","west","east"]],["Бой и действия",["fire","interact","hide_trench","ammo_switch","use_medkit","melee"]],["Способности",["class_ability","ability","hq_ability"]]]:
 			UiKit.label(body,group[0],Vector2(0,y),Vector2(700,30),15,UiKit.MUTED);y+=36
 			for action in group[1]:
-				UiKit.label(body,{"north":"Вверх / вперёд","south":"Вниз / назад","west":"Влево","east":"Вправо","fire":"Огонь","interact":"Выбрать / взаимодействовать","hide_trench":"Спрятаться в окопе","ammo_switch":"Сменить боеприпасы","use_medkit":"Аптечка из рюкзака","melee":"Удар лапой / прикладом","ability":"Гаджет","class_ability":"Навык класса","skill_1":"Второй навык класса","hq_ability":"Поддержка штаба"}[action],Vector2(0,y),Vector2(420,36),17)
+				UiKit.label(body,{"north":"Вверх / вперёд","south":"Вниз / назад","west":"Влево","east":"Вправо","fire":"Огонь","interact":"Выбрать / взаимодействовать","hide_trench":"Спрятаться в окопе","ammo_switch":"Сменить боеприпасы","use_medkit":"Аптечка из рюкзака","melee":"Удар лапой / прикладом","ability":"Гаджет","class_ability":"Навык класса","hq_ability":"Поддержка штаба"}[action],Vector2(0,y),Vector2(420,36),17)
 				var button=UiKit.button(body,OS.get_keycode_string(Settings.keys[action]),Vector2(440,y),Vector2(260,36),func():view.waiting_key=action;view.refresh())
 				if view.waiting_key==action:Texts.set_text(button,"Нажми клавишу…")
 				y+=46

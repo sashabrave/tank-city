@@ -81,9 +81,9 @@ func _ready():
 		var fill=StyleBoxFlat.new();fill.bg_color=Color("e34e4b");fill.set_corner_radius_all(5)
 		bar.add_theme_stylebox_override("background",background);bar.add_theme_stylebox_override("fill",fill)
 
-	var extra=root.get_node("Skills/Skill1").duplicate();extra.name="Skill3";root.get_node("Skills").add_child(extra)
+	# Two hero buttons: the class ability on Q and the gadget on F (one class slot since 4 Oct 2026).
 	root.get_node("Skills").add_theme_constant_override("separation",12)
-	for i in range(3):
+	for i in range(2):
 		var button=root.get_node("Skills/Skill"+str(i+1));skill_buttons.append(button);button.pressed.connect(func():arena.abilities.cast_slot(i))
 		button.visible=i<arena.abilities.slots.size()
 		if i<arena.abilities.slots.size():button.get_node("Icon").texture=UiKit.trimmed(UiKit.icon_texture("abilities/"+str(arena.abilities.slots[i])))

@@ -8,6 +8,8 @@ const CAPS={"crit_chance":.6,"dodge":.5,"guard":.6,"burn_chance":.8,"stun_chance
 ## Extreme builds stay meaningful: what goes over a cap flows into a neighbouring stat instead of being lost.
 ## Every 10% of crit chance over the cap adds 5% crit damage; every 10% of dodge over the cap adds 5% protection.
 const OVERFLOW=.5
+## «Урон вблизи» (class path) counts within this many cells.
+const CLOSE_RANGE=2.5
 static func crit_overflow(arena)->float:return maxf(0.0,arena.run.crit_chance+luck(arena)*.002-CAPS.crit_chance)*OVERFLOW
 static func dodge_overflow(arena)->float:return maxf(0.0,arena.run.dodge-CAPS.dodge)*OVERFLOW
 const BURN_TIME=3.0
@@ -31,6 +33,8 @@ static func outgoing(arena,bullet,target)->float:
 	if in_vehicle and "crew" in run.behavior_cards:amount*=1.2
 	if in_vehicle and "boarding" in run.behavior_cards and shooter.vehicle_origin=="captured":amount*=1.3
 	if bullet.opening:amount*=1.4
+	# Штурмовик's class path: «урон вблизи» on the soldier's own shots within 2.5 cells.
+	if not in_vehicle and run.close_damage>0 and arena.flat_distance(shooter.position,target.position)<=CLOSE_RANGE:amount*=1.0+run.close_damage
 	if "last_stand" in run.behavior_cards:
 		var ratio=(shooter.hp/maxf(1.0,shooter.max_hp)) if in_vehicle else (run.soldier_hp/maxf(1.0,float(run.soldier_max_hp)))
 		if ratio<=.25:amount*=1.3
@@ -45,6 +49,10 @@ static func outgoing(arena,bullet,target)->float:
 	if run.stealth>0 and target.hp>=target.max_hp:amount*=1.0+minf(CAPS.stealth,run.stealth)*2.0
 	var rng=run.combat_rng
 	var crit=rng.randf()<crit_chance(arena)
+	# Class perks: «Глаз-алмаз» marks a whole volley, «Последний рубеж» answers through the effects bus. The roll
+	# above is always made, so a forced crit never shifts the run's random sequence.
+	if not crit and (bullet.get("sure_crit")==true or arena.effects.modify("sure_crit",0.0,{"shooter":shooter})>0):crit=true
+	target.set_meta("crit_hit",crit)
 	if crit:
 		amount*=run.crit_damage+crit_overflow(arena)
 		arena.burst(target.position+Vector3.UP*.5,Color("ffd166"),.35)

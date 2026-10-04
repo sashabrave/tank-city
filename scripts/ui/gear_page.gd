@@ -140,17 +140,16 @@ func build_right()->float:
 
 ## Abilities, gadget and HQ support — pinned cells, the same on the gear screen and the run result.
 func ability_block(y:float)->float:
-	section("Способности",0,y,2);section("Гаджет",2,y,1);section("Штаб",3,y,1)
+	# One class slot, Q (4 Oct 2026), then the gadget and the HQ support.
+	section("Навык Q",0,y,1);section("Гаджет",1,y,1);section("Штаб",2,y,1)
 	y+=LABEL+UNDER_LABEL
-	var abilities=Game.class_loadout()
-	for i in range(2):
-		var id=abilities[i] if i<abilities.size() else ""
-		var info=AbilityCatalog.DATA.get(id,{})
-		fixed_cell("ability:%d" % i,col(i),y,Vector2(C,C),"abilities/"+id if id!="" else "",info.get("name","Второй навык класса"),info.get("description","Открывается в «Казарме»: уровень класса 5, затем 2500 сплава."),id=="",["Q","1"][i])
+	var abilities=Game.class_loadout();var id=abilities[0] if not abilities.is_empty() else ""
+	var info=AbilityCatalog.DATA.get(id,{})
+	fixed_cell("ability:0",col(0),y,Vector2(C,C),"abilities/"+id if id!="" else "",info.get("name","Способность класса"),info.get("description","Открывается в «Казарме» на 3 уровне класса."),id=="","Q")
 	var gadget=AbilityCatalog.DATA.get(Game.gadget,{})
-	fixed_cell("gadget",col(2),y,Vector2(C,C),"abilities/"+Game.gadget if Game.gadget!="" else "",gadget.get("name","Гаджет"),gadget.get("description","Выбирается в «Арсенале» → Гаджеты."),Game.gadget=="","F")
+	fixed_cell("gadget",col(1),y,Vector2(C,C),"abilities/"+Game.gadget if Game.gadget!="" else "",gadget.get("name","Гаджет"),gadget.get("description","Выбирается в «Арсенале» → Гаджеты."),Game.gadget=="","F")
 	var hq=Game.hq_loadout();var module=hq[0] if not hq.is_empty() else ""
-	fixed_cell("hq",col(3),y,Vector2(C,C),module,HQCatalog.DATA.get(module,{}).get("name","Поддержка штаба"),HQCatalog.DATA.get(module,{}).get("description","Выбери модуль в «Штабе» → Технологии."),module=="","2")
+	fixed_cell("hq",col(2),y,Vector2(C,C),module,HQCatalog.DATA.get(module,{}).get("name","Поддержка штаба"),HQCatalog.DATA.get(module,{}).get("description","Выбери модуль в «Штабе» → Технологии."),module=="","2")
 	y+=C+SECTION
 	return y
 

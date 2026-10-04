@@ -18,6 +18,8 @@ var pierce_left=0
 ## Chance to go through a raised riot shield (Бронебойные, T-156).
 var shield_pierce_chance:=0.0
 var opening=false
+## «Глаз-алмаз» (class perk): this bullet always crits.
+var sure_crit=false
 var piercing=false
 var star_power=false
 var rocket_radius=0.0

@@ -34,7 +34,9 @@ static func restore(arena,data:Dictionary):
 	arena.run.last_player_shot=-10;arena.run.dash_until=0;arena.run.dash_ready_at=0
 	arena.set_meta("start_documents",data.start_documents)
 	if not data.abilities.is_empty():
-		arena.abilities.slots=data.abilities.slots.duplicate();arena.abilities.states.clear()
+		# One class slot since 4 Oct 2026: a snapshot with a second class ability drops the class ability not on Q.
+		var own=ClassCatalog.abilities(Game.selected_class);var q=Game.class_loadout()
+		arena.abilities.slots=data.abilities.slots.filter(func(a):return a not in own or a in q or q.is_empty());arena.abilities.states.clear()
 		for id in data.abilities.levels:arena.abilities.states[id]={"cooldown":0.0,"level":data.abilities.levels[id].duplicate()}
 		arena.abilities.selected="";arena.abilities.select(data.abilities.selected)
 	if not data.hq.is_empty():

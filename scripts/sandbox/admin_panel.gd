@@ -7,7 +7,7 @@ const ENEMIES=[["soldier","Стрелок"],["grenadier","Гранатомётч
 const SIZES=[13,15,17,19,21,23,25]
 const TABS=[["field","Поле"],["class","Класс"],["enemies","Враги"],["bonuses","Бонусы"],["cards","Карты"],["stats","Статы"],["kit","Снаряжение"],["gear","Техника"],["challenges","Испытания"]]
 var tuning=""  # «Класс»: the ability whose cooldown/power sliders are shown
-var ability_slot=0  # sandbox «Снаряжение»: which slot (Q, 1, F) an ability button fills
+var ability_slot=0  # sandbox «Снаряжение»: which slot (Q, F) an ability button fills
 var arena
 var tab="field"
 var rank=1
@@ -88,8 +88,8 @@ func render():
 			for concept in ClassCatalog.CONCEPTS:
 				var draft=action(grid,str(concept[0])+" · только описание",func():pass);draft.disabled=true;draft.tooltip_text=Texts.render(" · ".join(concept.slice(1)))
 			header(grid,"Слот способности")
-			for slot in range(3):
-				var value=slot;action(grid,["Слот Q","Слот 1","Слот F"][slot],func():ability_slot=value;render(),ability_slot==slot)
+			for slot in range(2):
+				var value=slot;action(grid,["Слот Q","Слот F"][slot],func():ability_slot=value;render(),ability_slot==slot)
 			header(grid,"Способность в слот (все, включая неоткрытые)")
 			for id in AbilityCatalog.DATA:
 				var ability=id;action(grid,AbilityCatalog.DATA[id].name+(" ✓" if id in arena.abilities.slots else ""),func():tuning=ability;set_ability(ability),tuning==id)
@@ -232,7 +232,7 @@ func refresh_skill_icons():
 	for i in range(arena.hud.skill_buttons.size()):
 		var button=arena.hud.skill_buttons[i];button.visible=i<arena.abilities.slots.size()
 		if button.visible:button.get_node("Icon").texture=UiKit.trimmed(UiKit.icon_texture("abilities/"+str(arena.abilities.slots[i])))
-## Class level for milestone checks: abilities (second slot, Q +1 at 7) rebuild now; perks need a new run.
+## Class level for milestone checks: the Q slot rebuilds now; growth and perks need a new run.
 func class_level(level:int):
 	Game.class_levels[Game.selected_class]=level-1  # displayed level 1–20
 	arena.abilities.setup();refresh_skill_icons()

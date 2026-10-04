@@ -55,7 +55,7 @@ func run():
 	admin.ability_slot=1;admin.set_ability("laser")
 	check(arena.abilities.slots.size()>=2 and arena.abilities.slots[1]=="laser","any ability goes into a slot")
 	admin.class_level(10)
-	check(arena.abilities.states[Game.class_skill()].level.power==1.0 and arena.abilities.slots.slice(0,2)==Game.class_loadout() and Game.class_loadout().size()==2,"class level 10: second ability and stronger Q")
+	check(arena.abilities.slots.slice(0,1)==Game.class_loadout() and Game.class_loadout().size()==1,"class level 10: one class slot, Q")
 	admin.close_panel()
 	Game.earn(500)
 	admin.exit_requested.emit();await settle();await settle()

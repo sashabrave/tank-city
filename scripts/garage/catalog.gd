@@ -23,14 +23,17 @@ static func weight(id:String,stage:int)->int:
 ## Player vehicles carry more armour than the same enemy hull: each is clearly stronger than the soldier in its
 ## role (buggy fast scout, APC middle, tank heavy one-shotting infantry). Enemy health is left untouched.
 const PLAYER_ARMOR={"buggy":1.4,"apc":1.8,"tank":1.6}
+## «Броня техники» from the class path (Инженер): more armour on every vehicle the hero drives.
+static func vehicle_armor(arena)->float:return 1.0+(float(arena.run.vehicle_armor) if arena!=null and arena.get("run")!=null else 0.0)
 static func stats(kind:String,arena=null,origin:String="owned",zone:int=1,changes:Dictionary={})->Dictionary:
 	var t=Balance.CONFIG.enemy(kind)
 	if origin=="captured":
 		var stock=.85*(1+.04*clampi(zone-1,0,2))
-		return {"hp":t.health*PLAYER_ARMOR.get(kind,1.0)*stock,"damage":t.damage*stock,"interval":t.fire_interval,"speed":t.player_speed,"pressure":.35}
+		return {"hp":t.health*PLAYER_ARMOR.get(kind,1.0)*stock*vehicle_armor(arena),"damage":t.damage*stock,"interval":t.fire_interval,"speed":t.player_speed,"pressure":.35}
 	var hp=t.health*PLAYER_ARMOR.get(kind,1.0);var damage=t.damage+Game.meta_damage()*(.25 if kind=="buggy" else 1.0);var interval=t.fire_interval;var speed=t.player_speed*CombatStats.initial_speed_multiplier()
 	if arena!=null:
 		var mods=arena.run.vehicle_mods[kind];hp+=mods.hp;damage+=mods.damage+(arena.damage_bonus+changes.get("damage_bonus",0.0))*(.25 if kind=="buggy" else 1.0);interval*=arena.fire_multiplier*float(mods.get("rate",1.0));speed=t.player_speed*mods.speed*arena.speed_multiplier
 	hp*=1+Game.garage.level(kind,"armor")*.03;damage*=1+Game.garage.level(kind,"gun")*.03;interval/=1+Game.garage.level(kind,"loader")*.02
 	if Game.selected_class in ["driver","engineer"]:hp*=1.15+Game.class_specialization()*.01;damage*=1.1+Game.class_specialization()*.01
+	hp*=vehicle_armor(arena)
 	return {"hp":hp,"damage":damage,"interval":maxf(Balance.CONFIG.combat.minimum_fire_interval,interval),"speed":minf(speed,Balance.speed_cap()),"pressure":.35}

@@ -96,17 +96,17 @@ func run():
 	check(pacing_bad.is_empty(),"tank pacing, tank caps and commander tiers hold %s" % str(pacing_bad.slice(0,5)))
 	# from progression_v16: the class path loadout.
 	check(Game.class_loadout().is_empty() and Game.hq_loadout().is_empty(),"no abilities at the very start")
-	Game.class_levels[Game.selected_class]=7;check(Game.class_loadout().size()==2,"class level 7 brings two abilities")
-	check(Game.hero_loadout().size()<=3 and Game.hq_loadout().size()<=1,"loadout limits")
-	check(Game.ability_action(0)=="class_ability" and Game.ability_action(1)=="skill_1" and Game.ability_action(2)=="ability","ability slots map to their actions")
+	Game.class_levels[Game.selected_class]=7;check(Game.class_loadout().size()==1,"class level 8: still one class ability, on Q")
+	check(Game.hero_loadout().size()<=2 and Game.hq_loadout().size()<=1,"loadout limits: Q and the gadget")
+	check(Game.ability_action(0)=="class_ability" and Game.ability_action(1)=="ability","ability slots map to their actions")
 	check(Game.upgrade_cap("health")>10000,"health has no level cap")
 	# from progression_v16: uncapped levels and class slots survive a save — only inside a fresh temporary folder.
 	var dir=OS.get_temp_dir().path_join("warcats_quests_%d" % Time.get_ticks_usec());DirAccess.make_dir_recursive_absolute(dir)
 	var restore={"path":Game.save_path,"selected":Game.profiles.selected,"blocked":Game.save_blocked}
 	Game.save_path=dir.path_join("profile.json");Game.profiles.selected=true;Game.save_blocked=false;Game.save_enabled=true
-	Game.health_level=45;Game.class_slots[Game.selected_class]=[Game.class_skill(),Game.CLASS_CHOICES[Game.selected_class][0]]
+	Game.health_level=45;Game.class_slots[Game.selected_class]=[Game.CLASS_CHOICES[Game.selected_class][0]]
 	var saved=Game.save_progress();Game.health_level=0;Game.class_slots={};Game.load_progress()
-	check(saved and Game.health_level==45 and Game.class_second()==Game.CLASS_CHOICES[Game.selected_class][0],"save keeps uncapped levels and the class slots")
+	check(saved and Game.health_level==45 and Game.class_loadout()==[Game.CLASS_CHOICES[Game.selected_class][0]],"save keeps uncapped levels and the ability on Q")
 	Game.save_enabled=false;Game.save_path=restore.path;Game.profiles.selected=restore.selected;Game.save_blocked=restore.blocked
 	for file in DirAccess.get_files_at(dir):DirAccess.remove_absolute(dir.path_join(file))
 	DirAccess.remove_absolute(dir)

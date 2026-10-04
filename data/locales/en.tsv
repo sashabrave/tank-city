@@ -3335,3 +3335,53 @@ Q · есть сразу	Q · from the start
 Карточки переброшены	Cards rerolled
 Броня цела	Armor intact
 Припасы	Supplies
+темп огня	fire rate
+урон вблизи	close-range damage
+перезарядка Q	Q cooldown
+броня техники	vehicle armour
+жар	heat
+сила способностей	ability power
+Уровень %d из %d · «%s»	Level %d of %d · «%s»
+Класс ещё не открыт · «%s»	Class not unlocked yet · «%s»
+черновик	draft
+Глава %d · ур. %d–%d	Chapter %d · lv. %d–%d
+Получить уровень	Get the level
+Способность Q · %s	Q ability · %s
+Выбор для Q · %s	Choice for Q · %s
+Перк · %s	Perk · %s
+Выбор для Q	Choice for Q
+ловит момент	seizes the moment
+принимает удар	takes the hit
+держит технику в строю	keeps the vehicles running
+площадь	area
+засада	ambush
+После 1,5 с без стрельбы следующий выстрел +40% урона.	After 1.5 s without firing, the next shot deals +40% damage.
+Глаз-алмаз	Eagle eye
+Каждый 5-й выстрел — гарантированный крит.	Every 5th shot is a guaranteed crit.
+Кураж	Swagger
+Убийство критом: темп огня +15% на 3 с.	A kill by crit: +15% fire rate for 3 s.
+Кураж · темп +15%	Swagger · fire rate +15%
+При здоровье 25% и ниже все выстрелы критуют.	At 25% health or less every shot crits.
+Защита от пуль +12%.	Bullet protection +12%.
+Защита от пуль, взрывов и техники +12%.	Protection from bullets, blasts and vehicles +12%.
+Отдача	Recoil
+Попадание по бойцу оглушает пехоту в 1,5 клетки на 1 с. Раз в 4 с.	A hit on the soldier stuns infantry within 1.5 cells for 1 s. Once per 4 s.
+Каждое убийство чинит штаб и твою технику: полевой ремонт +25%.	Every kill repairs the HQ and your vehicle: field repair +25%.
+Больше сплава и жетонов с врагов: +20%.	More alloy and tokens from enemies: +20%.
+Горение жжёт сильнее: жар +50%.	Burning hurts more: heat +50%.
+Защита от взрывов +15%.	Blast protection +15%.
+Враги замечают ближе; первый удар по целому врагу сильнее: скрытность +10%.	Enemies notice you closer; the first hit on an unhurt enemy is stronger: stealth +10%.
+Уклонение и скрытность +10%.	Dodge and stealth +10%.
+Открывается вторая способность класса. На Q ставишь любую из открытых, менять — в Казарме.	The second class ability opens. Put any open one on Q; switch in the Barracks.
+Третья способность тоже встаёт на Q на выбор. Модификация Q — позже.	The third ability can also go on Q. Q modifications come later.
+Нажми, чтобы сменить · открыто %d из 3	Tap to switch · %d of 3 open
+Выбор для Q — с %d уровня	Choice for Q from level %d
+Выбери способность для Q	Choose the ability for Q
+✓ На Q	✓ On Q
+На Q · %s	On Q · %s
+Навык Q	Q skill
+Способность класса	Class ability
+Открывается в «Казарме» на 3 уровне класса.	Unlocks in the Barracks at class level 3.
+Ур. %d · %s: %s	Lv. %d · %s: %s
+(закрыто)	(locked)
+Старт класса · %s	Class start · %s

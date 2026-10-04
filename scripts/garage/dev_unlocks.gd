@@ -15,7 +15,7 @@ static func toggle(group:String,id:String,value:bool):
 		if id=="recruit":return
 		if value and id not in Game.class_unlocks:Game.class_unlocks.append(id)
 		if not value:
-			Game.class_unlocks.erase(id);Game.class_first_slots.erase(id);Game.class_second_slots.erase(id)
+			Game.class_unlocks.erase(id);Game.class_first_slots.erase(id);Game.class_slots.erase(id)
 			if Game.selected_class==id:Game.selected_class="recruit"
 	else:Game.set_recipe_unlocked(group,id,value)
 	Game.save_progress()
@@ -44,7 +44,7 @@ static func set_purchase(group:String,id:String,value:bool):
 	if value and id not in target:target.append(id)
 	if not value:
 		target.erase(id)
-		if group=="classes":Game.class_second_slots.erase(id)
+		if group=="classes":Game.class_slots.erase(id)
 		if group=="ability" and Game.gadget==id:Game.gadget=""
 		if group=="hq":
 			Game.hq_modules.erase(id)

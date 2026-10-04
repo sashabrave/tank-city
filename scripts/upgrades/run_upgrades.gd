@@ -25,6 +25,8 @@ static func eligible(arena,def:UpgradeDef,tier:int=3)->bool:
 		if int(Ammo.loaded_item(arena.run,def.id).get("rarity",-1))>=3:return false
 	elif def.max_stacks>0 and stacks(arena,def.id)>=def.max_stacks:return false
 	if (def.effect!=null or def.flag) and def.id in arena.run.behavior_cards:return false
+	# A card the class already has for good as a path perk never drops for that class.
+	if def.id in ClassCatalog.excluded_cards(Game.selected_class):return false
 	if "abilities" in def.requires and arena.abilities.slots.is_empty():return false
 	# Enhancements of an effect appear only after its base card: requires "card:burn".
 	for need in def.requires:

@@ -44,69 +44,224 @@ static func goal_met(id:String)->bool:var p=progress(id);return p[0]>=p[1]
 static func unlock_text(id:String)->String:
 	var unlock=info(id).unlock;var p=progress(id)
 	return "" if unlock.is_empty() else "%s · %d / %d" % [unlock.text,p[0],p[1]]
-## Class path (0.8.0, author): levels 1–20. A level costs alloy on a geometric ladder (Game.class_upgrade_cost),
-## so the first levels of any class are cheap and the second slot (level 8) comes near the world 1 general.
-## No abilities at the very start (author): the first one (Q) at 3, the second ability and second slot at 8,
-## the third at 14, a secret one at 20 (in development); the perk at 5, a stronger Q at 10, mastery at 12.
-## Every other level is a class upgrade «в разработке». Each level grows health and the class stats (GROWTH).
+## Class path (author, 4 Oct 2026; guides/01_design/10_abilities_proposal.md): levels 1–20 on a geometric alloy
+## ladder (Game.class_upgrade_cost). ONE ability slot, Q: the class ability at 3; at 8 the second class ability opens
+## and the player picks which one sits on Q (free in the Barracks); at 14 the third joins the choice (Q
+## modifications come later). Every level after the first grows health and one of the class's own stats; levels
+## 4, 10 and 18 are a «рывок» — one stat by a big step. Perks at 5, 11, 16, 20 are permanent class passives.
 const MAX_LEVEL=20
-const ABILITY_LEVELS=[3,8,14,20]
-const TRACK={3:["ability","Первая способность · слот Q"],5:["perk","Перк класса"],8:["ability","Вторая способность · второй слот"],10:["power","Q сильнее"],12:["mastery","Мастерство"],14:["ability","Третья способность"],20:["secret","Секретная способность"]}
-## Abilities of a class in unlock order; the fourth (level 20) is a secret still in development.
+const ABILITY_LEVELS=[3,8,14]
+const PERK_LEVELS=[5,11,16,20]
+const BURST_LEVELS=[4,10,18]
+## Stats a class path can grow. field: the RunState field; op: how the run gets it (add / rate: faster fire through
+## fire_multiplier / cap: speed with its cap); unit: the value of the matching run card — the power budget of a
+## path is counted in these «card units» (tests/class_path.gd keeps it near the old 0.8.0 totals).
+const STATS={
+	"health":{"title":"здоровье","chip":"здоровья","icon":"health"},
+	"crit_chance":{"field":"crit_chance","title":"шанс крита","unit":.07,"icon":"stats/crit_chance"},
+	"crit_damage":{"field":"crit_damage","title":"крит-урон","unit":.3,"icon":"stats/crit_damage"},
+	"fire_rate":{"field":"fire_multiplier","op":"rate","title":"темп огня","unit":.15,"icon":"upgrades/fire"},
+	"range":{"field":"range_multiplier","title":"дальность","unit":.12,"icon":"upgrades/range"},
+	"guard_bullet":{"field":"guard_bullet","title":"защита от пуль","unit":.12,"icon":"stats/guard_bullet"},
+	"guard_blast":{"field":"guard_blast","title":"защита от взрывов","unit":.15,"icon":"stats/guard_blast"},
+	"close_damage":{"field":"close_damage","title":"урон вблизи","unit":.18,"icon":"shotgun"},
+	"speed":{"field":"speed_multiplier","op":"cap","title":"скорость","unit":.04,"icon":"upgrades/speed"},
+	"field_repair":{"field":"field_repair","title":"полевой ремонт","unit":.25,"icon":"stats/field_repair"},
+	"dodge":{"field":"dodge","title":"уклонение","unit":.08,"icon":"stats/dodge"},
+	"q_cooldown":{"field":"class_cooldown","title":"перезарядка Q","unit":.1,"minus":true,"icon":"upgrades/device_cooldown"},
+	"vehicle_armor":{"field":"vehicle_armor","title":"броня техники","unit":.15,"icon":"vehicle"},
+	"burn_power":{"field":"burn_power","title":"жар","unit":.5,"icon":"stats/burn_power"},
+	"ability_power":{"field":"ability_power_multiplier","title":"сила способностей","unit":.15,"icon":"upgrades/device_power"},
+	"stealth":{"field":"stealth","title":"скрытность","unit":.1,"icon":"stats/stealth"},
+}
+## One path per class. stats: the five stats (health first); step: the usual growth of each; order: which stat the
+## ordinary levels raise, in turn; bursts: level → [stat, amount]; perks: levels 5, 11, 16, 20. A perk that reuses a
+## run card names it in «card» (its modifiers or behaviour switch become permanent; the card then never drops for
+## this class); a new one names its RunEffect script; «excludes» keeps a same-named card out of the class's runs.
+## Подрывник and Разведчик are out of the demo: their paths are drafts built from existing cards.
+const PATHS={
+	"recruit":{"motto":"ловит момент","stats":["health","crit_chance","crit_damage","fire_rate","range"],
+		"step":{"crit_chance":.01,"crit_damage":.05,"fire_rate":.025,"range":.02},"order":["crit_chance","crit_damage","fire_rate","range"],
+		"bursts":{4:["crit_damage",.15],10:["crit_chance",.03],18:["fire_rate",.075]},
+		"perks":[
+			{"level":5,"id":"opening_shot","title":"Выдержка","text":"После 1,5 с без стрельбы следующий выстрел +40% урона.","card":"opening_shot"},
+			{"level":11,"id":"sharp_eye","title":"Глаз-алмаз","text":"Каждый 5-й выстрел — гарантированный крит.","effect":"res://scripts/classes/perks/sharp_eye.gd","icon":"upgrades/crit_chance"},
+			{"level":16,"id":"courage","title":"Кураж","text":"Убийство критом: темп огня +15% на 3 с.","effect":"res://scripts/classes/perks/courage.gd","icon":"upgrades/legend_fury"},
+			{"level":20,"id":"last_line","title":"Последний рубеж","text":"При здоровье 25% и ниже все выстрелы критуют.","effect":"res://scripts/classes/perks/last_line.gd","excludes":["last_stand"],"icon":"upgrades/last_stand"}]},
+	"heavy":{"motto":"принимает удар","stats":["health","guard_bullet","guard_blast","close_damage","speed"],
+		"step":{"guard_bullet":.015,"guard_blast":.015,"close_damage":.03,"speed":.005},"order":["guard_bullet","close_damage","guard_blast","speed"],
+		"bursts":{4:["guard_bullet",.05],10:["close_damage",.1],18:["guard_blast",.05]},
+		"perks":[
+			{"level":5,"id":"guard_bullet","title":"Бронежилет","text":"Защита от пуль +12%.","card":"guard_bullet"},
+			{"level":11,"id":"fortress","title":"Крепость","text":"Защита от пуль, взрывов и техники +12%.","card":"fortress"},
+			{"level":16,"id":"recoil","title":"Отдача","text":"Попадание по бойцу оглушает пехоту в 1,5 клетки на 1 с. Раз в 4 с.","effect":"res://scripts/classes/perks/recoil.gd","icon":"upgrades/crit_stun"},
+			{"level":20,"id":"legend_second_wind","title":"Второе дыхание","text":"Раз за поле смертельный удар оставляет 1 здоровья и 2 с неуязвимости.","card":"legend_second_wind"}]},
+	"engineer":{"motto":"держит технику в строю","stats":["health","field_repair","dodge","q_cooldown","vehicle_armor"],
+		"step":{"field_repair":.04,"dodge":.008,"q_cooldown":.02,"vehicle_armor":.03},"order":["field_repair","q_cooldown","dodge","vehicle_armor"],
+		"bursts":{4:["field_repair",.12],10:["q_cooldown",.06],18:["vehicle_armor",.09]},
+		"perks":[
+			{"level":5,"id":"field_repair","title":"Ремонт на ходу","text":"Каждое убийство чинит штаб и твою технику: полевой ремонт +25%.","card":"field_repair"},
+			{"level":11,"id":"marauder","title":"Запасливый","text":"Больше сплава и жетонов с врагов: +20%.","card":"marauder"},
+			{"level":16,"id":"boarding","title":"Абордаж","text":"Захваченная машина сразу чинится полностью, её выстрелы +30%.","card":"boarding"},
+			{"level":20,"id":"legend_field_workshop","title":"Мастерская на колёсах","text":"Техника чинит 1 брони каждые 3 с.","card":"legend_field_workshop"}]},
+	"gunner":{"motto":"площадь","draft":true,"stats":["health","burn_power","guard_blast","ability_power","range"],
+		"step":{"burn_power":.04,"guard_blast":.01,"ability_power":.02,"range":.02},"order":["burn_power","ability_power","guard_blast","range"],
+		"bursts":{4:["burn_power",.12],10:["ability_power",.06],18:["guard_blast",.04]},
+		"perks":[
+			{"level":5,"id":"burn_heat","title":"Жар","text":"Горение жжёт сильнее: жар +50%.","card":"burn_heat"},
+			{"level":11,"id":"chain_fire","title":"Цепная реакция","text":"Горящие враги поджигают соседей, а погибая, вспыхивают.","card":"chain_fire"},
+			{"level":16,"id":"guard_blast","title":"Сапёрный костюм","text":"Защита от взрывов +15%.","card":"guard_blast"},
+			{"level":20,"id":"legend_detonator","title":"Детонатор","text":"Убитые враги взрываются: 1,5 урона соседям рядом.","card":"legend_detonator"}]},
+	"marksman":{"motto":"засада","draft":true,"stats":["health","crit_damage","stealth","range","crit_chance"],
+		"step":{"crit_damage":.05,"stealth":.015,"range":.02,"crit_chance":.01},"order":["crit_damage","stealth","range","crit_chance"],
+		"bursts":{4:["stealth",.045],10:["crit_damage",.15],18:["range",.06]},
+		"perks":[
+			{"level":5,"id":"stealth","title":"Маскхалат","text":"Враги замечают ближе; первый удар по целому врагу сильнее: скрытность +10%.","card":"stealth"},
+			{"level":11,"id":"exit_dash","title":"Смена позиции","text":"После выхода из машины: +25% скорости на 3 с. Откат 8 с.","card":"exit_dash"},
+			{"level":16,"id":"ghost","title":"Призрак","text":"Уклонение и скрытность +10%.","card":"ghost"},
+			{"level":20,"id":"legend_ricochet","title":"Шальная пуля","text":"Каждое третье попадание отскакивает в ближайшего врага: 60% урона.","card":"legend_ricochet"}]},
+}
+static func path(id:String)->Dictionary:return PATHS.get(id,PATHS.recruit)
+static func motto(id:String)->String:return str(path(id).motto)
+static func draft(id:String)->bool:return bool(path(id).get("draft",false))
+## Abilities of a class in unlock order: [Q, opens at 8, opens at 14].
 static func abilities(id:String)->Array:return [Game.CLASS_SKILLS.get(id,"grenade")]+Game.CLASS_CHOICES.get(id,[])
 static func ability_level(id:String,ability:String)->int:
-	var i=abilities(id).find(ability);return ABILITY_LEVELS[i] if i>=0 else 99
+	var i=abilities(id).find(ability);return ABILITY_LEVELS[i] if i>=0 and i<ABILITY_LEVELS.size() else 99
 static func unlocked_abilities(id:String)->Array:
 	return abilities(id).filter(func(a):return level(id)>=ability_level(id,a))
-static func slot_count(id:String)->int:return 2 if level(id)>=ABILITY_LEVELS[1] else 1 if level(id)>=ABILITY_LEVELS[0] else 0
-## Growth per level after the first (author, 0.8.0): health for everyone (Штурмовик more) plus the class's own
-## stats, same fields as run cards. Shown on the class page and on every row of the class path.
+## One slot (Q) from level 3, none before.
+static func slot_count(id:String)->int:return 1 if level(id)>=ABILITY_LEVELS[0] else 0
+## Health per level stays as in 0.8.0: +0.3, Штурмовик +0.5.
 const HP_PER_LEVEL={"heavy":.5}
-const GROWTH={
-	"recruit":[["crit_chance",.004,"шанс крита"],["crit_damage",.02,"крит-урон"]],
-	"heavy":[["guard_bullet",.006,"защита от пуль"]],
-	"gunner":[["burn_power",.02,"сила поджога"],["guard_blast",.005,"защита от взрывов"]],
-	"marksman":[["crit_damage",.025,"крит-урон"],["stealth",.004,"скрытность"]],
-	"engineer":[["field_repair",.02,"полевой ремонт"],["dodge",.003,"уклонение"]]}
 static func hp_per_level(id:String)->float:return float(HP_PER_LEVEL.get(id,.3))
-## Growth reached at the class's current level: [[field, total, title], …].
+static func burst(id:String,n:int)->bool:return path(id).bursts.has(n)
+## What level n adds: {stat: amount}, health included; level 1 is the start and adds nothing.
+static func level_gain(id:String,n:int)->Dictionary:
+	if n<2 or n>MAX_LEVEL:return {}
+	var p=path(id);var gain={"health":hp_per_level(id)}
+	if p.bursts.has(n):gain[p.bursts[n][0]]=float(p.bursts[n][1]);return gain
+	# Ordinary levels take the stats in turn, skipping the bursts.
+	var k=0
+	for at in range(2,n):
+		if not p.bursts.has(at):k+=1
+	var stat=str(p.order[k%p.order.size()]);gain[stat]=float(p.step[stat])
+	return gain
+## Sum of the growth from level 2 up to `upto` (the current level by default): {stat: total}.
+static func totals(id:String,upto:int=-1)->Dictionary:
+	if upto<0:upto=level(id)
+	var result={}
+	for stat in path(id).stats:result[stat]=0.0
+	for n in range(2,upto+1):
+		var gain=level_gain(id,n)
+		for stat in gain:result[stat]=float(result.get(stat,0.0))+float(gain[stat])
+	return result
+## Growth reached at the class's current level, as [[stat, total, title], …] without health.
 static func growth(id:String)->Array:
-	var steps=level(id)-1
-	return GROWTH.get(id,[]).map(func(g):return [g[0],float(g[1])*steps,g[2]])
-## «+0,3 здоровья · +0,4% шанс крита · …» for one level.
-static func growth_line(id:String)->String:
-	var parts=["+%s здоровья" % UiKit.number(hp_per_level(id))]
-	for g in GROWTH.get(id,[]):parts.append("+%s%% %s" % [UiKit.number(float(g[1])*100),g[2]])
-	return " · ".join(parts)
-static func track_title(at:int)->String:return str(TRACK[at][1]) if TRACK.has(at) else "Улучшение класса · в разработке"
-const PERKS={
-	"recruit":[["Шанс крита +5%",[{"stat":"crit_chance","op":"add","value":.05}]],["Урон крита +25%",[{"stat":"crit_damage","op":"add","value":.25}]]],
-	"heavy":[["Дробовик ×1,1 урона",[]],["Здоровье +2",[{"stat":"soldier_max_hp","op":"add_round","value":2.0},{"stat":"soldier_hp","op":"add_round","value":2.0}]]],
-	"gunner":[["Поджог +25%",[{"stat":"burn_power","op":"add","value":.25}]],["Защита от взрывов +15%",[{"stat":"guard_blast","op":"add","value":.15}]]],
-	"marksman":[["Снайперская винтовка ×1,15 урона",[]],["Скрытность +8%",[{"stat":"stealth","op":"add","value":.08}]]],
-	"engineer":[["Перезарядка способностей −10%",[{"stat":"ability_cooldown_multiplier","op":"scale","value":-.1}]],["Полевой ремонт +30%",[{"stat":"field_repair","op":"add","value":.3}]]],
-}
-## « · вторая способность» for a level that opens a track milestone, otherwise empty.
-static func milestone_suffix(at:int)->String:
-	if not TRACK.has(at):return ""
-	var text=Texts.render(TRACK[at][1])
-	return " · "+(text if text.begins_with("Q") else text.left(1).to_lower()+text.substr(1))
+	var t=totals(id);var result=[]
+	for stat in path(id).stats:
+		if stat!="health":result.append([stat,float(t[stat]),str(STATS[stat].title)])
+	return result
+## The path's power in run-card units (health left out: it grows as before).
+static func power_units(id:String,upto:int=MAX_LEVEL)->float:
+	var t=totals(id,upto);var sum=0.0
+	for stat in t:
+		if stat!="health":sum+=float(t[stat])/float(STATS[stat].unit)
+	return sum
+## «+0,5% шанс крита», «+0,3 здоровья», «−2% перезарядка Q».
+static func stat_chip(stat:String,amount:float)->String:
+	var def=STATS[stat]
+	if stat=="health":return "+%s %s" % [UiKit.number(snappedf(amount,.01)),def.chip]
+	return "%s%s%% %s" % ["−" if def.get("minus",false) else "+",UiKit.number(snappedf(amount*100,.1)),def.title]
+## Stat value as a number with its unit, for «сейчас → к 20» («5,7», «12%»).
+static func stat_amount(stat:String,amount:float)->String:
+	if stat=="health":return "+"+UiKit.number(snappedf(amount,.1))
+	return ("−" if STATS[stat].get("minus",false) else "+")+UiKit.number(snappedf(amount*100,.1))+"%"
+static func stat_title(stat:String)->String:var t=str(STATS[stat].title);return t.left(1).to_upper()+t.substr(1)
+## Level n's growth in one line: «+0,3 здоровья · +1% шанс крита»; a burst leads with its stat.
+static func level_line(id:String,n:int)->String:
+	var gain=level_gain(id,n);var parts=[]
+	for stat in gain:
+		if stat!="health":parts.append(stat_chip(stat,gain[stat]))
+	if gain.has("health"):parts.append(stat_chip("health",gain.health))
+	return ("Рывок · " if burst(id,n) else "")+" · ".join(parts)
+## Kept for older callers: the growth of an ordinary level.
+static func growth_line(id:String)->String:return level_line(id,2)
+## The four perks of a class.
+static func perks(id:String)->Array:return path(id).perks
+static func perk_at(id:String,n:int)->Dictionary:
+	for perk in perks(id):
+		if int(perk.level)==n:return perk
+	return {}
+static func perk_on(id:String,index:int)->bool:
+	var list=perks(id);return index>=0 and index<list.size() and level(id)>=int(list[index].level)
+static func unlocked_perks(id:String)->Array:return perks(id).filter(func(p):return level(id)>=int(p.level))
+static func perk_icon(perk:Dictionary)->String:
+	if perk.has("icon"):return str(perk.icon)
+	return "upgrades/"+str(perk.get("card",perk.id))
+## A milestone of level n: {kind: "ability"|"perk"|"", title, text, icon}.
+static func milestone(id:String,n:int)->Dictionary:
+	var index=ABILITY_LEVELS.find(n)
+	if index>=0:
+		var list=abilities(id)
+		if index>=list.size():return {}
+		var info=AbilityCatalog.DATA.get(list[index],{});var name=str(info.get("name",list[index]))
+		var title=["Способность Q · %s","Выбор для Q · %s","Выбор для Q · %s"][index] % name
+		var text=str(info.get("description",""))
+		if index==1:text="Открывается вторая способность класса. На Q ставишь любую из открытых, менять — в Казарме."
+		elif index==2:text="Третья способность тоже встаёт на Q на выбор. Модификация Q — позже."
+		return {"kind":"ability","title":title,"text":text,"icon":"abilities/"+str(list[index]),"ability":list[index]}
+	var perk=perk_at(id,n)
+	if not perk.is_empty():return {"kind":"perk","title":"Перк · "+str(perk.title),"text":str(perk.text),"icon":perk_icon(perk),"perk":perk.id}
+	return {}
+static func track_title(at:int,id:String="recruit")->String:
+	var m=milestone(id,at);return str(m.title) if not m.is_empty() else level_line(id,at)
 ## Displayed class level 1–20 (stored levels count upgrades bought, from 0).
 static func level(id:String)->int:return clampi(1+int(Game.class_levels.get(id,0)),1,MAX_LEVEL)
-## n: 0 — the level 5 perk, 1 — the level 12 mastery line.
-static func perk_on(id:String,n:int)->bool:return level(id)>=(5 if n==0 else 12)
+## Dossier lines: «Ур. 5 · Выдержка: …», «(закрыто)» until reached.
 static func perk_lines(id:String)->Array:
 	var result=[]
-	var perks=PERKS.get(id,[])
-	for n in range(perks.size()):result.append(("Ур. 5 · перк: %s" if n==0 else "Ур. 12 · мастерство: %s") % perks[n][0]+("" if perk_on(id,n) else " (закрыто)"))
+	for perk in perks(id):result.append("Ур. %d · %s: %s" % [int(perk.level),perk.title,perk.text]+("" if level(id)>=int(perk.level) else " (закрыто)"))
 	return result
+## Run cards that never drop for the selected class: the cards its unlocked perks already give for good.
+static func excluded_cards(id:String)->Array:
+	var result=[]
+	for perk in unlocked_perks(id):
+		if perk.has("card"):result.append(str(perk.card))
+		for other in perk.get("excludes",[]):result.append(str(other))
+	return result
+## RunEffect scripts of the unlocked new perks (scripts/classes/perks), read by RunEffects.
+static func perk_effects(id:String)->Array:
+	var result=[]
+	for perk in unlocked_perks(id):
+		if perk.has("effect"):result.append([str(perk.id),load(str(perk.effect))])
+	return result
+## Behaviour switches (flag or effect cards) of the unlocked perks; idempotent, also after a checkpoint restore.
+static func add_perk_cards(run,id:String=""):
+	if id=="":id=Game.selected_class
+	for perk in unlocked_perks(id):
+		var def=UpgradeRegistry.get_def(str(perk.get("card","")))
+		if def!=null and (def.flag or def.effect!=null) and def.id not in run.behavior_cards:run.behavior_cards.append(def.id)
+## Turns one stat total into run modifiers.
+static func stat_modifiers(stat:String,total:float)->Array:
+	var def=STATS.get(stat,{})
+	if not def.has("field") or is_zero_approx(total):return []
+	match str(def.get("op","add")):
+		"rate":return [{"stat":def.field,"op":"scale","value":1.0/(1.0+total)-1.0}]
+		"cap":return [{"stat":def.field,"op":"add","value":total,"cap":"speed_multiplier_cap"}]
+	return [{"stat":def.field,"op":"add","value":total}]
 static func apply_start(run):
-	for modifier in info(Game.selected_class).modifiers:RunUpgrades.apply_modifier(run,modifier,1.0)
-	for g in growth(Game.selected_class):RunUpgrades.apply_modifier(run,{"stat":g[0],"op":"add","value":g[1]},1.0)
-	var perks=PERKS.get(Game.selected_class,[])
-	for n in range(perks.size()):
-		if perk_on(Game.selected_class,n):
-			for modifier in perks[n][1]:RunUpgrades.apply_modifier(run,modifier,1.0)
+	var id=Game.selected_class
+	for modifier in info(id).modifiers:RunUpgrades.apply_modifier(run,modifier,1.0)
+	var t=totals(id)
+	for stat in t:
+		for modifier in stat_modifiers(stat,float(t[stat])):RunUpgrades.apply_modifier(run,modifier,1.0)
+	# Perks that reuse a card: its modifiers at the base rarity, its behaviour switch for good.
+	for perk in unlocked_perks(id):
+		var def=UpgradeRegistry.get_def(str(perk.get("card","")))
+		if def==null:continue
+		for modifier in def.modifiers:RunUpgrades.apply_modifier(run,modifier,Balance.tier_power(0))
+	add_perk_cards(run,id)
 	run.soldier_hp=minf(run.soldier_hp,run.soldier_max_hp)
 ## Start bonuses as dossier lines, formatted by the stat registry ("Шанс крита +5%").
 static func modifier_lines(id:String)->Array:

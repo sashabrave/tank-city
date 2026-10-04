@@ -31,6 +31,7 @@ func spawn_bullet(owner_actor,pos: Vector3,dir: Vector2i,damage: float,friendly:
 		var run=arena.run
 		if "opening_shot" in run.behavior_cards and run.elapsed-run.last_player_shot>=1.5:run.opening_until=run.elapsed+.05
 		bullet.opening=run.elapsed<=run.opening_until;run.last_player_shot=run.elapsed
+		bullet.sure_crit=run.elapsed<=run.sure_crit_until
 	var muzzle=2.15 if is_instance_valid(owner_actor) and owner_actor.kind=="boss" else .39
 	var muzzle_height=.55
 	if is_instance_valid(owner_actor.model) and owner_actor.model.get("muzzle")!=null:

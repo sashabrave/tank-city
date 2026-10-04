@@ -1,6 +1,6 @@
 extends RefCounted
 ## «Казарма» (always available): classes and their abilities, general upgrades,
-## field supply, backpack and rerolls. Class levels follow the class path (ClassCatalog.TRACK).
+## field supply, backpack and rerolls. Class levels follow the class path (ClassCatalog.PATHS).
 ## [id, title, short card text]. The numbers live in the card rows (T-254), not in the text.
 const GENERAL=[["health","Здоровье","Больше здоровья у всех классов"],["damage","Сила","Сильнее оружие и лапы у всех классов"],["mobility","Скорость","Быстрее бег; каждый уровень даёт чуть меньше"],["pressure","Напор","Шанс, что твой снаряд переживёт столкновение"]]
 const SUPPLY=[["heal","Сила лечения","upgrade/heal"],["supplies","Аптечки в передышках","upgrade/supplies"],["luck","Удача","upgrade/luck"]]

@@ -14,6 +14,7 @@ smoke
 combat_stats_revision
 upgrade_registry_revision
 class_choices
+class_path
 meta_shield
 resource_drops
 trench_regression

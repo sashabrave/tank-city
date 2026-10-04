@@ -28,7 +28,7 @@ func run():
 	page=view.find_child("Page",true,false)
 	check(page.find_child("ConceptStats",true,false)!=null and page.find_child("Take",true,false).disabled,"a class in development shows its sketch, nothing to take")
 	view.selected="recruit";view.build();await settle()
-	check(view.find_children("Slot_*","Button",true,false).size()==2 and view.find_child("Take",true,false)!=null and view.find_child("ClassPath",true,false)!=null,"one path button, two slot cells and the take button")
+	check(view.find_children("Slot_*","Button",true,false).size()==1 and view.find_child("Take",true,false)!=null and view.find_child("ClassPath",true,false)!=null,"one path button, one slot cell (Q) and the take button")
 	# Barracks redesign (T-204/T-208/T-211/T-220): main tabs on top, the path strip with the upgrade and the total.
 	check(view.find_child("Tab_general",true,false).is_in_group("h_tab") and view.find_child("ClassList",true,false)!=null,"main tabs are a row on top, classes a list on the left")
 	var total=view.find_child("TotalCost",true,false)

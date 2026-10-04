@@ -64,6 +64,13 @@ var luck=0
 var safe_slots=0
 
 var behavior_cards:Array=[]
+## Class path stats (ClassCatalog.PATHS) without a run card of their own: damage bonus within 2.5 cells, faster
+## recharge of the class ability on Q, more armour on the hero's vehicles. Set at the start from the class level.
+var close_damage=0.0
+var class_cooldown=0.0
+var vehicle_armor=0.0
+## «Глаз-алмаз» (class perk): the bullets of the volley fired until this moment always crit.
+var sure_crit_until=-10.0
 ## Ammo slots of the weapon (scripts/combat/ammo.gd): loaded types and the active one.
 var ammo_slots:Array=[{"type":"standard","rarity":0,"stats":{},"damage":0.0,"twist":false}]
 var ammo_active:=0

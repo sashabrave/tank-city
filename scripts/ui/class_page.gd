@@ -3,7 +3,7 @@ extends Control
 ## the top (StationScreen with tabs_on_top); this page puts the class list on the left — vertical, scrolling down
 ## to the last class in development, «Все классы» at its end — and on the right the class, big and pinned:
 ## portrait, name and one-line role, level N of 20 with a bar and the next price, the four key stats as large bars,
-## the two ability cells. Under it a short path strip like «Развитие заставы»: what opens at which level, the
+## the one ability cell (Q). Under it a short path strip like «Развитие заставы»: what opens at which level, the
 ## upgrade button, the total to the next ability and «Выбрать». A locked class shows «Как открыть» with progress
 ## instead. The detailed 20-level path stays behind «Все уровни»; the long description is a hint on the portrait.
 const STATS=preload("res://scripts/ui/stat_snapshot.gd")
@@ -124,7 +124,7 @@ func concept_view(pos:Vector2,area:Vector2):
 	var soon=UiKit.button(self,"В разработке",pos+Vector2(area.x-252,area.y-64),Vector2(236,48),func():pass);soon.disabled=true;soon.name="Take";UiKit.muted_locked_button(soon)
 
 ## The class, big and pinned (T-204): portrait (the long description is its hint), name and role, the level with a
-## bar and the next price, the four key stats as large bars, the class's own stats in one line, two ability cells.
+## bar and the next price, the four key stats as large bars, the class's own stats in one line, the Q ability cell.
 func hero(pos:Vector2,area:Vector2):
 	var id=viewed;var owned=id in Game.class_unlocks;var level=ClassCatalog.level(id)
 	var back=block(pos,area);back.name="Hero"
@@ -215,12 +215,12 @@ func link_button(text:String,pos:Vector2,dims:Vector2,callback:Callable)->Button
 	b.add_theme_stylebox_override("normal",flat);b.add_theme_stylebox_override("hover",hover);b.add_theme_stylebox_override("pressed",hover)
 	for key in ["font_color","font_hover_color","font_pressed_color"]:b.add_theme_color_override(key,UiKit.ORANGE)
 	return b
-## The class's own numbers (start bonus + level growth) in one line: «Шанс крита 5,4% · Крит-урон 152%».
+## The class's own growth so far in one line: «Шанс крита +3% · Крит-урон +20%» (nothing at level 1).
 static func own_stats_line(id:String)->String:
 	var parts=[]
-	for row in class_rows(id).slice(4):
-		if is_equal_approx(float(row.current),float(row.base)):continue  # nothing yet (a growth stat at level 1)
-		parts.append("%s %s%s" % [row.title,UiKit.number(snappedf(float(row.current),.1)),row.unit])
+	for g in ClassCatalog.growth(id):
+		if is_zero_approx(float(g[1])):continue
+		parts.append("%s %s" % [ClassCatalog.stat_title(str(g[0])),ClassCatalog.stat_amount(str(g[0]),float(g[1]))])
 	return " · ".join(parts)
 ## The best value of each key stat across the roster: the bars compare classes, not a fixed scale.
 static func key_stat_max()->Array:
@@ -230,15 +230,14 @@ static func key_stat_max()->Array:
 		for k in range(4):best[k]=maxf(best[k],float(rows[k].current))
 	return best
 
-## The numbers this class starts a run with: the four base ones plus its own stats (class bonus + level growth),
-## each bar from the plain start value to the class value.
+## The numbers this class starts a run with: the four base ones plus its start bonuses (the path's growth is
+## shown by own_stats_line), each bar from the plain start value to the class value.
 static func class_rows(id:String)->Array:
 	var s=CombatStats.shell_preview(id)
 	var rows=[STATS.row("Здоровье",s.health,s.health),STATS.row("Урон",s.damage,s.damage),STATS.row("Скорость",s.speed,s.speed," м/с"),STATS.row("Напор",s.pressure,s.pressure,"%")]
 	var extra={}
 	for m in ClassCatalog.info(id).modifiers:
 		if str(m.get("op","add"))=="add":extra[m.stat]=float(extra.get(m.stat,0.0))+float(m.value)
-	for g in ClassCatalog.growth(id):extra[g[0]]=float(extra.get(g[0],0.0))+float(g[1])
 	for def in StatRegistry.all():
 		if not extra.has(def.run_field) or def.run_field=="soldier_max_hp":continue
 		var base=StatRegistry.base_value(def)
@@ -246,39 +245,38 @@ static func class_rows(id:String)->Array:
 		rows.append(STATS.row(def.title,base*mult,(base+float(extra[def.run_field]))*mult,"%" if def.format=="percent" else ""))
 	return rows
 
-## Two slot cells (an ability, an empty slot with a yellow «+», or locked «С N уровня»), the name under each and
-## one short line; the ability's full text is the cell's hint. A tap on an open cell opens the ability list.
+## The one ability slot, Q (author, 4 Oct 2026): a big cell (the ability, an empty slot with a yellow «+», or locked
+## «С 3 уровня»), its name and one short line beside it; the ability's full text is the cell's hint. A tap on an open
+## cell opens the list of the class's abilities: from level 8 the player picks which one sits on Q.
 func abilities_cells(pos:Vector2,area:Vector2):
 	var id=viewed;var owned=id in Game.class_unlocks
 	ability_area=Rect2(pos+Vector2(0,6),area)
-	section(pos+Vector2(0,12),"Способности")
+	section(pos+Vector2(0,12),"Способность Q")
 	var layout=Game.class_slot_layout(id) if owned else []
-	slot_focus=clampi(slot_focus,0,1)
-	var gap=16.0;var cell=(area.x-gap)*.5;var top=40.0
-	var abilities=ClassCatalog.abilities(id)
-	for slot in range(2):
-		var x=pos.x+slot*(cell+gap)
-		var b=Button.new();add_child(b);b.position=Vector2(x,pos.y+top);b.size=Vector2(cell,cell);b.name="Slot_%d" % slot;b.focus_mode=Control.FOCUS_ALL
-		var open=slot<layout.size();var filled=open and layout[slot]!=""
-		var focused=slot==slot_focus and open
-		var style=UiKit.style(Color("2c352e") if open else Color("232a25"),14,UiKit.ORANGE if focused else Color(1,1,1,.1));style.set_border_width_all(2 if focused else 1)
-		for state in ["normal","hover","pressed","focus"]:b.add_theme_stylebox_override(state,style)
-		var at=slot
-		if owned and open:b.pressed.connect(func():slot_focus=at;screen.set_meta("slot_focus",at);build();open_popup(at))
-		if filled:UiKit.icon(b,"abilities/"+str(layout[slot]),Vector2(cell*.18,cell*.12),Vector2(cell*.64,cell*.64))
-		elif open:plus_mark(b,Vector2(cell*.3,cell*.26),cell*.4)
-		else:UiKit.icon(b,"lock",Vector2(cell*.3,cell*.26),Vector2(cell*.4,cell*.4)).modulate=Color(1,1,1,.45)
-		var key=UiKit.label(b,"Q" if slot==0 else "1",Vector2(10,cell-26),Vector2(30,20),13,UiKit.ORANGE);key.mouse_filter=Control.MOUSE_FILTER_IGNORE
-		var title="";var body=""
-		if filled:
-			var info=AbilityCatalog.DATA[str(layout[slot])];title=info.name;body="Нажми, чтобы сменить";b.tooltip_text=Texts.localized(str(info.get("description","")))
-		elif open:title="Пусто";body="Нажми, чтобы взять"
-		else:
-			var lv=ClassCatalog.ABILITY_LEVELS[slot];title="С %d уровня" % lv
-			body=AbilityCatalog.DATA[abilities[0]].name if slot==0 and abilities.size()>0 else "Второй слот"
-		var name_label=UiKit.label(self,title,Vector2(x,pos.y+top+cell+8),Vector2(cell,20),14,UiKit.INK if filled else UiKit.MUTED);name_label.clip_text=true;name_label.name="SlotTitle_%d" % slot
-		var desc=UiKit.label(self,body,Vector2(x,pos.y+top+cell+28),Vector2(cell,36),12,UiKit.MUTED);desc.name="SlotText_%d" % slot
-		desc.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;desc.vertical_alignment=VERTICAL_ALIGNMENT_TOP;desc.clip_text=true
+	slot_focus=0
+	var cell=minf(124.0,area.x*.52);var top=40.0;var slot=0
+	var b=Button.new();add_child(b);b.position=Vector2(pos.x,pos.y+top);b.size=Vector2(cell,cell);b.name="Slot_0";b.focus_mode=Control.FOCUS_ALL
+	var open=not layout.is_empty();var filled=open and layout[0]!=""
+	var style=UiKit.style(Color("2c352e") if open else Color("232a25"),14,UiKit.ORANGE if open else Color(1,1,1,.1));style.set_border_width_all(2 if open else 1)
+	for state in ["normal","hover","pressed","focus"]:b.add_theme_stylebox_override(state,style)
+	if owned and open:b.pressed.connect(func():build();open_popup(slot))
+	if filled:UiKit.icon(b,"abilities/"+str(layout[0]),Vector2(cell*.18,cell*.12),Vector2(cell*.64,cell*.64))
+	elif open:plus_mark(b,Vector2(cell*.3,cell*.26),cell*.4)
+	else:UiKit.icon(b,"lock",Vector2(cell*.3,cell*.26),Vector2(cell*.4,cell*.4)).modulate=Color(1,1,1,.45)
+	var key=UiKit.label(b,"Q",Vector2(10,cell-26),Vector2(30,20),13,UiKit.ORANGE);key.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	var title="";var body=""
+	var choices=ClassCatalog.unlocked_abilities(id).size() if owned else 0
+	if filled:
+		var info=AbilityCatalog.DATA[str(layout[0])];title=info.name;b.tooltip_text=Texts.localized(str(info.get("description","")))
+		body="Нажми, чтобы сменить · открыто %d из 3" % choices if choices>1 else "Выбор для Q — с %d уровня" % ClassCatalog.ABILITY_LEVELS[1]
+	elif open:title="Пусто";body="Нажми, чтобы взять"
+	else:
+		title="С %d уровня" % ClassCatalog.ABILITY_LEVELS[0]
+		body=AbilityCatalog.DATA[ClassCatalog.abilities(id)[0]].name
+	var tx=pos.x+cell+12;var tw=area.x-cell-12
+	var name_label=UiKit.label(self,title,Vector2(tx,pos.y+top+6),Vector2(tw,44),15,UiKit.INK if filled else UiKit.MUTED);name_label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;name_label.name="SlotTitle_0"
+	var desc=UiKit.label(self,body,Vector2(tx,pos.y+top+52),Vector2(tw,64),12,UiKit.MUTED);desc.name="SlotText_0"
+	desc.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;desc.vertical_alignment=VERTICAL_ALIGNMENT_TOP;desc.clip_text=true
 
 ## The path strip (T-204, like «Развитие заставы»): one node per milestone — level above, what it gives below —
 ## a rail filled up to the current level, the upgrade button, the total to the next ability (T-211), «Выбрать».
@@ -287,7 +285,7 @@ func path_strip(pos:Vector2,area:Vector2):
 	var back=block(pos,area);back.name="PathStrip"
 	section(pos+Vector2(16,12),"Путь класса")
 	var more=link_button("Все уровни",pos+Vector2(area.x-16-140,6),Vector2(140,32),open_path);more.name="ClassPath";more.alignment=HORIZONTAL_ALIGNMENT_RIGHT;more.tooltip_text=Texts.localized("Все 20 уровней с ростом характеристик")
-	var marks=ClassCatalog.TRACK.keys();marks.sort()
+	var marks=ClassCatalog.ABILITY_LEVELS+ClassCatalog.PERK_LEVELS;marks.sort()
 	var left=pos.x+64.0;var right=pos.x+area.x-64.0;var step=(right-left)/(marks.size()-1)
 	var cy=pos.y+84.0;var start=pos.x+20.0
 	# The rail starts at level 1 (left edge) and is green up to the current level.
@@ -332,18 +330,12 @@ func path_strip(pos:Vector2,area:Vector2):
 
 ## What a milestone gives: [kind, name, hint, icon].
 static func milestone(id:String,n:int)->Array:
-	var kind=str(ClassCatalog.TRACK[n][0]);var abilities=ClassCatalog.abilities(id);var index=ClassCatalog.ABILITY_LEVELS.find(n)
-	var perks=ClassCatalog.PERKS.get(id,[])
-	match kind:
-		"ability":
-			if index>=0 and index<abilities.size():
-				var info=AbilityCatalog.DATA[abilities[index]]
-				return ["Второй слот" if n==ClassCatalog.ABILITY_LEVELS[1] else "Способность",info.name,"%s. %s" % [info.name,info.get("description","")],"abilities/"+str(abilities[index])]
-			return ["Способность","В разработке",ClassCatalog.track_title(n),"lock"]
-		"perk":return ["Перк",perks[0][0] if perks.size()>0 else "Перк",ClassCatalog.track_title(n),"rare"]
-		"mastery":return ["Мастерство",perks[1][0] if perks.size()>1 else "Мастерство",ClassCatalog.track_title(n),"legendary"]
-		"power":return ["Способность","Q сильнее",ClassCatalog.track_title(n),"star"]
-	return ["Секрет","В разработке",ClassCatalog.track_title(n),"lock"]
+	var m=ClassCatalog.milestone(id,n)
+	if m.is_empty():return ["","",ClassCatalog.level_line(id,n),"lock"]
+	if m.kind=="ability":
+		var info=AbilityCatalog.DATA.get(m.ability,{})
+		return ["Способность Q" if n==ClassCatalog.ABILITY_LEVELS[0] else "Выбор для Q",str(info.get("name",m.ability)),"%s. %s" % [m.title,m.text],m.icon]
+	return ["Перк",str(ClassCatalog.perk_at(id,n).title),"%s. %s" % [ClassCatalog.perk_at(id,n).title,m.text],m.icon]
 ## The level the «Всего до N ур.» line counts to (T-211): the next ability level past the very next level.
 static func total_target(level:int)->int:
 	for at in ClassCatalog.ABILITY_LEVELS:
@@ -416,33 +408,33 @@ func overlay(name:String)->Control:
 	var dim=ColorRect.new();o.add_child(dim);dim.size=o.size;dim.color=Color(0,0,0,.6)
 	return o
 
-## Ability list for a slot (author's sketch): a panel beside the slots with a pointer to them, one row per ability
-## of the class — picture, name, short text, numbers as bars — and on the right its state: a big yellow «+»
-## (put it in), «В слоте» with «Убрать», «На N-м уровне», or a secret. No ×: a tap outside closes it.
+## Ability list for Q (author's sketch): a panel beside the slot with a pointer to it, one row per ability of the
+## class — picture, name, short text, numbers as bars — and on the right its state: a big yellow «+» (put it on Q),
+## «На Q», or «На N-м уровне». No ×: a tap outside closes it.
 func open_popup(slot:int):
 	var id=viewed;var o=overlay("AbilityPopup")
 	var dim=o.get_child(0);dim.color=Color(0,0,0,.35);dim.mouse_filter=Control.MOUSE_FILTER_STOP
 	dim.gui_input.connect(func(e):if e is InputEventMouseButton and e.pressed:o.queue_free())
-	var all=ClassCatalog.abilities(id)+["secret"]
+	var all=ClassCatalog.abilities(id)
 	const ROW=132.0
 	# The page is scaled with the station (StationScreen.fit): the list takes the same scale and sits beside the
 	# slots in screen space, so it lines up at any window size.
 	var k=get_global_transform().get_scale().x
-	var w=minf(560.0,ability_area.position.x-30);var h=minf(ROW*all.size()+64,size.y+40)
+	var w=minf(560.0,ability_area.position.x-30);var h=minf(ROW*all.size()+74,size.y+40)
 	var anchor=get_global_transform()*(ability_area.position+Vector2(0,34))
 	var panel=UiKit.glass(o,Vector2.ZERO,Vector2(w,h));panel.name="List";panel.scale=Vector2(k,k)
 	panel.position=Vector2(anchor.x-(w+18)*k,clampf(anchor.y-60*k,8,o.size.y-h*k-8))
-	var notch=Panel.new();o.add_child(notch);notch.size=Vector2(22,22)*k;notch.pivot_offset=notch.size*.5;notch.rotation=PI*.25;notch.position=Vector2(anchor.x-30*k,anchor.y+((ability_area.size.x-12)*.25-11)*k);notch.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	var notch=Panel.new();o.add_child(notch);notch.size=Vector2(22,22)*k;notch.pivot_offset=notch.size*.5;notch.rotation=PI*.25;notch.position=Vector2(anchor.x-30*k,anchor.y+(minf(124.0,ability_area.size.x*.52)*.5-11)*k);notch.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	notch.add_theme_stylebox_override("panel",bar_style(Color("2b332d"),3))
-	UiKit.label(panel,"Выбери способность · слот %s" % ("Q" if slot==0 else "1"),Vector2(20,16),Vector2(w-40,28),18)
+	UiKit.label(panel,"Выбери способность для Q",Vector2(20,16),Vector2(w-40,28),18)
 	var scroll=ScrollContainer.new();panel.add_child(scroll);scroll.position=Vector2(12,56);scroll.size=Vector2(w-24,h-66);scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
 	var list=Control.new();scroll.add_child(list);list.custom_minimum_size=Vector2(w-36,ROW*all.size())
 	var layout=Game.class_slot_layout(id);var open_list=ClassCatalog.unlocked_abilities(id)
 	var max_power=0.0
 	for a in ClassCatalog.abilities(id):max_power=maxf(max_power,float(AbilityCatalog.DATA[a].get("power",1.0)))
 	for i in range(all.size()):
-		var ability=str(all[i]);var y=i*ROW;var secret=ability=="secret"
-		var need=ClassCatalog.ABILITY_LEVELS[i];var open=not secret and ability in open_list
+		var ability=str(all[i]);var y=i*ROW
+		var need=ClassCatalog.ability_level(id,ability);var open=ability in open_list
 		var here=open and slot<layout.size() and layout[slot]==ability
 		var row=UiKit.panel(list,Vector2(0,y),Vector2(w-36,ROW-10),Color(1,1,1,.06) if open else Color(0,0,0,.12));row.name="Row_"+ability
 		if here:
@@ -450,32 +442,27 @@ func open_popup(slot:int):
 		var pic=UiKit.panel(row,Vector2(10,10),Vector2(ROW-30,ROW-30),Color("1f2621"))
 		UiKit.icon(pic,"abilities/"+ability if open else "lock",Vector2(12,12),pic.size-Vector2(24,24)).modulate=Color(1,1,1,1.0 if open else .7)
 		var tx=ROW-6;var tw=row.size.x-tx-ROW-6
-		if secret:
-			UiKit.label(row,"???",Vector2(tx,12),Vector2(tw,26),18,UiKit.MUTED)
-			UiKit.label(row,"Секретная способность класса · в разработке",Vector2(tx,42),Vector2(tw,36),13,UiKit.MUTED).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-		else:
-			var info=AbilityCatalog.DATA[ability]
-			UiKit.label(row,info.name,Vector2(tx,10),Vector2(tw,24),17,UiKit.INK if open else UiKit.MUTED)
-			var d=UiKit.label(row,info.get("description",""),Vector2(tx,34),Vector2(tw,34),12,UiKit.MUTED);d.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;d.clip_text=true
-			# Numbers as bars: cooldown (shorter is better) and power against the class's strongest ability.
-			var cd=float(info.get("cooldown",30.0));var pw=float(info.get("power",1.0))
-			stat_bar(row,Vector2(tx,72),tw*.5-6,"Перезарядка","%s с" % UiKit.number(cd),clampf(1.0-cd/60.0,.08,1.0),open)
-			stat_bar(row,Vector2(tx+tw*.5+6,72),tw*.5-6,"Сила",UiKit.number(pw),clampf(pw/maxf(1.0,max_power),.08,1.0),open)
+		var info=AbilityCatalog.DATA[ability]
+		UiKit.label(row,info.name,Vector2(tx,10),Vector2(tw,24),17,UiKit.INK if open else UiKit.MUTED)
+		var d=UiKit.label(row,info.get("description",""),Vector2(tx,34),Vector2(tw,34),12,UiKit.MUTED);d.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;d.clip_text=true
+		# Numbers as bars: cooldown (shorter is better) and power against the class's strongest ability.
+		var cd=float(info.get("cooldown",30.0));var pw=float(info.get("power",1.0))
+		stat_bar(row,Vector2(tx,72),tw*.5-6,"Перезарядка","%s с" % UiKit.number(cd),clampf(1.0-cd/60.0,.08,1.0),open)
+		stat_bar(row,Vector2(tx+tw*.5+6,72),tw*.5-6,"Сила",UiKit.number(pw),clampf(pw/maxf(1.0,max_power),.08,1.0),open)
 		# State on the right.
 		var ax=row.size.x-ROW+14;var side=ROW-38
 		if here:
-			UiKit.label(row,"✓ В слоте",Vector2(ax-10,14),Vector2(side+20,22),14,Color("8fe895")).horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
-			var out=UiKit.button(row,"Убрать",Vector2(ax,48),Vector2(side,40),func():o.queue_free();act(Game.set_class_slot(id,slot,""),"Слот %s пуст" % ("Q" if slot==0 else "1")));out.name="Remove_"+ability
+			var on=UiKit.label(row,"✓ На Q",Vector2(ax-10,(ROW-10)*.5-11),Vector2(side+20,22),15,Color("8fe895"));on.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;on.name="On_"+ability
 		elif open:
 			var put=Button.new();row.add_child(put);put.position=Vector2(ax,(ROW-10-side)*.5);put.size=Vector2(side,side);put.name="Put_"+ability;put.focus_mode=Control.FOCUS_ALL
 			put.tooltip_text=Texts.render("Взять в слот")
 			for state in ["normal","hover","pressed","focus"]:put.add_theme_stylebox_override(state,StyleBoxEmpty.new())
-			put.pressed.connect(func():o.queue_free();act(Game.set_class_slot(id,slot,ability),"Слот %s · %s" % ["Q" if slot==0 else "1",AbilityCatalog.DATA[ability].name]))
+			put.pressed.connect(func():o.queue_free();act(Game.set_class_slot(id,slot,ability),"На Q · %s" % AbilityCatalog.DATA[ability].name))
 			plus_mark(put,Vector2.ZERO,side)
 			UiKit.press_bounce(put)
 		else:
 			var lock=UiKit.panel(row,Vector2(ax-14,(ROW-10)*.5-24),Vector2(side+28,48),Color("1f2621"))
-			var t=UiKit.label(lock,("Секрет · %d ур." if secret else "На %d-м уровне") % need,Vector2.ZERO,lock.size,13,UiKit.MUTED);t.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;t.vertical_alignment=VERTICAL_ALIGNMENT_CENTER;t.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+			var t=UiKit.label(lock,"На %d-м уровне" % need,Vector2.ZERO,lock.size,13,UiKit.MUTED);t.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;t.vertical_alignment=VERTICAL_ALIGNMENT_CENTER;t.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 
 static func stat_bar(parent:Control,pos:Vector2,width:float,title:String,value:String,share:float,open:bool):
 	UiKit.label(parent,title,pos,Vector2(width-50,16),11,UiKit.MUTED)
@@ -483,111 +470,74 @@ static func stat_bar(parent:Control,pos:Vector2,width:float,title:String,value:S
 	var track=ColorRect.new();parent.add_child(track);track.position=pos+Vector2(0,20);track.size=Vector2(width,6);track.color=Color(1,1,1,.08);track.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	var bar=ColorRect.new();track.add_child(bar);bar.size=Vector2(width*share,6);bar.color=UiKit.ORANGE if open else Color(1,1,1,.2);bar.mouse_filter=Control.MOUSE_FILTER_IGNORE
 
-## The class path (author's draft, 0.8.0): a centre track from level 1 at the top down to 20, green up to the
-## current level; level cards alternate left and right with a pointer to the track — title, a medium picture of
-## the reward, the stat growth as small bars in two columns. Only the nearest level can be bought, by the
-## button at the bottom of its card; the rest show their price. At the very bottom: «20+», locked.
+## The class path («Все уровни», author 4 Oct 2026): laid out like «Развитие заставы» — a vertical track on the left
+## and even cards in one column (PathTrack). On top: the class motto and its five stats «сейчас → к 20». Levels come
+## in chapters of five; ordinary levels are compact rows with their growth, Q and perk levels are tall rows with a
+## picture and one line of text. Only the nearest level can be bought, by the button in its row; later rows show
+## their price.
+const CHAPTER:=5
 func open_path():
 	var id=viewed;var level=ClassCatalog.level(id);var owned=id in Game.class_unlocks;var o=overlay("ClassPathView")
 	var w=minf(940.0,o.size.x-40);var h=minf(720.0,o.size.y-40)
-	var panel=UiKit.glass(o,(o.size-Vector2(w,h))*.5,Vector2(w,h))
+	var panel=UiKit.glass(o,((o.size-Vector2(w,h))*.5).round(),Vector2(w,h));panel.name="PathPanel"
 	UiKit.accent(UiKit.label(panel,"Путь класса · %s" % Game.CLASSES[id].name,Vector2(22,14),Vector2(w-100,36),22))
 	UiKit.button(panel,"×",Vector2(w-62,14),Vector2(46,42),o.queue_free).name="Close"
-	UiKit.label(panel,"Уровень %d из %d · каждый уровень: %s" % [level,ClassCatalog.MAX_LEVEL,ClassCatalog.growth_line(id)],Vector2(22,52),Vector2(w-44,20),13,UiKit.MUTED).clip_text=true
-	var scroll=ScrollContainer.new();panel.add_child(scroll);scroll.position=Vector2(16,80);scroll.size=Vector2(w-32,h-96);scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;scroll.name="PathScroll"
-	var inner=scroll.size.x-14;var axis=inner*.5
-	var card_w=minf(380.0,axis-46);const CARD_H=214.0;const STEP=130.0;const TOP=34.0
-	var body=Control.new();scroll.add_child(body)
-	var node_y=func(n:int)->float:return TOP+(n-1)*STEP+44
-	var bottom=node_y.call(ClassCatalog.MAX_LEVEL)+CARD_H*.5+40
-	body.custom_minimum_size=Vector2(inner,bottom+190)
-	# The track: wide rounded bar, green from the top to the current level.
-	var rail=Panel.new();body.add_child(rail);rail.mouse_filter=Control.MOUSE_FILTER_IGNORE;rail.position=Vector2(axis-8,node_y.call(1));rail.size=Vector2(16,bottom-node_y.call(1))
-	rail.add_theme_stylebox_override("panel",bar_style(Color("1f2621"),8))
-	if owned:
-		var fill=Panel.new();body.add_child(fill);fill.mouse_filter=Control.MOUSE_FILTER_IGNORE;fill.name="TrackFill";fill.position=Vector2(axis-8,node_y.call(1)-8);fill.size=Vector2(16,node_y.call(level)-node_y.call(1)+16)
-		fill.add_theme_stylebox_override("panel",bar_style(Color("8fe895"),8))
-	var cost=Game.class_upgrade_cost(id,false)
-	for n in range(1,ClassCatalog.MAX_LEVEL+1):
-		var status="done" if owned and level>=n else ("goal" if owned and n==level+1 else "later")
-		var left=n%2==0;var y=node_y.call(n)
-		var node=preload("res://scripts/ui/track_node.gd").new();node.name="Node_%d" % n;node.status=status;node.milestone=ClassCatalog.TRACK.has(n)
-		var side=30.0 if ClassCatalog.TRACK.has(n) else 22.0;node.size=Vector2(side,side);node.position=Vector2(axis-side*.5,y-side*.5)
-		if status=="goal" and cost>0:node.progress=float(Game.credits)/cost
-		body.add_child(node)
-		if n==int(get_meta("just_reached",0)):node.celebrate.call_deferred()
-		var x=axis-28-card_w if left else axis+28
-		level_card(body,Vector2(x,y-46),Vector2(card_w,CARD_H),n,status,left,id,cost)
-	# Capstone under the track's end.
-	var cap=UiKit.panel(body,Vector2(axis-170,bottom+24),Vector2(340,150),Color("232a25"));cap.name="Level_20plus"
-	var notch=Panel.new();body.add_child(notch);notch.position=Vector2(axis-10,bottom+16);notch.size=Vector2(20,20);notch.rotation=PI*.25;notch.pivot_offset=Vector2(10,10);notch.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	notch.add_theme_stylebox_override("panel",UiKit.style(Color("232a25"),2))
-	var end=preload("res://scripts/ui/track_node.gd").new();end.size=Vector2(34,34);end.position=Vector2(axis-17,bottom-17);end.milestone=true;end.icon=UiKit.icon_texture("lock");body.add_child(end)
-	var t=UiKit.label(cap,"20+ уровень",Vector2(0,14),Vector2(340,30),20);t.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
-	var locked=UiKit.button(cap,"Недоступно",Vector2(70,56),Vector2(200,44),func():pass);locked.disabled=true;UiKit.muted_locked_button(locked)
-	var why=UiKit.label(cap,"Пройди игру",Vector2(0,110),Vector2(340,22),14,UiKit.MUTED);why.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
-	scroll.set_deferred("scroll_vertical",int(maxf(0,node_y.call(mini(level+1,ClassCatalog.MAX_LEVEL))-scroll.size.y*.4)))
-
-## One level card: a pointer to the track, title and state, a medium picture, growth bars in two columns,
-## and for the nearest level the buy button at the bottom.
-func level_card(body:Control,pos:Vector2,dims:Vector2,n:int,status:String,left:bool,id:String,cost:int):
-	var key=ClassCatalog.TRACK.has(n);var kind=str(ClassCatalog.TRACK[n][0]) if key else "stub"
-	var bg=Color("2a3a2e") if status=="done" else Color("3b3323") if status=="goal" else Color("232a25")
-	var notch=Panel.new();body.add_child(notch);notch.mouse_filter=Control.MOUSE_FILTER_IGNORE;notch.size=Vector2(20,20);notch.pivot_offset=Vector2(10,10);notch.rotation=PI*.25
-	notch.position=Vector2(pos.x+dims.x-12 if left else pos.x-8,pos.y+36);notch.add_theme_stylebox_override("panel",UiKit.style(bg,2))
-	var card=UiKit.panel(body,pos,dims,bg);card.name="Level_%d" % n
-	var border=UiKit.style(bg,16,UiKit.ORANGE if status=="goal" else Color(1,1,1,.06));border.set_border_width_all(2 if status=="goal" else 1);card.add_theme_stylebox_override("panel",border)
-	# Picture: the reward of a milestone, otherwise the class's main growing stat.
-	var abilities=ClassCatalog.abilities(id);var ability_index=ClassCatalog.ABILITY_LEVELS.find(n)
-	var picture={"perk":"rare","power":"star","mastery":"legendary","secret":"lock"}.get(kind,"")
-	if kind=="ability" and ability_index>=0 and ability_index<abilities.size():picture="abilities/"+str(abilities[ability_index])
-	if picture=="" and not ClassCatalog.GROWTH.get(id,[]).is_empty():picture="stats/"+str(ClassCatalog.GROWTH[id][0][0])
-	var pic_side=64.0
-	if picture!="":
-		var art=UiKit.icon(card,picture,Vector2(dims.x-pic_side-14,12),Vector2(pic_side,pic_side));art.modulate=Color(1,1,1,1.0 if status!="later" else .45)
-	UiKit.label(card,"%d уровень" % n,Vector2(16,10),Vector2(dims.x-pic_side-40,28),20,UiKit.INK if status!="later" else UiKit.MUTED)
-	var reward=""
-	if kind=="ability" and ability_index>=0 and ability_index<abilities.size():reward="Способность · "+AbilityCatalog.DATA[abilities[ability_index]].name+(" · второй слот" if n==ClassCatalog.ABILITY_LEVELS[1] else "")
-	elif kind=="perk" and ClassCatalog.PERKS.has(id):reward="Перк · "+Texts.render(ClassCatalog.PERKS[id][0][0])
-	elif kind=="mastery" and ClassCatalog.PERKS.has(id):reward="Мастерство · "+Texts.render(ClassCatalog.PERKS[id][1][0])
-	elif kind=="power":reward="Q сильнее"
-	elif kind=="secret":reward="Секретная способность · в разработке"
-	else:reward="Улучшение класса · в разработке"
-	var r=UiKit.label(card,reward,Vector2(16,40),Vector2(dims.x-pic_side-40,38),13,UiKit.ORANGE if key and status!="later" else UiKit.MUTED);r.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-	# Growth as bars in two columns: health and the class stats, value after this level, bar toward level 20.
-	var stats=[["Здоровье",ClassCatalog.hp_per_level(id),""]]
-	for g in ClassCatalog.GROWTH.get(id,[]):stats.append([str(g[2]).left(1).to_upper()+str(g[2]).substr(1),float(g[1])*100,"%"])
-	var col_w=(dims.x-40)*.5
-	var current=ClassCatalog.level(id) if id in Game.class_unlocks else 1
+	var sub="Уровень %d из %d · «%s»" % [level,ClassCatalog.MAX_LEVEL,ClassCatalog.motto(id)] if owned else "Класс ещё не открыт · «%s»" % ClassCatalog.motto(id)
+	if ClassCatalog.draft(id):sub+=" · черновик"
+	UiKit.label(panel,sub,Vector2(22,52),Vector2(w-44,20),14,UiKit.MUTED).name="PathSummary"
+	# Five stat tiles: what the class has now and what it will have at level 20.
+	var stats:Array=ClassCatalog.path(id).stats;var now=ClassCatalog.totals(id,level if owned else 1);var top=ClassCatalog.totals(id,ClassCatalog.MAX_LEVEL)
+	var gap=10.0;var tile_w=(w-44-gap*(stats.size()-1))/stats.size()
 	for k in range(stats.size()):
-		var cx=16+(k%2)*(col_w+8);var cy=88+floori(k/2.0)*40
-		var total=stats[k][1]*(n-1)
-		var name=UiKit.label(card,str(stats[k][0]),Vector2(cx,cy),Vector2(col_w-60,18),12,UiKit.MUTED);name.clip_text=true
-		var value=UiKit.label(card,"+%s%s" % [UiKit.number(snappedf(total,.01)),stats[k][2]],Vector2(cx+col_w-70,cy),Vector2(70,18),12,Color("8fe895") if status=="done" else UiKit.INK if status=="goal" else UiKit.MUTED);value.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
-		var track=ColorRect.new();card.add_child(track);track.position=Vector2(cx,cy+22);track.size=Vector2(col_w,6);track.color=Color(1,1,1,.08);track.mouse_filter=Control.MOUSE_FILTER_IGNORE
-		# What the class has now (light), and in green what this level adds on top of it (T-173).
-		var per=col_w/(ClassCatalog.MAX_LEVEL-1);var now=mini(n,current)-1
-		var base=ColorRect.new();track.add_child(base);base.size=Vector2(per*now,6);base.color=Color(1,1,1,.5);base.mouse_filter=Control.MOUSE_FILTER_IGNORE
-		if n>current:
-			var gain=ColorRect.new();track.add_child(gain);gain.position.x=per*now;gain.size=Vector2(per*(n-current),6);gain.color=Color("8fe895",1.0 if status=="goal" else .55);gain.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	# Bottom: bought / buy (nearest level only) / price.
-	var by=dims.y-46
-	if status=="done":
-		UiKit.label(card,"✓ Получено",Vector2(16,by+8),Vector2(dims.x-32,26),15,Color("8fe895"))
-	elif status=="goal":
-		var short=cost-Game.credits
-		var b=UiKit.button(card,("Получить · %d ◈" % cost) if short<=0 else ("Не хватает %d ◈" % short),Vector2(16,by),Vector2(dims.x-32,38),func():
-			if Game.upgrade_class(id,false):
-				Game.sound("upgrade",self);set_meta("just_reached",n);screen.notice="Уровень %d" % n;screen.changed.emit()
-				var old=get_node_or_null("ClassPathView")
-				if old:remove_child(old);old.queue_free()
-				# The page under the path refreshes too (T-206): a level-3 purchase unlocks the ability cell at once.
-				build();open_path()
-		,short<=0)
-		b.name="Buy_%d" % n;b.disabled=short>0;UiKit.muted_locked_button(b)
+		var stat=str(stats[k])
+		var tile=UiKit.panel(panel,Vector2(22+k*(tile_w+gap),82),Vector2(tile_w,58),Color(1,1,1,.05));tile.name="StatTile_"+stat
+		var icon=UiKit.icon(tile,str(ClassCatalog.STATS[stat].icon),Vector2(10,14),Vector2(30,30));icon.modulate=Color(1,1,1,.9)
+		var t=UiKit.label(tile,ClassCatalog.stat_title(stat),Vector2(48,6),Vector2(tile_w-56,18),12,UiKit.MUTED);t.clip_text=true
+		var v=UiKit.label(tile,"%s → %s" % [ClassCatalog.stat_amount(stat,float(now[stat])),ClassCatalog.stat_amount(stat,float(top[stat]))],Vector2(48,26),Vector2(tile_w-56,24),16,UiKit.INK);v.clip_text=true;v.name="Value"
+	var scroll=ScrollContainer.new();panel.add_child(scroll);scroll.position=Vector2(16,152);scroll.size=Vector2(w-32,h-168);scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;scroll.name="PathScroll"
+	var column=VBoxContainer.new();scroll.add_child(column);column.name="Levels"
+	var cost=Game.class_upgrade_cost(id,false);var items=[]
+	for n in range(1,ClassCatalog.MAX_LEVEL+1):items.append(level_row(id,n,level,owned,cost))
+	var track=preload("res://scripts/ui/path_track.gd").build(column,items,scroll.size.x-14,{"just":str(get_meta("just_reached","")),"node":38.0})
+	var goal=track.get_node_or_null("Item_%d" % mini(level+1,ClassCatalog.MAX_LEVEL))
+	if goal:scroll.set_deferred("scroll_vertical",int(maxf(0,goal.position.y-scroll.size.y*.35)))
+
+## One row of the path: level number, what it gives, its state and the buy button or the price.
+func level_row(id:String,n:int,level:int,owned:bool,cost:int)->Dictionary:
+	var status="done" if owned and level>=n else ("goal" if owned and n==level+1 else "later")
+	var row={"id":str(n),"number":str(n),"status":status,"height":66.0,"title_size":15,"picture_box":76.0}
+	if (n-1)%CHAPTER==0:row["header"]="Глава %d · ур. %d–%d" % [(n-1)/CHAPTER+1,n,mini(n+CHAPTER-1,ClassCatalog.MAX_LEVEL)]
+	var state={"done":"Получено","goal":"Следующий уровень","later":"Позже"}[status]
+	if status=="goal" and Game.credits<cost:state="Не хватает %d ◈" % (cost-Game.credits)
+	row["caption"]=state
+	var m=ClassCatalog.milestone(id,n)
+	if n==1:
+		var start=ClassCatalog.modifier_lines(id)
+		row["title"]="Старт класса"+(" · "+" · ".join(start) if not start.is_empty() else "")
+		row["texture"]=preload("res://scripts/ui/class_gallery.gd").texture(id,true);row["height"]=78.0
+	elif not m.is_empty():
+		row["height"]=118.0;row["title_size"]=17;row["title"]=m.title;row["detail"]=m.text;row["icon"]=m.icon
+		row["caption"]=state+" · "+ClassCatalog.level_line(id,n)
 	else:
-		var price=UiKit.label(card,str(Game.class_step_cost(n-2)) if n>=2 else "",Vector2(16,by+8),Vector2(dims.x-60,26),15,UiKit.MUTED)
-		if n>=2:UiKit.icon(card,"alloy",Vector2(16+price.get_theme_font("font").get_string_size(price.text,HORIZONTAL_ALIGNMENT_LEFT,-1,15).x+6,by+10),Vector2(20,20)).modulate=Color(1,1,1,.6)
+		row["title"]=ClassCatalog.level_line(id,n)
+		var gain=ClassCatalog.level_gain(id,n);var main="health"
+		for stat in gain:
+			if stat!="health":main=stat
+		row["icon"]=str(ClassCatalog.STATS[main].icon);row["picture"]=38.0
+		if ClassCatalog.burst(id,n):row["height"]=78.0;row["title_size"]=16
+	# Right side: the buy button on the nearest level, the price on later ones.
+	if status=="goal" and cost>0:
+		row["action"]={"text":str(cost),"icon":"alloy","name":"Buy_%d" % n,"width":120.0,"enabled":Game.credits>=cost,"tooltip":"Получить уровень","callback":func():buy_level(id,n)}
+	elif status=="later" and n>=2:
+		row["pill"]={"text":str(Game.class_step_cost(n-2)),"icon":"alloy","width":104.0}
+	return row
+func buy_level(id:String,n:int):
+	if not Game.upgrade_class(id,false):return
+	Game.sound("upgrade",self);set_meta("just_reached",str(n));screen.notice="Уровень %d" % n;screen.changed.emit()
+	var old=get_node_or_null("ClassPathView")
+	if old:remove_child(old);old.queue_free()
+	# The page under the path refreshes too (T-206): a level-3 purchase unlocks the ability cell at once.
+	build();open_path()
 
 ## Esc closes the open list or path first, not the whole Barracks (T-189).
 func _input(event):

@@ -1,7 +1,7 @@
 extends Node
 ## Default key bindings and the player's movement/fire intent from keyboard and touch controls.
 const MOVE_DIRECTIONS={"north":Vector2i.UP,"south":Vector2i.DOWN,"west":Vector2i.LEFT,"east":Vector2i.RIGHT}
-const DEFAULT_KEYS={"north": [KEY_W, KEY_UP], "south": [KEY_S, KEY_DOWN], "west": [KEY_A, KEY_LEFT], "east": [KEY_D, KEY_RIGHT], "fire": [KEY_SPACE], "interact": [KEY_E], "hide_trench": [KEY_C], "pause": [KEY_ESCAPE, KEY_TAB], "class_ability":[KEY_Q],"hq_ability":[KEY_2],"ability": [KEY_F],"skill_1":[KEY_1],"skill_2":[]}
+const DEFAULT_KEYS={"north": [KEY_W, KEY_UP], "south": [KEY_S, KEY_DOWN], "west": [KEY_A, KEY_LEFT], "east": [KEY_D, KEY_RIGHT], "fire": [KEY_SPACE], "interact": [KEY_E], "hide_trench": [KEY_C], "pause": [KEY_ESCAPE, KEY_TAB], "class_ability":[KEY_Q],"hq_ability":[KEY_2],"ability": [KEY_F]}
 var touch_direction=Vector2i.ZERO
 var touch_fire=false
 var keyboard_fire_held=false

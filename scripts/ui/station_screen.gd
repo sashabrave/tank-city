@@ -190,57 +190,18 @@ func build():
 		animate_cards=false
 	detail_box=UiKit.panel(panel,Vector2(area.end.x-detail_w,area.position.y),Vector2(detail_w,area.size.y),Color("2c352e"));detail_box.name="Detail"
 	render_detail()
-## Vertical milestones (T-191, the same quiet look as the class path): a thin track through big numbered
-## circles — done green, the next goal with an orange ring, later hollow — and an airy card per step.
-## A tap selects the step for the detail panel.
+## Vertical milestones (T-191): drawn by PathTrack, the same path as the class path («Все уровни»). A tap selects
+## the step for the detail panel; a reached step with alloy waiting carries a «+N» button right in the row.
 func milestones(column:VBoxContainer,items:Array):
-	const ROW=104.0;const NODE=46.0;const X=8.0;const GAP=14.0
-	var holder=Control.new();holder.name="Path";column.add_child(holder);holder.custom_minimum_size=Vector2(510,ROW*items.size()+8)
-	var axis=X+NODE*.5;var card_h=ROW-GAP;var mid=func(i:int)->float:return i*ROW+card_h*.5
-	if items.size()>1:
-		var rail=Panel.new();holder.add_child(rail);rail.mouse_filter=Control.MOUSE_FILTER_IGNORE;rail.position=Vector2(axis-3,mid.call(0));rail.size=Vector2(6,mid.call(items.size()-1)-mid.call(0))
-		rail.add_theme_stylebox_override("panel",bar_style(Color(1,1,1,.08),3))
-		var last=-1
-		for i in range(items.size()):
-			if str(items[i].get("status",""))=="done":last=i
-		if last>0:
-			var fill=Panel.new();holder.add_child(fill);fill.mouse_filter=Control.MOUSE_FILTER_IGNORE;fill.position=Vector2(axis-3,mid.call(0));fill.size=Vector2(6,mid.call(last)-mid.call(0))
-			fill.add_theme_stylebox_override("panel",bar_style(Color("8fe895"),3))
-	var left=X+NODE+20
-	for i in range(items.size()):
-		var item=items[i];var status=str(item.get("status","later"));var y=i*ROW
-		var row=Button.new();holder.add_child(row);row.name="Item_"+str(item.id);row.position=Vector2(left,y);row.size=Vector2(510-left-14,card_h);row.focus_mode=Control.FOCUS_NONE
-		var chosen=str(item.id)==selected
-		var bg=Color(UiKit.ORANGE,.16) if status=="goal" else Color(1,1,1,.05) if status=="done" else Color(0,0,0,.14)
-		var style=UiKit.style(bg,14,UiKit.ORANGE if chosen else Color(1,1,1,.07));style.set_border_width_all(2 if chosen else 1)
-		for state in ["normal","hover","pressed","focus"]:row.add_theme_stylebox_override(state,style)
-		var id=str(item.id)
-		row.pressed.connect(func():selected=id;notice="";build())
-		var node=preload("res://scripts/ui/track_node.gd").new();node.status=status;node.milestone=true;node.number=str(i+1);node.size=Vector2(NODE,NODE);node.position=Vector2(axis-NODE*.5,mid.call(i)-NODE*.5);node.name="Node_"+id
-		if status=="goal":node.progress=float(item.get("progress",0.0))
-		holder.add_child(node)
-		if id==str(get_meta("just_claimed","")):node.celebrate.call_deferred()
-		var pic=card_h-28
-		var art=TextureRect.new();row.add_child(art);art.mouse_filter=Control.MOUSE_FILTER_IGNORE;art.position=Vector2(14,14);art.size=Vector2(pic,pic)
-		art.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;art.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		art.texture=item.get("texture",UiKit.icon_texture(str(item.get("icon",""))))
-		if status=="later":
-			var grey=ShaderMaterial.new();grey.shader=GREY;art.material=grey;art.self_modulate=Color(.8,.8,.8,.55);art.set_meta("kit_layer",true)
-		var reward=int(item.get("reward",0));var right=112.0 if reward>0 else 14.0
-		var text_x=14+pic+16;var text_w=row.size.x-text_x-right
-		var title=UiKit.label(row,str(item.title),Vector2(text_x,card_h*.5-26),Vector2(text_w,26),18,UiKit.INK if status!="later" else Color(UiKit.INK,.62));title.clip_text=true
-		UiKit.label(row,str(item.get("caption","")),Vector2(text_x,card_h*.5+2),Vector2(text_w,22),13,Color("8fe895") if status=="done" else UiKit.ORANGE if status=="goal" else Color(UiKit.MUTED,.85)).clip_text=true
-		# The reward: a pill with the coin; a reached, unclaimed one becomes a «+N» button right in the row.
+	var rows=[]
+	for item in items:
+		var row=item.duplicate();var status=str(item.get("status","later"));var reward=int(item.get("reward",0));var id=str(item.id)
 		if reward>0:
 			if status=="done" and item.get("claimable",false):
-				var claim=UiKit.button(row,"+%d" % reward,Vector2(row.size.x-104,card_h*.5-20),Vector2(92,40),func():selected=id;perform("claim");set_meta("just_claimed",id),true);claim.name="Claim_"+id
-				claim.icon=UiKit.icon_texture("alloy");claim.expand_icon=true;claim.add_theme_constant_override("icon_max_width",20);claim.tooltip_text=Texts.render("Забрать награду")
-				if UiKit.motion_enabled():
-					claim.pivot_offset=claim.size*.5;var t=claim.create_tween().set_loops();t.tween_property(claim,"scale",Vector2.ONE*1.06,.5);t.tween_property(claim,"scale",Vector2.ONE,.5)
-			else:
-				var pill=UiKit.panel(row,Vector2(row.size.x-104,card_h*.5-16),Vector2(92,32),Color(1,1,1,.06) if status!="goal" else Color(UiKit.ORANGE,.24))
-				var amount=UiKit.label(pill,("" if status=="done" else "+")+str(reward),Vector2(6,4),Vector2(56,24),15,Color("8fe895") if status=="done" else UiKit.INK if status=="goal" else UiKit.MUTED);amount.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
-				UiKit.icon(pill,"alloy",Vector2(66,6),Vector2(20,20)).modulate=Color(1,1,1,1.0 if status!="later" else .5)
+				row["action"]={"text":"+%d" % reward,"icon":"alloy","name":"Claim_"+id,"pulse":true,"tooltip":"Забрать награду","callback":func():selected=id;perform("claim");set_meta("just_claimed",id)}
+			else:row["pill"]={"text":("" if status=="done" else "+")+str(reward),"icon":"alloy"}
+		rows.append(row)
+	preload("res://scripts/ui/path_track.gd").build(column,rows,510.0,{"selected":selected,"on_select":func(id):selected=id;notice="";build(),"just":str(get_meta("just_claimed",""))})
 static var GREY:Shader:
 	get:
 		if _grey==null:
