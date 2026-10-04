@@ -101,7 +101,22 @@ func run():
 	check(not shop.pull_lever(),"no tokens, no play")
 	shop.avatar.position=Vector3(0,0,3)
 	shop.interact_button.disabled=false;shop.avatar.position=shop.COUNTER+Vector3(0,0,1);shop.interact();await settle()
-	check(shop.find_child("MerchantShop",true,false)!=null,"shop window opens at the counter")
+	# The window itself, not the «MerchantShop» mesh inside the truck model (it matched this check before T-264).
+	check(is_instance_valid(shop.modal) and shop.modal.name=="MerchantShop","shop window opens at the counter")
+	# T-264: offers are big cards with a buy button each; «Перебросить» spends a run reroll on the unsold cards.
+	var shop_window=shop.modal
+	check(shop_window.find_children("Offer*","Panel",true,false).size()==shop.stock.size() and shop_window.find_child("Buy0",true,false) is Button,"T-264: every offer is a card with a buy button")
+	check(shop_window.find_child("Buy%d" % heal,true,false).disabled,"T-264: a sold offer's button is locked")
+	arena.run.rerolls_left=2
+	var unsold=func():return shop.stock.filter(func(e):return e.kind=="card" and not e.sold).map(func(e):return e.id)
+	var before_offers=unsold.call();var sold_card=shop.stock[card].duplicate()
+	check(shop_window.find_child("Reroll",true,false) is Button and not shop_window.find_child("Reroll",true,false).disabled,"T-264: reroll button is active with rerolls left")
+	check(shop.reroll_offers() and arena.run.rerolls_left==1,"T-264: reroll spends one run reroll")
+	var after_offers=unsold.call()
+	check(after_offers.size()==before_offers.size() and after_offers!=before_offers and shop.stock[card].id==sold_card.id and shop.stock[card].sold,"T-264: unsold cards change, the sold one stays")
+	check(shop.stock.filter(func(e):return e.kind=="card").all(func(e):return e.price==shop.CARD_PRICES[e.tier]),"T-264: rerolled cards keep the rarity prices")
+	arena.run.rerolls_left=0;shop.close_shop(false);shop.open_shop()
+	check(not shop.reroll_offers() and shop.find_child("Reroll",true,false).disabled,"T-264: no rerolls, no reroll")
 	shop.close_shop()
 	var checkpoint=preload("res://scripts/profile/run_checkpoint.gd").capture(arena,2,"map",{})
 	check(checkpoint.run.has("tokens"),"tokens stored in the run checkpoint")

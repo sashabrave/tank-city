@@ -135,37 +135,125 @@ func use_spot(spot:Node3D):
 	if spot.has_method("use"):spot.use(root,done)
 	else:spot.open(root,done)
 	if "modal" in spot and is_instance_valid(spot.modal):modal=spot.modal
+## Shop window (T-264): the offers are big cards in the style of the upgrade choice between waves
+## (scripts/ui/choice_card.gd, scene choice_upgrade.tscn) — picture, rarity plate, title, short effect — with a
+## buy button and the price in tokens at the bottom of each card. «Перебросить» spends the same run rerolls as the
+## upgrade cards and rolls the unsold card offers again. Cards that do not fit the width scroll sideways.
+const CARD_MIN_W:=200.0
+const CARD_MAX_W:=280.0
+const CARD_GAP:=14.0
+const BUY_ROW:=72.0
+## The reroll button and its hint under the cards.
+const REROLL_ROW:=84.0
+## Index of the card whose button had keyboard focus: a purchase rebuilds the window and keeps the place.
+var focus_index:=-1
+var reveal_cards:=false
 func open_shop():
+	CardNavigation.release_required=true
 	modal=Control.new();modal.name="MerchantShop";root.add_child(modal);modal.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);modal.add_to_group("selection_scope")
-	var shade=ColorRect.new();modal.add_child(shade);shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);shade.color=Color(0,0,0,.5)
-	var size=get_viewport().get_visible_rect().size;var width=minf(940,size.x-24);var height=minf(660,size.y-24)
-	var panel=UiKit.glass(modal,(size-Vector2(width,height))*.5,Vector2(width,height))
-	UiKit.accent(UiKit.label(panel,"Торговец",Vector2(25,18),Vector2(width-260,40),28))
-	var wallet=UiKit.icon(panel,"token",Vector2(width-265,24),Vector2(28,28))
-	var count=UiKit.label(panel,"Жетоны: %d" % arena.run.tokens,Vector2(width-230,20),Vector2(160,36),20);count.name="Wallet"
-	var close=UiKit.button(panel,"",Vector2(width-62,18),Vector2(44,40),close_shop);close.icon=UiKit.interface_icon("close");close.expand_icon=true;close.add_theme_constant_override("icon_max_width",18)
-	if status_text!="":UiKit.label(panel,status_text,Vector2(25,62),Vector2(width-50,30),17,UiKit.MUTED).name="Status"
-	var scroll=ScrollContainer.new();panel.add_child(scroll);scroll.position=Vector2(25,100);scroll.size=Vector2(width-50,height-125);scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
-	var list=VBoxContainer.new();scroll.add_child(list);list.size_flags_horizontal=Control.SIZE_EXPAND_FILL;list.add_theme_constant_override("separation",10);list.name="Stock"
-	for i in range(stock.size()):row(list,i,width-70)
-	if not shop_revealed:shop_revealed=true;UiKit.reveal_list(list)
-## One stock row (T-133): big enough for a finger — 64 px picture, 60 px button; on a narrow screen the button
-## goes under the text across the whole row.
-func row(list:VBoxContainer,i:int,width:float):
-	var entry=stock[i];var view=describe(entry)
-	var narrow=width<600
-	var text_w=width-96-(0.0 if narrow else 260.0)
-	var card=Panel.new();list.add_child(card);card.add_theme_stylebox_override("panel",UiKit.style(Color("dce3d5"),12))
-	var picture=UiKit.icon(card,view.icon,Vector2(16,18),Vector2(64,64));picture.modulate=view.get("tint",UiKit.INK)
-	UiKit.label(card,view.title,Vector2(96,12),Vector2(text_w,30),21).clip_text=true
-	var detail=UiKit.label(card,view.detail,Vector2(96,44),Vector2(text_w,52),16,UiKit.MUTED);detail.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-	var label="Продано" if entry.sold else "Купить · %d" % entry.price
-	if entry.kind=="slot":label="Сыграть · %d" % entry.price
-	var at=Vector2(16,104) if narrow else Vector2(width-244,20);var size=Vector2(width-32,60) if narrow else Vector2(228,60)
-	card.custom_minimum_size=Vector2(width,180 if narrow else 104)
-	var buy=UiKit.button(card,label,at,size,func():purchase(i),not entry.sold and arena.run.tokens>=entry.price)
-	buy.name="Buy%d" % i;buy.disabled=entry.sold or arena.run.tokens<entry.price or not available(entry);buy.add_theme_font_size_override("font_size",19)
+	var shade=ColorRect.new();modal.add_child(shade);shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);shade.color=Color(.10,.16,.12,.62)
+	var size=get_viewport().get_visible_rect().size;var width=minf(1400,size.x-24)
+	# Cards: as many as fit at 200–280 px; more scroll sideways (a finger drags the row on a phone).
+	var n=stock.size();var row_area=width-60
+	var card_w=clampf(floorf((row_area-CARD_GAP*(n-1))/maxf(1,n)),CARD_MIN_W,CARD_MAX_W)
+	var row_w=card_w*n+CARD_GAP*(n-1);var scrolls=row_w>row_area
+	var card_h=clampf(minf(740,size.y-24)-100-REROLL_ROW-(14.0 if scrolls else 0.0),300.0,480.0)
+	# The window hugs the cards and the reroll row under them.
+	var height=100+card_h+(14.0 if scrolls else 0.0)+REROLL_ROW
+	var panel=UiKit.glass(modal,((size-Vector2(width,height))*.5).round(),Vector2(width,height));panel.name="Panel"
+	UiKit.accent(UiKit.label(panel,"Торговец",Vector2(30,18),Vector2(width-360,44),30))
+	UiKit.icon(panel,"token",Vector2(width-286,24),Vector2(30,30))
+	var count=UiKit.label(panel,"Жетоны: %d" % arena.run.tokens,Vector2(width-250,20),Vector2(170,38),22);count.name="Wallet"
+	var close=UiKit.button(panel,"",Vector2(width-66,16),Vector2(48,44),close_shop);close.name="Close";close.icon=UiKit.interface_icon("close");close.expand_icon=true;close.add_theme_constant_override("icon_max_width",18)
+	var status=UiKit.label(panel,status_text if status_text!="" else "Жетоны с врагов меняются здесь на усиления",Vector2(30,62),Vector2(width-60,28),17,UiKit.MUTED);status.name="Status"
+	var scroll=ScrollContainer.new();scroll.name="StockScroll";panel.add_child(scroll)
+	scroll.size=Vector2(minf(row_area,row_w),card_h+(14.0 if scrolls else 0.0));scroll.position=Vector2(30+(row_area-scroll.size.x)*.5,100)
+	scroll.vertical_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
+	var list=HBoxContainer.new();list.name="Stock";scroll.add_child(list);list.add_theme_constant_override("separation",int(CARD_GAP))
+	for i in range(n):offer_card(list,i,card_w,card_h)
+	# The first card that can be bought takes the keyboard selection (not the close cross).
+	for i in range(n):
+		var buy=list.get_node("Offer%d/Buy%d" % [i,i])
+		if not buy.disabled:buy.set_meta("default_choice",true);break
+	# Reroll: the same counter as the upgrade cards between waves (arena.run.rerolls_left).
+	var bottom=height-REROLL_ROW+12
+	var reroll=UiKit.button(panel,"Перебросить карточки (%d)" % arena.run.rerolls_left,Vector2(30,bottom),Vector2(minf(400,width*.5-40),54),reroll_offers)
+	reroll.name="Reroll";reroll.disabled=not can_reroll();reroll.icon=UiKit.trimmed(UiKit.icon_texture("reroll"));reroll.expand_icon=true;reroll.add_theme_constant_override("icon_max_width",26)
+	UiKit.muted_locked_button(reroll)
+	var hint=UiKit.label(panel,"Перебросы общие с карточками после волны" if arena.run.rerolls_left>0 else "Перебросы закончились — их продаёт торговец",Vector2(reroll.position.x+reroll.size.x+18,bottom),Vector2(width-reroll.size.x-90,54),16,UiKit.MUTED)
+	hint.name="RerollHint";hint.vertical_alignment=VERTICAL_ALIGNMENT_CENTER;hint.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	if not shop_revealed or reveal_cards:shop_revealed=true;reveal_cards=false;UiKit.reveal_list(list)
+	var focus=list.get_node_or_null("Offer%d/Buy%d" % [focus_index,focus_index]) if focus_index>=0 else null
+	if focus and not focus.disabled:CardNavigation.choose(focus)
+## One offer as a run-upgrade card (choice_card.minimal): picture, rarity plate, family chip, title, values; the
+## buy button with the price sits in the card's bottom strip and says why it is locked.
+func offer_card(list:HBoxContainer,i:int,width:float,height:float)->Panel:
+	var entry=stock[i];var view=card_view(entry)
+	var card:Panel=load("res://scenes/ui/choice_upgrade.tscn").instantiate();card.name="Offer%d" % i;list.add_child(card)
+	card.custom_minimum_size=Vector2(width,height);card.size=Vector2(width,height-BUY_ROW+12)
+	preload("res://scripts/ui/choice_card.gd").configure(card,view,func():pass)
+	# The whole-card button of the wave screen gives way to the buy button: one button per card for E/arrows.
+	var choose=card.get_node("ChooseButton");card.remove_child(choose);choose.queue_free()
+	card.size=Vector2(width,height)
+	var glow=card.get_node_or_null("RarityGlow")
+	if glow:
+		glow.size=card.size-glow.position*2
+		if glow.material:glow.material.set_shader_parameter("rect_size",glow.size)
+	var reason=locked_reason(entry)
+	var label=reason if reason!="" else ("Сыграть · %d" if entry.kind=="slot" else "Купить · %d") % entry.price
+	var priced=reason=="" or reason.begins_with("Не хватает")
+	var buy=UiKit.button(card,"" if priced else label,Vector2(14,height-BUY_ROW+4),Vector2(width-28,54),func():focus_index=i;purchase(i),reason=="")
+	buy.name="Buy%d" % i;buy.disabled=reason!="";buy.add_theme_font_size_override("font_size",19)
 	UiKit.muted_locked_button(buy)
+	# Price with the token right after the number, centred: «Купить · 3 ◎» / «Не хватает 2 ◎».
+	if priced:
+		var line=HBoxContainer.new();line.name="Price";buy.add_child(line);line.mouse_filter=Control.MOUSE_FILTER_IGNORE
+		line.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);line.alignment=BoxContainer.ALIGNMENT_CENTER;line.add_theme_constant_override("separation",8)
+		var text=Label.new();line.add_child(text);text.mouse_filter=Control.MOUSE_FILTER_IGNORE;text.vertical_alignment=VERTICAL_ALIGNMENT_CENTER
+		text.add_theme_font_override("font",UiKit.field_font());text.add_theme_font_size_override("font_size",19)
+		text.add_theme_color_override("font_color",Color("20271f") if reason=="" else Color(.65,.69,.61,.65));Texts.set_text(text,label)
+		var coin=UiKit.icon(line,"token",Vector2.ZERO,Vector2(24,24));coin.custom_minimum_size=Vector2(24,24)
+		if reason!="":coin.modulate=Color(1,1,1,.35)
+	if entry.sold:card.modulate=Color(1,1,1,.55)
+	return card
+## Why the buy button is locked, in its own words; empty when the offer can be bought.
+func locked_reason(entry:Dictionary)->String:
+	if entry.sold:return "Продано"
+	if not available(entry):
+		match entry.kind:
+			"heal":return "Здоровье полное"
+			"repair":return "Броня цела"
+		return "Рюкзак полон"
+	if arena.run.tokens<entry.price:return "Не хватает %d" % (entry.price-arena.run.tokens)
+	return ""
+## Card data for choice_card.configure: run cards are the same cards as between waves; supplies get a grey plate.
+func card_view(entry:Dictionary)->Dictionary:
+	if entry.kind=="card":return RunUpgrades.card(arena,{"id":entry.id,"tier":entry.tier})
+	var view=describe(entry)
+	var chip={"heal":"Лечение","repair":"Техника","reroll":"Перебросы","blueprint":"Рюкзак","slot":"Удача"}.get(entry.kind,"Припасы")
+	var tier=2 if entry.kind=="blueprint" else 0
+	return {"category":chip,"family":"supply","title":view.title,"detail":view.detail,"icon":view.icon,"heading":"Чертёж" if entry.kind=="blueprint" else "Припасы","color":Color(LootCatalog.RARITY_COLORS[tier]),"tier":tier,"rows":[],"stacks":0}
+func can_reroll()->bool:
+	return arena.run.rerolls_left>0 and stock.any(func(e):return e.kind=="card" and not e.sold)
+## «Перебросить»: one run reroll rolls the unsold card offers again on the run's combat RNG (the same roll as the
+## stock); prices keep the rarity rule. Cards already on the counter are not offered again when the pool allows.
+func reroll_offers()->bool:
+	if not can_reroll():return false
+	var open=[];var shown=[]
+	for i in range(stock.size()):
+		if stock[i].kind!="card":continue
+		shown.append(stock[i].id)
+		if not stock[i].sold:open.append(i)
+	var fresh=RunUpgrades.roll_offers(arena,open.size()+shown.size()).filter(func(o):return o.id not in shown)
+	if fresh.size()<open.size():fresh=RunUpgrades.roll_offers(arena,open.size())
+	if fresh.is_empty():return false
+	arena.run.rerolls_left-=1
+	for k in range(mini(open.size(),fresh.size())):
+		var tier=clampi(int(fresh[k].tier),0,CARD_PRICES.size()-1)
+		stock[open[k]]={"kind":"card","id":fresh[k].id,"tier":tier,"price":CARD_PRICES[tier],"sold":false}
+	status_text="Карточки переброшены";Game.sound("reroll",self)
+	if is_instance_valid(modal):focus_index=-1;reveal_cards=true;close_shop(false);open_shop()
+	return true
 func describe(entry:Dictionary)->Dictionary:
 	match entry.kind:
 		"card":
