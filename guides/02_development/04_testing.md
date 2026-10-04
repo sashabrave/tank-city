@@ -45,7 +45,7 @@
 | stability_v09 | устойчивость долгого боя | — |
 | boss_campaign_revision | боссы, генераторы, флаг сундука, испытания, лабиринт достижим | chest_flag_revision, challenge_ladder_revision, challenge_hold_survive_revision, maze_revision |
 | route_roads_revision | графы маршрута трёх миров, стратегии маршрута, мир 1 | route_strategy, worlds_v13, route_world1_revision |
-| route_alternation_revision | сервисы маршрута не подряд, чередование | — |
+| route_alternation_revision | редкие точки прокачки, дороги не пересекаются, все точки достижимы, добыча ящиков на поле | — |
 | merchant_tokens_revision | торговец и жетоны, раскладка комнат, взять машину, гараж, переработка | room_layout_revision, take_vehicle_revision, garage_progression, recycling_v19 |
 | stations_revision | станции хаба, штаб, уведомления станций, точки доступности | headquarters, station_notices_revision, hub_refresh_cache |
 | quests_revision | задания, прогресс, адаптивные маршруты, новости | progression_v16, adaptive_routes, hub_polish_v11 |

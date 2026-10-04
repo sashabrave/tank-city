@@ -145,9 +145,7 @@ func _ready():
 			for next_id in info.next:
 				var target=plan[stage+1].filter(func(n):return n.id==next_id)[0]
 				var end=room_point(target,plan[stage+1].size())
-				# A service node replaces the next service row on its road: straight to the next battles (T-218).
-				if stage+1 in Campaign.SERVICES and RoutePlan.service_roads() and RoutePlan.is_service(info):path_line(pos,end)
-				elif stage+1 in Campaign.SERVICES and RoutePlan.service_roads():pass
+				if stage+1 in Campaign.SERVICES and RoutePlan.service_roads():pass
 				elif stage+1 in Campaign.SERVICES:
 					var side=-1 if (pos.x+end.x)*.5<=0 else 1
 					var camp=Vector3(side*3.25,0,stage_z(stage+1)+RoutePlan.STAGE_STEP)
@@ -169,7 +167,7 @@ func _ready():
 			elif stage in Campaign.BOSSES:MINI.boss(node,color);node.scale*=1.45
 			else:MINI.battle(node,posmod(wave_seed+stage*3+info.lane*7,4),color,visited,info.difficulty)
 			if branch=="" and not skipped and not visited:MINI.live_weather(node,preload("res://scripts/systems/weather.gd").for_room(wave_seed,stage,route_choices.merged({stage:info.id},true)),preload("res://scripts/systems/weather.gd").rain_for(stage))
-			var caption={"vehicle":"Техника","headquarters":"Депо","legend":"Захваченный КП"}.get(branch,ChallengeRooms.TITLES.get(info.type,"%02d" % (stage+1)))
+			var caption={"vehicle":"Техника","headquarters":"Депо","legend":"Захваченный КП"}.get(branch,ChallengeRooms.TITLES.get(info.type,"Генерал" if stage in Campaign.BOSSES else "Поле боя"))  # no stage numbers (T-255)
 			Visuals.label3d(node,"✓ "+caption if visited else caption,Vector3(0,.35,3.65),Color("f3eee0"),30).pixel_size=.025
 			if not visited and not skipped and branch=="":
 				for badge in range(info.difficulty):MINI.star(node,info.difficulty,badge)
@@ -185,8 +183,7 @@ func _ready():
 			Visuals.label3d(base,{"vehicle":"Техника","ability":"Способность","headquarters":"Штаб","merchant":"Торговец"}[branch],Vector3(0,.35,3.65),Color("f3eee0"),30).pixel_size=.025
 			if RoutePlan.service_roads() and service_stage<plan.size():
 				# Roads into the stop from neighbouring lanes of the previous stage, and out to the next stage.
-				for lane in RoutePlan.lane_span(i,choices.size(),plan[service_stage-1].size()):
-					if not RoutePlan.is_service(plan[service_stage-1][lane]):path_line(room_point(plan[service_stage-1][lane],plan[service_stage-1].size()),pos)
+				for lane in RoutePlan.lane_span(i,choices.size(),plan[service_stage-1].size()):path_line(room_point(plan[service_stage-1][lane],plan[service_stage-1].size()),pos)
 				for lane in RoutePlan.lane_span(i,choices.size(),plan[service_stage].size()):path_line(pos,room_point(plan[service_stage][lane],plan[service_stage].size()))
 			if service_stage==available and branch in RoutePlan.service_options_from(plan,available,route_choices,choices):fork_positions[branch]=pos;service_choices.append(branch)
 

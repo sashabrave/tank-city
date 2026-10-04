@@ -1,12 +1,15 @@
 extends Node3D
 ## Army crates: a few small olive boxes (about a quarter of a cell, 1.2× the first version) per field, usually alone, sometimes in a pair,
-## rarely stacked up to three. A player bullet breaks one into splinters with a wooden crack; with a small
-## chance it holds a little alloy. Anything walking into a crate kicks it apart too, so crates never block
-## movement or pathfinding. Placement and loot use their own RNG seeded by the room, not the combat RNG.
+## rarely stacked up to three. A player bullet breaks one into splinters with a wooden crack. Anything walking into
+## a crate kicks it apart too, so crates never block movement or pathfinding. Placement uses its own RNG seeded by
+## the room; the loot (T-228, 4 Oct: the author never saw an ingot) rolls on the run's combat RNG.
 const SIZE=Vector3(.264,.192,.204)
 const HIT_RADIUS=.24
-const LOOT_CHANCE=.15
-const LOOT=[2,4]
+## A crate broken by the soldier (shot or kicked) holds something with this chance, then one prize by weight:
+## alloy ingots, an ammo box for the gun in hand, a medkit, or a gun. Enemies kicking crates drop nothing.
+const LOOT_CHANCE=.55
+const LOOT_WEIGHTS={"alloy":45,"ammo":25,"medkit":20,"weapon":10}
+const ALLOY=[4,8]
 var arena
 var rng=RandomNumberGenerator.new()
 var crates:Array=[]  # {node, top:float}
@@ -69,10 +72,10 @@ func _physics_process(_delta):
 		if hit:smash(crate,true);continue
 		for actor in arena.actors:
 			if is_instance_valid(actor) and not actor.dead and actor.kind!="drone" and actor.kind!="flyer" and Vector2(actor.position.x-spot.x,actor.position.z-spot.z).length()<.3*actor.footprint:
-				smash(crate,false);break
+				smash(crate,actor==arena.player);break
 
-## Splinters fly from the broken crate; a shot crate may drop a little alloy.
-func smash(crate:Dictionary,shot:bool):
+## Splinters fly from the broken crate; one broken by the soldier may hold a prize (loot()).
+func smash(crate:Dictionary,by_player:bool):
 	crates.erase(crate)
 	var node:Node3D=crate.node;var pos=node.global_position+Vector3.UP*SIZE.y*.5
 	Game.sound("hit_wood",node);Game.sound("debris",arena)
@@ -95,4 +98,38 @@ func smash(crate:Dictionary,shot:bool):
 		if Vector2(other_pos.x-node.global_position.x,other_pos.z-node.global_position.z).length()<.08 and other_pos.y>node.global_position.y+.01:
 			var drop=other.node.create_tween();drop.tween_property(other.node,"position:y",other.node.position.y-SIZE.y,.18).set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT);other.top-=SIZE.y
 	node.queue_free()
-	if shot and rng.randf()<LOOT_CHANCE:preload("res://scripts/resource_drop.gd").spawn(arena,pos,rng.randi_range(LOOT[0],LOOT[1]),"alloy")
+	if by_player:loot(pos)
+
+## What a broken crate holds, rolled on the combat RNG: "" (empty) or one of LOOT_WEIGHTS. Alloy flies out as
+## ingots; the other prizes lie on the crate's cell as one item with its E / C card (reward.place_sack).
+static func roll_prize(combat:RandomNumberGenerator)->String:
+	if combat.randf()>=LOOT_CHANCE:return ""
+	var total=0
+	for kind in LOOT_WEIGHTS:total+=int(LOOT_WEIGHTS[kind])
+	var pick=combat.randi_range(0,total-1)
+	for kind in LOOT_WEIGHTS:
+		pick-=int(LOOT_WEIGHTS[kind])
+		if pick<0:return kind
+	return "alloy"
+func loot(pos:Vector3):
+	if not is_instance_valid(arena) or arena.run==null:return
+	var combat:RandomNumberGenerator=arena.run.combat_rng
+	var kind=roll_prize(combat)
+	if kind=="":return
+	if kind=="alloy":
+		preload("res://scripts/resource_drop.gd").spawn(arena,pos,combat.randi_range(ALLOY[0],ALLOY[1]),"alloy");return
+	var content={"recipes":[],"ammo":[]}
+	if kind=="ammo":
+		var types=Ammo.TYPES.filter(func(t):return Ammo.fits(t,str(arena.weapon)))
+		if types.is_empty():types=Ammo.TYPES
+		content.ammo=[Ammo.roll(types[combat.randi_range(0,types.size()-1)],1 if combat.randf()<.2 else 0,combat.randi())]
+	elif kind=="medkit":content["supplies"]=[{"type":"medkit","heal":Game.heal_amount()}]
+	else:
+		var locker=preload("res://scripts/weapon_locker.gd")
+		var pool=Game.LOOT.gun_ids().filter(func(id):return id in Game.weapon_unlocks)
+		if pool.is_empty():pool=[str(arena.weapon)]
+		var rarity=locker.pick_rarity(combat,0.0);var stats={}
+		for key in locker.STATS:
+			var span:Array=locker.STATS[key][1][rarity];stats[key]=snappedf(combat.randf_range(span[0],span[1]),.01)
+		content["weapons"]=[{"id":str(pool[combat.randi_range(0,pool.size()-1)]),"rarity":rarity,"stats":stats}]
+	arena.reward.place_sack(arena.grid_pos(pos),content)

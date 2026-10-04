@@ -4,7 +4,6 @@ const PRICE:=3
 var room:Node3D
 var arena
 var prompt
-var sign:Label3D
 static func place(parent:Node3D,context,at:Vector3)->Node3D:
 	var vendor=load("res://scripts/medkit_vendor.gd").new();vendor.room=parent;vendor.arena=context;vendor.position=at;parent.add_child(vendor);return vendor
 func _ready():
@@ -16,10 +15,8 @@ func _ready():
 		Visuals.box(self,Vector3(0,1.25,.33),Vector3(.38,.12,.02),red);Visuals.box(self,Vector3(0,1.25,.33),Vector3(.12,.38,.02),red)
 		Visuals.box(self,Vector3(0,.55,.32),Vector3(.5,.14,.04),Color("2a3033"),"gunmetal")
 		Visuals.box(self,Vector3(0,1.76,0),Vector3(.86,.12,.66),red,"paint")
-	sign=Visuals.label3d(self,"Аптечка · %d жетона · E" % PRICE,Vector3(0,2.1,0),Color("f6c5bc"),24)
+	# No sign over the machine (T-226): the prompt on approach says what it does, the price and why it refuses.
 	prompt=preload("res://scripts/interaction_prompt.gd").attach(self,room,status(),Vector3.ZERO,1.4)
-	# The world sign fades while the prompt shows, so it doesn't stack with the weapon crate's sign (T-213).
-	prompt.twin=sign;prompt.twin_searched=true
 func _process(_delta):
 	if prompt:prompt.caption=status()
 ## What a press does now (T-213): the prompt says it before the press, not only after it.

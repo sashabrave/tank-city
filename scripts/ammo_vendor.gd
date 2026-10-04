@@ -31,8 +31,8 @@ func _ready():
 		Visuals.box(self,Vector3(0,.55,.32),Vector3(.5,.14,.04),Color("2a3033"))
 		Visuals.box(self,Vector3(0,1.75,0),Vector3(.86,.12,.66),brass,"brass")
 		var glow=OmniLight3D.new();add_child(glow);glow.position=Vector3(0,1.3,.7);glow.light_color=Color("9fe6ff");glow.light_energy=.5;glow.omni_range=2.0
-	Visuals.label3d(self,"Боеприпасы · %d жетона · E" % PRICE,Vector3(0,2.1,0),Color("fff0ce"),22)
-	preload("res://scripts/interaction_prompt.gd").attach(self,room,"Автомат боеприпасов",Vector3.ZERO,1.4)
+	# No sign over the machine (T-226): the prompt on approach names it and its cheapest crate.
+	preload("res://scripts/interaction_prompt.gd").attach(self,room,"Автомат боеприпасов · ящик от %d жетонов" % int(CRATES[0][2]),Vector3.ZERO,1.4)
 func near(avatar:Node3D)->bool:return avatar.global_position.distance_to(global_position)<1.4
 ## How far along the map the run is, 0..1 (the crates' odds slide toward their deep values).
 func depth()->float:

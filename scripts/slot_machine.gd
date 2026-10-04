@@ -26,7 +26,7 @@ func _ready():
 		Visuals.box(self,Vector3(.6,1.1,0),Vector3(.08,.5,.08),Color("6b6f6a"),"steel")
 		Visuals.box(self,Vector3(.6,1.42,0),Vector3(.16,.16,.16),Color("d64a3c"))
 		var glow=OmniLight3D.new();add_child(glow);glow.position=Vector3(0,1.4,.8);glow.light_color=Color("ffd27a");glow.light_energy=.7;glow.omni_range=2.4
-	if room:preload("res://scripts/interaction_prompt.gd").attach(self,room,"Автомат · %d жетона" % PRICE,Vector3.ZERO,1.9,func():return true)
+	if room:preload("res://scripts/interaction_prompt.gd").attach(self,room,"Фортуна · автомат удачи за %d жетона" % PRICE,Vector3.ZERO,1.9,func():return true)
 func near(avatar:Node3D)->bool:return avatar.global_position.distance_to(global_position)<1.9
 ## Pulls the lever: pays PRICE tokens, rolls the outcome and opens the reel window over ui_root.
 ## Returns the result line, or "" when there are not enough tokens.

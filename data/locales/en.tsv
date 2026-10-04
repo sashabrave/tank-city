@@ -3261,3 +3261,16 @@ Q · есть сразу	Q · from the start
 броня	armour
 перезарядка	reload
 +5 HP	+5 HP
+Механик · улучшение машины	Mechanic · vehicle upgrade
+Инструктор · улучшение способности	Instructor · ability upgrade
+Штаб · модуль или припасы	HQ · module or supplies
+Торговец · карточки и припасы за жетоны	Merchant · cards and supplies for tokens
+Автомат боеприпасов · ящик от %d жетонов	Ammo machine · crates from %d tokens
+Фортуна · автомат удачи за %d жетона	Fortune · slot machine for %d tokens
+Ящик с оружием · стволы от %d ◈	Weapon crate · guns from %d ◈
+Ящик с оружием · всё куплено	Weapon crate · sold out
+Сильнее на %d%%	Stronger by %d%%
+Слабее на %d%%	Weaker by %d%%
+Как в руках	Same as in hand
+В руках	In hand
+Поле боя	Battlefield

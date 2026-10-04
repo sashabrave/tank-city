@@ -16,6 +16,12 @@ func run():
 	var kinds={}
 	for seed in range(200):kinds[RoomLayout.plan(seed,2,false).fortune]=true;kinds["m_"+RoomLayout.plan(seed,2,false).machine]=true
 	check(kinds.has("slot") and kinds.has("lootbox") and kinds.has("closed") and kinds.has("m_medkit") and kinds.has("m_lootbox"),"fortune and machine kinds all appear (%s)" % [kinds.keys()])
+	# T-234: the slot machine is the usual fortune (about 65% of rooms), a closed booth about one room in five.
+	var counts={"slot":0,"lootbox":0,"closed":0};var doubled=0
+	for seed in range(1000):
+		var layout=RoomLayout.plan(seed,3,false);counts[layout.fortune]+=1
+		if layout.fortune=="lootbox" and layout.machine=="lootbox":doubled+=1
+	check(counts.slot>550 and counts.slot<750 and counts.closed>140 and counts.closed<260 and doubled==0,"fortune shares: %s, no double ammo box" % [counts])
 	check(RoutePlan.lane_span(0,2,3)==[0,1] and RoutePlan.lane_span(1,2,3)==[1,2] and RoutePlan.lane_span(0,1,3)==[0,1,2],"service stops link to neighbouring lanes")
 	check(Campaign.service_options(1,2)==["ability","merchant"],"world 1 rows: instructor and merchant")
 	var plan=RoutePlan.build(11)
@@ -40,7 +46,7 @@ func run():
 	# from take_vehicle_revision: on foot at the mechanic, buying the parked vehicle costs alloy and waits for the next field.
 	arena.pending_vehicle="";main.show_service("vehicle",2);await get_tree().create_timer(.5).timeout
 	var garage_room=main.current;Game.credits=500
-	check(garage_room.has_node("TakeVehicleLabel"),"on foot the parked vehicle is offered")
+	check(garage_room.vehicle_for_sale and garage_room.vehicle_prompt!=null,"on foot the parked vehicle is offered")
 	var vehicle_price=int(garage_room.VEHICLE_PRICES.get(garage_room.vehicle,80))
 	garage_room.avatar.position=garage_room.PARKED+Vector3(-.8,0,.6);garage_room.interact();await settle()
 	for b in garage_room.modal.find_children("*","Button",true,false):

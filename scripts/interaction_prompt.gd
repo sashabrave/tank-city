@@ -36,6 +36,10 @@ func _ready():
 ## Shows text over the prompt for a moment, tinted, then the caption returns.
 func flash(text:String,seconds:=2.2):
 	flash_text=text;flash_time=seconds;amount=maxf(amount,.6)
+func window_open()->bool:
+	for node in get_tree().get_nodes_in_group("selection_scope"):
+		if is_instance_valid(node) and not node.is_queued_for_deletion() and node is CanvasItem and node.is_visible_in_tree():return true
+	return false
 func tapped(event:InputEvent):
 	var tap=(event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT and not event.pressed) or (event is InputEventScreenTouch and not event.pressed)
 	if not tap or amount<.5:return
@@ -54,6 +58,9 @@ func _process(delta):
 		active=active and context.phase in ["combat","countdown"]
 		if context.phase not in ["combat","countdown"]:amount=0
 	if "modal" in context:active=active and not is_instance_valid(context.modal)
+	# Any open window (shop, weapon crate, cards, tablet…) hides the world prompts (T-232): a window re-opened
+	# after a purchase is not the room's `modal` any more, so the windows group is asked as well.
+	if active and window_open():active=false;amount=0
 	if enabled_check.is_valid():active=active and enabled_check.call()
 	if active:
 		for other in get_tree().get_nodes_in_group("world_interaction_prompts"):
