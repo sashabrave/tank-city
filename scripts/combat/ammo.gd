@@ -132,10 +132,13 @@ static func replacing(run,_type:String="")->Dictionary:
 	return {} if not slot is Dictionary or slot.type in [STANDARD,EMPTY] else slot
 static func load_item(run,new_item:Dictionary)->Dictionary:
 	var at=target_slot(run)
-	# The same type already loaded is upgraded in place (the old item goes to the bag).
+	# The same type already loaded is upgraded in place. A second box of the same ammo is a copy (author,
+	# 4 Oct 2026): it merges into the loaded one and nothing extra comes out into the bag.
+	var same=false
 	for i in range(run.ammo_slots.size()):
-		if run.ammo_slots[i] is Dictionary and run.ammo_slots[i].type==new_item.type:at=i
+		if run.ammo_slots[i] is Dictionary and run.ammo_slots[i].type==new_item.type and new_item.type not in [STANDARD,EMPTY]:at=i;same=true
 	var old=run.ammo_slots[at]
+	if same:run.ammo_slots[at]=upgraded(old,new_item);run.ammo_active=at;return {}
 	run.ammo_slots[at]=new_item;run.ammo_active=at
 	# Plain rounds are an item too (author): whatever was loaded comes out — an empty slot gives nothing.
 	return old if old is Dictionary and old.type!=EMPTY else {}

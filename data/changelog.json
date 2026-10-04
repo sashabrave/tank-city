@@ -50,7 +50,8 @@
 					"Командный центр: открытая вкладка не загорается точкой от твоих же действий, например после принятия приказа оперштаба",
 					"Звонок: значок телефона стоит рядом со словом «Взять»",
 					"За полигоном в хабе появился пейзаж из тех же фигур, что окружают поле боя",
-					"Чертёж выглядит одинаково везде: в «Новом открытии» и у торговца — тот же планшет-чертёж, что в рюкзаке"
+					"Чертёж выглядит одинаково везде: в «Новом открытии» и у торговца — тот же планшет-чертёж, что в рюкзаке",
+					"Вторые такие же боеприпасы — копия: они улучшают заряженные (лучшие значения из двух), лишний ящик в рюкзак больше не падает."
 				]
 			},
 			"en": {
@@ -100,7 +101,8 @@
 					"Command centre: the open tab no longer lights a dot from your own actions, such as accepting an operations order",
 					"Incoming call: the phone icon sits right next to «Answer»",
 					"Behind the hub's range there is now a landscape of the same shapes that surround the battlefield",
-					"Blueprints look the same everywhere: «New discovery» and the merchant show the same clipboard as the backpack"
+					"Blueprints look the same everywhere: «New discovery» and the merchant show the same clipboard as the backpack",
+					"A second box of the same ammo is a copy: it upgrades the loaded one (the best values of both), no extra box drops into the backpack."
 				]
 			}
 		},

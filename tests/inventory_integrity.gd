@@ -175,6 +175,11 @@ func gear_rules():
 	check(arena.ensure_armed(true) and not Ammo.dry(r),"battle start without any rounds: plain ones are loaded")
 	r.ammo_slots=keep_slots;r.ammo_bag=keep_ammo
 	r.weapon=gun_before;Ammo.ensure(r,gun_before)
+	# A second box of the loaded type is a copy (author, 4 Oct 2026): it merges, nothing extra goes to the bag.
+	var bag_before=r.ammo_bag.size();Ammo.ensure(r,str(r.weapon));Ammo.load_item(r,Ammo.roll("burn",0,11))
+	var merged=Ammo.load_item(r,Ammo.roll("burn",1,12))
+	check(merged.is_empty() and r.ammo_bag.size()==bag_before and Ammo.loaded(r,"burn"),"a second box of the same ammo merges into the loaded one")
+	r.ammo_slots=[Ammo.standard()];r.ammo_active=0;Ammo.ensure(r,str(r.weapon))
 	# Empty hands: paws deal the bare-hand damage grown by «Сила»; Space and V scratch.
 	while Backpack.free_cells(r)<2 and not r.ammo_bag.is_empty():r.ammo_bag.pop_back()
 	check(Backpack.holster(arena) and str(r.weapon)=="paws","the gun can be put away any time")
