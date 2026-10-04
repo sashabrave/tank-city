@@ -30,6 +30,8 @@ func run():
 	run.shock_bonus=.5
 	check(is_equal_approx(CombatMods.outgoing(arena,bullet_from(player,1.0),tank),1.5),"electric rounds hit machines harder")
 	check(is_equal_approx(CombatMods.outgoing(arena,bullet_from(player,1.0),enemy),1.0),"electric rounds do not boost infantry")
+	check(enemy.slow_time>=CombatMods.SHOCK_SLOW_TIME-.01 and enemy.slow_factor>=CombatMods.SHOCK_SLOW,"electric rounds briefly slow infantry (T-231)")
+	enemy.slow_time=0.0;enemy.slow_factor=0.0
 	run.shock_bonus=0.0
 	# Stealth ambush: unhurt target only
 	run.stealth=.1

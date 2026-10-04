@@ -12,6 +12,9 @@ static func crit_overflow(arena)->float:return maxf(0.0,arena.run.crit_chance+lu
 static func dodge_overflow(arena)->float:return maxf(0.0,arena.run.dodge-CAPS.dodge)*OVERFLOW
 const BURN_TIME=3.0
 const STUN_TIME=.8
+## EMP on infantry (T-231): 25% slower for a second.
+const SHOCK_SLOW=.25
+const SHOCK_SLOW_TIME=1.0
 static func is_machine(kind:String)->bool:return kind in MACHINES
 ## Meta luck (station) plus luck cards of this run.
 static func luck(arena)->int:return Game.luck_level+(int(arena.run.luck) if arena!=null and arena.run!=null else 0)
@@ -56,6 +59,10 @@ static func outgoing(arena,bullet,target)->float:
 				arena.burst(target.position+Vector3.UP*.4,Color("86daec"),.25)
 				if rng.randf()<float(stats.get("jolt",0.0))+(.25 if "shock_short" in run.behavior_cards else 0.0):stun(target,.6)
 				if "shock_arc" in run.behavior_cards or twist:arc(arena,target,amount*.4)
+			else:
+				# T-231: EMP rounds were useless on infantry — a short jolt now slows a soldier down.
+				target.slow_time=maxf(target.slow_time,SHOCK_SLOW_TIME);target.slow_factor=maxf(target.slow_factor,SHOCK_SLOW)
+				arena.burst(target.position+Vector3.UP*.4,Color("86daec"),.18)
 		"explosive":
 			# A small blast around the target; the target itself takes the bullet.
 			var radius=float(stats.get("radius",.6));var splash=amount*float(stats.get("splash",.3))

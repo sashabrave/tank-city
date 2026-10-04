@@ -39,7 +39,8 @@
 					"На маршруте меньше точек прокачки; дороги больше не пересекаются и не ведут мимо инструктора и торговца",
 					"На карте маршрута боевые точки подписаны «Поле боя» без номеров",
 					"Маленькие ящики на поле чаще что-то дают: слитки сплава, боеприпасы, аптечку или оружие",
-					"Меньше лишних сохранений: открыть планшет, вкладку, звонок или карточку больше не запускает запись профиля со значком — такие отметки сохраняются тихо через несколько секунд или вместе со следующим настоящим сохранением."
+					"Меньше лишних сохранений: открыть планшет, вкладку, звонок или карточку больше не запускает запись профиля со значком — такие отметки сохраняются тихо через несколько секунд или вместе со следующим настоящим сохранением.",
+					"ЭМИ-боеприпасы теперь действуют и на пехоту: попадание на секунду замедляет врага на 25%."
 				]
 			},
 			"en": {
@@ -78,7 +79,8 @@
 					"Fewer upgrade stops on the route; roads no longer cross or skip the instructor and merchant",
 					"Battle stops on the route map are labelled «Battlefield» without numbers",
 					"Small field crates drop loot more often: alloy ingots, ammo, a medkit or a gun",
-					"Fewer needless saves: opening the tablet, a tab, a call or a card no longer writes the profile with the save icon — such marks are saved quietly a few seconds later or with the next real save."
+					"Fewer needless saves: opening the tablet, a tab, a call or a card no longer writes the profile with the save icon — such marks are saved quietly a few seconds later or with the next real save.",
+					"EMP ammo now works on infantry too: a hit slows the enemy by 25% for a second."
 				]
 			}
 		},
