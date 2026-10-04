@@ -7,9 +7,18 @@ var previous_markers:Array=[]
 const CAP_HEIGHT=.727
 ## Auto-fit never goes below this size: smaller text is not readable on a phone.
 const MIN_SIZE=11
-func _ready():process_mode=Node.PROCESS_MODE_ALWAYS
+## What the label looked like when it was last handled: most frames nothing changed, and then nothing is done
+## (perf, 2026-10-03: 45–97 of these ran a font-fit key build and theme lookups every frame, hidden ones too).
+var seen_text:="";var seen_size:=Vector2(-1,-1)
+func _ready():
+	process_mode=Node.PROCESS_MODE_ALWAYS
+	# A theme or language switch can change the fit without changing the text: look again then.
+	Settings.changed.connect(func():seen_size=Vector2(-1,-1))
 func _process(_delta):
 	var widget=get_parent()
+	if not widget.is_visible_in_tree():return
+	if widget.text==seen_text and widget.size==seen_size:return
+	seen_text=widget.text;seen_size=widget.size
 	if fit(widget):last=""
 	# Icons are placed from the box size too: a resized label (menu animation, container) re-places them.
 	if widget.size!=last_size:last_size=widget.size;last=""
