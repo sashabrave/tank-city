@@ -15,16 +15,22 @@ func boss_step(actor,delta:float):
 		actor.set_meta("boss_pattern",{"phase":"move","timer":1.6+actor.wave_slot*1.5,"index":0,"direction":Vector3.FORWARD,"target":Vector3.ZERO,"warning":null})
 	var state:Dictionary=actor.get_meta("boss_pattern")
 	state.timer-=delta
+	update_guard_shield(actor)
+	if state.phase=="ram":
+		ram_step(actor,state)
+		return
 	if state.phase=="charge":
 		actor.warning_ring.scale=Vector3.ONE*(1.0+.08*sin(state.timer*20))
 		if state.timer<=0:
-			fire_pattern(actor,state,spec)
 			if is_instance_valid(state.warning):state.warning.queue_free()
-			actor.warning_ring.hide();actor.attack_label.hide()
-			state.phase="recover";state.timer=2.0;state.index+=1
+			actor.warning_ring.hide();actor.attack_label.hide();state.index+=1
+			if state.attack=="ram":start_ram(actor,state);return
+			fire_pattern(actor,state,spec)
+			state.phase="recover";state.timer=1.3
 		return
 	if state.phase=="recover":
-		if state.timer<=0:state.phase="move";state.timer=1.8 if spec.id=="twins" else 2.4
+		# Shorter breaks between attacks (T-260: the general stood still too long).
+		if state.timer<=0:state.phase="move";state.timer=1.4 if spec.id=="twins" else 1.6
 		return
 	var diff=arena.player.position-actor.position;diff.y=0
 	var yaw=atan2(-diff.x,-diff.z);actor.turret_yaw=rotate_toward(actor.turret_yaw,yaw,1.9*delta);actor.model.aim(actor.turret_yaw)
@@ -36,10 +42,17 @@ func boss_step(actor,delta:float):
 		state.phase="charge";state.timer=1.1;state.direction=diff.normalized();state.target=arena.player.position
 		state.attack=spec.patterns[state.index%spec.patterns.size()]
 		actor.warning_ring.set_instance_shader_parameter("urgency",1.0);actor.warning_ring.show();actor.attack_label.show()
-		Texts.set_text(actor.attack_label,{"salvo":"Прицельный залп","fan":"Веерный залп","mortar":"Миномётный залп"}[state.attack])
+		Texts.set_text(actor.attack_label,{"salvo":"Прицельный залп","fan":"Веерный залп","mortar":"Миномётный залп","ram":"Таран"}[state.attack])
 		Game.sound("danger_warning",actor)
 		state.warning=Node3D.new();actor.add_child(state.warning)
-		if state.attack!="mortar":
+		if state.attack=="ram":
+			# Along the grid toward the hero: a wide stripe shows the lane it will crush.
+			var axis=Vector2i(signi(roundi(diff.x)),0) if absf(diff.x)>absf(diff.z) else Vector2i(0,signi(roundi(diff.z)))
+			if axis==Vector2i.ZERO:axis=Vector2i.DOWN
+			state.ram_dir=axis
+			var lane=Node3D.new();state.warning.add_child(lane);lane.rotation.y=atan2(axis.x,axis.y)
+			var mark=Visuals.box(lane,Vector3(0,.07,RAM_STEPS*.5+1),Vector3(actor.footprint*.9,.02,RAM_STEPS),Color("e8603c"));mark.material_override=EffectLighting.laser(Color("e8603c"),true)
+		elif state.attack!="mortar":
 			for angle in ([-.36,-.18,0.0,.18,.36] if state.attack=="fan" else [-.10,0.0,.10]):
 				var ray=Node3D.new();state.warning.add_child(ray);ray.rotation.y=atan2(state.direction.x,state.direction.z)+angle
 				var mark=Visuals.box(ray,Vector3(0,.07,7),Vector3(.10,.02,14),Color("efae54"));mark.material_override=EffectLighting.laser(Color("efae54"),true)
@@ -51,6 +64,30 @@ func boss_step(actor,delta:float):
 			dir=Vector2i(-toward.y,toward.x)*(1 if actor.wave_slot%2==0 else -1)
 		for next in [dir,toward,-dir]:
 			if next!=Vector2i.ZERO and arena.can_enter(actor.cell+next,actor):actor.set_facing(next);actor.try_move(next);break
+
+## Ram (T-260): after the warning the general rushes RAM_STEPS cells along the stripe, smashing brick cover;
+## the hero in the lane is hit once and the rush stops on him, on concrete or on the HQ.
+const RAM_STEPS:=6
+const RAM_SPEED:=3.5
+func start_ram(actor,state:Dictionary):
+	state.phase="ram";state.steps=RAM_STEPS;state.hit=false;state.base_speed=actor.speed;actor.speed*=RAM_SPEED
+	Game.sound("boss_radial",actor)
+func ram_step(actor,state:Dictionary):
+	if actor.moving:return
+	var dir:Vector2i=state.ram_dir;var next=actor.cell+dir
+	if state.steps>0:
+		for c in arena.cells_for(actor,next):
+			var wall=arena.room.walls.get(c)
+			if wall!=null and not wall.get("reinforced",false) and float(wall.get("hp",0))>0:arena.damage_wall(c,99.0)
+		var hero=arena.player
+		if not state.hit and is_instance_valid(hero) and not hero.dead and hero.cell in arena.cells_for(actor,next):
+			state.hit=true;hero.take_damage(actor.damage*1.5,Vector3(dir.x,0,dir.y),"","boss")
+			var feel=arena.get_node_or_null("CombatFeel")
+			if feel:feel.shake(.4)
+		elif arena.can_enter(next,actor):
+			actor.movement_pause=0;actor.set_facing(dir);actor.try_move(dir);state.steps-=1
+			if actor.moving:return
+	actor.speed=state.base_speed;state.phase="recover";state.timer=1.3
 
 func fire_pattern(actor,state:Dictionary,spec:Dictionary):
 	actor.model.kick();Game.weapon_sound(actor)
@@ -146,12 +183,9 @@ func spawn_generators():
 		room.generator_order=[Vector2i(3,3),Vector2i(g-4,3),Vector2i(g-4,g-4),Vector2i(3,g-4)]
 		room.generator_thresholds=[.8,.6,.4,.2];room.generator_hp=18.0;room.generator_guards=2
 	else:
-		# Regular boss: a small puzzle — two flank generators switch the shield on at 60% and 30%.
-		# The first side follows the run seed so the route to it differs between runs.
-		var sides=[Vector2i(2,g/2-1),Vector2i(g-3,g/2-1)]
-		if posmod(arena.run.run_seed+room.room_index,2)==1:sides.reverse()
-		room.generator_order=sides
-		room.generator_thresholds=[.6,.3];room.generator_hp=10.0+6.0*(Campaign.world-1);room.generator_guards=1 if Campaign.world==1 else 2
+		# World general (T-260, «Дуэль + волны»): no generators. At 75/50/25% HP he calls a squad; while it lives
+		# he is under a shield (BossSystem.call_guard_wave). The final boss keeps its four generators.
+		room.generator_thresholds=[.75,.5,.25];room.generator_order=[]
 	for cell in room.generator_order:
 		var node=Node3D.new();arena.add_child(node);node.position=arena.world_pos(cell)
 		Visuals.box(node,Vector3(0,.6,0),Vector3(.8,1.2,.8),Color("689baf"))
@@ -167,7 +201,40 @@ func spawn_generators():
 		arena.navigation.invalidate(cell)
 	arena.board.shape_map_walls()
 func shield_active()->bool:
-	return arena.room.generators.values().any(func(generator):return generator.active)
+	return arena.room.generators.values().any(func(generator):return generator.active) or guards_alive()
+func guards_alive()->bool:
+	return arena.room.actors.any(func(a):return is_instance_valid(a) and not a.dead and a.get_meta("boss_guard",false))
+## A squad from the top edge; the general is shielded until the last of them falls.
+func call_guard_wave():
+	var room=arena.room;var stage=room.generator_stage;room.generator_stage+=1
+	# The squad is a strong wave of the field before the general (the boss room's own roster is the boss).
+	var pool=WaveDirector.build(arena.run.run_seed+stage*7,maxi(0,room.room_index-1),2,2).filter(func(e):return e.kind!="boss")
+	if pool.is_empty():pool=[{"kind":"soldier","rank":1,"weapon":"rifle"}]
+	var amount=3+stage;var spawned=0;var columns=arena.spawn_columns()
+	for i in range(amount*3):
+		if spawned>=amount:break
+		var cell=Vector2i(columns[i%columns.size()],0)
+		if not arena.can_enter(cell):cell=arena.find_free_near(cell)
+		if not arena.can_enter(cell):continue
+		var entry=pool[arena.run.combat_rng.randi_range(0,pool.size()-1)]
+		var guard=arena.spawn_actor(entry.kind,cell,false,false,entry.get("rank",1),false,entry.get("weapon",EnemyLoadouts.default_for(entry.kind)))
+		guard.set_meta("boss_guard",true);guard.wave_slot=room.wave_roster.size()
+		room.wave_roster.append({"kind":entry.kind,"rank":entry.get("rank",1),"state":"active"});spawned+=1
+	if spawned==0:return
+	for boss in room.actors.filter(func(a):return is_instance_valid(a) and not a.dead and a.kind=="boss"):
+		var ring=boss.get_meta("guard_ring") if boss.has_meta("guard_ring") else null
+		if not is_instance_valid(ring):
+			ring=Visuals.ring(boss,Color("61d8ff"),2.6);boss.set_meta("guard_ring",ring)
+			ring.set_instance_shader_parameter("tint",Color("61d8ff"));ring.set_instance_shader_parameter("urgency",.6)
+		ring.show()
+	Game.sound("danger_warning",arena)
+	arena.toast("Генерал вызвал подкрепление — пока оно живо, у него щит")
+## Shield bubble follows the squad: it drops with the last guard.
+func update_guard_shield(actor):
+	if not actor.has_meta("guard_ring"):return
+	var ring=actor.get_meta("guard_ring")
+	if not is_instance_valid(ring) or not ring.visible or guards_alive():return
+	ring.hide();Game.sound("generator_off",arena);arena.toast("Подкрепление разбито — щит генерала снят!")
 func limit_damage(actor,amount:float)->float:
 	if shield_active():return 0.0
 	var stage=arena.room.generator_stage
@@ -178,6 +245,9 @@ func limit_damage(actor,amount:float)->float:
 	return allowed
 func activate_generator():
 	var room=arena.room
+	if room.generator_order.is_empty():
+		if room.generator_stage<room.generator_thresholds.size():call_guard_wave()
+		return
 	if room.generator_stage>=room.generator_order.size():return
 	var cell=room.generator_order[room.generator_stage];room.generator_stage+=1
 	var generator=room.generators[cell];generator.active=true;generator.ring.show();generator.bar.show()

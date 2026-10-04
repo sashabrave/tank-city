@@ -379,11 +379,11 @@ func begin_room(index: int):
 	get_node("WorldAtmosphere").apply()
 	var ambience=load("res://scripts/location_ambience.gd").new()
 	ambience.seed_value=Game.visual_run_seed;ambience.room_index=index;ambience.biome=room_palette().ambience;ambience.radius=grid_size*.5;ambience.palette=room_palette();add_child(ambience)
-	player=spawn_actor(carried_kind,Vector2i(base_cell.x,grid_size-2 if boss_room else grid_size-3),true,false,1,false,"",carried_origin,carried_zone)
+	player=spawn_actor(carried_kind,Vector2i(base_cell.x,grid_size-2 if hq_off_field() else grid_size-3),true,false,1,false,"",carried_origin,carried_zone)
 	player.salvaged=carried_salvaged
 	# No spawn grace since 0.8 (author: not needed for play, extra noise); the countdown covers the arrival.
 	if carried_kind!="soldier" and carried_armor>0:player.hp=minf(carried_armor,player.max_hp);player.refresh_health()
-	toast("Атакуй босса. При включении щита уничтожь светящийся генератор." if Campaign.is_final(room_index) else "Бой с генералом. Когда включится щит, уничтожь светящийся генератор на фланге." if boss_room else "")
+	toast("Атакуй босса. При включении щита уничтожь светящийся генератор." if Campaign.is_final(room_index) else "Бой с генералом. Он зовёт подкрепление — пока оно живо, у генерала щит. Береги штаб." if boss_room else "")
 	preload("res://scripts/effect_warmup.gd").run(self)
 	# HQ arrives on an arc, the soldier steps out, the brick defence builds up; visual only.
 	preload("res://scripts/battle_stage.gd").intro(self)
@@ -395,6 +395,10 @@ func begin_room(index: int):
 		# The first wave waits for the arrival plus its 3-2-1 after the landing (battle_stage), not the plain delay.
 		countdown=maxf(countdown,arrival)
 	if boss_room:drop_pickup(Vector2i(base_cell.x-3,grid_size-2),"vehicle")
+
+## The HQ stands on the field as a target in every fight except the final boss (T-260, author 4 Oct: the general
+## fight keeps the HQ like a battle field, his reinforcements go for it).
+func hq_off_field()->bool:return boss_room and Campaign.is_final(room_index)
 
 func world_pos(cell: Vector2i) -> Vector3:
 	var center=(grid_size-1)*.5
@@ -432,7 +436,11 @@ func _build_map():
 				if side==0 and band==0:cluster.append(Vector2i(x+1,y+1))
 				for cell in cluster:
 					BattleMapGenerator.put(current_layout,cell,"B")
-		BattleMapGenerator.thin_obstacles(current_layout,run_seed+room_index*991,false)
+		# The HQ in its brick horseshoe, as on a battle field (T-260).
+		if not hq_off_field():
+			var middle=base_cell.x
+			for p in [Vector2i(middle-1,grid_size-2),Vector2i(middle,grid_size-2),Vector2i(middle+1,grid_size-2),Vector2i(middle-1,grid_size-1),Vector2i(middle+1,grid_size-1)]:BattleMapGenerator.put(current_layout,p,"B")
+		BattleMapGenerator.thin_obstacles(current_layout,run_seed+room_index*991,not hq_off_field())
 		board.reinforce_layout(current_layout)
 		for z in range(grid_size):
 			for x in range(grid_size):
@@ -443,6 +451,10 @@ func _build_map():
 		terrain.build()
 		spawn_generators()
 		base_model=Visuals.model("base",self,world_pos(base_cell));base_model.rotation.y=preload("res://scripts/mobile_hq.gd").orientation(run_seed+room_index*719)
+		if hq_off_field():return
+		base_label=Visuals.label3d(self,"База",world_pos(base_cell)+Vector3(0,2.75,0),Color("f8e1b0"),30)
+		base_bar=load("res://scripts/health_bar_3d.gd").new();add_child(base_bar);base_bar.position=world_pos(base_cell)+Vector3.UP*2.45
+		base_bar.set_health(base_hp,base_max_hp)
 		return
 	current_layout=layout.rows
 	if room.mode!="battle":ChallengeLayouts.apply(current_layout,grid_size,room.mode,run_seed+room_index*977,room.difficulty)
@@ -489,7 +501,7 @@ func can_enter(cell: Vector2i,actor=null) -> bool:
 	for x in range(footprint):
 		for y in range(footprint):
 			var p=cell+Vector2i(x,y)
-			if not inside(p) or terrain.movement_blocked_at_cell(p) or generators.has(p) or walls.has(p) or (trenches.has(p) and (actor==null or actor.player_owned or actor.kind!="soldier" or not board.trench_available(p,actor))) or (not boss_room and p==base_cell):return false
+			if not inside(p) or terrain.movement_blocked_at_cell(p) or generators.has(p) or walls.has(p) or (trenches.has(p) and (actor==null or actor.player_owned or actor.kind!="soldier" or not board.trench_available(p,actor))) or (not hq_off_field() and p==base_cell):return false
 			for other in actors:
 				if other==actor or not is_instance_valid(other) or other.dead or other.kind=="flyer":continue
 				if p in cells_for(other,other.cell) or (other.moving and p in cells_for(other,other.destination)):return false
@@ -928,7 +940,7 @@ func can_stand(pos:Vector3,actor,ignore_actors:bool=false,static_only:bool=false
 		for z in range(maxi(0,grid_pos(pos-Vector3(0,0,half)).y),mini(grid_size-1,grid_pos(pos+Vector3(0,0,half)).y)+1):
 			var c=Vector2i(x,z);var center=world_pos(c)
 			if walls.has(c) and preload("res://scripts/section_wall.gd").overlap(walls[c],center,pos,Vector2(half,half)):return false
-			if (generators.has(c) or (trenches.has(c) and (actor.player_owned or actor.kind!="soldier" or (not static_only and not board.trench_available(c,actor)))) or (not boss_room and c==base_cell)) and absf(pos.x-center.x)<half+.499 and absf(pos.z-center.z)<half+.499:return false
+			if (generators.has(c) or (trenches.has(c) and (actor.player_owned or actor.kind!="soldier" or (not static_only and not board.trench_available(c,actor)))) or (not hq_off_field() and c==base_cell)) and absf(pos.x-center.x)<half+.499 and absf(pos.z-center.z)<half+.499:return false
 	if static_only:return true
 	for other in ([] if ignore_actors else actors):
 		if other==actor or not is_instance_valid(other) or other.dead or other.kind=="flyer":continue

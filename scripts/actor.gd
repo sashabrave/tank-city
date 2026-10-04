@@ -265,7 +265,7 @@ func _physics_process(delta):
 				var steps=2 if kind in ["apc","grenadier"] or (kind=="soldier" and burst_index%2==1) else 1
 				if burst_steps>=steps and assault_time<=0:
 					burst_steps=0;burst_index+=1
-					movement_pause={"soldier":.8,"apc":1.15,"tank":1.5,"boss":1.8,"drone":.65,"grenadier":1.1,"shield":1.0}.get(kind,1.0)*.8*pause_scale+arena.combat_rng.randf_range(0,.2)
+					movement_pause={"soldier":.8,"apc":1.15,"tank":1.5,"boss":.5,"drone":.65,"grenadier":1.1,"shield":1.0}.get(kind,1.0)*.8*pause_scale+arena.combat_rng.randf_range(0,.2)
 		if kind == "soldier": model.position.y = absf(sin(Time.get_ticks_msec()*.016))*.015
 	else: model.position.y = 0
 	if not moving:arena.terrain.begin_slide(self)
@@ -394,7 +394,7 @@ func shoot() -> bool:
 
 func take_damage(amount: float,blast:Vector3=Vector3.ZERO,vehicle_credit:String="",source:String=""):
 	resource_blast=blast
-	if kind=="boss" and not arena.room.generator_order.is_empty():
+	if kind=="boss" and not arena.room.generator_thresholds.is_empty():
 		amount=arena.boss.limit_damage(self,amount)
 		if amount<=0:return
 	if dead or invulnerable > 0 or hidden_in_trench or (player_owned and arena.star_time>0): return

@@ -136,7 +136,7 @@ func _process(_delta):
 		var boss=data.bosses[i];var bar=boss_bar if i==0 else boss_bar2;var label=boss_title if i==0 else boss_title2
 		bar.show();label.show();bar.max_value=boss.max_hp;bar.value=boss.hp;Texts.set_text(label,boss.title)
 	if get_viewport().get_visible_rect().size!=last_size:_layout()
-	health.set_health(data.hero_hp,data.hero_max);base_health.visible=not data.boss_room;base_health.set_health(data.base_hp,data.base_max)
+	health.set_health(data.hero_hp,data.hero_max);base_health.visible=not arena.hq_off_field();base_health.set_health(data.base_hp,data.base_max)
 	dpad.visible=InputScheme.touch();fire_pad.visible=InputScheme.touch();biome_panel.visible=Settings.values.biome_info
 	Texts.set_text(biome_label,arena.BIOMES.caption(arena.run_seed,arena.room_index,arena.room_lane()))
 	# Progress reads as pips: fields of the route and waves of the room; words only where they add meaning.

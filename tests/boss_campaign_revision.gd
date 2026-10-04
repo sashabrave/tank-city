@@ -57,19 +57,23 @@ func run():
 	check(arena.actors.filter(func(a):return a.get_meta("generator_guard",false)).size()==8,"Two defenders per active position")
 	boss.take_damage(99999);check(boss.dead,"Final HP can be depleted after four phases")
 	arena.queue_free();await get_tree().process_frame
-	# Regular world-1 boss: two flank generators at 60% and 30%, one guard each.
+	# World-1 general (T-260, «Дуэль + волны»): no generators; at 75/50/25% a squad comes and shields him until it falls.
 	Campaign.configure(1)
 	arena=load("res://scenes/arena.tscn").instantiate();arena.auto_pause_enabled=false;add_child(arena);arena.set_physics_process(false);arena.begin_room(Campaign.BOSSES[0]);arena.phase="combat"
 	for actor in arena.actors:actor.set_physics_process(false)
 	arena.spawn_queue.clear();boss=arena.spawn_actor("boss",Vector2i(9,1),false);boss.set_physics_process(false)
-	check(arena.generators.size()==2 and not arena.boss.shield_active(),"Regular boss: two dormant generators")
-	for i in range(2):
-		boss.take_damage(99999);check(is_equal_approx(boss.hp,boss.max_hp*[.6,.3][i]) and arena.boss.shield_active(),"Regular boss shield at threshold")
-		var live=arena.generators.keys().filter(func(cell):return arena.generators[cell].active)
-		arena.damage_generator(live[0],999);check(not arena.boss.shield_active(),"Regular generator drops the shield")
+	check(arena.generators.is_empty() and not arena.boss.shield_active(),"General: no generators, no shield at start")
+	check(not arena.hq_off_field() and is_instance_valid(arena.base_bar),"General fight keeps the HQ on the field")
+	var base_before=arena.base_hp;arena.damage_base(1);check(arena.base_hp<base_before,"The HQ takes damage in the general fight")
+	for i in range(3):
+		boss.take_damage(99999);check(is_equal_approx(boss.hp,boss.max_hp*[.75,.5,.25][i]) and arena.boss.shield_active(),"General shield at threshold %d" % i)
+		var guards=arena.actors.filter(func(a):return is_instance_valid(a) and not a.dead and a.get_meta("boss_guard",false))
+		check(guards.size()==3+i,"Squad of %d at threshold %d" % [3+i,i])
+		var hp=boss.hp;boss.take_damage(999);check(boss.hp==hp,"Shield blocks damage while the squad lives")
+		for g in guards:g.dead=true
+		check(not arena.boss.shield_active(),"Squad down drops the shield")
 		for actor in arena.actors:actor.set_physics_process(false)
-	check(arena.actors.filter(func(a):return a.get_meta("generator_guard",false)).size()==2,"One guard per regular generator in world 1")
-	boss.take_damage(99999);check(boss.dead,"Regular boss dies after two phases")
+	boss.take_damage(99999);check(boss.dead,"General dies after three phases")
 	arena.queue_free();await get_tree().process_frame
 	# from chest_flag_revision (T-044): an unopened commander chest holds the exit flag back.
 	arena=load("res://scenes/arena.tscn").instantiate();arena.run_seed=3;add_child(arena);arena.auto_pause_enabled=false

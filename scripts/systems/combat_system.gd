@@ -59,14 +59,14 @@ func bullet_hit(bullet) -> bool:
 		arena.shred_net(cell)
 	if bullet.sniper_round:
 		# Elevated shot: cover is passed over, never damaged. Each target is hit once.
-		if not bullet.friendly and not arena.room.boss_room and cell==arena.room.base_cell and not bullet.hit_base:
+		if not bullet.friendly and not arena.hq_off_field() and cell==arena.room.base_cell and not bullet.hit_base:
 			bullet.hit_base=true;damage_base(bullet.damage)
 		var target=arena.room.player
 		if is_instance_valid(target) and not target.dead and target not in bullet.hit_actors and not (arena.abilities.cloak_time>0 and arena.abilities.cloak_ghost) and arena.flat_distance(pos,target.position)<.38:
 			bullet.hit_actors.append(target);target.take_damage(bullet.damage,Vector3.ZERO,"","bullet")
 		return false
 	if bullet.rocket_radius>0:
-		var impact=not arena.wall_contacts(pos,bullet.travel_direction,bullet.wall_width).is_empty() or (not bullet.friendly and not arena.room.boss_room and cell==arena.room.base_cell)
+		var impact=not arena.wall_contacts(pos,bullet.travel_direction,bullet.wall_width).is_empty() or (not bullet.friendly and not arena.hq_off_field() and cell==arena.room.base_cell)
 		for enemy in arena.room.actors:
 			if is_instance_valid(enemy) and not enemy.dead and (enemy.player_owned or enemy.allied)!=bullet.friendly and enemy!=bullet.owner_actor and arena.flat_distance(pos,enemy.position)<(.9 if enemy.kind=="boss" else .4):impact=true
 		if impact:rocket_impact(bullet);return true
@@ -112,7 +112,7 @@ func bullet_hit(bullet) -> bool:
 			var feel=arena.get_node_or_null("CombatFeel")
 			if feel and not actor.player_owned:feel.impact(actor,actor.position)
 			if not pierce_on(bullet):return true
-	if not arena.room.boss_room and not bullet.friendly and cell==arena.room.base_cell:
+	if not arena.hq_off_field() and not bullet.friendly and cell==arena.room.base_cell:
 		arena.set_meta("attacker",attacker_of(bullet));damage_base(bullet.damage);arena.set_meta("attacker","")
 		return true
 	return false
@@ -122,7 +122,7 @@ func attacker_of(bullet)->String:
 	var owner=bullet.get("owner_actor")
 	return str(owner.kind) if is_instance_valid(owner) and not owner.player_owned else ""
 func damage_base(amount: float):
-	if arena.room.boss_room or arena.phase != "combat" or arena.headquarters.shield_time>0: return
+	if arena.hq_off_field() or arena.phase != "combat" or arena.headquarters.shield_time>0: return
 	if is_instance_valid(arena.base_model):
 		var alert=arena.base_model.get_node_or_null("BaseAlert")
 		if alert:alert.trigger()
@@ -229,7 +229,7 @@ func explosion(pos: Vector3,amount: float):
 		if is_instance_valid(actor) and not actor.dead and arena.flat_distance(pos,actor.position)<1.45: actor.take_damage(amount,actor.position-pos+Vector3(.01,0,.01),"","blast")
 	for cell in arena.room.walls.keys():
 		if arena.flat_distance(pos,arena.world_pos(cell))<1.5: arena.damage_wall(cell,amount)
-	if not arena.room.boss_room and arena.flat_distance(pos,arena.world_pos(arena.room.base_cell))<1.5: damage_base(amount)
+	if not arena.hq_off_field() and arena.flat_distance(pos,arena.world_pos(arena.room.base_cell))<1.5: damage_base(amount)
 	for wreck in arena.room.wrecks.duplicate():
 		if is_instance_valid(wreck) and not wreck.spent and arena.flat_distance(pos,wreck.position)<1.5: wreck.explode()
 
@@ -277,13 +277,13 @@ func grenade_explosion(pos: Vector3,amount: float,friendly: bool,blast_radius: f
 			actor.take_damage(amount,actor.position-pos+Vector3(.01,0,.01),"","blast")
 	for cell in arena.room.walls.keys():
 		if arena.flat_distance(pos,arena.world_pos(cell))<1.15:arena.damage_wall(cell,amount)
-	if not friendly and not arena.room.boss_room and arena.flat_distance(pos,arena.world_pos(arena.room.base_cell))<1.15:damage_base(amount)
+	if not friendly and not arena.hq_off_field() and arena.flat_distance(pos,arena.world_pos(arena.room.base_cell))<1.15:damage_base(amount)
 	# Own explosives bite back a little (T-026): 1 damage to the soldier caught in the blast and 1 to the HQ.
 	if friendly:
 		var reach=blast_radius if blast_radius>0 else 1.15
 		var player=arena.room.player
 		if is_instance_valid(player) and not player.dead and arena.flat_distance(pos,player.position)<=reach:player.take_damage(1.0,player.position-pos+Vector3(.01,0,.01),"","blast")
-		if not arena.room.boss_room and arena.flat_distance(pos,arena.world_pos(arena.room.base_cell))<=reach:damage_base(1.0)
+		if not arena.hq_off_field() and arena.flat_distance(pos,arena.world_pos(arena.room.base_cell))<=reach:damage_base(1.0)
 		# T-165: friendly fire only from explosives — allies caught in the blast take the same small bite;
 		# bullets never hurt your own side.
 		for ally in arena.room.actors.duplicate():
@@ -328,7 +328,7 @@ func volley(actor,data:Dictionary):
 		bullet.speed=data.speed;bullet.lifetime=data.range*arena.run.range_multiplier/data.speed;bullet.piercing=data.pierce;bullet.rocket_radius=data.blast
 		if data.blast>0:bullet.scale=Vector3(2,2,2)
 func rocket_impact(bullet):
-	if not bullet.friendly and not arena.room.boss_room and arena.flat_distance(bullet.position,arena.world_pos(arena.room.base_cell))<=bullet.rocket_radius:damage_base(bullet.damage)
+	if not bullet.friendly and not arena.hq_off_field() and arena.flat_distance(bullet.position,arena.world_pos(arena.room.base_cell))<=bullet.rocket_radius:damage_base(bullet.damage)
 	arena.burst(bullet.position,Color("e8b957"),bullet.rocket_radius);Game.sound("boom",arena)
 	# The player's charges carry the loaded ammo (T-114): every enemy in the blast takes the hit with its
 	# effects (fire, EMP, cryo, crit); cluster scatters bomblets, napalm leaves a burning patch.

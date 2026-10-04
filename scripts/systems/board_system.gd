@@ -49,12 +49,12 @@ func shape_map_walls():
 	for cell in arena.room.walls:
 		var wall=arena.room.walls[cell]
 		if wall.get("barrel",false) or wall.get("barrier",false) or wall.get("reinforced",false):continue
-		if not arena.boss_room and cell.y>=arena.grid_size-2 and absi(cell.x-arena.base_cell.x)<=1:shape_base_wall(cell)
+		if not arena.hq_off_field() and cell.y>=arena.grid_size-2 and absi(cell.x-arena.base_cell.x)<=1:shape_base_wall(cell)
 		elif wall.hp<0:
 			var style=preload("res://scripts/concrete_style.gd").pick(arena.run.run_seed+arena.room.room_index*1907,cell)
 			if style.shape>=0:shape_wall(cell,style.shape)
 		# T-183: no random half-blocks in the HQ column — enemies kept shooting a half-block there instead of the HQ.
-		elif not arena.boss_room and cell.x==arena.base_cell.x:continue
+		elif not arena.hq_off_field() and cell.x==arena.base_cell.x:continue
 		elif rng.randf()<.28:shape_wall(cell,rng.randi_range(0,3))
 	place_statue()
 ## Rare landmark: in 20% of built-up rooms one whole indestructible block becomes a statue of a chubby dog
@@ -196,7 +196,7 @@ func reinforce_layout(rows:Array):
 	for y in range(width):
 		for x in range(width):
 			if rows[y][x]!="B":continue
-			if not arena.boss_room and y>=width-2 and absi(x-middle)<=1:continue
+			if not arena.hq_off_field() and y>=width-2 and absi(x-middle)<=1:continue
 			if rng.randf()<share:BattleMapGenerator.put(rows,Vector2i(x,y),"K")
 func add_barrel(cell):
 	arena.navigation.invalidate(cell)

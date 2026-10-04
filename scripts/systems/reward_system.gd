@@ -475,7 +475,7 @@ func collect_resources():
 		if is_instance_valid(token):token.collect()
 
 func drop_cell_open(cell:Vector2i)->bool:
-	if not arena.inside(cell) or arena.walls.has(cell) or arena.trenches.has(cell) or arena.generators.has(cell) or (not arena.boss_room and cell==arena.base_cell):return false
+	if not arena.inside(cell) or arena.walls.has(cell) or arena.trenches.has(cell) or arena.generators.has(cell) or (not arena.hq_off_field() and cell==arena.base_cell):return false
 	if arena.terrain.blocked(arena.world_pos(cell),.245):return false
 	for wreck in arena.wrecks:
 		if is_instance_valid(wreck) and not wreck.spent and wreck.cell==cell:return false

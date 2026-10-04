@@ -129,9 +129,10 @@ func run():
 	boss.moving=false;boss.set_meta("boss_pattern",{"phase":"move","timer":0.0,"index":0,"direction":Vector3.FORWARD,"target":Vector3.ZERO,"warning":null});arena.boss_step(boss,.01)
 	check(boss.get_meta("boss_pattern").phase=="charge" and boss.warning_ring.visible,"boss attack has a visible warning interval")
 
-	arena.damage_base(100);check(arena.phase=="combat","no base-loss condition in boss duel")
-	# Generator shields cap boss damage (boss_campaign_revision); without them the boss falls and drops the commander chest.
-	arena.room.generator_order.clear();boss.invulnerable=0;boss.take_damage(boss.max_hp+1)
+	# T-260: the HQ stays on the field in a world general fight and can be damaged.
+	var base_before=arena.base_hp;arena.damage_base(1);check(arena.base_hp<base_before or Campaign.is_final(arena.room_index),"the HQ is a target in the general fight")
+	# Shield phases cap boss damage (boss_campaign_revision); without them the boss falls and drops the commander chest.
+	arena.room.generator_order.clear();arena.room.generator_thresholds.clear();boss.invulnerable=0;boss.take_damage(boss.max_hp+1)
 	check(arena.boss_defeated and arena.pickups.any(func(p):return p.kind=="recipe_draft"),"boss death drops the commander chest")
 	fresh()
 	for side in [-1,1]:

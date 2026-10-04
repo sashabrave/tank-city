@@ -10,7 +10,7 @@ var base_lanes_revision=-1
 func base_weapon_range(actor)->float:
 	return EnemyLoadouts.profile(actor.enemy_weapon).range if actor.kind in ["soldier","shield"] else 7.0
 func base_lane_user(actor)->bool:
-	return not arena.boss_room and actor.kind in ["soldier","shield","buggy","apc","tank"]
+	return not arena.hq_off_field() and actor.kind in ["soldier","shield","buggy","apc","tank"]
 func base_firing_cells(actor)->Array:
 	if not base_lane_user(actor):return []
 	if base_lanes_revision!=arena.navigation.base_revision:
@@ -64,7 +64,7 @@ func enemy_aim(actor) -> Vector2i:
 	if open_shot!=Vector2i.ZERO:return open_shot
 	var seek_open_lane=not base_firing_cells(actor).is_empty()
 	var weapon_range=EnemyLoadouts.profile(actor.enemy_weapon).range if actor.kind in ["soldier","shield"] else 7.0
-	if actor.assault_time>0 and not arena.boss_room:
+	if actor.assault_time>0 and not arena.hq_off_field():
 		# T-169: an assaulting unit still answers a player standing in its line of fire.
 		var answer=player_shot(actor,weapon_range) if actor.kind!="grenadier" else Vector2i.ZERO
 		if answer!=Vector2i.ZERO:return answer
@@ -76,7 +76,7 @@ func enemy_aim(actor) -> Vector2i:
 		var direction=arena.aligned_direction(actor.cell,wreck.cell)
 		if direction!=Vector2i.ZERO and arena.clear_line(actor.cell,wreck.cell):return direction
 	if actor.kind=="grenadier":return Vector2i.ZERO
-	if not seek_open_lane and actor.kind=="buggy" and not arena.room.boss_room and actor.cell.x==arena.room.base_cell.x and actor.cell.y>=arena.room.grid_size-4 and not concrete_to_base(actor.cell):return Vector2i.DOWN
+	if not seek_open_lane and actor.kind=="buggy" and not arena.hq_off_field() and actor.cell.x==arena.room.base_cell.x and actor.cell.y>=arena.room.grid_size-4 and not concrete_to_base(actor.cell):return Vector2i.DOWN
 	for turret in arena.room.actors:
 		if not is_instance_valid(turret) or not turret.allied or turret.dead or arena.flat_distance(actor.position,turret.position)>weapon_range:continue
 		var aim=arena.aligned_direction(actor.cell,turret.cell)
@@ -84,7 +84,7 @@ func enemy_aim(actor) -> Vector2i:
 	var at_player=player_shot(actor,weapon_range)
 	if at_player!=Vector2i.ZERO:return at_player
 	# Shoot toward the base, including through its destructible cover.
-	if not seek_open_lane and not arena.room.boss_room and actor.cell.x == arena.room.base_cell.x and actor.cell.y >= arena.room.grid_size-4:
+	if not seek_open_lane and not arena.hq_off_field() and actor.cell.x == arena.room.base_cell.x and actor.cell.y >= arena.room.grid_size-4:
 		return Vector2i.ZERO if concrete_to_base(actor.cell) else Vector2i.DOWN
 	var next = actor.cell+actor.facing
 	if not seek_open_lane and needs_breach(actor) and arena.room.walls.has(next) and arena.room.walls[next].hp>0:
@@ -121,7 +121,7 @@ func path_direction(actor) -> Vector2i:
 	while not actor.route_points.is_empty() and actor.cell==actor.route_points[0]:actor.route_points.pop_front()
 	var waypoint=attack_waypoint(actor,actor.route_points[0] if actor.assault_time<=0 and not actor.route_points.is_empty() else Vector2i(-1,-1))
 	var start:Vector2i=actor.cell
-	var key=[waypoint,arena.navigation.revision,arena.walls.size(),arena.player.cell if arena.boss_room and is_instance_valid(arena.player) else arena.base_cell]
+	var key=[waypoint,arena.navigation.revision,arena.walls.size(),arena.player.cell if arena.hq_off_field() and is_instance_valid(arena.player) else arena.base_cell]
 	var state:Dictionary=actor.get_meta("cell_search",{})
 	var now=Time.get_ticks_msec()
 	# Distant wall hits must not restart every unfinished search. Validate the next
@@ -153,11 +153,11 @@ func path_direction(actor) -> Vector2i:
 	while not state.queue.is_empty() and expanded<96:
 		if Time.get_ticks_usec()-began+path_budget_usec>=2000 or Time.get_ticks_usec()-began>=450:break
 		var p:Vector2i=frontier_pop(state.queue);expanded+=1
-		if (waypoint!=Vector2i(-1,-1) and p==waypoint) or (waypoint==Vector2i(-1,-1) and ((not arena.boss_room and p.x==arena.base_cell.x and p.y>=arena.grid_size-4 and p!=arena.base_cell) or (arena.boss_room and is_instance_valid(arena.player) and arena.aligned_direction(p,arena.player.cell)!=Vector2i.ZERO and arena.clear_line(p,arena.player.cell)))):
+		if (waypoint!=Vector2i(-1,-1) and p==waypoint) or (waypoint==Vector2i(-1,-1) and ((not arena.hq_off_field() and p.x==arena.base_cell.x and p.y>=arena.grid_size-4 and p!=arena.base_cell) or (arena.hq_off_field() and is_instance_valid(arena.player) and arena.aligned_direction(p,arena.player.cell)!=Vector2i.ZERO and arena.clear_line(p,arena.player.cell)))):
 			goal=p;state.done=true;break
 		for dir in arena.DIRS:
 			var next:Vector2i=p+dir
-			if not arena.inside(next) or (not arena.boss_room and next==arena.base_cell) or arena.walls.has(next) or arena.terrain.movement_blocked_at_cell(next):continue
+			if not arena.inside(next) or (not arena.hq_off_field() and next==arena.base_cell) or arena.walls.has(next) or arena.terrain.movement_blocked_at_cell(next):continue
 			if actor.footprint>1:
 				var blocked=false
 				for occupied in arena.cells_for(actor,next):
@@ -167,7 +167,7 @@ func path_direction(actor) -> Vector2i:
 			var cost=float(state.cost[p])+arena.terrain.navigation_cost(arena.actor_world_pos(actor,next),actor,dir)
 			if state.cost.has(next) and state.cost[next]<=cost:continue
 			state.came[next]=p;state.cost[next]=cost
-			var estimate=0 if arena.boss_room and waypoint==Vector2i(-1,-1) else (absi(next.x-waypoint.x)+absi(next.y-waypoint.y) if waypoint!=Vector2i(-1,-1) else absi(next.x-arena.base_cell.x)+maxi(0,arena.grid_size-4-next.y))
+			var estimate=0 if arena.hq_off_field() and waypoint==Vector2i(-1,-1) else (absi(next.x-waypoint.x)+absi(next.y-waypoint.y) if waypoint!=Vector2i(-1,-1) else absi(next.x-arena.base_cell.x)+maxi(0,arena.grid_size-4-next.y))
 			frontier_push(state.queue,[cost+estimate,next])
 	path_budget_usec+=Time.get_ticks_usec()-began
 	if goal!=start:
@@ -188,7 +188,7 @@ func quarter_path_direction(actor)->Vector2i:
 	if not actor.route_points.is_empty() and arena.trenches.has(actor.route_points[0]) and not arena.board.trench_available(actor.route_points[0],actor):actor.route_points.pop_front()
 	var waypoint=attack_waypoint(actor,actor.route_points[0] if actor.assault_time<=0 and not actor.route_points.is_empty() else Vector2i(-1,-1))
 	var start=Vector2i(roundi(actor.position.x*4),roundi(actor.position.z*4))
-	var key=[waypoint,arena.navigation.revision,arena.walls.size(),arena.player.cell if arena.boss_room and is_instance_valid(arena.player) else arena.base_cell]
+	var key=[waypoint,arena.navigation.revision,arena.walls.size(),arena.player.cell if arena.hq_off_field() and is_instance_valid(arena.player) else arena.base_cell]
 	var state:Dictionary=actor.get_meta("quarter_search",{})
 	var now=Time.get_ticks_msec()
 	# Distant wall hits must not restart every unfinished search. Validate the next
@@ -225,7 +225,7 @@ func quarter_path_direction(actor)->Vector2i:
 		var p:Vector2i=frontier_pop(state.queue);expanded+=1
 		var pos=Vector3(p.x*.25,actor.position.y,p.y*.25);var cell=arena.grid_pos(pos)
 		var at_waypoint=cell==waypoint and (not arena.trenches.has(cell) or pos.is_equal_approx(arena.world_pos(cell)))
-		if (waypoint!=Vector2i(-1,-1) and at_waypoint) or (waypoint==Vector2i(-1,-1) and ((not arena.boss_room and cell.x==arena.base_cell.x and cell.y>=arena.grid_size-4 and cell!=arena.base_cell) or (arena.boss_room and is_instance_valid(arena.player) and arena.aligned_direction(cell,arena.player.cell)!=Vector2i.ZERO and arena.clear_line(cell,arena.player.cell)))):
+		if (waypoint!=Vector2i(-1,-1) and at_waypoint) or (waypoint==Vector2i(-1,-1) and ((not arena.hq_off_field() and cell.x==arena.base_cell.x and cell.y>=arena.grid_size-4 and cell!=arena.base_cell) or (arena.hq_off_field() and is_instance_valid(arena.player) and arena.aligned_direction(cell,arena.player.cell)!=Vector2i.ZERO and arena.clear_line(cell,arena.player.cell)))):
 			goal=p;state.done=true;break
 		for dir in arena.DIRS:
 			var next=p+dir
@@ -249,7 +249,7 @@ func quarter_path_direction(actor)->Vector2i:
 	return Vector2i.ZERO
 
 func route_estimate(point:Vector2i,waypoint:Vector2i)->int:
-	if waypoint==Vector2i(-1,-1) and arena.boss_room:return 0
+	if waypoint==Vector2i(-1,-1) and arena.hq_off_field():return 0
 	var cell=waypoint if waypoint!=Vector2i(-1,-1) else Vector2i(arena.base_cell.x,arena.grid_size-3)
 	var target=arena.world_pos(cell)*4
 	# Goal is a cell (or lower base firing lane), so subtract the allowed cell extent.
@@ -318,7 +318,7 @@ func mortar_step(actor):
 		if target==null:return
 		arena.throw_grenade(actor,target.position);lob(actor,target.position)
 	else:
-		if arena.room.boss_room:
+		if arena.hq_off_field():
 			if not is_instance_valid(arena.room.player):return
 			arena.throw_grenade(actor,arena.room.player.position);lob(actor,arena.room.player.position)
 		else:arena.throw_grenade(actor,arena.world_pos(arena.room.base_cell));lob(actor,arena.world_pos(arena.room.base_cell))
@@ -428,7 +428,7 @@ func rpg_step(actor,delta:float)->bool:
 	return true
 
 func attention_tick(actor,delta:float):
-	if actor.kind not in ["soldier","shield","grenadier","buggy","apc","tank"] or actor.elite or arena.boss_room:return
+	if actor.kind not in ["soldier","shield","grenadier","buggy","apc","tank"] or actor.elite or arena.hq_off_field():return
 	actor.assault_time=maxf(0,actor.assault_time-delta);actor.trench_return_delay=maxf(0,actor.trench_return_delay-delta)
 	actor.attention_timer-=delta
 	if actor.cell.y>actor.deepest_row:actor.deepest_row=actor.cell.y;actor.idle_progress_time=0
