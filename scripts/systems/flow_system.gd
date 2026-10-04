@@ -144,7 +144,30 @@ func place_flag(caption:String):
 	ExitFlag.build(arena.room.flag)
 	Visuals.label3d(arena.room.flag,caption,Vector3(0,3.35,0),Color("f5edcc"),25)
 	preload("res://scripts/battle_stage.gd").rise(arena.room.flag,.35)
+## Blueprints lying on the field (a chest drop not picked up yet) never vanish on a timer (author, 4 Oct 2026):
+## at the exit flag they go into the backpack by themselves; with a full backpack the soldier is asked first.
+func field_recipes()->Array:
+	return arena.room.pickups.filter(func(p):return p.kind in ["item","sack"] and not p.get("content",{}).get("recipes",[]).is_empty() and p.get("content",{}).get("weapons",[]).is_empty() and p.get("content",{}).get("ammo",[]).is_empty() and p.get("content",{}).get("supplies",[]).is_empty())
+func gather_field_recipes()->bool:
+	for pickup in field_recipes():
+		for recipe in pickup.content.recipes.duplicate():
+			if Backpack.full(arena.run):return false
+			arena.run.pending_recipes.append(recipe);pickup.content.recipes.erase(recipe)
+		arena.room.pickups.erase(pickup);pickup.node.queue_free();Game.sound("pickup",arena)
+	return true
+func leave_field_recipes():
+	for pickup in field_recipes():arena.room.pickups.erase(pickup);pickup.node.queue_free()
+	arena.phase="combat";open_flag()
+func recipe_confirm_closed(root:Control):
+	if is_instance_valid(root):root.queue_free()
+	if is_instance_valid(arena) and arena.phase=="paused":arena.phase="combat"
 func open_flag():
+	if not field_recipes().is_empty() and not gather_field_recipes():
+		arena.room.flag_armed=false;arena.phase="paused";Game.reset_input()
+		var root=Control.new();root.name="RecipeLeftConfirm";root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);arena.hud.add_child(root)
+		var dialog=preload("res://scripts/ui/skip_confirm.gd").open(root,leave_field_recipes,{"heading":"Чертёж остался на поле","body":"Рюкзак полон. Освободи ячейку (выброси или уничтожь предмет) и подбери чертёж — иначе он останется здесь.","stay_text":"Вернуться","leave_text":"Уйти без чертежа"})
+		dialog.tree_exited.connect(recipe_confirm_closed.bind(root))
+		return
 	arena.room.flag_armed=false;arena.phase="upgrade";Game.reset_input()
 	if arena.room.reward_claimed:arena.hud.show_departure()
 	else:arena.hud.show_upgrades()

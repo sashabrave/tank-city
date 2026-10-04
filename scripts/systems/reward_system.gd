@@ -330,7 +330,7 @@ func grant_chest_recipe(pickup:Dictionary):
 	if pickup.has("recipe_given"):return
 	pickup["recipe_given"]=chest_recipe()
 	# It drops on the ground next to the chest, like a gun or an ammo can (author, 4 Oct 2026): the player
-	# decides — C into the backpack, or leave it. Not picked up before leaving the field = gone.
+	# decides when — C into the backpack. No timer: at the exit flag it is gathered (FlowSystem.open_flag).
 	if not pickup.recipe_given.is_empty():place_sack(arena.find_free_near(arena.grid_pos(pickup.node.position)),{"recipes":[pickup.recipe_given],"ammo":[]})
 
 func apply_secret(offer):
