@@ -1,0 +1,8 @@
+# LONG: перед релизом (tools/run_tests.sh long; full = core + long). Боты и долгие прогоны, минуты на тест.
+playthrough
+extreme_builds
+balance_v09
+# Бот маршрута мира 1: hp dmg mob press class_lvl challenge seed path
+balance_pacing 0 0 0 0 0 0 42 mid
+replay_v09
+chaos_monkey

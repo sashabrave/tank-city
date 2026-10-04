@@ -90,6 +90,13 @@ func run():
 	var mixed=WaveDirector.build(42,4,2)
 	check(mixed.size()==WaveDirector.wave_size(4,2) and mixed.any(func(e):return e.kind in WaveDirector.PEOPLE) and mixed.any(func(e):return e.kind in WaveDirector.MACHINES),"room 5 uses mixed squad waves")
 	fresh()
+	# The run seed is random: route every stage through a plain battle node, so a challenge room (maze, hold…)
+	# never replaces the wave machine checked below (it made this check flaky).
+	var plan=RoutePlan.build(arena.run_seed)
+	for stage in range(mini(7,plan.size())):
+		var battles=plan[stage].filter(func(node):return node.type=="battle")
+		if not battles.is_empty():arena.run.route_choices[stage]=battles[0].id
+	arena.begin_room(0);arena.phase="combat";arena.spawn_queue.clear()
 	for room in range(6):
 		for wave in range(3):
 			arena.room_index=room;arena.wave=wave;arena.phase="combat";arena.spawn_queue.clear()
@@ -157,6 +164,8 @@ func run():
 	for file in DirAccess.get_files_at(dir):DirAccess.remove_absolute(dir.path_join(file))
 	DirAccess.remove_absolute(dir);Game.save_enabled=false;Game.save_path=restore.path;Game.profiles.selected=restore.selected;Game.save_blocked=restore.blocked
 	arena.free()
+	obstacle_density_checks()
+	terrain_checks()
 	var hub=load("res://scenes/hub.tscn").instantiate();add_child(hub)
 	# E at the parked vehicle opens the garage now; driving starts from the mounted state (as hub_animation_visual).
 	hub.phase="combat";hub.moving=false;hub.mounted=true;hub.avatar.hide();hub.training_tank.show();hub.training_tank.position=Vector3(5,0,1);hub.cell=Vector2i(5,1);hub.destination=hub.training_tank.position
@@ -166,3 +175,98 @@ func run():
 	check(not hub.mounted and hub.avatar.visible,"leave hub tank")
 	hub.free();await get_tree().process_frame
 	print("R13 SMOKE: %d checks, %d failures" % [checks,failures]);get_tree().quit(1 if failures else 0)
+
+# from obstacle_density_revision: thinning cuts every obstacle family by 15%, deterministically, keeping layouts valid.
+func obstacle_density_checks():
+	var rows=[]
+	for y in range(31):rows.append(".".repeat(31))
+	var kinds=["B","C","X","R","T","N"]
+	for i in range(kinds.size()):
+		for x in range(1,21):BattleMapGenerator.put(rows,Vector2i(x,2+i*3),kinds[i])
+	var copy=rows.duplicate();BattleMapGenerator.thin_obstacles(rows,917,false);BattleMapGenerator.thin_obstacles(copy,917,false)
+	check(rows==copy,"obstacle thinning is deterministic for one seed")
+	var thinned=true
+	for kind in kinds:
+		var count=0
+		for row in rows:count+=row.count(kind)
+		thinned=thinned and count==17
+	check(thinned,"every obstacle family is reduced by 15 percent (20 -> 17)")
+	var valid=true
+	for world in range(1,4):
+		Campaign.configure(world)
+		for room in [0,3,5]:
+			for seed_value in range(20):
+				valid=valid and BattleMapGenerator.validate(BattleMapGenerator.generate(seed_value*1117,room).rows)
+	Campaign.configure(1)
+	check(valid,"thinning preserves connected paths and base cover in 180 layouts of three worlds")
+
+# from terrain_v1: floor patches (water/sand/ice/vegetation) by biome, determinism and movement rules. Screenshot dropped.
+func terrain_checks():
+	var ta=load("res://scenes/arena.tscn").instantiate();ta.run_seed=82415;add_child(ta);ta.process_mode=Node.PROCESS_MODE_DISABLED;ta.auto_pause_enabled=false
+	var kinds={};var seen_biomes={};var saw_bend=false;var saw_long=false
+	var deterministic=true;var exclusive=true;var palette_ok=true;var budget_ok=true;var strips_ok=true
+	for world in range(1,4):
+		Campaign.configure(world)
+		for room in range(7):
+			ta.begin_room(room)
+			var before=ta.terrain.patches.duplicate()
+			ta.terrain.generate();var again=ta.terrain.patches.duplicate()
+			ta.terrain.generate();deterministic=deterministic and again==ta.terrain.patches
+			for p in before:
+				var c=Vector2i(p.x/2,p.y/2)
+				exclusive=exclusive and not ta.trenches.has(c) and not ta.walls.has(c) and not ta.generators.has(c)
+				kinds[before[p]]=true
+			seen_biomes[ta.BIOMES.index(ta.run_seed,room)]=true
+			palette_ok=palette_ok and ta.room_palette().family in ta.BIOMES.families(room) and not before.is_empty()
+			for kind in before.values():palette_ok=palette_ok and kind in ta.room_palette().kinds
+			var hazard_count=0
+			for kind in before.values():
+				if kind in ["water","ice"]:hazard_count+=1
+			budget_ok=budget_ok and hazard_count/4<=ta.terrain.terrain_budget()
+			for strip in ta.terrain.strips:
+				strips_ok=strips_ok and strip.width==1.0 and strip.length>=1 and strip.length<=6
+				saw_bend=saw_bend or strip.bend;saw_long=saw_long or strip.length>2
+	check(deterministic,"terrain generation is deterministic on a finished field")
+	check(exclusive,"floor patches never overlap trenches, walls or generators")
+	check(palette_ok,"room palette follows the biome families of the world and route part")
+	check(budget_ok,"water and ice stay inside the terrain budget")
+	check(kinds.size()==4 and seen_biomes.size()>=7 and saw_bend,"three worlds show four floor kinds, 7+ biomes and bends")
+	for seed_value in range(140):
+		ta.run_seed=seed_value;ta.room.difficulty=2;ta.terrain.generate()
+		for strip in ta.terrain.strips:
+			strips_ok=strips_ok and strip.width==1 and strip.cells.size()==strip.length
+			for i in range(strip.cells.size()):
+				var c=strip.cells[i]
+				if i>0:strips_ok=strips_ok and (c-strip.cells[i-1]).length_squared()==1
+				for x in range(2):
+					for y in range(2):strips_ok=strips_ok and ta.terrain.patches[c*2+Vector2i(x,y)]==strip.kind
+			if strip.length==6:saw_long=true
+	check(strips_ok and saw_long,"terrain strips are one cell wide, contiguous, atomically placed, up to 6 long")
+	ta.walls.clear();ta.trenches.clear();ta.generators.clear();ta.wrecks.clear()
+	for a in ta.actors:
+		if a!=ta.player:a.dead=true
+	var actor=ta.player;actor.occupying_trench=false;actor.kind="soldier";actor.position=Vector3.ZERO;actor.cell=ta.grid_pos(actor.position);actor.moving=false
+	ta.terrain.patches.clear();ta.terrain.set_cell(actor.cell,"water")
+	check(not ta.can_stand(actor.position,actor) and not ta.can_enter(actor.cell,actor),"water blocks actors")
+	check(ta.clear_shot(actor.position-Vector3.RIGHT,actor.position+Vector3.RIGHT,.5),"water does not block shots")
+	var bullet=ta.spawn_bullet(actor,actor.position,Vector2i.RIGHT,1,true)
+	check(not ta.bullet_hit(bullet),"bullets pass over water");bullet.consume()
+	ta.terrain.patches.clear();ta.terrain.set_cell(actor.cell,"sand")
+	var sand_soldier=ta.terrain.speed_factor(actor);actor.kind="tank"
+	check(is_equal_approx(sand_soldier,.55) and is_equal_approx(ta.terrain.speed_factor(actor),.55),"sand slows infantry and tanks to 55%")
+	ta.terrain.patches.clear();ta.terrain.set_cell(actor.cell,"ice")
+	for kind in ["soldier","tank"]:
+		actor.kind=kind;actor.position=Vector3.ZERO;actor.moving=false;actor.slide_remaining=0;actor.terrain_direction=Vector2i.RIGHT
+		var started=ta.terrain.begin_slide(actor) and actor.quarter_destination==Vector3(.25,0,0)
+		for step in range(12):
+			actor.position=actor.quarter_destination;actor.cell=ta.grid_pos(actor.position);actor.moving=false
+			if not ta.terrain.begin_slide(actor):break
+		check(started and actor.slide_remaining==0 and actor.position.x<2,"ice coasts a short distance and stops ("+kind+")")
+	actor.kind="soldier";actor.position=Vector3.ZERO;actor.cell=ta.grid_pos(actor.position);actor.moving=false;actor.terrain_direction=Vector2i.RIGHT
+	ta.terrain.set_cell(actor.cell+Vector2i.RIGHT,"water")
+	for step in range(8):
+		if not ta.terrain.begin_slide(actor):break
+		actor.position=actor.quarter_destination;actor.moving=false
+	check(not ta.terrain.blocked(actor.position,.245),"ice slide stops before water")
+	Campaign.configure(1)
+	ta.free()

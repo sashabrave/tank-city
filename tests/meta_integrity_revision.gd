@@ -120,6 +120,54 @@ func run():
 			var list=provider.items(tab[0])
 			for item in list:check(str(item.get("id",""))!="" and str(item.get("title",""))!="","station %s/%s items have id and title" % [kind,tab[0]])
 
+	# from guaranteed_blueprints: world 1 hands HQ at the end of the first segment and the Garage in the middle
+	# one, until owned; never twice in a run. Building blueprints survive a death, weapons roll.
+	var research_keep=Game.research_unlocks.duplicate()
+	Campaign.configure(1);Game.research_unlocks.erase("headquarters");Game.research_unlocks.erase("garage")
+	check(EncounterRules.guaranteed(1,[])=={"category":"research","id":"headquarters"},"guaranteed HQ blueprint at the end of the first segment")
+	check(EncounterRules.guaranteed(3,[])=={"category":"research","id":"garage"},"guaranteed Garage blueprint in the middle segment")
+	check(EncounterRules.guaranteed(0,[]).is_empty() and EncounterRules.guaranteed(2,[]).is_empty(),"other fields stay random")
+	check(EncounterRules.guaranteed(1,[{"category":"research","id":"headquarters"}]).is_empty(),"a guaranteed blueprint is not given twice in one run")
+	Game.research_unlocks.append("headquarters")
+	check(EncounterRules.guaranteed(1,[]).is_empty(),"no guaranteed blueprint once it is owned")
+	check(RecipeExtraction.survivors([{"category":"research","id":"garage"},{"category":"weapon","id":"smg"}],false,0,RandomNumberGenerator.new()).size()==1,"building blueprints survive a death, weapons roll")
+	Game.research_unlocks=research_keep
+
+	# from world1_content_revision: world 1 holds the content of all worlds; tiers open along the route.
+	var pool_ids=func(level:int,stage:int)->Array:return EncounterRules.recipe_pool(level,[],stage,true).map(func(r):return r.id)
+	check(Campaign.recipe_world()==3 and Campaign.unified_content(),"world 1 holds all content")
+	check(pool_ids.call(2,0).is_empty() and pool_ids.call(2,1).is_empty(),"no rare blueprints on the first two stages")
+	check(pool_ids.call(1,0).all(func(id):return Game.TIERS.tier(id)<=1),"early stages drop common blueprints")
+	for id in ["sniper","rpg","vehicle_tank","vehicle_apc","laser","airstrike"]:check(id in pool_ids.call(2,6) or id in pool_ids.call(2,4),"late world 1 can drop "+id)
+	check(not ("vehicle_tank" in pool_ids.call(2,2)),"tank blueprint waits for the second half")
+	for id in Game.CLASSES:check(Game.class_world(id)==1,"shell available in world 1: "+id)
+	var counters_keep=Game.progression.counters.duplicate()
+	Game.progression.counters["field_reached"]=5
+	check(Game.can_select_class("heavy") and Game.can_select_class("engineer"),"classes open by goals in world 1")
+	Game.progression.counters=counters_keep
+	Campaign.configure(2)
+	check(not Campaign.unified_content() and Campaign.recipe_world()==2,"locked world 2 keeps its gating")
+	Campaign.configure(1)
+	# Barrels grow towards the boss; the boss arena has barrels only in its corners.
+	var counts=[]
+	var arena=load("res://scenes/arena.tscn").instantiate();arena.run_seed=77;add_child(arena);arena.set_physics_process(false);arena.auto_pause_enabled=false
+	for room in range(7):
+		arena.begin_room(room)
+		for f in range(3):await get_tree().process_frame
+		counts.append(arena.room.walls.values().filter(func(w):return w.get("barrel",false)).size())
+	check(counts[0]>=1 and counts[5]>counts[0],"barrels grow along the route %s" % str(counts))
+	var g=arena.room.grid_size
+	var corners=[Vector2i(1,2),Vector2i(g-2,2),Vector2i(1,g-6),Vector2i(g-2,g-6)].filter(func(c):return arena.room.walls.has(c) and arena.room.walls[c].get("barrel",false)).size()
+	check(counts[6]>=3 and corners==counts[6],"boss barrels only in the corners (%d)" % counts[6])
+	# The mechanic upgrades the vehicle the player has, not a world-bound one.
+	arena.pending_vehicle="tank"
+	var service=load("res://scripts/service_room.gd").new();service.arena=arena;service.index=2;service.branch="vehicle";add_child(service)
+	for f in range(3):await get_tree().process_frame
+	check(service.vehicle=="tank","mechanic works on the pending tank")
+	service.queue_free();arena.pending_vehicle=""
+	arena.queue_free()
+	for f in range(3):await get_tree().process_frame
+
 	# ── Quests: every goal counter is written ────────────────────────────────────────────────────────────
 	var quests=preload("res://scripts/progression/quest_catalog.gd")
 	for q in quests.STORY+quests.INSTITUTE+quests.BRIEFINGS:
@@ -135,10 +183,15 @@ func run():
 	check(preload("res://scripts/wall_counter.gd").value()==9,"start: the wall reads 9")
 	# First field.
 	Game.progression.event("world_depth_1",1,true)
-	var before=Game.credits;road.act("story","depth1","claim")
-	check(Game.credits==before+road.reward("depth1"),"first field: the roadmap pays %d ◈" % road.reward("depth1"))
-	before=Game.credits;road.act("story","depth1","claim")
-	check(Game.credits==before,"a reward is paid once")
+	# from roadmap_rewards: a reached step waits to be claimed by hand; an unreached one pays nothing.
+	check("depth1" in road.unclaimed(),"first field: the roadmap step is waiting to be claimed")
+	var d=road.detail("story","depth1")
+	check(d.actions.size()==1 and d.actions[0].id=="claim","the step detail offers to claim it")
+	var before=Game.credits
+	check(road.act("story","depth1","claim")!="" and Game.credits==before+road.reward("depth1"),"first field: the roadmap pays %d ◈" % road.reward("depth1"))
+	before=Game.credits
+	check(road.act("story","depth1","claim")=="" and Game.credits==before,"a reward is paid once")
+	check(road.act("story","depth3","claim")=="" and Game.credits==before,"an unreached step pays nothing")
 	# Class to level 3: the first ability.
 	Game.credits=10000
 	for i in range(2):Game.upgrade_class("recruit",false)
@@ -160,6 +213,21 @@ func run():
 	# A boss, then world 1.
 	Game.progression.event("boss_wins")
 	check(preload("res://scripts/wall_counter.gd").value()==8,"a boss win turns the wall to 8")
+	# from wall_counter_revision: the wall clicks 9 → 8 once after the boss and remembers it (tween sped up).
+	Game.progression.counters.erase("wall_shown")
+	var scale_keep=Engine.time_scale;Engine.time_scale=20.0
+	var wall=preload("res://scripts/wall_counter.gd").new();add_child(wall)
+	await get_tree().process_frame
+	check(wall.clicking and wall.label.text=="9","the wall starts clicking from the last shown 9")
+	var waited=0
+	while int(Game.progression.counters.get("wall_shown",9))!=8 and waited<300:
+		await get_tree().process_frame;waited+=1
+	check(wall.label.text=="8" and int(Game.progression.counters.get("wall_shown",9))==8,"the wall clicks to 8 and remembers it")
+	wall.queue_free();Engine.time_scale=scale_keep
+	wall=preload("res://scripts/wall_counter.gd").new();add_child(wall)
+	await get_tree().process_frame
+	check(not wall.clicking and wall.label.text=="8","no second click on the next visit")
+	wall.queue_free()
 	Game.progression.complete_world(1)
 	check(not Campaign.unlocked(2) and Campaign.infinite_unlocked() and road.steps("story")[3][2],"world 1 done: the endless front opens, world 2 stays closed in the demo, the roadmap marks the general")
 	Settings.values["dev_worlds"]=true

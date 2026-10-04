@@ -1,8 +1,11 @@
-extends "res://tests/balance_v08.gd"
+extends "res://tests/playthrough.gd"
 ## test-timeout: 420 (simulates a long run)
+## Strong late-game build plays the whole campaign with the playthrough bot (drive). Fails on a timeout or a run
+## without a single kill: either means the bot or the battle loop is broken, not a balance result.
 var stage_limit=15
+var seed_value=42
 func _ready():
-	Game.save_enabled=false;Game.sound_enabled=false;Game.reset_upgrades()
+	Game.save_enabled=false;Settings.persistence_enabled=false;Game.sound_enabled=false;Game.reset_upgrades()
 	var args=Array(OS.get_cmdline_user_args()).filter(func(s):return not str(s).begins_with("--"));seed_value=int(args[0]) if args.size()>0 else 42
 	Game.health_level=20;Game.damage_level=20;Game.base_level=10;Game.heal_level=10;Game.mobility_level=10;Game.turret_level=10;Game.luck_level=10;Game.rarity_level=10;Game.recovery_level=10;Game.camp_level=3
 	Game.ability_slots=2;Game.equipped_abilities=["grenade","ally_drone"];Game.selected_ability="grenade";Game.ability_unlocks=Game.equipped_abilities.duplicate();Game.shield_capacity_level=1
@@ -21,7 +24,10 @@ func _physics_process(_delta):
 	if arena.room.has_meta("pending_flag"):
 		for chest in arena.room.pickups.filter(func(c):return c.kind=="recipe_draft"):arena.reward.consume_chest(chest)
 	if arena.phase=="result" or (arena.room_index==stage_limit and arena.boss_defeated) or ticks>130000:
-		finished=true;print("BALANCE09 seed=%d stage=%d kills=%d time=%.1f hp=%.2f base=%.2f earned=%d clear=%s timeout=%s" % [seed_value,arena.room_index+1,arena.kills,arena.elapsed,arena.soldier_hp,arena.base_hp,arena.earned,arena.boss_defeated,ticks>130000]);get_tree().quit();return
+		finished=true;print("BALANCE09 seed=%d stage=%d kills=%d time=%.1f hp=%.2f base=%.2f earned=%d clear=%s timeout=%s" % [seed_value,arena.room_index+1,arena.kills,arena.elapsed,arena.soldier_hp,arena.base_hp,arena.earned,arena.boss_defeated,ticks>130000])
+		var broken=ticks>130000 or arena.kills==0
+		if broken:print("FAIL balance_v09: ","timeout" if ticks>130000 else "no kills")
+		get_tree().quit(1 if broken else 0);return
 	if arena.phase=="countdown":arena.countdown=minf(arena.countdown,.1)
 	elif arena.phase=="paused" and arena.boss_defeated:advance()
 	elif arena.phase=="upgrade" and arena.reward_claimed:advance()

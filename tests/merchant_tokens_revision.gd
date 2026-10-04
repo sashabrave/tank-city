@@ -10,6 +10,12 @@ func settle():
 func run():
 	Game.save_enabled=false;Game.sound_enabled=false;Settings.persistence_enabled=false;Settings.values.fullscreen=false;Settings.apply()
 	Campaign.configure(1)
+	# from room_layout_revision: room machines are deterministic, the merchant always has the slot machine, all kinds appear.
+	check(RoomLayout.plan(7,2,false)==RoomLayout.plan(7,2,false),"same room, same machines")
+	check(RoomLayout.plan(7,2,true).fortune=="slot","merchant fortune is the slot machine")
+	var kinds={}
+	for seed in range(200):kinds[RoomLayout.plan(seed,2,false).fortune]=true;kinds["m_"+RoomLayout.plan(seed,2,false).machine]=true
+	check(kinds.has("slot") and kinds.has("lootbox") and kinds.has("closed") and kinds.has("m_medkit") and kinds.has("m_lootbox"),"fortune and machine kinds all appear (%s)" % [kinds.keys()])
 	check(RoutePlan.lane_span(0,2,3)==[0,1] and RoutePlan.lane_span(1,2,3)==[1,2] and RoutePlan.lane_span(0,1,3)==[0,1,2],"service stops link to neighbouring lanes")
 	check(Campaign.service_options(1,2)==["ability","merchant"],"world 1 rows: instructor and merchant")
 	var plan=RoutePlan.build(11)
@@ -31,8 +37,34 @@ func run():
 	check(drops>60 and drops<200,"ordinary enemies drop tokens rarely (%d / 2000)" % drops)
 	arena.run.tokens=30;arena.run.soldier_hp=1
 	main.show_map(1);await settle();main.show_map(2);await settle()
+	# from take_vehicle_revision: on foot at the mechanic, buying the parked vehicle costs alloy and waits for the next field.
+	arena.pending_vehicle="";main.show_service("vehicle",2);await get_tree().create_timer(.5).timeout
+	var garage_room=main.current;Game.credits=500
+	check(garage_room.has_node("TakeVehicleLabel"),"on foot the parked vehicle is offered")
+	var vehicle_price=int(garage_room.VEHICLE_PRICES.get(garage_room.vehicle,80))
+	garage_room.avatar.position=garage_room.PARKED+Vector3(-.8,0,.6);garage_room.interact();await settle()
+	for b in garage_room.modal.find_children("*","Button",true,false):
+		if b.text.contains("Купить"):b.pressed.emit()
+	await settle()
+	check(arena.pending_vehicle==garage_room.vehicle and Game.credits==500-vehicle_price,"taking the vehicle costs alloy and waits at the next field")
+	arena.pending_vehicle=""
 	main.show_service("merchant",2);await settle()
 	var shop=main.current
+	# from room_layout_revision: the common room layout keeps crate, machine and «Фортуна» in place, off the floor.
+	check(shop.spots.has("crate") and is_instance_valid(shop.spots.crate) and shop.spots.crate.position==RoomLayout.WEAPON_CRATE and is_instance_valid(shop.spots.machine) and shop.spots.machine.position==RoomLayout.MACHINE and is_instance_valid(shop.spots.fortune) and shop.spots.fortune.position==RoomLayout.FORTUNE,"merchant: crate, machine and fortune spot in their places")
+	check(not shop.stand(RoomLayout.WEAPON_CRATE) and not shop.stand(RoomLayout.FORTUNE),"merchant: spots are outside the walking floor")
+	# from room_layout_revision: the weapon crate sells three rolled guns into the backpack for alloy, each once.
+	var crate=shop.spots.crate
+	check(crate.offers.size()==3 and crate.offers.all(func(o):return o.id in Game.LOOT.WEAPONS and o.stats.has("damage")),"three rolled guns with stats")
+	Game.credits=1000;var bag_before=arena.run.weapon_bag.size()
+	check(crate.buy(0)=="" and arena.run.weapon_bag.size()==bag_before+1 and Game.credits==1000-int(crate.offers[0].price),"bought gun goes to the backpack for alloy")
+	check(crate.buy(0)=="Уже куплено","an offer sells once")
+	# from room_layout_revision: the medkit machine heals for tokens.
+	var medkit=preload("res://scripts/medkit_vendor.gd").place(Node3D.new(),arena,Vector3.ZERO)
+	arena.run.soldier_hp=1;arena.run.tokens=10
+	check(medkit.buy() and arena.run.soldier_hp==arena.run.soldier_max_hp and arena.run.tokens==10-medkit.PRICE,"medkit machine heals for tokens")
+	medkit.get_parent().free()
+	arena.run.tokens=30;arena.run.soldier_hp=1
 	check(shop.get_script()==load("res://scripts/merchant_room.gd"),"merchant stop opens")
 	# The room hero holds and fires the run's gun, not the hub's choice (2026-10-03).
 	var room_gun="shotgun" if Game.selected_weapon!="shotgun" else "smg"
@@ -73,4 +105,34 @@ func run():
 	check(route.reachable.all(func(id):return id in RoutePlan.reachable(route.plan,2,main.route_choices,"merchant")),"only lanes behind the merchant are reachable")
 	if is_instance_valid(main.run_arena):main.run_arena.free()
 	main.queue_free();await settle()
+	# from recycling_v19: duplicate recipes on extraction, single/all sale, unlocks kept, profile round trip.
+	Game.reset_upgrades()
+	var pending=[{"category":"weapon","id":"smg"},{"category":"weapon","id":"smg"},{"category":"weapon","id":"pistol"}]
+	Game.bank_recipes(pending)
+	check(pending.is_empty() and "smg" in Game.weapon_unlocks and Game.duplicate_recipes.size()==2 and Game.new_recipes.size()==1,"extraction banks one recipe and two duplicates")
+	var dup_price=Game.duplicate_price(Game.duplicate_recipes[0])
+	check(Game.sell_duplicate(0) and Game.credits==dup_price and Game.duplicate_recipes.size()==1 and "smg" in Game.weapon_unlocks,"a duplicate sells for alloy, the unlock stays")
+	check(not Game.sell_duplicate(10),"no sale of a missing duplicate")
+	check(Game.sell_all_duplicates()>0 and Game.duplicate_recipes.is_empty() and "pistol" in Game.weapon_unlocks and Game.sell_all_duplicates()==0,"sell all, no repeat sale")
+	Game.duplicate_recipes=[{"category":"weapon","id":"pistol"}]
+	var snapshot=Game.serialize_progress().duplicate(true);Game.duplicate_recipes=[];Game.apply_profile(snapshot)
+	check(Game.duplicate_recipes.size()==1,"duplicates survive the profile round trip")
+	# from garage_progression: garage gates (research, yard, workshop, blueprint, level), single purchase, upgrades,
+	# armor formula and the owned fleet in the profile round trip.
+	Game.reset_upgrades();Game.credits=50000
+	check(Game.garage.starting_vehicle()=="" and not Game.garage.buy("buggy"),"no vehicle and no purchase without the garage")
+	Game.research_unlocks.append("garage")
+	check(not Game.build_workshop("garage") and Game.build_workshop("yard") and Game.build_workshop("garage") and not Game.garage.buy("buggy"),"garage needs the yard, a vehicle needs its blueprint")
+	Game.garage.unlocks.append("vehicle_buggy")
+	check(Game.garage.buy("buggy") and Game.garage.starting_vehicle()=="buggy","bought buggy becomes the starting vehicle")
+	var money=Game.credits;check(not Game.garage.buy("buggy") and Game.credits==money,"a vehicle is bought once")
+	Game.garage.unlocks.append("vehicle_tank");Game.progression.level=5
+	check(not Game.garage.buy("tank"),"tank needs the APC first")
+	Game.garage.unlocks.append("vehicle_apc");check(Game.garage.buy("apc") and Game.garage.buy("tank"),"APC then tank")
+	Game.garage.choose("buggy");check(not Game.garage.upgrade("buggy","armor"),"upgrade needs its blueprint")
+	Game.garage.unlocks.append("buggy_armor");check(Game.garage.upgrade("buggy","armor"),"armor upgrade bought")
+	check(is_equal_approx(GarageCatalog.stats("buggy").hp,Balance.CONFIG.enemy("buggy").health*GarageCatalog.PLAYER_ARMOR.buggy*1.03),"armor upgrade adds 3% hp")
+	var garage_snapshot=Game.serialize_progress().duplicate(true);Game.garage=load("res://scripts/garage/state.gd").new();Game.apply_profile(garage_snapshot)
+	check(Game.garage.owned.size()==3 and Game.garage.selected=="buggy" and Game.garage.level("buggy","armor")==1,"garage survives the profile round trip")
+	check(Game.garage.choose("") and Game.garage.starting_vehicle()=="","going on foot is a choice")
 	print("MERCHANT: %d failures" % failures);get_tree().quit(1 if failures else 0)

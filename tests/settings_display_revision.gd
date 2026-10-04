@@ -24,5 +24,19 @@ func run():
 	check(not Settings.resolutions().is_empty() and Settings.resolutions()[0].contains("x"),"resolution list (%s)" % ", ".join(Settings.resolutions().slice(0,3)))
 	Settings.values.retina=true;var full=Settings.render_scale();Settings.values.retina=false;var half=Settings.render_scale();Settings.values.retina=true
 	check(half<=full,"Retina off never renders more (%.2f / %.2f)" % [half,full])
+	# from settings: the settings window pauses, key rebinding swaps a taken key, music 0 mutes its bus, reset restores defaults.
+	Settings.open()
+	check(get_tree().paused,"settings window pauses the game")
+	Settings.tab=2;Settings.draw();Settings.waiting="fire"
+	var event=InputEventKey.new();event.physical_keycode=KEY_E;event.keycode=KEY_E;event.pressed=true
+	Settings._input(event)
+	check(Settings.keys.fire==KEY_E and Settings.keys.interact==KEY_SPACE,"rebinding fire onto E swaps interact onto Space")
+	check(event.is_action("fire"),"the new key fires")
+	Settings.change("music",0.0)
+	check(AudioServer.is_bus_mute(AudioServer.get_bus_index("TankCityMusic")),"music at zero mutes its bus")
+	Settings.reset_defaults()
+	check(Settings.keys.fire==KEY_SPACE and is_equal_approx(Settings.values.music,0.8),"reset restores keys and volume")
+	Settings.close()
+	check(not get_tree().paused,"closing settings resumes")
 	print("SETTINGS DISPLAY: %d failures" % failures)
 	get_tree().quit(1 if failures else 0)

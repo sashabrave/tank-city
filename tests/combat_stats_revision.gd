@@ -110,5 +110,74 @@ func run():
 	var carried=[{"id":"a"},{"id":"b"},{"id":"c"}]
 	var kept=preload("res://scripts/recipe_extraction.gd").survivors(carried,false,0,arena.run.combat_rng,2)
 	check(kept.size()==2 and kept[0].id=="a" and kept[1].id=="b","safe slots keep their blueprints")
+	arena.queue_free();await get_tree().process_frame
+	await grenadier_checks()
+	await friendly_fire_checks()
+	await smg_burst_checks()
+	Game.reset_upgrades();Campaign.configure(1)
 	print("COMBAT STATS: %d failures" % failures)
-	get_tree().quit(failures)
+	get_tree().quit(1 if failures else 0)
+
+# from grenadier_environment: an enemy grenade hurts the base and a nearby brick once; far and solid blocks untouched.
+func grenadier_checks():
+	Game.reset_upgrades();Campaign.configure(1)
+	var arena=load("res://scenes/arena.tscn").instantiate();add_child(arena);arena.auto_pause_enabled=false;arena.set_physics_process(false);arena.phase="combat"
+	var center=arena.base_cell
+	var near=center+Vector2i.LEFT;var far=center+Vector2i(3,0);var solid=center+Vector2i.RIGHT
+	for cell in [near,far,solid]:
+		if arena.walls.has(cell):arena.walls[cell].node.queue_free();arena.walls.erase(cell)
+	arena.add_wall(near,10);arena.add_wall(far,10);arena.add_wall(solid,-1)
+	var enemy=arena.spawn_actor("grenadier",Vector2i(3,3),false);enemy.set_physics_process(false)
+	var amount=enemy.damage;check(amount>0,"grenadier has damage")
+	var hp=arena.base_hp
+	arena.throw_grenade(enemy,arena.world_pos(center))
+	var grenade=arena.grenades.back();grenade.set_physics_process(false)
+	check(is_equal_approx(grenade.damage,amount) and not grenade.friendly,"enemy grenade carries the grenadier damage")
+	grenade._physics_process(grenade.flight_time+.01)
+	check(grenade.spent and is_equal_approx(arena.base_hp,hp-amount),"enemy grenade damages the base once")
+	check(is_equal_approx(arena.walls[near].hp,10-amount),"enemy grenade damages a nearby brick")
+	check(arena.walls[far].hp==10 and arena.walls[solid].hp==-1,"distant and solid blocks are untouched")
+	grenade._physics_process(1);check(is_equal_approx(arena.base_hp,hp-amount),"no duplicate explosion")
+	arena.queue_free();await get_tree().process_frame
+
+# from friendly_fire_revision (T-165): own explosives bite allies a little, own bullets never do; hub comrade blocks its cell.
+func friendly_fire_checks():
+	Game.reset_upgrades();Campaign.configure(1)
+	var arena=load("res://scenes/arena.tscn").instantiate();arena.auto_pause_enabled=false;add_child(arena)
+	await get_tree().create_timer(.6).timeout;arena.set_physics_process(false);arena.phase="combat"
+	arena.summon_comrade(.5,0);var buddy=arena.actors.back();buddy.set_physics_process(false);buddy.parachute_left=0
+	var hp=buddy.hp
+	arena.grenade_explosion(buddy.position,5.0,true,1.2)
+	check(buddy.hp==hp-1.0,"own grenade bites the comrade by 1 (%s → %s)" % [hp,buddy.hp])
+	hp=buddy.hp
+	var bullet=load("res://scenes/projectile.tscn").instantiate();bullet.arena=arena;bullet.owner_actor=arena.player;bullet.friendly=true;bullet.damage=3.0;bullet.position=buddy.position+Vector3.UP*.5;arena.add_child(bullet)
+	arena.bullet_hit(bullet)
+	check(buddy.hp==hp,"own bullets pass the comrade")
+	arena.queue_free();await get_tree().process_frame
+	Game.selected_class="recruit"
+	var hub=load("res://scenes/hub.tscn").instantiate();add_child(hub);await get_tree().create_timer(.5).timeout
+	var effect=load("res://scripts/hub_ability_effect.gd").new();effect.hub=hub;effect.kind="comrade";hub.add_child(effect)
+	check(effect.accepted and effect.deployed_cell in hub.training_barriers and not hub.hub_free(effect.deployed_cell),"hub comrade blocks its cell")
+	var taken=effect.deployed_cell
+	effect.queue_free();await get_tree().process_frame
+	check(taken not in hub.training_barriers,"the cell frees when the comrade leaves")
+	hub.queue_free();await get_tree().process_frame
+
+# from smg_burst_revision: pistol and SMG share a short range; one SMG pull fires a 3-shot burst; rate counts every shot.
+func smg_burst_checks():
+	Game.reset_upgrades();Campaign.configure(1)
+	var W=Game.LOOT.WEAPONS
+	check(is_equal_approx(W.pistol.range,W.smg.range) and W.pistol.range<W.rifle.range,"pistol and SMG: same shorter range")
+	check(int(W.smg.burst)==3 and int(W.pistol.burst)==1,"SMG fires bursts of 3")
+	var arena=load("res://scenes/arena.tscn").instantiate();arena.run_seed=5;add_child(arena);arena.auto_pause_enabled=false
+	await get_tree().process_frame
+	arena.run.weapon="smg";arena.phase="combat"
+	var spawned=[0]
+	arena.child_entered_tree.connect(func(n):if n.get("friendly")==true:spawned[0]+=1)
+	arena.fire_weapon(arena.player)
+	check(spawned[0]==1,"first shot of the burst is immediate")
+	await get_tree().create_timer(.25).timeout
+	check(spawned[0]==3,"two more shots follow (%d)" % spawned[0])
+	var stats=CombatStats.weapon(arena,"smg")
+	check(is_equal_approx(stats.rate,3.0/stats.interval),"rate counts every shot of the burst")
+	arena.queue_free();await get_tree().process_frame

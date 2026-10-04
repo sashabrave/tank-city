@@ -1,4 +1,0 @@
-[gd_scene load_steps=2 format=3]
-[ext_resource type="Script" path="res://tests/range_visual.gd" id="1"]
-[node name="Range" type="Node"]
-script=ExtResource("1")

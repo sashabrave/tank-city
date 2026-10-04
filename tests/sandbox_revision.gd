@@ -62,4 +62,31 @@ func run():
 	check(Game.credits==77 and Game.weapon_unlocks==["pistol"],"profile restored after exit")
 	check(main.run_arena==null and main.current!=null and main.current.get_script().resource_path.ends_with("hub.gd"),"back in the hub")
 	main.queue_free();await settle()
+	# from gallery: the object gallery shows the full catalog, respawns targets on their stands, never touches the profile.
+	var before=[Game.credits,Game.cores,Game.weapon_unlocks.duplicate(),Game.selected_weapon,Game.ability_unlocks.duplicate()]
+	var gallery=load("res://scenes/test_gallery.tscn").instantiate();add_child(gallery)
+	gallery.set_physics_process(false);gallery.player.set_physics_process(false)
+	check(gallery.exhibits.size()>=80,"gallery: complete object catalog (%d)" % gallery.exhibits.size())
+	var target=gallery.exhibits[0].actor;var original=target.position
+	target.take_damage(9999)
+	check(target.dead and not target.visible and gallery.respawns.size()==1,"gallery: death schedules respawn")
+	gallery._physics_process(1.99);check(target.dead,"gallery: still dead before two seconds")
+	gallery._physics_process(.02);check(not target.dead and target.visible and target.hp==target.max_hp and target.position==original,"gallery: restored at its stand after two seconds")
+	var hero_hp=gallery.player.hp;gallery.player.take_damage(9999);check(gallery.player.hp==hero_hp,"gallery: invulnerable testing hero")
+	gallery.focus_exhibit(0);gallery.weapon="pistol";gallery.player.apply_weapon()
+	var bullet=gallery.spawn_bullet(gallery.player,target.position,Vector2i.UP,1,true);bullet.set_physics_process(false);bullet.position=target.position
+	var target_hp=target.hp;gallery.bullet_hit(bullet);check(target.hp<target_hp,"gallery: a real player bullet damages the exhibit")
+	for i in range(gallery.exhibits.size()):gallery.focus_exhibit(i)
+	check(before==[Game.credits,Game.cores,Game.weapon_unlocks,Game.selected_weapon,Game.ability_unlocks],"gallery: profile unchanged")
+	gallery.queue_free();await settle()
+	# from dev_shop_v17: dev unlocks — ability catalog, class purchase and second skill, reversible grants in every group.
+	Game.reset_upgrades()
+	check(DevUnlocks.catalog("ability").size()==4 and not DevUnlocks.catalog("ability").has("shield"),"dev shop: four buyable abilities, shield is the default")
+	DevUnlocks.set_purchase("classes","gunner",true);check("gunner" in Game.class_unlocks and "gunner" in Game.class_first_slots,"dev shop: class purchase opens it with its first slot")
+	DevUnlocks.second_skill("gunner",true);check(ClassCatalog.level("gunner")>=8,"dev shop: second skill raises the class level")
+	DevUnlocks.toggle("classes","gunner",false);check("gunner" not in Game.class_unlocks,"dev shop: class grant is reversible")
+	for pair in [["ability","barrier"],["hq","hq_medbay"],["garage","vehicle_tank"],["research","weapons"]]:
+		DevUnlocks.set_purchase(pair[0],pair[1],true);var on=DevUnlocks.purchased(pair[0],pair[1])
+		DevUnlocks.set_purchase(pair[0],pair[1],false)
+		check(on and not DevUnlocks.purchased(pair[0],pair[1]),"dev shop: %s/%s grant and take back" % pair)
 	print("SANDBOX: %d failures" % failures);get_tree().quit(1 if failures else 0)

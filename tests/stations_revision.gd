@@ -72,5 +72,93 @@ func run():
 	hub.open_station("garage");await settle();p=screen(hub).provider
 	check(p.act("vehicles","buggy","buy")!="" and "buggy" in Game.garage.owned,"buy a vehicle")
 	check(p.act("vehicles","buggy","choose")!="" and Game.garage.starting_vehicle()=="buggy","vehicle waits at the start")
-	hub.close_station();hub.queue_free();await settle()
+	hub.close_station()
+
+	# from station_notices_revision: seen-aware station dots and «Новое» chips.
+	var N=preload("res://scripts/ui/station_notices.gd")
+	Game.credits=0;Game.cores=0
+	Game.progression.seen=Game.progression.seen.filter(func(s):return not str(s).begins_with("item:") and s!=N.BASELINE)
+	Game.progression.viewed_updates.erase("station:fighter")
+	check(not N.has_dot("fighter"),"notices baseline: an existing profile starts without dots")
+	Game.credits=100000
+	check(N.has_dot("fighter"),"new affordable upgrades light the Barracks dot")
+	var news=N.scan("fighter").filter(func(i):return N.item_new("fighter",i.id,i.status))
+	for k in range(news.size()-1):N.mark_item_seen("fighter",news[k].tab,news[k].id.split(":",true,1)[1])
+	check(news.size()<2 or N.has_dot("fighter"),"the dot stays while one new item is left")
+	if not news.is_empty():
+		var last=news.back();N.mark_item_seen("fighter",last.tab,last.id.split(":",true,1)[1])
+		check(not N.has_dot("fighter"),"selecting the last new item clears the dot")
+		check(not N.tab_new("fighter",last.tab),"and the tab dot")
+	check(hub.bench_available("character")==N.has_dot("fighter"),"the bench dot follows the station notice")
+	N.mark_all_seen("arsenal")
+	var fresh=Game.LOOT.gun_ids().filter(func(w):return w not in Game.weapon_unlocks)
+	check(not fresh.is_empty(),"a weapon blueprint is still left to test the Arsenal notice")
+	if not fresh.is_empty():
+		Game.weapon_unlocks.append(fresh[0])
+		check(N.has_dot("arsenal"),"a new blueprint lights the Arsenal dot")
+		var arsenal_tab=load(N.STATIONS.arsenal).new().tabs()[0][0]
+		check(N.item_new("arsenal",arsenal_tab+":"+fresh[0],"owned") or N.is_new("arsenal",arsenal_tab,fresh[0]),"the unlocked weapon is marked «Новое»")
+		for i in N.scan("arsenal").filter(func(i):return N.item_new("arsenal",i.id,i.status)):N.mark_item_seen("arsenal",i.tab,i.id.split(":",true,1)[1])
+		check(not N.is_new("arsenal",arsenal_tab,fresh[0]) and not N.has_dot("arsenal"),"selecting the new items clears «Новое» and the dot")
+	# from hub_refresh_cache: hub bench dots follow live availability as alloy changes.
+	for id in ["character","weapons","bonuses"]:
+		if id not in Game.built_workshops:Game.built_workshops.append(id)
+	hub.update_bench_visuals()
+	check(not hub.bench_dots.is_empty(),"built benches carry availability dots")
+	for credits in [0,99999]:
+		Game.credits=credits;hub.hint_refresh=0;hub._physics_process(.4)
+		var mismatched=hub.bench_dots.keys().filter(func(id):return hub.bench_dots[id].visible!=hub.bench_available(id))
+		check(mismatched.is_empty(),"bench dots match availability at %d alloy %s" % [credits,str(mismatched)])
+	hub.queue_free();await settle()
+
+	# from headquarters: HQ rules — keys, blueprint gate, one hub slot, insurance, supply timer, Q heal and
+	# shield, regeneration, Tesla, interceptor, route cards, workbench level and save round trip.
+	Game.reset_upgrades()
+	check(InputMap.has_action("hq_ability") and Settings.DEFAULT_KEYS.hq_ability==KEY_2 and Settings.DEFAULT_KEYS.class_ability==KEY_Q,"HQ support on 2, class ability on Q")
+	check(Game.hq_modules.is_empty() and HQCatalog.available("hq_medbay") and not HQCatalog.available("hq_tesla"),"a fresh profile knows only the starting HQ tech")
+	Game.credits=5000
+	check(not Game.build_workshop("headquarters"),"no HQ without its blueprint")
+	Game.research_unlocks.append("headquarters");check(Game.build_workshop("headquarters"),"the blueprint builds the HQ")
+	check(Game.equip_hq("hq_patch") and Game.equip_hq("hq_plating") and Game.hq_active=="" and Game.hq_modules==["hq_plating"],"one HQ slot in the hub: a new tech replaces the old one")
+	var arena=load("res://scenes/arena.tscn").instantiate();add_child(arena);arena.auto_pause_enabled=false;arena.phase="combat";arena.set_physics_process(false)
+	check(is_equal_approx(Game.death_loss_fraction(),.4),"death loses 40% without insurance")
+	Game.progression.insurance=1;check(is_equal_approx(Game.death_loss_fraction(),.35),"one insurance level: 35%")
+	Game.progression.insurance=6;check(is_equal_approx(Game.death_loss_fraction(),.2),"full insurance: 20%")
+	check(not Game.buy_insurance(),"insurance stops at its cap");Game.progression.insurance=0
+	var h=arena.headquarters
+	check(arena.base_max_hp==8,"base has 8 HP")
+	h.modules=["hq_medbay","hq_plating"];h.active="hq_patch";h.room_started();check(arena.base_max_hp==8,"modules keep base HP at 8")
+	arena.phase="countdown";h.tick(100);var supply_ok=arena.pickups.is_empty()
+	arena.phase="combat";h.tick(89);supply_ok=supply_ok and arena.pickups.is_empty()
+	h.tick(1);supply_ok=supply_ok and arena.pickups.size()==1 and arena.pickups[0].kind=="heart"
+	h.tick(89);supply_ok=supply_ok and arena.pickups.size()==1
+	h.tick(1);supply_ok=supply_ok and arena.pickups.size()==2
+	arena.phase="upgrade";h.tick(300);supply_ok=supply_ok and arena.pickups.size()==2
+	arena.phase="combat";h.tick(90);supply_ok=supply_ok and arena.pickups.size()==3
+	check(supply_ok,"a medkit every 90 combat seconds, never in countdown or card picks")
+	var pickup=arena.pickups[0];arena.soldier_hp=1;arena.player.hp=1;arena.reward.collect_pickup(pickup);check(arena.soldier_hp>1,"the HQ medkit heals")
+	arena.base_hp=3;check(h.cast() and arena.base_hp==6 and not h.cast(),"Q patch repairs the base by 3 and goes on cooldown")
+	Game.set_all_recipes(true);Game.progression.level=4
+	h.apply("hq_swap:hq_field:0",1);check(h.cooldown>=55,"swapping in the field shield starts a long cooldown");h.cooldown=0
+	check(h.cast(),"the field shield casts");var health=arena.base_hp;arena.combat.damage_base(1);check(arena.base_hp==health,"the shield absorbs base damage")
+	h.shield_time=0;arena.combat.damage_base(1);check(h.hit_delay==6,"a hit delays regeneration")
+	h.modules=["hq_regen"];h.timers.hq_regen=0;h.tick(1);var dented=arena.base_hp==health-1;h.tick(6);check(dented and arena.base_hp>health-1,"regeneration restores the base after the delay")
+	var foe=arena.spawn_actor("soldier",Vector2i(3,3),false);foe.set_physics_process(false);foe.position=h.origin()+Vector3(1,0,-1);var hp=foe.hp
+	check(h.trigger("hq_tesla") and (foe.dead or foe.hp<hp),"Tesla hits a nearby enemy")
+	var bullet=load("res://scenes/projectile.tscn").instantiate();bullet.arena=arena;bullet.position=h.origin()+Vector3(1,0,0);arena.add_child(bullet);arena.projectiles.append(bullet)
+	check(h.trigger("hq_interceptor") and bullet.spent,"the interceptor stops a projectile")
+	var offers=arena.reward.service_offers("headquarters")
+	check(not offers.is_empty() and offers.all(func(o):return o.id.begins_with("hq_")),"the HQ service stop offers HQ cards")
+	arena.queue_free();await settle()
+	check(Game.upgrade_hq("hq_medbay"),"the workbench levels an HQ tech")
+	# Profile round trip only inside a fresh temporary folder (profile, backup and temp files).
+	var dir=OS.get_temp_dir().path_join("warcats_stations_%d" % Time.get_ticks_usec());DirAccess.make_dir_recursive_absolute(dir)
+	var restore={"path":Game.save_path,"selected":Game.profiles.selected,"blocked":Game.save_blocked}
+	Game.save_path=dir.path_join("profile.json");Game.profiles.selected=true;Game.save_blocked=false;Game.save_enabled=true
+	var saved=Game.save_progress();Game.hq_unlocks=[];Game.hq_levels={};Game.load_progress()
+	check(saved and "hq_tesla" in Game.hq_unlocks and int(Game.hq_levels.get("hq_medbay",0))==1,"HQ techs and levels survive a save round trip")
+	Game.save_enabled=false;Game.save_path=restore.path;Game.profiles.selected=restore.selected;Game.save_blocked=restore.blocked
+	for file in DirAccess.get_files_at(dir):DirAccess.remove_absolute(dir.path_join(file))
+	DirAccess.remove_absolute(dir)
+	Game.reset_upgrades()
 	print("STATIONS: %d failures" % failures);get_tree().quit(1 if failures else 0)

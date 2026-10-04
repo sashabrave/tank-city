@@ -1,11 +1,13 @@
 extends Node
-## test-timeout: 900 (bot plays a whole world-1 route)
+## test-timeout: 2400 (bot plays a whole world-1 route, 15–40 min depending on load; same limit as tools/balance/run_pacing.sh)
+## test-flags: --fixed-fps 60
 ## Pacing probe for the economy model (tools/balance/pacing_model.py, guides/03_release/07_balance_pacing.md).
 ## The bot cannot defend like a person, so it never dies: soldier and HQ stay at 999 HP and every hit is
 ## booked per field as «damage taken». The model turns that pressure into a death chance with a human factor.
 ## Run: Godot --headless --fixed-fps 60 --path . tests/balance_pacing.tscn -- hp dmg mob press class_lvl challenge seed path [weapon_lvl] [debug]
 ## (tools/balance/run_pacing.sh runs a whole matrix).
-## Without arguments (the full test suite) it only checks that the scene loads and quits: a route takes minutes.
+## Without arguments it only checks that the scene loads and quits; tests/suites/long.txt passes a meta state.
+## Fails (exit 1) on a timeout or a route without a single kill.
 ##   path: easy | mid | hard — which route nodes the bot picks (battle nodes only).
 ## Prints one PACE line per field and a PACE_RUN summary. Never saves: Game.save_enabled=false.
 var arena
@@ -92,7 +94,10 @@ func finish():
 	finished=true
 	print("PACE_RUN "+JSON.stringify({"seed":seed_value,"challenge":Campaign.challenge,"path":path,"hp":Game.health_level,"dmg":Game.damage_level,"class":Game.class_level(),
 		"time":snappedf(arena.elapsed,.1),"earned":arena.run.earned,"tokens":arena.run.tokens,"soldier_dmg":snappedf(total_soldier,.01),"base_dmg":snappedf(total_base,.01),"assists":assists,"boss":arena.boss_defeated,"ticks":ticks}))
-	get_tree().quit()
+	# In the long suite (tests/suites/long.txt passes a meta state) a timeout or a route without kills is a failure.
+	var broken=ticks>2400000 or arena.kills==0
+	if broken:print("FAIL balance_pacing: ","timeout" if ticks>2400000 else "no kills")
+	get_tree().quit(1 if broken else 0)
 
 func _physics_process(_delta):
 	if finished:return

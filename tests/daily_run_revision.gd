@@ -41,5 +41,28 @@ func run():
 	Campaign.configure(1,true)
 	check(not Campaign.daily and Campaign.daily_key=="","plain endless is not daily")
 	Game.progression.daily=saved_daily
+	# from daily_board_revision: local top 10 across profiles, written only into a fresh temporary folder.
+	var dir=OS.get_temp_dir().path_join("warcats_daily_board_%d" % Time.get_ticks_usec());DirAccess.make_dir_recursive_absolute(dir)
+	var saved=[DailyBoard.directory,Game.profiles.directory,Game.profiles.active]
+	DailyBoard.directory=dir;Game.profiles.directory=dir;Game.save_enabled=true
+	check(DailyBoard.top(key).is_empty(),"empty board in a fresh folder")
+	for i in range(12):
+		Game.profiles.active=1+i%3
+		DailyBoard.add(key,DailyBoard.entry_for(i%3,i%7,i*5,60.0+i))
+	Game.save_enabled=false
+	var rows=DailyBoard.top(key)
+	check(rows.size()==10,"board keeps the top 10")
+	check(rows.size()==10 and int(rows[0].score)>=int(rows[9].score),"best first")
+	check(not rows.is_empty() and DailyBoard.place(key,int(rows[0].score)+1)==1,"a better score takes first place")
+	check(FileAccess.file_exists(dir.path_join("daily_board.json")),"board file lands in the temp folder")
+	for file in DirAccess.get_files_at(dir):DirAccess.remove_absolute(dir.path_join(file))
+	DirAccess.remove_absolute(dir)
+	DailyBoard.directory=saved[0];Game.profiles.directory=saved[1];Game.profiles.active=saved[2]
+	# from daily_board_revision: the daily run and its table are open before world 1 is cleared (0.8.0).
+	var cleared=Game.progression.cleared_worlds.duplicate();Game.progression.cleared_worlds.clear()
+	var early=load("res://scripts/ui/world_select.gd").new();add_child(early);await get_tree().process_frame
+	check(early.find_child("DailyRun",true,false)!=null and early.find_child("DailyBoard",true,false)!=null,"daily run and table open from the start")
+	early.queue_free();await get_tree().process_frame
+	Game.progression.cleared_worlds=cleared
 	print("DAILY RUN: %d failures" % errors)
-	get_tree().quit(errors)
+	get_tree().quit(1 if errors else 0)

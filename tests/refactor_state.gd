@@ -43,4 +43,24 @@ func run_test():
 	check(fresh.damage_bonus==0 and fresh.pending_recipes.is_empty() and fresh.vehicle_mods.apc.damage==0,"new run isolates previous run data")
 	check(Game.damage_level==0 and Game.research_unlocks==profile_research,"run upgrades do not leak into permanent profile")
 	fresh.queue_free();await get_tree().process_frame
+	await drone_cooldown_checks()
 	print("REFACTOR STATE: ",checks," checks, ",failures," failures");get_tree().quit(1 if failures else 0)
+
+# from drone_background_cooldown: background drone timer bounds, combat-only ticking, and its own RNG (battle RNG untouched).
+func drone_cooldown_checks():
+	Campaign.configure(1)
+	var arena=load("res://scenes/arena.tscn").instantiate();arena.auto_pause_enabled=false;add_child(arena);arena.set_physics_process(false)
+	for actor in arena.actors:actor.set_physics_process(false)
+	arena.phase="combat";arena.room.surprise_initialized=false;arena.room.combat_elapsed=0;arena.surprises.start_wave()
+	check(arena.room.surprise_timer>=15 and arena.room.surprise_timer<=30,"background drone: initial delay 15-30 seconds")
+	arena.room.surprise_timer=0;arena.room.combat_elapsed=14.99
+	var count=arena.actors.size();arena.surprises.tick(.01);check(arena.actors.size()==count,"background drone: none before 15 s of combat")
+	arena.room.combat_elapsed=16;var combat_rng=arena.combat_rng.state
+	arena.surprises.tick(.01);check(arena.actors.size()==count+1,"background drone: cooldown dispatches a drone")
+	check(arena.room.surprise_timer>=18 and arena.room.surprise_timer<=30,"background drone: repeat cooldown 18-30 seconds")
+	check(combat_rng==arena.combat_rng.state,"background drone randomness does not touch the battle RNG")
+	var timer=arena.room.surprise_timer
+	for phase in ["upgrade","paused","countdown"]:
+		arena.phase=phase;arena.surprises.tick(10);check(arena.room.surprise_timer==timer,"background drone timer does not tick in "+phase)
+	arena.room.wave=1;arena.surprises.start_wave();check(arena.room.surprise_timer==timer,"background drone: next wave keeps the cooldown")
+	arena.queue_free();await get_tree().process_frame

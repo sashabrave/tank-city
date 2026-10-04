@@ -1,0 +1,37 @@
+# CORE: перед каждой сборкой и после каждого заметного изменения (tools/run_tests.sh core, ~1–2 мин).
+# Одно имя теста на строку (без .tscn); можно добавить аргументы теста через пробел. Политика — guides/02_development/04_testing.md.
+# Сохранения и профили
+boot_profiles_revision
+profiles_v19
+save_exit_revision
+flow_full_loop
+inventory_integrity
+meta_integrity_revision
+assets_integrity
+localization_revision
+# Бой и правила
+smoke
+combat_stats_revision
+upgrade_registry_revision
+class_choices
+meta_shield
+resource_drops
+trench_regression
+navigation_cache
+squads_revision
+refactor_state
+refactor_contract
+stability_v09
+boss_campaign_revision
+# Маршрут, хаб, сервисы
+route_roads_revision
+route_alternation_revision
+merchant_tokens_revision
+stations_revision
+quests_revision
+daily_run_revision
+sandbox_revision
+author_rooms_revision
+# Интерфейс
+esc_windows
+settings_display_revision

@@ -1,7 +1,7 @@
 extends Node
 var failures=0
 func check(ok,message):
-	if not ok:failures+=1;push_error(message)
+	if not ok:failures+=1;print("FAIL: ",message);push_error(message)
 	else:print("PASS: ",message)
 func _ready():call_deferred("run")
 func run():
@@ -55,4 +55,40 @@ func run():
 	check(Game.credits==0 and Game.health_level+Game.damage_level+Game.luck_level+Game.turret_level==0,"full reset persists zero currency and all branches")
 	for file in DirAccess.get_files_at(dir):DirAccess.remove_absolute(dir.path_join(file))
 	DirAccess.remove_absolute(dir);Game.save_enabled=false;Game.save_path=restore.path;Game.profiles.selected=restore.selected;Game.save_blocked=restore.blocked
-	arena.free();print("META/SHIELD failures: ",failures);get_tree().quit(failures)
+	arena.free()
+	# from meta_gates_revision: no base-level gates; permanent upgrades stop only at fixed caps from economy.tres.
+	Game.reset_upgrades()
+	Game.progression.level=1;Game.credits=10000000;Game.cores=100
+	Game.built_workshops=["weapons","headquarters","garage","bonuses","character"]
+	Game.weapon_unlocks=["pistol","rifle"]
+	for i in range(e.weapon_level_cap+2):Game.upgrade_weapon("rifle")
+	check(Game.weapon_level("rifle")==e.weapon_level_cap,"weapon levels up to the fixed cap at base level 1")
+	for i in range(e.insurance_cap+2):Game.buy_insurance()
+	check(Game.progression.insurance==e.insurance_cap,"insurance up to its cap")
+	Game.bonus_unlocks=["heart","repair"]
+	for i in range(e.bonus_level_cap+2):Game.upgrade_bonus("repair")
+	check(Game.bonus_level("repair")==e.bonus_level_cap,"bonus levels up to their cap")
+	check(Game.upgrade_cap("heal")==e.branch_cap and Game.upgrade_cap("supplies")==e.supplies_cap,"branch caps are fixed")
+	Game.ability_unlocks.append("laser")
+	check(Game.ability_available("laser"),"late gadgets need only the blueprint")
+	for id in HQCatalog.DATA:Game.hq_unlocks.append(id)
+	check(HQCatalog.DATA.keys().all(func(id):return HQCatalog.available(id)) and HQCatalog.cap()==e.hq_level_cap,"every known HQ technology usable")
+	Game.garage.unlocks=["vehicle_buggy","vehicle_apc","vehicle_tank"]
+	check(Game.garage.buy("buggy") and Game.garage.buy("apc") and Game.garage.buy("tank"),"vehicles need only blueprint, order and price")
+	check(Game.garage.cap("tank")==e.vehicle_equipment_cap,"vehicle equipment cap is fixed")
+	# from shell_reset: the shell (general branches) refunds in full; class and camp levels stay.
+	Game.reset_upgrades();Game.new_recipes.clear()
+	Game.health_level=0;Game.damage_level=0;Game.mobility_level=0;Game.pressure_level=0
+	Game.credits=10000;Game.class_levels={"recruit":2};Game.camp_level=2
+	var bought=true
+	for branch in ["health","health","damage","mobility","pressure"]:bought=Game.purchase(branch) and bought
+	check(bought and Game.character_level()==5,"five shell levels bought")
+	check(Game.shell_refund()==10000-Game.credits,"the refund equals what was spent")
+	var returned=Game.reset_shell()
+	check(returned>0 and Game.credits==10000 and Game.character_level()==0,"reset returns all the alloy and zeroes the shell")
+	check(Game.class_levels=={"recruit":2} and Game.camp_level==2,"class and camp levels survive the shell reset")
+	check(Game.reset_shell()==0 and Game.credits==10000,"a second reset returns nothing")
+	var first_price=Game.cost("health")
+	check(Game.purchase("health") and Game.character_level()==1 and Game.credits==10000-first_price,"the shell can be bought again at its first price")
+	Game.reset_upgrades()
+	print("META/SHIELD failures: ",failures);get_tree().quit(1 if failures else 0)
