@@ -3712,7 +3712,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-292.png",
 			"source": "game",
-			"status": "doing",
+			"status": "review",
 			"title": "патроны не долны выпадать в карточках - только в точках прокачки (лутбоксах) и из ящиков.",
 			"type": "bug",
 			"version": "0.8.0"
@@ -3725,7 +3725,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-293.png",
 			"source": "game",
-			"status": "doing",
+			"status": "review",
 			"title": "на экране смерти оружи и инвентарь не просто пропают, а падают как ресурсы за низ экрана",
 			"type": "bug",
 			"version": "0.8.0"
@@ -3829,7 +3829,7 @@
 			"scene": "arena",
 			"shot": "res://tasks/shots/T-301.png",
 			"source": "game",
-			"status": "doing",
+			"status": "review",
 			"title": "иконка снайперки неверная, нужна именно пушка в стиле (уже нарисована)",
 			"type": "bug",
 			"version": "0.8.0"
