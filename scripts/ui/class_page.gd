@@ -142,13 +142,12 @@ func hero(pos:Vector2,area:Vector2):
 	# The full-body doll, facing right like every doll in the interface (author).
 	var portrait=TextureRect.new();body.add_child(portrait);portrait.name="Doll";portrait.texture=preload("res://scripts/ui/class_gallery.gd").texture(id,true);portrait.flip_h=preload("res://scripts/ui/gear_page.gd").DOLL_FACES_LEFT;portrait.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;portrait.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;portrait.position=Vector2.ZERO;portrait.size=Vector2(DOLL_W,DOLL_H);portrait.mouse_filter=Control.MOUSE_FILTER_PASS
 	UiKit.locked_preview(portrait,not owned)
-	var by=DOLL_H+10
-	for part in [[bio[0],UiKit.MUTED,""],[bio[1],Color("8fe895"),"+ "],[bio[2],Color("e3a08f"),"− "]]:
-		if str(part[0])=="":continue
-		var line=UiKit.label(body,str(part[2])+str(part[0]),Vector2(0,by),Vector2(DOLL_W,40),13,part[1]);line.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;line.mouse_filter=Control.MOUSE_FILTER_PASS
-		line.set_meta("no_fit",true);line.size.y=preload("res://scripts/ui/station_screen.gd").wrapped_height(line,DOLL_W,13);by+=line.size.y+6
-	line_names(body)
-	body.custom_minimum_size=Vector2(DOLL_W,by+28)  # room to scroll the last line out of the fade
+	# The story is not printed under the doll (author, 4 Oct 2026): it is the doll's hint and opens with «i»,
+	# like the ability info.
+	portrait.mouse_filter=Control.MOUSE_FILTER_PASS;portrait.tooltip_text=bio_text(bio)
+	var info=UiKit.button(self,"i",pos+Vector2(12+DOLL_W-40,16),Vector2(36,36),show_bio);info.name="BioInfo";info.text="i";info.add_theme_font_size_override("font_size",18)
+	info.tooltip_text=Texts.localized("О классе")
+	body.custom_minimum_size=Vector2(DOLL_W,DOLL_H)
 	const ABIL_W:=236.0
 	var x=pos.x+12+DOLL_W+20;var w=area.x-(12+DOLL_W+20)-ABIL_W-28
 	var name_label=UiKit.label(self,Game.CLASSES[id].name,Vector2(x,pos.y+8),Vector2(w,36),26);UiKit.accent(name_label);name_label.name="ClassName"
@@ -176,11 +175,30 @@ func hero(pos:Vector2,area:Vector2):
 		var fill=Panel.new();track.add_child(fill);fill.mouse_filter=Control.MOUSE_FILTER_IGNORE;fill.size=Vector2(col*share,10);fill.add_theme_stylebox_override("panel",bar_style(Color(UiKit.INK,.78) if owned else Color(UiKit.MUTED,.55),5))
 	abilities_cells(Vector2(pos.x+area.x-ABIL_W-12,pos.y),Vector2(ABIL_W,area.y))
 
-## Bio lines in the doll column are named for tests and the typography audit.
-static func line_names(body:Control):
-	var k=0
-	for child in body.get_children():
-		if child is Label:child.name="Bio_%d" % k;k+=1
+static func bio_text(bio:Array)->String:
+	var lines=[]
+	for part in [[bio[0],""],[bio[1],"+ "],[bio[2],"− "]]:
+		if str(part[0])!="":lines.append(part[1]+Texts.localized(str(part[0])))
+	return "\n".join(lines)
+## «i» on the doll: the class story, strengths and weaknesses in a small window over the page.
+var bio_popup:Control
+func show_bio():
+	if is_instance_valid(bio_popup):bio_popup.queue_free()
+	var bio:Array=ClassCatalog.BIO.get(viewed,["","",""])
+	var o=Control.new();o.name="BioPopup";add_child(o);o.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);o.add_to_group("selection_scope");o.z_index=60;bio_popup=o
+	var dim=ColorRect.new();o.add_child(dim);dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);dim.color=Color(0,0,0,.45);dim.mouse_filter=Control.MOUSE_FILTER_STOP
+	dim.gui_input.connect(func(e):if (e is InputEventMouseButton or e is InputEventScreenTouch) and e.pressed:o.queue_free())
+	const W=520.0
+	var box=UiKit.glass(o,Vector2.ZERO,Vector2(W,200));box.name="Bio"
+	var close=UiKit.button(box,"",Vector2(W-64,14),Vector2(48,40),func():o.queue_free());close.icon=UiKit.interface_icon("close");close.expand_icon=true;close.add_theme_constant_override("icon_max_width",18)
+	var heading=UiKit.label(box,Game.CLASSES[viewed].name,Vector2(24,20),Vector2(W-100,36),24);UiKit.accent(heading)
+	var y=66.0
+	for part in [[bio[0],UiKit.INK,""],[bio[1],Color("8fe895"),"+ "],[bio[2],Color("e3a08f"),"− "]]:
+		if str(part[0])=="":continue
+		var line=UiKit.label(box,str(part[2])+str(part[0]),Vector2(24,y),Vector2(W-48,40),16,part[1]);line.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+		line.size.y=preload("res://scripts/ui/station_screen.gd").wrapped_height(line,W-48,16);y+=line.size.y+10
+	box.size.y=y+14
+	var screen=get_viewport_rect().size;box.global_position=((screen-box.size)*.5).round()
 ## Section heading inside the class page (T-239): one size and colour for «Способности», «Путь класса», «Как открыть».
 func section(pos:Vector2,text:String)->Label:
 	return UiKit.label(self,text,pos,Vector2(260,22),15,UiKit.MUTED)
