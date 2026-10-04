@@ -374,6 +374,14 @@ func bail_out(actor,wreck):
 	var span:Array=CREW.get(actor.kind,[0,0]);var rng=arena.run.combat_rng if arena.run!=null else RandomNumberGenerator.new()
 	var count=rng.randi_range(span[0],span[1])
 	if actor.kind=="buggy" and rng.randf()<.5:count=1
+	# T-236: a tank has at most one tanker (50%). He runs off ~5 cells, waits, then runs back and repairs.
+	if actor.kind=="tank":
+		if rng.randf()>=TANKER_CHANCE:return
+		var tanker=arena.spawn_actor("soldier",arena.find_free_near(actor.cell),false,false,actor.rank,false,"pistol")
+		tanker.hp=1.0;tanker.max_hp=1.0;tanker.refresh_health();tanker.set_meta("crew",true);tanker.set_meta("mechanic",true)
+		tanker.set_meta("tanker",{"phase":"flee","path":tanker_path(tanker.cell,tanker_hideout(actor.cell,rng)),"clock":0.0})
+		wreck.mechanic=tanker;Game.sound("enemy_surprise",wreck)
+		return
 	for i in range(count):
 		var cell=arena.find_free_near(actor.cell)
 		var dog=arena.spawn_actor("soldier",cell,false,false,actor.rank,false,"pistol")
@@ -382,3 +390,66 @@ func bail_out(actor,wreck):
 	if count>0:Game.sound("enemy_surprise",wreck)
 ## The mechanic stays put while repairing (no walking away from the wreck).
 const REPAIR_HOLD=4.5
+const TANKER_CHANCE=.5
+const TANKER_RUN=5
+const TANKER_WAIT=2.0
+## A free cell about TANKER_RUN cells from the wreck, away from the player when possible.
+func tanker_hideout(from:Vector2i,rng)->Vector2i:
+	var away=Vector2.ZERO
+	if is_instance_valid(arena.player):away=Vector2(from-arena.player.cell).normalized()
+	var best=from;var best_score=-INF
+	for x in range(-TANKER_RUN,TANKER_RUN+1):
+		for y in range(-TANKER_RUN,TANKER_RUN+1):
+			var cell=from+Vector2i(x,y);var reach=absi(x)+absi(y)
+			if reach<TANKER_RUN or reach>TANKER_RUN+1 or not arena.inside(cell) or not arena.can_enter(cell):continue
+			var score=Vector2(x,y).normalized().dot(away)+rng.randf()*.3
+			if score>best_score:best=cell;best_score=score
+	return best
+## Cell path (breadth-first, walls and blocked terrain avoided); empty when there is no way.
+func tanker_path(from:Vector2i,to:Vector2i,beside:=false)->Array:
+	var came={from:from};var queue=[from];var hulls={}
+	for w in arena.wrecks:
+		if is_instance_valid(w):hulls[w.cell]=true
+	while not queue.is_empty():
+		var p:Vector2i=queue.pop_front()
+		if p==to or (beside and absi(p.x-to.x)+absi(p.y-to.y)==1):to=p;break
+		for dir in arena.DIRS:
+			var next:Vector2i=p+dir
+			if came.has(next) or hulls.has(next) or not arena.inside(next) or arena.walls.has(next) or next==arena.base_cell or arena.terrain.movement_blocked_at_cell(next):continue
+			came[next]=p;queue.append(next)
+	if not came.has(to):return []
+	var path=[];var at=to
+	while at!=from:path.push_front(at);at=came[at]
+	return path
+## Tanker brain: flee along the path, wait, come back to the wreck (Wreck.tick_repair does the repair).
+func tanker_step(actor,delta:float):
+	var state:Dictionary=actor.get_meta("tanker");actor.movement_pause=0
+	var wreck=null
+	for w in arena.wrecks:
+		if is_instance_valid(w) and w.mechanic==actor:wreck=w
+	if wreck==null:actor.remove_meta("tanker");return
+	state.clock+=delta
+	if actor.moving:return
+	match state.phase:
+		"flee","back":
+			var path:Array=state.path
+			while not path.is_empty() and arena.flat_distance(actor.position,arena.world_pos(path[0]))<.05:path.pop_front()
+			# Stuck or done: switch phase.
+			if path.is_empty() or state.clock>8.0:
+				if state.phase=="flee":state.phase="wait";state.clock=0.0
+				else:state.phase="repair"
+				return
+			# Blocked by someone for a while: look for another way to the same goal.
+			if actor.position.distance_to(state.get("last",Vector3.INF))<.01:
+				state.stuck=state.get("stuck",0.0)+delta
+				if state.stuck>1.0:
+					state.stuck=0.0;state.path=tanker_path(actor.cell,path[-1] if state.phase=="flee" else wreck.cell,state.phase=="back");return
+			else:state.stuck=0.0
+			state.last=actor.position
+			var step=arena.world_pos(path[0])-actor.position;step.y=0
+			var dir=Vector2i(signi(roundi(step.x*4)),0) if absf(step.x)>=absf(step.z) else Vector2i(0,signi(roundi(step.z*4)))
+			actor.set_facing(dir);actor.try_move(dir)
+		"wait":
+			if state.clock>=TANKER_WAIT:
+				state.phase="back";state.clock=0.0
+				state.path=tanker_path(actor.cell,wreck.cell,true)

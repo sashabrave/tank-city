@@ -282,6 +282,9 @@ func _physics_process(delta):
 			var aim=(arena.player.position-position).normalized();aim.y=0
 			model.aim(atan2(-aim.x,-aim.z));arena.spawn_free_bullet(self,aim,damage,6,false);fire_cooldown=2.2
 		return
+	if has_meta("tanker"):
+		arena.combat.tanker_step(self,delta)
+		return
 	if not player_owned and kind=="boss" and arena.boss_room:
 		arena.boss_step(self,delta)
 		return

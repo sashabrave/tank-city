@@ -137,7 +137,9 @@ func start_delivery(duration: float):
 func tick_repair(delta:float):
 	if not is_instance_valid(mechanic) or mechanic.dead or husk or not boardable or delivery_left>0:
 		mechanic=null;repair=0.0;timer_sprite.visible=false;return
-	if arena.flat_distance(mechanic.position,position)>1.2:return
+	if arena.flat_distance(mechanic.position,position)>(1.6 if mechanic.has_meta("tanker") else 1.2):return
+	# A tanker (T-236) first runs off and waits; he repairs only once he is back.
+	if mechanic.has_meta("tanker") and str(mechanic.get_meta("tanker").phase) in ["flee","wait"]:return
 	repair+=delta
 	timer_sprite.visible=true;timer_sprite.modulate=Color("ff8a5c")
 	var frame=clampi(floori(repair/REPAIR_TIME*50),0,50)
