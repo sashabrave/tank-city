@@ -6,6 +6,8 @@ extends Node3D
 ## Several items at once still drop as a sack that is picked up by walking over it.
 const REACH:=1.15
 var arena
+## The room floor this item lies on (scripts/room_floor.gd, T-202); null — the battle field.
+var ground=null
 var pickup:Dictionary={}
 var chip:PanelContainer
 var use_key
@@ -45,14 +47,26 @@ func refresh_card():
 	column.add_child(card);column.move_child(card,0)
 	Texts.set_text(use_text,{"weapon":"Взять в руки","ammo":"Зарядить","supply":"Вылечиться"}.get(kind(),"Подобрать"))
 
+## The hero who can pick it up: the soldier on the field, or the room's walking hero.
+func hero()->Node3D:
+	if ground!=null:return ground.hero() if is_instance_valid(ground) else null
+	return arena.room.player if is_instance_valid(arena) else null
+static func flat(a:Vector3,b:Vector3)->float:return Vector2(a.x-b.x,a.z-b.z).length()
 func near()->bool:
-	var player=arena.room.player if is_instance_valid(arena) else null
-	return is_instance_valid(player) and player.kind=="soldier" and not player.dead and arena.phase in ["combat","countdown"] and arena.flat_distance(player.position,global_position)<REACH and nearest()
+	var player=hero()
+	if not is_instance_valid(player):return false
+	if ground!=null:
+		if not ground.can_pick():return false
+	elif not (player.kind=="soldier" and not player.dead and arena.phase in ["combat","countdown"]):return false
+	return flat(player.global_position,global_position)<REACH and nearest()
+## A dropped item's card is open: the room's own E (mechanic, crate, exit) waits (T-202).
+static func engaged(node:Node)->bool:
+	return node.get_tree().get_nodes_in_group("drop_prompts").any(func(p):return is_instance_valid(p) and is_instance_valid(p.chip) and p.chip.visible)
 ## Only the closest dropped item answers the keys.
 func nearest()->bool:
-	var me=arena.flat_distance(arena.room.player.position,global_position)
+	var player=hero();var me=flat(player.global_position,global_position)
 	for other in get_tree().get_nodes_in_group("drop_prompts"):
-		if other!=self and is_instance_valid(other) and arena.flat_distance(arena.room.player.position,other.global_position)<me-.001:return false
+		if other!=self and is_instance_valid(other) and other.is_visible_in_tree() and flat(player.global_position,other.global_position)<me-.001:return false
 	return true
 func _enter_tree():add_to_group("drop_prompts")
 func _process(_d):
@@ -82,14 +96,14 @@ func use():
 			var guns=[old] if LootCatalog.is_gun(str(old.id)) else []
 			if guns.is_empty() and spilled.is_empty():remove()
 			else:replace({"recipes":[],"ammo":spilled,"weapons":guns})
-			Game.sound("weapon_equip",arena);arena.toast(Texts.render("Оружие в руках"))
+			Game.sound("inv_weapon",arena);arena.toast(Texts.render("Оружие в руках"))
 		"ammo":
 			Ammo.ensure(run,str(arena.weapon))
 			if not Ammo.fits(str(it.type),str(arena.weapon)):arena.toast(Texts.render("Эти боеприпасы не подходят к оружию"));return
 			var out=Ammo.load_item(run,it);Backpack.refresh(arena)
 			if out.is_empty():remove()
 			else:replace({"recipes":[],"ammo":[out]})
-			Game.sound("weapon_equip",arena);arena.toast(Texts.render("Боеприпасы заряжены"))
+			Game.sound("inv_ammo",arena);arena.toast(Texts.render("Боеприпасы заряжены"))
 		"supply":
 			run.supplies.append(it)
 			if Backpack.use_medkit(arena,run.supplies.size()-1):remove()
@@ -98,11 +112,14 @@ func use():
 ## C: into the backpack, when there is room.
 func stash():
 	if Backpack.full(arena.run):arena.toast(Texts.render("Рюкзак полон"));Game.sound("ui_denied",arena);return
-	if Backpack.pick_sack(arena,pickup.content):Game.sound("pickup",arena);remove()
+	if Backpack.pick_sack(arena,pickup.content):Game.sound(GearCell.click_for(kind()),arena);remove()
 func remove():
+	if ground!=null:ground.take_away(pickup);return
 	arena.room.pickups.erase(pickup);preload("res://scripts/battle_stage.gd").vanish(pickup.node)
 ## The item swaps with what was in hand: the old one now lies here.
 func replace(content:Dictionary):
 	content["weapons"]=content.get("weapons",[]).filter(func(w):return LootCatalog.is_gun(str(w.get("id",""))))
+	if ground!=null:
+		var spot=pickup.node.position;remove();ground.place(content,spot);return
 	var at=arena.grid_pos(pickup.node.position)
 	remove();arena.reward.place_sack(at,content)

@@ -387,6 +387,7 @@ func set_transport_visible(value:bool):
 	left_info.size=Vector2(76,76) if value else Vector2(235,168)
 	weapon_icon.position=Vector2(12,10) if value else Vector2(10,10);weapon_icon.size=Vector2(52,52) if value else Vector2(74,52)
 	left_info.tooltip_text=LOOT.WEAPONS[arena.weapon].name if value else ""
+	place_ammo_row()
 	if transport_tween and transport_tween.is_valid():transport_tween.kill()
 	transport_panel.show()
 	transport_tween=create_tween().set_parallel(true)
@@ -411,8 +412,8 @@ func refresh_ammo():
 	if is_instance_valid(ammo_row):ammo_row.queue_free()
 	ammo_row=HBoxContainer.new();ammo_row.name="AmmoRow";left_info.add_child(ammo_row);ammo_row.add_theme_constant_override("separation",5)
 	ammo_row.mouse_filter=Control.MOUSE_FILTER_PASS
-	# Under the weapon name, next to the picture: round cells, then the active ammo's name in its colour.
-	ammo_row.position=Vector2(vehicle_label.position.x,vehicle_label.position.y+28)
+	# Under the weapon name, next to the picture: round cells, then the active ammo's name in its colour
+	# (place_ammo_row; folded card — the cells only, in the square's corner).
 	for i in range(run.ammo_slots.size()):
 		var slot=run.ammo_slots[i];var type=str(slot.type) if slot is Dictionary else str(slot);var on=i==run.ammo_active;var color=Color(Ammo.COLORS.get(type,"cfd3c8"))
 		var cell=Panel.new();ammo_row.add_child(cell);cell.custom_minimum_size=Vector2(18,18);cell.size_flags_vertical=Control.SIZE_SHRINK_CENTER
@@ -425,3 +426,14 @@ func refresh_ammo():
 			if tap and Ammo.switch(arena):refresh_ammo())
 	var name_label=Label.new();ammo_row.add_child(name_label);Texts.set_text(name_label,Ammo.NAMES.get(Ammo.active(run),""))
 	name_label.add_theme_font_size_override("font_size",12);name_label.add_theme_color_override("font_color",Color(Ammo.COLORS.get(Ammo.active(run),"cfd3c8")))
+	name_label.name="AmmoName"
+	place_ammo_row()
+## Expanded card: the ammo cells and the active ammo's name under the weapon name. Folded to the weapon square
+## (a vehicle is driven, T-222): only the coloured cells, without the name, inside its bottom-right corner.
+func place_ammo_row():
+	if not is_instance_valid(ammo_row):return
+	var name_label=ammo_row.get_node_or_null("AmmoName")
+	if name_label:name_label.visible=not showing_transport
+	ammo_row.reset_size()
+	if showing_transport:ammo_row.position=left_info.size-ammo_row.get_combined_minimum_size()-Vector2(7,7)
+	else:ammo_row.position=Vector2(vehicle_label.position.x,vehicle_label.position.y+28)

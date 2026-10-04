@@ -81,6 +81,8 @@ func _ready():
 		arena.LOOT.visual(kit,"heart");Visuals.label3d(kit,"Аптечка",Vector3(0,1.1,0),Color("f6c5bc"),25);medkits.append(kit)
 	avatar=Visuals.model("soldier",self,destination,"cat",true)
 	walker=preload("res://scripts/room_walker.gd").new(avatar)
+	# One inventory everywhere (T-202): items thrown away here lie on the room floor and can be picked up again.
+	preload("res://scripts/room_floor.gd").attach(self,arena)
 	var canvas=CanvasLayer.new();add_child(canvas);root=Control.new();canvas.add_child(root);root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);root.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	var heading_plate=UiKit.glass(root,Vector2(25,25),Vector2(590,120),Color("242d27ed"));heading_plate.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	UiKit.accent(UiKit.label(root,{"vehicle":"Полевой механик","ability":"Подготовка бойца","headquarters":"Депо штаба"}[branch],Vector2(40,30),Vector2(800,60),32))
@@ -132,6 +134,7 @@ func stand(p:Vector3)->bool:
 	return p.x>=-3.01 and p.x<=3.01 and p.z>=-2.01 and p.z<=4.01 and c not in [Vector2i(0,-1),Vector2i(2,-1)]
 func at_exit()->bool:return claimed and avatar.position.distance_to(Vector3(dressing.EXIT_CELL.x,0,dressing.EXIT_CELL.y))<1.3
 func interact():
+	if preload("res://scripts/ui/drop_prompt.gd").engaged(self):return
 	if is_instance_valid(modal):return
 	# The room spots (weapon crate, vending machine, fortune) work before and after the choice.
 	var spot=RoomLayout.near(spots,avatar)

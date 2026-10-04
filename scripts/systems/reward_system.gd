@@ -6,7 +6,7 @@ var arena
 var thieves
 
 func _init(context):
-	arena=context;thieves=preload("res://scripts/systems/bonus_thieves.gd").new(context)
+	arena=context;thieves=preload("res://scripts/systems/bonus_thieves.gd").new(context);look.seed=hash(Game.visual_run_seed)
 
 func drop_pickup(_cell: Vector2i,kind: String):
 	var candidates: Array[Vector2i]=[]
@@ -41,15 +41,22 @@ func place_pickup(cell:Vector2i,kind:String,fall:=1.1):
 func parachute(visual:Node3D,_tint:Color)->Node3D:return Visuals.parachute(visual)
 ## An army sack with dropped backpack items (T-113): it stays until the soldier walks over it with room to spare.
 func place_sack(cell:Vector2i,content:Dictionary):
-	var node=Node3D.new();arena.add_child(node);node.position=arena.world_pos(cell)+Vector3(randf_range(-.2,.2),0,randf_range(-.2,.2))
+	var node=Node3D.new();arena.add_child(node);node.position=arena.world_pos(cell)+Vector3(look.randf_range(-.2,.2),0,look.randf_range(-.2,.2))
+	arena.room.pickups.append(dress_pile(node,content))
+	Game.sound("inv_drop",arena)
+## Looks of dropped items (jitter, turn): its own generator, never the combat one.
+var look:=RandomNumberGenerator.new()
+## Dresses a pile of dropped items under `node` and returns its pickup entry {node, visual, kind, content, blocked}.
+## One item: the item itself with a glow in its rarity colour and the E / C card (author, 2026-10-03); several —
+## an army sack picked up by walking over it. `ground` — a room floor (scripts/room_floor.gd, T-202), null on the field.
+func dress_pile(node:Node3D,content:Dictionary,ground=null)->Dictionary:
 	var visual=Node3D.new();node.add_child(visual)
-	# One item dropped: the item itself lies there with a glow in its rarity colour (author, 2026-10-03);
-	# several at once still go into an army sack.
 	var items=content.get("recipes",[]).size()+content.get("ammo",[]).size()+content.get("supplies",[]).size()+content.get("weapons",[]).size()
+	var card=null
 	if items==1:
 		var tier=dropped_item(visual,content)
 		# Not picked up by walking over: a small card offers E (use now) and C (into the backpack).
-		var card=preload("res://scripts/ui/drop_prompt.gd").new();card.arena=arena;node.add_child(card)
+		card=preload("res://scripts/ui/drop_prompt.gd").new();card.arena=arena;card.ground=ground;node.add_child(card)
 		var glow=Color(LootCatalog.RARITY_COLORS[clampi(tier,0,3)])
 		Visuals.ring(node,glow if tier>0 else Color("cfd3a0"),.38)
 		var light=OmniLight3D.new();light.name="RarityGlow";visual.add_child(light);light.position.y=.25;light.omni_range=1.3;light.light_color=glow;light.light_energy=.6 if tier>0 else .3;light.shadow_enabled=false
@@ -61,22 +68,20 @@ func place_sack(cell:Vector2i,content:Dictionary):
 		Visuals.box(visual,Vector3(0,.2,.145),Vector3(.06,.3,.02),Color("3e3a2a"),"rubber")
 		Visuals.ring(node,Color("cfd3a0"),.38)
 	var entry={"node":node,"visual":visual,"kind":"item" if items==1 else "sack","content":content,"blocked":true}
-	arena.room.pickups.append(entry)
-	for child in node.get_children():
-		if child.get_script()==preload("res://scripts/ui/drop_prompt.gd"):child.pickup=entry
-	Game.sound("debris",arena)
+	if card!=null:card.pickup=entry
+	return entry
 ## The model of a single dropped item; returns its rarity tier (0..3) for the glow.
 func dropped_item(visual:Node3D,content:Dictionary)->int:
 	if not content.get("weapons",[]).is_empty():
 		var gun:Dictionary=content.weapons[0];var path="res://assets/models/infantry_v6/weapon_"+str(gun.get("id","pistol"))+".glb"
 		if ResourceLoader.exists(path):
-			var model=load(path).instantiate();visual.add_child(model);model.scale=Vector3.ONE*1.6;model.rotation=Vector3(0,randf()*TAU,PI*.5);model.position.y=.08
+			var model=load(path).instantiate();visual.add_child(model);model.scale=Vector3.ONE*1.6;model.rotation=Vector3(0,look.randf()*TAU,PI*.5);model.position.y=.08
 			Visuals.refresh_cozy_materials(model)
 		return int(gun.get("rarity",0))
 	if not content.get("ammo",[]).is_empty():
 		# The simplest ammo can (author, 2026-10-03): an olive box, a band in the ammo effect's colour, a steel handle.
 		var box:Dictionary=content.ammo[0];var color=Color(Ammo.COLORS.get(str(box.get("type","")),"cfd3c8"))
-		var can=Node3D.new();visual.add_child(can);can.rotation.y=randf_range(-.6,.6)
+		var can=Node3D.new();visual.add_child(can);can.rotation.y=look.randf_range(-.6,.6)
 		Visuals.box(can,Vector3(0,.12,0),Vector3(.36,.24,.2),Color("5d6147"),"paint")
 		Visuals.box(can,Vector3(0,.12,0),Vector3(.372,.07,.212),color,"paint")
 		Visuals.box(can,Vector3(0,.255,0),Vector3(.38,.03,.22),Color("4f5340"),"paint")
@@ -86,12 +91,12 @@ func dropped_item(visual:Node3D,content:Dictionary)->int:
 		LootCatalog.visual(visual,"heart");return 0
 	var recipe:Dictionary=content.get("recipes",[{}])[0]
 	var tier=Game.TIERS.tier(str(recipe.get("id",""))) if recipe.has("id") else 0
-	blueprint_model(visual,tier)
+	blueprint_model(visual,tier,look)
 	return tier
 ## A blueprint lying on the ground: a half-unrolled blue sheet with white lines, the rest rolled up and tied
 ## with a ribbon in the rarity colour. Readable from the battle camera as «бумага-чертёж», not a crate.
-static func blueprint_model(visual:Node3D,tier:int):
-	var root=Node3D.new();visual.add_child(root);root.rotation.y=randf_range(-.5,.5);root.scale=Vector3.ONE*1.3
+static func blueprint_model(visual:Node3D,tier:int,look:RandomNumberGenerator):
+	var root=Node3D.new();visual.add_child(root);root.rotation.y=look.randf_range(-.5,.5);root.scale=Vector3.ONE*1.3
 	var blue=Color("2f63b5")
 	var sheet=Visuals.box(root,Vector3(.06,.012,0),Vector3(.3,.012,.34),blue,"paint")
 	for i in range(3):Visuals.box(sheet,Vector3(-.02,.008,-.1+i*.1),Vector3(.2,.004,.012),Color("e6eef9"))

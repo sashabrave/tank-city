@@ -206,6 +206,30 @@ func gear_rules():
 	r.weapon=gun_before;r.weapon_bag.clear();Ammo.ensure(r,gun_before)
 	arena.phase="result";check(not Backpack.can_drop(arena),"no dropping outside battle")
 	check(InputMap.action_get_events("pause").any(func(e):return e is InputEventKey and e.physical_keycode==KEY_TAB),"Tab opens and closes the tablet")
+	# T-203: «Уничтожить» works anywhere (no floor needed): a backpack entry, a loaded slot (→ empty), the gun in hand (→ paws).
+	r.ammo_bag.clear();r.weapon_bag.clear();r.ammo_bag.append(Ammo.roll("burn",1,3));r.weapon_bag.append({"id":"rifle","rarity":1})
+	before=count(arena)
+	check(Backpack.destroy(arena,"ammo",0) and count(arena)==before-1 and r.ammo_bag.is_empty(),"destroy: a backpack item is gone")
+	check(Backpack.destroy(arena,"weapon",0) and r.weapon_bag.is_empty(),"destroy: a spare gun is gone")
+	r.ammo_slots[0]=Ammo.roll("cryo",1,4)
+	check(Backpack.destroy(arena,"slot",0) and Ammo.is_empty_slot(r.ammo_slots[0]),"destroy: a loaded slot becomes empty")
+	check(Backpack.destroy(arena,"hand") and str(r.weapon)=="paws","destroy: the gun in hand leaves the paws")
+	check(not Backpack.destroy(arena,"hand"),"destroy: the paws are not an item")
+	r.weapon=gun_before;Ammo.ensure(r,gun_before);r.ammo_slots[0]=Ammo.standard()
+	# T-202: a walk-in room has a floor like the field: a throw lands there, a sack comes back by walking over it.
+	var room=FakeRoom.new();add_child(room);room.avatar=Node3D.new();room.add_child(room.avatar)
+	var ground=preload("res://scripts/room_floor.gd").attach(room,arena)
+	check(Backpack.floor_of(arena)==ground and Backpack.can_drop(arena),"outside battle the room floor takes thrown items")
+	r.ammo_bag.clear();r.ammo_bag.append(Ammo.roll("burn",1,3));r.ammo_bag.append(Ammo.roll("stun",1,3))
+	check(Backpack.drop(arena,"ammo",0) and ground.piles.size()==1 and ground.piles[0].kind=="item","a thrown item lies on the room floor as itself")
+	var prompt=ground.piles[0].node.get_children().filter(func(n):return n.get_script()==preload("res://scripts/ui/drop_prompt.gd"))
+	check(prompt.size()==1 and prompt[0].ground==ground,"its E / C card works with the room hero")
+	prompt[0].stash();check(ground.piles.is_empty() and r.ammo_bag.size()==2,"C puts it back into the backpack")
+	ground.drop_items({"recipes":[],"ammo":r.ammo_bag.duplicate()});r.ammo_bag.clear()
+	room.avatar.position=Vector3(2,0,0);ground._process(0.0);room.avatar.position=ground.piles[0].node.position;ground._process(0.0)
+	check(ground.piles.is_empty() and r.ammo_bag.size()==2,"a sack on the room floor comes back when the hero walks over it")
+	room.free();r.ammo_bag.clear()
+	check(not Backpack.can_drop(arena),"no floor (route map): nothing to drop onto — the gear page destroys after a confirmation")
 	# Aid kits (T-115): at full health a heart goes into the backpack; H heals from it later.
 	arena.phase="combat"
 	r.supplies.clear();while Backpack.full(r) and not r.ammo_bag.is_empty():r.ammo_bag.pop_back()
@@ -275,3 +299,7 @@ func ammo_rules():
 	check(Ammo.shield_pierce(ap_low)>=.25 and Ammo.shield_pierce(ap_high)>Ammo.shield_pierce(ap_low) and Ammo.shield_pierce(Ammo.roll("burn",0,1))==0.0,"AP shield chance grows with rarity, other ammo has none")
 	check(Ammo.describe(ap_high).contains("%d%%" % roundi(Ammo.shield_pierce(ap_high)*100)),"AP ammo describes its shield chance")
 	arena.queue_free();await get_tree().process_frame
+## A walk-in room as the floor sees it: a walking hero and maybe a window.
+class FakeRoom extends Node3D:
+	var avatar:Node3D
+	var modal:Control

@@ -29,7 +29,9 @@ static func of(kind:String,item:Dictionary,arena,equipped:=false)->Dictionary:
 			var new=CombatStats.weapon(ctx,id,{"item_stats":item.get("stats",{})} if not equipped else {});var old=CombatStats.weapon(ctx,hand)
 			if equipped and ctx!=null:info.tier=int(ctx.run.weapon_rarity)
 			var shot=func(stats:Dictionary,gun:String)->float:return float(stats.damage)*int(Game.LOOT.WEAPONS[gun].get("pellets",1))
-			var same=equipped or id==hand
+			# Only the gun in hand itself has nothing to compare with: a second pistol of another rarity or with
+			# rolled stats is compared with the one in hand (T-247).
+			var same=equipped
 			for spec in [["Урон за выстрел",shot.call(new,id),shot.call(old,hand),""],["Темп",new.rate,old.rate," /с"],["Дальность",new.range,old.range," м"],["Напор",new.intercept,old.intercept,"%"]]:
 				info.rows.append(row(spec[0],spec[1],spec[2],spec[3],same))
 			if same:info.note="В руках"
@@ -73,7 +75,8 @@ static func blueprint_key(item:Dictionary)->String:
 	return key if IconKit.has(key) else "blueprint/"+cat
 static func row(label:String,new:float,old:float,unit:String,same:bool)->Array:
 	var text=func(v:float)->String:return UiKit.number(snappedf(v,.01))+unit
-	if same or is_equal_approx(new,old):return [Texts.render(label),text.call(new),"",0]
+	# Equal as shown is equal: no arrow for a difference hidden by rounding.
+	if same or text.call(new)==text.call(old):return [Texts.render(label),text.call(new),"",0]
 	return [Texts.render(label),text.call(new),text.call(old),1 if new>old else -1]
 
 ## The card itself, `width` wide; the caller adds keys or buttons under it.
@@ -87,16 +90,31 @@ static func card(info:Dictionary,width:float)->VBoxContainer:
 	var rank=Label.new();names.add_child(rank);Texts.set_text(rank,str(info.get("rank",LootCatalog.RARITY_NAMES[tier])));rank.add_theme_font_size_override("font_size",11);rank.add_theme_color_override("font_color",color if tier>0 else UiKit.MUTED)
 	if str(info.summary)!="":
 		var line=Label.new();box.add_child(line);Texts.set_text(line,str(info.summary));line.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;line.custom_minimum_size.x=width;line.add_theme_font_size_override("font_size",12);line.add_theme_color_override("font_color",UiKit.MUTED)
-	for r in info.rows:
-		var line=HBoxContainer.new();box.add_child(line);line.mouse_filter=Control.MOUSE_FILTER_IGNORE
-		var name=Label.new();line.add_child(name);name.text=str(r[0]);name.size_flags_horizontal=Control.SIZE_EXPAND_FILL;name.add_theme_font_size_override("font_size",12);name.add_theme_color_override("font_color",UiKit.MUTED)
-		var value=RichTextLabel.new();line.add_child(value);value.bbcode_enabled=true;value.fit_content=true;value.scroll_active=false;value.autowrap_mode=TextServer.AUTOWRAP_OFF;value.custom_minimum_size.x=width*.48;value.mouse_filter=Control.MOUSE_FILTER_IGNORE
-		value.add_theme_font_override("normal_font",UiKit.field_font());value.add_theme_font_size_override("normal_font_size",12)
-		var mark={1:"[color=#8fe895]▲ ",-1:"[color=#e0806b]▼ ",0:"[color=#f1eedb]"}[int(r[3])]
-		value.text="[right]"+("[color=#8d9589]%s → [/color]" % str(r[2]) if str(r[2])!="" else "")+mark+str(r[1])+"[/color][/right]"
+	if not info.rows.is_empty():box.add_child(compare_grid(info.rows))
 	if str(info.note)!="":
 		var note=Label.new();box.add_child(note);Texts.set_text(note,str(info.note));note.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;note.custom_minimum_size.x=width;note.add_theme_font_size_override("font_size",11);note.add_theme_color_override("font_color",UiKit.ORANGE)
 	return box
+## Comparison rows in four aligned columns (T-200): parameter · was · arrow · now. The arrow column keeps its
+## width when a value is unchanged or has nothing to compare with, so the numbers stand in one line.
+const BETTER:=Color("8fe895")
+const WORSE:=Color("e0806b")
+const WAS:=Color("8d9589")
+const ARROW_W:=18.0
+static func compare_grid(rows:Array)->GridContainer:
+	var grid=GridContainer.new();grid.name="Compare";grid.columns=4;grid.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	grid.add_theme_constant_override("h_separation",6);grid.add_theme_constant_override("v_separation",2)
+	for r in rows:
+		var sign=int(r[3]);var was=str(r[2])
+		var color=BETTER if sign>0 else WORSE if sign<0 else UiKit.INK
+		var name=cell_label(grid,str(r[0]),UiKit.MUTED,HORIZONTAL_ALIGNMENT_LEFT);name.size_flags_horizontal=Control.SIZE_EXPAND_FILL;name.name="Param"
+		cell_label(grid,was if sign!=0 else "",WAS,HORIZONTAL_ALIGNMENT_RIGHT).name="Was"
+		var arrow=cell_label(grid,"▲" if sign>0 else "▼" if sign<0 else "",color,HORIZONTAL_ALIGNMENT_CENTER);arrow.custom_minimum_size.x=ARROW_W;arrow.name="Arrow"
+		cell_label(grid,str(r[1]),color,HORIZONTAL_ALIGNMENT_RIGHT).name="Now"
+	return grid
+static func cell_label(parent:Control,text:String,color:Color,align:HorizontalAlignment)->Label:
+	var label=Label.new();parent.add_child(label);label.text=text;label.horizontal_alignment=align;label.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	label.add_theme_font_override("font",UiKit.field_font());label.add_theme_font_size_override("font_size",12);label.add_theme_color_override("font_color",color)
+	return label
 ## A ready tooltip panel around the card (custom tooltips in the gear page).
 static func tooltip(info:Dictionary,width:=260.0)->Control:
 	var panel=PanelContainer.new();var style=UiKit.style(Color("1d2420"),10,Color(1,1,1,.14));style.content_margin_left=12;style.content_margin_right=12;style.content_margin_top=10;style.content_margin_bottom=10

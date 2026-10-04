@@ -41,6 +41,8 @@ func _ready():
 	preload("res://scripts/room_lights.gd").build(self,-3.55)
 	avatar=Visuals.model("soldier",self,destination,"cat",true)
 	walker=preload("res://scripts/room_walker.gd").new(avatar)
+	# One inventory everywhere (T-202): items thrown away here lie on the room floor and can be picked up again.
+	preload("res://scripts/room_floor.gd").attach(self,arena)
 	var canvas=CanvasLayer.new();add_child(canvas);root=Control.new();canvas.add_child(root);root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);root.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	# Shooting and abilities like in the hub and in battle (T-185).
 	preload("res://scripts/room_combat.gd").attach(self,avatar,walker,stand,root)
@@ -113,6 +115,7 @@ func _physics_process(delta):
 	interact_button.disabled=avatar.position.distance_to(COUNTER)>2.2 and RoomLayout.near(spots,avatar)==null
 	if Game.wants_interact():interact()
 func interact():
+	if preload("res://scripts/ui/drop_prompt.gd").engaged(self):return
 	if is_instance_valid(modal):return
 	# The common room spots: weapon crate, vending machine, fortune (RoomLayout).
 	var spot=RoomLayout.near(spots,avatar)

@@ -95,7 +95,7 @@ static func state(arena=null)->Array:
 	var totals={}
 	for node in arena.find_children("*","HBoxContainer",true,false):
 		if node.get_script()==preload("res://scripts/ui/status_strip.gd"):totals=node.totals
-	if totals.is_empty() and is_instance_valid(arena.get_tree()):
+	if totals.is_empty() and arena.is_inside_tree():
 		for node in arena.get_tree().root.find_children("*","HBoxContainer",true,false):
 			if node.get_script()==preload("res://scripts/ui/status_strip.gd") and node.arena==arena:totals=node.totals
 	for id in entries:

@@ -83,7 +83,7 @@ static func stow(arena,item:Dictionary,kind:="ammo")->bool:
 			"supply":content["supplies"]=[item]
 			"recipe":content.recipes.append(item)
 			_:content.ammo.append(item)
-		arena.reward.place_sack(arena.grid_pos(arena.room.player.position),content);arena.toast(Texts.render("Рюкзак полон — предмет лежит рядом"))
+		put_down(arena,content);arena.toast(Texts.render("Рюкзак полон — предмет лежит рядом"))
 		return true
 	return false
 static func stow_all(arena,items:Array,kind:="ammo"):
@@ -157,9 +157,26 @@ static func unequip(arena,slot:int)->bool:
 	if not item is Dictionary or item.type==Ammo.EMPTY or full(run):return false
 	run.ammo_bag.append(item);run.ammo_slots[slot]=Ammo.empty()
 	refresh(arena);return true
-## Can a drop happen right now: only in a battle with a soldier on the field.
-static func can_drop(arena)->bool:
-	return is_instance_valid(arena) and arena.get("phase") in ["combat","countdown","paused","upgrade"] and is_instance_valid(arena.room.player) and arena.is_inside_tree()
+## Where a dropped item lands (T-202, one inventory everywhere): the battle field with the soldier on it, or the
+## floor of the walk-in room the hero stands in (service rooms, the merchant — scripts/room_floor.gd, group
+## «item_floor»). null on the route map and when no run is on: there a discard destroys the item instead.
+static func floor_of(arena):
+	if not is_instance_valid(arena):return null
+	if arena.get("phase") in ["combat","countdown","paused","upgrade"] and arena.is_inside_tree() and is_instance_valid(arena.room.player):return arena
+	var tree=Engine.get_main_loop() as SceneTree
+	if tree==null:return null
+	for node in tree.get_nodes_in_group("item_floor"):
+		if is_instance_valid(node) and node.is_inside_tree() and node.get("arena")==arena and node.has_method("drop_items"):return node
+	return null
+## Can a drop happen right now: a battle with the soldier on the field, or a walk-in room.
+static func can_drop(arena)->bool:return floor_of(arena)!=null
+## Puts a pile of items on the floor at the hero's feet (a sack, or the item itself when it is one).
+static func put_down(arena,content:Dictionary)->bool:
+	var ground=floor_of(arena)
+	if ground==null:return false
+	if ground==arena:arena.reward.place_sack(arena.grid_pos(arena.room.player.position),content)
+	else:ground.drop_items(content)
+	return true
 ## Drops a bag entry (or a loaded ammo slot) as an army sack next to the soldier.
 static func drop(arena,kind:String,index:int)->bool:
 	if not can_drop(arena):return false
@@ -182,7 +199,39 @@ static func drop(arena,kind:String,index:int)->bool:
 			if not item is Dictionary or item.type==Ammo.EMPTY:return false
 			content.ammo.append(item);run.ammo_slots[index]=Ammo.empty()
 		_:return false
-	arena.reward.place_sack(arena.grid_pos(arena.room.player.position),content)
+	put_down(arena,content)
+	refresh(arena);return true
+## Destroys an item for good (T-203, after a confirmation in the gear page; also a discard where there is no floor —
+## the route map, T-202): a backpack entry leaves its cell, a loaded slot becomes empty (Ammo.EMPTY — the butt
+## strikes), the gun in hand leaves the paws. kind: recipe / ammo / supply / weapon (backpack lists), slot, hand.
+static func destroy(arena,kind:String,index:=0)->bool:
+	var run=arena.run if is_instance_valid(arena) else null
+	if run==null:return false
+	match kind:
+		"recipe":
+			if index<0 or index>=run.pending_recipes.size():return false
+			run.pending_recipes.remove_at(index)
+		"ammo":
+			if index<0 or index>=run.ammo_bag.size():return false
+			run.ammo_bag.remove_at(index)
+		"supply":
+			if index<0 or index>=run.supplies.size():return false
+			run.supplies.remove_at(index)
+		"weapon":
+			if index<0 or index>=run.weapon_bag.size():return false
+			run.weapon_bag.remove_at(index)
+		"slot":
+			var item=run.ammo_slots[index] if index>=0 and index<run.ammo_slots.size() else null
+			if not item is Dictionary or item.type==Ammo.EMPTY:return false
+			run.ammo_slots[index]=Ammo.empty()
+		"hand":
+			if holstered(run):return false
+			# Second-slot ammo the paws cannot hold is not destroyed with the gun: it goes to the backpack or the floor.
+			if not room_for(arena,Ammo.overflow(run,LootCatalog.PAWS)):
+				arena.toast(Texts.render("Рюкзак полон — некуда убрать боеприпасы второго слота"));return false
+			run.weapon=LootCatalog.PAWS;run.weapon_rarity=0;run.weapon_stats={}
+			stow_all(arena,Ammo.ensure(run,run.weapon));RunUpgrades.refresh_player(arena)
+		_:return false
 	refresh(arena);return true
 ## Picks a sack up when everything fits; otherwise it stays and says so.
 static func pick_sack(arena,content:Dictionary)->bool:
