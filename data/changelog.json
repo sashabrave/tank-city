@@ -40,7 +40,17 @@
 					"На карте маршрута боевые точки подписаны «Поле боя» без номеров",
 					"Маленькие ящики на поле чаще что-то дают: слитки сплава, боеприпасы, аптечку или оружие",
 					"Меньше лишних сохранений: открыть планшет, вкладку, звонок или карточку больше не запускает запись профиля со значком — такие отметки сохраняются тихо через несколько секунд или вместе со следующим настоящим сохранением.",
-					"ЭМИ-боеприпасы теперь действуют и на пехоту: попадание на секунду замедляет врага на 25%."
+					"ЭМИ-боеприпасы теперь действуют и на пехоту: попадание на секунду замедляет врага на 25%.",
+					"Окна поверх окон (например, «i» поверх станции) теперь сплошные и тёмные на плотном затемнении — картинка под ними больше не ломается",
+					"Карточки прокачки показывают «Уровень 1 → 2» и главный параметр «было → станет» ровными колонками; описания короче и без повторов цифр",
+					"Вкладки станций одного размера и шрифта: длинное название плавно растворяется у края. Короткие названия: «Улучшения», «Рюкзак», «Модель», «Армия»",
+					"Казарма: колонка куклы класса прокручивается — под куклой предыстория, сильные и слабые стороны",
+					"Экран классов в Казарме стал аккуратнее: меньше рамок, единые заголовки и отступы, «Все уровни» — ссылкой",
+					"Класс, который можно открыть, отмечен зелёной точкой в списке, на вкладке «Классы» и над Казармой — пока его не откроешь",
+					"Командный центр: открытая вкладка не загорается точкой от твоих же действий, например после принятия приказа оперштаба",
+					"Звонок: значок телефона стоит рядом со словом «Взять»",
+					"За полигоном в хабе появился пейзаж из тех же фигур, что окружают поле боя",
+					"Чертёж выглядит одинаково везде: в «Новом открытии» и у торговца — тот же планшет-чертёж, что в рюкзаке"
 				]
 			},
 			"en": {
@@ -80,7 +90,17 @@
 					"Battle stops on the route map are labelled «Battlefield» without numbers",
 					"Small field crates drop loot more often: alloy ingots, ammo, a medkit or a gun",
 					"Fewer needless saves: opening the tablet, a tab, a call or a card no longer writes the profile with the save icon — such marks are saved quietly a few seconds later or with the next real save.",
-					"EMP ammo now works on infantry too: a hit slows the enemy by 25% for a second."
+					"EMP ammo now works on infantry too: a hit slows the enemy by 25% for a second.",
+					"Windows opened over another window (like «i» over a station) are now solid and dark over a deeper dim — the picture underneath no longer breaks up",
+					"Upgrade cards show «Level 1 → 2» and the main stat as before → after in aligned columns; descriptions are shorter, without repeated numbers",
+					"Station tabs share one size and font: a long name fades out at the edge. Shorter names: Upgrades, Backpack, Model, Army",
+					"Barracks: the class doll column scrolls — the story, strengths and weaknesses sit under the doll",
+					"The Barracks class screen is tidier: fewer frames, consistent headings and spacing, «All levels» is a link",
+					"A class you can unlock carries a green dot in the list, on the Classes tab and over the Barracks until you unlock it",
+					"Command centre: the open tab no longer lights a dot from your own actions, such as accepting an operations order",
+					"Incoming call: the phone icon sits right next to «Answer»",
+					"Behind the hub's range there is now a landscape of the same shapes that surround the battlefield",
+					"Blueprints look the same everywhere: «New discovery» and the merchant show the same clipboard as the backpack"
 				]
 			}
 		},
