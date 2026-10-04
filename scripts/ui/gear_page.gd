@@ -13,6 +13,8 @@ const STATS=preload("res://scripts/ui/stat_snapshot.gd")
 const ITEM=preload("res://scripts/ui/item_info.gd")
 const INFO_H:=190.0
 static var selected:=""
+## The kind of the item being moved or used («weapon», «ammo», «recipe», «supply»): its click plays when done.
+var acting:=""
 ## The class gallery art looks to the left; the doll is mirrored so it always faces right.
 const DOLL_FACES_LEFT:=true
 var view
@@ -296,7 +298,7 @@ func tapped(key:String):
 	selected="" if key==selected else key
 	highlight();refresh_info()
 func activate(key:String):
-	var r=run()
+	var r=run();acting=cells[key].item_kind if cells.has(key) else ""
 	if key=="weapon" and Backpack.holstered(r):return
 	if key=="weapon":
 		preload("res://scripts/ui/tablet_pages.gd").new(view).weapon_details(str(arena.weapon) if is_instance_valid(arena) else Game.selected_weapon);return
@@ -310,7 +312,7 @@ func activate(key:String):
 		if e==null:return
 		match e.kind:
 			"supply":
-				if Backpack.use_medkit(arena,e.index):done("")
+				if Backpack.use_medkit(arena,e.index):done("","")
 			"weapon":
 				if Backpack.equip_weapon(arena,e.index):done("Оружие в руках")
 			"ammo":
@@ -326,7 +328,7 @@ func entry(key:String):
 	var cells=Backpack.layout(run());var n=int(key.get_slice(":",1))
 	return cells[n] if n>=0 and n<cells.size() else null
 func move(from:String,to:String):
-	var r=run()
+	var r=run();acting=cells[from].item_kind if cells.has(from) else ""
 	if r==null:return
 	if to=="discard":discard(from);return
 	if from.begins_with("bag:") and to=="weapon":
@@ -375,7 +377,7 @@ func discard(key:String):
 		var e=entry(key)
 		ok=e!=null and Backpack.drop(arena,e.kind,e.index)
 	elif key.begins_with("slot:"):ok=Backpack.drop(arena,"slot",int(key.get_slice(":",1)))
-	if ok:selected="";done("Выброшено рядом с бойцом","drop")
+	if ok:selected="";done("Выброшено рядом с бойцом","inv_drop")
 ## «Уничтожить» (T-203): any item, after a confirmation; a slot becomes empty, the gun in hand leaves the paws.
 func destroy(key:String):
 	var r=run()
@@ -386,7 +388,7 @@ func destroy(key:String):
 	elif key.begins_with("bag:"):
 		var e=entry(key)
 		ok=e!=null and Backpack.destroy(arena,e.kind,e.index)
-	if ok:selected="";done("Предмет уничтожен","destroy")
+	if ok:selected="";done("Предмет уничтожен","inv_destroy")
 ## What a destroy would take away, for the confirmation: the item's name.
 func destroy_target(key:String)->String:
 	var r=run()
@@ -416,8 +418,11 @@ class DestroyDialog extends Control:
 	func _input(event):
 		if (event.is_action_pressed("pause") or event.is_action_pressed("ui_cancel")) and not event.is_echo():
 			get_viewport().set_input_as_handled();queue_free()
-func done(message:String,_sound:="equip"):
-	Game.sound("weapon_equip",arena if is_instance_valid(arena) else view)
+## After a change: the item's click (T-252 — gun, ammo box or blueprint; «inv_drop» thrown away, «inv_destroy»;
+## "" — the action already made its own sound, like the aid kit), a toast, a fresh page.
+func done(message:String,sound:="item"):
+	if sound=="item":sound=GearCell.click_for(acting)
+	if sound!="":Game.sound(sound,arena if is_instance_valid(arena) else view)
 	if message!="" and is_instance_valid(arena):arena.toast(Texts.render(message))
 	view.refresh()
 func highlight():

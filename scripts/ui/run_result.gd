@@ -96,17 +96,20 @@ static func show(hud,arena,won:bool,reason:String):
 		if entry!=null and not (entry.kind=="recipe" and entry.item not in gone):lost_keys.append("bag:%d" % i)
 	# The inventory reveals on its own clock, alongside the loot (it is the other column).
 	var resume=clock[0];clock[0]=.3
+	var falling=[];var last_appear=0.0
 	for key in page.cells:
 		var cell:GearCell=page.cells[key]
 		var falls=key in lost_keys
 		if cell.get_node_or_null("Art")==null:continue
-		var appear=at.call(.1)
+		var appear=at.call(.1);last_appear=maxf(last_appear,appear)
 		cell.modulate.a=0;reveal(cell,appear,"debris" if falls else "ui_confirm",hud)
 		if not falls:continue
 		if key.begins_with("bag:") and entries[int(key.get_slice(":",1))].kind=="recipe":
 			# A lost blueprint chars first, then falls out like the rest.
 			var burn=cell.create_tween();burn.tween_interval(appear+.4);burn.tween_property(cell,"modulate",Color(1,.55,.35,1),.25)
-		fall_out(hud,cell,appear+.75)
+		falling.append(cell)
+	# The lost cards fall one after another, a staircase in time (T-253), each with its item's click.
+	for i in range(falling.size()):fall_out(hud,falling[i],last_appear+.75+i*FALL_STEP)
 	clock[0]=resume
 	var inv_bottom=left.y+bottom
 	# — Summary — under the loot in the same column.
@@ -222,9 +225,12 @@ static func drop_coins(hud,lost:int):
 ## A card leaves its cell and falls (2026-10-03): the same lifted card as a drag (GearCell.lifted — the cell's
 ## frame and picture on a soft shadow) comes off, rises a little, then drops off the bottom of the screen with a
 ## slow sway — like the resource coins, only heavier and smoother. The cell is left empty. Visual RNG only.
+## Seconds between two falling cards (T-253: one by one, not all at once).
+const FALL_STEP:=.2
+## A lost card tears off its cell and drops off the screen (T-253): a short jerk up, then straight down, fast and
+## heavy (accelerating, no sideways drift, no spin), with the item's click (GearCell.click_for).
 static func fall_out(hud,cell:GearCell,delay:float):
 	var layer:Control=hud.root;var screen=layer.get_viewport_rect().size
-	var rng=RandomNumberGenerator.new();rng.randomize()
 	var t=cell.create_tween();t.tween_interval(delay)
 	t.tween_callback(func():
 		if not is_instance_valid(cell):return
@@ -233,13 +239,10 @@ static func fall_out(hud,cell:GearCell,delay:float):
 		var start=layer.get_global_transform().affine_inverse()*cell.global_position
 		card.position=start;card.pivot_offset=card.size*.5
 		cell.empty_out();cell.set_meta("lost",true)
-		Game.sound("debris",hud)
-		var time=rng.randf_range(1.5,1.8);var drift=rng.randf_range(-60,60);var spin=rng.randf_range(-.35,.35)
+		Game.sound(GearCell.click_for(cell.item_kind),hud)
 		var lift=card.create_tween().set_parallel(true)
-		lift.tween_property(card,"position:y",start.y-14,.24).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-		lift.tween_property(card,"scale",Vector2.ONE*1.05,.24).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-		var fall=lift.chain().set_parallel(true)
-		fall.tween_property(card,"position:y",screen.y+card.size.y+60,time).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
-		fall.tween_property(card,"position:x",start.x+drift,time).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-		fall.tween_property(card,"rotation",spin,time).set_trans(Tween.TRANS_SINE)
-		fall.chain().tween_callback(card.queue_free))
+		lift.tween_property(card,"position:y",start.y-8,.08).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		lift.tween_property(card,"scale",Vector2.ONE*1.04,.08).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		var fall=lift.chain()
+		fall.tween_property(card,"position:y",screen.y+card.size.y+60,.62).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+		fall.tween_callback(card.queue_free))

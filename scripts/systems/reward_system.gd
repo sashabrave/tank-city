@@ -64,7 +64,7 @@ func place_sack(cell:Vector2i,content:Dictionary):
 	arena.room.pickups.append(entry)
 	for child in node.get_children():
 		if child.get_script()==preload("res://scripts/ui/drop_prompt.gd"):child.pickup=entry
-	Game.sound("debris",arena)
+	Game.sound("inv_drop",arena)
 ## The model of a single dropped item; returns its rarity tier (0..3) for the glow.
 func dropped_item(visual:Node3D,content:Dictionary)->int:
 	if not content.get("weapons",[]).is_empty():

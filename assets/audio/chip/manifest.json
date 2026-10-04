@@ -1370,5 +1370,118 @@
       "weather_thunder_02.wav"
     ],
     "loop": false
+  },
+  "inv_weapon": {
+    "files": [
+      "inv_weapon_01.wav",
+      "inv_weapon_02.wav",
+      "inv_weapon_03.wav"
+    ],
+    "loop": false,
+    "stats": [
+      {
+        "seconds": 0.32,
+        "peak": 0.5,
+        "rms": 0.055780904211695174
+      },
+      {
+        "seconds": 0.32,
+        "peak": 0.5,
+        "rms": 0.05708875806904173
+      },
+      {
+        "seconds": 0.32,
+        "peak": 0.5,
+        "rms": 0.06020374897791246
+      }
+    ]
+  },
+  "inv_ammo": {
+    "files": [
+      "inv_ammo_01.wav",
+      "inv_ammo_02.wav",
+      "inv_ammo_03.wav"
+    ],
+    "loop": false,
+    "stats": [
+      {
+        "seconds": 0.26,
+        "peak": 0.5,
+        "rms": 0.06572240839396648
+      },
+      {
+        "seconds": 0.26,
+        "peak": 0.5,
+        "rms": 0.05391242241377269
+      },
+      {
+        "seconds": 0.26,
+        "peak": 0.5,
+        "rms": 0.06070494898531693
+      }
+    ]
+  },
+  "inv_blueprint": {
+    "files": [
+      "inv_blueprint_01.wav",
+      "inv_blueprint_02.wav"
+    ],
+    "loop": false,
+    "stats": [
+      {
+        "seconds": 0.24,
+        "peak": 0.5,
+        "rms": 0.05525993578951008
+      },
+      {
+        "seconds": 0.24,
+        "peak": 0.5,
+        "rms": 0.05102800099235729
+      }
+    ]
+  },
+  "inv_drop": {
+    "files": [
+      "inv_drop_01.wav",
+      "inv_drop_02.wav",
+      "inv_drop_03.wav"
+    ],
+    "loop": false,
+    "stats": [
+      {
+        "seconds": 0.4,
+        "peak": 0.5,
+        "rms": 0.07579925859176745
+      },
+      {
+        "seconds": 0.4,
+        "peak": 0.5,
+        "rms": 0.07543006313844038
+      },
+      {
+        "seconds": 0.4,
+        "peak": 0.5,
+        "rms": 0.07853562811687362
+      }
+    ]
+  },
+  "inv_destroy": {
+    "files": [
+      "inv_destroy_01.wav",
+      "inv_destroy_02.wav"
+    ],
+    "loop": false,
+    "stats": [
+      {
+        "seconds": 0.44997732426303855,
+        "peak": 0.5,
+        "rms": 0.0764154756193425
+      },
+      {
+        "seconds": 0.44997732426303855,
+        "peak": 0.5,
+        "rms": 0.08242918896319418
+      }
+    ]
   }
 }

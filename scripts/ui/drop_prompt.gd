@@ -82,14 +82,14 @@ func use():
 			var guns=[old] if LootCatalog.is_gun(str(old.id)) else []
 			if guns.is_empty() and spilled.is_empty():remove()
 			else:replace({"recipes":[],"ammo":spilled,"weapons":guns})
-			Game.sound("weapon_equip",arena);arena.toast(Texts.render("Оружие в руках"))
+			Game.sound("inv_weapon",arena);arena.toast(Texts.render("Оружие в руках"))
 		"ammo":
 			Ammo.ensure(run,str(arena.weapon))
 			if not Ammo.fits(str(it.type),str(arena.weapon)):arena.toast(Texts.render("Эти боеприпасы не подходят к оружию"));return
 			var out=Ammo.load_item(run,it);Backpack.refresh(arena)
 			if out.is_empty():remove()
 			else:replace({"recipes":[],"ammo":[out]})
-			Game.sound("weapon_equip",arena);arena.toast(Texts.render("Боеприпасы заряжены"))
+			Game.sound("inv_ammo",arena);arena.toast(Texts.render("Боеприпасы заряжены"))
 		"supply":
 			run.supplies.append(it)
 			if Backpack.use_medkit(arena,run.supplies.size()-1):remove()
@@ -98,7 +98,7 @@ func use():
 ## C: into the backpack, when there is room.
 func stash():
 	if Backpack.full(arena.run):arena.toast(Texts.render("Рюкзак полон"));Game.sound("ui_denied",arena);return
-	if Backpack.pick_sack(arena,pickup.content):Game.sound("pickup",arena);remove()
+	if Backpack.pick_sack(arena,pickup.content):Game.sound(GearCell.click_for(kind()),arena);remove()
 func remove():
 	arena.room.pickups.erase(pickup);preload("res://scripts/battle_stage.gd").vanish(pickup.node)
 ## The item swaps with what was in hand: the old one now lies here.

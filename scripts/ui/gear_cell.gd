@@ -18,6 +18,10 @@ var skip_tap:=false
 func _make_custom_tooltip(_text:String)->Object:
 	return preload("res://scripts/ui/item_info.gd").tooltip(info) if not info.is_empty() else null
 const DOUBLE_MS:=350
+## Inventory foley (T-252, tools/audio/build_inventory_clicks.py): a gun clacks, an ammo box ticks and rattles,
+## a blueprint snaps on its clipboard. The same clicks in the tablet, over a dropped item and on the result screen.
+static func click_for(kind:String)->String:
+	return {"weapon":"inv_weapon","recipe":"inv_blueprint"}.get(kind,"inv_ammo")
 
 func _ready():
 	focus_mode=Control.FOCUS_ALL
@@ -44,6 +48,7 @@ func _get_drag_data(_at:Vector2):
 	var holder=Control.new()
 	var card=lifted();holder.add_child(card);card.position=-size*.5+Vector2(0,-8)
 	set_drag_preview(holder)
+	Game.sound(click_for(item_kind),self)
 	modulate.a=.35
 	return {"gear_key":key}
 ## The item as an object (2026-10-03): the cell's frame and picture lifted on a soft shadow. The drag preview and
