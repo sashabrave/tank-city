@@ -49,7 +49,12 @@ func allied_flyer_step(actor,delta):
 		if d<distance:target=enemy;distance=d
 	var destination=arena.room.player.position+Vector3(1,0,-1)
 	if target!=null:destination=target.position+Vector3(0,0,3)
-	actor.position=actor.position.move_toward(destination,delta*actor.speed);actor.cell=arena.grid_pos(actor.position)
+	# Along the grid like the enemy drones (T-274): one axis at a time, to the centre of a cell.
+	destination=arena.world_pos(arena.grid_pos(destination));destination.y=actor.position.y
+	var step=delta*actor.speed
+	if absf(destination.x-actor.position.x)>.01:actor.position.x=move_toward(actor.position.x,destination.x,step)
+	else:actor.position.z=move_toward(actor.position.z,destination.z,step)
+	actor.cell=arena.grid_pos(actor.position)
 	if target!=null and distance<7 and actor.fire_cooldown<=0:
 		actor.fire_cooldown=1.1;var dir=(target.position-actor.position).normalized()
 		actor.model.aim(atan2(-dir.x,-dir.z),-.12);actor.model.kick()
@@ -80,6 +85,8 @@ func comrade_step(buddy,delta):
 	buddy.brain_cooldown-=delta
 	if buddy.brain_cooldown>0:return
 	buddy.brain_cooldown=.2
+	# Field cleared: the comrade leaves the vehicle standing for the player (T-258: it kept the car to itself).
+	if buddy.kind!="soldier" and arena.room.room_cleared:dismount_comrade(buddy);return
 	# T-167: the comrade fights every enemy it can reach, not only the nearest one (it used to stand still when
 	# that one was diagonal or behind water), and walks to any cell with a clear line on some enemy.
 	var reach=float(arena.LOOT.WEAPONS[buddy.companion_weapon].range) if buddy.kind=="soldier" and buddy.get("companion_weapon")!=null and arena.LOOT.WEAPONS.has(buddy.companion_weapon) else 7.0
@@ -97,12 +104,14 @@ func comrade_step(buddy,delta):
 		return
 	# No shot: with nobody to fight, board a nearby wreck or stay by the player.
 	var goal=arena.room.player.cell
-	if enemies.is_empty() and buddy.kind=="soldier":
+	if enemies.is_empty() and buddy.kind=="soldier" and not arena.room.room_cleared:
 		for wreck in arena.room.wrecks.duplicate():
 			if not is_instance_valid(wreck) or wreck.spent or not wreck.boardable or wreck.unstable:continue
 			var d=arena.flat_distance(buddy.position,wreck.position)
 			if d<1.6:
 				var vehicle=arena.spawn_actor(wreck.kind,buddy.cell,false,true);vehicle.companion=true;vehicle.companion_factor=buddy.companion_factor;vehicle.damage*=1+buddy.companion_factor;vehicle.hp=minf(vehicle.max_hp,maxf(1,wreck.armor if not wreck.unstable else vehicle.max_hp*.6));vehicle.refresh_health()
+				# Who drives it, so the same comrade climbs out when the field is cleared (T-258).
+				vehicle.set_meta("comrade",{"weapon":buddy.companion_weapon,"max_hp":buddy.max_hp,"hp":buddy.hp,"speed":buddy.speed,"damage":buddy.damage,"interval":buddy.fire_interval})
 				wreck.spent=true;arena.room.wrecks.erase(wreck);wreck.queue_free();arena.room.actors.erase(buddy);buddy.queue_free();return
 			if d<8:goal=wreck.cell
 	var firing_cell=func(cell:Vector2i)->bool:
@@ -120,6 +129,17 @@ func comrade_step(buddy,delta):
 	if destination!=buddy.cell:
 		while came[destination]!=buddy.cell:destination=came[destination]
 		buddy.facing=destination-buddy.cell;buddy.model.rotation.y=buddy.angle_for(buddy.facing);buddy.destination=destination;buddy.moving=true;buddy.terrain_direction=buddy.facing;buddy.terrain_sliding=false
+## The comrade steps out of the vehicle it drove: the vehicle stays as a free wreck to board, with the armor it has left.
+func dismount_comrade(vehicle):
+	var info:Dictionary=vehicle.get_meta("comrade",{})
+	make_wreck(vehicle.kind,vehicle.cell,vehicle.facing,false,maxf(1,vehicle.hp))
+	arena.room.actors.erase(vehicle);vehicle.queue_free()
+	var weapon=str(info.get("weapon",arena.LOOT.gun_ids()[0]))
+	var buddy=arena.spawn_actor("soldier",arena.find_free_near(vehicle.cell),false,true);buddy.companion=true;buddy.companion_factor=vehicle.companion_factor;buddy.companion_weapon=weapon
+	buddy.max_hp=float(info.get("max_hp",maxf(1,arena.run.soldier_max_hp*vehicle.companion_factor)));buddy.hp=clampf(float(info.get("hp",buddy.max_hp)),1,buddy.max_hp)
+	buddy.speed=float(info.get("speed",3.0));buddy.damage=float(info.get("damage",arena.LOOT.WEAPONS[weapon].damage));buddy.fire_interval=float(info.get("interval",arena.LOOT.WEAPONS[weapon].interval))
+	Visuals.equip_model(buddy.model,weapon);Visuals.label3d(buddy,"Товарищ",Vector3(0,1.8,0),Color("a6eeb4"),22);buddy.refresh_health()
+
 func fire_comrade_weapon(buddy):
 	var data=arena.LOOT.WEAPONS[buddy.companion_weapon]
 	for i in range(data.pellets):

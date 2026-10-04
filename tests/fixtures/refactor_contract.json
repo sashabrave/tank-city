@@ -13,14 +13,64 @@
 		"chests": [
 			[
 				{
-					"amount": 18,
-					"category": "alloy",
-					"id": "alloy",
+					"category": "upgrade",
+					"id": "damage",
+					"tier": 0
+				},
+				{
+					"category": "upgrade",
+					"id": "crit_damage",
+					"tier": 0
+				},
+				{
+					"category": "upgrade",
+					"id": "intercept",
+					"tier": 0
+				}
+			],
+			[
+				{
+					"category": "upgrade",
+					"id": "intercept",
+					"tier": 0
+				},
+				{
+					"category": "upgrade",
+					"id": "range",
 					"tier": 0
 				},
 				{
 					"category": "upgrade",
 					"id": "damage",
+					"tier": 0
+				}
+			],
+			[
+				{
+					"category": "upgrade",
+					"id": "crew",
+					"tier": 1
+				},
+				{
+					"category": "upgrade",
+					"id": "ricochet",
+					"tier": 0
+				},
+				{
+					"category": "upgrade",
+					"id": "luck",
+					"tier": 0
+				}
+			],
+			[
+				{
+					"category": "upgrade",
+					"id": "fire",
+					"tier": 0
+				},
+				{
+					"category": "upgrade",
+					"id": "guard_bullet",
 					"tier": 0
 				},
 				{
@@ -31,73 +81,18 @@
 			],
 			[
 				{
-					"amount": 18,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
 					"category": "upgrade",
-					"id": "fire",
-					"tier": 0
-				},
-				{
-					"category": "upgrade",
-					"id": "opening_shot",
-					"tier": 0
-				}
-			],
-			[
-				{
-					"amount": 18,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
-					"category": "upgrade",
-					"id": "opening_shot",
+					"id": "intercept",
 					"tier": 1
 				},
 				{
 					"category": "upgrade",
-					"id": "damage",
-					"tier": 0
-				}
-			],
-			[
-				{
-					"amount": 18,
-					"category": "alloy",
-					"id": "alloy",
+					"id": "dodge",
 					"tier": 0
 				},
 				{
 					"category": "upgrade",
-					"id": "crew",
-					"tier": 0
-				},
-				{
-					"category": "upgrade",
-					"id": "ricochet",
-					"tier": 0
-				}
-			],
-			[
-				{
-					"amount": 18,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
-					"category": "upgrade",
-					"id": "intercept",
-					"tier": 0
-				},
-				{
-					"category": "upgrade",
-					"id": "guard_vehicle",
+					"id": "crit_chance",
 					"tier": 0
 				}
 			]
@@ -220,7 +215,7 @@
 			"N...BBB....",
 			"....BHB...."
 		],
-		"rng_state": "-992553932017039738",
+		"rng_state": "-9141636764856115158",
 		"seed": 42,
 		"stage": 0,
 		"walls": [
@@ -363,12 +358,6 @@
 		"chests": [
 			[
 				{
-					"amount": 56,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
 					"category": "upgrade",
 					"id": "crit_chance",
 					"tier": 0
@@ -377,15 +366,14 @@
 					"category": "upgrade",
 					"id": "health",
 					"tier": 0
+				},
+				{
+					"category": "upgrade",
+					"id": "opening_shot",
+					"tier": 0
 				}
 			],
 			[
-				{
-					"amount": 56,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
 				{
 					"category": "upgrade",
 					"id": "intercept",
@@ -393,20 +381,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "range",
-					"tier": 0
-				}
-			],
-			[
-				{
-					"amount": 56,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
-					"category": "upgrade",
-					"id": "crit_damage",
+					"id": "damage",
 					"tier": 1
 				},
 				{
@@ -417,12 +392,6 @@
 			],
 			[
 				{
-					"amount": 56,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
 					"category": "upgrade",
 					"id": "opening_shot",
 					"tier": 0
@@ -431,23 +400,44 @@
 					"category": "upgrade",
 					"id": "last_stand",
 					"tier": 0
+				},
+				{
+					"category": "upgrade",
+					"id": "healing",
+					"tier": 1
 				}
 			],
 			[
 				{
-					"amount": 56,
-					"category": "alloy",
-					"id": "alloy",
+					"category": "upgrade",
+					"id": "damage",
 					"tier": 0
 				},
 				{
 					"category": "upgrade",
-					"id": "fire",
-					"tier": 1
+					"id": "crit_damage",
+					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "guard_bullet",
+					"id": "opening_shot",
+					"tier": 2
+				}
+			],
+			[
+				{
+					"category": "upgrade",
+					"id": "crit_damage",
+					"tier": 0
+				},
+				{
+					"category": "upgrade",
+					"id": "crit_chance",
+					"tier": 0
+				},
+				{
+					"category": "upgrade",
+					"id": "healing",
 					"tier": 0
 				}
 			]
@@ -576,7 +566,7 @@
 			"N......BBB.......",
 			".......BHB......."
 		],
-		"rng_state": "-9039322567431394214",
+		"rng_state": "3086070192784169022",
 		"seed": 42,
 		"stage": 5,
 		"walls": [
@@ -807,12 +797,6 @@
 		"chests": [
 			[
 				{
-					"amount": 210,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
 					"category": "upgrade",
 					"id": "fire",
 					"tier": 3
@@ -821,32 +805,18 @@
 					"category": "upgrade",
 					"id": "range",
 					"tier": 2
-				}
-			],
-			[
-				{
-					"amount": 210,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
 				},
 				{
 					"category": "upgrade",
-					"id": "crit_damage",
-					"tier": 2
-				},
-				{
-					"category": "upgrade",
-					"id": "ricochet",
+					"id": "exit_dash",
 					"tier": 2
 				}
 			],
 			[
 				{
-					"amount": 210,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
+					"category": "upgrade",
+					"id": "opening_shot",
+					"tier": 2
 				},
 				{
 					"category": "upgrade",
@@ -855,17 +825,11 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "luck",
+					"id": "last_stand",
 					"tier": 2
 				}
 			],
 			[
-				{
-					"amount": 210,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
 				{
 					"category": "upgrade",
 					"id": "intercept",
@@ -875,23 +839,44 @@
 					"category": "upgrade",
 					"id": "landing",
 					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "guard_bullet",
+					"tier": 2
 				}
 			],
 			[
 				{
-					"amount": 210,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
 					"category": "upgrade",
-					"id": "damage",
+					"id": "intercept",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "marauder",
+					"id": "opening_shot",
+					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "fire",
+					"tier": 2
+				}
+			],
+			[
+				{
+					"category": "upgrade",
+					"id": "fire",
+					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "crit_damage",
+					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "speed",
 					"tier": 2
 				}
 			]
@@ -1022,7 +1007,7 @@
 			"...................",
 			"..................."
 		],
-		"rng_state": "-4014611286374332289",
+		"rng_state": "-2829545460393222157",
 		"seed": 42,
 		"stage": 6,
 		"walls": [
@@ -1133,12 +1118,6 @@
 		"chests": [
 			[
 				{
-					"amount": 71,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
 					"category": "upgrade",
 					"id": "crit_damage",
 					"tier": 0
@@ -1147,31 +1126,17 @@
 					"category": "upgrade",
 					"id": "ricochet",
 					"tier": 1
-				}
-			],
-			[
-				{
-					"amount": 71,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
 				},
 				{
 					"category": "upgrade",
-					"id": "fire",
-					"tier": 0
-				},
-				{
-					"category": "upgrade",
-					"id": "ricochet",
+					"id": "intercept",
 					"tier": 0
 				}
 			],
 			[
 				{
-					"amount": 71,
-					"category": "alloy",
-					"id": "alloy",
+					"category": "upgrade",
+					"id": "intercept",
 					"tier": 0
 				},
 				{
@@ -1187,12 +1152,6 @@
 			],
 			[
 				{
-					"amount": 71,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
 					"category": "upgrade",
 					"id": "damage",
 					"tier": 2
@@ -1201,24 +1160,45 @@
 					"category": "upgrade",
 					"id": "luck",
 					"tier": 0
-				}
-			],
-			[
-				{
-					"amount": 71,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
 				},
 				{
 					"category": "upgrade",
 					"id": "crit_chance",
 					"tier": 0
+				}
+			],
+			[
+				{
+					"category": "upgrade",
+					"id": "crit_damage",
+					"tier": 0
 				},
 				{
 					"category": "upgrade",
-					"id": "fire",
+					"id": "crew",
 					"tier": 0
+				},
+				{
+					"category": "upgrade",
+					"id": "burn",
+					"tier": 1
+				}
+			],
+			[
+				{
+					"category": "upgrade",
+					"id": "crit_damage",
+					"tier": 0
+				},
+				{
+					"category": "upgrade",
+					"id": "healing",
+					"tier": 1
+				},
+				{
+					"category": "upgrade",
+					"id": "stealth",
+					"tier": 2
 				}
 			]
 		],
@@ -1351,7 +1331,7 @@
 			"N.........BBB........N",
 			"..........BHB........."
 		],
-		"rng_state": "-8811608934490056824",
+		"rng_state": "-7017889663116410420",
 		"seed": 42,
 		"stage": 0,
 		"walls": [
@@ -1626,12 +1606,6 @@
 		"chests": [
 			[
 				{
-					"amount": 385,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
 					"category": "upgrade",
 					"id": "damage",
 					"tier": 2
@@ -1640,37 +1614,6 @@
 					"category": "upgrade",
 					"id": "exit_dash",
 					"tier": 2
-				}
-			],
-			[
-				{
-					"amount": 385,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
-					"category": "upgrade",
-					"id": "crew",
-					"tier": 2
-				},
-				{
-					"category": "upgrade",
-					"id": "fire",
-					"tier": 2
-				}
-			],
-			[
-				{
-					"amount": 385,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
-					"category": "upgrade",
-					"id": "crit_damage",
-					"tier": 2
 				},
 				{
 					"category": "upgrade",
@@ -1680,11 +1623,22 @@
 			],
 			[
 				{
-					"amount": 385,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
+					"category": "upgrade",
+					"id": "damage",
+					"tier": 2
 				},
+				{
+					"category": "upgrade",
+					"id": "field_repair",
+					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "crew",
+					"tier": 2
+				}
+			],
+			[
 				{
 					"category": "upgrade",
 					"id": "crew",
@@ -1694,24 +1648,45 @@
 					"category": "upgrade",
 					"id": "opening_shot",
 					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "crit_damage",
+					"tier": 2
 				}
 			],
 			[
 				{
-					"amount": 385,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
 					"category": "upgrade",
-					"id": "crit_chance",
+					"id": "intercept",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "ricochet",
+					"id": "dodge",
 					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "healing",
+					"tier": 2
+				}
+			],
+			[
+				{
+					"category": "upgrade",
+					"id": "opening_shot",
+					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "stun",
+					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "pierce",
+					"tier": 3
 				}
 			]
 		],
@@ -1852,7 +1827,7 @@
 			"..............................",
 			".............................."
 		],
-		"rng_state": "-5116388085179112915",
+		"rng_state": "7776438107162214401",
 		"seed": 42,
 		"stage": 6,
 		"walls": [
@@ -1941,12 +1916,6 @@
 		"chests": [
 			[
 				{
-					"amount": 610,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
 					"category": "upgrade",
 					"id": "damage",
 					"tier": 2
@@ -1955,37 +1924,6 @@
 					"category": "upgrade",
 					"id": "exit_dash",
 					"tier": 2
-				}
-			],
-			[
-				{
-					"amount": 610,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
-					"category": "upgrade",
-					"id": "crew",
-					"tier": 2
-				},
-				{
-					"category": "upgrade",
-					"id": "fire",
-					"tier": 2
-				}
-			],
-			[
-				{
-					"amount": 610,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
-					"category": "upgrade",
-					"id": "crit_damage",
-					"tier": 2
 				},
 				{
 					"category": "upgrade",
@@ -1995,11 +1933,22 @@
 			],
 			[
 				{
-					"amount": 610,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
+					"category": "upgrade",
+					"id": "damage",
+					"tier": 2
 				},
+				{
+					"category": "upgrade",
+					"id": "field_repair",
+					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "crew",
+					"tier": 2
+				}
+			],
+			[
 				{
 					"category": "upgrade",
 					"id": "crew",
@@ -2009,24 +1958,45 @@
 					"category": "upgrade",
 					"id": "opening_shot",
 					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "crit_damage",
+					"tier": 2
 				}
 			],
 			[
 				{
-					"amount": 610,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
 					"category": "upgrade",
-					"id": "crit_chance",
+					"id": "intercept",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "ricochet",
+					"id": "dodge",
 					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "healing",
+					"tier": 2
+				}
+			],
+			[
+				{
+					"category": "upgrade",
+					"id": "opening_shot",
+					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "stun",
+					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "pierce",
+					"tier": 3
 				}
 			]
 		],
@@ -2169,7 +2139,7 @@
 			"................................",
 			"................................"
 		],
-		"rng_state": "-5116388085179112915",
+		"rng_state": "7776438107162214401",
 		"seed": 42,
 		"stage": 6,
 		"walls": [
@@ -2258,12 +2228,6 @@
 		"chests": [
 			[
 				{
-					"amount": 610,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
 					"category": "upgrade",
 					"id": "damage",
 					"tier": 2
@@ -2272,37 +2236,6 @@
 					"category": "upgrade",
 					"id": "exit_dash",
 					"tier": 2
-				}
-			],
-			[
-				{
-					"amount": 610,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
-					"category": "upgrade",
-					"id": "crew",
-					"tier": 2
-				},
-				{
-					"category": "upgrade",
-					"id": "fire",
-					"tier": 2
-				}
-			],
-			[
-				{
-					"amount": 610,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
-					"category": "upgrade",
-					"id": "crit_damage",
-					"tier": 2
 				},
 				{
 					"category": "upgrade",
@@ -2312,11 +2245,22 @@
 			],
 			[
 				{
-					"amount": 610,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
+					"category": "upgrade",
+					"id": "damage",
+					"tier": 2
 				},
+				{
+					"category": "upgrade",
+					"id": "field_repair",
+					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "crew",
+					"tier": 2
+				}
+			],
+			[
 				{
 					"category": "upgrade",
 					"id": "crew",
@@ -2326,24 +2270,45 @@
 					"category": "upgrade",
 					"id": "opening_shot",
 					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "crit_damage",
+					"tier": 2
 				}
 			],
 			[
 				{
-					"amount": 610,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
 					"category": "upgrade",
-					"id": "crit_chance",
+					"id": "intercept",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "ricochet",
+					"id": "dodge",
 					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "healing",
+					"tier": 2
+				}
+			],
+			[
+				{
+					"category": "upgrade",
+					"id": "opening_shot",
+					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "stun",
+					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "pierce",
+					"tier": 3
 				}
 			]
 		],
@@ -2489,7 +2454,7 @@
 			"...................................",
 			"..................................."
 		],
-		"rng_state": "-5116388085179112915",
+		"rng_state": "7776438107162214401",
 		"seed": 42,
 		"stage": 7,
 		"walls": [
@@ -2598,12 +2563,6 @@
 		"chests": [
 			[
 				{
-					"amount": 18,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
 					"category": "upgrade",
 					"id": "crew",
 					"tier": 0
@@ -2612,37 +2571,23 @@
 					"category": "upgrade",
 					"id": "damage",
 					"tier": 0
-				}
-			],
-			[
-				{
-					"amount": 18,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
 				},
 				{
 					"category": "upgrade",
-					"id": "crit_damage",
-					"tier": 0
-				},
-				{
-					"category": "upgrade",
-					"id": "range",
+					"id": "fire",
 					"tier": 0
 				}
 			],
 			[
-				{
-					"amount": 18,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
 				{
 					"category": "upgrade",
 					"id": "intercept",
-					"tier": 1
+					"tier": 0
+				},
+				{
+					"category": "upgrade",
+					"id": "marauder",
+					"tier": 0
 				},
 				{
 					"category": "upgrade",
@@ -2652,37 +2597,52 @@
 			],
 			[
 				{
-					"amount": 18,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
 					"category": "upgrade",
-					"id": "opening_shot",
-					"tier": 0
+					"id": "pierce",
+					"tier": 1
 				},
 				{
 					"category": "upgrade",
 					"id": "speed",
 					"tier": 1
+				},
+				{
+					"category": "upgrade",
+					"id": "luck",
+					"tier": 0
 				}
 			],
 			[
 				{
-					"amount": 18,
-					"category": "alloy",
-					"id": "alloy",
+					"category": "upgrade",
+					"id": "crew",
 					"tier": 0
 				},
 				{
 					"category": "upgrade",
-					"id": "intercept",
+					"id": "guard_vehicle",
 					"tier": 0
 				},
 				{
 					"category": "upgrade",
-					"id": "ap",
+					"id": "crit_damage",
+					"tier": 0
+				}
+			],
+			[
+				{
+					"category": "upgrade",
+					"id": "crew",
+					"tier": 0
+				},
+				{
+					"category": "upgrade",
+					"id": "last_stand",
+					"tier": 0
+				},
+				{
+					"category": "upgrade",
+					"id": "exit_dash",
 					"tier": 0
 				}
 			]
@@ -2805,7 +2765,7 @@
 			"N...BBB...N",
 			"....BHB...."
 		],
-		"rng_state": "4097297923508469483",
+		"rng_state": "5404087319460419615",
 		"seed": 137,
 		"stage": 0,
 		"walls": [
@@ -2952,12 +2912,6 @@
 		"chests": [
 			[
 				{
-					"amount": 56,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
 					"category": "upgrade",
 					"id": "opening_shot",
 					"tier": 1
@@ -2966,36 +2920,22 @@
 					"category": "upgrade",
 					"id": "stealth",
 					"tier": 0
+				},
+				{
+					"category": "upgrade",
+					"id": "marauder",
+					"tier": 0
 				}
 			],
 			[
 				{
-					"amount": 56,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
 					"category": "upgrade",
-					"id": "intercept",
-					"tier": 0
+					"id": "crit_damage",
+					"tier": 1
 				},
 				{
 					"category": "upgrade",
 					"id": "damage",
-					"tier": 1
-				}
-			],
-			[
-				{
-					"amount": 56,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
-					"category": "upgrade",
-					"id": "crit_chance",
 					"tier": 2
 				},
 				{
@@ -3006,12 +2946,6 @@
 			],
 			[
 				{
-					"amount": 56,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
 					"category": "upgrade",
 					"id": "crit_damage",
 					"tier": 0
@@ -3020,15 +2954,31 @@
 					"category": "upgrade",
 					"id": "marauder",
 					"tier": 3
+				},
+				{
+					"category": "upgrade",
+					"id": "cryo",
+					"tier": 0
 				}
 			],
 			[
 				{
-					"amount": 56,
-					"category": "alloy",
-					"id": "alloy",
+					"category": "upgrade",
+					"id": "intercept",
+					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "stealth",
 					"tier": 0
 				},
+				{
+					"category": "upgrade",
+					"id": "marauder",
+					"tier": 0
+				}
+			],
+			[
 				{
 					"category": "upgrade",
 					"id": "crit_chance",
@@ -3036,8 +2986,13 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "marauder",
-					"tier": 2
+					"id": "ricochet",
+					"tier": 0
+				},
+				{
+					"category": "upgrade",
+					"id": "crew",
+					"tier": 0
 				}
 			]
 		],
@@ -3165,7 +3120,7 @@
 			"N......BBB......N",
 			".......BHB......."
 		],
-		"rng_state": "6983926832510494446",
+		"rng_state": "5303998839185285394",
 		"seed": 137,
 		"stage": 5,
 		"walls": [
@@ -3400,12 +3355,6 @@
 		"chests": [
 			[
 				{
-					"amount": 210,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
 					"category": "upgrade",
 					"id": "crit_chance",
 					"tier": 2
@@ -3413,37 +3362,6 @@
 				{
 					"category": "upgrade",
 					"id": "last_stand",
-					"tier": 2
-				}
-			],
-			[
-				{
-					"amount": 210,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
-					"category": "upgrade",
-					"id": "opening_shot",
-					"tier": 2
-				},
-				{
-					"category": "upgrade",
-					"id": "cryo",
-					"tier": 2
-				}
-			],
-			[
-				{
-					"amount": 210,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
-					"category": "upgrade",
-					"id": "crew",
 					"tier": 2
 				},
 				{
@@ -3454,11 +3372,22 @@
 			],
 			[
 				{
-					"amount": 210,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
+					"category": "upgrade",
+					"id": "crit_chance",
+					"tier": 2
 				},
+				{
+					"category": "upgrade",
+					"id": "ap",
+					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "shock",
+					"tier": 2
+				}
+			],
+			[
 				{
 					"category": "upgrade",
 					"id": "intercept",
@@ -3468,23 +3397,44 @@
 					"category": "upgrade",
 					"id": "ap",
 					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "guard_vehicle",
+					"tier": 2
 				}
 			],
 			[
 				{
-					"amount": 210,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
 					"category": "upgrade",
-					"id": "damage",
+					"id": "crew",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "burn",
+					"id": "intercept",
+					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "healing",
+					"tier": 2
+				}
+			],
+			[
+				{
+					"category": "upgrade",
+					"id": "fire",
+					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "health",
+					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "guard_blast",
 					"tier": 2
 				}
 			]
@@ -3615,7 +3565,7 @@
 			"...................",
 			"..................."
 		],
-		"rng_state": "-2512818069838136068",
+		"rng_state": "-2509676769983440000",
 		"seed": 137,
 		"stage": 6,
 		"walls": [
@@ -3716,12 +3666,6 @@
 		"chests": [
 			[
 				{
-					"amount": 153,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
 					"category": "upgrade",
 					"id": "crew",
 					"tier": 1
@@ -3730,36 +3674,22 @@
 					"category": "upgrade",
 					"id": "damage",
 					"tier": 1
-				}
-			],
-			[
-				{
-					"amount": 153,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
 				},
 				{
 					"category": "upgrade",
-					"id": "crit_damage",
-					"tier": 1
-				},
-				{
-					"category": "upgrade",
-					"id": "range",
+					"id": "fire",
 					"tier": 1
 				}
 			],
 			[
-				{
-					"amount": 153,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
 				{
 					"category": "upgrade",
 					"id": "intercept",
+					"tier": 1
+				},
+				{
+					"category": "upgrade",
+					"id": "opening_shot",
 					"tier": 1
 				},
 				{
@@ -3770,12 +3700,6 @@
 			],
 			[
 				{
-					"amount": 153,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
 					"category": "upgrade",
 					"id": "pierce",
 					"tier": 1
@@ -3784,24 +3708,45 @@
 					"category": "upgrade",
 					"id": "speed",
 					"tier": 3
+				},
+				{
+					"category": "upgrade",
+					"id": "luck",
+					"tier": 2
 				}
 			],
 			[
 				{
-					"amount": 153,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
 					"category": "upgrade",
-					"id": "intercept",
+					"id": "crew",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "ap",
+					"id": "healing",
 					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "crit_damage",
+					"tier": 1
+				}
+			],
+			[
+				{
+					"category": "upgrade",
+					"id": "crew",
+					"tier": 1
+				},
+				{
+					"category": "upgrade",
+					"id": "last_stand",
+					"tier": 1
+				},
+				{
+					"category": "upgrade",
+					"id": "exit_dash",
+					"tier": 1
 				}
 			]
 		],
@@ -3934,7 +3879,7 @@
 			"N.........BBB........N",
 			"..........BHB........."
 		],
-		"rng_state": "4097297923508469483",
+		"rng_state": "5404087319460419615",
 		"seed": 137,
 		"stage": 0,
 		"walls": [
@@ -4215,12 +4160,6 @@
 		"chests": [
 			[
 				{
-					"amount": 385,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
 					"category": "upgrade",
 					"id": "crit_chance",
 					"tier": 2
@@ -4228,37 +4167,6 @@
 				{
 					"category": "upgrade",
 					"id": "last_stand",
-					"tier": 2
-				}
-			],
-			[
-				{
-					"amount": 385,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
-					"category": "upgrade",
-					"id": "opening_shot",
-					"tier": 2
-				},
-				{
-					"category": "upgrade",
-					"id": "cryo",
-					"tier": 2
-				}
-			],
-			[
-				{
-					"amount": 385,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
-					"category": "upgrade",
-					"id": "crew",
 					"tier": 2
 				},
 				{
@@ -4269,11 +4177,22 @@
 			],
 			[
 				{
-					"amount": 385,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
+					"category": "upgrade",
+					"id": "crit_chance",
+					"tier": 2
 				},
+				{
+					"category": "upgrade",
+					"id": "ap",
+					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "shock",
+					"tier": 2
+				}
+			],
+			[
 				{
 					"category": "upgrade",
 					"id": "intercept",
@@ -4283,23 +4202,44 @@
 					"category": "upgrade",
 					"id": "ap",
 					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "guard_vehicle",
+					"tier": 2
 				}
 			],
 			[
 				{
-					"amount": 385,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
 					"category": "upgrade",
-					"id": "damage",
+					"id": "crew",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "burn",
+					"id": "intercept",
+					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "healing",
+					"tier": 2
+				}
+			],
+			[
+				{
+					"category": "upgrade",
+					"id": "fire",
+					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "health",
+					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "guard_blast",
 					"tier": 2
 				}
 			]
@@ -4441,7 +4381,7 @@
 			"..............................",
 			".............................."
 		],
-		"rng_state": "-2512818069838136068",
+		"rng_state": "-2509676769983440000",
 		"seed": 137,
 		"stage": 6,
 		"walls": [
@@ -4536,12 +4476,6 @@
 		"chests": [
 			[
 				{
-					"amount": 610,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
 					"category": "upgrade",
 					"id": "crit_chance",
 					"tier": 2
@@ -4549,37 +4483,6 @@
 				{
 					"category": "upgrade",
 					"id": "last_stand",
-					"tier": 2
-				}
-			],
-			[
-				{
-					"amount": 610,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
-					"category": "upgrade",
-					"id": "opening_shot",
-					"tier": 2
-				},
-				{
-					"category": "upgrade",
-					"id": "cryo",
-					"tier": 2
-				}
-			],
-			[
-				{
-					"amount": 610,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
-					"category": "upgrade",
-					"id": "crew",
 					"tier": 2
 				},
 				{
@@ -4590,11 +4493,22 @@
 			],
 			[
 				{
-					"amount": 610,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
+					"category": "upgrade",
+					"id": "crit_chance",
+					"tier": 2
 				},
+				{
+					"category": "upgrade",
+					"id": "ap",
+					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "shock",
+					"tier": 2
+				}
+			],
+			[
 				{
 					"category": "upgrade",
 					"id": "intercept",
@@ -4604,23 +4518,44 @@
 					"category": "upgrade",
 					"id": "ap",
 					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "guard_vehicle",
+					"tier": 2
 				}
 			],
 			[
 				{
-					"amount": 610,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
 					"category": "upgrade",
-					"id": "damage",
+					"id": "crew",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "burn",
+					"id": "intercept",
+					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "healing",
+					"tier": 2
+				}
+			],
+			[
+				{
+					"category": "upgrade",
+					"id": "fire",
+					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "health",
+					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "guard_blast",
 					"tier": 2
 				}
 			]
@@ -4764,7 +4699,7 @@
 			"................................",
 			"................................"
 		],
-		"rng_state": "-2512818069838136068",
+		"rng_state": "-2509676769983440000",
 		"seed": 137,
 		"stage": 6,
 		"walls": [
@@ -4853,12 +4788,6 @@
 		"chests": [
 			[
 				{
-					"amount": 610,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
 					"category": "upgrade",
 					"id": "crit_chance",
 					"tier": 2
@@ -4866,37 +4795,6 @@
 				{
 					"category": "upgrade",
 					"id": "last_stand",
-					"tier": 2
-				}
-			],
-			[
-				{
-					"amount": 610,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
-					"category": "upgrade",
-					"id": "opening_shot",
-					"tier": 2
-				},
-				{
-					"category": "upgrade",
-					"id": "cryo",
-					"tier": 2
-				}
-			],
-			[
-				{
-					"amount": 610,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
-					"category": "upgrade",
-					"id": "crew",
 					"tier": 2
 				},
 				{
@@ -4907,11 +4805,22 @@
 			],
 			[
 				{
-					"amount": 610,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
+					"category": "upgrade",
+					"id": "crit_chance",
+					"tier": 2
 				},
+				{
+					"category": "upgrade",
+					"id": "ap",
+					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "shock",
+					"tier": 2
+				}
+			],
+			[
 				{
 					"category": "upgrade",
 					"id": "intercept",
@@ -4921,23 +4830,44 @@
 					"category": "upgrade",
 					"id": "ap",
 					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "guard_vehicle",
+					"tier": 2
 				}
 			],
 			[
 				{
-					"amount": 610,
-					"category": "alloy",
-					"id": "alloy",
-					"tier": 0
-				},
-				{
 					"category": "upgrade",
-					"id": "damage",
+					"id": "crew",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "burn",
+					"id": "intercept",
+					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "healing",
+					"tier": 2
+				}
+			],
+			[
+				{
+					"category": "upgrade",
+					"id": "fire",
+					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "health",
+					"tier": 2
+				},
+				{
+					"category": "upgrade",
+					"id": "guard_blast",
 					"tier": 2
 				}
 			]
@@ -5084,7 +5014,7 @@
 			"...................................",
 			"..................................."
 		],
-		"rng_state": "-2512818069838136068",
+		"rng_state": "-2509676769983440000",
 		"seed": 137,
 		"stage": 7,
 		"walls": [

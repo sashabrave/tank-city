@@ -164,11 +164,11 @@ func run():
 		for i in range(20):
 			var offers=arena.reward.chest_offers()
 			check(offers.size()==3,"three rewards")
-			check(offers.slice(1).all(func(o):return o.category=="upgrade" and o.tier>=difficulty),"chest upgrades never below the room difficulty")
-			if difficulty==0:check(offers[0].category=="alloy" and offers[0].amount==EncounterRules.chest_alloy(field,0),"simple chest has alloy, no blueprints")
-			else:check(offers[0].category!="alloy" or offers[0].amount==EncounterRules.chest_alloy(field,difficulty),"starred chest: blueprint or alloy by difficulty")
+			check(offers.all(func(o):return o.category=="upgrade" and o.tier>=difficulty),"chest: upgrade cards only, never below the room difficulty (T-267)")
 		if chests.is_empty():continue
-		arena.run.rerolls_left=2;arena.reward.open_recipe_draft(chests[0]);arena.reward.reroll_recipe_draft()
+		arena.run.rerolls_left=2;arena.reward.open_recipe_draft(chests[0])
+		check(int(chests[0].get("alloy_given",0))==EncounterRules.chest_alloy(field,difficulty),"chest alloy spills out as alloy, not a card")
+		arena.reward.reroll_recipe_draft()
 		if difficulty==0:check(arena.draft_pickup.offers.all(func(o):return o.category in ["alloy","upgrade"]),"reroll cannot upgrade chest tier")
 	# from route_strategy: a map exit freezes combat at once (the transition itself is not awaited here).
 	arena.phase="upgrade";var map_events=[]

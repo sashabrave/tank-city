@@ -3,7 +3,7 @@ extends Control
 ## a short verdict appears, then the window closes by itself. E, Esc or a click skips straight to the end.
 ## The outcome is rolled by the merchant from the combat RNG; reels only use their own visual RNG.
 signal finished
-const SYMBOLS=["token","medkit","alloy","ammo","star2","star3","skull"]
+const SYMBOLS=["token","medkit","alloy","ammo","star1","star2","star3","skull"]
 const OUTCOME_SYMBOL={"tokens":"token","heal":"medkit","alloy":"alloy","ammo":"ammo","card0":"star1","card1":"star2","card2":"star3"}
 const CELL=Vector2(150,150)
 const SPIN=.5
@@ -21,15 +21,17 @@ var verdict_label:Label
 var visual_rng=RandomNumberGenerator.new()
 var done=false
 var elapsed=0.0
-func setup(result:String,text:String)->Control:
-	outcome=result;verdict=text;win=result!="empty";return self
+## Prize table shown under the reels (T-263: what can drop and how often): [outcome, name, chance in %].
+var prizes:Array=[]
+func setup(result:String,text:String,table:Array=[])->Control:
+	outcome=result;verdict=text;win=result!="empty";prizes=table;return self
 func _ready():
 	name="SlotWindow";set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);add_to_group("selection_scope")
 	visual_rng.randomize()
 	var shade=ColorRect.new();add_child(shade);shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);shade.color=Color(0,0,0,.45);shade.mouse_filter=Control.MOUSE_FILTER_STOP
 	shade.gui_input.connect(func(e):if e is InputEventMouseButton and e.pressed:finish())
 	var screen=get_viewport().get_visible_rect().size
-	var inner=CELL.x*3+GAP*2+16;var width=inner+40;var height=CELL.y+160
+	var inner=CELL.x*3+GAP*2+16;var width=inner+40;var rows=ceili(prizes.size()/2.0);var height=CELL.y+160+(rows*24+18 if rows>0 else 0)
 	var frame=Panel.new();add_child(frame);frame.name="Cabinet";frame.size=Vector2(width,height);frame.position=((screen-frame.size)*.5).round()
 	frame.add_theme_stylebox_override("panel",flat(Color("8f2f2a"),18,Color("e5b34f"),4))
 	frame.mouse_filter=Control.MOUSE_FILTER_IGNORE
@@ -43,6 +45,10 @@ func _ready():
 	var targets=reel_targets()
 	for i in range(3):fill(reels[i],targets[i])
 	verdict_label=UiKit.label(frame,"",Vector2(16,CELL.y+90),Vector2(width-32,56),22,Color("fff0ce"));verdict_label.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;verdict_label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;verdict_label.name="Verdict"
+	for i in range(prizes.size()):
+		var prize=prizes[i];var at=Vector2(24+(i%2)*(width-48)*.5,CELL.y+160+(i/2)*24)
+		var line=UiKit.label(frame,"",at,Vector2((width-48)*.5-8,24),15,Color("ffe08a") if win and prize[0]==outcome else Color("e8dccb"))
+		line.name="Prize_"+str(prize[0]);line.text=Texts.render(str(prize[1]))+" · %d%%" % int(prize[2])
 	Game.sound("reroll",self)
 ## A win lands three equal symbols; a miss never does.
 func reel_targets()->Array:

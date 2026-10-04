@@ -56,6 +56,7 @@ func apply():
 	get_viewport().msaa_3d=[Viewport.MSAA_DISABLED,Viewport.MSAA_2X,Viewport.MSAA_4X][values.quality]
 	apply_render_scale()
 	if not get_viewport().size_changed.is_connected(apply_render_scale):get_viewport().size_changed.connect(apply_render_scale)
+	if not get_viewport().size_changed.is_connected(remember_window_mode):get_viewport().size_changed.connect(remember_window_mode)
 	# Ambient occlusion at half resolution: nearly the same soft contact shadows for a third of the cost.
 	RenderingServer.environment_set_ssao_quality(RenderingServer.ENV_SSAO_QUALITY_MEDIUM,true,.5,2,50.0,300.0)
 	for entry in [["Master","master"],["TankCityMusic","music"],["TankCityEffects","effects"]]:
@@ -113,6 +114,14 @@ func apply_display():
 	if applied_display.get("vsync")!=bool(values.vsync):
 		applied_display.vsync=bool(values.vsync)
 		DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_ENABLED if values.vsync else DisplayServer.VSYNC_DISABLED)
+## Fullscreen switched by the system (green window button, Ctrl+Cmd+F) is remembered too: the next launch
+## opens the same way (T-259 — the game kept starting in a small window).
+func remember_window_mode():
+	if DisplayServer.get_name()=="headless" or not applied_display.has("fullscreen"):return
+	var mode=DisplayServer.window_get_mode()
+	var is_full=mode in [DisplayServer.WINDOW_MODE_FULLSCREEN,DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN]
+	if is_full==bool(values.fullscreen):return
+	values.fullscreen=is_full;applied_display.fullscreen=is_full;pending.erase("fullscreen");save();changed.emit()
 ## Pixels per point of the current screen (2 on Retina).
 func pixel_ratio()->float:
 	return maxf(1.0,DisplayServer.screen_get_scale(DisplayServer.window_get_current_screen())) if DisplayServer.get_name()!="headless" else 1.0

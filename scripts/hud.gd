@@ -245,7 +245,9 @@ func show_upgrades():
 	var epoch=choice_epoch
 	if is_instance_valid(arena.presentation) and arena.presentation.text_tween and arena.presentation.text_tween.is_running():
 		await arena.presentation.text_tween.finished
-	if not is_inside_tree() or epoch!=choice_epoch or arena.phase!="upgrade":return
+	if not is_inside_tree() or epoch!=choice_epoch or arena.phase!="upgrade":
+		if epoch==choice_epoch:CardNavigation.transition_locked=false
+		return
 	_show_upgrades_now()
 
 func animate_choices(panel:Panel):

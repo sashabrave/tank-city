@@ -63,8 +63,11 @@ func _input(event):
 		selected.pressed.emit();Game.reset_input()
 func _process(_delta):
 	if get_viewport().gui_get_focus_owner() is LineEdit or get_viewport().gui_get_focus_owner() is TextEdit:return
-	if not transition_locked and not Input.is_action_pressed("interact"):release_required=false
 	var choices=available()
+	# The lock only guards a choice screen that is opening; with nothing on screen to confirm it must not outlive
+	# it (T-257: an upgrade screen that never opened left E dead in every room after the field).
+	if transition_locked and choices.is_empty() and scope()==null:transition_locked=false
+	if not transition_locked and not Input.is_action_pressed("interact"):release_required=false
 	if choices.is_empty():selected=null;return
 	var focused=get_viewport().gui_get_focus_owner()
 	if not is_instance_valid(selected) or selected not in choices:choose(initial(choices,focused))

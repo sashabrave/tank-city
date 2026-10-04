@@ -4,6 +4,34 @@
 			"date": "2026-10-04",
 			"version": "0.8.0",
 			"ru": {
+				"title": "Прохождение b539: автоматы, товарищ, награды",
+				"items": [
+					"Полный экран запоминается, даже если включить его системной кнопкой окна или Ctrl+Cmd+F: игра больше не стартует в маленьком окне.",
+					"Автоматы в комнатах снова отвечают на E: после окна улучшений E иногда переставала работать до конца вылазки.",
+					"«Фортуна»-слот: карточки прокачки выпадают почти в каждой второй попытке (обычная 26%, редкая 14%, эпическая — джекпот 4%), остальное — жетоны, сплав, боеприпасы, лечение. Таблица призов с шансами видна прямо в окне автомата.",
+					"Товарищ выходит из машины, когда поле зачищено, — машина остаётся свободной для тебя.",
+					"Дрон-помощник инженера летает по клеткам, по вертикали и горизонтали, как вражеские дроны.",
+					"Оружие в лапах стало крупнее.",
+					"Сундук командира: сплав высыпается на поле сам, а выбор — из трёх карточек улучшений. В карточках после боя больше нет смены оружия: оружие — в ящике с оружием и в автоматах."
+				]
+			},
+			"en": {
+				"title": "Playthrough b539: machines, comrade, rewards",
+				"items": [
+					"Fullscreen is remembered even when switched with the window's system button or Ctrl+Cmd+F: the game no longer starts in a small window.",
+					"Machines in upgrade rooms answer E again: after the upgrade window E could stop working until the end of the run.",
+					"Fortune slot: upgrade cards drop in almost every second spin (common 26%, rare 14%, epic jackpot 4%); the rest is tokens, alloy, ammo or a heal. The prize table with chances is shown right in the machine window.",
+					"The comrade leaves the vehicle once the field is cleared, so the vehicle is free for you.",
+					"The engineer's helper drone flies along the grid, vertically and horizontally, like enemy drones.",
+					"Guns look bigger in the hero's paws.",
+					"Commander's chest: alloy spills onto the field by itself and you choose from three upgrade cards. Post-battle cards no longer offer a weapon swap: guns come from the weapon crate and machines."
+				]
+			}
+		},
+		{
+			"date": "2026-10-04",
+			"version": "0.8.0",
+			"ru": {
 				"title": "Прохождение b497: чертежи, инвентарь, карточки, комнаты",
 				"items": [
 					"Чертежи: чертёж из сундука командира больше не занимает место карточки — он выпадает из сундука на землю (свёрнутый синий чертёж), его поздравляет отдельное окно «Новый чертёж!», а выбор остаётся из трёх: сплав и два усиления. Он лежит без таймера, как любой предмет: подобрать — C; не подобрал — остаётся на поле.",

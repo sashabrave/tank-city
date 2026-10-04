@@ -117,6 +117,7 @@ func play_death()->bool:
 	if not has_death():return false
 	dying=true;oneshot="hero_death";player.play("hero_death",.08);return true
 
+const WEAPON_SCALE:=1.35
 func equip_weapon(id:String):
 	if not is_instance_valid(weapon_socket):return
 	var path="res://assets/models/infantry_v6/weapon_"+id+".glb"
@@ -128,6 +129,8 @@ func equip_weapon(id:String):
 	for child in weapon_socket.get_children():
 		weapon_socket.remove_child(child);child.queue_free()
 	equipped_weapon=load(path).instantiate();weapon_socket.add_child(equipped_weapon);weapon_id=id
+	# Guns read bigger in the paws (T-273, author: «слишком маленькое оружие в руках»); grip and muzzle follow.
+	equipped_weapon.scale*=WEAPON_SCALE
 	Visuals.refresh_cozy_materials(equipped_weapon)  # guns are metal (palette metal map, 2026-10-03)
 	support_grip=Visuals.named_part(equipped_weapon,"SupportGrip")
 	muzzle=Visuals.named_part(equipped_weapon,"Muzzle")

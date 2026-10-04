@@ -256,7 +256,7 @@ func open_recipe_draft(pickup: Dictionary):
 		pop.tween_property(v,"scale",Vector3(1.15,.8,1.15),.08);pop.tween_property(v,"scale",Vector3(.9,1.25,.9),.12);pop.tween_property(v,"scale",Vector3.ONE*.95,.18)
 		arena.burst(pickup.node.position+Vector3.UP*.6,Color("ffd56a"),.6)
 	if pickup.offers.is_empty():pickup.offers=chest_offers(pickup.get("elite",true))
-	grant_chest_recipe(pickup)
+	grant_chest_recipe(pickup);spill_chest_alloy(pickup)
 	arena.room.draft_pickup=pickup;arena.room.previous_phase=arena.phase;arena.phase="paused";Game.reset_input();arena.hud.show_recipe_draft()
 func reroll_recipe_draft():
 	if arena.phase!="paused" or arena.room.draft_pickup.is_empty() or arena.run.rerolls_left<=0:return
@@ -313,10 +313,17 @@ func collect_nearby_pickups(delta):
 				arena.room.pickups.erase(pickup);arena.burst(pickup.node.position+Vector3.UP*.3,Color("d8cfb4"),.35);pickup.node.queue_free()
 func chest_offers(_elite:bool=true)->Array:
 	var difficulty=2 if arena.room.boss_room else arena.room.difficulty
-	# Chest cards come from the same registry and rarity roll as wave offers, never below the room difficulty.
-	var result=[{"category":"alloy","id":"alloy","amount":EncounterRules.chest_alloy(arena.room.room_index,difficulty),"tier":0}]
-	for offer in RunUpgrades.roll_offers(arena,2,true):result.append({"category":"upgrade","id":offer.id,"tier":maxi(int(offer.tier),difficulty)})
+	# Chest cards come from the same registry and rarity roll as wave offers, never below the room difficulty
+	# (the boss chest — epic). The chest's alloy is no card any more (T-267): it spills out when the lid opens.
+	var result=[]
+	for offer in RunUpgrades.roll_offers(arena,3,true):result.append({"category":"upgrade","id":offer.id,"tier":maxi(int(offer.tier),difficulty)})
 	return result
+## The chest's alloy pours out on the field once, as plain alloy to pick up (T-267).
+func spill_chest_alloy(pickup:Dictionary):
+	if pickup.has("alloy_given"):return
+	var difficulty=2 if arena.room.boss_room else arena.room.difficulty
+	pickup["alloy_given"]=EncounterRules.chest_alloy(arena.room.room_index,difficulty)
+	preload("res://scripts/resource_drop.gd").spawn(arena,pickup.node.position,int(pickup.alloy_given),"alloy")
 ## The chest blueprint is its own reward (author, 4 Oct 2026): it no longer takes the place of a card. It is
 ## rolled once per chest and drops on the ground next to it.
 func chest_recipe()->Dictionary:
@@ -357,11 +364,8 @@ func effective_bonus_level(id:String)->int:return Game.bonus_level(id)+int(arena
 
 func prepare_upgrade_offers():
 	if arena.room.upgrade_offers.is_empty():
+		# Upgrade cards only (T-267): guns come from the weapon crate, the vending machines and the field.
 		var offers=RunUpgrades.roll_offers(arena,3)
-		# At the flag the first card offers switching to another unlocked weapon.
-		if arena.room.next_is_room and not offers.is_empty():
-			var alternatives=Game.weapon_unlocks.filter(func(id):return id!=arena.run.weapon)
-			if not alternatives.is_empty():offers[0]={"id":alternatives[arena.run.combat_rng.randi_range(0,alternatives.size()-1)],"tier":arena.room.difficulty}
 		for offer in offers:arena.room.upgrade_offers.append(offer)
 
 func upgrade_card(offer:Dictionary)->Dictionary:

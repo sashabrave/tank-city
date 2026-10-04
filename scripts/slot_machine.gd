@@ -3,8 +3,15 @@ extends Node3D
 ## merchant (2026-10-03) so any upgrade room can host it. Outcomes come from the run's combat RNG; the reels animate
 ## on their own visual RNG (scripts/ui/slot_window.gd).
 const PRICE:=2
-## Outcomes and weights: fewer blanks, alloy and an ammo box; a card is at least rare, an epic one is the jackpot.
-const TABLE:=[["empty",30],["tokens",18],["heal",8],["alloy",16],["ammo",14],["card1",10],["card2",4]]
+## Outcomes and weights (T-263, author 4 Oct: «карточки прокачки рандомные выпадать часто, остальное по редкости»):
+## a run upgrade card in almost every second pull, the rarer the card the rarer the prize; the epic one is the jackpot.
+const TABLE:=[["card0",26],["card1",14],["card2",4],["tokens",12],["alloy",10],["ammo",10],["heal",8],["empty",16]]
+const PRIZE_NAMES:={"card0":"Обычная карточка","card1":"Редкая карточка","card2":"Эпическая карточка","tokens":"Жетоны вдвойне","alloy":"Сплав","ammo":"Особые боеприпасы","heal":"Полное лечение","empty":"Пусто"}
+## The prize table as the slot window shows it: [outcome, name, chance in %].
+static func prizes()->Array:
+	var total=0
+	for outcome in TABLE:total+=outcome[1]
+	return TABLE.map(func(o):return [o[0],PRIZE_NAMES[o[0]],roundi(100.0*o[1]/total)])
 var room:Node3D
 var arena
 var modal:Control
@@ -40,7 +47,7 @@ func pull(ui_root:Control,done:Callable)->String:
 	var line=play()
 	Game.progression.event("slot_play")
 	if ui_root:
-		modal=preload("res://scripts/ui/slot_window.gd").new().setup(last_slot,line);ui_root.add_child(modal)
+		modal=preload("res://scripts/ui/slot_window.gd").new().setup(last_slot,line,prizes());ui_root.add_child(modal)
 		modal.finished.connect(func():modal=null;done.call())
 	else:done.call()
 	return line
