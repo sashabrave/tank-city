@@ -34,7 +34,7 @@ extends Resource
 @export_range(1,20,1) var supplies_cap:int=3
 @export_range(1,20,1) var insurance_cap:int=4
 @export_range(1,50,1) var weapon_level_cap:int=10
-@export_range(1,20,1) var bonus_level_cap:int=3
+@export_range(1,20,1) var bonus_level_cap:int=5
 @export_range(1,20,1) var hq_level_cap:int=5
 @export_range(1,20,1) var vehicle_equipment_cap:int=5
 @export_group("Жетоны — валюта забега для торговца")

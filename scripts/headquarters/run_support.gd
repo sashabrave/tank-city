@@ -151,6 +151,24 @@ func readiness(id:String)->float:
 	var total=HQCatalog.interval(id,level(id))
 	return clampf(1.0-remaining/maxf(total,.01),0,1)
 func loadout()->Array:return modules
+## Sandbox (T-303): put on exactly these modules now, in this order; new ones start ready, the HQ health follows.
+func equip_modules(ids:Array):
+	var oldmax=max_hp();var before=modules.duplicate()
+	modules=HQCatalog.migrate_ids(ids)
+	for id in modules:
+		if id not in before:timers[id]=HQCatalog.interval(id,level(id)) if id=="hq_medbay" else 0.0
+	if "hq_medpost" in modules and "hq_medpost" not in before:medpost_stock=HQCatalog.medpost_stock(level("hq_medpost"))
+	if "hq_field" not in modules:shield_time=0;clear_dome()
+	refit_health(oldmax)
+## Sandbox (T-303): every module at this level.
+func set_all_levels(value:float):
+	var oldmax=max_hp()
+	for id in HQCatalog.DATA:levels[id]=value
+	medpost_stock=HQCatalog.medpost_stock(level("hq_medpost"))
+	refit_health(oldmax)
+func refit_health(oldmax:float):
+	arena.base_max_hp=max_hp();arena.base_hp=clampf(arena.base_hp+maxf(0,max_hp()-oldmax),0,arena.base_max_hp)
+	if is_instance_valid(arena.base_bar):arena.base_bar.set_health(arena.base_hp,arena.base_max_hp)
 func offers(_at_service:bool=false)->Array:
 	var result=[];var equipped=loadout()
 	for id in equipped:

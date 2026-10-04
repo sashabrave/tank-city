@@ -32,6 +32,8 @@ var pause_button: Button
 var last_size=Vector2.ZERO
 var intercept_label: Label
 var skill_buttons:Array=[]
+## HQ modules as round icons at the end of the ability row (T-299).
+var hq_strip:Control
 var weapon_bars:Control
 var transport_panel:Panel
 var transport_title:Label
@@ -100,7 +102,7 @@ func _ready():
 		var display=preload("res://scripts/ui/skill_display.gd").new();display.name="CooldownDisplay";button.add_child(display);button.move_child(display,0)
 		display.action=Game.ability_action(i)
 		button.get_node("Icon").position=Vector2(14,14);button.get_node("Icon").size=Vector2(48,48)
-	var support_ui=preload("res://scripts/headquarters/battle_panel.gd").new();support_ui.arena=arena;root.add_child(support_ui)
+	hq_strip=preload("res://scripts/headquarters/battle_panel.gd").new();hq_strip.name="HQModules";hq_strip.arena=arena;root.add_child(hq_strip)
 	var tracker=preload("res://scripts/progression/quest_tracker.gd").new();tracker.hud=self;root.add_child(tracker)
 
 	biome_panel=UiKit.panel(root,Vector2(20,320),Vector2(235,78))
@@ -127,8 +129,11 @@ func _process(_delta):
 	if refresh_elapsed<.05:return
 	refresh_elapsed=0.0
 	update_challenge_timer()
-	var hero_count=arena.abilities.slots.size();var total=hero_count
-	var strip=root.get_node("Skills");strip.set_anchors_preset(Control.PRESET_TOP_LEFT);strip.position=Vector2((get_viewport().get_visible_rect().size.x-(total*88-12))*.5,get_viewport().get_visible_rect().size.y-112);strip.size=Vector2(maxi(0,hero_count*88-12),76)
+	var hero_count=arena.abilities.slots.size()
+	# The row is centred as a whole: hero tiles, then the round HQ module icons (T-299).
+	var tiles_w=maxi(0,hero_count*88-12);var total_w=tiles_w+hq_strip.strip_width(arena,hero_count>0)
+	var strip=root.get_node("Skills");strip.set_anchors_preset(Control.PRESET_TOP_LEFT);strip.position=Vector2((get_viewport().get_visible_rect().size.x-total_w)*.5,get_viewport().get_visible_rect().size.y-112);strip.size=Vector2(tiles_w,76)
+	hq_strip.strip_origin=strip.position+Vector2(tiles_w+(hq_strip.GAP if hero_count>0 else 0.0),0);hq_strip.strip_height=76.0
 	for i in range(skill_buttons.size()):skill_buttons[i].visible=i<hero_count
 	var data=preload("res://scripts/ui/battle_snapshot.gd").capture(arena)
 	boss_bar.hide();boss_title.hide();boss_bar2.hide();boss_title2.hide()

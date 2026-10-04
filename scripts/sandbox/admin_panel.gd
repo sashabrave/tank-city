@@ -5,7 +5,7 @@ extends CanvasLayer
 signal exit_requested
 const ENEMIES=[["soldier","Стрелок"],["grenadier","Гранатомётчик"],["shield","Щитовой"],["sniper","Снайпер"],["buggy","Багги"],["apc","БТР"],["tank","Танк"],["mortar","Миномёт"],["drone","Дрон"],["flyer","Летающий"]]
 const SIZES=[13,15,17,19,21,23,25]
-const TABS=[["field","Поле"],["class","Класс"],["enemies","Враги"],["bonuses","Бонусы"],["cards","Карты"],["stats","Статы"],["kit","Снаряжение"],["gear","Техника"],["challenges","Испытания"]]
+const TABS=[["field","Поле"],["class","Класс"],["enemies","Враги"],["bonuses","Бонусы"],["cards","Карты"],["stats","Статы"],["kit","Снаряжение"],["gear","Техника"],["hq","Штаб"],["challenges","Испытания"]]
 var tuning=""  # «Класс»: the ability whose cooldown/power sliders are shown
 var ability_slot=0  # sandbox «Снаряжение»: which slot (Q, F) an ability button fills
 var arena
@@ -58,7 +58,9 @@ func render():
 	for child in body.get_children():body.remove_child(child);child.queue_free()
 	section=null
 	for child in panel.get_children():
-		if child.name.begins_with("Tab_"):child.add_theme_stylebox_override("normal",UiKit.style(Color("584a2c") if child.name=="Tab_"+tab else Color("2c352e"),6))
+		if child.name.begins_with("Tab_"):
+			child.add_theme_stylebox_override("normal",UiKit.style(Color("584a2c") if child.name=="Tab_"+tab else Color("2c352e"),6))
+			child.add_theme_color_override("font_color",UiKit.INK)  # the tab chosen at open was built as primary: dark text on brown
 	var grid=GridContainer.new();grid.name="AdminGrid";body.add_child(grid);grid.columns=clampi(int((body.custom_minimum_size.x+10)/(BUTTON_MIN+10)),1,4);grid.size_flags_horizontal=Control.SIZE_EXPAND_FILL;grid.add_theme_constant_override("h_separation",10);grid.add_theme_constant_override("v_separation",10)
 	match tab:
 		"field":
@@ -155,6 +157,19 @@ func render():
 			header(grid,"Оружие")
 			for id in Game.LOOT.WEAPONS:
 				var weapon=id;action(grid,Game.LOOT.WEAPONS[id].name,func():arena.run.weapon=weapon;RunUpgrades.refresh_player(arena);render(),arena.run.weapon==id)
+		"hq":
+			# T-303: any HQ module, unlocked or not, on and off at once; the ability row and the HQ follow.
+			var hq=arena.headquarters
+			header(grid,"Модули штаба · надеты: %d" % hq.modules.size())
+			for id in HQCatalog.DATA:
+				var module=id;var on=id in hq.modules
+				var b=action(grid,HQCatalog.DATA[id].name+(" ✓" if on else ""),func():toggle_module(module),on);b.name="HQ_"+id
+				b.tooltip_text=Texts.render(HQCatalog.DATA[id].description)
+			action(grid,"Все модули",func():hq.equip_modules(HQCatalog.DATA.keys());render()).name="HQAll"
+			action(grid,"Без модулей",func():hq.equip_modules([]);render()).name="HQNone"
+			header(grid,"Уровень всех модулей")
+			for lv in [0,1,3,5,10]:
+				var value=lv;action(grid,"Уровень %d" % lv,func():hq.set_all_levels(value);render(),is_equal_approx(hq.level(HQCatalog.DATA.keys()[0]),lv) and HQCatalog.DATA.keys().all(func(k):return is_equal_approx(hq.level(k),lv)))
 		"challenges":
 			header(grid,"Звёзды")
 			for d in range(3):
@@ -162,6 +177,12 @@ func render():
 			header(grid,"Запустить")
 			for mode in RoutePlan.CHALLENGES:
 				var id=mode;action(grid,ChallengeRooms.TITLES.get(mode,mode),func():rebuild({"mode":id}))
+## HQ module on or off in the sandbox (T-303): a new one goes to the end of the row.
+func toggle_module(id:String):
+	var hq=arena.headquarters;var next:Array=hq.modules.duplicate()
+	if id in next:next.erase(id)
+	else:next.append(id)
+	hq.equip_modules(next);arena.toast(Texts.render("Модуль надет" if id in next else "Модуль снят")+": "+Texts.render(HQCatalog.DATA[id].name));render()
 ## Class switch: the soldier respawns as that class, its abilities fill the slots.
 func switch_class(id:String):
 	Game.selected_class=id;arena.abilities.setup();respawn();refresh_skill_icons()

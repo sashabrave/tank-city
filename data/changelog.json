@@ -40,7 +40,13 @@
 					"Прежние модули штаба перешли в новые без потерь: Ремонтный импульс и Техснабжение → Ремонт, Эми-разряд и Активная защита → Оборона; уровни — по лучшему из слитых.",
 					"Клавиши V больше нет: без оружия или без боеприпасов Пробел бьёт лапой или прикладом, над героем — маленькая подсказка «Возьми оружие» / «Нет боеприпасов».",
 					"Аптечек в рюкзаке и клавиши H больше нет: аптечка лечит сразу при подборе, а при полном здоровье остаётся лежать.",
-					"Хаб: правая часть с полигоном и стоянкой стала спокойной — там больше не ходят коты и не пролетает дрон. Колонны и патрули на дороге перед заставой остались."
+					"Хаб: правая часть с полигоном и стоянкой стала спокойной — там больше не ходят коты и не пролетает дрон. Колонны и патрули на дороге перед заставой остались.",
+					"Видеозвонок майора: кнопка «Дальше» сразу в фокусе — Enter или кнопка геймпада листают разговор без мыши.",
+					"«Связь» → «Сообщения»: новые сообщения отмечены точкой в правом верхнем углу карточки, как новинки в других окнах.",
+					"Арсенал: вкладки «Оружие · Гаджеты · Бонусы» — в ряд сверху окна, гаджеты поднялись на второе место.",
+					"Бонусы поля прокачиваются до 5 уровней (было 3): цены 95 → 170 → 240 → 310 → 380 сплава, +10% силы за уровень.",
+					"Модули штаба в бою — круглые значки в конце ряда способностей внизу, с кольцом готовности; у Медпункта под кругом полоска запаса. Над штабом остались только всплывающие подписи срабатываний.",
+					"Песочница: в админке (F2) новая вкладка «Штаб» — любые модули штаба надеваются и снимаются сразу, есть «Все модули», «Без модулей» и уровень всех модулей."
 				]
 			},
 			"en": {
@@ -80,7 +86,13 @@
 					"Old HQ modules moved into the new ones with nothing lost: Repair pulse and Tech supply → Repair, EMP burst and Active defence → Defence; levels take the best of the merged ones.",
 					"No more V key: with no weapon or no ammo, Space strikes with paws or the gun butt, and a small hint «Pick up a weapon» / «No ammo» shows over the hero.",
 					"No more medkits in the backpack and no H key: a medkit heals at once on pickup and stays on the ground at full health.",
-					"Hub: the right side with the range and parking is calm now — no cats wandering and no drone flying over. Convoys and patrols on the road in front of the outpost remain."
+					"Hub: the right side with the range and parking is calm now — no cats wandering and no drone flying over. Convoys and patrols on the road in front of the outpost remain.",
+					"Major's video call: the «Next» button is focused at once — Enter or a gamepad button moves the talk on without the mouse.",
+					"«Comms» → «Messages»: new messages carry a dot in the top-right corner of the card, like new items in other windows.",
+					"Arsenal: the «Weapons · Gadgets · Bonuses» tabs sit in a row at the top of the window; gadgets moved up to second place.",
+					"Field bonuses level up to 5 (was 3): prices 95 → 170 → 240 → 310 → 380 alloy, +10% power per level.",
+					"HQ modules in battle are round icons at the end of the ability row at the bottom, with a readiness ring; the Medical post shows its stock as a bar under the circle. Only the pop-up captions of triggers stay over the HQ.",
+					"Sandbox: the admin panel (F2) has a new «HQ» tab — any HQ module goes on and off at once, plus «All modules», «No modules» and the level of all modules."
 				]
 			}
 		},

@@ -377,7 +377,7 @@ func apply_profile(data:Dictionary):
 			if id!="pistol" and (id in data.get("weapon_unlocks",[]) or (id=="sniper" and "heavy" in data.get("weapon_unlocks",[]))):weapon_unlocks.append(id)
 		for id in LOOT.BONUSES:
 			if id!="heart" and id in data.get("bonus_unlocks",[]):bonus_unlocks.append(id)
-			bonus_levels[id]=clampi(int(data.get("bonus_levels",{}).get(id,0)),0,3)
+			bonus_levels[id]=clampi(int(data.get("bonus_levels",{}).get(id,0)),0,Balance.CONFIG.economy.bonus_level_cap)
 
 		ammo_slot_weapons=data.get("ammo_slot_weapons",[]).filter(func(id):return str(id) in weapon_unlocks).map(func(id):return str(id))
 		selected_weapon=str(data.get("selected_weapon","pistol"));selected_weapon="sniper" if selected_weapon=="heavy" else selected_weapon

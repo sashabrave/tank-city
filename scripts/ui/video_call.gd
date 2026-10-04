@@ -127,7 +127,9 @@ func _ready():
 		t.parallel().tween_method(func(_v):layout(),0.0,1.0,.3)
 	Game.sound("telegram_accept",self)
 	if not replay:Game.notifications.post("Видеосвязь: "+MAJOR)
-	# No button is focused on open: a stray Space/Enter/E from the game must not skip the first line (T-048).
+	# «Дальше» takes keyboard/gamepad focus at once (T-290); a stray Space/Enter/E from the game still cannot skip
+	# the first line: advance() ignores presses during the first 0.6 s, then the first press only completes the reveal (T-048).
+	next_button.grab_focus.call_deferred()
 
 func layout():
 	const PAD=24.0

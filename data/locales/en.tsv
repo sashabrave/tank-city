@@ -2238,7 +2238,7 @@ E — в хаб	E — to the hub
 Новое	New
 Техника к старту вылазки: багги → БТР → танк.	Vehicles for the start of a run: buggy → APC → tank.
 Поддержка, оборона, страховка, постройки.	Support, defence, insurance, buildings.
-Оружие, бонусы, гаджеты. Чертёж открывает, сплав прокачивает.	Weapons, bonuses, gadgets. Blueprints unlock, alloy upgrades.
+Оружие, гаджеты, бонусы. Чертёж открывает, сплав прокачивает.	Weapons, gadgets, bonuses. Blueprints unlock, alloy upgrades.
 Классы, выучка, снабжение — на все вылазки.	Classes, training, supply — for every run.
 Сплав — покупки и прокачка. При выбывании теряется часть добытого за вылазку.	Alloy — purchases and upgrades. A knockout loses part of what the run earned.
 Документы — открытия и исследования.	Documents — unlocks and research.
@@ -3431,6 +3431,12 @@ Q · есть сразу	Q · from the start
 Лечит героя пешком в 3 клетках от штаба: по 1 здоровью из запаса, пустой запас перезаряжается	Heals the hero on foot within 3 cells of the HQ: 1 health at a time from a stock; an empty stock recharges
 Враг в 3 клетках от штаба — разряд: урон и оглушение всем рядом, вражеские снаряды сгорают	An enemy within 3 cells of the HQ sets off a pulse: damage and stun to everyone near, enemy rounds burn up
 После попадания в штаб — купол: штаб не получает урона, пока купол стоит	After a hit on the HQ a dome rises: the HQ takes no damage while it stands
-Модули штаба выбираются и улучшаются на верстаке штаба. Кнопки у штаба нет: модуль срабатывает сам по своему правилу. Аптечка — аптечка у штаба по таймеру; Броня — прочность; Ремонт — чинит штаб после 5 с без попаданий и машину рядом; Медпункт — лечит героя рядом из запаса; Оборона — разряд по врагам у штаба; Купол — после попадания штаб недолго неуязвим. Значки модулей с кольцом готовности видны над штабом.	HQ modules are picked and upgraded at the HQ workbench. The HQ has no key: a module works on its own by its rule. Medkit — a medkit by the HQ on a timer; Armor — durability; Repair — repairs the HQ after 5 s without hits and a vehicle nearby; Medical post — heals the hero nearby from a stock; Defence — a pulse at enemies near the HQ; Dome — after a hit the HQ is briefly invulnerable. Module icons with a readiness ring show above the HQ.
+Модули штаба выбираются и улучшаются на верстаке штаба. Кнопки у штаба нет: модуль срабатывает сам по своему правилу. Аптечка — аптечка у штаба по таймеру; Броня — прочность; Ремонт — чинит штаб после 5 с без попаданий и машину рядом; Медпункт — лечит героя рядом из запаса; Оборона — разряд по врагам у штаба; Купол — после попадания штаб недолго неуязвим. Модули видны круглыми значками с кольцом готовности в конце ряда способностей внизу экрана.	HQ modules are picked and upgraded at the HQ workbench. The HQ has no key: a module works on its own by its rule. Medkit — a medkit by the HQ on a timer; Armor — durability; Repair — repairs the HQ after 5 s without hits and a vehicle nearby; Medical post — heals the hero nearby from a stock; Defence — a pulse at enemies near the HQ; Dome — after a hit the HQ is briefly invulnerable. Modules show as round icons with a readiness ring at the end of the ability row at the bottom of the screen.
 Аптечка лечит героя сразу при подборе (при полном здоровье остаётся лежать). Броня ремонтирует машину, в которой ты находишься. Ремонт базы восстанавливает штаб. Эти три эффекта лечат разные цели и не заменяют друг друга.	A medkit heals the hero at once on pickup (at full health it stays on the ground). Armor repairs the vehicle you are in. Base repair restores the HQ. These three heal different targets and do not replace each other.
 Пусть модуль штаба сработает в бою три раза.	Let an HQ module work in battle three times.
+Модули штаба · надеты: %d	HQ modules · equipped: %d
+Все модули	All modules
+Без модулей	No modules
+Уровень всех модулей	Level of all modules
+Модуль надет	Module equipped
+Модуль снят	Module removed
