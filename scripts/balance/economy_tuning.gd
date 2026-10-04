@@ -5,8 +5,8 @@ extends Resource
 @export_range(0,1000,1) var upgrade_base_cost:int=10
 @export_range(0,1000,1) var upgrade_step_cost:int=3
 ## Buildings: Арсенал (weapons), Стоянка (garage), Полигон (range); Штаб (headquarters) is set in Game._ready.
-@export var building_costs:Dictionary={"weapons":120,"garage":120,"range":72}
-@export var branch_unlock_costs:Dictionary={"health":0,"damage":168,"base":120,"heal":120,"recovery":168,"turret":144,"mobility":144,"rarity":216,"luck":144,"supplies":120}
+@export var building_costs:Dictionary={"weapons":120,"garage":120,"range":70}
+@export var branch_unlock_costs:Dictionary={"health":0,"damage":170,"base":120,"heal":120,"recovery":170,"turret":140,"mobility":140,"rarity":220,"luck":140,"supplies":120}
 @export_group("Дроп — вероятность от 0 до 1")
 @export_range(0,1,0.001) var heart_chance:float=0.06
 @export_range(0,1,0.001) var bonus_chance:float=0.12

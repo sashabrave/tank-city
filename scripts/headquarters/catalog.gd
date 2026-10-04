@@ -12,7 +12,7 @@ const DATA={
 "hq_emp":{"name":"Эми-разряд","mode":"active","rarity":2,"base":4,"score":15,"icon":"freeze","description":"2: 4 урона и 2 с оглушения врагам рядом. Кулдаун 45 с."}}
 const DEFAULT_UNLOCKS=["hq_medbay","hq_plating","hq_patch"]
 static func available(id:String)->bool:return id in Game.hq_unlocks and id in DATA
-static func permanent_cost(id:String)->int:return roundi((180+DATA[id].rarity*180)*pow(1.85,int(Game.hq_levels.get(id,0))))
+static func permanent_cost(id:String)->int:return Game.nice_price(roundi((180+DATA[id].rarity*180)*pow(1.85,int(Game.hq_levels.get(id,0)))))
 static func cap()->int:return Balance.CONFIG.economy.hq_level_cap
 static func interval(id:String,level:float)->float:
 	return maxf({"hq_medbay":45.0,"hq_supply":40.0,"hq_regen":8.0,"hq_interceptor":7.0,"hq_tesla":9.0,"hq_patch":25.0,"hq_field":30.0,"hq_emp":24.0}.get(id,1.0),{"hq_medbay":90.0,"hq_supply":70.0,"hq_regen":14.0,"hq_interceptor":14.0,"hq_tesla":18.0,"hq_patch":50.0,"hq_field":55.0,"hq_emp":45.0}.get(id,1.0)-level*{"hq_medbay":8.0,"hq_supply":7.0}.get(id,2.0))

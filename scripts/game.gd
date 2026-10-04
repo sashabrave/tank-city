@@ -90,7 +90,13 @@ var BUILD_COST=Balance.CONFIG.economy.building_costs
 ## The yard outside the hangar is bought first (alloy, no blueprint); the parking and the range stand on it.
 const YARD_COST=150
 const BUILDING_REQUIRES={"garage":"yard","range":"yard"}
-func building_cost(id:String)->int:return YARD_COST if id=="yard" else int(BUILD_COST.get(id,0))
+## Shop prices read as round numbers (author, 2026-10-03): to 5 under 100, to 10 under 1000, to 50 under 5000,
+## to 100 above. Small token prices (under 20) stay exact. Every alloy price formula passes through here.
+static func nice_price(value:int)->int:
+	if value<20:return value
+	var step=5 if value<100 else 10 if value<1000 else 50 if value<5000 else 100
+	return maxi(step,roundi(float(value)/step)*step)
+func building_cost(id:String)->int:return nice_price(YARD_COST if id=="yard" else int(BUILD_COST.get(id,0)))
 func building_known(id:String)->bool:return id=="yard" or id in research_unlocks
 ## Missing prerequisite building ("" when none).
 func building_blocker(id:String)->String:
@@ -151,7 +157,7 @@ func character_level()->int:
 func shell_refund()->int:
 	var refund=0
 	for branch in ["health","damage","mobility","pressure"]:
-		for n in range(level(branch)):refund+=ceili(shell_raw_cost(branch,n)*1.2)
+		for n in range(level(branch)):refund+=nice_price(ceili(shell_raw_cost(branch,n)*1.2))
 	return refund
 
 func reset_shell()->int:
@@ -451,11 +457,11 @@ func bank_recipes(pending: Array):
 		if recipe.id not in owned:owned.append(recipe.id);new_recipes.append(recipe.duplicate(true))
 		else:duplicate_recipes.append({"category":recipe.category,"id":recipe.id})
 	pending.clear();save_progress()
-func bag_cost() -> int:return ceili(72*pow(2,backpack_slots-1))
+func bag_cost() -> int:return nice_price(ceili(72*pow(2,backpack_slots-1)))
 func upgrade_backpack() -> bool:
 	if backpack_slots>=Backpack.MAX_BOUGHT or credits<bag_cost():return false
 	credits-=bag_cost();backpack_slots+=1;save_progress();return true
-func reroll_cost() -> int:return roundi(96*pow(1.7,reroll_level))
+func reroll_cost() -> int:return nice_price(roundi(96*pow(1.7,reroll_level)))
 func upgrade_rerolls() -> bool:
 	if "reroll" not in research_unlocks or reroll_level>=5 or credits<reroll_cost():return false
 	credits-=reroll_cost();reroll_level+=1;save_progress();return true
@@ -511,7 +517,7 @@ func buy_special(id:String)->bool:
 func special_cost(id:String)->int:
 	match id:
 		"slots":return -1
-		"rescue":return 144+rescue_level*120 if rescue_level<10 and "rescue" in research_unlocks else -1
+		"rescue":return nice_price(144+rescue_level*120) if rescue_level<10 and "rescue" in research_unlocks else -1
 		"shield":return -1
 	return -1
 const CLASS_SKILLS={"recruit":"grenade","gunner":"dynamite","driver":"field_repair","marksman":"cloak","engineer":"ally_drone","heavy":"shield"}
@@ -538,7 +544,7 @@ func class_upgrade_cost(id:String,special:bool)->int:
 	var upgrade_level=int((specializations if special else class_levels).get(id,0))
 	if special:return -1 if upgrade_level>=3 else ceili((2+upgrade_level)*1.2)*DOC_ALLOY
 	# 0.8.0: geometric ladder, 100 ◈ ×1.32 per level; levels 1→7 cost ≈1340 in total (near the world 1 general).
-	return -1 if upgrade_level>=ClassCatalog.MAX_LEVEL-1 else roundi(100.0*pow(1.32,upgrade_level))
+	return -1 if upgrade_level>=ClassCatalog.MAX_LEVEL-1 else nice_price(roundi(100.0*pow(1.32,upgrade_level)))
 func upgrade_class(id:String,special:bool)->bool:
 	if id not in class_unlocks:return false
 	var price=class_upgrade_cost(id,special)
@@ -594,19 +600,19 @@ func set_all_recipes(unlocked:bool):
 
 func health_upgrade_bonus()->int:return health_level*2
 
-func cost(branch:String)->int:return ceili(raw_cost(branch)*1.2)
+func cost(branch:String)->int:return nice_price(ceili(raw_cost(branch)*1.2))
 ## Permanent upgrades are limited by price and fixed caps from economy.tres; there is no base level gate.
 func upgrade_cap(branch:String)->int:return 2147483647 if branch in ["health","damage","mobility","pressure"] else Balance.CONFIG.economy.supplies_cap if branch=="supplies" else Balance.CONFIG.economy.branch_cap
-func bonus_cost(id:String)->int:return ceili((80+60*bonus_level(id))*1.2)
+func bonus_cost(id:String)->int:return nice_price(ceili((80+60*bonus_level(id))*1.2))
 func death_loss_fraction(insurance:int=-1)->float:
 	var e=Balance.CONFIG.economy;return maxf(e.death_loss_floor,e.death_loss-(progression.insurance if insurance<0 else insurance)*.05)
-func insurance_cost()->int:return roundi(180*pow(1.5,progression.insurance))
+func insurance_cost()->int:return nice_price(roundi(180*pow(1.5,progression.insurance)))
 func buy_insurance()->bool:
 	if progression.insurance>=Balance.CONFIG.economy.insurance_cap or credits<insurance_cost():return false
 	credits-=insurance_cost();progression.insurance+=1;save_progress();return true
 func weapon_level(id:String)->int:return int(progression.weapon_levels.get(id,0))
 func weapon_factor(id:String)->float:return 1.0+weapon_level(id)*.04  # 0.8: +4% per level (was 1.5%, a weak mid-game buy)
-func weapon_upgrade_cost(id:String)->int:return roundi(350*pow(1.65,weapon_level(id)))
+func weapon_upgrade_cost(id:String)->int:return nice_price(roundi(350*pow(1.65,weapon_level(id))))
 func upgrade_weapon(id:String)->bool:
 	if "weapons" not in built_workshops or id not in weapon_unlocks or weapon_level(id)>=Balance.CONFIG.economy.weapon_level_cap or credits<weapon_upgrade_cost(id):return false
 	credits-=weapon_upgrade_cost(id);progression.weapon_levels[id]=weapon_level(id)+1;save_progress();return true
@@ -692,7 +698,7 @@ func class_health_bonus()->float:return 0.0
 func class_pressure_bonus()->float:return 0.0
 
 func gadget_cost(id:String)->int:return 35 if id=="barrier" else 100 if id=="mine" else 240
-func hq_purchase_cost(id:String)->int:return 60 if id=="hq_medbay" else 90+HQCatalog.DATA[id].rarity*120
+func hq_purchase_cost(id:String)->int:return nice_price(60 if id=="hq_medbay" else 90+HQCatalog.DATA[id].rarity*120)
 
 func mobility_multiplier()->float:return 1.0+.35*mobility_level/(70.0+mobility_level)
 func shell_pressure_bonus()->float:return .2*pressure_level/(20.0+pressure_level)

@@ -16,7 +16,7 @@ func restore(data:Dictionary):
 			var id=kind+"_"+branch;levels[id]=clampi(int(data.get("levels",{}).get(id,0)),0,5)
 func level(kind:String,branch:String)->int:return int(levels.get(kind+"_"+branch,0))
 func cap(_kind:String)->int:return Balance.CONFIG.economy.vehicle_equipment_cap
-func cost(kind:String,branch:String)->int:return roundi((240 if kind=="buggy" else 650 if kind=="apc" else 1400)*pow(1.8,level(kind,branch)))
+func cost(kind:String,branch:String)->int:return Game.nice_price(roundi((240 if kind=="buggy" else 650 if kind=="apc" else 1400)*pow(1.8,level(kind,branch))))
 func can_buy(kind:String)->bool:
 	if kind not in GarageCatalog.VEHICLES or "garage" not in Game.built_workshops:return false
 	var v=GarageCatalog.VEHICLES[kind]

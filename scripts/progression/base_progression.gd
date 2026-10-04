@@ -53,7 +53,7 @@ func restore(data:Dictionary):
 		telegram["runs_left"]=telegram.get("runs_left",3);telegram["run_limit"]=telegram.get("run_limit",3)
 		telegram["hint"]=telegram.get("hint","Выполни приказ за несколько вылазок. Сдай в командном центре.")
 func required_xp()->int:return roundi(120*pow(level,1.45))
-func level_cost()->int:return roundi(500*pow(level,1.6))
+func level_cost()->int:return Game.nice_price(roundi(500*pow(level,1.6)))
 func upgrade()->bool:
 	if xp<required_xp() or Game.credits<level_cost():return false
 	xp-=required_xp();Game.credits-=level_cost();level+=1

@@ -28,7 +28,7 @@ static func level(id:String)->int:
 	if def.meta_field!="":return int(Game.get(def.meta_field))
 	return int(Game.stat_levels.get(id,0))
 static func cost(id:String)->int:
-	var def=get_def(id);return def.cost_base+def.cost_step*level(id)
+	var def=get_def(id);return Game.nice_price(def.cost_base+def.cost_step*level(id))
 static func unlocked(id:String)->bool:
 	var def=get_def(id)
 	return def!=null and (def.requires=="" or level(def.requires)>=def.requires_level)
