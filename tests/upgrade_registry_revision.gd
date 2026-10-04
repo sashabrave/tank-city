@@ -145,9 +145,9 @@ func effect_cards_checks():
 	check(is_equal_approx(CombatMods.outgoing(arena,probe,tank),1.0),"station EMP alone adds no damage to machines");probe.free()
 	for id in ["burn_heat","burn_long","chain_fire","stun_long","stun_often","crit_stun","shock_overload","shock_short","shock_arc"]:
 		check(not RunUpgrades.eligible(arena,UpgradeRegistry.get_def(id)),id+" waits for its base card")
-	for id in ["burn","stun","shock"]:check(RunUpgrades.eligible(arena,UpgradeRegistry.get_def(id)),id+" base card is offered")
+	for id in ["burn","stun","shock"]:check(not RunUpgrades.eligible(arena,UpgradeRegistry.get_def(id)),id+" box is no card (T-292: machines, crates and enemies)")
 	RunUpgrades.apply(arena,"burn",0)
-	check(Ammo.active(run)=="burn","base card loads incendiary ammo")
+	check(Ammo.active(run)=="burn","loading the box (admin or an old saved offer) loads incendiary ammo")
 	check(RunUpgrades.eligible(arena,UpgradeRegistry.get_def("burn_heat")) and RunUpgrades.eligible(arena,UpgradeRegistry.get_def("chain_fire")),"fire enhancements open after the base card")
 	check(not RunUpgrades.eligible(arena,UpgradeRegistry.get_def("stun_long")),"other effects stay closed")
 	var enemy=arena.spawn_actor("soldier",Vector2i(3,1),false);enemy.set_physics_process(false);enemy.hp=999;enemy.max_hp=999

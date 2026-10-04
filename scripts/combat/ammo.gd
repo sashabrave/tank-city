@@ -36,6 +36,30 @@ const TWISTS={"burn":"Горящие враги поджигают соседе�
 const ART={"explosive":"upgrades/legend_detonator","ap":"upgrades/pierce","ricochet":"upgrades/legend_ricochet","cryo":"pickups/freeze","cluster":"abilities/grenade","napalm":"upgrades/burn_long"}
 ## Arsenal price of the second slot for a weapon (alloy).
 const SLOT_PRICE=600
+## Enemy ammo (T-292, 4 Oct 2026): ammo boxes are no upgrade cards; enemies carry them and sometimes drop one —
+## one box per drop, lying where the enemy fell (E / C card). Chance per kill by room difficulty (—, ★, ★★; a boss
+## field counts as ★★), veterans (rank 2+) ×1.5, a commander a flat 25%, the Gunner class ×2, marauder luck on top.
+## Drones carry nothing. Rolled on run.combat_rng.
+const DROP_CHANCE=[.015,.025,.04]
+const DROP_VETERAN=1.5
+const DROP_COMMANDER=.25
+const DROP_CLASS={"gunner":2.0}
+## Rarity weights [обычные, редкие, эпические, легендарные] by drop level = stage band (progress 0-1, 2-3, 4-5, 6+;
+## endless 3) + room difficulty (0-2) + 1 for a commander, capped at 5: harder fields carry rarer ammo.
+const DROP_RARITY=[[90,10,0,0],[78,19,3,0],[65,27,7,1],[52,33,12,3],[40,38,17,5],[30,40,22,8]]
+static func drop_chance(difficulty:int,rank:int,commander:bool,shell:String)->float:
+	var chance=DROP_COMMANDER if commander else float(DROP_CHANCE[clampi(difficulty,0,2)])*(DROP_VETERAN if rank>=2 else 1.0)
+	return chance*float(DROP_CLASS.get(shell,1.0))
+static func drop_level(stage:int,endless:bool,difficulty:int,commander:bool)->int:
+	var band=3 if endless else 0 if stage<2 else 1 if stage<4 else 2 if stage<6 else 3
+	return clampi(band+clampi(difficulty,0,2)+(1 if commander else 0),0,DROP_RARITY.size()-1)
+static func drop_rarity(rng:RandomNumberGenerator,level:int)->int:
+	var weights:Array=DROP_RARITY[clampi(level,0,DROP_RARITY.size()-1)]
+	var pick=rng.randi_range(0,99)
+	for r in range(weights.size()):
+		pick-=int(weights[r])
+		if pick<0:return r
+	return 0
 
 static func weapon_class(weapon:String)->String:
 	for key in CLASSES:

@@ -81,27 +81,32 @@ func run():
 	for offer in RunUpgrades.roll_offers(arena,3):
 		check(int(offer.tier)>=UpgradeRegistry.get_def(offer.id).min_tier,"card rarity respects its minimum: "+offer.id)
 	# Favourite family and attraction
-	Game.selected_class="gunner";run.upgrade_history.clear()
+	# T-292: ammo boxes are no cards, so the hit-effect family needs loaded ammo; the survival shell checks the pull.
+	Game.selected_class="heavy";run.upgrade_history.clear()
 	var first=RunUpgrades.roll_offers(arena,3)
-	check(UpgradeRegistry.get_def(first[0].id).family=="ammo","first offer holds the shell's favourite family")
-	var ammo_before=0;var ammo_after=0
+	check(UpgradeRegistry.get_def(first[0].id).family=="survival","first offer holds the shell's favourite family")
+	var family_before=0;var family_after=0
 	for i in range(300):
 		run.upgrade_history=[{"id":"damage","tier":0}]
-		for offer in RunUpgrades.roll_offers(arena,3):ammo_before+=int(UpgradeRegistry.get_def(offer.id).family=="ammo")
-		run.upgrade_history=[{"id":"burn","tier":0},{"id":"shock","tier":0},{"id":"stun","tier":0}]
-		for offer in RunUpgrades.roll_offers(arena,3):ammo_after+=int(UpgradeRegistry.get_def(offer.id).family=="ammo")
-	check(ammo_after>ammo_before,"taken family attracts its cards (%d → %d)" % [ammo_before,ammo_after])
+		for offer in RunUpgrades.roll_offers(arena,3):family_before+=int(UpgradeRegistry.get_def(offer.id).family=="survival")
+		run.upgrade_history=[{"id":"health","tier":0},{"id":"dodge","tier":0},{"id":"healing","tier":0}]
+		for offer in RunUpgrades.roll_offers(arena,3):family_after+=int(UpgradeRegistry.get_def(offer.id).family=="survival")
+	check(family_after>family_before,"taken family attracts its cards (%d → %d)" % [family_before,family_after])
+	check(UpgradeRegistry.all().filter(func(def):return def.id in Ammo.TYPES).all(func(def):return not RunUpgrades.eligible(arena,def,3)),"T-292: ammo boxes never come as cards")
 	# T-221: a commander/boss chest leans harder to the build — incendiary loaded: fire cards, not a concussion box.
 	var slots_before=run.ammo_slots.duplicate(true)
 	run.upgrade_history=[{"id":"burn","tier":0}];Ammo.ensure(run,arena.weapon);run.ammo_slots[0]=Ammo.roll("burn",0,3)
 	var pull=RunUpgrades.family_counts(arena)
 	var heat_def=UpgradeRegistry.get_def("burn_heat");var stun_box=UpgradeRegistry.get_def("stun")
-	check(RunUpgrades.attracted_weight(arena,heat_def,pull,true)>=2.9*RunUpgrades.attracted_weight(arena,heat_def,pull) and RunUpgrades.attracted_weight(arena,stun_box,pull,true)<RunUpgrades.attracted_weight(arena,stun_box,pull),"chest: fire improvement ×3+, other ammo box weaker")
+	check(RunUpgrades.attracted_weight(arena,heat_def,pull,true)>=2.9*RunUpgrades.attracted_weight(arena,heat_def,pull),"chest: fire improvement ×3+")
+	check(RunUpgrades.eligible(arena,heat_def,3) and not RunUpgrades.eligible(arena,stun_box,3),"T-292: loaded incendiary keeps «Жар» on offer, no ammo box card")
 	var fire_wave=0;var fire_chest=0
 	for i in range(200):
 		for offer in RunUpgrades.roll_offers(arena,2):fire_wave+=int(Ammo.type_of(offer.id)=="burn")
 		for offer in RunUpgrades.roll_offers(arena,2,true):fire_chest+=int(Ammo.type_of(offer.id)=="burn")
 	check(fire_chest>fire_wave*1.5,"chest offers more fire cards with incendiary loaded (%d → %d)" % [fire_wave,fire_chest])
+	run.upgrade_history.clear()
+	check(RunUpgrades.eligible(arena,heat_def,3),"T-292: a box from a machine, crate or enemy (no card in the history) opens its improvements")
 	run.ammo_slots=slots_before;run.upgrade_history.clear()
 	Game.selected_class="recruit"
 	# Flag cards

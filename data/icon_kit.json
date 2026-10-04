@@ -196,7 +196,6 @@
 		"wall": "bricks",
 		"turret": "turret",
 		"vehicle": "jeep",
-		"sniper": "trajectory",
 		"range": "trajectory",
 		"recovery": "vest",
 		"utility": "loot_sack",

@@ -16,22 +16,23 @@ static func stacks(arena,id:String)->int:
 
 static func eligible(arena,def:UpgradeDef,tier:int=3)->bool:
 	if def.weight<=0 or def.min_tier>tier:return false
-	# Ammo (T-109): a base ammo card is offered while that type is not loaded (it can come back after being
-	# swapped out); its improvements only while it is loaded.
-	# Ammo items (T-112) fit the weapon's ammo class and can drop again with a better roll.
-	if def.id in Ammo.TYPES:
-		if not Ammo.fits(def.id,str(arena.weapon)):return false
-		# A legendary box of this type is already loaded: nothing left to improve (T-243).
-		if int(Ammo.loaded_item(arena.run,def.id).get("rarity",-1))>=3:return false
-	elif def.max_stacks>0 and stacks(arena,def.id)>=def.max_stacks:return false
+	# Ammo boxes are never cards (T-292, 4 Oct 2026): they come from the upgrade-room machines (ammo vendor, slot
+	# machine), field crates and, by rarity, from enemies (RewardSystem.drop_enemy_ammo). The improvement cards of a
+	# type (Жар, Дольше…) stay cards: they drop while that type is loaded, whatever brought the box.
+	if def.id in Ammo.TYPES:return false
+	if def.max_stacks>0 and stacks(arena,def.id)>=def.max_stacks:return false
 	if (def.effect!=null or def.flag) and def.id in arena.run.behavior_cards:return false
 	# A card the class already has for good as a path perk never drops for that class.
 	if def.id in ClassCatalog.excluded_cards(Game.selected_class):return false
 	if "abilities" in def.requires and arena.abilities.slots.is_empty():return false
-	# Enhancements of an effect appear only after its base card: requires "card:burn".
+	# Enhancements of an effect appear only after its base card: requires "card:burn". For an ammo type the box has
+	# to be loaded — however it came (machine, crate, enemy, T-292); no card of it is needed in the history.
 	for need in def.requires:
-		if need.begins_with("card:") and need.trim_prefix("card:") in Ammo.TYPES and not Ammo.loaded(arena.run,need.trim_prefix("card:")):return false
-		if need.begins_with("card:") and stacks(arena,need.trim_prefix("card:"))==0:return false
+		if not need.begins_with("card:"):continue
+		var base=need.trim_prefix("card:")
+		if base in Ammo.TYPES:
+			if not Ammo.loaded(arena.run,base):return false
+		elif stacks(arena,base)==0:return false
 	# A capped stat that would not move is not offered (speed and interception limits).
 	if def.preview!="" and is_instance_valid(arena.player):
 		var change=measure_change(arena,def,Balance.tier_power(0))
@@ -71,10 +72,10 @@ static func attracted_weight(arena,def:UpgradeDef,counts:Dictionary,trophy:bool=
 	if ClassCatalog.info(Game.selected_class).family==def.family:weight*=1.5
 	return weight
 ## Commander and boss chest (T-221): the trophy leans harder towards the build. Taken family: +60% per card, up to
-## ×5 (instead of +35%, ×3); the shell's family ×1.5; an improvement of the loaded ammo ×3, a better box of it ×2;
-## a box of another special type while one is loaded ×0.4 (incendiary loaded → fire, not concussion);
-## a card already taken ×1.5. Only the weights change — the draw still uses run.combat_rng.
-const TROPHY_PULL={"family_step":.6,"family_cap":5.0,"class":1.5,"loaded_improvement":3.0,"loaded_box":2.0,"other_box":.4,"taken":1.5}
+## ×5 (instead of +35%, ×3); the shell's family ×1.5; an improvement of the loaded ammo ×3 (incendiary loaded →
+## fire cards); a card already taken ×1.5. Ammo boxes are no cards (T-292). Only the weights change — the draw
+## still uses run.combat_rng.
+const TROPHY_PULL={"family_step":.6,"family_cap":5.0,"class":1.5,"loaded_improvement":3.0,"taken":1.5}
 static func trophy_weight(arena,def:UpgradeDef,counts:Dictionary)->float:
 	var pull=TROPHY_PULL
 	var weight=float(def.weight)*minf(pull.family_cap,1.0+pull.family_step*int(counts.get(def.family,0)))
@@ -82,7 +83,6 @@ static func trophy_weight(arena,def:UpgradeDef,counts:Dictionary)->float:
 	var special=Ammo.types_loaded(arena.run).filter(func(type):return type in Ammo.TYPES)
 	var own=Ammo.type_of(def.id)
 	if own!="" and def.id!=own and own in special:weight*=pull.loaded_improvement
-	elif def.id in Ammo.TYPES:weight*=pull.loaded_box if def.id in special else (pull.other_box if not special.is_empty() else 1.0)
 	if stacks(arena,def.id)>0:weight*=pull.taken
 	return weight
 ## Offers {id, tier}: each card rolls its own rarity, then a card that exists at that rarity is drawn

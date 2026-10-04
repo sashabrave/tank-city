@@ -19,12 +19,12 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "crit_damage",
+					"id": "dodge",
 					"tier": 0
 				},
 				{
 					"category": "upgrade",
-					"id": "intercept",
+					"id": "health",
 					"tier": 0
 				}
 			],
@@ -36,12 +36,12 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "range",
+					"id": "opening_shot",
 					"tier": 0
 				},
 				{
 					"category": "upgrade",
-					"id": "damage",
+					"id": "dodge",
 					"tier": 0
 				}
 			],
@@ -53,12 +53,12 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "ricochet",
+					"id": "opening_shot",
 					"tier": 0
 				},
 				{
 					"category": "upgrade",
-					"id": "luck",
+					"id": "last_stand",
 					"tier": 0
 				}
 			],
@@ -87,7 +87,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "dodge",
+					"id": "exit_dash",
 					"tier": 0
 				},
 				{
@@ -381,7 +381,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "opening_shot",
+					"id": "marauder",
 					"tier": 0
 				}
 			],
@@ -393,12 +393,12 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "damage",
+					"id": "dodge",
 					"tier": 1
 				},
 				{
 					"category": "upgrade",
-					"id": "crew",
+					"id": "crit_chance",
 					"tier": 0
 				}
 			],
@@ -410,12 +410,12 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "last_stand",
+					"id": "intercept",
 					"tier": 0
 				},
 				{
 					"category": "upgrade",
-					"id": "healing",
+					"id": "guard_vehicle",
 					"tier": 1
 				}
 			],
@@ -432,7 +432,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "opening_shot",
+					"id": "marauder",
 					"tier": 2
 				}
 			],
@@ -779,7 +779,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "range",
+					"id": "pierce",
 					"tier": 2
 				},
 				{
@@ -796,12 +796,12 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "crew",
+					"id": "crit_chance",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "last_stand",
+					"id": "landing",
 					"tier": 2
 				}
 			],
@@ -830,7 +830,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "opening_shot",
+					"id": "marauder",
 					"tier": 2
 				},
 				{
@@ -1096,12 +1096,12 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "crit_damage",
+					"id": "dodge",
 					"tier": 1
 				},
 				{
 					"category": "upgrade",
-					"id": "intercept",
+					"id": "health",
 					"tier": 0
 				}
 			],
@@ -1113,12 +1113,12 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "range",
+					"id": "opening_shot",
 					"tier": 0
 				},
 				{
 					"category": "upgrade",
-					"id": "damage",
+					"id": "dodge",
 					"tier": 1
 				}
 			],
@@ -1130,12 +1130,12 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "safe",
+					"id": "range",
 					"tier": 1
 				},
 				{
 					"category": "upgrade",
-					"id": "marauder",
+					"id": "last_stand",
 					"tier": 0
 				}
 			],
@@ -1164,7 +1164,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "dodge",
+					"id": "exit_dash",
 					"tier": 1
 				},
 				{
@@ -1552,12 +1552,12 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "exit_dash",
+					"id": "field_repair",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "crew",
+					"id": "crit_chance",
 					"tier": 2
 				}
 			],
@@ -1569,7 +1569,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "field_repair",
+					"id": "fire",
 					"tier": 2
 				},
 				{
@@ -1586,12 +1586,12 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "opening_shot",
+					"id": "marauder",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "crit_damage",
+					"id": "damage",
 					"tier": 2
 				}
 			],
@@ -1603,7 +1603,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "dodge",
+					"id": "exit_dash",
 					"tier": 2
 				},
 				{
@@ -1620,12 +1620,12 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "stun",
+					"id": "stealth",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "pierce",
+					"id": "marauder",
 					"tier": 3
 				}
 			]
@@ -1858,12 +1858,12 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "exit_dash",
+					"id": "field_repair",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "crew",
+					"id": "crit_chance",
 					"tier": 2
 				}
 			],
@@ -1875,7 +1875,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "field_repair",
+					"id": "fire",
 					"tier": 2
 				},
 				{
@@ -1892,12 +1892,12 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "opening_shot",
+					"id": "marauder",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "crit_damage",
+					"id": "damage",
 					"tier": 2
 				}
 			],
@@ -1909,7 +1909,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "dodge",
+					"id": "exit_dash",
 					"tier": 2
 				},
 				{
@@ -1926,12 +1926,12 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "stun",
+					"id": "stealth",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "pierce",
+					"id": "marauder",
 					"tier": 3
 				}
 			]
@@ -2166,12 +2166,12 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "exit_dash",
+					"id": "field_repair",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "crew",
+					"id": "crit_chance",
 					"tier": 2
 				}
 			],
@@ -2183,7 +2183,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "field_repair",
+					"id": "fire",
 					"tier": 2
 				},
 				{
@@ -2200,12 +2200,12 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "opening_shot",
+					"id": "marauder",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "crit_damage",
+					"id": "damage",
 					"tier": 2
 				}
 			],
@@ -2217,7 +2217,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "dodge",
+					"id": "exit_dash",
 					"tier": 2
 				},
 				{
@@ -2234,12 +2234,12 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "stun",
+					"id": "stealth",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "pierce",
+					"id": "marauder",
 					"tier": 3
 				}
 			]
@@ -2501,7 +2501,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "damage",
+					"id": "dodge",
 					"tier": 0
 				},
 				{
@@ -2518,12 +2518,12 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "marauder",
+					"id": "luck",
 					"tier": 0
 				},
 				{
 					"category": "upgrade",
-					"id": "stealth",
+					"id": "speed",
 					"tier": 0
 				}
 			],
@@ -2540,7 +2540,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "luck",
+					"id": "last_stand",
 					"tier": 0
 				}
 			],
@@ -2859,7 +2859,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "marauder",
+					"id": "last_stand",
 					"tier": 0
 				}
 			],
@@ -2871,12 +2871,12 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "damage",
+					"id": "dodge",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "shock",
+					"id": "range",
 					"tier": 0
 				}
 			],
@@ -2888,12 +2888,12 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "marauder",
+					"id": "luck",
 					"tier": 3
 				},
 				{
 					"category": "upgrade",
-					"id": "cryo",
+					"id": "damage",
 					"tier": 0
 				}
 			],
@@ -2910,7 +2910,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "marauder",
+					"id": "luck",
 					"tier": 0
 				}
 			],
@@ -2922,12 +2922,12 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "ricochet",
+					"id": "opening_shot",
 					"tier": 0
 				},
 				{
 					"category": "upgrade",
-					"id": "crew",
+					"id": "crit_damage",
 					"tier": 0
 				}
 			]
@@ -3269,12 +3269,12 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "last_stand",
+					"id": "intercept",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "shock",
+					"id": "range",
 					"tier": 2
 				}
 			],
@@ -3286,12 +3286,12 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "ap",
+					"id": "boarding",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "shock",
+					"id": "range",
 					"tier": 2
 				}
 			],
@@ -3303,7 +3303,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "ap",
+					"id": "boarding",
 					"tier": 2
 				},
 				{
@@ -3342,7 +3342,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "guard_blast",
+					"id": "guard_bullet",
 					"tier": 2
 				}
 			]
@@ -3576,7 +3576,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "damage",
+					"id": "dodge",
 					"tier": 1
 				},
 				{
@@ -3593,7 +3593,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "opening_shot",
+					"id": "marauder",
 					"tier": 1
 				},
 				{
@@ -3615,7 +3615,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "luck",
+					"id": "last_stand",
 					"tier": 2
 				}
 			],
@@ -4050,12 +4050,12 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "last_stand",
+					"id": "intercept",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "shock",
+					"id": "range",
 					"tier": 2
 				}
 			],
@@ -4067,12 +4067,12 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "ap",
+					"id": "boarding",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "shock",
+					"id": "range",
 					"tier": 2
 				}
 			],
@@ -4084,7 +4084,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "ap",
+					"id": "boarding",
 					"tier": 2
 				},
 				{
@@ -4123,7 +4123,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "guard_blast",
+					"id": "guard_bullet",
 					"tier": 2
 				}
 			]
@@ -4362,12 +4362,12 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "last_stand",
+					"id": "intercept",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "shock",
+					"id": "range",
 					"tier": 2
 				}
 			],
@@ -4379,12 +4379,12 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "ap",
+					"id": "boarding",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "shock",
+					"id": "range",
 					"tier": 2
 				}
 			],
@@ -4396,7 +4396,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "ap",
+					"id": "boarding",
 					"tier": 2
 				},
 				{
@@ -4435,7 +4435,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "guard_blast",
+					"id": "guard_bullet",
 					"tier": 2
 				}
 			]
@@ -4670,12 +4670,12 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "last_stand",
+					"id": "intercept",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "shock",
+					"id": "range",
 					"tier": 2
 				}
 			],
@@ -4687,12 +4687,12 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "ap",
+					"id": "boarding",
 					"tier": 2
 				},
 				{
 					"category": "upgrade",
-					"id": "shock",
+					"id": "range",
 					"tier": 2
 				}
 			],
@@ -4704,7 +4704,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "ap",
+					"id": "boarding",
 					"tier": 2
 				},
 				{
@@ -4743,7 +4743,7 @@
 				},
 				{
 					"category": "upgrade",
-					"id": "guard_blast",
+					"id": "guard_bullet",
 					"tier": 2
 				}
 			]

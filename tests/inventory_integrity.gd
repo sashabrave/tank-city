@@ -265,7 +265,7 @@ func ammo_rules():
 	check(Ammo.roll("cryo",1,99)==Ammo.roll("cryo",1,99),"same seed, same item")
 	check(Ammo.fits("explosive","pistol") and not Ammo.fits("explosive","rpg") and Ammo.fits("burn","rpg"),"bullets and charges classes")
 	var heat=UpgradeRegistry.get_def("burn_heat")
-	check(RunUpgrades.eligible(arena,UpgradeRegistry.get_def("burn")) and not RunUpgrades.eligible(arena,heat),"ammo card offered, its improvement not yet")
+	check(not RunUpgrades.eligible(arena,UpgradeRegistry.get_def("burn")) and not RunUpgrades.eligible(arena,heat),"T-292: no ammo box card; its improvement not before the box is loaded")
 	var card=RunUpgrades.card(arena,{"id":"burn","tier":2})
 	check(str(card.short).contains("Зарядит") and card.rows.size()>=2 and str(card.rows[0][0]).begins_with("↑"),"card loads it and shows rolled values as gains")
 	RunUpgrades.apply(arena,"burn",2)
@@ -301,6 +301,17 @@ func ammo_rules():
 	shock_now.rarity=3
 	check(not RunUpgrades.eligible(arena,UpgradeRegistry.get_def("shock")),"legendary EMP loaded: the EMP box card is no longer offered")
 	run.ammo_bag=run.ammo_bag.filter(func(a):return a.type!="standard")
+	# T-292: enemies carry ammo — a small chance per kill, more on ★/★★ fields, from veterans and commanders; rarer on later fields.
+	check(Ammo.drop_chance(0,1,false,"recruit")<Ammo.drop_chance(1,1,false,"recruit") and Ammo.drop_chance(1,1,false,"recruit")<Ammo.drop_chance(2,1,false,"recruit") and Ammo.drop_chance(0,2,false,"recruit")>Ammo.drop_chance(0,1,false,"recruit") and Ammo.drop_chance(0,1,true,"recruit")>=.2,"enemy ammo chance grows with difficulty, veterans and commanders")
+	var rarity_rng=RandomNumberGenerator.new();rarity_rng.seed=5;var easy=[0,0,0,0];var hard=[0,0,0,0]
+	for i in range(2000):easy[Ammo.drop_rarity(rarity_rng,Ammo.drop_level(0,false,0,false))]+=1;hard[Ammo.drop_rarity(rarity_rng,Ammo.drop_level(6,false,2,true))]+=1
+	check(easy[2]+easy[3]==0 and hard[3]>0 and hard[0]<easy[0],"harder fields carry rarer ammo %s → %s" % [str(easy),str(hard)])
+	var commander=arena.spawn_actor("soldier",Vector2i(3,3),false);commander.elite=true
+	var piles_before=arena.room.pickups.filter(func(p):return p.kind=="item").size();var tries=0
+	while arena.room.pickups.filter(func(p):return p.kind=="item").size()==piles_before and tries<80:arena.reward.drop_enemy_ammo(commander);tries+=1
+	var dropped=arena.room.pickups.filter(func(p):return p.kind=="item").back()
+	check(dropped!=null and dropped.content.ammo.size()==1 and Ammo.fits(str(dropped.content.ammo[0].type),arena.weapon),"a commander drops a fitting ammo box on the field (%d kills)" % tries)
+	arena.room.pickups.erase(dropped);dropped.node.queue_free();commander.dead=true;arena.room.actors.erase(commander);commander.queue_free()
 	# Ammo vending machine (T-116/T-159): tokens → a fitting rolled item at the crate price; odds add up, officer is richer.
 	Game.ammo_slot_weapons=[];Ammo.ensure(run,arena.weapon)
 	var holder=Node3D.new()

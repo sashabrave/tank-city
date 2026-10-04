@@ -1,6 +1,8 @@
 extends RefCounted
 ## Seconds a landed field bonus stays before it disappears (T-046).
 const BONUS_LIFETIME=25.0
+## Field bonus models are 30% smaller than the catalog model (T-293); the parachute keeps its size.
+const BONUS_MODEL_SCALE=.7
 ## Reward system. Owns rules; Arena remains the scene coordinator.
 var arena
 var thieves
@@ -27,7 +29,7 @@ func drop_pickup(_cell: Vector2i,kind: String):
 ## A field bonus on a given cell, parachuting down for `fall` seconds (also used when a thief drops one, T-072).
 func place_pickup(cell:Vector2i,kind:String,fall:=1.1):
 	var node=Node3D.new();arena.add_child(node);node.position=arena.world_pos(cell)
-	var visual=arena.LOOT.visual(node,kind)
+	var visual=arena.LOOT.visual(node,kind);visual.scale=Vector3.ONE*BONUS_MODEL_SCALE
 	var info=arena.LOOT.BONUSES[kind]
 	# No labels: each bonus reads by its model and colour; the ring takes the bonus colour, rare ones pulse.
 	var ring=Visuals.ring(node,Color(info.color),.42)
@@ -38,7 +40,10 @@ func place_pickup(cell:Vector2i,kind:String,fall:=1.1):
 	arena.room.pickups.append({"node":node,"visual":visual,"kind":kind,"land_at":arena.run.elapsed+fall,"chute":chute})
 
 ## The one parachute of the game (Visuals.parachute) over a falling bonus.
-func parachute(visual:Node3D,_tint:Color)->Node3D:return Visuals.parachute(visual)
+## The visual may be scaled down (BONUS_MODEL_SCALE): the canopy is scaled back so it keeps its size and height.
+func parachute(visual:Node3D,_tint:Color)->Node3D:
+	var undo=1.0/maxf(.01,visual.scale.x)
+	return Visuals.parachute(visual,undo,.3*undo)
 ## An army sack with dropped backpack items (T-113): it stays until the soldier walks over it with room to spare.
 func place_sack(cell:Vector2i,content:Dictionary):
 	var node=Node3D.new();arena.add_child(node);node.position=arena.world_pos(cell)+Vector3(look.randf_range(-.2,.2),0,look.randf_range(-.2,.2))
@@ -452,6 +457,25 @@ func drop_enemy_loot(actor):
 		if not pool.is_empty():drop_pickup(actor.cell,pool[arena.run.combat_rng.randi_range(0,pool.size()-1)])
 	if not arena.room.boss_room and Game.TIERS.weight("star",arena.room_index)>0 and arena.run.combat_rng.randf()<Game.star_chance(arena.room.wave):drop_pickup(actor.cell,"star")
 	if arena.run.combat_rng.randf()<Game.heart_chance():drop_pickup(actor.cell,"heart")
+	drop_enemy_ammo(actor)
+
+## Enemies carry ammo (T-292): sometimes a box falls where one dies, rarer on harder fields and from commanders
+## (numbers in Ammo.DROP_*). One box of a type that fits the gun in hand; combat RNG only.
+func drop_enemy_ammo(actor):
+	if UnitKinds.is_flying(actor.kind) or actor.kind=="boss":return
+	var rng:RandomNumberGenerator=arena.run.combat_rng
+	var difficulty=2 if arena.room.boss_room else EncounterRules.difficulty(arena.room.difficulty)
+	var chance=Ammo.drop_chance(difficulty,int(actor.rank),bool(actor.elite),str(Game.selected_class))*CombatMods.loot_multiplier(arena)
+	if rng.randf()>=chance:return
+	var types=Ammo.TYPES.filter(func(t):return Ammo.fits(t,str(arena.weapon)))
+	if types.is_empty():types=Ammo.TYPES
+	var stage=Campaign.progress_index(arena.room_index) if arena.room_index>=0 else 0
+	var rarity=Ammo.drop_rarity(rng,Ammo.drop_level(stage,Campaign.endless,difficulty,bool(actor.elite)))
+	var item=Ammo.roll(types[rng.randi_range(0,types.size()-1)],rarity,rng.randi())
+	# Not on top of another pickup (a commander's chest lands on the same cell): the next free cell then.
+	var cell=arena.grid_pos(safe_drop_position(actor.position))
+	if arena.room.pickups.any(func(p):return is_instance_valid(p.get("node")) and arena.grid_pos(p.node.position)==cell):cell=arena.find_free_near(cell)
+	place_sack(cell,{"recipes":[],"ammo":[item]})
 
 func skip_upgrade():
 	if arena.phase!="upgrade":return

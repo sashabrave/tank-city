@@ -223,12 +223,15 @@ static func drop_coins(hud,lost:int):
 	drop_pile(layer,origin,"alloy_single",pieces(lost,14),24.0)
 
 ## A card leaves its cell and falls (2026-10-03): the same lifted card as a drag (GearCell.lifted — the cell's
-## frame and picture on a soft shadow) comes off, rises a little, then drops off the bottom of the screen with a
-## slow sway — like the resource coins, only heavier and smoother. The cell is left empty. Visual RNG only.
+## frame and picture on a soft shadow) comes off, jerks up a little, then falls off the bottom of the screen like
+## the resource coins (T-293): a ballistic arc — a sideways push that fades (ease out) while gravity pulls it down
+## (ease in) — with a slow tilt, heavier and slower than the coins. The cell is left empty. Visual RNG only.
 ## Seconds between two falling cards (T-253: one by one, not all at once).
-const FALL_STEP:=.2
-## A lost card tears off its cell and drops off the screen (T-253): a short jerk up, then straight down, fast and
-## heavy (accelerating, no sideways drift, no spin), with the item's click (GearCell.click_for).
+const FALL_STEP:=.28
+## Fall time of a card (s), its sideways drift (px) and tilt (radians), each rolled inside the span.
+const FALL_TIME:=[1.05,1.3]
+const FALL_DRIFT:=[40.0,120.0]
+const FALL_TILT:=[.25,.7]
 static func fall_out(hud,cell:GearCell,delay:float):
 	var layer:Control=hud.root;var screen=layer.get_viewport_rect().size
 	var t=cell.create_tween();t.tween_interval(delay)
@@ -240,9 +243,16 @@ static func fall_out(hud,cell:GearCell,delay:float):
 		card.position=start;card.pivot_offset=card.size*.5
 		cell.empty_out();cell.set_meta("lost",true)
 		Game.sound(GearCell.click_for(cell.item_kind),hud)
+		var rng=RandomNumberGenerator.new();rng.randomize()
+		var side=-1.0 if rng.randf()<.5 else 1.0
+		var time=rng.randf_range(FALL_TIME[0],FALL_TIME[1])
+		var drift=side*rng.randf_range(FALL_DRIFT[0],FALL_DRIFT[1]);var tilt=side*rng.randf_range(FALL_TILT[0],FALL_TILT[1])
 		var lift=card.create_tween().set_parallel(true)
-		lift.tween_property(card,"position:y",start.y-8,.08).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-		lift.tween_property(card,"scale",Vector2.ONE*1.04,.08).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		lift.tween_property(card,"position:y",start.y-12,.1).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		lift.tween_property(card,"scale",Vector2.ONE*1.05,.1).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 		var fall=lift.chain()
-		fall.tween_property(card,"position:y",screen.y+card.size.y+60,.62).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-		fall.tween_callback(card.queue_free))
+		fall.tween_property(card,"position:y",screen.y+card.size.y+60,time).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+		fall.tween_property(card,"position:x",start.x+drift,time).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		fall.tween_property(card,"rotation",tilt,time).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+		fall.tween_property(card,"scale",Vector2.ONE*.94,time)
+		fall.chain().tween_callback(card.queue_free))

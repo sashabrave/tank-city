@@ -46,7 +46,12 @@
 					"Арсенал: вкладки «Оружие · Гаджеты · Бонусы» — в ряд сверху окна, гаджеты поднялись на второе место.",
 					"Бонусы поля прокачиваются до 5 уровней (было 3): цены 95 → 170 → 240 → 310 → 380 сплава, +10% силы за уровень.",
 					"Модули штаба в бою — круглые значки в конце ряда способностей внизу, с кольцом готовности; у Медпункта под кругом полоска запаса. Над штабом остались только всплывающие подписи срабатываний.",
-					"Песочница: в админке (F2) новая вкладка «Штаб» — любые модули штаба надеваются и снимаются сразу, есть «Все модули», «Без модулей» и уровень всех модулей."
+					"Песочница: в админке (F2) новая вкладка «Штаб» — любые модули штаба надеваются и снимаются сразу, есть «Все модули», «Без модулей» и уровень всех модулей.",
+					"Ящики патронов больше не выпадают карточками — ни между волнами, ни в сундуках, ни у торговца. Патроны дают патронный и игровой автоматы, армейские ящики и враги: иногда коробка падает там, где враг упал, — на сложных полях и с командиров чаще и редкостнее. Подрывнику враги роняют патроны вдвое чаще.",
+					"Улучшения патронов («Жар», «Перегрузка»…) выпадают, как только тип заряжен, откуда бы ни пришёл ящик.",
+					"Экран итогов: оружие и вещи забега не исчезают, а по одной срываются из ячеек и падают за низ экрана, как монеты, — с наклоном и сносом в сторону.",
+					"Слитки сплава и бонусы на поле стали на 30% меньше.",
+					"Снайперка везде показывается своей нарисованной винтовкой, а не значком траектории."
 				]
 			},
 			"en": {
@@ -92,7 +97,12 @@
 					"Arsenal: the «Weapons · Gadgets · Bonuses» tabs sit in a row at the top of the window; gadgets moved up to second place.",
 					"Field bonuses level up to 5 (was 3): prices 95 → 170 → 240 → 310 → 380 alloy, +10% power per level.",
 					"HQ modules in battle are round icons at the end of the ability row at the bottom, with a readiness ring; the Medical post shows its stock as a bar under the circle. Only the pop-up captions of triggers stay over the HQ.",
-					"Sandbox: the admin panel (F2) has a new «HQ» tab — any HQ module goes on and off at once, plus «All modules», «No modules» and the level of all modules."
+					"Sandbox: the admin panel (F2) has a new «HQ» tab — any HQ module goes on and off at once, plus «All modules», «No modules» and the level of all modules.",
+					"Ammo boxes no longer come as cards — not between waves, in chests or at the merchant. Ammo comes from the ammo and slot machines, army crates and enemies: sometimes a box drops where an enemy falls, more often and rarer on hard fields and from commanders. Enemies drop ammo twice as often for the Demolisher.",
+					"Ammo upgrades (Heat, Overload…) are offered as soon as the type is loaded, wherever the box came from.",
+					"Results screen: weapons and run items no longer just vanish — they tear out of their cells one by one and fall off the bottom of the screen like coins, tilting and drifting aside.",
+					"Alloy ingots and bonuses on the field are 30% smaller.",
+					"The sniper rifle shows its drawn rifle icon everywhere instead of the trajectory symbol."
 				]
 			}
 		},

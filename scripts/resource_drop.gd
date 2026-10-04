@@ -35,7 +35,8 @@ func _ready():
 	visual=Node3D.new();add_child(visual)
 	if currency=="alloy":
 		# A soft-bevelled gold bar (tools/art/build_ingot.py), sized by its value: 1 small, 5 medium, 10 large.
-		var size={1:.9,5:1.2,10:1.55}.get(denomination,1.2)
+		# 30% smaller since T-293 (were .9 / 1.2 / 1.55).
+		var size={1:.63,5:.84,10:1.085}.get(denomination,.84)
 		var bar=preload("res://assets/models/pickups/ingot.glb").instantiate();bar.scale=Vector3.ONE*size;visual.add_child(bar)
 		var gold=Visuals.material(Color("ffc948"));gold.set_meta("cozy_original",Vector2(1.0,.16));gold.metallic_specular=.9
 		gold.emission_enabled=true;gold.emission=Color("ffb42e");gold.emission_energy_multiplier=.18
