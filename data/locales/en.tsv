@@ -3155,3 +3155,24 @@ Q · есть сразу	Q · from the start
 Рюкзак полон — освободи ячейку в «Снаряжении»	Backpack full — free a cell in Gear
 Дойди до поля 3 в вылазке	Reach field 3 in a sortie
 Дойди до поля 5 в вылазке	Reach field 5 in a sortie
+Экономно — быстрее и меньше греет ноутбук. Стандарт — по умолчанию. Кино — 3D в полном разрешении, примерно вдвое тяжелее.	Economy — faster, keeps the laptop cooler. Standard — default. Cinema — full-resolution 3D, about twice as heavy.
+Влияет на скорость и нагрев	Affects speed and heat
+Самая сильная настройка: 100% почти вдвое тяжелее «Авто». Интерфейс всегда чёткий. Применяется кнопкой «Применить».	The strongest setting: 100% is almost twice as heavy as Auto. The interface stays sharp. Applied with Apply.
+Весь мягкий свет, тени и блики разом. Выключение — +15% кадров днём, до +40% ночью; картинка станет простой.	All soft light, shadows and glints at once. Off: +15% frames by day, up to +40% at night; the picture becomes plain.
+Мягкая тень в углах и у стен. Около +9% кадров, если выключить.	Soft shade in corners and at walls. About +9% frames when off.
+Мягкий фокус сверху и снизу. Около +10% кадров, если выключить.	Soft focus at the top and bottom. About +10% frames when off.
+Свечение	Glow
+Блики металла, золота и ламп. Около +4% кадров, если выключить.	Glints of metal, gold and lamps. About +4% frames when off.
+Сколько ближних фонарей светит одновременно. Больше — тяжелее, особенно ночью.	How many nearby lamps shine at once. More is heavier, especially at night.
+Только внешний вид — на скорость почти не влияют	Look only — hardly affect speed
+Цвет солнца, тени, дымка и небо.	Sun colour, shadows, haze and sky.
+Положение ночного света на поле.	Where the night light stands.
+Цвет и направление солнца; ниже 30° оно не опускается.	Sun colour and direction; it never goes below 30°.
+Только оформление, на бой не влияет.	Look only, no effect on combat.
+Размытые края теней.	Blurred shadow edges.
+Лёгкий воздух у горизонта.	Light air at the horizon.
+Светлый край у моделей.	A bright edge on models.
+Отражения на металле.	Reflections on metal.
+Мягкие тени у стен, теплее солнце.	Soft shade at walls, a warmer sun.
+Цветная подсветка сзади, у каждой комнаты своя.	Coloured back light, its own per room.
+Пыль, листья, ночные светлячки.	Dust, leaves, night fireflies.

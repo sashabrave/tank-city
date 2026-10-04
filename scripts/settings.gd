@@ -147,7 +147,7 @@ func save():
 	config.save(PATH)
 ## Graphics presets (T-049): one choice sets every lighting/effect switch; each can still be changed alone.
 const GRAPHICS_PRESETS={
-	"eco":{"shaders":true,"soft_shadows":false,"ambient_occlusion":false,"glow":false,"haze":false,"rim_light":false,"shiny_metal":false,"depth_light":true,"cinematic_light":false,"atmosphere":false,"tilt_shift":false,"light_budget":6,"render_scale":"75"},
+	"eco":{"shaders":true,"soft_shadows":false,"ambient_occlusion":false,"glow":false,"haze":false,"rim_light":false,"shiny_metal":false,"depth_light":true,"cinematic_light":false,"atmosphere":false,"tilt_shift":false,"light_budget":6,"render_scale":"50"},
 	"standard":{"shaders":true,"soft_shadows":true,"ambient_occlusion":true,"glow":true,"haze":true,"rim_light":true,"shiny_metal":true,"depth_light":true,"cinematic_light":true,"atmosphere":true,"tilt_shift":true,"light_budget":10,"render_scale":"auto"},
 	"cinema":{"shaders":true,"soft_shadows":true,"ambient_occlusion":true,"glow":true,"haze":true,"rim_light":true,"shiny_metal":true,"depth_light":true,"cinematic_light":true,"atmosphere":true,"tilt_shift":true,"light_budget":12,"render_scale":"100"},
 }

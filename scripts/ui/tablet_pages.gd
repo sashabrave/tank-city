@@ -171,32 +171,26 @@ func settings():
 	var body=Control.new();box.add_child(body);body.custom_minimum_size=Vector2(705,350)
 	var y=0
 	if view.settings_tab=="Графика":
-		# One choice sets every switch below at once; any switch can still be changed by hand afterwards (T-049).
-		preload("res://scripts/ui/appearance_card.gd").build(body)
-		var shaders=CheckButton.new();body.add_child(shaders);shaders.position.y=256;Texts.set_text(shaders,"Шейдеры · уютный свет и металл");shaders.size=Vector2(700,40);shaders.button_pressed=Settings.values.get("shaders",true)
-		shaders.toggled.connect(func(enabled):Settings.change("shaders",enabled);view.refresh.call_deferred())
-		UiKit.label(body,"Единый режим для хаба, карты и боя: мягкие тени, объём и блики.",Vector2(0,300),Vector2(700,36),14,UiKit.MUTED)
-		setting_choice(body,["shader_style","Стиль картинки",["Пастель · мягкий мульт","Уютный · как раньше","Золотой час","Пасмурный фронт"],Settings.SHADER_STYLES,"Цвет солнца, заполняющий свет теней, дымка и небо для отражений металла."],346)
-		var night=Settings.values.get("world_lighting","day")=="night"
-		if night:setting_choice(body,["sun_night","Луна и солнце в бою",["Случайно","Конец заката","Луна","Перед рассветом"],["random","dusk","moon","predawn"],"Ночное поле: от последнего света заката через луну до раннего рассвета."],434)
-		else:setting_choice(body,["sun_day","Солнце в бою",["Случайно","Рассвет","Утро","Полдень","Золотой час","Закат"],["random","dawn","morning","noon","golden","sunset"],"Случайно — своё положение солнца в каждой комнате, чаще рассвет и золотые часы."],434)
-		setting_choice(body,["weather","Погода в бою",["Случайно","Ясно","Дождь","Снег","Туман","Песчаная буря"],["random","clear","rain","snow","fog","sandstorm"],"Случайно — на новом этапе погода иногда меняется. Только оформление, на бой не влияет."],522)
-		y=610
-		var names={"soft_shadows":"Мягкие тени","ambient_occlusion":"Затенение углов","glow":"Блики и свечение","haze":"Дымка вдали","rim_light":"Контурный свет","shiny_metal":"Блестящий металл","depth_light":"Глубина света","cinematic_light":"Киношный свет"}
-		for i in range(Settings.SHADER_OPTIONS.size()):
-			var key=Settings.SHADER_OPTIONS[i]
-			var toggle=CheckButton.new();body.add_child(toggle);Texts.set_text(toggle,names[key]);toggle.position=Vector2((i%2)*355,y+int(i/2.0)*42);toggle.size=Vector2(340,38)
-			toggle.button_pressed=Settings.values[key];toggle.disabled=not Settings.values.get("shaders",true)
-			toggle.toggled.connect(func(enabled):Settings.change(key,enabled))
-		y+=128
-		var note=UiKit.label(body,"Затенение углов доступно на компьютере (Forward+). На слабых устройствах сначала выключи затенение и мягкие тени.",Vector2(0,y),Vector2(700,40),14,UiKit.MUTED);note.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-		y+=54
-		for entry in [["atmosphere","Атмосферные частицы",["Выключены","Включены"],[false,true],"Редкая пыль, листья и ночные светлячки. Без физических столкновений."],["tilt_shift","Размытие краёв",["Выключено","Включено"],[false,true],"Мягкий tilt-shift сверху и снизу. Центр поля и интерфейс остаются чёткими."],["light_budget","Источники света",["Экономно · 6","Обычно · 10","Больше света · 14"],[6,10,14],"Ближайшие фонари; в режиме шейдеров до трёх источников отбрасывают тени."]]:
-			setting_choice(body,entry,y);y+=88
-		# The preset goes on top: everything built above moves down one row (T-049).
-		for child in body.get_children():child.position.y+=104
-		setting_choice(body,["graphics_preset","Пресет графики",["Экономно","Стандарт","Кино"],["eco","standard","cinema"],"Экономно — для слабых устройств; Кино — весь свет, тени и эффекты."],0)
-		y+=104
+		# Two plain groups (author, 2026-10-03; measured on M4 Air, fullscreen Retina, a battle): what costs speed
+		# and heat, and what only changes the look. One preset on top sets everything at once.
+		setting_choice(body,["graphics_preset","Пресет графики",["Экономно","Стандарт","Кино"],["eco","standard","cinema"],"Экономно — быстрее и меньше греет ноутбук. Стандарт — по умолчанию. Кино — 3D в полном разрешении, примерно вдвое тяжелее."],y);y+=96
+		y=graphics_group(body,"Влияет на скорость и нагрев",y)
+		setting_choice(body,["render_scale","Разрешение 3D",["Авто","100%","75%","50%"],["auto","100","75","50"],"Самая сильная настройка: 100% почти вдвое тяжелее «Авто». Интерфейс всегда чёткий. Применяется кнопкой «Применить»."],y);y+=96
+		y=graphics_toggle(body,"shaders","Шейдеры · уютный свет и металл","Весь мягкий свет, тени и блики разом. Выключение — +15% кадров днём, до +40% ночью; картинка станет простой.",y)
+		for entry in [["ambient_occlusion","Затенение углов","Мягкая тень в углах и у стен. Около +9% кадров, если выключить."],["tilt_shift","Размытие краёв","Мягкий фокус сверху и снизу. Около +10% кадров, если выключить."],["glow","Свечение","Блики металла, золота и ламп. Около +4% кадров, если выключить."]]:
+			y=graphics_toggle(body,entry[0],entry[1],entry[2],y,true)
+		setting_choice(body,["light_budget","Источники света",["Экономно · 6","Обычно · 10","Больше света · 14"],[6,10,14],"Сколько ближних фонарей светит одновременно. Больше — тяжелее, особенно ночью."],y);y+=96
+		y=graphics_group(body,"Только внешний вид — на скорость почти не влияют",y)
+		var holder=Control.new();holder.name="AppearanceCard";body.add_child(holder);holder.position=Vector2(0,y);holder.mouse_filter=Control.MOUSE_FILTER_PASS
+		preload("res://scripts/ui/appearance_card.gd").build(holder)
+		y+=250
+		setting_choice(body,["shader_style","Стиль картинки",["Пастель · мягкий мульт","Уютный · как раньше","Золотой час","Пасмурный фронт"],Settings.SHADER_STYLES,"Цвет солнца, тени, дымка и небо."],y);y+=96
+		if Settings.values.get("world_lighting","day")=="night":setting_choice(body,["sun_night","Луна и солнце в бою",["Случайно","Конец заката","Луна","Перед рассветом"],["random","dusk","moon","predawn"],"Положение ночного света на поле."],y)
+		else:setting_choice(body,["sun_day","Солнце в бою",["Случайно","Рассвет","Утро","Полдень","Золотой час","Закат"],["random","dawn","morning","noon","golden","sunset"],"Цвет и направление солнца; ниже 30° оно не опускается."],y)
+		y+=96
+		setting_choice(body,["weather","Погода в бою",["Случайно","Ясно","Дождь","Снег","Туман","Песчаная буря"],["random","clear","rain","snow","fog","sandstorm"],"Только оформление, на бой не влияет."],y);y+=96
+		for entry in [["soft_shadows","Мягкие тени","Размытые края теней."],["haze","Дымка вдали","Лёгкий воздух у горизонта."],["rim_light","Контурный свет","Светлый край у моделей."],["shiny_metal","Блестящий металл","Отражения на металле."],["depth_light","Глубина света","Мягкие тени у стен, теплее солнце."],["cinematic_light","Киношный свет","Цветная подсветка сзади, у каждой комнаты своя."],["atmosphere","Атмосферные частицы","Пыль, листья, ночные светлячки."]]:
+			y=graphics_toggle(body,entry[0],entry[1],entry[2],y,true)
 	elif view.settings_tab=="Экран":
 		setting_choice(body,["fullscreen","Режим экрана",["Окно","Полный экран"],[false,true],"Полный экран занимает весь дисплей."],y);y+=88
 		var sizes=Settings.resolutions()
@@ -205,7 +199,7 @@ func settings():
 		var retina=CheckButton.new();body.add_child(retina);retina.position=Vector2(0,y);retina.size=Vector2(700,40);Texts.set_text(retina,"Retina · полная чёткость")
 		retina.button_pressed=bool(Settings.shown("retina"));retina.toggled.connect(func(on):Settings.change("retina",on);view.refresh.call_deferred())
 		UiKit.label(body,"Без галочки мир рисуется в стандартном разрешении — в два раза меньше по каждой стороне на Retina-экране. Быстрее, но мягче.",Vector2(0,y+42),Vector2(700,44),14,UiKit.MUTED).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;y+=96
-		for entry in [["vsync","Вертикальная синхронизация",["Выключена","Включена"],[false,true],"Убирает разрывы изображения; может ограничивать FPS."],["render_scale","Разрешение 3D",["Авто","100%","75%","50%"],["auto","100","75","50"],"Мир рисуется в меньшем разрешении и чётко масштабируется, интерфейс остаётся резким. Авто снижает разрешение на больших и Retina-экранах."],["quality","Сглаживание MSAA",["Выключено","2×","4×"],[0,1,2],"Сглаживает края моделей. 4× сильнее нагружает графику."],["fps","Лимит кадров",["30 FPS","60 FPS","120 FPS","Без ограничения"],[30,60,120,0],"Верхняя граница; реальная частота зависит от устройства и VSync."]]:
+		for entry in [["vsync","Вертикальная синхронизация",["Выключена","Включена"],[false,true],"Убирает разрывы изображения; может ограничивать FPS."],["quality","Сглаживание MSAA",["Выключено","2×","4×"],[0,1,2],"Сглаживает края моделей. 4× сильнее нагружает графику."],["fps","Лимит кадров",["30 FPS","60 FPS","120 FPS","Без ограничения"],[30,60,120,0],"Верхняя граница; реальная частота зависит от устройства и VSync."]]:
 			setting_choice(body,entry,y);y+=88
 	elif view.settings_tab=="Звук":
 		for entry in [["master","Общая громкость","Меняет громкость всей игры."],["music","Музыка","Музыкальные композиции и радио."],["effects","Звуки игры","Выстрелы, взрывы и звуковые сигналы."]]:
@@ -275,6 +269,20 @@ func keep_prompt():
 		if is_instance_valid(timer_label):Texts.set_text(timer_label,Texts.render("Вернутся прежние через %d с") % int(left[0]))
 	Texts.set_text(timer_label,Texts.render("Вернутся прежние через %d с") % 15)
 	var t=Timer.new();t.wait_time=1.0;t.autostart=true;canvas.add_child(t);t.timeout.connect(tick)
+## A group heading in the settings list.
+func graphics_group(body:Control,title:String,y:float)->float:
+	UiKit.label(body,title,Vector2(0,y+6),Vector2(700,28),UiKit.SECTION_SIZE,UiKit.MUTED)
+	var line=ColorRect.new();body.add_child(line);line.position=Vector2(0,y+38);line.size=Vector2(700,1);line.color=Color(1,1,1,.14)
+	return y+50
+## One on/off setting with a short line of what it does; shader effects grey out while shaders are off.
+func graphics_toggle(body:Control,key:String,title:String,note:String,y:float,needs_shaders:=false)->float:
+	var toggle=CheckButton.new();body.add_child(toggle);Texts.set_text(toggle,title);toggle.position=Vector2(0,y);toggle.size=Vector2(700,36);toggle.name="Toggle_"+key
+	toggle.button_pressed=bool(Settings.values.get(key,true));toggle.disabled=needs_shaders and not Settings.values.get("shaders",true)
+	toggle.toggled.connect(func(enabled):
+		Settings.change(key,enabled)
+		if key=="shaders":view.refresh.call_deferred())
+	UiKit.label(body,note,Vector2(0,y+36),Vector2(700,22),13,UiKit.MUTED).clip_text=true
+	return y+66
 func setting_choice(body,entry,y):
 	UiKit.label(body,entry[1],Vector2(0,y),Vector2(380,34),18)
 	var option=OptionButton.new();body.add_child(option);option.position=Vector2(395,y);option.size=Vector2(305,36);option.add_theme_font_size_override("font_size",17)

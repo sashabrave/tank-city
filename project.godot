@@ -67,6 +67,7 @@ theme/custom="res://assets/ui/field_theme.tres"
 
 [rendering]
 
+rendering_device/vsync/frame_queue_size=1
 renderer/rendering_method.mobile="gl_compatibility"
 textures/vram_compression/import_etc2_astc=true
 lights_and_shadows/directional_shadow/soft_shadow_filter_quality=3
