@@ -543,8 +543,11 @@ func class_specialization()->int:return clampi(int(specializations.get(selected_
 func class_upgrade_cost(id:String,special:bool)->int:
 	var upgrade_level=int((specializations if special else class_levels).get(id,0))
 	if special:return -1 if upgrade_level>=3 else ceili((2+upgrade_level)*1.2)*DOC_ALLOY
-	# 0.8.0: geometric ladder, 100 ◈ ×1.32 per level; levels 1→7 cost ≈1340 in total (near the world 1 general).
-	return -1 if upgrade_level>=ClassCatalog.MAX_LEVEL-1 else nice_price(roundi(100.0*pow(1.32,upgrade_level)))
+	return class_step_cost(upgrade_level)
+## 0.8.0: geometric ladder, 100 ◈ ×1.32 per level, round prices (nice_price). `stored` counts upgrades bought
+## (level − 1); -1 past the top. The Barracks sums it for «Всего до N ур.».
+static func class_step_cost(stored:int)->int:
+	return -1 if stored>=ClassCatalog.MAX_LEVEL-1 else nice_price(roundi(100.0*pow(1.32,stored)))
 func upgrade_class(id:String,special:bool)->bool:
 	if id not in class_unlocks:return false
 	var price=class_upgrade_cost(id,special)

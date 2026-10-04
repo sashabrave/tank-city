@@ -29,6 +29,15 @@ func run():
 	check(page.find_child("ConceptStats",true,false)!=null and page.find_child("Take",true,false).disabled,"a class in development shows its sketch, nothing to take")
 	view.selected="recruit";view.build();await settle()
 	check(view.find_children("Slot_*","Button",true,false).size()==2 and view.find_child("Take",true,false)!=null and view.find_child("ClassPath",true,false)!=null,"one path button, two slot cells and the take button")
+	# Barracks redesign (T-204/T-208/T-211/T-220): main tabs on top, the path strip with the upgrade and the total.
+	check(view.find_child("Tab_general",true,false).is_in_group("h_tab") and view.find_child("ClassList",true,false)!=null,"main tabs are a row on top, classes a list on the left")
+	var total=view.find_child("TotalCost",true,false)
+	check(total!=null and total.text.contains(str(Game.class_step_cost(0)+Game.class_step_cost(1))),"«Всего до 3 ур.» sums the ladder")
+	var level_before=ClassCatalog.level("recruit")
+	view.find_child("LevelUp",true,false).pressed.emit();await settle()
+	check(ClassCatalog.level("recruit")==level_before+1 and view.find_child("LevelText",true,false).text.contains(str(level_before+1)),"the upgrade button buys the next level and the page refreshes at once")
+	view.selected="heavy";view.build();await settle()
+	check(view.find_child("UnlockText",true,false)!=null and view.find_child("PathStrip",true,false)==null,"a locked class shows how to open it instead of the path")
 	# Meta stage 4: no «Выучка» tab.
 	check(not view.provider.tabs().any(func(t):return t[0]=="training"),"no training tab")
 	var p=view.provider

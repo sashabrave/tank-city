@@ -1,11 +1,12 @@
 extends Control
-## One template for every hub station: tabs on the left, a grid of item cards in the middle and a detail panel
+## One template for every hub station: tabs on the left (or on top, provider.tabs_on_top(), T-220), a grid of item cards in the middle and a detail panel
 ## on the right with before → after rows, the price and the actions. A provider object supplies the data:
 ##   title()->String, subtitle()->String, tabs()->Array of [key,title,icon],
 ##   items(tab)->Array of {id,title,icon,caption,state(locked|ready|owned|active|max),dot,group},
 ##     items with a "group" are laid out as titled rows (station trees: one row per branch),
 ##   detail(tab,id)->{title,icon,text,rows:[[name,before,after]],lines:[String],actions:[{id,text,enabled,primary}]},
 ##   act(tab,id,action)->String (message shown on success, "" when nothing happened).
+##   Optional: tabs_on_top()->bool, page_for(tab)->Control (a page drawn instead of cards + detail), tab_dot(tab).
 signal closed
 signal changed
 var provider
@@ -117,28 +118,37 @@ func build():
 		if not first_items.is_empty():selected=str(first_items[0].id)
 	if selected!="" and station_kind not in ["","roadmap"]:preload("res://scripts/ui/station_notices.gd").mark_item_seen(station_kind,tab,str(selected))
 	var tabs=provider.tabs()
+	# Content area: right of the tab column, or under the tab row when the station puts its tabs on top (Barracks, T-220).
+	var top=provider.has_method("tabs_on_top") and provider.tabs_on_top()
+	var area=Rect2(22,146,1076,484) if top else Rect2(232,96,866,532)
+	var tab_buttons=[]
 	for i in range(tabs.size()):
 		var key=tabs[i][0]
-		var b=UiKit.button(panel,tabs[i][1],Vector2(22,96+i*54),Vector2(190,46),func():tab=key;selected="";notice="";animate_cards=true;build(),key==tab);b.name="Tab_"+key
+		var tab_w=(area.size.x-(tabs.size()-1)*8.0)/tabs.size() if top else 190.0
+		var b=UiKit.button(panel,tabs[i][1],Vector2(22+i*(tab_w+8),88) if top else Vector2(22,96+i*54),Vector2(tab_w,46),func():tab=key;selected="";notice="";animate_cards=true;build(),key==tab);b.name="Tab_"+key
+		tab_buttons.append(b)
 		b.icon=tab_icon(str(tabs[i][2])) if tabs[i].size()>2 else null;
 		for state in ["normal","hover","pressed","disabled"]:
 			var tight=b.get_theme_stylebox(state).duplicate();tight.content_margin_left=14;tight.content_margin_right=10;b.add_theme_stylebox_override(state,tight)
-		b.expand_icon=true;b.add_theme_constant_override("icon_max_width",22);b.add_theme_constant_override("h_separation",10);b.alignment=HORIZONTAL_ALIGNMENT_LEFT;b.add_theme_font_size_override("font_size",16)
+		b.expand_icon=true;b.add_theme_constant_override("icon_max_width",22);b.add_theme_constant_override("h_separation",10);b.alignment=HORIZONTAL_ALIGNMENT_CENTER if top else HORIZONTAL_ALIGNMENT_LEFT;b.add_theme_font_size_override("font_size",16)
 		# T-052: a tab with something affordable right now carries a «ready» dot, as everywhere else.
 		# One rule (0.8.0): a station tab is lit while any of its items is new; plain screens keep «affordable».
 		var lit=provider.tab_dot(key) if provider.has_method("tab_dot") else preload("res://scripts/ui/station_notices.gd").tab_new(station_kind,key) if station_kind not in ["","roadmap"] else affordable_in(key)
 		if key!=tab and lit:UiKit.badge(b,"ready",0,"trailing")
 		# Long names shrink to fit beside the icon and the dot instead of running under it.
-		var room=190.0-14-22-10-10-(26 if key!=tab and lit else 0);var font=b.get_theme_font("font");var fs=16
+		var room=tab_w-14-22-10-10-(26 if key!=tab and lit else 0);var font=b.get_theme_font("font");var fs=16
 		while fs>12 and font.get_string_size(Texts.render(tabs[i][1]),HORIZONTAL_ALIGNMENT_LEFT,-1,fs).x>room:fs-=1
 		b.add_theme_font_size_override("font_size",fs);b.clip_text=true
+	# Tabs on top are horizontal tabs: Q / E walk them (T-178).
+	if top:UiKit.mark_h_tabs(tab_buttons,tabs.map(func(t):return t[0]).find(tab))
 	# A tab can draw its own page instead of cards + detail (Barracks → «Классы», 0.8.0).
 	if provider.has_method("page_for"):
 		var page=provider.page_for(tab)
 		if page:
-			page.name="Page";panel.add_child(page);page.position=Vector2(232,96);page.setup(self,Vector2(866,532))
+			page.name="Page";panel.add_child(page);page.position=area.position;page.setup(self,area.size)
 			return  # the page shows its own feedback (the notice line overlapped the class bio)
-	var scroll=ScrollContainer.new();panel.add_child(scroll);scroll.position=Vector2(232,96);scroll.size=Vector2(530,532);scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
+	var detail_w=320.0;var list_w=area.size.x-detail_w-16
+	var scroll=ScrollContainer.new();panel.add_child(scroll);scroll.position=area.position;scroll.size=Vector2(list_w,area.size.y);scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
 	var items=provider.items(tab)
 	if selected=="" and not items.is_empty():selected=items[0].id
 
@@ -152,16 +162,16 @@ func build():
 	for item in items:
 		if grouped and item.get("group")!=current_group:
 			current_group=item.get("group")
-			var header=UiKit.label(column,str(current_group),Vector2.ZERO,Vector2(510,24),15,UiKit.MUTED);header.custom_minimum_size=Vector2(510,24);header.clip_text=false
+			var header=UiKit.label(column,str(current_group),Vector2.ZERO,Vector2(list_w-20,24),15,UiKit.MUTED);header.custom_minimum_size=Vector2(list_w-20,24);header.clip_text=false
 			grid=null
 		if grid==null:
-			grid=GridContainer.new();column.add_child(grid);grid.columns=3;grid.add_theme_constant_override("h_separation",10);grid.add_theme_constant_override("v_separation",10)
+			grid=GridContainer.new();column.add_child(grid);grid.columns=maxi(3,int((list_w-20+10)/176.0));grid.add_theme_constant_override("h_separation",10);grid.add_theme_constant_override("v_separation",10)
 		card(item)
 	if animate_cards:
 		for child in column.get_children():
 			if child is GridContainer:UiKit.reveal_list(child)
 		animate_cards=false
-	detail_box=UiKit.panel(panel,Vector2(778,96),Vector2(320,532),Color("2c352e"));detail_box.name="Detail"
+	detail_box=UiKit.panel(panel,Vector2(area.end.x-detail_w,area.position.y),Vector2(detail_w,area.size.y),Color("2c352e"));detail_box.name="Detail"
 	render_detail()
 ## Vertical milestones (T-191, the same quiet look as the class path): a thin track through big numbered
 ## circles — done green, the next goal with an orange ring, later hollow — and an airy card per step.

@@ -47,6 +47,7 @@ func _process(_delta):
 		var full_line=raw.split("\n")[prefix.count("\n")]
 		var x=font.get_string_size(line,HORIZONTAL_ALIGNMENT_LEFT,-1,size).x
 		if widget is Button or widget.horizontal_alignment==HORIZONTAL_ALIGNMENT_CENTER:x+=(widget.size.x-font.get_string_size(full_line,HORIZONTAL_ALIGNMENT_LEFT,-1,size).x)*.5
+		elif widget.horizontal_alignment==HORIZONTAL_ALIGNMENT_RIGHT:x+=widget.size.x-font.get_string_size(full_line,HORIZONTAL_ALIGNMENT_LEFT,-1,size).x
 		var block_height=font.get_height(size)*raw.split("\n").size()
 		var offset=(widget.size.y-block_height)*.5 if widget is Button or widget.vertical_alignment==VERTICAL_ALIGNMENT_CENTER else widget.size.y-block_height if widget.vertical_alignment==VERTICAL_ALIGNMENT_BOTTOM else 0.0
 		# Optical centre: the middle of the capital letters and digits, not of the whole line box (which
