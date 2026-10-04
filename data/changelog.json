@@ -208,7 +208,8 @@
 					"Отказ от карточки в комнатах улучшений и на «Захваченном КП» спрашивает «Не взял улучшение — уйти?», по умолчанию — вернуться к выбору.",
 					"Казарма: после покупки 3-го уровня ячейка способности открывается сразу, без перезахода.",
 					"Сплав из наград «Развития заставы» и заданий летит в верхний счётчик ресурсов.",
-					"Класс, который только что можно открыть, горит зелёной лампочкой на плашке в Казарме, пока его не посмотришь."
+					"Класс, который только что можно открыть, горит зелёной лампочкой на плашке в Казарме, пока его не посмотришь.",
+					"Режим разработчика на карте: клик по любой точке — бою, механику, депо штаба, КП, испытанию, инструктору или торговцу — открывает окно и сразу переносит в эту комнату (можно с прокачкой)."
 				]
 			},
 			"en": {
@@ -416,7 +417,8 @@
 					"Declining a card in upgrade rooms and at the «Captured CP» asks «No upgrade taken — leave?», defaulting to back to the choice.",
 					"Barracks: after buying level 3 the ability cell opens at once, no reopening needed.",
 					"Alloy from «Outpost progress» rewards and quests flies into the resource counter at the top.",
-					"A class that just became available glows with a green lamp on its plate in the Barracks until you look at it."
+					"A class that just became available glows with a green lamp on its plate in the Barracks until you look at it.",
+					"Developer map mode: clicking any node — battle, mechanic, HQ depot, command post, challenge, instructor or merchant — opens a dialog and jumps straight into that room (optionally with progression)."
 				]
 			}
 		},

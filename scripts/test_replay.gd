@@ -6,6 +6,8 @@ var events:Array=[]
 var cursor=0
 var last_build:Array=[]
 var service
+## What follows the replay (main.dev_run): the target battle, or a service room; empty — the target battle.
+var on_done:Callable
 func _ready():
 	for room in range(target):
 		if room not in Campaign.BOSSES:
@@ -21,7 +23,10 @@ func next():
 	if cursor>=events.size():
 		var progress=arena.hud.root.get_node_or_null("ReplayProgress")
 		if progress:progress.queue_free()
-		arena.replay=null;arena.hud.close_modal();arena.begin_room(target);queue_free();return
+		arena.replay=null;arena.hud.close_modal();queue_free()
+		if on_done.is_valid():on_done.call()
+		else:arena.begin_room(target)
+		return
 	var event=events[cursor];cursor+=1;arena.room_index=event.room;arena.boss_room=event.room in Campaign.BOSSES
 	match event.type:
 		"upgrade":

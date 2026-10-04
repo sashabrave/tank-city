@@ -4,6 +4,10 @@ signal route_selected(index:int,node_id:String)
 signal service_requested(branch:String,index:int)
 signal test_requested(target:int,replay_rewards:bool)
 signal dev_requested(target:int,progress:bool,node_id:String)
+## Dev map: jump into a stop between stages (instructor, merchant, …) — main.test_jump_service.
+signal dev_service_requested(target:int,progress:bool,branch:String)
+## Dev map: the stop between stages picked for a jump ({branch, stage}), empty otherwise.
+var dev_stop:Dictionary={}
 var run_context
 var modal:Control
 var pending_info:Dictionary={}
@@ -174,7 +178,7 @@ func _ready():
 		var choices=Campaign.service_options(wave_seed,service_stage)
 		for i in range(choices.size()):
 			var branch=choices[i];var pos=Vector3((i-(choices.size()-1)*.5)*6.5,0,stage_z(service_stage)+RoutePlan.STAGE_STEP)
-			var base=Node3D.new();add_child(base);base.position=pos;base.scale=Vector3.ONE*MINI_SCALE;service_nodes.append(base)
+			var base=Node3D.new();add_child(base);base.position=pos;base.scale=Vector3.ONE*MINI_SCALE;service_nodes.append(base);base.set_meta("stop",{"branch":branch,"stage":service_stage})
 			if branch=="headquarters":MINI.depot(base)
 			elif branch=="merchant":MINI.merchant(base)
 			else:MINI.service(base,branch=="vehicle",Color("839c9f") if branch=="vehicle" else Color("a99b79"))
@@ -365,7 +369,7 @@ func confirm_entry():
 	Game.sound("route_enter",Game)
 	fade_entry(false,false)
 func dev_entry(progress:bool):
-	if travelling or pending_info.is_empty():return
+	if travelling or (pending_info.is_empty() and dev_stop.is_empty()):return
 	fade_entry(true,progress)
 func fade_entry(dev:bool,progress:bool):
 	travelling=true;close_dialog()
@@ -375,14 +379,15 @@ func fade_entry(dev:bool,progress:bool):
 	tween.tween_property(camera,"size",18.0,.35)
 	tween.tween_property(camera,"position:y",camera.position.y-3,.35)
 	tween.chain().tween_callback(func():
-		if dev:dev_requested.emit(pending_info.stage,progress,pending_info.id)
+		if dev and not dev_stop.is_empty():dev_service_requested.emit(int(dev_stop.stage),progress,str(dev_stop.branch))
+		elif dev:dev_requested.emit(pending_info.stage,progress,pending_info.id)
 		else:route_selected.emit(available,pending_info.id);enter_requested.emit(available))
 func cancel_entry():
 	Game.sound("route_cancel",Game)
 	if travelling:return
 	close_dialog()
 	if preview_only:
-		pending_info={};pending_service="";preview_only=false;selection_ring.show();return
+		pending_info={};pending_service="";dev_stop={};preview_only=false;selection_ring.show();return
 	travelling=true
 	var tween=create_tween().set_parallel(true)
 	tween.tween_property(player_marker,"position",return_position,.55).set_trans(Tween.TRANS_SINE)
@@ -404,11 +409,22 @@ func tap_at(screen_pos:Vector2):
 	var point=Plane(Vector3.UP,.17).intersects_ray(camera.project_ray_origin(screen_pos),camera.project_ray_normal(screen_pos))
 	if point==null:return
 	if Game.dev_map:
+		# Any node opens a jump dialog: battles show their preview, every other room a small dev dialog.
+		for node in service_nodes:
+			var near=point-node.position
+			if node.visible and absf(near.x)<=3.15*MINI_SCALE and absf(near.z)<=3.15*MINI_SCALE:
+				dev_stop=node.get_meta("stop");pending_info={};pending_service="";preview_only=true;selection_ring.hide()
+				modal=preload("res://scripts/route_dev_dialog.gd").build(self,{"vehicle":"Механик","ability":"Инструктор","headquarters":"Штаб","merchant":"Торговец"}.get(dev_stop.branch,dev_stop.branch),"Остановка перед этапом %d" % (int(dev_stop.stage)+1));return
 		for id in previews:
 			var delta=point-previews[id].position
 			if previews[id].visible and absf(delta.x)<=3.15*MINI_SCALE and absf(delta.z)<=3.15*MINI_SCALE:
-				pending_info=previews[id].get_meta("info");pending_service="";preview_only=true;selection_ring.hide()
-				modal=preload("res://scripts/route_room_dialog.gd").build(self,pending_info);return
+				pending_info=previews[id].get_meta("info");pending_service="";dev_stop={};preview_only=true;selection_ring.hide()
+				var branch=RoutePlan.node_branch(pending_info)
+				if branch!="" or pending_info.type in RoutePlan.CHALLENGES:
+					var title={"vehicle":"Механик","headquarters":"Депо штаба","legend":"Захваченный КП"}.get(branch,ChallengeRooms.TITLES.get(pending_info.type,str(pending_info.type)))
+					modal=preload("res://scripts/route_dev_dialog.gd").build(self,title,"Этап %d" % (int(pending_info.stage)+1))
+				else:modal=preload("res://scripts/route_room_dialog.gd").build(self,pending_info)
+				return
 	if needs_service:
 		for branch in fork_positions:
 			var delta=point-fork_positions[branch]

@@ -99,7 +99,7 @@ func show_map(index: int):
 		elif not run_arena.resume_checkpoint.get("hero",{}).is_empty():current.hero_kind=str(run_arena.resume_checkpoint.hero.kind)
 	add_child(current)
 	Game.checkpoint_run(run_arena,index,"map",route_choices)
-	current.dev_requested.connect(test_jump);current.test_requested.connect(test_jump);current.route_selected.connect(enter_room);current.hub_requested.connect(show_hub);current.service_requested.connect(show_service)
+	current.dev_requested.connect(test_jump);current.test_requested.connect(test_jump);current.dev_service_requested.connect(test_jump_service);current.route_selected.connect(enter_room);current.hub_requested.connect(show_hub);current.service_requested.connect(show_service)
 func enter_room(index: int,node_id:String=""):
 	if is_instance_valid(current) and current.has_method("travel_to_room") and index!=current.available:return
 	var seed_value=run_arena.run_seed if is_instance_valid(run_arena) else Game.visual_run_seed
@@ -148,20 +148,39 @@ func show_node_service(branch:String,index:int):
 	current.hub_requested.connect(show_hub)
 	current.completed.connect(func(_completed):run_arena.run.route_choices=route_choices;show_map(index+1))
 
+## Dev map jump to any route node (battle, challenge, mechanic, depot, captured post). Service nodes enter through
+## show_node_service, exactly like a normal entry from the map.
 func test_jump(target:int,replay_rewards:bool,node_id:String=""):
 	var plan=RoutePlan.build(Game.visual_run_seed)
 	if node_id=="":node_id=plan[target][0].id
 	route_choices=RoutePlan.path_to(plan,target,node_id)
+	var branch=RoutePlan.node_branch(RoutePlan.chosen(plan,target,route_choices))
+	dev_run(target,replay_rewards,branch!="",func():
+		if branch=="":run_arena.begin_room(target);return
+		# The captured post opens over the map, so the map comes first.
+		if branch=="legend":show_map(target)
+		show_node_service(branch,target),target+1)
+## Dev map jump to a stop between stages (instructor, merchant, …): entered through show_service.
+func test_jump_service(stage:int,replay_rewards:bool,branch:String):
+	var plan=RoutePlan.build(Game.visual_run_seed)
+	route_choices=RoutePlan.path_to(plan,stage-1,plan[stage-1][0].id) if stage>0 else {}
+	dev_run(stage,replay_rewards,true,func():show_service(branch,stage),stage)
+## A fresh run arena for a dev jump: stops before services_before count as visited; with replay_rewards every
+## reward of the earlier rooms is replayed first, then enter runs.
+func dev_run(target:int,replay_rewards:bool,service:bool,enter:Callable,services_before:int):
 	clear_current()
 	if is_instance_valid(run_arena):run_arena.queue_free()
-	run_arena=load("res://scenes/arena.tscn").instantiate();run_arena.run_seed=Game.visual_run_seed;run_arena.run.route_choices=route_choices;current=run_arena;add_child(current)
+	run_arena=load("res://scenes/arena.tscn").instantiate();run_arena.run_seed=Game.visual_run_seed;run_arena.run.route_choices=route_choices
+	# A service needs no battlefield unless the rewards are replayed on it.
+	run_arena.defer_room=service and not replay_rewards
+	current=run_arena;add_child(current)
 	current.exit_requested.connect(show_hub);current.map_requested.connect(show_map);current.restart_requested.connect(restart_room)
 	current.visited_services={}
 	for stage in Campaign.SERVICES:
-		if stage<=target:current.visited_services[stage]="test"
+		if stage<services_before:current.visited_services[stage]="test"
 	if replay_rewards:
-		var replay=load("res://scripts/test_replay.gd").new();replay.arena=run_arena;replay.main=self;replay.target=target;run_arena.add_child(replay)
-	else:current.begin_room(target)
+		var replay=load("res://scripts/test_replay.gd").new();replay.arena=run_arena;replay.main=self;replay.target=target;replay.on_done=enter;run_arena.add_child(replay)
+	else:enter.call()
 
 func show_gallery():
 	clear_current()

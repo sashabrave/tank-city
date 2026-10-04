@@ -88,5 +88,34 @@ func run():
 	ResourceStrip.fly_reward("alloy",Vector2(400,400),80)
 	await get_tree().create_timer(.4).timeout
 	check(ResourceStrip.pickup_flights.filter(is_instance_valid).size()>flights,"reward alloy flies to the strip")
+	hub.queue_free();await get_tree().process_frame
+	# Dev map: every route node jumps into its room through the normal entry (main.show_node_service/show_service).
+	var main=load("res://scripts/main.gd").new();add_child(main);await get_tree().process_frame;await get_tree().process_frame
+	var plan=RoutePlan.build(Game.visual_run_seed)
+	var special={}
+	for stage in plan:
+		for node in stage:
+			var branch=RoutePlan.node_branch(node)
+			if branch!="" and not special.has(branch):special[branch]=node
+	for branch in special:
+		var node=special[branch]
+		main.test_jump(int(node.stage),false,str(node.id));await get_tree().process_frame
+		if branch=="legend":check(main.current.has_method("travel_to_room") and main.current.root.get_children().any(func(c):return c.get_script()==preload("res://scripts/legend_stop.gd")),"dev jump: captured post opens over the map")
+		else:check(main.current.get_script()==preload("res://scripts/service_room.gd") and main.current.branch==branch,"dev jump: %s node opens its room" % branch)
+	var stop=Campaign.SERVICES[0];var stop_branch=Campaign.service_options(Game.visual_run_seed,stop)[0]
+	main.test_jump_service(stop,false,stop_branch);await get_tree().process_frame
+	var expected=preload("res://scripts/merchant_room.gd") if stop_branch=="merchant" else preload("res://scripts/service_room.gd")
+	check(main.current.get_script()==expected and main.current.index==stop,"dev jump: the stop between stages opens its room")
+	var route=load("res://scripts/route_map.gd").new();route.wave_seed=42;add_child(route);await get_tree().process_frame
+	var events=[];route.dev_service_requested.connect(func(stage,progress,branch):events.append([stage,progress,branch]))
+	for i in range(200):
+		if not route.travelling:break
+		await get_tree().process_frame
+	route.dev_stop=route.service_nodes[0].get_meta("stop");route.dev_entry(false)
+	for i in range(80):
+		if not events.is_empty():break
+		await get_tree().process_frame
+	check(events.size()==1 and events[0][2]==route.dev_stop.branch,"dev map: a stop between stages emits its jump")
+	route.queue_free();main.queue_free();await get_tree().process_frame
 	print("DONE errors=",errors)
 	get_tree().quit(1 if errors>0 else 0)
