@@ -4,7 +4,7 @@ var tier=0
 var seed_value=42
 var service_choice="vehicle"
 func _ready():
-	var args=OS.get_cmdline_user_args()
+	var args=Array(OS.get_cmdline_user_args()).filter(func(s):return not str(s).begins_with("--"))  # skip runner flags
 	if args.size()>0:tier=int(args[0])
 	if args.size()>1:seed_value=int(args[1])
 	if args.size()>2:service_choice=args[2]

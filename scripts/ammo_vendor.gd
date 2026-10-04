@@ -52,6 +52,8 @@ func types()->Array:return Ammo.TYPES.filter(func(t):return Ammo.fits(t,str(aren
 func buy(id:="army")->Dictionary:
 	var price=int(crate(id)[2])
 	if arena.run.tokens<price:return {}
+	# The prize must have a place before it is paid for (audit 2026-10-03): «В рюкзак» or the swapped-out ammo.
+	if Backpack.full(arena.run):arena.toast(Texts.render("Рюкзак полон — освободи ячейку в «Снаряжении»"));return {}
 	arena.run.tokens-=price
 	var pool=types()
 	var type=pool[arena.run.combat_rng.randi_range(0,pool.size()-1)]
@@ -180,11 +182,11 @@ func result(ui_root:Control,item:Dictionary):
 	var note=(Texts.render("Заменит")+": "+Texts.render(Ammo.NAMES[old.type])) if not old.is_empty() else Texts.render("Свободный слот")
 	UiKit.label(panel,note,Vector2(24,y+4),Vector2(512,22),13,UiKit.MUTED)
 	var bag_button=UiKit.button(panel,"В рюкзак",Vector2(24,size.y-66),Vector2(250,48),func():
-		arena.run.ammo_bag.append(item);close())
+		Backpack.stow(arena,item);close())
 	if Backpack.full(arena.run):bag_button.disabled=true;bag_button.tooltip_text=Texts.render("Рюкзак полон")
 	var load_button=UiKit.button(panel,"Зарядить",Vector2(size.x-274,size.y-66),Vector2(250,48),func():
 		var out=Ammo.load_item(arena.run,item)
-		# Outside battle a full backpack still takes the swapped-out ammo (one over the limit until the next field).
-		if not out.is_empty():arena.run.ammo_bag.append(out)
+		# A cell was checked before paying (buy): the swapped-out ammo always has a place.
+		if not out.is_empty():Backpack.stow(arena,out)
 		Game.sound("weapon_equip",room);close(),true)
 	load_button.grab_focus.call_deferred()

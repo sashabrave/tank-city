@@ -64,15 +64,44 @@ static func safe_order(run)->Array:
 ## Empty hands (2026-10-03): the gun goes into a backpack cell and the cat fights with its paws (the hidden
 ## «paws» weapon: Space and V scratch, damage grows with «Сила»). Any time, anywhere a run is on; the tablet
 ## closes as usual — the gear page only reminds to take a gun.
+## One rule for every item that has to go somewhere (audit 2026-10-03): the backpack if a cell is free, else a
+## sack at the soldier's feet when there is a field; otherwise false and nothing changes — the caller must not
+## have taken the item yet (check room() first). Never a hidden ninth cell, never a silent loss.
+static func stow(arena,item:Dictionary,kind:="ammo")->bool:
+	var run=arena.run
+	if not full(run):
+		match kind:
+			"weapon":run.weapon_bag.append(item)
+			"supply":run.supplies.append(item)
+			"recipe":run.pending_recipes.append(item)
+			_:run.ammo_bag.append(item)
+		return true
+	if can_drop(arena):
+		var content={"recipes":[],"ammo":[]}
+		match kind:
+			"weapon":content["weapons"]=[item]
+			"supply":content["supplies"]=[item]
+			"recipe":content.recipes.append(item)
+			_:content.ammo.append(item)
+		arena.reward.place_sack(arena.grid_pos(arena.room.player.position),content);arena.toast(Texts.render("Рюкзак полон — предмет лежит рядом"))
+		return true
+	return false
+static func stow_all(arena,items:Array,kind:="ammo"):
+	for item in items:stow(arena,item,kind)
+## Can `count` items be put away right now (free cells, or a field to drop them on)?
+static func room_for(arena,count:int)->bool:return count<=0 or free_cells(arena.run)>=count or can_drop(arena)
 static func holstered(run)->bool:return run!=null and str(run.weapon)==LootCatalog.PAWS
 static func holster(arena,cell:=-1)->bool:
 	var run=arena.run
 	if run==null or holstered(run) or full(run):return false
+	# The gun takes a cell; ammo the paws cannot hold must fit too (or drop on the field).
+	if not (free_cells(run)>=1+Ammo.overflow(run,LootCatalog.PAWS) or can_drop(arena)):
+		arena.toast(Texts.render("Рюкзак полон — некуда убрать боеприпасы второго слота"));return false
 	var item={"id":str(run.weapon),"rarity":int(run.weapon_rarity),"stats":run.weapon_stats.duplicate()}
 	if cell>=0 and cell<capacity() and layout(run)[cell]==null:item["cell"]=cell
 	run.weapon_bag.append(item)
 	run.weapon=LootCatalog.PAWS;run.weapon_rarity=0;run.weapon_stats={}
-	Ammo.ensure(run,run.weapon);RunUpgrades.refresh_player(arena);refresh(arena);return true
+	stow_all(arena,Ammo.ensure(run,run.weapon));RunUpgrades.refresh_player(arena);refresh(arena);return true
 ## A gun waiting in the backpack while the paws fight (the reminder on the gear page and after the tablet).
 static func spare_gun(run)->bool:return run!=null and not run.weapon_bag.is_empty()
 ## A spare weapon into the backpack (weapon crates, the gun in hand dragged out); false when it is full.
@@ -87,13 +116,17 @@ static func equip_weapon(arena,index:int)->bool:
 	var run=arena.run
 	if index<0 or index>=run.weapon_bag.size():return false
 	var item:Dictionary=run.weapon_bag[index]
+	# A one-slot gun cannot hold the second slot's ammo: it goes to the backpack (or the field) — check first.
+	var spill=Ammo.overflow(run,str(item.id));var freed=1 if holstered(run) else 0
+	if not (free_cells(run)+freed>=spill or can_drop(arena)):
+		arena.toast(Texts.render("Рюкзак полон — некуда убрать боеприпасы второго слота"));return false
 	var old={"id":str(run.weapon),"rarity":int(run.weapon_rarity),"stats":run.weapon_stats.duplicate()}
 	if item.has("cell"):old["cell"]=item.cell
 	# Bare paws are not an item: the taken gun simply leaves its cell.
 	if holstered(run):run.weapon_bag.remove_at(index)
 	else:run.weapon_bag[index]=old
 	run.weapon=str(item.id);run.weapon_rarity=int(item.get("rarity",0));run.weapon_stats=item.get("stats",{}).duplicate()
-	Ammo.ensure(run,run.weapon)
+	stow_all(arena,Ammo.ensure(run,run.weapon))
 	RunUpgrades.refresh_player(arena);refresh(arena);return true
 
 ## Bag ammo → the active slot (or a given one); the slot's special ammo comes back to the bag. Standard ammo

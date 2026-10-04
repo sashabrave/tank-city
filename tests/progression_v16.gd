@@ -41,10 +41,10 @@ func run():
 	arena.queue_free()
 	# Fresh temporary folder: the profile, its backup and temp files never touch real saves or older runs.
 	var dir=OS.get_temp_dir().path_join("warcats_v16_%d" % Time.get_ticks_usec());DirAccess.make_dir_recursive_absolute(dir)
-	var old_path=Game.save_path;Game.save_path=dir.path_join("profile.json");Game.save_enabled=true
+	var old_path=Game.save_path;var picked=Game.profiles.selected;Game.profiles.selected=true;Game.save_path=dir.path_join("profile.json");Game.save_enabled=true
 	Game.health_level=45;Game.class_slots[Game.selected_class]=[Game.class_skill(),Game.CLASS_CHOICES[Game.selected_class][0]];Game.save_progress();Game.health_level=0;Game.class_slots={};Game.load_progress()
 	assert(Game.health_level==45 and Game.class_second()==Game.CLASS_CHOICES[Game.selected_class][0],"Save preserves uncapped levels and the class slots")
-	Game.save_enabled=false;Game.save_path=old_path
+	Game.save_enabled=false;Game.save_path=old_path;Game.profiles.selected=picked
 	for file in DirAccess.get_files_at(dir):DirAccess.remove_absolute(dir.path_join(file))
 	DirAccess.remove_absolute(dir)
 	print("PASS v16 loadout, registry cards, class gallery, quest acceptance and isolated save roundtrip")

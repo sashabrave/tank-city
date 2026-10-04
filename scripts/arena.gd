@@ -302,7 +302,8 @@ func ensure_armed(at_start:=false)->bool:
 	elif at_start and not LootCatalog.is_gun(str(run.weapon)):
 		toast(Texts.render("Руки пусты — бьёшь лапой. Возьми оружие в «Снаряжении»"))
 	if run.ammo_slots.is_empty():fixed=true;toast(Texts.render("Нет боеприпасов в слоте — заряжены обычные"))
-	Ammo.ensure(run,str(run.weapon))
+	# A slot the issued gun cannot hold puts its ammo away (backpack or field), never deletes it.
+	Backpack.stow_all(self,Ammo.ensure(run,str(run.weapon)))
 	if at_start and LootCatalog.is_gun(str(run.weapon)) and run.ammo_slots.all(func(s):return Ammo.is_empty_slot(s)) and not run.ammo_bag.any(func(a):return Ammo.fits(str(a.get("type","")),str(run.weapon))):
 		run.ammo_slots[clampi(run.ammo_active,0,run.ammo_slots.size()-1)]=Ammo.standard();fixed=true
 		toast(Texts.render("Нет боеприпасов — заряжены обычные"))

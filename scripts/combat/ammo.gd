@@ -65,7 +65,10 @@ static func seed_for(arena,type:String,tier:int)->int:
 
 static func capacity(weapon:String)->int:return 2 if weapon in Game.ammo_slot_weapons else 1
 ## Slots hold items; older saves held type names — those become plain common items.
-static func ensure(run,weapon:String):
+## Returns the items that no longer fit (a two-slot gun swapped for a one-slot one, audit 2026-10-03): the
+## caller puts them away (Backpack.stow) — nothing is silently deleted. Empty slots are not items.
+static func ensure(run,weapon:String)->Array:
+	var evicted=[]
 	for i in range(run.ammo_slots.size()):
 		if not run.ammo_slots[i] is Dictionary:
 			var name=str(run.ammo_slots[i])
@@ -74,8 +77,16 @@ static func ensure(run,weapon:String):
 	while run.ammo_slots.size()<size:run.ammo_slots.append(standard())
 	while run.ammo_slots.size()>size:
 		if run.ammo_active>=run.ammo_slots.size()-1:run.ammo_active=0
-		run.ammo_slots.pop_back()
+		var out=run.ammo_slots.pop_back()
+		if out is Dictionary and not is_empty_slot(out):evicted.append(out)
 	run.ammo_active=clampi(run.ammo_active,0,run.ammo_slots.size()-1)
+	return evicted
+## How many loaded items a switch to `weapon` would push out of the slots.
+static func overflow(run,weapon:String)->int:
+	var count=0
+	for i in range(capacity(weapon),run.ammo_slots.size()):
+		if run.ammo_slots[i] is Dictionary and not is_empty_slot(run.ammo_slots[i]):count+=1
+	return count
 static func item(run)->Dictionary:
 	if run==null or run.ammo_slots.is_empty():return standard()
 	var slot=run.ammo_slots[clampi(run.ammo_active,0,run.ammo_slots.size()-1)]

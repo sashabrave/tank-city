@@ -3143,3 +3143,13 @@ Q · есть сразу	Q · from the start
 Нет боеприпасов — удар прикладом. Заряди в «Снаряжении»	No ammo — gun butt strike. Load some in Gear
 Нет оружия — выдано из штаба: %s	No weapon — the HQ issued: %s
 Нет боеприпасов — заряжены обычные	No ammo — plain rounds loaded
+Класс · сейчас %s, ур. %d	Class · now %s, lv. %d
+Слот способности	Ability slot
+Способность в слот (все, включая неоткрытые)	Ability into the slot (all, locked too)
+Параметры	Parameters
+Перезарядка, с	Cooldown, s
+Исходные значения	Original values
+В скобках — исходное значение. Изменения действуют сразу; «Сохранить» оставляет их и после выхода.	In brackets: the original value. Changes apply at once; Save keeps them after leaving.
+Рюкзак полон — предмет лежит рядом	Backpack full — the item lies nearby
+Рюкзак полон — некуда убрать боеприпасы второго слота	Backpack full — no room for the second slot's ammo
+Рюкзак полон — освободи ячейку в «Снаряжении»	Backpack full — free a cell in Gear

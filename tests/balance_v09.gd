@@ -3,7 +3,7 @@ extends "res://tests/balance_v08.gd"
 var stage_limit=15
 func _ready():
 	Game.save_enabled=false;Game.sound_enabled=false;Game.reset_upgrades()
-	var args=OS.get_cmdline_user_args();seed_value=int(args[0]) if args.size()>0 else 42
+	var args=Array(OS.get_cmdline_user_args()).filter(func(s):return not str(s).begins_with("--"));seed_value=int(args[0]) if args.size()>0 else 42
 	Game.health_level=20;Game.damage_level=20;Game.base_level=10;Game.heal_level=10;Game.mobility_level=10;Game.turret_level=10;Game.luck_level=10;Game.rarity_level=10;Game.recovery_level=10;Game.camp_level=3
 	Game.ability_slots=2;Game.equipped_abilities=["grenade","ally_drone"];Game.selected_ability="grenade";Game.ability_unlocks=Game.equipped_abilities.duplicate();Game.shield_capacity_level=1
 	arena=load("res://scenes/arena.tscn").instantiate();add_child(arena);arena.auto_pause_enabled=false;arena.run_seed=seed_value;arena.combat_rng.seed=seed_value;arena.begin_room(0)

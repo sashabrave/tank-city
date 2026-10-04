@@ -34,6 +34,18 @@ func run():
 	arena.damage_base(99);await settle()
 	check(arena.room.base_hp==arena.room.base_max_hp and arena.phase=="combat","HQ comes back")
 	# «Снаряжение» tab: ammo items, backpack, sack, any ability in a slot, class level milestones.
+	# «Класс» tab (2026-10-03): any class and any ability, live sliders, reset to the originals; no files written.
+	AbilityCatalog.write_enabled=false
+	admin.tab="class";admin.open_panel();admin.render();await settle()
+	admin.switch_class("heavy");await settle()
+	check(Game.selected_class=="heavy" and is_instance_valid(arena.player),"class switch respawns as the chosen class")
+	admin.ability_slot=0;admin.tuning="shield";admin.set_ability("shield");await settle()
+	check(arena.abilities.slots[0]=="shield" and admin.body.find_child("Tune_cooldown",true,false)!=null,"ability set into Q, its sliders are shown")
+	var slider:HSlider=admin.body.find_child("Tune_cooldown",true,false).get_node("Slider");slider.value=5.0
+	check(is_equal_approx(AbilityCatalog.DATA.shield.cooldown,5.0),"the slider changes the cooldown at once")
+	AbilityCatalog.reset_tuning("shield")
+	check(is_equal_approx(AbilityCatalog.DATA.shield.cooldown,AbilityCatalog.default_value("shield","cooldown")),"reset returns the original value")
+	admin.close_panel()
 	admin.tab="kit";admin.open_panel();admin.render();await settle()
 	admin.tier=2;admin.load_ammo("burn")
 	check(Ammo.item(arena.run).type=="burn" and Ammo.item(arena.run).rarity==2,"admin loads rolled ammo")

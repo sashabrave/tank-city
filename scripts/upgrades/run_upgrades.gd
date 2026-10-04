@@ -88,13 +88,12 @@ static func apply(arena,id:String,tier:int,record:bool=true)->bool:
 	# An ammo card is an item with its own rolled values (T-112): it goes into a slot; the card's stat
 	# modifiers are not applied — the item carries the values.
 	if id in Ammo.TYPES:
-		Ammo.ensure(arena.run,str(arena.weapon))
+		Backpack.stow_all(arena,Ammo.ensure(arena.run,str(arena.weapon)))
 		var item=Ammo.roll(id,tier,Ammo.seed_for(arena,id,tier))
 		var old=Ammo.load_item(arena.run,item)
-		if not old.is_empty():
-			# No room in the backpack: the replaced ammo waits on the field in a sack (nothing is lost).
-			if Backpack.full(arena.run) and Backpack.can_drop(arena):arena.reward.place_sack(arena.grid_pos(arena.room.player.position),{"recipes":[],"ammo":[old]})
-			else:arena.run.ammo_bag.append(old)
+		# The replaced ammo: backpack, else a sack on the field; with neither (a full backpack in a room) it stays
+		# in the backpack over the limit only as a last resort — merchant ammo cards need a free cell (available()).
+		if not old.is_empty() and not Backpack.stow(arena,old):arena.run.ammo_bag.append(old)
 		if record:arena.run.upgrade_history.append({"id":id,"tier":tier})
 		refresh_player(arena)
 		if is_instance_valid(arena.hud):arena.hud.refresh_ammo()

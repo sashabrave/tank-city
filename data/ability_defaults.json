@@ -1,0 +1,50 @@
+{
+	"airstrike": {
+		"cooldown": 100.0,
+		"power": 2.0
+	},
+	"ally_drone": {
+		"cooldown": 65.0,
+		"power": 3.0
+	},
+	"barrier": {
+		"cooldown": 33.0,
+		"power": 12.0
+	},
+	"cloak": {
+		"cooldown": 55.0,
+		"power": 5.0
+	},
+	"comrade": {
+		"cooldown": 150.0,
+		"power": 0.5
+	},
+	"dynamite": {
+		"cooldown": 30.0,
+		"power": 6.0
+	},
+	"gas": {
+		"cooldown": 42.0,
+		"power": 5.0
+	},
+	"grenade": {
+		"cooldown": 36.0,
+		"power": 4.0
+	},
+	"laser": {
+		"cooldown": 20.0,
+		"power": 6.0
+	},
+	"mine": {
+		"cooldown": 28.0,
+		"power": 7.0
+	},
+	"shield": {
+		"cooldown": 15.0,
+		"power": 4.0
+	},
+	"field_repair": {
+		"cooldown": 35.0,
+		"power": 3.0
+	}
+}

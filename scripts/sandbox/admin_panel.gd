@@ -5,7 +5,8 @@ extends CanvasLayer
 signal exit_requested
 const ENEMIES=[["soldier","Стрелок"],["grenadier","Гранатомётчик"],["shield","Щитовой"],["sniper","Снайпер"],["buggy","Багги"],["apc","БТР"],["tank","Танк"],["mortar","Миномёт"],["drone","Дрон"],["flyer","Летающий"]]
 const SIZES=[13,15,17,19,21,23,25]
-const TABS=[["field","Поле"],["enemies","Враги"],["bonuses","Бонусы"],["cards","Карты"],["stats","Статы"],["kit","Снаряжение"],["gear","Техника"],["challenges","Испытания"]]
+const TABS=[["field","Поле"],["class","Класс"],["enemies","Враги"],["bonuses","Бонусы"],["cards","Карты"],["stats","Статы"],["kit","Снаряжение"],["gear","Техника"],["challenges","Испытания"]]
+var tuning=""  # «Класс»: the ability whose cooldown/power sliders are shown
 var ability_slot=0  # sandbox «Снаряжение»: which slot (Q, 1, F) an ability button fills
 var arena
 var tab="field"
@@ -78,6 +79,21 @@ func render():
 			header(grid,"Биом")
 			for i in range(arena.BIOMES.ENTRIES.size()):
 				var index=i;action(grid,arena.BIOMES.ENTRIES[i].name,func():rebuild({"biome":index}),arena.sandbox_biome==i)
+		"class":
+			# One place to test classes and abilities (author, 2026-10-03). The sandbox profile is a snapshot:
+			# leaving for the hub returns the real class and abilities.
+			header(grid,"Класс · сейчас %s, ур. %d" % [Game.CLASSES[Game.selected_class].name,ClassCatalog.level(Game.selected_class)])
+			for id in Game.CLASSES:
+				var shell=id;action(grid,Game.CLASSES[id].name+(" · черновик" if id=="driver" else ""),func():switch_class(shell),Game.selected_class==id)
+			for concept in ClassCatalog.CONCEPTS:
+				var draft=action(grid,str(concept[0])+" · только описание",func():pass);draft.disabled=true;draft.tooltip_text=Texts.render(" · ".join(concept.slice(1)))
+			header(grid,"Слот способности")
+			for slot in range(3):
+				var value=slot;action(grid,["Слот Q","Слот 1","Слот F"][slot],func():ability_slot=value;render(),ability_slot==slot)
+			header(grid,"Способность в слот (все, включая неоткрытые)")
+			for id in AbilityCatalog.DATA:
+				var ability=id;action(grid,AbilityCatalog.DATA[id].name+(" ✓" if id in arena.abilities.slots else ""),func():tuning=ability;set_ability(ability),tuning==id)
+			if tuning!="" and AbilityCatalog.DATA.has(tuning):tuning_panel()
 		"enemies":
 			header(grid,"Ранг и количество")
 			for r in [1,2,3]:
@@ -129,11 +145,6 @@ func render():
 			action(grid,"Случайное оружие",func():airdrop({"recipes":[],"ammo":[],"weapons":[random_gun()]}))
 			action(grid,"Случайные боеприпасы",func():airdrop({"recipes":[],"ammo":[Ammo.roll(Ammo.TYPES[randi()%Ammo.TYPES.size()],tier,randi())]}))
 			action(grid,"Аптечка",func():airdrop({"recipes":[],"ammo":[],"supplies":[{"type":"medkit","heal":3.0}]}))
-			header(grid,"Способность в слот")
-			for s in range(3):
-				var value=s;action(grid,["Слот Q","Слот 1","Слот F"][s],func():ability_slot=value;render(),ability_slot==s)
-			for id in AbilityCatalog.DATA:
-				var ability=id;action(grid,AbilityCatalog.DATA[id].name+(" ✓" if id in arena.abilities.slots else ""),func():set_ability(ability))
 			action(grid,"Сила способности +1",func():arena.abilities.level.power+=1.0;arena.toast("Сила: +%d" % int(arena.abilities.level.power)))
 			header(grid,"Уровень класса (%s · %d)" % [Game.CLASSES[Game.selected_class].name,ClassCatalog.level(Game.selected_class)])
 			for lv in [1,3,5,8,10,14,20]:
@@ -145,9 +156,6 @@ func render():
 			header(grid,"Оружие")
 			for id in Game.LOOT.WEAPONS:
 				var weapon=id;action(grid,Game.LOOT.WEAPONS[id].name,func():arena.run.weapon=weapon;RunUpgrades.refresh_player(arena);render(),arena.run.weapon==id)
-			header(grid,"Класс (возрождение)")
-			for id in Game.CLASSES:
-				var shell=id;action(grid,Game.CLASSES[id].name,func():Game.selected_class=shell;respawn();render(),Game.selected_class==id)
 		"challenges":
 			header(grid,"Звёзды")
 			for d in range(3):
@@ -155,6 +163,30 @@ func render():
 			header(grid,"Запустить")
 			for mode in RoutePlan.CHALLENGES:
 				var id=mode;action(grid,ChallengeRooms.TITLES.get(mode,mode),func():rebuild({"mode":id}))
+## Class switch: the soldier respawns as that class, its abilities fill the slots.
+func switch_class(id:String):
+	Game.selected_class=id;arena.abilities.setup();respawn();refresh_skill_icons()
+	arena.toast(Texts.render("Класс")+": "+Texts.render(Game.CLASSES[id].name));render()
+## Sliders of the chosen ability: they act at once; «Сохранить» keeps them, «Сбросить» returns the originals.
+func tuning_panel():
+	var info:Dictionary=AbilityCatalog.DATA[tuning]
+	var title=Label.new();body.add_child(title);Texts.set_text(title,Texts.render("Параметры")+": "+Texts.render(str(info.name)));title.add_theme_color_override("font_color",UiKit.MUTED);title.custom_minimum_size=Vector2(0,30)
+	for spec in [["cooldown","Перезарядка, с",1.0,maxf(120.0,AbilityCatalog.default_value(tuning,"cooldown")*2.0),.5],["power","Сила",.1,maxf(10.0,AbilityCatalog.default_value(tuning,"power")*3.0),.05]]:
+		var row=HBoxContainer.new();body.add_child(row);row.add_theme_constant_override("separation",10);row.name="Tune_"+spec[0]
+		var name=Label.new();row.add_child(name);Texts.set_text(name,spec[1]);name.custom_minimum_size=Vector2(150,36);name.vertical_alignment=VERTICAL_ALIGNMENT_CENTER
+		var bar=HSlider.new();row.add_child(bar);bar.min_value=spec[2];bar.max_value=spec[3];bar.step=spec[4];bar.value=float(info[spec[0]]);bar.size_flags_horizontal=Control.SIZE_EXPAND_FILL;bar.custom_minimum_size=Vector2(0,36);bar.name="Slider"
+		var value=Label.new();row.add_child(value);value.custom_minimum_size=Vector2(110,36);value.vertical_alignment=VERTICAL_ALIGNMENT_CENTER
+		var key=str(spec[0])
+		var show=func(v):value.text="%s (%s)" % [UiKit.number(v),UiKit.number(AbilityCatalog.default_value(tuning,key))]
+		show.call(bar.value)
+		bar.value_changed.connect(func(v):AbilityCatalog.tune(tuning,key,v);show.call(v))
+	var buttons=HBoxContainer.new();body.add_child(buttons);buttons.add_theme_constant_override("separation",10)
+	var save=UiKit.button(buttons,"Сохранить",Vector2.ZERO,Vector2(200,40),func():
+		arena.toast(Texts.render("Сохранено") if AbilityCatalog.save_tuning(tuning) else Texts.render("Не удалось сохранить"));render(),true)
+	save.custom_minimum_size=Vector2(200,40);save.name="TuneSave"
+	var reset=UiKit.button(buttons,"Сбросить",Vector2.ZERO,Vector2(200,40),func():AbilityCatalog.reset_tuning(tuning);arena.toast(Texts.render("Исходные значения"));render())
+	reset.custom_minimum_size=Vector2(200,40);reset.name="TuneReset"
+	var note=Label.new();body.add_child(note);Texts.set_text(note,"В скобках — исходное значение. Изменения действуют сразу; «Сохранить» оставляет их и после выхода.");note.add_theme_font_size_override("font_size",13);note.add_theme_color_override("font_color",UiKit.MUTED);note.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 func load_ammo(type:String):
 	Ammo.ensure(arena.run,arena.run.weapon)
 	var old=Ammo.load_item(arena.run,Ammo.roll(type,tier,randi()))

@@ -174,6 +174,8 @@ func available(entry:Dictionary)->bool:
 		"heal":return arena.run.soldier_hp<arena.run.soldier_max_hp
 		"repair":return is_instance_valid(arena.room.player) and arena.room.player.hp<arena.room.player.max_hp
 		"blueprint":return not Backpack.full(arena.run)
+		# An ammo card pushes the loaded ammo into the backpack (audit 2026-10-03): it needs a free cell here.
+		"card":return not (str(entry.get("id","")) in Ammo.TYPES and Backpack.full(arena.run))
 	return true
 func purchase(i:int)->bool:
 	if i<0 or i>=stock.size():return false

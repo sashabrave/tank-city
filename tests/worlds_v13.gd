@@ -71,7 +71,7 @@ func run():
 	print("PASS arenas: all world finals / reward pools")
 	Campaign.configure(1,true);var first=Campaign.hp_scale(0);Campaign.cycle=4;check(Campaign.hp_scale(0)>first,"endless grows")
 	var folder="/tmp/war-cats-worlds-v13-%d-%d" % [Time.get_ticks_usec(),randi()];DirAccess.make_dir_recursive_absolute(folder)
-	var save_path=Game.save_path;Game.save_path=folder+"/profile.json";Game.save_enabled=true;Game.save_progress();Game.progression.cleared_worlds=[];Game.load_progress();Game.save_enabled=false;Game.save_path=save_path
+	var save_path=Game.save_path;var picked=Game.profiles.selected;Game.profiles.selected=true;Game.save_path=folder+"/profile.json";Game.save_enabled=true;Game.save_progress();Game.progression.cleared_worlds=[];Game.load_progress();Game.save_enabled=false;Game.save_path=save_path;Game.profiles.selected=picked
 	check(Game.progression.cleared_worlds==[1,2,3],"disk save preserves world unlocks")
 	var main=load("res://scripts/main.gd").new();add_child(main);await get_tree().process_frame;await get_tree().process_frame
 	Campaign.configure(1,true);main.start_run();main.enter_room(0);var carried=main.run_arena;carried.damage_bonus=2.5

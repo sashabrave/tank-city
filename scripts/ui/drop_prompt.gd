@@ -75,10 +75,13 @@ func use():
 	match kind():
 		"weapon":
 			var old={"id":str(run.weapon),"rarity":int(run.weapon_rarity),"stats":run.weapon_stats.duplicate()}
-			run.weapon=str(it.id);run.weapon_rarity=int(it.get("rarity",0));run.weapon_stats=it.get("stats",{}).duplicate();Ammo.ensure(run,run.weapon);RunUpgrades.refresh_player(arena)
+			run.weapon=str(it.id);run.weapon_rarity=int(it.get("rarity",0));run.weapon_stats=it.get("stats",{}).duplicate()
+			# Second-slot ammo a one-slot gun cannot hold lies down here with the old gun (audit: never deleted).
+			var spilled=Ammo.ensure(run,run.weapon);RunUpgrades.refresh_player(arena)
 			# Bare paws are not an item (T-201): with empty hands nothing is left lying here.
-			if LootCatalog.is_gun(str(old.id)):replace({"recipes":[],"ammo":[],"weapons":[old]})
-			else:remove()
+			var guns=[old] if LootCatalog.is_gun(str(old.id)) else []
+			if guns.is_empty() and spilled.is_empty():remove()
+			else:replace({"recipes":[],"ammo":spilled,"weapons":guns})
 			Game.sound("weapon_equip",arena);arena.toast(Texts.render("Оружие в руках"))
 		"ammo":
 			Ammo.ensure(run,str(arena.weapon))

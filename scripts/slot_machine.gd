@@ -33,6 +33,9 @@ func near(avatar:Node3D)->bool:return avatar.global_position.distance_to(global_
 func pull(ui_root:Control,done:Callable)->String:
 	if arena.run.tokens<PRICE:
 		Game.sound("ui_denied",self);done.call();return ""
+	# An ammo prize needs a cell (audit 2026-10-03): no spin with a full backpack, nothing over the limit.
+	if Backpack.full(arena.run):
+		arena.toast(Texts.render("Рюкзак полон — освободи ячейку в «Снаряжении»"));Game.sound("ui_denied",self);done.call();return ""
 	arena.run.tokens-=PRICE
 	var line=play()
 	Game.progression.event("slot_play")
@@ -65,7 +68,7 @@ func play()->String:
 			var types=Ammo.TYPES.filter(func(t):return Ammo.fits(t,str(arena.weapon)))
 			var type=types[arena.run.combat_rng.randi_range(0,types.size()-1)]
 			var item=Ammo.roll(type,1 if arena.run.combat_rng.randf()<.3 else 0,arena.run.combat_rng.randi())
-			arena.run.ammo_bag.append(item)  # like the ammo machine: one over the backpack limit until the next field
+			Backpack.stow(arena,item)  # a free cell was checked before the spin
 			return Texts.render(Ammo.NAMES[type]+" боеприпасы")+" · "+Texts.render("в рюкзак")
 		"card0","card1","card2":
 			var ids=RunUpgrades.roll(arena,1)

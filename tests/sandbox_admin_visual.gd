@@ -18,7 +18,7 @@ func run():
 	for size in [Vector2i(1600,900),Vector2i(1280,720),Vector2i(960,600)]:
 		get_window().size=size;await settle()
 		for entry in admin.TABS:
-			admin.close_panel();admin.tab=entry[0];admin.open_panel();await settle()
+			admin.close_panel();admin.tab=entry[0];admin.tuning="shield" if entry[0]=="class" else "";admin.open_panel();await settle()
 			var limit=admin.scroll.size.x
 			var wide=admin.body.find_children("*","Button",true,false).filter(func(b):return b.size.x>limit+1)
 			check(wide.is_empty(),"%s %dx%d: buttons fit the panel" % [entry[0],size.x,size.y])
