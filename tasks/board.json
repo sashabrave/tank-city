@@ -1,5 +1,5 @@
 {
-	"next_id": 310,
+	"next_id": 311,
 	"tasks": [
 		{
 			"id": "T-001",
@@ -3930,6 +3930,18 @@
 			"type": "bug",
 			"priority": 1,
 			"status": "doing",
+			"version": "0.8.1",
+			"created": "2026-10-04",
+			"source": "chat",
+			"shot": ""
+		},
+		{
+			"id": "T-310",
+			"title": "Нестабильный тест author_rooms_revision при параллельном прогоне CORE (find_children на Nil)",
+			"note": "Отдельно проходит всегда; в 4 потока иногда падает за 2 с.",
+			"type": "bug",
+			"priority": 3,
+			"status": "backlog",
 			"version": "0.8.1",
 			"created": "2026-10-04",
 			"source": "chat",
