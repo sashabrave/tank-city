@@ -35,6 +35,11 @@ const LOW_SUN_SHADOW=.55
 ## golden hour, sunset or dawn — whatever the day/night setting. A room opts in with `var cozy_light:=true`.
 const COZY_MOMENTS=["golden","sunset","dawn"]
 static func cozy_room(context)->bool:return context!=null and context.get("cozy_light")==true
+## Room number behind the sun and rim choice: the hub on the arena keeps its own per-visit number (hub.gd).
+static func light_index(context:Node)->int:
+	var ground=context.get("playground")
+	if ground!=null and is_instance_valid(ground) and ground.get("room_index")!=null:return int(ground.room_index)
+	return int(context.get("room_index")) if context.get("room_index")!=null else 0
 static func moment(context:Node,night:bool)->Dictionary:
 	if cozy_room(context):
 		# The room's own index: a playground on the arena (one field engine) or a room node itself.
@@ -48,7 +53,7 @@ static func moment(context:Node,night:bool)->Dictionary:
 	if context==null or not context.has_method("room_palette") or not "room_index" in context:return {}
 	var choice=str(Settings.values.get("sun_night" if night else "sun_day","random"))
 	var ids=NIGHT_MOMENTS if night else DAY_MOMENTS
-	var rng=RandomNumberGenerator.new();rng.seed=hash([Game.visual_run_seed,int(context.room_index),"sun"])
+	var rng=RandomNumberGenerator.new();rng.seed=hash([Game.visual_run_seed,light_index(context),"sun"])
 	if choice not in ids:
 		var total=0.0
 		for id in ids:total+=float(MOMENTS[id].weight)
@@ -216,7 +221,7 @@ func cinematic_light(on:bool,night:bool,sun_angle:Vector3):
 		rim=DirectionalLight3D.new();rim.name="CineRim";rim.shadow_enabled=false;rim.light_specular=.7;add_child(rim)
 	rim.visible=on
 	if not on:return
-	var room=int(get_parent().get("room_index")) if get_parent().get("room_index")!=null else 0
+	var room=light_index(get_parent()) if get_parent().get("room_index")!=null else 0
 	var rng=RandomNumberGenerator.new();rng.seed=hash([Game.visual_run_seed,room,"cine"])
 	var recipe=(CINE_NIGHT if night else CINE_DAY)[rng.randi_range(0,(CINE_NIGHT if night else CINE_DAY).size()-1)]
 	rim.light_color=Color(recipe[0]);rim.light_energy=float(recipe[1])

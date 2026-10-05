@@ -176,13 +176,17 @@ func friendly_fire_checks():
 	check(buddy.hp==hp,"own bullets pass the comrade")
 	arena.queue_free();await get_tree().process_frame
 	Game.selected_class="recruit"
-	var hub=load("res://scenes/hub.tscn").instantiate();add_child(hub);await get_tree().create_timer(.5).timeout
-	var effect=load("res://scripts/hub_ability_effect.gd").new();effect.hub=hub;effect.kind="comrade";hub.add_child(effect)
-	check(effect.accepted and effect.deployed_cell in hub.training_barriers and not hub.hub_free(effect.deployed_cell),"hub comrade blocks its cell")
-	var taken=effect.deployed_cell
-	effect.queue_free();await get_tree().process_frame
-	check(taken not in hub.training_barriers,"the cell frees when the comrade leaves")
-	hub.queue_free();await get_tree().process_frame
+	# The hub is the practice run's arena (one field engine): its comrade is the battle's — an allied actor that
+	# blocks its cell like a body, and the cell is free again once he is gone.
+	Engine.set_meta("hub_calls_off",true)
+	var hub=preload("res://scripts/hub.gd").open_practice(self);await get_tree().create_timer(.6).timeout
+	var practice=hub.arena;practice.set_physics_process(false)
+	practice.summon_comrade(.5,0);var comrade=practice.actors.back();comrade.set_physics_process(false);comrade.parachute_left=0
+	var taken=comrade.cell
+	check(comrade.companion and comrade.allied and not practice.can_enter(taken,practice.player),"hub comrade blocks its cell")
+	practice.actors.erase(comrade);comrade.queue_free();await get_tree().process_frame
+	check(practice.can_enter(taken,practice.player),"the cell frees when the comrade leaves")
+	hub.queue_free();await get_tree().process_frame;Engine.remove_meta("hub_calls_off")
 
 # from smg_burst_revision: pistol and SMG share a short range; one SMG pull fires a 3-shot burst; rate counts every shot.
 func smg_burst_checks():

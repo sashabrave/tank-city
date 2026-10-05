@@ -43,7 +43,10 @@ const ROOM_WAVES = [
 ]
 const BIOMES=preload("res://scripts/biome_catalog.gd")
 var navigation=preload("res://scripts/systems/navigation_cache.gd").new(self)
-func room_palette()->Dictionary:return BIOMES.ENTRIES[sandbox_biome] if sandbox and sandbox_biome>=0 else BIOMES.entry(run_seed,room_index,room_lane())
+func room_palette()->Dictionary:
+	# The hub keeps its own look per visit (hub.gd room_palette).
+	if is_instance_valid(playground) and playground.has_method("room_palette"):return playground.room_palette()
+	return BIOMES.ENTRIES[sandbox_biome] if sandbox and sandbox_biome>=0 else BIOMES.entry(run_seed,room_index,room_lane())
 ## Lane of the route node this room was entered from: each node of a stage has its own biome and name.
 func room_lane()->int:return BIOMES.chosen_lane(run_seed,room_index,run.route_choices if run else {})
 
@@ -257,6 +260,9 @@ var cozy_light:bool:
 	get:return room.mode=="service" and is_instance_valid(playground)
 
 var resume_checkpoint:Dictionary={}
+## The hub's practice run (one field engine, step 2): this arena is the hub in «hub» mode — a RunState built from
+## the current hub loadout like a sortie start; no waves, no losses, nothing earned or saved (scripts/hub.gd).
+var practice:=false
 ## Sandbox (test field from the hub): overrides applied by begin_room; the admin panel sets them.
 ## Resume to the route map: restore the run but build no battle room until a room is entered.
 var defer_room=false
@@ -268,13 +274,31 @@ var sandbox_biome=-1
 var sandbox_waves=false
 func _ready():
 	set_meta("start_documents",Game.cores)
-	ResourceStrip.track_run(run)
+	# The hub's practice run is not a sortie: the resource strip keeps showing the profile, not run currency.
+	ResourceStrip.track_run(null if practice else run)
+	start_run_state()
+	camera = Visuals.setup_world(self,15.5,Vector3.ZERO)
+	hud = load("res://scenes/hud.tscn").instantiate()
+	hud.arena = self
+	add_child(hud)
+	presentation=load("res://scripts/battle_presentation.gd").new();presentation.arena=self;add_child(presentation)
+	pending_vehicle=Game.garage.starting_vehicle() if not practice else ""
+	if not resume_checkpoint.is_empty():
+		preload("res://scripts/profile/run_checkpoint.gd").restore(self,resume_checkpoint)
+		ClassCatalog.add_perk_cards(run)  # a snapshot from before a perk was bought still gets its behaviour
+	if defer_room or practice:return
+	begin_room(int(resume_checkpoint.index) if not resume_checkpoint.is_empty() else 0)
+
+## The run as a sortie starts it, from the hub loadout of this moment: the Arsenal weapon, the class and its path,
+## meta upgrades (StatRegistry), the class ability and the gadget (RunAbility), the HQ modules. A battle and the
+## hub's practice run both begin here (one source, guides/02_development/07_one_world.md).
+func start_run_state():
 	weapon=Game.selected_weapon;rerolls_left=3+Game.reroll_level+Game.branch_milestones()
 	for id in LOOT.WEAPONS:weapon_mods[id]={"damage":0.0,"interval":1.0,"intercept":0.0}
 	abilities=load("res://scripts/run_ability.gd").new();abilities.arena=self;abilities.selected=Game.selected_ability;abilities.setup()
 	if run_seed==0:run_seed=randi()
 	# Daily runs: fights and offers follow the day's seed; normal runs stay unpredictable.
-	if Campaign.daily:combat_rng.seed=hash([run_seed,"combat"])
+	if Campaign.daily and not practice:combat_rng.seed=hash([run_seed,"combat"])
 	else:combat_rng.randomize()
 	headquarters=load("res://scripts/headquarters/run_support.gd").new(self)
 	base_max_hp=headquarters.max_hp()
@@ -283,17 +307,6 @@ func _ready():
 	speed_multiplier=CombatStats.initial_speed_multiplier()
 	StatRegistry.apply_meta(run)
 	ClassCatalog.apply_start(run)
-	camera = Visuals.setup_world(self,15.5,Vector3.ZERO)
-	hud = load("res://scenes/hud.tscn").instantiate()
-	hud.arena = self
-	add_child(hud)
-	presentation=load("res://scripts/battle_presentation.gd").new();presentation.arena=self;add_child(presentation)
-	pending_vehicle=Game.garage.starting_vehicle()
-	if not resume_checkpoint.is_empty():
-		preload("res://scripts/profile/run_checkpoint.gd").restore(self,resume_checkpoint)
-		ClassCatalog.add_perk_cards(run)  # a snapshot from before a perk was bought still gets its behaviour
-	if defer_room:return
-	begin_room(int(resume_checkpoint.index) if not resume_checkpoint.is_empty() else 0)
 
 ## Never into a fight unarmed (author, 2026-10-03): no gun in hand → the one chosen at the HQ is issued, and
 ## the ammo slots always hold at least the plain rounds. Says so when it had to step in.
@@ -426,13 +439,41 @@ func park_arriving_vehicle(kind:String,armor:float,salvaged:bool,origin:String,z
 	wreck.salvaged=salvaged;set_meta("arriving_vehicle",wreck)
 ## The HQ stands on the field as a target in every fight except the final boss (T-260, author 4 Oct: the general
 ## fight keeps the HQ like a battle field, his reinforcements go for it).
-func hq_off_field()->bool:return room.mode=="service" or (boss_room and Campaign.is_final(room_index))
-## Rooms between fields (service mode): nothing hurts the hero there.
-func peaceful()->bool:return room.mode=="service"
+func hq_off_field()->bool:return peaceful() or (boss_room and Campaign.is_final(room_index))
+## Rooms between fields (service mode) and the hub (hub mode): nothing hurts the hero there.
+func peaceful()->bool:return room.mode in ["service","hub"]
 ## Enters a playground (upgrade room, merchant) on this field: see scripts/systems/service_field.gd.
 func begin_service(index:int,ground:Node3D):
 	ground.index=index
 	service.begin(index,ground)
+## The hub on this field (practice run): see scripts/hub.gd and scripts/systems/service_field.gd.
+func begin_hub(ground:Node3D):
+	ground.index=0
+	service.begin(0,ground,"hub")
+## Station changes reach the practice hero at once (author, 4 Oct 2026): a fresh RunState from the hub loadout —
+## the same start as a sortie (start_run_state, ensure_armed); the hero stays where he stands, on foot; placed
+## abilities and helpers go.
+func reset_practice():
+	if not practice:return
+	var hero=player;var at=hero.position if is_instance_valid(hero) else playground.start_position()
+	var facing=hero.facing if is_instance_valid(hero) else Vector2i.DOWN
+	if abilities!=null:
+		for mine in abilities.live_mines():mine.queue_free()
+		for cell in abilities.barriers:
+			if walls.has(cell) and walls[cell].get("barrier",false):walls[cell].node.queue_free();walls.erase(cell);navigation.invalidate(cell)
+	for actor in actors.duplicate():
+		if is_instance_valid(actor) and actor.allied and not actor.player_owned:actors.erase(actor);actor.queue_free()
+	if is_instance_valid(hero):actors.erase(hero);hero.dead=true;hero.queue_free()
+	var seed_value=run.run_seed
+	run=preload("res://scripts/state/run_state.gd").new();run.run_seed=seed_value
+	effects=preload("res://scripts/upgrades/run_effects.gd").new(self)
+	start_run_state()
+	ensure_armed(true)
+	player=spawn_actor("soldier",grid_pos(at),true)
+	if can_stand(at,player):player.position=at
+	player.quarter_destination=player.position
+	player.facing=facing;player.model.rotation.y=player.angle_for(facing)
+	if is_instance_valid(hud):hud.refresh_skill_icons()
 ## Leaves the room: the playground goes, the hero's vehicle is kept for the next field.
 func end_service():
 	service.finish()
@@ -609,7 +650,7 @@ func _unhandled_input(event):
 		pause_battle()
 
 func _physics_process(delta):
-	if room.mode=="service":service.tick(delta);return
+	if peaceful():service.tick(delta);return
 	if phase=="combat" and run!=null:effects.emit("tick",{"delta":delta})
 	if phase == "countdown":
 		var before=ceili(countdown)
@@ -723,7 +764,7 @@ func nearest_wreck():
 	return vehicle.nearest_wreck()
 
 func interact():
-	if room.mode=="service":service.interact();return
+	if peaceful():service.interact();return
 	if phase not in ["combat","countdown"] or not is_instance_valid(player) or player.moving: return
 	var recipe=nearest_recipe()
 	if not recipe.is_empty():open_recipe_draft(recipe);return

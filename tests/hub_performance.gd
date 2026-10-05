@@ -16,7 +16,7 @@ func samples(label:String):
 func run():
 	Game.save_enabled=false;Game.sound_enabled=false;Settings.persistence_enabled=false
 	Settings.values.fullscreen=false;Settings.values.fps=0;Settings.values.vsync=0;Settings.apply()
-	var began=Time.get_ticks_usec();hub=load("res://scenes/hub.tscn").instantiate();add_child(hub)
+	var began=Time.get_ticks_usec();hub=preload("res://scripts/hub.gd").open_practice(self)
 	print("HUB PERF create ms=",(Time.get_ticks_usec()-began)/1000.0)
 	await get_tree().create_timer(1).timeout;hub.phase="combat"
 	await samples("idle")
@@ -28,9 +28,9 @@ func run():
 		began=Time.get_ticks_usec();hub.refresh();refresh_costs.append((Time.get_ticks_usec()-began)/1000.0)
 		await get_tree().process_frame
 	print("HUB PERF refresh ms=",refresh_costs)
-	hub.avatar.position=hub.command_pos+Vector3(1.2,0,0)
+	hub.place_hero(hub.command_pos+Vector3(1.2,0,0))
 	await samples("near-command")
-	hub.avatar.position=Vector3(2,0,2)
+	hub.place_hero(Vector3(2,0,2))
 	var profile={}
 	var nodes=get_tree().root.find_children("*","Node",true,false)
 	for node in nodes:
@@ -51,7 +51,7 @@ func run():
 	await samples("build-menu");hub.close_station()
 	for id in Game.BUILD_COST:
 		if id not in Game.built_workshops:Game.built_workshops.append(id)
-	hub.update_bench_visuals();hub.avatar.position=Vector3(2,0,1);hub.moving=false
+	hub.update_bench_visuals();hub.place_hero(Vector3(2,0,1))
 	await samples("walking")
 	assert(hub.avatar.position.distance_to(Vector3(2,0,1))>.05,"Movement must be exercised")
 	Settings.values.world_lighting="night";Settings.apply()

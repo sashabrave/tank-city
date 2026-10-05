@@ -14,7 +14,7 @@ func run():
 	Game.apply_profile(profile)
 	check("weapons" in Game.built_workshops and "character" not in Game.built_workshops and Game.credits==Game.RETIRED_BUILDINGS.character,"retired buildings: bonuses become the arsenal, the rest is refunded")
 	Game.reset_upgrades();Game.credits=100000;Game.cores=50;Game.profiles.selected=true
-	var hub=load("res://scenes/hub.tscn").instantiate();add_child(hub);await settle()
+	var hub=preload("res://scripts/hub.gd").open_practice(self);await settle()
 	hub.phase="combat"
 	hub.open_station("fighter");await settle()
 	var view=screen(hub)

@@ -1,4 +1,12 @@
-extends Node3D
+extends "res://scripts/playground.gd"
+## The hub on the one field engine (step 2, guides/02_development/07_one_world.md): a playground of the practice
+## run's Arena in «hub» mode. The arena owns the hero — the same Actor as in battle (movement, speed, collision,
+## animation, shooting through Gun/CombatSystem, abilities through RunAbility with real cooldowns, ammo, the
+## backpack and the drop floor, the HUD) — built from the hub loadout of this moment like a sortie start
+## (arena.start_run_state). Station changes rebuild it at once (sync_practice → arena.reset_practice). Nothing here
+## hurts the hero, earns alloy or writes the profile. The hub keeps only what is its own: the hangar and yard
+## dressing, the stations and their windows, calls and dialogs, the range dummy's stand, the camera that follows
+## the hero across the yard. Open with Hub.open_practice(parent) (main.gd).
 signal start_requested
 signal gallery_requested
 signal sandbox_requested
@@ -6,35 +14,28 @@ var arrival_reason=""
 var recycling_pos=Vector3(6,0,3)
 var printer_pos=Vector3(3,0,3)
 var printer_model:Node3D
-var avatar: Node3D
-var root: Control
 var credits: Label
 var start_button: Button
 var status: Label
 var title: TextureRect
 var subtitle: Label
-var destination=Vector3(2,0,2)
-var cell=Vector2i(2,2)
-var moving=false
-var facing=Vector2i.DOWN
 var exit_queued=false
-var dpad: Control
-var training_tank: Node3D
-var displayed_vehicle=""
-var mounted=false
-var board_button: Button
-var fire_pad: Control
+## The range dummy: a practice target of the arena (service_field.spawn_target) — every card, ammo and ability
+## hits it through the combat code; it never falls.
 var dummy: Node3D
-var dummy_label: Label3D
-var dummy_hits=0
-var fire_cooldown=0.0
-var turn_timer=0.0
-var turn_from=0.0
-var turn_to=0.0
+## The hub's own UI state: «combat» (free), «workshop» (a station or window), «intro», «ringing», «profiles».
+## Anything but «combat» holds the field (window_open → arena phase «upgrade»).
 var phase="combat"
-var projectiles: Array=[]
-var hub_skills:Control
-var training_barriers:Array=[]
+## Open station or window; the same slot as a room's `modal`.
+var build_menu:Control:
+	get:return modal
+	set(value):modal=value
+## The printer intro drives the camera while it plays.
+var intro_camera:=false
+## Hub world cells held as arena walls now (the edge of the walkable floor), to follow buildings as they appear.
+var solid_now:Dictionary={}
+var practice_key:=""
+var field_live:=false
 ## Outdoor yard to the right of the hangar, through the gap between the racks (row y=0): the parking spot
 ## and a fenced range with the dummy. Vehicles can drive out there too; the camera slides to follow.
 const YARD_PARK=Vector3(12,0,-2)  # T-270: one cell right of the passage exit
@@ -51,7 +52,8 @@ const TRACK_RADII=Vector2(5.3,1.35)
 const BOOTH_CELL=Vector2i(10,3)
 ## Tyre stacks on the track infield stand on whole cells, and those cells are not walkable (T-270).
 const TYRE_CELLS=[Vector2i(15,1),Vector2i(17,1)]
-var camera_base:=Vector3.INF
+## The hub frame (the old hub scene's camera): orthographic 11.2, the same arm as every field.
+const CAMERA_SIZE:=11.2
 var camera_tilt:Node
 var yard_gate:Node3D
 var uniform_preview:MeshInstance3D
@@ -61,10 +63,8 @@ var command_faded=false
 var bench_signature:Array=[]
 var bench_dots:Dictionary={}
 var command_model:Node3D
-var training_ability_cooldown=0.0
 var build_tab=0
 var recipe_tab="weapon"
-var build_menu: Control
 var bench_visuals: Node3D
 var bonus_bench_pos=Vector3(-3,0,-1)
 var hint_clock=0.0
@@ -83,11 +83,22 @@ var barracks_dot:Label3D
 var hq_bench_pos=Vector3(-2,0,3)
 var weapon_bench_pos=Vector3(0,0,3)
 
+
+## Opens the hub: a practice-run arena under `parent` with this hub as its playground (one field engine, step 2).
+## Returns the hub; freeing the hub frees its arena too.
+static func open_practice(parent:Node,reason:="")->Node3D:
+	var field=load("res://scenes/arena.tscn").instantiate();field.practice=true;field.auto_pause_enabled=false
+	var hub=load("res://scenes/hub.tscn").instantiate();hub.arrival_reason=reason
+	# Known before the arena enters the tree: its light is set up once, in the hub's palette (arena.room_palette).
+	field.playground=hub
+	parent.add_child(field)
+	field.begin_hub(hub)
+	return hub
+
 func _ready():
 	add_to_group("profile_hub")
 	PerfOverlay.show_build=true;tree_exiting.connect(func():PerfOverlay.show_build=false)
 	add_to_group("notification_context")
-	Visuals.setup_world(self,11.2,Vector3(0,0,0))
 	preload("res://scripts/base_surroundings.gd").hub(self,Color(room_palette().floor).darkened(.12))
 	var outskirts=preload("res://scripts/hub_outskirts.gd").new();outskirts.hub=self;add_child(outskirts)
 	Visuals.box(self,Vector3(1,-.4,.5),Vector3(13.3,.6,8.3),Color("8b9585"))
@@ -111,26 +122,15 @@ func _ready():
 	barracks_dot=Visuals.label3d(self,"●",printer_pos+Vector3(0,2.35,0),UiKit.NOTICE.ready,48);barracks_dot.outline_size=0;barracks_dot.no_depth_test=true;barracks_dot.name="BarracksDot"
 	Visuals.model("crate",self,Vector3(-2,0,-2))
 	Visuals.model("supply_stack",self,Vector3(-1,0,-2.4))
-	displayed_vehicle=Game.garage.starting_vehicle()
-	training_tank=Visuals.model(displayed_vehicle if displayed_vehicle!="" else "buggy",self,YARD_PARK)
-	preload("res://scripts/world_lighting.gd").headlights(training_tank,true)
-	training_tank.rotation.y=PI;training_tank.visible=Game.garage.starting_vehicle()!=""
-	pass
 	for x in range(-5,8):
 		if x in [4,5,6]:continue
 		var style=preload("res://scripts/concrete_style.gd").pick(17041,Vector2i(x,-3))
 		Visuals.model(preload("res://scripts/concrete_style.gd").asset(style),self,Vector3(x,0,-3))
-	spawn_avatar(Vector3(2,0,2),PI)
-	# Cool rim light from behind and above keeps the soldier readable against the floor.
-	dummy=Node3D.new();add_child(dummy);dummy.position=YARD_DUMMY
-	Visuals.model("training_dummy",dummy).scale=Vector3.ONE*1.3  # tools/build_yard_props.py; stands apart in the range pen
-	dummy.visible="range" in Game.built_workshops
 	build_yard()
 	build_wardrobe()
 	# T-174: the number on the back wall (boss wins count it down).
 	var counter=preload("res://scripts/wall_counter.gd").new();add_child(counter);counter.position=Vector3(-1.0,1.95,-3.0)
 	build_roadmap()
-	dummy_label=Visuals.label3d(dummy,"",Vector3(0,1.7,0),Color("f7d891"),26)
 	Game.progression.prepare_telegrams()
 	command_model=Visuals.model("command_center",self,command_pos)
 	command_model.rotation.y=.55  # screen turned toward the hub centre and the camera
@@ -142,19 +142,31 @@ func _ready():
 	var halo=Visuals.label3d(command_alert,"!",Vector3(0,0,-.01),Color(1,.55,.4,.35),128);halo.name="Halo";halo.no_depth_test=true;halo.outline_size=0;halo.pixel_size=.014
 	var glow=OmniLight3D.new();glow.name="Glow";command_alert.add_child(glow);glow.light_color=Color("ff6a4d");glow.omni_range=2.6;glow.light_energy=1.4
 	refresh_command_alert()
-	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Управление",command_pos,1.65)
+	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Управление",command_pos,1.65,on_foot)
 	preload("res://scripts/ui/recycling_station.gd").model(self,recycling_pos)
-	build_ui()
-	hub_skills=preload("res://scripts/ui/hub_skills.gd").new();hub_skills.hub=self;root.add_child(hub_skills)
-	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Казарма",printer_pos,1.4)
-	preload("res://scripts/interaction_prompt.gd").attach(self,self,"В бой",Vector3(5,0,-2),2.2)
-	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Стоянка",GARAGE_TERMINAL,1.2,func():return "garage" in Game.built_workshops and not mounted)
-	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Сесть",YARD_PARK,1.65,func():return "garage" in Game.built_workshops and not mounted and training_tank.visible)
+	build_hub_ui()
+	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Казарма",printer_pos,1.4,on_foot)
+	preload("res://scripts/interaction_prompt.gd").attach(self,self,"В бой",Vector3(5,0,-2),2.2,on_foot)
+	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Стоянка",GARAGE_TERMINAL,1.2,func():return "garage" in Game.built_workshops and on_foot())
 	var terminal=Visuals.box(self,GARAGE_TERMINAL+Vector3(0,.55,0),Vector3(.45,1.1,.3),Color("5b6650"));terminal.name="GarageTerminal"
 	var screen=Visuals.box(self,GARAGE_TERMINAL+Vector3(0,.82,.16),Vector3(.34,.26,.02),Color("7fd0ff"));screen.material_override=Visuals.material(Color("7fd0ff"),true)
+
+## The hero stands on the field (the arena spawned him): the hub's HUD layout and camera, the range dummy, the
+## parked vehicle, then the printer intro.
+func field_ready():
+	arena.hud.hub_mode(true)
+	arena.camera.size=CAMERA_SIZE
+	var hero=avatar;hero.facing=Vector2i.DOWN;hero.model.rotation.y=PI
+	practice_key=practice_signature()
+	field_live=true
+	sync_field()
 	preload("res://scripts/printer_intro.gd").play(self)
 
-func build_ui():
+## Freeing the hub frees its practice arena (main.clear_current frees the hub).
+func _exit_tree():
+	if is_instance_valid(arena) and arena.get("practice") and not arena.is_queued_for_deletion():arena.queue_free()
+
+func build_hub_ui():
 	var canvas=CanvasLayer.new();add_child(canvas)
 	root=preload("res://scenes/ui/hub_screen.tscn").instantiate();canvas.add_child(root)
 	root.get_node("GalleryButton").pressed.connect(func():gallery_requested.emit())
@@ -164,13 +176,13 @@ func build_ui():
 		if child is TextureRect and child.position==Vector2(48,109):child.hide()
 	credits.size.x=600;credits.add_theme_font_size_override("font_size",23)
 	build_dev_menu()
-	dpad=root.get_node("MovePad");dpad.apply_movement_layout();fire_pad=root.get_node("FirePad")
+	# Movement, fire and E on touch are the arena HUD's own pads (one field engine): the hub screen has none.
 	start_button=root.get_node("StartButton");start_button.pressed.connect(launch);UiKit.accent(start_button,26)
 	root.get_node("SettingsButton").hide()
-	board_button=root.get_node("InteractButton");board_button.pressed.connect(interact);board_button.hide()
-	# Interaction notes («E — выйти»): kept as a hidden label; stations open through station_screen.gd.
+	# Interaction notes: kept as a hidden label; stations open through station_screen.gd.
 	status=Label.new();status.name="StatusLabel";status.visible=false;root.add_child(status)
 	refresh()
+
 
 ## Test tools live in one glass menu under the logo; construction is reached in the world (locked benches)
 ## and from HQ → Buildings, so it sits here only as a shortcut.
@@ -213,6 +225,71 @@ func toggle_dev_menu(open=null):
 func refresh():
 	credits.hide()
 	update_bench_visuals()
+	sync_practice()
+
+## What the practice run is built from: the hub loadout and everything that shapes the start of a sortie (class
+## and its path, Arsenal weapon and its meta levels, gadget, HQ modules, Barracks upgrades, the garage, the
+## uniform). Alloy, quests and notifications are left out: spending or a task tick does not rebuild the hero.
+func practice_signature()->String:
+	var data:Dictionary=Game.serialize_progress()
+	for key in ["credits","notifications","progression","run_checkpoint","duplicate_recipes","research","built"]:data.erase(key)
+	if data.get("v09") is Dictionary:data.v09.erase("cores")
+	return str(data)+str(Game.progression.weapon_levels)
+## A station changed the loadout: the practice hero is rebuilt at once, exactly as a sortie would start now.
+func sync_practice():
+	if not field_live or not is_instance_valid(arena):return
+	var key=practice_signature()
+	if key!=practice_key:
+		practice_key=key;arena.reset_practice()
+	sync_field()
+func on_foot()->bool:return is_instance_valid(avatar) and avatar.kind=="soldier"
+func riding()->bool:return is_instance_valid(avatar) and avatar.kind!="soldier"
+
+## The field follows the buildings: walls at the edge of the walkable floor, the range dummy, the parked vehicle.
+func sync_field():
+	if not field_live or not is_instance_valid(arena):return
+	var wanted={}
+	for c in solid_cells():wanted[c]=true
+	for c in solid_now.keys():
+		if not wanted.has(c):arena.service.unblock(c)
+	for c in wanted:
+		if not solid_now.has(c):arena.service.block(c)
+	solid_now=wanted
+	sync_dummy();sync_vehicle()
+func sync_dummy():
+	var built="range" in Game.built_workshops
+	if built and not is_instance_valid(dummy):
+		dummy=arena.service.spawn_target(YARD_DUMMY,"training_dummy")  # tools/build_yard_props.py; stands apart in the range pen
+		dummy.model.rotation.y=0;dummy.model.scale=Vector3.ONE*1.3;dummy.name="RangeDummy"
+	elif not built and is_instance_valid(dummy):
+		arena.actors.erase(dummy);dummy.queue_free();dummy=null
+## The garage's selected vehicle waits on the parking bay as the arena's own vehicle (VehicleSystem): E boards it,
+## its armour, gun and speed are GarageCatalog.stats with the garage upgrades — the same machine as in a sortie.
+func sync_vehicle():
+	var kind=Game.garage.starting_vehicle()
+	# Every vehicle standing in the hub is the garage's (parked here or left where it was driven).
+	for wreck in arena.wrecks.duplicate():
+		if is_instance_valid(wreck) and wreck.kind!=kind:
+			arena.wrecks.erase(wreck);wreck.queue_free()
+	if kind=="":return
+	if is_instance_valid(avatar) and avatar.kind==kind:return
+	if arena.wrecks.any(func(w):return is_instance_valid(w) and not w.spent and w.kind==kind):return
+	var wreck=arena.make_wreck(kind,arena.grid_pos(YARD_PARK),Vector2i.DOWN,false,arena.vehicle.player_armor(kind,"owned",1),"owned",1)
+	wreck.set_meta("hub_parked",true)
+
+## The hub's camera (presentation calls it): the old hub frame that slides right while the hero (on foot or driving)
+## is out in the yard, with a few degrees of diorama tilt toward the cursor or a drag.
+func frame_camera(camera:Camera3D,delta:float):
+	if intro_camera or not is_instance_valid(avatar):return
+	camera.size=CAMERA_SIZE
+	var shift=clampf((avatar.position.x-6.0)*1.45,0.0,16.5)
+	if camera_tilt==null:camera_tilt=preload("res://scripts/camera_tilt.gd").new();camera_tilt.name="CameraTilt";add_child(camera_tilt)
+	camera_tilt.enabled=phase=="combat" and not is_instance_valid(build_menu)
+	var focus=Vector3(shift,0,0)
+	var arm=Vector3(0,19,14).rotated(Vector3.UP,deg_to_rad(10)).rotated(Vector3.UP,deg_to_rad(camera_tilt.yaw()))
+	arm=arm.rotated(arm.cross(Vector3.UP).normalized(),deg_to_rad(camera_tilt.pitch()))
+	camera.position=camera.position.lerp(focus+arm,minf(1.0,delta*4.0))
+	camera.look_at(camera.position-arm)
 
 
 
@@ -237,17 +314,12 @@ func refresh_command_alert():
 	command_alert.visible=news!=""
 	command_alert.modulate=UiKit.NOTICE.news if news=="general" else UiKit.NOTICE.goal
 
-func sync_model_animation():
-	var active=phase=="combat" and moving and not is_instance_valid(build_menu)
-	avatar.preview_moving=active and not mounted;avatar.preview_speed=3.4
-	training_tank.preview_moving=active and mounted;training_tank.preview_speed=2.7
-
+## Only the hub's own signs live here (station dots, the task «!», build arrows, the yard gate and the parking
+## sign); the hero, his gun, abilities and E belong to the arena (service_field.tick, actor.gd).
 func _physics_process(delta):
-	follow_yard(delta)
-	sync_model_animation()
-	if is_instance_valid(dpad):dpad.visible=InputScheme.touch();fire_pad.visible=InputScheme.touch()
+	if is_instance_valid(yard_gate):yard_gate.visible="yard" not in Game.built_workshops
+	if is_instance_valid(parking_sign):parking_sign.visible="garage" in Game.built_workshops and Game.garage.starting_vehicle()==""
 	if phase in ["intro","profiles"]:return
-	training_ability_cooldown=maxf(0,training_ability_cooldown-delta)
 	hint_clock+=delta;hint_refresh-=delta
 	if hint_refresh<=0:
 		for id in bench_dots:bench_dots[id].visible=bench_available(id)
@@ -278,39 +350,6 @@ func _physics_process(delta):
 	if is_instance_valid(roadmap_alert) and roadmap_alert.visible:roadmap_alert.position.y=2.05+absf(sin(hint_clock*3.0))*.12
 	for arrow in build_arrows.values():
 		if is_instance_valid(arrow):arrow.position.y=1.9+(1-cos(hint_clock*TAU/4.8))*.18
-	if is_instance_valid(build_menu):return
-	for slot in range(Game.hero_loadout().size()):
-		if Input.is_action_just_pressed(Game.ability_action(slot)):use_training_ability(slot)
-	fire_cooldown=maxf(0,fire_cooldown-delta);turn_timer=maxf(0,turn_timer-delta)
-	var controlled=training_tank if mounted else avatar
-	var dir=Game.direction()
-	if dir!=Vector2i.ZERO:
-		if dir!=facing:
-			facing=dir;turn_timer=.105;turn_from=controlled.rotation.y;turn_to=atan2(-float(dir.x),-float(dir.y))
-	controlled.rotation.y=lerp_angle(turn_from,turn_to,1.0-turn_timer/.105) if turn_timer>0 else atan2(-float(facing.x),-float(facing.y))
-	if moving:
-		controlled.position=controlled.position.move_toward(destination,(2.7 if mounted else 3.4)*delta)
-		if controlled.position.distance_to(destination)<.01:moving=false
-	if not moving:
-		if dir!=Vector2i.ZERO:
-			var next=controlled.position+Vector3(dir.x,0,dir.y)*.25
-			next.x=snappedf(next.x,.25);next.z=snappedf(next.z,.25)
-			if hub_stand(next):
-				cell=Vector2i(roundi(next.x),roundi(next.z));destination=next;moving=true
-	sync_model_animation()
-	var near_station=not mounted and avatar.position.distance_to(Vector3(0,0,-1))<1.25
-	var near_bonus=not mounted and avatar.position.distance_to(bonus_bench_pos)<1.2
-	var near_weapon=not mounted and avatar.position.distance_to(weapon_bench_pos)<1.25
-	Texts.set_text(board_button,"Бонусы [E]" if near_bonus else "Оружие [E]" if near_weapon else ("Прокачка [E]" if near_station else ("Выйти [E]" if mounted else "Занять [E]")))
-	board_button.disabled=moving or (not near_station and not near_weapon and not near_bonus and not mounted and avatar.position.distance_to(training_tank.position)>1.65)
-	if not mounted and avatar.position.distance_to(printer_pos)<1.4:Texts.set_text(board_button,"Боец [E]");board_button.disabled=moving
-	if not mounted and avatar.position.distance_to(command_pos)<1.65:Texts.set_text(board_button,"Управление [E]");board_button.disabled=moving
-	if not mounted and "garage" in Game.built_workshops and (avatar.position.distance_to(GARAGE_TERMINAL)<1.2 or (not training_tank.visible and avatar.position.distance_to(YARD_PARK)<1.65)):Texts.set_text(board_button,"Стоянка [E]");board_button.disabled=moving
-	if nearest_locked()!="":Texts.set_text(board_button,"Построить [E]");board_button.disabled=moving
-	if not mounted and avatar.position.distance_to(hq_bench_pos)<1.2:Texts.set_text(board_button,"Технологии [E]");board_button.disabled=moving
-	if not mounted and avatar.position.distance_to(recycling_pos)<1.3:Texts.set_text(board_button,"Продать [E]");board_button.disabled=moving
-	if Game.wants_fire() and turn_timer<=0 and fire_cooldown<=0:shoot()
-	if Game.wants_interact():interact()
 
 ## Concrete yard, the range fence (open toward the hangar so vehicles can drive in), a sandbag berm and a
 ## target board behind the dummy, a lamp post, and the parking sign that shows a tank icon while empty.
@@ -337,7 +376,7 @@ func build_roadmap():
 	Visuals.label3d(board,"Развитие заставы",Vector3(0,2.0,0),Color("dcf6ec"),22)
 	# A reached goal not seen yet: an orange «!» hops over the board until the station is opened.
 	roadmap_alert=Visuals.label3d(board,"!",Vector3(.62,2.05,0),UiKit.ORANGE,64);roadmap_alert.outline_size=12;roadmap_alert.name="RoadmapAlert"
-	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Развитие заставы",ROADMAP_POS,1.3,func():return not mounted)
+	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Развитие заставы",ROADMAP_POS,1.3,on_foot)
 ## The way out (author's draft, 2026-10-03): even chevrons on the yellow plate pointing into the gate, and
 ## the two yellow panels on each pillar become lamps that softly pulse — a game-design «exit is here».
 const GATE_POS=Vector3(5,0,-2)
@@ -384,22 +423,12 @@ func build_wardrobe():
 	uniform_preview=Visuals.box(hanger,Vector3(0,1.28,0),Vector3(.42,.62,.14),Color("5d6147"))
 	Visuals.box(hanger,Vector3(0,.82,0),Vector3(.34,.32,.13),Color("4a5039"))
 	Visuals.label3d(locker,"Шкаф",Vector3(0,2.15,0),Color("dcf6ec"),22)
-	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Шкаф",WARDROBE_POS,1.3,func():return not mounted)
-## Player soldier in the hub: the wardrobe's cat model with the selected weapon, lamp and ring.
-func spawn_avatar(pos:Vector3,yaw:float):
-	avatar=Visuals.model("soldier",self,pos,"cat",true)
-	avatar.set_meta("player_model",Game.player_model)
-	Visuals.equip_model(avatar,Game.selected_weapon)
-	preload("res://scripts/world_lighting.gd").headlights(avatar)
-	avatar.rotation.y=yaw
-	Visuals.ring(avatar,Color("fac47a"),.44)
+	preload("res://scripts/interaction_prompt.gd").attach(self,self,"Шкаф",WARDROBE_POS,1.3,on_foot)
+## The wardrobe changed the uniform: the locker's preview, and the practice hero (rebuilt with the new model).
 func refresh_uniform():
-	if is_instance_valid(avatar) and avatar.get_meta("player_model","")!=Game.player_model:
-		var pos=avatar.position;var yaw=avatar.rotation.y;var shown=avatar.visible
-		avatar.queue_free();spawn_avatar(pos,yaw);avatar.visible=shown
 	if is_instance_valid(uniform_preview):
 		var camo=Skins.camo(Game.skin);uniform_preview.material_override=Visuals.material(camo.get("camo_a",Color("5d6147")))
-	if is_instance_valid(avatar) and avatar.has_method("apply_palette"):avatar.apply_palette()
+	sync_practice()
 func build_yard():
 	var yard=Node3D.new();yard.name="Yard";add_child(yard)
 	# A concrete apron flush with the hangar floor (top at y=0), standing on the outside ground.
@@ -496,7 +525,7 @@ func passage(yard:Node3D):
 	Visuals.box(yard_gate,Vector3(0,1.0,0),Vector3(.08,2.0,1.8),Color("7d837b"),"paint")
 	for i in range(6):Visuals.box(yard_gate,Vector3(-.05,.3+i*.3,0),Vector3(.02,.05,1.8),Color("8a9196"),"steel")
 	for i in range(5):Visuals.box(yard_gate,Vector3(-.05,.12,-.72+i*.36),Vector3(.02,.12,.18),Color("e5b34f"))
-	preload("res://scripts/interaction_prompt.gd").attach(self,self,"🔒 Площадка · %d ◈" % Game.YARD_COST,Vector3(7,0,0),1.3,func():return "yard" not in Game.built_workshops and not mounted)
+	preload("res://scripts/interaction_prompt.gd").attach(self,self,"🔒 Площадка · %d ◈" % Game.YARD_COST,Vector3(7,0,0),1.3,func():return "yard" not in Game.built_workshops and on_foot())
 ## Around the apron: concrete barriers along the south and east edges, parking lines, a guard booth and a
 ## flag at the entrance, a container on the ground behind the range.
 func yard_dressing(yard:Node3D):
@@ -516,73 +545,65 @@ func yard_dressing(yard:Node3D):
 	for i in range(6):Visuals.box(self,Vector3(YARD_EAST+1.53,-.72+.65,-2.8+i*.48),Vector3(.02,1.2,.08),Color("5f3a28"))
 func sandbag_row(parent:Node3D,center:Vector3,count:int):
 	for i in range(count):Visuals.box(parent,center+Vector3((i-(count-1)*.5)*.46,.14+(i%2)*.02,0),Vector3(.44,.26,.3),Color("b8a47c"))
-## The camera slides right while the soldier or the parked vehicle is out in the yard.
-func follow_yard(delta:float):
-	var camera=get_viewport().get_camera_3d()
-	if not is_instance_valid(camera) or not is_instance_valid(avatar):return
-	if camera_base==Vector3.INF:camera_base=camera.position
-	var who=training_tank if mounted else avatar
-	var shift=clampf((who.position.x-6.0)*1.45,0.0,16.5)
-	# A few degrees of diorama tilt toward the cursor or a drag; eases back on its own.
-	if camera_tilt==null:camera_tilt=preload("res://scripts/camera_tilt.gd").new();camera_tilt.name="CameraTilt";add_child(camera_tilt)
-	camera_tilt.enabled=phase=="combat" and not is_instance_valid(build_menu)
-	var focus=Vector3(shift,0,0)
-	var arm=(camera_base-Vector3.ZERO).rotated(Vector3.UP,deg_to_rad(camera_tilt.yaw()))
-	arm=arm.rotated(arm.cross(Vector3.UP).normalized(),deg_to_rad(camera_tilt.pitch()))
-	camera.position=camera.position.lerp(focus+arm,minf(1.0,delta*4.0))
-	camera.look_at(camera.position-arm)
-	if is_instance_valid(yard_gate):yard_gate.visible="yard" not in Game.built_workshops
-	if is_instance_valid(parking_sign):parking_sign.visible="garage" in Game.built_workshops and (Game.garage.starting_vehicle()=="" or (not training_tank.visible and not mounted))
 
-func hub_free(p: Vector2i) -> bool:
-	if p in training_barriers or p in [Vector2i(-2,3),Vector2i(3,3),Vector2i(6,3)]:return false
+## The hub on the arena grid. The hub spans x −5…23 (hangar, passage, yard), so the square field is 47 cells with
+## the hub's own world coordinates (arena.world_pos(cell) = hub position); only the cells along the edge of the
+## walkable floor become walls (solid_cells), the rest of the square is never reached.
+const FIELD:=47
+func field_size()->int:return FIELD
+## The walkable floor (the old hub_free): the hangar x −4…7, z −2…4 without the props, the rack gap on row 0 and
+## the yard x 10…YARD_EAST, z −3…3 without the target pen, the booth, the tyres and the terminal, once the yard
+## is built. The range dummy and the parked vehicle are actors and block by themselves.
+func walkable(p:Vector2i)->bool:
+	if p in [Vector2i(-2,3),Vector2i(3,3),Vector2i(6,3)]:return false
 	if p.x>7:
 		if "yard" not in Game.built_workshops:return false
 		# Yard: the rack gap (x 8-9 only on row 0), then open concrete x 10..YARD_EAST, y -3..3 except the target pen and booth.
 		if p.x<=9:return p.y==0
 		var d=Vector2i(roundi(YARD_DUMMY.x),roundi(YARD_DUMMY.z))
-		return p.x<=YARD_EAST and p.y>=-3 and p.y<=3 and p not in [d,d+Vector2i(0,-1),d+Vector2i(0,1),d+Vector2i(1,0)] and p!=BOOTH_CELL and p not in TYRE_CELLS and p!=Vector2i(roundi(GARAGE_TERMINAL.x),roundi(GARAGE_TERMINAL.z))
+		return p.x<=YARD_EAST and p.y>=-3 and p.y<=3 and p not in [d+Vector2i(0,-1),d+Vector2i(0,1),d+Vector2i(1,0)] and p!=BOOTH_CELL and p not in TYRE_CELLS and p!=Vector2i(roundi(GARAGE_TERMINAL.x),roundi(GARAGE_TERMINAL.z))
 	if p.x< -4 or p.y< -2 or p.y>4:return false
 	# Command centre (left edge), crates by the back wall, the range pad and the arsenal spot. The retired
 	# workbench cells (character at 0,-1 and bonuses at -3,-1) are walkable floor now.
 	if p in [Vector2i(-4,0),Vector2i(-4,1),Vector2i(-4,2),Vector2i(0,3),Vector2i(-2,-2),Vector2i(-1,-2),Vector2i(-3,-1),Vector2i(1,-1)]:return false
-	if not mounted and training_tank.visible and Vector2i(roundi(training_tank.position.x),roundi(training_tank.position.z))==p:return false
 	return true
+## Walls only where the floor ends (every non-walkable cell touching a walkable one): collision, bullets, blasts
+## and the laser stop there exactly as on a battle field. ~150 cells instead of the whole 47×47 square.
+func solid_cells()->Array:
+	var result=[]
+	for x in range(-6,YARD_EAST+3):
+		for z in range(-5,7):
+			var c=Vector2i(x,z)
+			if walkable(c):continue
+			for dx in [-1,0,1]:
+				for dz in [-1,0,1]:
+					if (dx!=0 or dz!=0) and walkable(c+Vector2i(dx,dz)):result.append(c);break
+				if not result.is_empty() and result.back()==c:break
+	return result
+func start_position()->Vector3:return Vector3(2,0,2)
 
+## E on the hub field (the arena's dispatcher calls it): a dropped item's card first, then the stations on foot,
+## then the vehicles (VehicleSystem: board the parked one, leave the one driven), then the gate.
 func interact():
-	if phase=="intro":return
-	if is_instance_valid(build_menu):close_station();return
-	if moving:return
-	if not mounted and avatar.position.distance_to(recycling_pos)<1.3:show_recycling();return
-	if not mounted and avatar.position.distance_to(hq_bench_pos)<1.2:open_station("hq");return
-	if not mounted and avatar.position.distance_to(command_pos)<1.65:show_command();return
-	if not mounted and avatar.position.distance_to(printer_pos)<1.4:open_station("fighter");return
-	if not mounted and avatar.position.distance_to(WARDROBE_POS)<1.3:open_station("wardrobe");return
-	if not mounted and avatar.position.distance_to(ROADMAP_POS)<1.3:open_station("roadmap");return
-	# T-014: with a vehicle parked, E boards it; the motor pool station opens from its terminal beside the bay.
-	if not mounted and "garage" in Game.built_workshops and avatar.position.distance_to(GARAGE_TERMINAL)<1.2:open_station("garage");return
-	if not mounted and "garage" in Game.built_workshops and not training_tank.visible and avatar.position.distance_to(YARD_PARK)<1.65:open_station("garage");return
-	var locked=nearest_locked()
-	if locked!="":build_tab=1 if locked in ["garage","range"] else 0;show_build_menu();return
-	if not mounted and "yard" not in Game.built_workshops and avatar.position.distance_to(Vector3(7,0,0))<1.3:show_build_menu();return
-	if not mounted and avatar.position.distance_to(weapon_bench_pos)<1.25:open_station("arsenal");return
-	if mounted:
-		var exit_cell=cell
-		for dir in [Vector2i.LEFT,Vector2i.RIGHT,Vector2i.DOWN,Vector2i.UP]:
-			if hub_free(cell+dir):exit_cell=cell+dir;break
-		if exit_cell==cell:return
-		mounted=false
-		cell=exit_cell;destination=Vector3(cell.x,0,cell.y)
-		avatar.position=destination;avatar.visible=true;avatar.rotation.y=atan2(-float(facing.x),-float(facing.y))
-		Texts.set_text(status,"Танк оставлен.")
-	elif "garage" in Game.built_workshops and avatar.position.distance_to(training_tank.position)<=1.65:
-		mounted=true;avatar.visible=false
-		facing=Vector2i(roundi(-sin(training_tank.rotation.y)),roundi(-cos(training_tank.rotation.y)))
-		cell=Vector2i(roundi(training_tank.position.x),roundi(training_tank.position.z))
-		destination=training_tank.position
-		Texts.set_text(status,"E — выйти.")
-	elif avatar.position.distance_to(Vector3(5,0,-2))<2.2:
-		launch()
+	if phase=="intro" or not is_instance_valid(avatar):return
+	if preload("res://scripts/ui/drop_prompt.gd").engaged(self):return
+	if window_open():return
+	var at:Vector3=avatar.position
+	if on_foot():
+		if at.distance_to(recycling_pos)<1.3:show_recycling();return
+		if at.distance_to(hq_bench_pos)<1.2:open_station("hq");return
+		if at.distance_to(command_pos)<1.65:show_command();return
+		if at.distance_to(printer_pos)<1.4:open_station("fighter");return
+		if at.distance_to(WARDROBE_POS)<1.3:open_station("wardrobe");return
+		if at.distance_to(ROADMAP_POS)<1.3:open_station("roadmap");return
+		# T-014: the motor pool station opens from its terminal beside the bay; the parked vehicle boards with E.
+		if "garage" in Game.built_workshops and at.distance_to(GARAGE_TERMINAL)<1.2:open_station("garage");return
+		var locked=nearest_locked()
+		if locked!="":build_tab=1 if locked in ["garage","range"] else 0;show_build_menu();return
+		if "yard" not in Game.built_workshops and at.distance_to(Vector3(7,0,0))<1.3:show_build_menu();return
+		if at.distance_to(weapon_bench_pos)<1.25:open_station("arsenal");return
+	if riding() or arena.nearest_wreck()!=null:arena.vehicle.interact_vehicle();return
+	if on_foot() and at.distance_to(Vector3(5,0,-2))<2.2:launch()
 
 func launch():
 	if phase=="intro":return
@@ -595,52 +616,24 @@ func launch():
 func close_station():
 	# Dots follow the items (0.8.0): leaving a station does not clear them, selecting the last new item does.
 	if is_instance_valid(build_menu):build_menu.get_parent().remove_child(build_menu);build_menu.queue_free();build_menu=null
-	phase="combat";Game.reset_input();dpad.clear();fire_pad.clear();dpad.enabled=true;fire_pad.enabled=true;start_button.disabled=false
+	phase="combat";Game.reset_input();start_button.disabled=false
+	sync_practice()
 	call_deferred("present_unlock")
-
-func shoot():
-	if phase=="intro":return
-	if is_instance_valid(build_menu):return
-	# On foot the hero shoots exactly as in battle (scripts/combat/gun.gd): the hub loadout, no run cards.
-	if not mounted:fire_cooldown=Gun.trigger(self,avatar);return
-	# The training tank keeps its own simple gun for now (step U4).
-	training_tank.kick()
-	fire_cooldown=1.25
-	var bullet=load("res://scenes/projectile.tscn").instantiate()
-	bullet.arena=self;bullet.friendly=true;bullet.speed=13;bullet.damage=3+Game.meta_damage()
-	bullet.travel_direction=Vector3(facing.x,0,facing.y)
-	var muzzle_height=training_tank.muzzle.global_position.y-training_tank.position.y if is_instance_valid(training_tank.muzzle) else .55
-	bullet.position=training_tank.position+bullet.travel_direction*.45+Vector3.UP*muzzle_height
-	bullet.lifetime=2.5
-	add_child(bullet);projectiles.append(bullet)
-	Game.fire_sound("vehicle_mg",training_tank)
-
-## The hub as a practice field for Gun: the range dummy takes hits, the hangar walls stop rounds.
-func bullet_hit(bullet)->bool:return Gun.practice_hit(self,bullet)
-func rocket_impact(bullet):Gun.practice_blast(self,bullet)
-func gun_targets()->Array:return [dummy] if "range" in Game.built_workshops and is_instance_valid(dummy) else []
-func gun_target_hit(_target,amount:float):
-	dummy_hits+=1;Texts.set_text(dummy_label,"−%.2f" % amount)
-	dummy.scale=Vector3(1.08,.94,1.08)
-	create_tween().tween_property(dummy,"scale",Vector3.ONE,.18)
-## The built yard extends the hub east to the range pen: shots there must reach the dummy.
-func gun_inside(pos:Vector3)->bool:return pos.x>=-3 and pos.x<=(YARD_EAST+1.5 if "yard" in Game.built_workshops else 8.0) and pos.z>=-3 and pos.z<=4
-func gun_blocked(pos:Vector3)->bool:
-	if not gun_inside(pos):return true
-	var p=Vector2i(roundi(pos.x),roundi(pos.z))
-	return p in [Vector2i(-2,-2),Vector2i(-1,-2),Vector2i(0,-1)] or p.y== -3
+func close_window():close_station()
+## The field holds while the hub shows anything over it (a station, a dialog, a call, the profiles).
+func window_open()->bool:return phase!="combat" or super()
 
 ## Soft contact shadows under hub props («Глубина света»), rebuilt when stations change.
 func refresh_floor_ao():
 	var old=get_node_or_null("FloorAO")
 	if old:old.name="FloorAOOld";old.queue_free()
-	preload("res://scripts/systems/floor_ao.gd").build_props(self,[avatar,training_tank,dummy,dummy_label,command_beams,get_node_or_null("HubOutskirts")])
+	preload("res://scripts/systems/floor_ao.gd").build_props(self,[command_beams,get_node_or_null("HubOutskirts")])
 func update_bench_visuals():
-	if is_instance_valid(avatar) and avatar.weapon_id!=Game.selected_weapon:Visuals.equip_model(avatar,Game.selected_weapon)
 	hint_refresh=0
 	if not is_instance_valid(bench_visuals) or bench_signature!=Game.built_workshops:
 		bench_signature=Game.built_workshops.duplicate()
 		refresh_floor_ao.call_deferred()
+		sync_field.call_deferred()
 		build_arrows.clear();bench_dots.clear()
 		if is_instance_valid(bench_visuals):remove_child(bench_visuals);bench_visuals.queue_free()
 		bench_visuals=Node3D.new();add_child(bench_visuals)
@@ -665,12 +658,6 @@ func update_bench_visuals():
 				Visuals.box(bench_visuals,pos+Vector3.UP*.06,Vector3(1.25*sqrt(.6),.12,1.25*sqrt(.6)),Color("758783"))
 				Visuals.box(bench_visuals,pos+Vector3(0,.3,0),Vector3(.40,.35,.22),Color("e2d5a9"))
 				Visuals.box(bench_visuals,pos+Vector3(-.14,.58,0),Vector3(.07,.25,.12),Color("e2d5a9"));Visuals.box(bench_visuals,pos+Vector3(.14,.58,0),Vector3(.07,.25,.12),Color("e2d5a9"));Visuals.box(bench_visuals,pos+Vector3(0,.7,0),Vector3(.34,.07,.12),Color("e2d5a9"))
-	if is_instance_valid(training_tank):
-		var selected=Game.garage.starting_vehicle()
-		if selected!="" and selected!=displayed_vehicle:
-			training_tank.queue_free();training_tank=Visuals.model(selected,self,YARD_PARK);training_tank.rotation.y=PI
-		displayed_vehicle=selected;training_tank.visible=selected!=""
-	if is_instance_valid(dummy):dummy.visible="range" in Game.built_workshops
 func show_build_menu():preload("res://scripts/ui/build_menu.gd").show(self)
 
 ## The four stations share one screen (scripts/ui/station_screen.gd); only «Казарма» needs no building.
@@ -679,7 +666,7 @@ func open_station(kind:String):
 	var building=STATIONS[kind][0]
 	if building!="" and building not in Game.built_workshops:build_tab=0;show_build_menu();return
 	if building!="":preload("res://scripts/ui/build_catalog.gd").mark(building)
-	close_station();phase="workshop";Game.reset_input();dpad.clear();fire_pad.clear();dpad.enabled=false;fire_pad.enabled=false;start_button.disabled=true
+	close_station();phase="workshop";Game.reset_input();start_button.disabled=true
 	var screen=preload("res://scripts/ui/station_screen.gd").new();screen.name="Station_"+kind;screen.provider=load(STATIONS[kind][1]).new();screen.station_kind=kind
 	build_menu=screen;root.add_child(screen);screen.closed.connect(close_station);screen.changed.connect(refresh)
 	if kind=="wardrobe":screen.changed.connect(refresh_uniform)
@@ -688,7 +675,7 @@ func open_station(kind:String):
 		if is_instance_valid(roadmap_alert):roadmap_alert.hide()
 
 func nearest_locked() -> String:
-	if mounted:return ""
+	if not on_foot():return ""
 	for id in Game.BUILD_COST:
 		var pos={"headquarters":hq_bench_pos,"character":Vector3(0,0,-1),"weapons":weapon_bench_pos,"bonuses":bonus_bench_pos,"garage":YARD_PARK,"range":YARD_DUMMY}[id]
 		if id not in Game.built_workshops and avatar.position.distance_to(pos)<1.25:return id
@@ -701,21 +688,20 @@ func bench_available(id:String)->bool:
 	return id in notices.BENCHES and notices.has_dot(notices.BENCHES[id])
 
 
-## Dev «reset profile» (recipe shop): wipe upgrades, park the avatar and the training tank.
+## Dev «reset profile» (recipe shop): wipe upgrades; the practice hero is rebuilt where he stands.
 func reset_upgrades():
 	Game.reset_upgrades()
-	mounted=false;moving=false;cell=Vector2i(2,2);destination=Vector3(2,0,2);avatar.position=destination;avatar.show()
-	training_tank.position=YARD_PARK;update_bench_visuals();close_station()
+	update_bench_visuals();close_station()
 	Texts.set_text(status,"Профиль обнулён.")
 	refresh()
 func show_recipe_shop():
-	close_station();phase="workshop";dpad.enabled=false;fire_pad.enabled=false;start_button.disabled=true
+	close_station();phase="workshop";start_button.disabled=true
 	build_menu=load("res://scripts/garage/recipe_shop.gd").new();root.add_child(build_menu)
 	build_menu.closed.connect(close_station);build_menu.changed.connect(refresh);build_menu.reset_requested.connect(reset_upgrades)
 
 
 func show_command():
-	close_station();phase="workshop";dpad.enabled=false;fire_pad.enabled=false;start_button.disabled=true
+	close_station();phase="workshop";start_button.disabled=true
 	build_menu=preload("res://scenes/progression/command_screen.tscn").instantiate();root.add_child(build_menu);build_menu.closed.connect(close_station)
 
 func present_unlock():
@@ -742,30 +728,17 @@ func present_unlock():
 	,true)
 	Game.music_stinger("wave_victory")
 
-func use_training_ability(slot:int=0):
-	if phase=="intro":return
-	hub_skills.cast(slot)
-
-
-
 func show_recycling():
 	close_station();phase="workshop";Game.reset_input()
 	build_menu=preload("res://scripts/ui/recycling_station.gd").build(self);root.add_child(build_menu)
 
-func hub_stand(pos:Vector3)->bool:
-	var half=.499 if mounted else .249
-	for x in [-half,half]:
-		for z in [-half,half]:
-			if not hub_free(Vector2i(roundi(pos.x+x),roundi(pos.z+z))):return false
-	return true
-
 func show_arrival():
 	if arrival_reason=="":phase="combat";present_call();return
-	phase="intro";dpad.enabled=false;fire_pad.enabled=false
+	phase="intro"
 	var dialog=preload("res://scripts/ui/arrival_dialog.gd").new();dialog.reason=arrival_reason;arrival_reason=""
 	root.add_child(dialog)
 	dialog.closed.connect(func():
-		phase="combat";dpad.enabled=true;fire_pad.enabled=true;Game.reset_input();call_deferred("present_call"))
+		phase="combat";Game.reset_input();call_deferred("present_call"))
 
 ## Tutorial video call from HQ (once per trigger), then pending unlock cards.
 func present_call():
@@ -776,30 +749,30 @@ func present_call():
 	# The call rings in the corner; the player answers when ready, nothing is blocked meanwhile.
 	if root.has_node("IncomingCall"):return
 	# The call opens as a dialog (T-120) and holds the hub until «Взять» or «Позже».
-	phase="ringing";dpad.enabled=false;fire_pad.enabled=false
+	phase="ringing"
 	var ring=preload("res://scripts/ui/incoming_call.gd").new();ring.call_id=call;root.add_child(ring)
 	ring.answered.connect(func():
 		if phase=="ringing":phase="combat"
 		open_call(call,ring.answered_rect))
-	ring.postponed.connect(func():phase="combat";dpad.enabled=true;fire_pad.enabled=true;Game.reset_input();present_unlock())
+	ring.postponed.connect(func():phase="combat";Game.reset_input();present_unlock())
 	present_unlock()
 func open_call(call:String,from_rect:=Rect2()):
 	# Answered while an unlock card is open: the call starts right after it.
 	while is_inside_tree() and phase!="combat":await get_tree().process_frame
 	if not is_inside_tree():return
-	phase="intro";dpad.enabled=false;fire_pad.enabled=false
+	phase="intro"
 	var view=preload("res://scripts/ui/video_call.gd").new();view.id=call;view.from_rect=from_rect;root.add_child(view)
 	view.closed.connect(func():
-		phase="combat";dpad.enabled=true;fire_pad.enabled=true;Game.reset_input())
+		phase="combat";Game.reset_input())
 
 ## Esc (T-189): the topmost open window closes first — windows that handle Esc themselves get it before the hub
-## (they are deeper in the tree); a station without its own handler is closed here; only with nothing open
-## does Esc bring up the pause tablet.
+## (they are deeper in the tree); a station without its own handler is closed here. With nothing open the event
+## goes on to the arena (the hub's parent), whose pause opens the tablet over the practice run — as in battle.
 func _unhandled_input(event):
 	if not event.is_action_pressed("pause") or event.is_echo():return
-	get_viewport().set_input_as_handled()
-	if is_instance_valid(build_menu):close_station();return
+	if is_instance_valid(build_menu):get_viewport().set_input_as_handled();close_station();return
 	for node in get_tree().get_nodes_in_group("selection_scope"):
-		if node is CanvasItem and node.is_visible_in_tree() and is_ancestor_of(node):return
-	if phase in ["combat"]:preload("res://scripts/ui/pause_tablet.gd").open(self)
-
+		if node is CanvasItem and node.is_visible_in_tree() and is_ancestor_of(node):get_viewport().set_input_as_handled();return
+	if phase!="combat":get_viewport().set_input_as_handled()
+## The rooms' Esc poll (playground.gd) is not used here: the hub answers Esc in _unhandled_input above.
+func _process(_delta):pass

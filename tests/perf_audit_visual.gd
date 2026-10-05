@@ -59,7 +59,7 @@ func run():
 	RenderingServer.viewport_set_measure_render_time(get_viewport().get_viewport_rid(),true)
 	print("PERF preset=%s render_scale=%s light_budget=%s" % [Settings.values.graphics_preset,Settings.values.render_scale,Settings.values.light_budget])
 	# Hub, day and night, standing and walking.
-	var hub=load("res://scenes/hub.tscn").instantiate();add_child(hub)
+	var hub=preload("res://scripts/hub.gd").open_practice(self)
 	for light in ["day","night"]:
 		Settings.values.world_lighting=light;Settings.apply()
 		await measure("hub %s idle" % light,4.0)

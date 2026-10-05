@@ -167,14 +167,23 @@ func run():
 	arena.free()
 	obstacle_density_checks()
 	terrain_checks()
-	var hub=load("res://scenes/hub.tscn").instantiate();add_child(hub)
-	# E at the parked vehicle opens the garage now; driving starts from the mounted state (as hub_animation_visual).
-	hub.phase="combat";hub.moving=false;hub.mounted=true;hub.avatar.hide();hub.training_tank.show();hub.training_tank.position=Vector3(5,0,1);hub.cell=Vector2i(5,1);hub.destination=hub.training_tank.position
-	Game.touch_direction=Vector2i.UP;hub._physics_process(.01);hub._physics_process(.5)
-	check(hub.training_tank.position.z<1,"drive hub tank")
-	Game.touch_direction=Vector2i.ZERO;hub._physics_process(.5);hub.interact()
-	check(not hub.mounted and hub.avatar.visible,"leave hub tank")
-	hub.free();await get_tree().process_frame
+	# The hub is the practice run's arena (one field engine): its garage tank is the arena's vehicle — E boards it,
+	# the battle controls drive it, E again leaves it.
+	for id in ["garage","yard"]:
+		if id not in Game.built_workshops:Game.built_workshops.append(id)
+	Game.garage.owned=["tank"];Game.garage.selected="tank";Engine.set_meta("hub_calls_off",true)
+	var hub=preload("res://scripts/hub.gd").open_practice(self);await get_tree().process_frame
+	var practice=hub.arena;hub.phase="combat";practice.phase="combat";practice.set_physics_process(false)
+	var parked=practice.wrecks.filter(func(w):return is_instance_valid(w) and w.kind=="tank" and not w.spent)
+	hub.place_hero(parked[0].position+Vector3(-1,0,0));hub.interact()
+	check(practice.player.kind=="tank" and hub.riding(),"board the hub tank")
+	var z=practice.player.position.z
+	Game.touch_direction=Vector2i.DOWN
+	for i in range(30):practice.player._physics_process(.05)
+	check(practice.player.position.z>z+.5,"drive hub tank")
+	Game.touch_direction=Vector2i.ZERO;hub.interact()
+	check(practice.player.kind=="soldier" and hub.on_foot(),"leave hub tank")
+	hub.queue_free();await get_tree().process_frame;Engine.remove_meta("hub_calls_off")
 	print("R13 SMOKE: %d checks, %d failures" % [checks,failures]);get_tree().quit(1 if failures else 0)
 
 # from obstacle_density_revision: thinning cuts every obstacle family by 15%, deterministically, keeping layouts valid.

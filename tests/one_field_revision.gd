@@ -97,5 +97,94 @@ func run():
 	check(parked.size()==1 and arena.player.kind=="soldier","the buggy is parked at the start of the next field")
 	check(arena.room.mode=="battle" and arena.playground==null and not arena.peaceful(),"the next field is a battle again")
 	arena.queue_free();await get_tree().process_frame
+	await hub_practice()
 	print("ONE FIELD: failures=",failures)
 	get_tree().quit(1 if failures else 0)
+
+## Step 2: the hub is the practice run's arena (hub mode). The practice hero starts exactly as a sortie would start
+## from the same hub loadout; a run card, ammo and an ability act the same in the hub, in a room and in battle; a
+## station change reaches the practice hero at once; the hub's tank is the VehicleSystem's machine.
+func start_state(field)->Dictionary:
+	var hero=field.player
+	return {"gun":Gun.stats(field).duplicate(),"damage":hero.damage,"interval":hero.fire_interval,"hp":hero.max_hp,"speed":CombatStats.soldier_speed(field.run),
+		"slots":field.abilities.slots.duplicate(),"ability":ability_interval(field),"modules":field.headquarters.modules.duplicate(),"weapon":field.weapon,"crit":field.run.crit_chance}
+func ability_interval(field)->float:
+	if field.abilities.slots.is_empty():return 0.0
+	field.abilities.select(field.abilities.slots[0]);return field.abilities.interval()
+func hub_practice():
+	Game.reset_upgrades();Campaign.configure(1)
+	Engine.set_meta("hub_calls_off",true)
+	for id in ["weapons","range","yard","garage","headquarters"]:
+		if id not in Game.built_workshops:Game.built_workshops.append(id)
+	Game.weapon_unlocks=Game.LOOT.gun_ids();Game.selected_weapon="rifle"
+	Game.class_levels["recruit"]=4  # the class ability on Q (grenade) from class level 3
+	Game.garage.owned=["tank"];Game.garage.selected="tank"
+	var hub=preload("res://scripts/hub.gd").open_practice(self)
+	await get_tree().create_timer(.8).timeout
+	var practice=hub.arena
+	practice.set_physics_process(false)
+	check(practice.practice and practice.room.mode=="hub" and practice.peaceful() and practice.playground==hub and hub.get_parent()==practice,"the hub is a playground of a practice-run arena in hub mode")
+	check(hub.avatar==practice.player and practice.player.kind=="soldier" and practice.player.player_owned,"the hub hero is the arena's own hero actor")
+	check(get_tree().get_nodes_in_group("profile_hub").has(hub) and hub.phase=="combat","the hub keeps its stations' state (profile hub, phase)")
+	# The same start as a sortie: a battle arena from the same profile gives the same hero, gun and abilities.
+	var battle=load("res://scenes/arena.tscn").instantiate();battle.run_seed=43;battle.auto_pause_enabled=false;add_child(battle);battle.set_physics_process(false)
+	await get_tree().process_frame
+	var hub_start=start_state(practice);var battle_start=start_state(battle)
+	check(str(hub_start)==str(battle_start),"one source: the practice hero starts as the sortie hero (%s / %s)" % [hub_start,battle_start])
+	check(hub_start.slots.has("grenade") and hub_start.weapon=="rifle","the class ability and the Arsenal weapon are in the practice run")
+	# The same card and ammo on both: identical pause, damage and hit on a target (the hub's range dummy / an enemy).
+	check(is_instance_valid(hub.dummy) and hub.dummy in practice.room.actors and hub.dummy.has_meta("practice_target"),"the range dummy is a real practice target of the arena")
+	for field in [practice,battle]:
+		field.player.set_physics_process(false);field.phase="combat"
+		RunUpgrades.apply(field,"fire",1)
+		Ammo.load_item(field.run,Ammo.roll("ap",2,7));RunUpgrades.refresh_player(field)
+	var enemy=battle.spawn_actor("soldier",battle.find_free_near(Vector2i(2,2)),false)
+	var at_hub=shot(practice,hub.dummy);var at_battle=shot(battle,enemy)
+	check(same(at_hub,at_battle,["cooldown","interval","damage","gun","bullet"]) and at_hub.ammo==at_battle.ammo,"one system: the card and ammo give the same pause and damage in the hub and in battle (%.3f / %.3f s, %.3f / %.3f)" % [at_hub.cooldown,at_battle.cooldown,at_hub.bullet,at_battle.bullet])
+	check(is_equal_approx(at_hub.hit,at_battle.hit),"the hub dummy takes the same hit as an enemy (%.3f / %.3f)" % [at_hub.hit,at_battle.hit])
+	# …and in a room on the battle's arena.
+	var room=load("res://scripts/service_room.gd").new();room.branch="ability"
+	battle.begin_service(2,room);await get_tree().process_frame
+	battle.player.set_physics_process(false);RunUpgrades.refresh_player(battle)
+	var at_room=shot(battle,room.targets[0])
+	check(same(at_hub,at_room,["cooldown","interval","damage","gun","bullet"]) and is_equal_approx(at_hub.hit,at_room.hit),"one system: hub, room and battle shoot alike (%.3f / %.3f)" % [at_hub.bullet,at_room.bullet])
+	# The class ability: the same RunAbility with the same cooldown.
+	for field in [practice,battle]:
+		field.abilities.select("grenade");field.abilities.cooldown=0.0
+	var thrown=practice.grenades.size()
+	check(practice.abilities.cast_slot(practice.abilities.slots.find("grenade")) and practice.grenades.size()==thrown+1,"Q in the hub throws the battle's grenade (RunAbility)")
+	check(battle.abilities.cast_slot(battle.abilities.slots.find("grenade")) and is_equal_approx(practice.abilities.cooldown,battle.abilities.cooldown),"the ability cooldown is the same in the hub and on the field (%.2f / %.2f s)" % [practice.abilities.cooldown,battle.abilities.cooldown])
+	battle.queue_free()
+	# Nothing hurts the hero; the hangar walls are walls; the floor is walkable.
+	var hp=practice.player.hp;practice.player.take_damage(3.0,Vector3.ZERO,"","bullet")
+	check(practice.player.hp==hp,"nothing hurts the hero in the hub")
+	check(not practice.can_stand(Vector3(2,0,-3),practice.player) and not practice.can_stand(Vector3(-4,0,1),practice.player) and practice.can_stand(Vector3(2,0,1),practice.player),"the back wall and the command centre block, the hangar floor is free")
+	# A station change reaches the practice hero at once.
+	var credits=Game.credits
+	Game.selected_weapon="smg";hub.refresh()
+	check(practice.weapon=="smg" and Gun.stats(practice).id=="smg" and practice.player.model.weapon_id=="smg","the Arsenal weapon reaches the practice hero at once")
+	check(practice.run.upgrade_history.is_empty() and str(Ammo.effective(practice).type)=="standard","a station change rebuilds the practice run from the loadout (the card and ammo are gone)")
+	var recruit_hp=practice.player.max_hp
+	Game.selected_class="heavy";hub.refresh()
+	check(not practice.abilities.slots.has("grenade") and not is_equal_approx(practice.player.max_hp,recruit_hp),"the Barracks class reaches the practice hero at once (abilities, health %.1f → %.1f)" % [recruit_hp,practice.player.max_hp])
+	Game.selected_class="recruit";Game.selected_weapon="rifle";hub.refresh()
+	var again=start_state(practice)
+	check(str(again)==str(hub_start),"back to the first loadout: the practice hero is the first one again (%s)" % again)
+	check(Game.credits==credits,"practice earns and spends nothing")
+	# The hub's tank: the arena's VehicleSystem, the garage's stats.
+	var parked=practice.wrecks.filter(func(w):return is_instance_valid(w) and w.kind=="tank" and not w.spent)
+	check(parked.size()==1 and parked[0].get_meta("hub_parked",false),"the garage tank waits on the parking bay as a vehicle of the arena")
+	Game.garage.levels["tank_gun"]=3;Game.garage.levels["tank_armor"]=2;hub.refresh()
+	parked=practice.wrecks.filter(func(w):return is_instance_valid(w) and w.kind=="tank" and not w.spent)
+	hub.place_hero(parked[0].position+Vector3(-1,0,0));hub.interact()
+	var tank=practice.player;var garage=GarageCatalog.stats("tank",practice,"owned",1)
+	check(tank.kind=="tank" and tank.player_owned and hub.riding(),"E boards the hub tank through VehicleSystem")
+	check(is_equal_approx(tank.damage,garage.damage) and is_equal_approx(tank.fire_interval,garage.interval) and is_equal_approx(tank.max_hp,garage.hp) and is_equal_approx(tank.speed,garage.speed),"the hub tank has the garage's stats with upgrades (%.2f dmg, %.2f s, %.1f hp)" % [tank.damage,tank.fire_interval,tank.max_hp])
+	tank.fire_cooldown=0.0;tank.turn_left=0.0;var flying=practice.projectiles.size()
+	check(tank.shoot() and practice.projectiles.size()>flying and is_equal_approx(practice.projectiles[flying].damage,garage.damage),"the hub tank fires the battle's vehicle round")
+	hub.interact()
+	check(practice.player.kind=="soldier" and hub.on_foot(),"E again: out of the tank, on foot")
+	# Freeing the hub frees its practice arena.
+	hub.queue_free();await get_tree().process_frame;await get_tree().process_frame
+	check(not is_instance_valid(practice),"the practice arena goes with the hub")
+	Engine.remove_meta("hub_calls_off")

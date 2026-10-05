@@ -10,10 +10,10 @@ func run():
 	Game.save_enabled=false;Game.sound_enabled=false;Settings.persistence_enabled=false;Campaign.configure(1)
 	Settings.values.world_lighting="night"
 	get_window().size=Vector2i(1600,900)
-	var hub=load("res://scenes/hub.tscn").instantiate();add_child(hub);await settle(60)
+	var hub=preload("res://scripts/hub.gd").open_practice(self);await settle(60)
 	for dialog in get_tree().root.find_children("*","Control",true,false):
 		if dialog.has_method("dismiss"):dialog.dismiss()
-	hub.set_process(false);var camera=get_viewport().get_camera_3d();camera.set_process(false)
+	hub.set_process(false);hub.arena.presentation.set_process(false);var camera=get_viewport().get_camera_3d();camera.set_process(false)
 	var stands=hub.find_children("MilitaryLightStand",  "Node3D",true,false)
 	var target=stands[0].global_position if not stands.is_empty() else Vector3.ZERO
 	camera.projection=Camera3D.PROJECTION_PERSPECTIVE;camera.fov=40;camera.global_position=target+Vector3(2.5,2.6,5.5);camera.look_at(target+Vector3(0,1.2,0))

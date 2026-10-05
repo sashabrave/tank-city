@@ -18,8 +18,9 @@ func ground():
 	return node if is_instance_valid(node) else null
 
 ## Builds the room field around `playground` (not yet in the tree; its `branch`/`index` set by the caller).
-func begin(index:int,playground:Node3D):
-	remember_hero()
+## `mode` "hub": the hub on the practice run's arena (step 2) — the same field, without the room light and frame.
+func begin(index:int,playground:Node3D,mode:="service"):
+	if mode=="service":remember_hero()
 	arena.ensure_armed(true)
 	preload("res://scripts/battle_stage.gd").stop(arena)
 	arena.room.base_model=null;arena.room.base_label=null;arena.room.base_bar=null
@@ -35,21 +36,23 @@ func begin(index:int,playground:Node3D):
 	room.commander=null;room.commander_help_pool.clear();room.generator_thresholds.clear();room.generator_order.clear()
 	room.star_time=0.0;room.freeze_time=0.0;room.pressure_time=0.0;room.recipe_offer={};room.draft_pickup={}
 	# room_index stays the last field: the biome around the room and the prizes of its machines follow it.
-	room.mode="service";room.boss_room=false;room.boss_defeated=false;room.twin_boss=false
+	room.mode=mode;room.boss_room=false;room.boss_defeated=false;room.twin_boss=false
 	room.room_cleared=true;room.reward_claimed=true;room.difficulty=0
 	arena.challenges.reset()
 	room.grid_size=playground.field_size();room.base_cell=Vector2i(int(room.grid_size/2),room.grid_size-1)  # no HQ here (hq_off_field)
 	arena.navigation.reset();arena.terrain.patches.clear()
-	frame_camera(arena.camera,CAMERA_SIZE)
+	if mode=="service":frame_camera(arena.camera,CAMERA_SIZE)
 	playground.arena=arena;arena.playground=playground
 	arena.add_child(playground)
 	for cell in playground.solid_cells():block(cell)
 	var feel=preload("res://scripts/combat/combat_feel.gd").new();arena.add_child(feel);feel.setup(arena)
-	var lighting=arena.get_node("WorldLighting");lighting.day_background=Color("bec3b8");lighting.apply()
+	# The hub's light was set up with its palette when the practice arena entered the tree (hub.open_practice).
+	if mode=="service":var lighting=arena.get_node("WorldLighting");lighting.day_background=Color("bec3b8");lighting.apply()
 	var atmosphere=arena.get_node("WorldAtmosphere");atmosphere.clear_clouds();atmosphere.apply()
-	preload("res://scripts/world_lighting.gd").reflection_probe(arena,Vector3(room.grid_size+4,6,room.grid_size+4))
+	# The hub captures its own probe once its buildings stand (hub.gd).
+	if mode=="service":preload("res://scripts/world_lighting.gd").reflection_probe(arena,Vector3(room.grid_size+4,6,room.grid_size+4))
 	arena.player=arena.spawn_actor("soldier",arena.grid_pos(playground.start_position()),true)
-	arena.player.position=playground.start_position()
+	arena.player.position=playground.start_position();arena.player.quarter_destination=arena.player.position
 	arena.phase="combat"
 	if is_instance_valid(arena.hud):arena.hud.service_mode(true)
 	playground.field_ready()

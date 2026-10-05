@@ -40,7 +40,7 @@ func run():
 	check(not arena.get_node("WorldLighting").environment.glow_enabled,"Off disables glow")
 	Settings.change("shaders",true);Settings.change("world_lighting","day")
 	arena.queue_free();await get_tree().process_frame
-	var hub=load("res://scenes/hub.tscn").instantiate();add_child(hub)
+	var hub=preload("res://scripts/hub.gd").open_practice(self)
 	await get_tree().create_timer(1.5,true,false,true).timeout
 	await shot("hub")
 	var layer=CanvasLayer.new();add_child(layer);layer.layer=200

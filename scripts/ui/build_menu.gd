@@ -1,7 +1,7 @@
 extends RefCounted
 const Catalog=preload("res://scripts/ui/build_catalog.gd")
 static func show(hub):
-	hub.close_station();hub.phase="workshop";hub.dpad.enabled=false;hub.fire_pad.enabled=false;hub.start_button.disabled=true
+	hub.close_station();hub.phase="workshop";hub.start_button.disabled=true
 	var root=Control.new();hub.build_menu=root;hub.root.add_child(root);root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);root.add_to_group("selection_scope")
 	var shade=ColorRect.new();root.add_child(shade);shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);shade.color=Color(0,0,0,.5)
 	var panel=UiKit.glass(root,(root.get_viewport_rect().size-Vector2(1060,690))*.5,Vector2(1060,690))

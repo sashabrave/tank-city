@@ -33,6 +33,9 @@ func _ready():
 func clear_current():
 	Game.reset_input()
 	if is_instance_valid(current):
+		# The hub goes with its practice-run arena (never the sortie's run arena).
+		var practice=current.get("arena") if current.has_signal("start_requested") else null
+		if is_instance_valid(practice) and practice.get("practice") and practice.get_parent()==self:remove_child(practice);practice.queue_free()
 		if current.get_parent()==self:remove_child(current)
 		if current!=run_arena:current.queue_free()
 func show_hub():
@@ -58,7 +61,11 @@ func _return_hub():
 	clear_current()
 	if is_instance_valid(run_arena):run_arena.queue_free()
 	run_arena=null
-	current=load("res://scenes/hub.tscn").instantiate();current.arrival_reason=greeting;add_child(current)
+	open_hub(greeting)
+## The hub is a playground of its own practice-run arena (one field engine, step 2): `current` is the hub, freeing
+## it frees that arena; a sortie starts a new run arena as before.
+func open_hub(greeting:String):
+	current=preload("res://scripts/hub.gd").open_practice(self,greeting)
 	current.start_requested.connect(request_run)
 	current.gallery_requested.connect(show_gallery)
 	current.sandbox_requested.connect(show_sandbox)
@@ -188,8 +195,7 @@ func reload_profile_hub():
 	clear_current();current=null
 	if not Game.profiles.selected:
 		ProfileMenu.call_deferred("open_start");return
-	current=load("res://scenes/hub.tscn").instantiate();current.arrival_reason="wake";add_child(current)
-	current.start_requested.connect(request_run);current.gallery_requested.connect(show_gallery);current.sandbox_requested.connect(show_sandbox)
+	open_hub("wake")
 
 func request_run():
 	if Game.run_checkpoint.is_empty():select_world();return

@@ -19,7 +19,7 @@ func fit_panel():
 	hud.right_info.size.y=position.y-hud.right_info.position.y+tracked+16
 	hud.pause_button.position.y=hud.right_info.position.y+hud.right_info.size.y+16
 func _process(delta):
-	visible=hud.arena.phase in ["combat","countdown"] and not is_instance_valid(hud.modal)
+	visible=hud.arena.phase in ["combat","countdown"] and not is_instance_valid(hud.modal) and not hud.hub_layout
 	fit_panel()
 	delay-=delta
 	if delay>0:return

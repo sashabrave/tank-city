@@ -17,7 +17,7 @@ func _ready():
 	opening=false
 	layer=110;process_mode=Node.PROCESS_MODE_ALWAYS;add_to_group("field_tablet")
 	paused_before=get_tree().paused;get_tree().paused=true;Game.reset_input()
-	var view=preload("res://scripts/ui/field_tablet.gd").new();view.arena=context_arena;view.tab=initial_tab;view.can_leave=leave.is_valid();view.can_restart=is_instance_valid(context_arena) and context_arena.is_inside_tree() and context_arena.phase=="paused" and Game.run_checkpoint.get("mode","")=="room";add_child(view);view.closed.connect(close)
+	var view=preload("res://scripts/ui/field_tablet.gd").new();view.arena=context_arena;view.tab=initial_tab;view.can_leave=leave.is_valid();view.can_restart=is_instance_valid(context_arena) and context_arena.is_inside_tree() and not context_arena.get("practice") and context_arena.phase=="paused" and Game.run_checkpoint.get("mode","")=="room";add_child(view);view.closed.connect(close)
 	view.restart_requested.connect(func():close(false);context_arena.restart_requested.emit())
 	view.exit_requested.connect(func():
 		if leave.is_valid():close(false);leave.call()

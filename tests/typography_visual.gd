@@ -57,7 +57,7 @@ func run():
 	var memory=preload("res://scripts/ui/tablet_memory.gd");memory.loaded=true;memory.state={}
 	for language in ["ru","en"]:
 		Texts.set_language(language)
-		var hub=load("res://scenes/hub.tscn").instantiate();add_child(hub)
+		var hub=preload("res://scripts/hub.gd").open_practice(self)
 		await get_tree().create_timer(1.0).timeout;hub.phase="combat";hub.set_physics_process(false)
 		await capture("hub",hub)
 		for kind in hub.STATIONS:

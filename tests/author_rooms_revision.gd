@@ -104,7 +104,7 @@ func run():
 	arena.queue_free()
 	await get_tree().process_frame
 	# T-206 / T-219 in the Barracks.
-	var hub=load("res://scenes/hub.tscn").instantiate();add_child(hub);await get_tree().create_timer(1.0).timeout
+	var hub=preload("res://scripts/hub.gd").open_practice(self);await get_tree().create_timer(1.0).timeout
 	hub.phase="combat"
 	Game.credits=100000;Game.selected_class="recruit";Game.class_unlocks=["recruit"];Game.class_levels["recruit"]=1
 	Game.progression.counters["field_reached"]=3

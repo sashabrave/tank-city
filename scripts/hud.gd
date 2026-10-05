@@ -57,6 +57,28 @@ var service_room:=false
 func service_mode(on:bool):
 	service_room=on
 	if is_instance_valid(right_info):right_info.visible=not on
+## The hub on the practice run's arena (one field engine, step 2): the same HUD — health, weapon panel, ability row
+## with the HQ module circles — set under the hub's logo and tools; the hub has no pause button or task tracker
+## of its own on screen (Esc opens the tablet, tasks live on the command screen).
+var hub_layout:=false
+const HUB_DROP:=236.0
+## No HQ on the hub field: the health panel keeps only the hero's row.
+const HUB_TRIM:=45.0
+func hub_mode(on:bool):
+	if on==hub_layout:return
+	hub_layout=on
+	var s=1.0 if on else -1.0
+	top.offset_top+=s*HUB_DROP;top.offset_bottom+=s*(HUB_DROP-HUB_TRIM)
+	left_info.offset_top+=s*(HUB_DROP-HUB_TRIM);left_info.offset_bottom+=s*(HUB_DROP-HUB_TRIM)
+	transport_panel.position.y+=s*(HUB_DROP-HUB_TRIM)
+	pause_button.visible=not on
+## How far the left column sits lower than in battle (the hub's logo and tools are above it).
+func panel_drop()->float:return HUB_DROP-HUB_TRIM if hub_layout else 0.0
+## Ability tiles follow the slots (a practice run rebuilt after a station change, the sandbox's own loadout).
+func refresh_skill_icons():
+	for i in range(skill_buttons.size()):
+		skill_buttons[i].visible=i<arena.abilities.slots.size()
+		if skill_buttons[i].visible:skill_buttons[i].get_node("Icon").texture=UiKit.trimmed(UiKit.icon_texture("abilities/"+str(arena.abilities.slots[i])))
 func _ready():
 	add_to_group("battle_message_anchor")
 	root=$Layout
@@ -306,7 +328,8 @@ func _show_upgrades_now():
 
 func show_pause():
 	close_modal()
-	preload("res://scripts/ui/pause_tablet.gd").open(arena,arena.pause_battle,retreat)
+	# The hub's practice run has nothing to leave: the tablet opens over the hub as it always did.
+	preload("res://scripts/ui/pause_tablet.gd").open(arena,arena.pause_battle,Callable() if arena.get("practice") else retreat)
 ## «В хаб» from the pause (author, 4 Oct 2026): leaving a field that is not cleared counts as a defeat — the
 ## same losses as being knocked out. A cleared field (or the sandbox) is left freely, as before.
 func retreat():
@@ -410,7 +433,7 @@ func set_transport_visible(value:bool):
 	transport_panel.show()
 	transport_tween=create_tween().set_parallel(true)
 	transport_tween.tween_property(transport_panel,"position:x",28.0 if value else -250.0,.22).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-	transport_tween.tween_property(left_info,"position:y",339.0 if value else 135.0,.22).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	transport_tween.tween_property(left_info,"position:y",(339.0 if value else 135.0)+panel_drop(),.22).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	if not value:transport_tween.chain().tween_callback(transport_panel.hide)
 
 func show_final_preparation():

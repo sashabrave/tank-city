@@ -464,7 +464,7 @@ func can_quit()->bool:
 	return not OS.has_feature("mobile") and not OS.has_feature("web")
 func confirm_quit():
 	if is_instance_valid(quit_confirm):return
-	var in_battle=is_instance_valid(arena) and arena.is_inside_tree()
+	var in_battle=is_instance_valid(arena) and arena.is_inside_tree() and not arena.get("practice")
 	var endless_battle=in_battle and Campaign.endless
 	quit_confirm=Control.new();quit_confirm.name="QuitConfirm";add_child(quit_confirm);quit_confirm.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);quit_confirm.add_to_group("guide_confirmation")
 	var shade=ColorRect.new();quit_confirm.add_child(shade);shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);shade.color=Color(0,0,0,.6)

@@ -24,7 +24,8 @@ func touch(pad,index,pos,pressed):
 func _ready():call_deferred("run")
 func run():
 	Game.save_enabled=false;Game.sound_enabled=false;Settings.persistence_enabled=false;Engine.set_meta("hub_calls_off",true)
-	var hub=load("res://scenes/hub.tscn").instantiate();add_child(hub);await get_tree().create_timer(1.0).timeout
+	# The hub on its practice-run arena: windows close first, then Esc reaches the arena's pause (the tablet).
+	var hub=preload("res://scripts/hub.gd").open_practice(self);await get_tree().create_timer(1.0).timeout
 	hub.phase="combat"
 	hub.open_station("fighter");await get_tree().create_timer(.3).timeout
 	# T-178 / T-220: Q / E walk the Barracks' main tabs, now a row on top.
@@ -40,6 +41,8 @@ func run():
 	check(not is_instance_valid(hub.build_menu) and not tablet_open(hub),"Esc closes the Barracks without the pause tablet on top")
 	await esc()
 	check(tablet_open(hub),"with nothing open Esc brings up the pause tablet")
+	var over_hub=get_tree().get_first_node_in_group("field_tablet")
+	check(over_hub!=null and over_hub.get_child(0).can_leave==false and over_hub.get_child(0).can_restart==false,"the hub's tablet has nothing to leave or restart")
 	for t in get_tree().get_nodes_in_group("field_tablet"):t.queue_free()
 	get_tree().paused=false
 	hub.queue_free();await get_tree().process_frame

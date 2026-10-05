@@ -99,9 +99,11 @@ func _process(delta):
 	# A room between fields (service mode): the fixed room frame, no overview swings, no tilt.
 	if arena.peaceful():
 		var cam:Camera3D=arena.camera;var h=cam.h_offset;var v=cam.v_offset
+		view=NORMAL.duplicate();focus=Vector3.ZERO;last_phase=phase
+		# A playground with its own camera (the hub follows the hero across its big yard).
+		if is_instance_valid(arena.playground) and arena.playground.has_method("frame_camera"):arena.playground.frame_camera(cam,delta);return
 		preload("res://scripts/systems/service_field.gd").frame_camera(cam,preload("res://scripts/systems/service_field.gd").CAMERA_SIZE)
 		cam.h_offset=h;cam.v_offset=v
-		view=NORMAL.duplicate();focus=Vector3.ZERO;last_phase=phase
 		return
 	var overview=phase in ["upgrade","map","result"] or (phase=="countdown" and arena.countdown>.85)
 	var goal:Dictionary=(OVERVIEW if overview else NORMAL).duplicate()

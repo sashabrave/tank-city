@@ -51,7 +51,7 @@ func _process(delta):
 	if not is_instance_valid(context):return
 	var observer:Node3D
 	if "avatar" in context:
-		observer=context.training_tank if "mounted" in context and context.mounted else context.avatar
+		observer=context.avatar
 	elif "player" in context and is_instance_valid(context.player):observer=context.player
 	var active=is_instance_valid(observer) and observer.global_position.distance_to(global_position)<radius
 	if "phase" in context:

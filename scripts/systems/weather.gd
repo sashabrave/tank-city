@@ -30,7 +30,12 @@ const RAIN={
 	"shower":{"count":190,"quad":Vector2(.034,.34),"fall":1.35,"slant":.9,"strength":1.0,"ripples":48,"puddles":9},
 	"downpour":{"count":300,"quad":Vector2(.038,.5),"fall":1.8,"slant":1.6,"strength":1.2,"ripples":80,"puddles":14},
 }
-static func pick_rain(context:Node)->String:return rain_for(int(context.room_index))
+static func pick_rain(context:Node)->String:return rain_for(int(own_look(context).room_index))
+## The hub on the practice arena keeps its own per-visit look (hub.gd room_palette/run_seed/room_index).
+static func own_look(context:Node)->Node:
+	var ground=context.get("playground") if context!=null else null
+	if ground!=null and is_instance_valid(ground) and ground.has_method("room_palette") and ground.get("room_index")!=null:return ground
+	return context
 static func rain_for(index:int)->String:
 	var forced=str(Settings.values.get("rain_style",""))
 	if forced in RAIN:return forced
@@ -45,6 +50,7 @@ static func allowed(entry:Dictionary)->Array:
 
 ## Weather of the context's current room, or "" outside battle.
 static func pick(context:Node)->String:
+	context=own_look(context)
 	if context==null or not context.has_method("room_palette") or not "room_index" in context:return ""
 	# Rooms between fields (the arena in service mode) stay in fair weather.
 	if context.get("cozy_light")==true:return ""

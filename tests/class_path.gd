@@ -144,7 +144,7 @@ func hud_checks():
 
 func window_checks():
 	Game.reset_upgrades();Game.credits=100000;Game.profiles.selected=true;Game.selected_class="recruit";Game.class_levels["recruit"]=5
-	var hub=load("res://scenes/hub.tscn").instantiate();add_child(hub);await settle()
+	var hub=preload("res://scripts/hub.gd").open_practice(self);await settle()
 	hub.phase="combat";hub.open_station("fighter");await settle()
 	var page=hub.build_menu.find_child("Page",true,false)
 	check(page.find_children("Slot_*","Button",true,false).size()==1,"the class page has one slot, Q")

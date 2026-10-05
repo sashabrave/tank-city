@@ -24,4 +24,4 @@ static func build(hub)->Control:
 static func model(hub,pos:Vector3):
 	var bin=Node3D.new();hub.add_child(bin);bin.name="BlueprintRecycling";bin.position=pos
 	Visuals.model("recycler",bin)  # tools/build_props_v6.py
-	preload("res://scripts/interaction_prompt.gd").attach(hub,hub,"Продать повторы",pos,1.3,func():return not hub.mounted)
+	preload("res://scripts/interaction_prompt.gd").attach(hub,hub,"Продать повторы",pos,1.3,func():return not hub.riding())

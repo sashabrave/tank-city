@@ -16,6 +16,8 @@ func enabled()->bool:return bool(Settings.values.get("ui_motion",true))
 ## A short camera push towards the field when a reward appears (T-022): zoom in ~5% and settle back.
 func punch_in(amount:=.05):
 	if not enabled() or not is_instance_valid(arena.camera):return
+	# Rooms and the hub keep their own camera frame (no field-sized zoom there).
+	if arena.has_method("peaceful") and arena.peaceful():return
 	var base=float(arena.grid_size)+5.0
 	var tween=create_tween();tween.tween_property(arena.camera,"size",base*(1.0-amount),.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	tween.tween_property(arena.camera,"size",base,.55).set_trans(Tween.TRANS_SINE)

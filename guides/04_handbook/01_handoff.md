@@ -49,7 +49,7 @@ Godot --headless --path . --export-release "macOS" build/macos/WarCats-<верс
 | `scripts/upgrades`, `scripts/stats`, `scripts/classes` | Карточки, характеристики, классы (реестры) |
 | `assets/balance/**/*.tres` | Все игровые числа: враги, оружие, способности, карточки, характеристики, экономика, бой |
 | `scripts/ui/*`, `scripts/ui_kit.gd` | Интерфейс: планшет, станции, карточки, HUD-элементы, стекло, табы |
-| `scripts/hub.gd`, `route_map.gd` | Хаб-база и карта маршрута |
+| `scripts/hub.gd`, `route_map.gd` | Хаб-база (площадка тренировочного забега на арене, guides/02_development/07_one_world.md) и карта маршрута |
 | `scripts/battle_stage.gd`, `battle_presentation.gd` | Постановка боя и камера |
 | `data/` | Changelog, энциклопедия, локаль |
 | `tests/` | ~260 сцен проверок (headless и оконные), наборы в `tests/suites`, запуск `tools/run_tests.sh` |

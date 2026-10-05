@@ -24,7 +24,7 @@ func run():
 	get_window().size=Vector2i(1920,1080)
 	for night in [false,true]:
 		Settings.values.world_lighting="night" if night else "day";Settings.apply()
-		var hub=load("res://scenes/hub.tscn").instantiate();add_child(hub)
+		var hub=preload("res://scripts/hub.gd").open_practice(self)
 		await get_tree().create_timer(2.0).timeout;await shot("hub_"+("night" if night else "day"))
 		await clear()
 	# Battle in daylight, mid-wave.

@@ -3,7 +3,6 @@
 [ext_resource type="Texture2D" path="res://assets/ui/branding_v1/war_cats_logo_v2.png" id="99_brand_logo"]
 
 [ext_resource type="Texture2D" path="res://assets/icons/v1/alloy.png" id="1_wkqdn"]
-[ext_resource type="Script" path="res://scripts/touch_controls.gd" id="2_hye22"]
 
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mwv13"]
@@ -247,70 +246,6 @@ corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ge6cf"]
-content_margin_left = 18.0
-content_margin_top = 12.0
-content_margin_right = 18.0
-content_margin_bottom = 12.0
-bg_color = Color(0.14, 0.175, 0.15, 0.985)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.43, 0.46, 0.41, 1)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_v3yvx"]
-content_margin_left = 18.0
-content_margin_top = 12.0
-content_margin_right = 18.0
-content_margin_bottom = 12.0
-bg_color = Color(0.14, 0.175, 0.15, 0.985)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.43, 0.46, 0.41, 1)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_g8044"]
-content_margin_left = 18.0
-content_margin_top = 12.0
-content_margin_right = 18.0
-content_margin_bottom = 12.0
-bg_color = Color(1, 0.596, 0.122, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.43, 0.46, 0.41, 1)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8hjbr"]
-content_margin_left = 18.0
-content_margin_top = 12.0
-content_margin_right = 18.0
-content_margin_bottom = 12.0
-bg_color = Color(0.14, 0.175, 0.15, 0.985)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.43, 0.46, 0.41, 1)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_to02o"]
 content_margin_left = 18.0
 content_margin_top = 12.0
 content_margin_right = 18.0
@@ -1028,31 +963,6 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_qjpos")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_7v3pa")
 text = "Build · Построить"
 
-[node name="MovePad" type="Control" parent="." unique_id=317183551]
-anchors_preset = 0
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = 30.0
-offset_top = -237.5
-offset_right = 245.0
-offset_bottom = -22.5
-mouse_filter = 2
-script = ExtResource("2_hye22")
-
-[node name="FirePad" type="Control" parent="." unique_id=905230146]
-anchors_preset = 0
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -245.0
-offset_top = -340.0
-offset_right = -65.0
-offset_bottom = -160.0
-mouse_filter = 2
-script = ExtResource("2_hye22")
-fire_mode = true
-
 [node name="StartButton" type="Button" parent="." unique_id=189218791]
 layout_mode = 0
 anchor_left = 1.0
@@ -1095,28 +1005,6 @@ theme_override_styles/pressed = SubResource("StyleBoxFlat_1ol5w")
 theme_override_styles/hover = SubResource("StyleBoxFlat_5jabd")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_ge6cf")
 text = "Настройки"
-
-[node name="InteractButton" type="Button" parent="." unique_id=928119094]
-layout_mode = 0
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -320.0
-offset_top = -155.0
-offset_right = -50.0
-offset_bottom = -103.0
-focus_mode = 0
-theme_override_colors/font_color = Color(0.945, 0.933, 0.859, 1)
-theme_override_colors/font_pressed_color = Color(0.945, 0.933, 0.859, 1)
-theme_override_colors/font_hover_color = Color(0.945, 0.933, 0.859, 1)
-theme_override_colors/font_disabled_color = Color(0.55, 0.58, 0.53, 1)
-theme_override_font_sizes/font_size = 20
-theme_override_styles/normal = SubResource("StyleBoxFlat_v3yvx")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_g8044")
-theme_override_styles/hover = SubResource("StyleBoxFlat_8hjbr")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_to02o")
-text = "E"
 
 [node name="GalleryButton" type="Button" parent="."]
 layout_mode = 0

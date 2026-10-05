@@ -1,21 +1,15 @@
 class_name Gun
 extends RefCounted
-## One hero, one gun (step U1, 2026-10-04): the battle, the hub range and the rooms between fields shoot through
-## this module. A mode only provides the floor — the «field» the shots fly over:
-##   battle  — the Arena: real enemies, walls, generators (CombatSystem.bullet_hit/rocket_impact). The rooms between
-##             fields are the same Arena in service mode (one field engine): their shots are battle shots;
-##   practice — the hub: training targets and its own wall test (until the hub moves onto the arena, step 2).
-## A field exposes `projectiles`, `phase`, `facing`, `bullet_hit(bullet)`, `rocket_impact(bullet)`; a practice field
-## also `gun_targets()` (nodes that take hits), `gun_target_hit(target, amount)`, `gun_blocked(pos)` (walls and props
-## stop a round) and `gun_inside(pos)` (the floor a lobbed charge may fly over).
-## Its run (arena with `run`) is the field itself; none in the hub.
+## One hero, one gun (step U1, 2026-10-04): every shot of the hero goes through this module, on one field engine
+## (guides/02_development/07_one_world.md) — the battle, the rooms between fields (service mode) and the hub
+## (the practice run, hub mode) are all the Arena: real targets, walls and blasts (CombatSystem.bullet_hit /
+## rocket_impact). The hub's own practice branch is gone (step 2). `Gun.stats(null)` still reads the hub loadout
+## for the stations' numbers.
 const LOOT=preload("res://scripts/loot_catalog.gd")
 const SPREAD:=.10            # radians between pellets
 const LOB_WEAPON:="grenade_launcher"
-const TARGET_REACH:=.4       # half-size of a training target's hit box
-const PRACTICE_SEED:=4100    # visual-only randomness of practice fields
 
-## The run behind a field: the arena itself (battle or a room between fields), or null in the hub.
+## The run behind a field: the arena itself, or null without one (the stations' numbers).
 static func run_of(field):
 	if field==null:return null
 	return field if field.get("run")!=null else null
@@ -36,30 +30,18 @@ static func stats(run_arena=null,id:="")->Dictionary:
 		"speed":float(data.speed),"blast":float(data.blast),"pierce":bool(data.pierce),"lob":id==LOB_WEAPON},true)
 	return result
 
-## Practice pull of the trigger (the hub): the shot plus the recoil; returns the cooldown till the next one.
-static func trigger(field,shooter:Node3D)->float:
-	var id=weapon_id(field)
-	fire(field,shooter)
-	if id!=LootCatalog.PAWS and not Ammo.dry(run_of(field).run if run_of(field)!=null else null):
-		var model=model_of(shooter)
-		if is_instance_valid(model) and model.has_method("kick"):model.kick()
-	return float(stats(run_of(field),id).interval)
-
 ## One pull: the paws scratch, a dry gun hits with its butt, a gun fires a volley (bursts follow on pausable timers).
 static func fire(field,shooter:Node3D):
-	var battle=is_battle(field);var run_arena=run_of(field)
 	var id=weapon_id(field);var data:Dictionary=LOOT.WEAPONS[id]
 	# Empty hands (2026-10-03): Space scratches with the paws instead of a shot (there is no separate strike key).
 	if id==LootCatalog.PAWS:
 		hint(field,shooter,"Возьми оружие")
-		if battle:Melee.strike(field,shooter,shooter.damage*field.effects.modify("shot_damage",1.0,{"actor":shooter}),true)
-		else:practice_strike(field,shooter,Melee.damage(run_arena),true)
+		Melee.strike(field,shooter,shooter.damage*field.effects.modify("shot_damage",1.0,{"actor":shooter}),true)
 		return
 	# No rounds loaded (T-197): the gun hits with its butt; a small reminder over the hero now and then.
-	if run_arena!=null and Ammo.dry(run_arena.run):
+	if Ammo.dry(field.run):
 		hint(field,shooter,"Нет боеприпасов")
-		if battle:Melee.strike(field,shooter,Melee.damage(field)*Melee.BUTT,false)
-		else:practice_strike(field,shooter,Melee.damage(run_arena)*Melee.BUTT,false)
+		Melee.strike(field,shooter,Melee.damage(field)*Melee.BUTT,false)
 		return
 	volley(field,shooter,id)
 	# Bursts (SMG): the rest of the pull follows on pausable timers in the facing of that moment.
@@ -67,8 +49,7 @@ static func fire(field,shooter:Node3D):
 		field.get_tree().create_timer(float(data.get("burst_gap",.07))*k,false).timeout.connect(func():
 			if is_instance_valid(field) and is_instance_valid(shooter) and shooter.get("dead")!=true and field.phase=="combat" and weapon_id(field)==id:
 				volley(field,shooter,id)
-				if battle:Game.weapon_sound(shooter)
-				else:Game.fire_sound(id,shooter))
+				Game.weapon_sound(shooter))
 
 ## The small hint of a strike instead of a shot (author, 4 Oct 2026): a short word rising over the hero, at most
 ## once per HINT_PAUSE seconds — not the big toast. The same in battle, the hub and the rooms. Visual only.
@@ -87,46 +68,36 @@ static func hint(field:Node,shooter:Node3D,text:String):
 
 ## One volley: every pellet with its spread, speed, range, pierce and blast; the grenade launcher lobs.
 static func volley(field,shooter:Node3D,id:String):
-	var data:Dictionary=LOOT.WEAPONS[id];var battle=is_battle(field);var run_arena=run_of(field)
-	var damage:float
-	var facing:Vector2i=aim(field,shooter)
-	if battle:
-		var multiplier=field.effects.modify("shot_damage",1.0,{"actor":shooter})
-		field.effects.emit("shot",{"actor":shooter})
-		damage=shooter.damage*multiplier
-	else:damage=float(stats(run_arena,id).damage)
+	var data:Dictionary=LOOT.WEAPONS[id]
+	var facing:Vector2i=shooter.facing
+	var multiplier=field.effects.modify("shot_damage",1.0,{"actor":shooter})
+	field.effects.emit("shot",{"actor":shooter})
+	var damage:float=shooter.damage*multiplier
 	for i in range(data.pellets):
-		var bullet=field.spawn_bullet(shooter,shooter.position,facing,damage,true) if battle else practice_bullet(field,shooter,facing,damage,id)
+		var bullet=field.spawn_bullet(shooter,shooter.position,facing,damage,true)
 		var spread=(i-(data.pellets-1)*.5)*SPREAD
 		bullet.travel_direction=bullet.travel_direction.rotated(Vector3.UP,spread);bullet.rotation.y=atan2(-bullet.travel_direction.x,-bullet.travel_direction.z)
-		bullet.speed=data.speed;bullet.lifetime=data.range*(run_arena.run.range_multiplier if run_arena!=null else 1.0)/data.speed;bullet.piercing=data.pierce;bullet.rocket_radius=data.blast
+		bullet.speed=data.speed;bullet.lifetime=data.range*field.run.range_multiplier/data.speed;bullet.piercing=data.pierce;bullet.rocket_radius=data.blast
 		if data.blast>0:bullet.scale=Vector3(2,2,2)
 		if id==LOB_WEAPON:lob(field,shooter,bullet,data)
 
 ## Grenade launcher (T-268, author: «работает как РПГ»): the charge goes over cover in an arc and lands on the first
 ## target in the line of fire within range, otherwise at full range. The RPG keeps its straight rocket.
 static func lob(field,shooter:Node3D,bullet,data:Dictionary):
-	var run_arena=run_of(field)
-	var reach=float(data.range)*(run_arena.run.range_multiplier if run_arena!=null else 1.0);var distance=reach
-	for target in lob_targets(field):
+	var reach=float(data.range)*field.run.range_multiplier;var distance=reach
+	for target in field.room.actors:
+		if not is_instance_valid(target) or target.dead or target.player_owned or target.allied:continue
 		var offset=target.position-shooter.position;offset.y=0
 		var along=offset.dot(bullet.travel_direction)
 		if along>.5 and along<distance and (offset-bullet.travel_direction*along).length()<.6:distance=along
 	bullet.lobbed=true;bullet.lob_ground=bullet.position.y;bullet.lifetime=distance/bullet.speed
-static func lob_targets(field)->Array:
-	if is_battle(field):
-		return field.room.actors.filter(func(enemy):return is_instance_valid(enemy) and not enemy.dead and not enemy.player_owned and not enemy.allied)
-	return field.gun_targets()
-## Where a lobbed charge may still fly: inside the battle grid, inside a practice field's floor (`gun_inside`).
+## Where a lobbed charge may still fly: inside the field's grid.
 static func on_field(field,pos:Vector3)->bool:
-	if field.has_method("gun_inside"):return field.gun_inside(pos)
 	return not field.has_method("inside") or field.inside(field.grid_pos(pos))
 
-## The facing of the shot: the actor's own in battle, the field's (the hub walker) in practice.
-static func aim(field,shooter)->Vector2i:
-	return shooter.facing if shooter.get("facing") is Vector2i else field.facing
 static func model_of(shooter)->Node3D:
 	return shooter.model if shooter.get("model") is Node3D else shooter
+
 
 ## Where a shot leaves the barrel (2026-10-04, author: «снаряды вылетают из тела, а не из ствола»), in world space:
 ## `spawn` — the round's start: the forward reach and the height of the shouldered gun's «Muzzle», but on the
@@ -144,7 +115,7 @@ static func muzzle(shooter:Node3D,facing:Vector2i,forward:=.39,height:=.55)->Dic
 	return {"spawn":spawn,"flash":spawn,"casing":spawn-dir*minf(.25,forward*.5)}
 
 ## Loaded ammo extras of a charge's blast (T-114), shared by every field: cluster scatters bomblets around the
-## landing spot, napalm leaves a burning patch. `rng` is the fight's in battle, a visual one in practice;
+## landing spot, napalm leaves a burning patch. `rng` is the fight's generator;
 ## `blast` is the field's small-explosion function (position, damage).
 static func charge_effects(field,bullet,ammo:Dictionary,rng:RandomNumberGenerator,blast:Callable):
 	var stats:Dictionary=ammo.stats;var at=bullet.position;at.y=0
@@ -160,75 +131,3 @@ static func charge_effects(field,bullet,ammo:Dictionary,rng:RandomNumberGenerato
 			var patch=preload("res://scripts/combat/napalm_patch.gd").new();patch.arena=field;patch.position=at
 			patch.radius=float(stats.get("fire_radius",.8));patch.seconds=float(stats.get("fire_time",2.5));patch.damage=bullet.damage*.6
 			field.add_child(patch)
-
-# --- Practice fields (the hub range) ---------------------------------------------------------------------------
-
-## The loaded ammo of the practice field's run (the hub: standard rounds).
-static func practice_ammo(field)->Dictionary:
-	var run_arena=run_of(field)
-	return Ammo.effective(run_arena) if run_arena!=null else Ammo.standard()
-## A practice round: the same projectile, muzzle point, sound, flash and casing as in battle.
-static func practice_bullet(field,shooter:Node3D,facing:Vector2i,damage:float,id:String):
-	Game.fire_sound(id,shooter)
-	var bullet=load("res://scenes/projectile.tscn").instantiate()
-	bullet.arena=field;bullet.friendly=true;bullet.player_shot=true;bullet.damage=damage;bullet.sniper_visual=id=="sniper"
-	bullet.direction=facing;bullet.travel_direction=Vector3(facing.x,0,facing.y)
-	var at=muzzle(shooter,facing)
-	bullet.position=field.to_local(at.spawn)
-	field.add_child(bullet);field.projectiles.append(bullet)
-	var feel=practice_feel(field)
-	feel.muzzle(null,at.flash,bullet.travel_direction);feel.casing(shooter,bullet.travel_direction,at.casing)
-	return bullet
-## Muzzle flashes and casings need a CombatFeel on the field; practice fields get a light one on first shot.
-static func practice_feel(field)->Node:
-	var feel=field.get_node_or_null("CombatFeel")
-	if feel==null:
-		feel=preload("res://scripts/combat/combat_feel.gd").new();feel.name="CombatFeel";feel.arena=field
-		feel.rng.seed=PRACTICE_SEED;field.add_child(feel)
-	return feel
-
-## Projectile step on a practice field: training targets take the hit (a charge bursts on them), then the field's
-## own wall test stops the round — a charge bursts at the wall too.
-static func practice_hit(field,bullet)->bool:
-	var pos:Vector3=bullet.position
-	for target in field.gun_targets():
-		if not is_instance_valid(target) or target in bullet.hit_actors:continue
-		if absf(pos.x-target.position.x)<TARGET_REACH and absf(pos.z-target.position.z)<TARGET_REACH:
-			if bullet.rocket_radius>0:practice_blast(field,bullet);return true
-			bullet.hit_actors.append(target);practice_damage(field,target,bullet.damage)
-			if not bullet.piercing:return true
-	if field.gun_blocked(pos):
-		if bullet.rocket_radius>0:practice_blast(field,bullet)
-		else:burst(field,pos,Color("dc9870"),.16)
-		return true
-	return false
-## A charge's blast on a practice field: the same flash, sound and radius; every target inside takes the hit,
-## then the loaded ammo's extras (cluster bomblets, napalm) play out exactly as in battle.
-static func practice_blast(field,bullet):
-	burst(field,bullet.position,Color("e8b957"),bullet.rocket_radius);Game.sound("boom",field)
-	for target in field.gun_targets():
-		if is_instance_valid(target) and flat(bullet.position,target.position)<=bullet.rocket_radius:practice_damage(field,target,bullet.damage)
-	var rng=RandomNumberGenerator.new();rng.seed=PRACTICE_SEED+field.projectiles.size()
-	charge_effects(field,bullet,practice_ammo(field),rng,func(spot:Vector3,amount:float):
-		GrenadeVisual.explode(field,spot,.6,true);Game.sound("boom",field)
-		for target in field.gun_targets():
-			if is_instance_valid(target) and flat(spot,target.position)<=.6:practice_damage(field,target,amount))
-## A hit on a training target: the loaded ammo's flat damage share and its colour; no crit or status rolls, so no
-## run randomness is spent outside battle.
-const AMMO_COLORS={"burn":"ff8a3d","cryo":"bff3ff","shock":"86daec","stun":"ffe08a","explosive":"ff8a5a","ricochet":"c9a5ff","ap":"ffe0a0"}
-static func practice_damage(field,target:Node3D,amount:float):
-	var ammo=practice_ammo(field)
-	amount*=1.0+float(ammo.get("damage",0.0))
-	if AMMO_COLORS.has(str(ammo.type)):burst(field,target.position+Vector3.UP*.45,Color(AMMO_COLORS[str(ammo.type)]),.3)
-	field.gun_target_hit(target,amount)
-## Hand-to-hand on a practice field: the battle's swipe; training targets in the arc take the strike.
-static func practice_strike(field,shooter:Node3D,amount:float,claws:bool):
-	var facing=aim(field,shooter);var forward=Vector3(facing.x,0,facing.y).normalized()
-	for target in field.gun_targets():
-		if not is_instance_valid(target):continue
-		var to=target.position-shooter.position;to.y=0
-		if to.length()<=Melee.REACH and (to.length()<=.2 or to.normalized().dot(forward)>=Melee.ARC):field.gun_target_hit(target,amount)
-	Melee.swipe(model_of(shooter),field,claws,facing)
-static func burst(field:Node3D,pos:Vector3,color:Color,radius:float):
-	preload("res://scripts/combat_effect.gd").spawn(field,pos,color,radius)
-static func flat(a:Vector3,b:Vector3)->float:return Vector2(a.x-b.x,a.z-b.z).length()

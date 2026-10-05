@@ -9,10 +9,10 @@ func shot(name:String):
 func run():
 	Game.save_enabled=false;Settings.persistence_enabled=false;Game.sound_enabled=false
 	get_window().size=Vector2i(1600,900)
-	var hub=load("res://scenes/hub.tscn").instantiate();add_child(hub);await settle(60)
+	var hub=preload("res://scripts/hub.gd").open_practice(self);await settle(60)
 	for dialog in get_tree().root.find_children("*","Control",true,false):
 		if dialog.has_method("dismiss"):dialog.dismiss()
-	hub.set_process(false);hub.set_physics_process(false)
+	hub.set_process(false);hub.set_physics_process(false);hub.arena.presentation.set_process(false)  # the hub camera is the arena presentation's now
 	var camera=get_viewport().get_camera_3d();camera.set_process(false);camera.set_physics_process(false)
 	var focus=hub.command_model.global_position+Vector3(0,1.3,0)
 	camera.projection=Camera3D.PROJECTION_PERSPECTIVE;camera.fov=40
