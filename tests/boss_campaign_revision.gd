@@ -141,7 +141,7 @@ func run():
 	check(rooms.rewarded and rooms.shells.is_empty(),"timer ends the barrage")
 	arena.queue_free();await settle()
 	# from maze_revision: the maze goal flag is reachable on foot through the real board.
-	arena=load("res://scenes/arena.tscn").instantiate();arena.sandbox=true;arena.sandbox_mode="maze";arena.sandbox_difficulty=1;arena.run_seed=11;add_child(arena);arena.auto_pause_enabled=false
+	arena=preload("res://scripts/sandbox/sandbox_ground.gd").field({"mode":"maze","difficulty":1});arena.run_seed=11;add_child(arena);arena.auto_pause_enabled=false
 	await get_tree().create_timer(1.2).timeout
 	var goal=arena.challenges.goal_flag
 	check(is_instance_valid(goal),"maze: green flag placed")

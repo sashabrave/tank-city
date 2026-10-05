@@ -52,6 +52,7 @@
 | daily_run_revision | ежедневная вылазка и доска | daily_board_revision |
 | sandbox_revision | песочница, галерея, дев-магазин | gallery, dev_shop_v17 |
 | author_rooms_revision | правки автора по комнатам и дев-карта (переход в любую точку маршрута) | — |
+| one_field_revision | одно поле: комнаты, торговец, хаб и песочница — площадки арены; одни цифры героя на всех площадках, в площадках нет своей ходьбы и стрельбы | — |
 | esc_windows | Esc и окна, канал уведомлений, мобильный ввод, возобновление планшета | notification_channel, mobile_input, tablet_resume |
 | settings_display_revision | настройки и экран | settings |
 

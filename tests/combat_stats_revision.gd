@@ -248,18 +248,18 @@ func gun_checks():
 	await get_tree().process_frame
 	var run=arena.run;run.weapon="sniper";run.damage_bonus=0.0;run.fire_multiplier=1.0;run.range_multiplier=1.0;run.weapon_stats={}
 	run.weapon_mods["sniper"]={"damage":0.0,"interval":1.0,"intercept":0.0}
-	var hub=Gun.stats(null,"sniper");var battle=Gun.stats(arena)
-	check(is_equal_approx(hub.damage,battle.damage) and is_equal_approx(hub.interval,battle.interval),"Gun.stats: hub and battle agree (%.3f/%.3f, %.3f/%.3f)" % [hub.damage,battle.damage,hub.interval,battle.interval])
+	var hub=CombatStats.weapon(null,"sniper");var battle=Gun.stats(arena)
+	check(is_equal_approx(hub.damage,battle.damage) and is_equal_approx(hub.interval,battle.interval),"the stations' numbers and Gun.stats of a fresh battle agree (%.3f/%.3f, %.3f/%.3f)" % [hub.damage,battle.damage,hub.interval,battle.interval])
 	var bare=Game.LOOT.WEAPONS.sniper.damage*Game.weapon_factor("sniper")*(1+Game.damage_level*Game.DAMAGE_PER_LEVEL)
 	check(is_equal_approx(hub.damage,bare) and hub.damage>Game.LOOT.WEAPONS.sniper.damage,"the hub gun carries meta damage (no class weapon multiplier since the 4 Oct path)")
 	arena.player.apply_weapon()
 	check(is_equal_approx(arena.player.damage,battle.damage),"the battle hero's damage is Gun.stats")
-	check(Gun.stats(null,"smg").burst==3 and Gun.stats(null,"grenade_launcher").lob and Gun.stats(null,"rpg").blast>0 and not Gun.stats(null,"rpg").lob,"Gun.stats carries bursts, lob and blast")
+	check(Gun.stats(arena,"smg").burst==3 and Gun.stats(arena,"grenade_launcher").lob and Gun.stats(arena,"rpg").blast>0 and not Gun.stats(arena,"rpg").lob,"Gun.stats carries bursts, lob and blast")
 	# A room between fields is the same arena (one field engine): the hero there is the arena's soldier with the
 	# run's gun and the run's stats, and a volley is the battle's volley.
-	var room=load("res://scripts/service_room.gd").new();room.branch="vehicle";arena.begin_service(2,room)
+	var room=load("res://scripts/service_room.gd").new();room.branch="vehicle";arena.begin_playground(room,2)
 	run.weapon="shotgun";run.weapon_stats={"damage":.2};RunUpgrades.refresh_player(arena)
-	check(room.avatar==arena.player and Gun.weapon_id(arena)=="shotgun" and Gun.is_battle(arena),"the room shoots the run's gun on the arena")
+	check(room.avatar==arena.player and Gun.weapon_id(arena)=="shotgun","the room shoots the run's gun on the arena")
 	check(is_equal_approx(arena.player.damage,CombatStats.weapon(arena,"shotgun").damage) and is_equal_approx(arena.player.damage,Gun.stats(arena).damage),"the room uses the run's gun stats (crate rolls too)")
 	arena.player.facing=Vector2i.UP;var flying=arena.projectiles.size()
 	arena.fire_weapon(arena.player)

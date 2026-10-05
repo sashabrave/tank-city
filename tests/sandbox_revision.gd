@@ -16,7 +16,7 @@ func run():
 	var arena=main.run_arena
 	check(arena!=null and arena.sandbox and main.current==arena,"sandbox opens a field")
 	check(Game.weapon_unlocks.size()==Game.LOOT.gun_ids().size() and not Game.save_enabled,"everything unlocked, writing off")
-	var admin=arena.get_node("SandboxAdmin")
+	var admin=arena.playground.admin
 	for i in range(30):arena._physics_process(.05)
 	check(arena.phase=="combat" and arena.room.spawn_queue.is_empty() and not arena.room.room_cleared,"no automatic waves")
 	admin.count=3;admin.spawn_enemies("tank")

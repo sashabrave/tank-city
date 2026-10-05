@@ -31,7 +31,7 @@ func run_test():
 	check(arena.room.room_index==next_room and arena.wave==0 and arena.phase=="countdown" and arena.room.generators.is_empty(),"new room initializes encounter")
 	await get_tree().process_frame
 	check(not is_instance_valid(old_player),"previous player scene released")
-	var service=load("res://scripts/service_room.gd").new();service.branch="vehicle";arena.begin_service(4,service);service.set_process(false)
+	var service=load("res://scripts/service_room.gd").new();service.branch="vehicle";arena.begin_playground(service,4);service.set_process(false)
 	# The mechanic upgrades the vehicle the hero drives or will get (buggy when none).
 	# The run seed is random here: take the damage card so the check does not depend on the draw.
 	service.offers=[{"id":"damage","tier":0}]+service.offers

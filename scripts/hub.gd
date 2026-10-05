@@ -6,9 +6,8 @@ extends "res://scripts/playground.gd"
 ## (arena.start_run_state). Station changes rebuild it at once (sync_practice → arena.reset_practice). Nothing here
 ## hurts the hero, earns alloy or writes the profile. The hub keeps only what is its own: the hangar and yard
 ## dressing, the stations and their windows, calls and dialogs, the range dummy's stand, the camera that follows
-## the hero across the yard. Open with Hub.open_practice(parent) (main.gd).
+## the hero across the yard. Open with Hub.open_practice(parent) (main.enter_playground("hub")).
 signal start_requested
-signal gallery_requested
 signal sandbox_requested
 var arrival_reason=""
 var recycling_pos=Vector3(6,0,3)
@@ -72,10 +71,13 @@ var hint_refresh=0.0
 var build_arrows:Dictionary={}
 var command_alert:Label3D
 var command_pos=Vector3(-4,0,1)  # main screen: middle of the left edge
-## Visual-only: each hub visit gets a biome, sun moment and weather like a battle room (no RNG consumed).
+## Visual-only: each hub visit gets a biome, sun moment and weather like a battle room (no RNG consumed). The
+## playground's `index` is this visit number (the arena reads it through look_index / look_seed, own_look).
 var run_seed=Game.visual_run_seed+int(Time.get_ticks_usec()%9973)
-var room_index=int(Time.get_ticks_usec()/7)%15
-func room_palette()->Dictionary:return preload("res://scripts/biome_catalog.gd").entry(run_seed,room_index)
+func _init():index=int(Time.get_ticks_usec()/7)%15
+func room_palette()->Dictionary:return preload("res://scripts/biome_catalog.gd").entry(run_seed,index)
+func field_mode()->String:return "hub"
+func own_look()->bool:return true
 var command_screen:ShaderMaterial
 var command_beams:Node3D
 var roadmap_alert:Label3D
@@ -87,12 +89,12 @@ var weapon_bench_pos=Vector3(0,0,3)
 ## Opens the hub: a practice-run arena under `parent` with this hub as its playground (one field engine, step 2).
 ## Returns the hub; freeing the hub frees its arena too.
 static func open_practice(parent:Node,reason:="")->Node3D:
-	var field=load("res://scenes/arena.tscn").instantiate();field.practice=true;field.auto_pause_enabled=false
+	var field=load("res://scenes/arena.tscn").instantiate();field.auto_pause_enabled=false
 	var hub=load("res://scenes/hub.tscn").instantiate();hub.arrival_reason=reason
-	# Known before the arena enters the tree: its light is set up once, in the hub's palette (arena.room_palette).
+	# Known before the arena enters the tree: the arena is the practice run (`practice`), its light is set up once
+	# in the hub's palette (arena.room_palette), and its _ready stands the hub on the field (begin_playground).
 	field.playground=hub
 	parent.add_child(field)
-	field.begin_hub(hub)
 	return hub
 
 func _ready():
@@ -151,10 +153,9 @@ func _ready():
 	var terminal=Visuals.box(self,GARAGE_TERMINAL+Vector3(0,.55,0),Vector3(.45,1.1,.3),Color("5b6650"));terminal.name="GarageTerminal"
 	var screen=Visuals.box(self,GARAGE_TERMINAL+Vector3(0,.82,.16),Vector3(.34,.26,.02),Color("7fd0ff"));screen.material_override=Visuals.material(Color("7fd0ff"),true)
 
-## The hero stands on the field (the arena spawned him): the hub's HUD layout and camera, the range dummy, the
-## parked vehicle, then the printer intro.
+## The hero stands on the field (the arena spawned him; the HUD took its hub view by the arena's mode): the hub
+## camera, the range dummy, the parked vehicle, then the printer intro.
 func field_ready():
-	arena.hud.hub_mode(true)
 	arena.camera.size=CAMERA_SIZE
 	var hero=avatar;hero.facing=Vector2i.DOWN;hero.model.rotation.y=PI
 	practice_key=practice_signature()
@@ -169,7 +170,6 @@ func _exit_tree():
 func build_hub_ui():
 	var canvas=CanvasLayer.new();add_child(canvas)
 	root=preload("res://scenes/ui/hub_screen.tscn").instantiate();canvas.add_child(root)
-	root.get_node("GalleryButton").pressed.connect(func():gallery_requested.emit())
 	title=root.get_node("GameTitle");credits=root.get_node("AlloyLabel")
 	var title_plate=UiKit.glass(root,Vector2(30,25),Vector2(345,150),Color("242d27ed"));title_plate.mouse_filter=Control.MOUSE_FILTER_IGNORE;root.move_child(title_plate,0)
 	for child in root.get_children():
@@ -178,7 +178,6 @@ func build_hub_ui():
 	build_dev_menu()
 	# Movement, fire and E on touch are the arena HUD's own pads (one field engine): the hub screen has none.
 	start_button=root.get_node("StartButton");start_button.pressed.connect(launch);UiKit.accent(start_button,26)
-	root.get_node("SettingsButton").hide()
 	# Interaction notes: kept as a hidden label; stations open through station_screen.gd.
 	status=Label.new();status.name="StatusLabel";status.visible=false;root.add_child(status)
 	refresh()
@@ -203,7 +202,6 @@ func build_dev_menu():
 			var width=(321.0-GAP)*.5 if half else 321.0
 			button.position=Vector2(PAD+(i/2)*(width+GAP),y);button.size=Vector2(width,ROW)
 		y+=ROW+GAP
-	root.get_node("GalleryButton").hide()
 	# Construction: square icon button, second in emphasis after «В бой», in the thumb zone.
 	var build:Button=root.get_node("BuildButton");build.text="";build.tooltip_text=Texts.render("Строительство")
 	build.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT);build.offset_left=-408;build.offset_right=-332;build.offset_top=-112;build.offset_bottom=-36

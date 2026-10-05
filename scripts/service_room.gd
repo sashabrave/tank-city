@@ -2,7 +2,7 @@ extends "res://scripts/playground.gd"
 ## Upgrade room between fields (mechanic, instructor, HQ depot, captured command post) as a playground on the run's
 ## Arena (one field engine, guides/02_development/07_one_world.md): the room's dressing, its main spot, the common
 ## RoomLayout spots, the parked vehicle and the exit gate. The hero, shooting, abilities and the drop floor are the
-## arena's. Open with arena.begin_service(index, room) (main.show_service / show_node_service).
+## arena's. Open with main.enter_playground(branch, index) → arena.begin_playground (show_service / show_node_service).
 var branch="vehicle"
 var vehicle="buggy"
 ## RoomLayout nodes: {crate, machine, fortune, layout}.
@@ -27,12 +27,11 @@ var guide:Node3D
 ## The instructor's stands as real practice targets on the field (scripts/systems/service_field.gd spawn_target).
 var targets:Array=[]
 ## The rooms are their route stops seen up close (author, 3 Oct), like the merchant: the stop's parts, bigger and
-## more detailed, in daylight on a sand floor. Without the model file the old hangar dressing stays.
+## more detailed, in daylight on a sand floor (assets_integrity checks the files are there).
 const ROOM_MODELS={"vehicle":"res://assets/models/route/mechanic_room.glb","ability":"res://assets/models/route/training_room.glb","headquarters":"res://assets/models/route/workshop_room.glb","legend":"res://assets/models/route/command_post_point.glb"}
 ## «Захваченный КП» is a walk-in room too (author, 4 Oct 2026): the route point model up close, the legendary
 ## rules at its main spot (scripts/legend_stop.gd as the window), the exit opens after the choice.
 const LEGEND_MODEL_SCALE:=1.45
-var street=false
 ## The HQ depot on the route is this room with branch "headquarters" (T-215): walk to the HQ, then the cards.
 ## Without HQ technologies it still refuels: base repair, a reroll or a token box (moved from depot_stop.gd).
 const DEPOT_SUPPLIES=[{"id":"repair","title":"Ремонт штаба","detail":"Прочность базы +1 до конца забега","icon":"repair"},{"id":"refuel","title":"Заправка","detail":"Перебросы карточек +1","icon":"reroll"},{"id":"tokens","title":"Ящик жетонов","detail":"Жетоны +4 для торговца","icon":"token"}]
@@ -45,25 +44,20 @@ func blocked_floor()->Array:return [Vector2i(0,-1)] if branch=="ability" else [V
 func exit_open()->bool:return claimed
 func _ready():
 	vehicle=current_vehicle()
-	street=ResourceLoader.exists(ROOM_MODELS[branch])
 	var positions=[]
 	for x in range(-4,5):
-		for z in range(-4 if street else -3,5):positions.append(Vector3(x,0,z))
-	Visuals.tiled_floor(self,positions,Color("98917f") if street else Color("7d8784"))
-	if street:Visuals.box(self,Vector3(0,-.4,0),Vector3(9.3,.6,9.3),Color("7d7462"))
-	else:Visuals.box(self,Vector3(0,-.4,.5),Vector3(9.3,.6,8.3),Color("4e5856"))
-	dressing=preload("res://scripts/service_dressing.gd").new();dressing.branch=branch;dressing.vehicle=vehicle;dressing.street=street;add_child(dressing)
+		for z in range(-4,5):positions.append(Vector3(x,0,z))
+	Visuals.tiled_floor(self,positions,Color("98917f"))
+	Visuals.box(self,Vector3(0,-.4,0),Vector3(9.3,.6,9.3),Color("7d7462"))
+	dressing=preload("res://scripts/service_dressing.gd").new();add_child(dressing)
 	# Cozy surroundings (2026-10-03): the biome of the last field close around the room, fair weather, and fixed
 	# decorative lights — a festoon over the far edge and two masts at the front corners.
-	if street:
-		preload("res://scripts/location_ambience.gd").room(self,arena,index,4.9)
-		preload("res://scripts/room_lights.gd").build(self,-4.5)
-	if street:
-		var stop:Node3D=load(ROOM_MODELS[branch]).instantiate();stop.name="StopModel";add_child(stop)
-		if branch=="legend":stop.scale=Vector3.ONE*LEGEND_MODEL_SCALE;stop.position=Vector3(0,0,-2.0)
-		preload("res://scripts/route_miniatures.gd").library_surfaces(stop)
+	preload("res://scripts/location_ambience.gd").room(self,arena,index,4.9)
+	preload("res://scripts/room_lights.gd").build(self,-4.5)
+	var stop:Node3D=load(ROOM_MODELS[branch]).instantiate();stop.name="StopModel";add_child(stop)
+	if branch=="legend":stop.scale=Vector3.ONE*LEGEND_MODEL_SCALE;stop.position=Vector3(0,0,-2.0)
+	preload("res://scripts/route_miniatures.gd").library_surfaces(stop)
 	if branch=="vehicle":
-		if not street:Visuals.model("workbench",self,Vector3(0,0,-1))
 		Visuals.model(vehicle,self,Vector3(2.2,.16,-1.2))
 		# T-011: when the soldier is on foot, the parked vehicle can be taken into the next field for alloy.
 		# T-284: the same vehicle already yours — a sign «Уже есть» over it; a different one — «Купить и заменить».
@@ -71,10 +65,7 @@ func _ready():
 		if not vehicle_for_sale:Visuals.label3d(self,"Уже есть",PARKED+Vector3(0,1.6,0),Color("bdf0b0"),30)
 	elif branch=="headquarters":
 		# Street room: the HQ stands on the ramp under the canopy, its nose just behind the main spot.
-		Visuals.model("base",self,Vector3(0,.18,-2.6) if street else Vector3(0,0,-1))
-	elif not street:
-		Visuals.box(self,Vector3(0,.35,-1),Vector3(1.4,.7,1.4),Color("717d79"))
-		var statue=Visuals.model("soldier",self,Vector3(0,.7,-1));statue.scale=Vector3.ONE*1.5;Visuals.tint_model(statue,Color("738982"))
+		Visuals.model("base",self,Vector3(0,.18,-2.6))
 	# No standing signs over the station, the vehicle or the machines (T-226): the prompt on approach says what
 	# it is and what it costs; a yellow arrow shows where the upgrade is taken, then a green one the exit.
 	continue_button=build_ui({"vehicle":"Полевой механик","ability":"Подготовка бойца","headquarters":"Депо штаба","legend":"Захваченный КП"}[branch],{"vehicle":"Модификация транспорта","ability":"Модификация способности","headquarters":"Модуль штаба или припасы на вылазку","legend":"Легендарное правило — только здесь"}[branch],"В следующий бой →" if Campaign.endless else "На карту →",func():leave())

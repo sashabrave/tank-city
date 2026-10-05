@@ -61,14 +61,7 @@ func _return_hub():
 	clear_current()
 	if is_instance_valid(run_arena):run_arena.queue_free()
 	run_arena=null
-	open_hub(greeting)
-## The hub is a playground of its own practice-run arena (one field engine, step 2): `current` is the hub, freeing
-## it frees that arena; a sortie starts a new run arena as before.
-func open_hub(greeting:String):
-	current=preload("res://scripts/hub.gd").open_practice(self,greeting)
-	current.start_requested.connect(request_run)
-	current.gallery_requested.connect(show_gallery)
-	current.sandbox_requested.connect(show_sandbox)
+	enter_playground("hub",0,greeting)
 func select_world():
 	var picker=load("res://scripts/ui/world_select.gd").new();current.root.add_child(picker)
 	current.build_menu=picker;current.phase="workshop";current.exit_queued=false
@@ -140,14 +133,33 @@ func show_node_service(branch:String,index:int):
 	var ground=enter_playground(branch,index)
 	ground.completed.connect(func(_completed):run_arena.run.route_choices=route_choices;run_arena.end_service();show_map(index+1))
 
-## One field engine (guides/02_development/07_one_world.md): a room between fields is the run's own arena in
-## service mode with the room as its playground — the same hero, gun, abilities, HUD and inventory as in battle.
-func enter_playground(branch:String,index:int)->Node3D:
+## One entry for every place where the hero walks (one field engine, guides/02_development/07_one_world.md): each
+## is a playground on an arena (arena.begin_playground) — the same hero, gun, abilities, HUD and inventory.
+##   "hub"     — the hub on its own practice-run arena; `current` is the hub, freeing it frees that arena;
+##   "sandbox" — the test field: a battle playground with the admin panel on its own arena, the profile snapshotted;
+##   a route branch (vehicle, ability, headquarters, legend, merchant) — a room on the run's arena (service mode).
+## A playground's `hub_requested` leads back to the hub (out of the sandbox — with the profile restored).
+func enter_playground(kind:String,index:=0,greeting:="")->Node3D:
+	match kind:
+		"hub":
+			clear_current()
+			current=preload("res://scripts/hub.gd").open_practice(self,greeting)
+			current.start_requested.connect(request_run)
+			current.sandbox_requested.connect(enter_playground.bind("sandbox"))
+			return current
+		"sandbox":
+			if is_instance_valid(run_arena):return null
+			clear_current()
+			var sandbox=preload("res://scripts/sandbox/sandbox_ground.gd").open(self)
+			run_arena=sandbox.arena;current=run_arena
+			run_arena.exit_requested.connect(exit_sandbox);sandbox.hub_requested.connect(exit_sandbox)
+			Game.music_context("battle")
+			return sandbox
 	clear_current()
-	var ground:Node3D=load("res://scripts/merchant_room.gd").new() if branch=="merchant" else load("res://scripts/service_room.gd").new()
-	if branch!="merchant":ground.branch=branch
+	var ground:Node3D=load("res://scripts/merchant_room.gd").new() if kind=="merchant" else load("res://scripts/service_room.gd").new()
+	if kind!="merchant":ground.branch=kind
 	current=run_arena;add_child(run_arena)
-	run_arena.begin_service(index,ground)
+	run_arena.begin_playground(ground,index)
 	ground.hub_requested.connect(show_hub)
 	return ground
 
@@ -185,17 +197,12 @@ func dev_run(target:int,replay_rewards:bool,service:bool,enter:Callable,services
 		var replay=load("res://scripts/test_replay.gd").new();replay.arena=run_arena;replay.main=self;replay.target=target;replay.on_done=enter;run_arena.add_child(replay)
 	else:enter.call()
 
-func show_gallery():
-	clear_current()
-	current=load("res://scenes/test_gallery.tscn").instantiate();add_child(current)
-	current.hub_requested.connect(show_hub)
-
 func reload_profile_hub():
 	if is_instance_valid(run_arena):return
 	clear_current();current=null
 	if not Game.profiles.selected:
 		ProfileMenu.call_deferred("open_start");return
-	open_hub("wake")
+	enter_playground("hub",0,"wake")
 
 func request_run():
 	if Game.run_checkpoint.is_empty():select_world();return
@@ -243,31 +250,11 @@ func advance_endless(index:int):
 		Game.checkpoint_run(run_arena,index,"map",route_choices)
 	else:enter_room(index)
 
-## Sandbox: an isolated test field. The profile is snapshotted, writing is off, everything is unlocked;
-## leaving restores the profile exactly (including an unfinished real run) and returns to the hub.
-var sandbox_snapshot:Dictionary={}
-var sandbox_restore:Dictionary={}
-func show_sandbox():
-	if is_instance_valid(run_arena):return
-	sandbox_snapshot=Game.serialize_progress().duplicate(true)
-	sandbox_restore={"save":Game.save_enabled,"settings":Settings.persistence_enabled,"lighting":Settings.values.world_lighting,"world":Campaign.world,"endless":Campaign.endless}
-	Game.save_enabled=false;Settings.persistence_enabled=false
-	Game.weapon_unlocks=Game.LOOT.gun_ids();Game.class_unlocks=Game.CLASSES.keys()
-	Campaign.configure(1)
-	clear_current()
-	run_arena=load("res://scenes/arena.tscn").instantiate();run_arena.sandbox=true;run_arena.run_seed=randi();run_arena.auto_pause_enabled=false
-	current=run_arena;add_child(current)
-	current.exit_requested.connect(exit_sandbox)
-	var admin=load("res://scripts/sandbox/admin_panel.gd").new();admin.name="SandboxAdmin";admin.arena=run_arena;run_arena.add_child(admin)
-	admin.exit_requested.connect(exit_sandbox)
-	Game.music_context("battle")
+## Leaving the sandbox: its arena goes, the profile, settings and campaign come back (SandboxGround.restore).
 func exit_sandbox():
 	if not is_instance_valid(run_arena) or not run_arena.sandbox:return
+	var sandbox=run_arena.playground
 	get_tree().paused=false
 	clear_current();run_arena.queue_free();run_arena=null;current=null
-	Settings.values.world_lighting=sandbox_restore.lighting;Settings.apply()
-	Game.apply_profile(sandbox_snapshot)
-	Game.save_enabled=sandbox_restore.save;Settings.persistence_enabled=sandbox_restore.settings
-	Campaign.configure(sandbox_restore.world,sandbox_restore.endless)
-	ResourceStrip.track_run(null)
+	sandbox.restore()
 	show_hub()

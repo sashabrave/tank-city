@@ -59,7 +59,7 @@ func outside(name:String):
 		"enter_room":
 			if is_instance_valid(cur) and cur.get_script().resource_path.ends_with("route_map.gd"):main.enter_room(cur.available)
 		"start_run":main.start_run()
-		"sandbox":main.show_sandbox()
+		"sandbox":main.enter_playground("sandbox")
 		"resume":
 			if not Game.run_checkpoint.is_empty():main.resume_run()
 		"hub":main.show_hub()
@@ -96,7 +96,7 @@ func inside(a,name:String):
 			if is_instance_valid(p):p.invulnerable=0;p.take_damage(rng.randf_range(.5,40))
 		"hurt_base":a.damage_base(rng.randf_range(1,50))
 		"sandbox_boss":
-			var admin=a.get_node_or_null("SandboxAdmin")
+			var admin=a.playground.admin if a.sandbox else null
 			if admin and admin.has_method("boss"):admin.boss()
 		"flag":
 			if a.phase=="combat" and a.room_cleared:a.open_flag()

@@ -48,7 +48,7 @@ func next():
 		Game.luck_level=1000
 		for def in StatRegistry.all():
 			if def.meta_field=="":Game.stat_levels[def.id]=def.max_level*40
-	arena=load("res://scenes/arena.tscn").instantiate();arena.auto_pause_enabled=false;arena.sandbox=true;arena.sandbox_waves=true;add_child(arena)
+	arena=preload("res://scripts/sandbox/sandbox_ground.gd").field({"waves":true});add_child(arena)
 	arena.begin_room(3)
 	var family=ClassCatalog.info(cls).family
 	var pool=UpgradeRegistry.all().filter(func(d):return d.weight>0)

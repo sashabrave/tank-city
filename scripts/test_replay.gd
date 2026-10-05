@@ -51,6 +51,6 @@ func open_service(branch:String,index:int):
 	# The room is the arena itself in service mode (one field engine); the replay goes on after it.
 	service=load("res://scripts/merchant_room.gd").new() if branch=="merchant" else load("res://scripts/service_room.gd").new()
 	if branch!="merchant":service.branch=branch
-	arena.begin_service(index,service)
+	arena.begin_playground(service,index)
 	service.place_hero(Vector3.ZERO);service.interact()
 	service.completed.connect(func(_index):arena.end_service();service=null;next());service.hub_requested.connect(func():arena.replay=null;main.show_hub();queue_free())

@@ -11,7 +11,7 @@ func _ready():call_deferred("run")
 ## One field engine: an upgrade room is the run's arena in service mode with the room as its playground.
 func open_room(arena,branch:String,index:int):
 	var room=load("res://scripts/service_room.gd").new();room.branch=branch
-	arena.begin_service(index,room);return room
+	arena.begin_playground(room,index);return room
 func ground(main):
 	var node=main.current.get("playground") if is_instance_valid(main.current) else null
 	return node if node!=null and is_instance_valid(node) else null
@@ -19,6 +19,9 @@ func run():
 	Game.save_enabled=false;Settings.persistence_enabled=false;Game.sound_enabled=false;Game.reset_upgrades()
 	Engine.set_meta("hub_calls_off",true)
 	var arena=load("res://scenes/arena.tscn").instantiate();add_child(arena);arena.auto_pause_enabled=false;arena.begin_room(1)
+	# T-310: the field holds still while the HUD windows are driven by hand. A live field on a slow frame (parallel
+	# CORE) could end its countdown and «clear» the hand-made stash room — finish_wave → show_upgrades closed the window.
+	arena.set_physics_process(false)
 	await get_tree().process_frame
 	# T-214: the stash window says what is left behind, not «поле зачищено».
 	arena.room.mode="cache";arena.challenges.rewarded=false;arena.challenges.opened=false
@@ -26,7 +29,7 @@ func run():
 	var texts=arena.hud.modal.find_children("*","Label",true,false).map(func(l):return l.text)
 	check(texts.any(func(t):return str(t).to_lower()=="тайник не открыт"),"stash departure says the stash is still closed")
 	check(arena.hud.modal.find_children("*","Button",true,false).any(func(b):return b.text=="Вернуться к тайнику"),"stash departure offers to go back")
-	arena.hud.close_modal();arena.room.mode="battle"
+	arena.hud.close_modal();arena.room.mode="battle";arena.set_physics_process(true)
 	# T-215: the depot is the service room with branch headquarters; without HQ technologies it refuels.
 	var room=open_room(arena,"headquarters",2)
 	await get_tree().process_frame

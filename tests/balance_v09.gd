@@ -14,7 +14,7 @@ func advance():
 	var next=arena.room_index+1
 	if next in Campaign.SERVICES:
 		# The room is the arena itself in service mode; its aid kits are the field's «heart» pickups.
-		var service=load("res://scripts/service_room.gd").new();service.branch="vehicle";arena.begin_service(next,service)
+		var service=load("res://scripts/service_room.gd").new();service.branch="vehicle";arena.begin_playground(service,next)
 		for kit in service.medkits.duplicate():service.place_hero(kit.node.position);arena.collect_nearby_pickups(0.0)
 		service.claim(0);arena.end_service()
 	arena.begin_room(next)

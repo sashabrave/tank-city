@@ -30,12 +30,10 @@ const RAIN={
 	"shower":{"count":190,"quad":Vector2(.034,.34),"fall":1.35,"slant":.9,"strength":1.0,"ripples":48,"puddles":9},
 	"downpour":{"count":300,"quad":Vector2(.038,.5),"fall":1.8,"slant":1.6,"strength":1.2,"ripples":80,"puddles":14},
 }
-static func pick_rain(context:Node)->String:return rain_for(int(own_look(context).room_index))
-## The hub on the practice arena keeps its own per-visit look (hub.gd room_palette/run_seed/room_index).
-static func own_look(context:Node)->Node:
-	var ground=context.get("playground") if context!=null else null
-	if ground!=null and is_instance_valid(ground) and ground.has_method("room_palette") and ground.get("room_index")!=null:return ground
-	return context
+static func pick_rain(context:Node)->String:return rain_for(look_index(context))
+## The number behind the look of this place: the arena's look_index (the hub keeps its own per-visit look).
+static func look_index(context:Node)->int:
+	return context.look_index() if context.has_method("look_index") else int(context.get("room_index"))
 static func rain_for(index:int)->String:
 	var forced=str(Settings.values.get("rain_style",""))
 	if forced in RAIN:return forced
@@ -50,11 +48,13 @@ static func allowed(entry:Dictionary)->Array:
 
 ## Weather of the context's current room, or "" outside battle.
 static func pick(context:Node)->String:
-	context=own_look(context)
 	if context==null or not context.has_method("room_palette") or not "room_index" in context:return ""
 	# Rooms between fields (the arena in service mode) stay in fair weather.
 	if context.get("cozy_light")==true:return ""
-	return for_room(context.run_seed,int(context.room_index),context.run.route_choices if "run" in context and context.run else {})
+	# The hub's own look (its visit seed and number) has no route behind it.
+	var own=context.has_method("look_seed") and context.ground_mode()=="hub"
+	var seed_value=context.look_seed() if context.has_method("look_seed") else int(context.run_seed)
+	return for_room(seed_value,look_index(context),{} if own else (context.run.route_choices if "run" in context and context.run else {}))
 ## Weather of room `index` of a run (the route map shows the same weather the battle will have).
 static func for_room(run_seed:int,index:int,choices:Dictionary={})->String:
 	var choice=str(Settings.values.get("weather","random"))

@@ -13,7 +13,7 @@ func run():
 	Game.profiles.selected=true
 	var main=load("res://scenes/main.tscn").instantiate();add_child(main);await settle()
 	main.current.sandbox_requested.emit();await settle()
-	var arena=main.run_arena;var admin=arena.get_node("SandboxAdmin")
+	var arena=main.run_arena;var admin=arena.playground.admin
 	var out=OS.get_environment("SHOT_DIR") if OS.get_environment("SHOT_DIR")!="" else "/tmp"
 	for size in [Vector2i(1600,900),Vector2i(1280,720),Vector2i(960,600)]:
 		get_window().size=size;await settle()

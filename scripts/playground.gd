@@ -1,16 +1,25 @@
 class_name Playground
 extends Node3D
 ## A playground on the one field engine (guides/02_development/07_one_world.md): the layout, dressing and
-## interactables of a non-combat room. Everything else is the run's Arena — the hero Actor (movement, speed,
+## interactables of a place where the hero walks. Everything else is the Arena — the hero Actor (movement, speed,
 ## collision, animation), shooting (Gun → CombatSystem), abilities (RunAbility), the effects bus, the HUD, the
 ## inventory and the drop floor. A playground never moves, shoots or heals the hero itself.
-## Towards the arena (scripts/systems/service_field.gd, arena.begin_service):
+## Kinds (field_mode): «service» — a room between fields (service_room.gd, merchant_room.gd); «hub» — the hub on its
+## practice-run arena (hub.gd); «battle» — a generated battle field under the playground's own rules (the sandbox,
+## sandbox/sandbox_ground.gd). Every one enters through arena.begin_playground (main.enter_playground).
+## Towards the arena (arena.begin_playground → scripts/systems/service_field.gd or arena.begin_room):
+##   field_mode()     — «service», «hub» or «battle» (above);
+##   battle_rules()   — a «battle» playground's overrides for begin_room: {mode, size, difficulty, biome, waves};
+##   take_defeat(why) — true when the playground handles the hero's defeat itself (the sandbox respawns);
+##   own_look()       — the light, weather and outskirts follow this playground's palette and `index` (the hub);
 ##   field_size()     — side of the square grid, cells (9: the room floor);
 ##   solid_cells()    — world cells that block like walls (props, the edges, a closed exit);
 ##   start_position() — where the hero stands when the room opens;
 ##   field_ready()    — once the hero is on the field (pickups, practice targets);
 ##   interact()       — E on the field (the arena's dispatcher calls it);
 ##   window_open()    — a window of the room holds the field (arena phase «upgrade»), like the battle's cards.
+## `index` is where the hero is: the route stage of a room, the hub's visit number (its look), 0 in the sandbox.
+## The arena's `room_index` stays the route field (the last field while in a room: its biome and prizes).
 ## Interactables: world prompts (interaction_prompt.gd) take this node as their context — it exposes `avatar` (the
 ## arena's hero) and `modal`; RoomLayout spots answer near(avatar) and use(root, done).
 signal completed(index:int)
@@ -24,10 +33,14 @@ var modal:Control
 ## The hero on the field: the arena's own soldier.
 var avatar:Node3D:
 	get:return arena.player if arena!=null and is_instance_valid(arena.player) else null
-## Kept for older callers: the on-screen pad is the HUD's (scripts/hud.gd MovePad).
+## Side of a room floor grid, cells.
 const SIZE:=9
 const EXIT_CELL:=Vector2i(4,1)
 
+func field_mode()->String:return "service"
+func battle_rules()->Dictionary:return {}
+func take_defeat(_reason:String)->bool:return false
+func own_look()->bool:return false
 func field_size()->int:return SIZE
 ## Back row of the free floor (world z); the floor runs to z = 4 and x = −3…3.
 func floor_back()->int:return -2

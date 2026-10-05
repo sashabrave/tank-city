@@ -1,9 +1,12 @@
 extends Node
-## One field engine, step 1 (guides/02_development/07_one_world.md): the upgrade rooms and the merchant are the run's
+## One field engine (guides/02_development/07_one_world.md). Step 1: the upgrade rooms and the merchant are the run's
 ## Arena in service mode. A run card and the loaded ammo change the hero's shot the same way in battle and in a room
 ## (the same actor numbers, the same Gun.stats, the same bullet damage on a target), an ability cast in a room is the
 ## battle's RunAbility with the same cooldown, the room's props block like walls, the hero takes no damage there and
-## his vehicle waits for the next field. Profile and settings writes are off.
+## his vehicle waits for the next field. Step 2: the hub is the practice run's arena (hub_practice). Step 3: one source
+## end to end — the hub, an upgrade room, the sandbox and a battle give the same hero numbers for the same profile and
+## run cards, and no playground script moves or arms the hero itself (single_source). Profile and settings writes
+## are off.
 var failures=0
 func check(ok,message):
 	print("PASS " if ok else "FAIL ",message)
@@ -47,7 +50,7 @@ func run():
 	var battle_cooldown=arena.abilities.cooldown
 	# The instructor's room on the same arena.
 	var room=load("res://scripts/service_room.gd").new();room.branch="ability"
-	arena.begin_service(2,room);await get_tree().process_frame
+	arena.begin_playground(room,2);await get_tree().process_frame
 	arena.player.set_physics_process(false)
 	check(arena.peaceful() and arena.room.mode=="service" and arena.playground==room and room.get_parent()==arena,"the room is the arena in service mode with the room as its playground")
 	check(room.avatar==arena.player and arena.player.kind=="soldier" and arena.player.player_owned,"the room hero is the arena's own hero actor")
@@ -88,7 +91,7 @@ func run():
 	arena.end_service();arena.begin_room(3);arena.set_physics_process(false);await get_tree().process_frame
 	var cell=arena.find_free_near(arena.player.cell);arena.player.queue_free();arena.room.actors.erase(arena.player)
 	arena.player=arena.spawn_actor("buggy",cell,true);arena.player.hp=2.0
-	arena.begin_service(4,garage);await get_tree().process_frame
+	arena.begin_playground(garage,4);await get_tree().process_frame
 	check(arena.player.kind=="soldier" and arena.hero_kind()=="buggy" and garage.vehicle=="buggy","in the room the hero walks; his buggy waits outside")
 	var saved=preload("res://scripts/profile/run_checkpoint.gd").capture(arena,4,"map",{})
 	check(saved.hero.kind=="buggy" and is_equal_approx(float(saved.hero.hp),2.0),"the checkpoint after a room keeps the buggy and its armour")
@@ -98,6 +101,7 @@ func run():
 	check(arena.room.mode=="battle" and arena.playground==null and not arena.peaceful(),"the next field is a battle again")
 	arena.queue_free();await get_tree().process_frame
 	await hub_practice()
+	await single_source()
 	print("ONE FIELD: failures=",failures)
 	get_tree().quit(1 if failures else 0)
 
@@ -144,7 +148,7 @@ func hub_practice():
 	check(is_equal_approx(at_hub.hit,at_battle.hit),"the hub dummy takes the same hit as an enemy (%.3f / %.3f)" % [at_hub.hit,at_battle.hit])
 	# …and in a room on the battle's arena.
 	var room=load("res://scripts/service_room.gd").new();room.branch="ability"
-	battle.begin_service(2,room);await get_tree().process_frame
+	battle.begin_playground(room,2);await get_tree().process_frame
 	battle.player.set_physics_process(false);RunUpgrades.refresh_player(battle)
 	var at_room=shot(battle,room.targets[0])
 	check(same(at_hub,at_room,["cooldown","interval","damage","gun","bullet"]) and is_equal_approx(at_hub.hit,at_room.hit),"one system: hub, room and battle shoot alike (%.3f / %.3f)" % [at_hub.bullet,at_room.bullet])
@@ -187,4 +191,71 @@ func hub_practice():
 	# Freeing the hub frees its practice arena.
 	hub.queue_free();await get_tree().process_frame;await get_tree().process_frame
 	check(not is_instance_valid(practice),"the practice arena goes with the hub")
+	Engine.remove_meta("hub_calls_off")
+
+## Step 3: one source end to end. The same profile and the same run cards give the same hero on every playground —
+## the hub's practice run, an upgrade room, the sandbox and a battle field: walking speed, the gun (Gun.stats damage
+## and pause, the actor's numbers), the class ability's cooldown and the vehicle's stats. And no playground script
+## implements walking or shooting of its own: the hero is the arena's (grep-style check of the playground files).
+func hero_numbers(field)->Dictionary:
+	var hero=field.player;var gun=Gun.stats(field)
+	field.abilities.select("grenade")
+	var tank=GarageCatalog.stats("tank",field,"owned",1)
+	return {"speed":snappedf(hero.speed,.0001),"walk":snappedf(CombatStats.soldier_speed(field.run),.0001),"gun_damage":snappedf(gun.damage,.0001),"gun_interval":snappedf(gun.interval,.0001),
+		"damage":snappedf(hero.damage,.0001),"interval":snappedf(hero.fire_interval,.0001),"hp":snappedf(hero.max_hp,.0001),"ability":snappedf(field.abilities.interval(),.0001),
+		"tank_damage":snappedf(float(tank.damage),.0001),"tank_interval":snappedf(float(tank.interval),.0001),"tank_hp":snappedf(float(tank.hp),.0001),"tank_speed":snappedf(float(tank.speed),.0001),
+		"tank_armor":snappedf(float(field.vehicle.player_armor("tank")),.0001),"weapon":str(field.weapon)}
+func single_source():
+	Game.reset_upgrades();Campaign.configure(1)
+	Engine.set_meta("hub_calls_off",true)
+	for id in ["weapons","range","yard","garage","headquarters"]:
+		if id not in Game.built_workshops:Game.built_workshops.append(id)
+	Game.weapon_unlocks=Game.LOOT.gun_ids();Game.selected_weapon="smg";Game.damage_level=2
+	Game.selected_class="recruit";Game.class_levels["recruit"]=4
+	Game.garage.owned=["tank"];Game.garage.selected="tank";Game.garage.levels["tank_gun"]=2;Game.garage.levels["tank_armor"]=1
+	var hub=preload("res://scripts/hub.gd").open_practice(self)
+	await get_tree().create_timer(.8).timeout
+	var practice=hub.arena
+	var battle=load("res://scenes/arena.tscn").instantiate();battle.run_seed=51;battle.auto_pause_enabled=false;add_child(battle)
+	var room_field=load("res://scenes/arena.tscn").instantiate();room_field.run_seed=52;room_field.auto_pause_enabled=false;add_child(room_field)
+	var sandbox=preload("res://scripts/sandbox/sandbox_ground.gd").field();add_child(sandbox)
+	await get_tree().process_frame
+	var room=load("res://scripts/service_room.gd").new();room.branch="ability"
+	room_field.begin_playground(room,2);await get_tree().process_frame
+	var fields={"hub":practice,"room":room_field,"sandbox":sandbox,"battle":battle}
+	check(practice.ground_mode()=="hub" and room_field.ground_mode()=="service" and sandbox.ground_mode()=="battle" and sandbox.sandbox and battle.ground_mode()=="","four playgrounds on one engine: hub, room, sandbox, battle")
+	check(sandbox.playground.get_parent()==sandbox and is_instance_valid(sandbox.playground.admin),"the sandbox is a playground of its arena with the admin panel")
+	# The same run cards on every field.
+	for key in fields:
+		var field=fields[key];field.set_physics_process(false);field.player.set_physics_process(false)
+		for card in [["fire",1],["speed",1],["damage",0]]:RunUpgrades.apply(field,card[0],card[1])
+		RunUpgrades.refresh_player(field);field.player.set_physics_process(true)
+	# One actor frame: the hero's walking speed follows the run each frame (actor.gd), the fields themselves hold.
+	await get_tree().physics_frame;await get_tree().physics_frame
+	for key in fields:fields[key].player.set_physics_process(false)
+	var numbers={}
+	for key in fields:numbers[key]=hero_numbers(fields[key])
+	for key in ["hub","room","sandbox"]:
+		check(str(numbers[key])==str(numbers.battle),"one source: %s = battle (%s / %s)" % [key,numbers[key],numbers.battle])
+	check(numbers.battle.weapon=="smg" and numbers.battle.ability>0 and numbers.battle.tank_damage>0,"the numbers are real: the Arsenal gun, the class ability, the garage tank")
+	# A sandbox rebuild (the admin changes the field size) keeps the playground and the same hero numbers.
+	sandbox.playground.size=17;sandbox.begin_room(0);await get_tree().process_frame
+	sandbox.set_physics_process(false);await get_tree().physics_frame;await get_tree().physics_frame;sandbox.player.set_physics_process(false)
+	check(sandbox.grid_size==17 and sandbox.sandbox and sandbox.playground.get_parent()==sandbox and is_instance_valid(sandbox.playground.admin),"a sandbox rebuild keeps its playground, admin and rules")
+	var rebuilt=hero_numbers(sandbox)
+	check(str(rebuilt)==str(numbers.battle),"after a rebuild the sandbox hero is still the battle hero (%s)" % rebuilt)
+	# No playground walks or shoots for the hero: movement, the gun and abilities are the arena's.
+	var forbidden=['Input.is_action_pressed("move','Input.get_vector','move_and_slide','quarter_destination','spawn_bullet','projectiles.append','fire_weapon(','Gun.fire(','cast_slot(','abilities.tick(','.shoot(']
+	for path in ["res://scripts/hub.gd","res://scripts/service_room.gd","res://scripts/merchant_room.gd","res://scripts/sandbox/sandbox_ground.gd","res://scripts/sandbox/admin_panel.gd","res://scripts/room_layout.gd"]:
+		var text=FileAccess.get_file_as_string(path)
+		var found=forbidden.filter(func(pattern):return pattern in text)
+		check(not text.is_empty() and found.is_empty(),"%s has no walking or shooting of its own %s" % [path.get_file(),found])
+		var at=text.find("func _physics_process")
+		if at>=0:
+			var end=text.find("\nfunc ",at+1)
+			var body=text.substr(at,end-at if end>0 else -1)
+			check(not ("avatar" in body or "player" in body),"%s: its _physics_process runs only its own signs, never the hero" % path.get_file())
+	for key in fields:
+		if key!="hub":fields[key].queue_free()
+	hub.queue_free();await get_tree().process_frame;await get_tree().process_frame
 	Engine.remove_meta("hub_calls_off")

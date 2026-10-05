@@ -52,28 +52,30 @@ var weapon_icon: TextureRect
 var ability_icon: TextureRect
 
 var status_strip:HBoxContainer
-## The arena runs a room between fields (one field engine, service mode): no field/wave panel, no biome card.
-var service_room:=false
-func service_mode(on:bool):
-	service_room=on
-	if is_instance_valid(right_info):right_info.visible=not on
-## The hub on the practice run's arena (one field engine, step 2): the same HUD — health, weapon panel, ability row
-## with the HQ module circles — set under the hub's logo and tools; the hub has no pause button or task tracker
-## of its own on screen (Esc opens the tablet, tasks live on the command screen).
-var hub_layout:=false
+## One HUD on every playground (one field engine): the view follows the arena's playground (sync_view).
+##   "battle" — a field of a sortie or the sandbox: everything, with the field/wave panel and the biome card;
+##   "room"   — a room between fields (service): no field/wave panel or biome card, the room's heading stands there;
+##   "hub"    — the hub's practice run: health, weapon panel and the ability row with the HQ module circles set under
+##              the hub's logo and tools, no field panel, no pause button or task tracker (Esc opens the tablet,
+##              tasks live on the command screen), no HQ row in the health panel.
+var view:="battle"
 const HUB_DROP:=236.0
 ## No HQ on the hub field: the health panel keeps only the hero's row.
 const HUB_TRIM:=45.0
-func hub_mode(on:bool):
-	if on==hub_layout:return
-	hub_layout=on
-	var s=1.0 if on else -1.0
-	top.offset_top+=s*HUB_DROP;top.offset_bottom+=s*(HUB_DROP-HUB_TRIM)
-	left_info.offset_top+=s*(HUB_DROP-HUB_TRIM);left_info.offset_bottom+=s*(HUB_DROP-HUB_TRIM)
-	transport_panel.position.y+=s*(HUB_DROP-HUB_TRIM)
-	pause_button.visible=not on
+static func view_for(mode:String)->String:return {"service":"room","hub":"hub"}.get(mode,"battle")
+func sync_view():
+	var next:=view_for(arena.ground_mode())
+	if next==view:return
+	var s=(1.0 if next=="hub" else 0.0)-(1.0 if view=="hub" else 0.0)
+	view=next
+	if s!=0.0:
+		top.offset_top+=s*HUB_DROP;top.offset_bottom+=s*(HUB_DROP-HUB_TRIM)
+		left_info.offset_top+=s*(HUB_DROP-HUB_TRIM);left_info.offset_bottom+=s*(HUB_DROP-HUB_TRIM)
+		transport_panel.position.y+=s*(HUB_DROP-HUB_TRIM)
+	pause_button.visible=view!="hub"
+	right_info.visible=view=="battle"
 ## How far the left column sits lower than in battle (the hub's logo and tools are above it).
-func panel_drop()->float:return HUB_DROP-HUB_TRIM if hub_layout else 0.0
+func panel_drop()->float:return HUB_DROP-HUB_TRIM if view=="hub" else 0.0
 ## Ability tiles follow the slots (a practice run rebuilt after a station change, the sandbox's own loadout).
 func refresh_skill_icons():
 	for i in range(skill_buttons.size()):
@@ -169,9 +171,9 @@ func _process(_delta):
 		bar.show();label.show();bar.max_value=boss.max_hp;bar.value=boss.hp;Texts.set_text(label,boss.title)
 	if get_viewport().get_visible_rect().size!=last_size:_layout()
 	health.set_health(data.hero_hp,data.hero_max);base_health.visible=not arena.hq_off_field();base_health.set_health(data.base_hp,data.base_max)
-	dpad.visible=InputScheme.touch();fire_pad.visible=InputScheme.touch();biome_panel.visible=Settings.values.biome_info and not service_room
-	# A room between fields (service mode): the room's own heading stands where the field and waves are shown.
-	right_info.visible=not service_room
+	dpad.visible=InputScheme.touch();fire_pad.visible=InputScheme.touch();biome_panel.visible=Settings.values.biome_info and view=="battle"
+	# A room or the hub: the playground's own heading stands where the field and waves are shown.
+	right_info.visible=view=="battle"
 	Texts.set_text(biome_label,arena.BIOMES.caption(arena.run_seed,arena.room_index,arena.room_lane()))
 	# Progress reads as pips: fields of the route and waves of the room; words only where they add meaning.
 	var plain=not arena.sandbox and not data.boss_room and not Campaign.endless

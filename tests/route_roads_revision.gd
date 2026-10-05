@@ -253,7 +253,7 @@ func world_progress():
 		arena.upgrade_offers.clear();arena.reward.prepare_upgrade_offers();check(not arena.upgrade_offers.any(func(o):return str(o.id).begins_with("hq_")),"no HQ battle cards")
 		Game.hq_unlocks=HQCatalog.DEFAULT_UNLOCKS.duplicate();Game.purchased_hq=HQCatalog.DEFAULT_UNLOCKS.duplicate()
 		check(arena.reward.service_offers("headquarters").size()==3,"HQ service has three start options")
-		var service=load("res://scripts/service_room.gd").new();service.branch="headquarters";arena.begin_service(2,service);service.claim(0);check(service.claimed,"HQ service claim")
+		var service=load("res://scripts/service_room.gd").new();service.branch="headquarters";arena.begin_playground(service,2);service.claim(0);check(service.claimed,"HQ service claim")
 		var tiers=load("res://scripts/progression/recipe_tiers.gd")
 		check(tiers.weight("sniper",12)>0,"sniper world gate")
 		check((tiers.weight("rpg",16)>0)==(world!=2),"RPG world gate")

@@ -17,17 +17,17 @@ func ground():
 	var node=arena.get("playground")
 	return node if is_instance_valid(node) else null
 
-## Builds the room field around `playground` (not yet in the tree; its `branch`/`index` set by the caller).
-## `mode` "hub": the hub on the practice run's arena (step 2) — the same field, without the room light and frame.
-func begin(index:int,playground:Node3D,mode:="service"):
+## Builds the room field around `playground` (not yet in the tree; its `branch`/`index` set by the caller), through
+## arena.begin_playground. Its field_mode() «hub» is the hub on the practice run's arena (step 2) — the same field,
+## without the room light and frame.
+func begin(playground:Node3D):
+	var mode:String=playground.field_mode()
 	if mode=="service":remember_hero()
 	arena.ensure_armed(true)
 	preload("res://scripts/battle_stage.gd").stop(arena)
 	arena.room.base_model=null;arena.room.base_label=null;arena.room.base_bar=null
 	if arena.has_meta("arriving_vehicle"):arena.remove_meta("arriving_vehicle")
-	for child in arena.get_children():
-		if child==arena.presentation or child==arena.hud or child==arena.camera or child is WorldEnvironment or child is DirectionalLight3D or child.name in ["WorldLighting","WorldAtmosphere","SandboxAdmin"]:continue
-		arena.remove_child(child);child.queue_free()
+	arena.clear_field()
 	var room=arena.room
 	if room.has_meta("pending_flag"):room.remove_meta("pending_flag")
 	room.commander_countdown=false;room.room_boss_spawned=false;room.flag=null;room.flag_armed=false;room.upgrade_offers.clear();room.trenches.clear()
@@ -54,7 +54,7 @@ func begin(index:int,playground:Node3D,mode:="service"):
 	arena.player=arena.spawn_actor("soldier",arena.grid_pos(playground.start_position()),true)
 	arena.player.position=playground.start_position();arena.player.quarter_destination=arena.player.position
 	arena.phase="combat"
-	if is_instance_valid(arena.hud):arena.hud.service_mode(true)
+	if is_instance_valid(arena.hud):arena.hud.sync_view()
 	playground.field_ready()
 
 ## The hero's vehicle (or the soldier) before the room: kept for the next field, never lost in the room.
@@ -129,13 +129,8 @@ func tick(delta:float):
 		if hold and arena.phase=="combat":arena.phase="upgrade";Game.reset_input()
 		elif not hold and arena.phase=="upgrade":arena.phase="combat";Game.reset_input()
 	if arena.phase!="combat":return
-	arena.room.freeze_time=maxf(0,arena.room.freeze_time-delta);arena.room.pressure_time=maxf(0,arena.room.pressure_time-delta)
-	arena.room.star_time=maxf(0,arena.room.star_time-delta)
-	arena.abilities.tick(delta)
-	if Input.is_action_just_pressed("ammo_switch") and Ammo.switch(arena):arena.hud.refresh_ammo()
-	for slot in range(arena.abilities.slots.size()):
-		if Input.is_action_just_pressed(arena.abilities.action_for(slot)):arena.abilities.cast_slot(slot)
-	arena.collect_nearby_pickups(delta)
+	arena.cool_down(delta)
+	arena.hero_frame(delta)
 
 ## E on the room field: a dropped item's card answers first, then the playground's spots.
 func interact():
@@ -150,4 +145,4 @@ func finish():
 		if playground.get_parent()==arena:arena.remove_child(playground)
 		playground.queue_free()
 	arena.playground=null
-	if is_instance_valid(arena.hud):arena.hud.service_mode(false)
+	if is_instance_valid(arena.hud):arena.hud.sync_view()

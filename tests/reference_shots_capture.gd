@@ -40,7 +40,7 @@ func run():
 	await clear()
 	# Dark maze with zombies.
 	Settings.values.weather="clear";Settings.values.rain_style="";Settings.apply()
-	arena=arena_scene(11,func(a):a.sandbox=true;a.sandbox_mode="maze";a.sandbox_difficulty=1)
+	arena=arena_scene(11,func(a):a.playground=preload("res://scripts/sandbox/sandbox_ground.gd").make({"mode":"maze","difficulty":1}))
 	await get_tree().create_timer(3.0).timeout;await shot("maze_night")
 	await clear()
 	# Route map and upgrade cards in daylight.
@@ -58,7 +58,7 @@ func run():
 		arena=arena_scene(4);await get_tree().create_timer(.8).timeout
 		var room=load("res://scripts/merchant_room.gd" if branch=="merchant" else "res://scripts/service_room.gd").new()
 		if branch!="merchant":room.branch=branch
-		arena.begin_service(2,room)
+		arena.begin_playground(room,2)
 		await get_tree().create_timer(1.4).timeout;await shot("room_"+("mechanic" if branch=="vehicle" else "merchant"))
 		await clear()
 	# World boss, golden light.

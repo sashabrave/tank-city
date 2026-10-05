@@ -32,7 +32,7 @@ func _process(delta):
 	var allowed=not get_tree().paused
 	var limit=2
 	feed.position=Vector2(get_viewport().get_visible_rect().size.x-263,150)
-	if is_instance_valid(hud) and hud.root.is_visible_in_tree() and not hud.hub_layout:
+	if is_instance_valid(hud) and hud.root.is_visible_in_tree() and hud.view!="hub":
 		allowed=allowed and hud.arena.phase in ["combat","countdown"]
 		feed.position=hud.left_info.global_position+Vector2(0,hud.left_info.size.y+12)
 		if hud.dpad.global_position.y-feed.position.y<165:limit=1

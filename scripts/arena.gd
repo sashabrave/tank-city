@@ -45,8 +45,13 @@ const BIOMES=preload("res://scripts/biome_catalog.gd")
 var navigation=preload("res://scripts/systems/navigation_cache.gd").new(self)
 func room_palette()->Dictionary:
 	# The hub keeps its own look per visit (hub.gd room_palette).
-	if is_instance_valid(playground) and playground.has_method("room_palette"):return playground.room_palette()
-	return BIOMES.ENTRIES[sandbox_biome] if sandbox and sandbox_biome>=0 else BIOMES.entry(run_seed,room_index,room_lane())
+	if is_instance_valid(playground) and playground.own_look():return playground.room_palette()
+	var biome=int(rules().get("biome",-1))
+	return BIOMES.ENTRIES[biome] if biome>=0 else BIOMES.entry(run_seed,room_index,room_lane())
+## Number behind the look of this place (sun, rim light, rain): the hub's own visit number, the field otherwise.
+func look_index()->int:return int(playground.index) if is_instance_valid(playground) and playground.own_look() else int(room_index)
+## The seed behind that look: the hub's per-visit seed, the run's otherwise.
+func look_seed()->int:return int(playground.run_seed) if is_instance_valid(playground) and playground.own_look() else int(run_seed)
 ## Lane of the route node this room was entered from: each node of a stage has its own biome and name.
 func room_lane()->int:return BIOMES.chosen_lane(run_seed,room_index,run.route_choices if run else {})
 
@@ -253,8 +258,16 @@ var effects=preload("res://scripts/upgrades/run_effects.gd").new(self)
 var challenges=preload("res://scripts/systems/challenge_rooms.gd").new(self)
 ## Non-combat rooms on this same field (upgrade rooms, merchant): room.mode "service" (scripts/systems/service_field.gd).
 var service=preload("res://scripts/systems/service_field.gd").new(self)
-## The playground standing on the field in service mode (scripts/playground.gd), null in battle.
+## The playground standing on this field (scripts/playground.gd): a room between fields («service»), the hub
+## («hub», the practice run), the sandbox («battle» with its own rules); null on a plain battle field of a sortie.
+## Set it before the arena enters the tree to open the arena on it (Hub.open_practice, SandboxGround.open).
 var playground:Node3D=null
+## How the playground uses the field ("" on a plain battle field): see Playground.field_mode.
+func ground_mode()->String:return playground.field_mode() if is_instance_valid(playground) else ""
+## Battle rules of a «battle» playground (the sandbox), {} otherwise: {mode, size, difficulty, biome, waves}.
+func rules()->Dictionary:return playground.battle_rules() if ground_mode()=="battle" else {}
+## A field without waves (the sandbox's empty field): it never clears by itself.
+func free_field()->bool:return ground_mode()=="battle" and not rules().get("waves",false) and not boss_room
 ## Rooms between fields are lit in warm cozy daylight (world_lighting.gd COZY_MOMENTS).
 var cozy_light:bool:
 	get:return room.mode=="service" and is_instance_valid(playground)
@@ -262,16 +275,14 @@ var cozy_light:bool:
 var resume_checkpoint:Dictionary={}
 ## The hub's practice run (one field engine, step 2): this arena is the hub in «hub» mode — a RunState built from
 ## the current hub loadout like a sortie start; no waves, no losses, nothing earned or saved (scripts/hub.gd).
-var practice:=false
-## Sandbox (test field from the hub): overrides applied by begin_room; the admin panel sets them.
+var practice:bool:
+	get:return ground_mode()=="hub"
+## The sandbox (test field from the hub, step 3): a «battle» playground with the admin panel stands on the field;
+## nothing counts for progress, a defeat respawns (scripts/sandbox/sandbox_ground.gd).
+var sandbox:bool:
+	get:return ground_mode()=="battle"
 ## Resume to the route map: restore the run but build no battle room until a room is entered.
 var defer_room=false
-var sandbox=false
-var sandbox_size=0
-var sandbox_mode="battle"
-var sandbox_difficulty=0
-var sandbox_biome=-1
-var sandbox_waves=false
 func _ready():
 	set_meta("start_documents",Game.cores)
 	# The hub's practice run is not a sortie: the resource strip keeps showing the profile, not run currency.
@@ -286,7 +297,8 @@ func _ready():
 	if not resume_checkpoint.is_empty():
 		preload("res://scripts/profile/run_checkpoint.gd").restore(self,resume_checkpoint)
 		ClassCatalog.add_perk_cards(run)  # a snapshot from before a perk was bought still gets its behaviour
-	if defer_room or practice:return
+	if defer_room:return
+	if is_instance_valid(playground):begin_playground(playground);return
 	begin_room(int(resume_checkpoint.index) if not resume_checkpoint.is_empty() else 0)
 
 ## The run as a sortie starts it, from the hub loadout of this moment: the Arsenal weapon, the class and its path,
@@ -332,8 +344,9 @@ func ensure_armed(at_start:=false)->bool:
 	return fixed
 func begin_room(index: int):
 	Game.progression.combat_entered=true
-	playground=null
-	if is_instance_valid(hud):hud.service_mode(false)
+	# A «battle» playground (the sandbox) stays over its fields; a room or the hub is over here.
+	if ground_mode()!="battle":playground=null
+	if is_instance_valid(hud):hud.sync_view()
 	preload("res://scripts/systems/service_field.gd").frame_camera(camera,camera.size)
 	# The deepest field ever reached opens the demo classes (author, 2026-10-03): Штурмовик at field 3 (first
 	# third of the world), Инженер at field 5 (about two thirds). The sandbox never counts.
@@ -363,9 +376,7 @@ func begin_room(index: int):
 	# and a stale typed reference to a freed node crashes the exported build.
 	room.base_model=null;room.base_label=null;room.base_bar=null
 	preload("res://scripts/battle_stage.gd").stop(self)
-	for child in get_children():
-		if child==presentation or child==hud or child==camera or child is WorldEnvironment or child is DirectionalLight3D or child.name in ["WorldLighting","WorldAtmosphere","SandboxAdmin"]:continue
-		remove_child(child);child.queue_free()
+	clear_field()
 	if room.has_meta("pending_flag"):room.remove_meta("pending_flag")
 	room.commander_countdown=false;room_cleared=false;room_boss_spawned=false;reward_claimed=false;flag=null;flag_armed=true;upgrade_offers.clear();trenches.clear()
 	room.resource_drops.clear();actors.clear();wrecks.clear();walls.clear();pickups.clear();nets.clear();projectiles.clear();bombs.clear();grenades.clear()
@@ -373,14 +384,16 @@ func begin_room(index: int):
 	var route_node=RoutePlan.chosen(RoutePlan.build(run_seed),index,run.route_choices)
 	room.difficulty=route_node.difficulty;room.route_node_id=route_node.id
 	room.mode=route_node.get("type","battle") if route_node.get("type","battle") in RoutePlan.CHALLENGES else "battle"
-	if sandbox:room.mode=sandbox_mode;room.difficulty=sandbox_difficulty;room.commander_elite=sandbox_difficulty>0
+	var field_rules=rules()
+	if not field_rules.is_empty():room.mode=str(field_rules.mode);room.difficulty=int(field_rules.difficulty)
 	challenges.reset()
 	room.commander_elite=room.difficulty>0 or Campaign.challenge_level()>=3
 	room.commander=null;room.commander_help_timer=0;room.commander_help_waves=0;room.commander_help_pool.clear()
 	room_index=index;grid_size=ROOM_SIZES[index];boss_room=index in Campaign.BOSSES;boss_defeated=false
-	if sandbox and sandbox_size>0 and not boss_room:grid_size=sandbox_size
+	var forced_size=int(field_rules.get("size",0))
+	if forced_size>0 and not boss_room:grid_size=forced_size
 	# The dark maze is a big field, like the boss arena: the largest size of this world.
-	if room.mode=="maze" and not (sandbox and sandbox_size>0):grid_size=ROOM_SIZES.max()
+	if room.mode=="maze" and forced_size<=0:grid_size=ROOM_SIZES.max()
 	base_cell=Vector2i(int(grid_size/2),grid_size-1)
 	headquarters.room_started()
 	reinforcement_timer=9.2
@@ -421,7 +434,7 @@ func begin_room(index: int):
 	preload("res://scripts/battle_stage.gd").intro(self)
 	var arrival=countdown
 	if challenges.active():challenges.start();phase="combat"
-	elif sandbox and not sandbox_waves and not boss_room:room.spawn_queue.clear();room.wave_roster.clear();phase="combat"
+	elif free_field():room.spawn_queue.clear();room.wave_roster.clear();phase="combat"
 	else:
 		start_wave(0)
 		# The first wave waits for the arrival plus its 3-2-1 after the landing (battle_stage), not the plain delay.
@@ -442,14 +455,24 @@ func park_arriving_vehicle(kind:String,armor:float,salvaged:bool,origin:String,z
 func hq_off_field()->bool:return peaceful() or (boss_room and Campaign.is_final(room_index))
 ## Rooms between fields (service mode) and the hub (hub mode): nothing hurts the hero there.
 func peaceful()->bool:return room.mode in ["service","hub"]
-## Enters a playground (upgrade room, merchant) on this field: see scripts/systems/service_field.gd.
-func begin_service(index:int,ground:Node3D):
-	ground.index=index
-	service.begin(index,ground)
-## The hub on this field (practice run): see scripts/hub.gd and scripts/systems/service_field.gd.
-func begin_hub(ground:Node3D):
-	ground.index=0
-	service.begin(0,ground,"hub")
+## Puts a playground on this field — the one entry for every place where the hero walks (main.enter_playground):
+## «service» (an upgrade room, the merchant) and «hub» (the practice run) through scripts/systems/service_field.gd,
+## «battle» (the sandbox) as a generated battle field under the playground's rules (begin_room). `index` ≥ 0 sets
+## the playground's number (a room's route stage); otherwise it keeps its own (the hub's visit, the sandbox's 0).
+func begin_playground(ground:Node3D,index:=-1):
+	if index>=0:ground.index=index
+	if ground.field_mode()=="battle":
+		ground.arena=self;playground=ground
+		if ground.get_parent()!=self:add_child(ground)
+		begin_room(ground.index)
+	else:service.begin(ground)
+## What a new field (begin_room) or a playground (service_field.begin) clears away: everything but the camera,
+## HUD, presentation, light and atmosphere — and a «battle» playground (the sandbox and its admin panel).
+func clear_field():
+	for child in get_children():
+		if child==presentation or child==hud or child==camera or child is WorldEnvironment or child is DirectionalLight3D or child.name in ["WorldLighting","WorldAtmosphere"]:continue
+		if child==playground and ground_mode()=="battle":continue
+		remove_child(child);child.queue_free()
 ## Station changes reach the practice hero at once (author, 4 Oct 2026): a fresh RunState from the hub loadout —
 ## the same start as a sortie (start_run_state, ensure_armed); the hero stays where he stands, on foot; placed
 ## abilities and helpers go.
@@ -662,20 +685,12 @@ func _physics_process(delta):
 		# The pause between waves is not a freeze (T-020, T-053): time runs, so bonuses keep falling, and the
 		# soldier can shoot and use abilities while the next wave gets ready.
 		elapsed+=delta
-		abilities.tick(delta)
-		for slot in range(abilities.slots.size()):
-			if Input.is_action_just_pressed(abilities.action_for(slot)):abilities.cast_slot(slot)
-		if Input.is_action_just_pressed("ammo_switch") and Ammo.switch(self):hud.refresh_ammo()
-		collect_nearby_pickups(delta)
+		hero_frame(delta)
 		return
 	if phase != "combat": return
-	freeze_time=maxf(0,freeze_time-delta);pressure_time=maxf(0,pressure_time-delta)
-	star_time=maxf(0,star_time-delta)
-	abilities.tick(delta)
+	cool_down(delta)
 	headquarters.tick(delta)
-	if Input.is_action_just_pressed("ammo_switch") and Ammo.switch(self):hud.refresh_ammo()
-	for slot in range(abilities.slots.size()):
-		if Input.is_action_just_pressed(abilities.action_for(slot)):abilities.cast_slot(slot)
+	hero_frame(delta)
 	elapsed += delta
 	room.combat_elapsed += delta
 	toast_time = maxf(0,toast_time-delta)
@@ -693,15 +708,27 @@ func _physics_process(delta):
 			enemy.wave_slot=wave_spawned;wave_roster[wave_spawned].state="active";wave_spawned+=1
 			spawn_index+=1;spawn_timer=Balance.CONFIG.combat.spawn_interval
 		else:spawn_index+=1;spawn_timer=.35
-	collect_nearby_pickups(delta)
 	if challenges.active():challenges.tick(delta)
 	if room_cleared and is_instance_valid(flag) and is_instance_valid(player):
 		var near=flat_distance(player.position,flag.position)<1.1
 		# The stash starts on its open exit (T-214): it arms only after a real step into the field, not a twitch.
 		if not near and (room.mode!="cache" or flat_distance(player.position,flag.position)>2.4):flag_armed=true
 		if near and flag_armed:open_flag()
-	if not room_cleared and spawn_queue.is_empty() and enemy_count()==0 and grenades.is_empty() and not challenges.blocks_waves() and not (sandbox and not sandbox_waves and not boss_room):
+	if not room_cleared and spawn_queue.is_empty() and enemy_count()==0 and grenades.is_empty() and not challenges.blocks_waves() and not free_field():
 		finish_wave()
+
+## The hero's own frame, the same on every playground — a battle (also between waves), a room, the hub, the
+## sandbox: abilities and their keys (RunAbility), the ammo switch, pickups under his feet.
+func hero_frame(delta:float):
+	abilities.tick(delta)
+	for slot in range(abilities.slots.size()):
+		if Input.is_action_just_pressed(abilities.action_for(slot)):abilities.cast_slot(slot)
+	if Input.is_action_just_pressed("ammo_switch") and Ammo.switch(self):hud.refresh_ammo()
+	collect_nearby_pickups(delta)
+## Field timers that run down in combat on every playground: freeze, pressure, star.
+func cool_down(delta:float):
+	freeze_time=maxf(0,freeze_time-delta);pressure_time=maxf(0,pressure_time-delta)
+	star_time=maxf(0,star_time-delta)
 
 func wave_enemy_count()->int:
 	return actors.filter(func(actor):return is_instance_valid(actor) and not actor.player_owned and not actor.allied and not actor.dead and actor.kind not in ["drone","flyer"]).size()

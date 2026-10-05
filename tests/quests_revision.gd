@@ -39,7 +39,7 @@ func run():
 	check(p.quests("available").filter(func(q):return q in Q.BRIEFINGS).map(func(q):return q.id)==[offered[0].id],"the taken briefing stays alone until handed in")
 	var before=int(p.counters.get("challenge_any",0))
 	Campaign.configure(1)
-	var arena=load("res://scenes/arena.tscn").instantiate();arena.sandbox=true;arena.sandbox_mode="hold";arena.sandbox_difficulty=2;add_child(arena);arena.set_physics_process(false);await settle()
+	var arena=preload("res://scripts/sandbox/sandbox_ground.gd").field({"mode":"hold","difficulty":2});add_child(arena);arena.set_physics_process(false);await settle()
 	arena.challenges.complete(arena.player.position)
 	check(int(p.counters.get("challenge_any",0))==before+1 and int(p.counters.get("challenge_hold",0))>=1 and int(p.counters.get("challenge_hard",0))>=1,"challenge success counts")
 	RunUpgrades.apply(arena,"opening_shot",0)

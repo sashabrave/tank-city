@@ -35,10 +35,9 @@ const LOW_SUN_SHADOW=.55
 ## golden hour, sunset or dawn — whatever the day/night setting. A room opts in with `var cozy_light:=true`.
 const COZY_MOMENTS=["golden","sunset","dawn"]
 static func cozy_room(context)->bool:return context!=null and context.get("cozy_light")==true
-## Room number behind the sun and rim choice: the hub on the arena keeps its own per-visit number (hub.gd).
+## Room number behind the sun and rim choice: the arena's look_index (the hub keeps its own per-visit number).
 static func light_index(context:Node)->int:
-	var ground=context.get("playground")
-	if ground!=null and is_instance_valid(ground) and ground.get("room_index")!=null:return int(ground.room_index)
+	if context.has_method("look_index"):return context.look_index()
 	return int(context.get("room_index")) if context.get("room_index")!=null else 0
 static func moment(context:Node,night:bool)->Dictionary:
 	if cozy_room(context):

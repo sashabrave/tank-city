@@ -229,7 +229,7 @@ func gear_rules():
 	r.weapon=gun_before;Ammo.ensure(r,gun_before);r.ammo_slots[0]=Ammo.standard()
 	# T-202 + one field engine: a room between fields is the arena's own field in service mode — a throw lands
 	# there exactly like in battle, its E / C card answers the arena's hero, a sack comes back by walking over it.
-	var room=load("res://scripts/merchant_room.gd").new();arena.begin_service(2,room)
+	var room=load("res://scripts/merchant_room.gd").new();arena.begin_playground(room,2)
 	check(Backpack.floor_of(arena)==arena and Backpack.can_drop(arena),"in a room between fields the arena's floor takes thrown items")
 	r.ammo_bag.clear();r.ammo_bag.append(Ammo.roll("burn",1,3));r.ammo_bag.append(Ammo.roll("stun",1,3))
 	var piles=arena.room.pickups.size()

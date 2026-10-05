@@ -13,7 +13,7 @@ var convoy_on_road=false
 
 func _ready():
 	name="HubOutskirts"
-	rng.seed=hash([Game.visual_run_seed,hub.room_index,"outskirts"])
+	rng.seed=hash([Game.visual_run_seed,hub.index,"outskirts"])
 	var biome:Dictionary=hub.room_palette()
 	hangar()
 	backwall()

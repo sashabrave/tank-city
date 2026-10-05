@@ -147,9 +147,9 @@ func extra_checks(arena):
 		check(arena.run.combat_rng.state!=state,"crate loot rolls on the combat RNG")
 		check(arena.room.pickups.size()>items,"broken crates leave items on the field")
 	# T-205: the sandbox admin turret drops a turret even on the first field.
-	arena.sandbox=true;var before=arena.room.pickups.size()
+	arena.playground=preload("res://scripts/sandbox/sandbox_ground.gd").make();var before=arena.room.pickups.size()
 	arena.drop_pickup(hero.cell,"turret")
 	check(arena.room.pickups.size()==before+1 and arena.room.pickups.back().kind=="turret","sandbox turret drop stays a turret")
-	arena.sandbox=false
+	arena.playground.free();arena.playground=null
 	arena.drop_pickup(hero.cell,"turret")
 	check(arena.room.pickups.back().kind!="turret","campaign field 1 still swaps the turret")

@@ -98,8 +98,8 @@ func finish_wave():
 
 func finish_run(won: bool,reason: String):
 	if arena.phase=="result": return
-	# Sandbox never ends a run: the soldier and the HQ come back on the spot.
-	if arena.sandbox and not won:sandbox_respawn.call_deferred(reason);return
+	# A playground may take the defeat itself (the sandbox: the soldier and the HQ come back on the spot).
+	if not won and is_instance_valid(arena.playground) and arena.playground.take_defeat(reason):return
 	if won:arena.reward.collect_resources()
 	# Defeat fanfare comes from the battle theme; the effect stays when music is muted.
 	if won or Settings.values.music<=.01 or not is_instance_valid(Game.music_controller):Game.sound("rare_reveal" if won else "defeat",arena)
@@ -107,7 +107,7 @@ func finish_run(won: bool,reason: String):
 	arena.phase="result"
 	if not won:
 		arena.run.lost_run=true
-		if not arena.sandbox:Game.progression.event("deaths")
+		Game.progression.event("deaths")
 		# 0.8.0 (author): the share lost varies ±10% around the insurance level each time (run RNG, reproducible).
 		var share=Game.death_loss_fraction()*arena.run.combat_rng.randf_range(.9,1.1)
 		var loss=mini(Game.credits,roundi(arena.run.earned*share))
@@ -170,13 +170,3 @@ func transition(next:String):
 	current=next
 	changed.emit(previous,current)
 
-func sandbox_respawn(reason:String):
-	var cell=Vector2i(arena.room.base_cell.x,arena.room.grid_size-3)
-	if not is_instance_valid(arena.room.player) or arena.room.player.dead:
-		arena.run.soldier_hp=arena.run.soldier_max_hp
-		arena.room.player=arena.spawn_actor("soldier",arena.find_free_near(cell),true)
-		arena.room.player.invulnerable=1.5
-	arena.room.base_hp=arena.room.base_max_hp
-	if is_instance_valid(arena.room.base_bar):arena.room.base_bar.set_health(arena.room.base_hp,arena.room.base_max_hp)
-	arena.phase="combat"
-	arena.toast(reason+" · возрождение")

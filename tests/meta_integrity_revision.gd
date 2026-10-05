@@ -163,7 +163,7 @@ func run():
 	check(counts[6]>=3 and corners==counts[6],"boss barrels only in the corners (%d)" % counts[6])
 	# The mechanic upgrades the vehicle the player has, not a world-bound one.
 	arena.pending_vehicle="tank"
-	var service=load("res://scripts/service_room.gd").new();service.branch="vehicle";arena.begin_service(2,service)
+	var service=load("res://scripts/service_room.gd").new();service.branch="vehicle";arena.begin_playground(service,2)
 	for f in range(3):await get_tree().process_frame
 	check(service.vehicle=="tank","mechanic works on the pending tank")
 	arena.end_service();arena.pending_vehicle=""

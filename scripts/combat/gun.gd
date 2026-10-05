@@ -3,27 +3,22 @@ extends RefCounted
 ## One hero, one gun (step U1, 2026-10-04): every shot of the hero goes through this module, on one field engine
 ## (guides/02_development/07_one_world.md) — the battle, the rooms between fields (service mode) and the hub
 ## (the practice run, hub mode) are all the Arena: real targets, walls and blasts (CombatSystem.bullet_hit /
-## rocket_impact). The hub's own practice branch is gone (step 2). `Gun.stats(null)` still reads the hub loadout
-## for the stations' numbers.
+## rocket_impact). Every field is an arena with a run (the hub's practice run too), so there is no «no run» branch:
+## the stations' base numbers come from CombatStats.weapon(null), the practice hero's from Gun.stats(hub arena).
 const LOOT=preload("res://scripts/loot_catalog.gd")
 const SPREAD:=.10            # radians between pellets
 const LOB_WEAPON:="grenade_launcher"
 
-## The run behind a field: the arena itself, or null without one (the stations' numbers).
-static func run_of(field):
-	if field==null:return null
-	return field if field.get("run")!=null else null
-static func is_battle(field)->bool:return field!=null and run_of(field)==field
-## The gun in hand: the run's weapon (crate gun, swap in the backpack), otherwise the hub loadout.
+## The gun in hand: the run's weapon (the Arsenal's at the start, a crate gun, a swap in the backpack).
 static func weapon_id(field)->String:
-	var run_arena=run_of(field)
-	var id=str(run_arena.run.weapon) if run_arena!=null else Game.selected_weapon
+	var id=str(field.run.weapon)
 	return id if id in LOOT.WEAPONS else "pistol"
 
 ## Everything the gun does, by ONE formula: CombatStats.weapon (class multiplier, meta upgrades, run cards and the
-## rolled crate stats when a run exists) plus the catalog's ballistics. `run_arena` null = the hub loadout.
-static func stats(run_arena=null,id:="")->Dictionary:
-	if id=="":id=Game.selected_weapon if run_arena==null else str(run_arena.run.weapon)
+## rolled crate stats) plus the catalog's ballistics, for the gun of `run_arena` (a battle, a room, the hub's
+## practice run, the sandbox) or its weapon `id`.
+static func stats(run_arena,id:="")->Dictionary:
+	if id=="":id=str(run_arena.run.weapon)
 	var data:Dictionary=LOOT.WEAPONS[id]
 	var result:Dictionary=CombatStats.weapon(run_arena,id).duplicate()
 	result.merge({"id":id,"pellets":int(data.pellets),"burst":int(data.get("burst",1)),"burst_gap":float(data.get("burst_gap",.07)),

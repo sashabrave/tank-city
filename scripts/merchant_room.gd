@@ -3,7 +3,7 @@ extends "res://scripts/playground.gd"
 ## run tokens on cards, healing, rerolls or a blueprint at the counter. The room follows the common RoomLayout:
 ## weapon crate on the left, a vending machine at the front left, the slot machine on the «Фортуна» spot
 ## (scripts/slot_machine.gd). Stock comes from the run's combat RNG. The hero, shooting, abilities and the drop
-## floor are the arena's. Open with arena.begin_service(index, shop) (main.show_service).
+## floor are the arena's. Open with main.enter_playground("merchant", index) → arena.begin_playground (show_service).
 const CARD_PRICES=[3,5,8,12]
 var locker:Node3D
 var vendor:Node3D

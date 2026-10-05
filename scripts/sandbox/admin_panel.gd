@@ -1,7 +1,8 @@
 extends CanvasLayer
 ## Sandbox admin: build the field, call enemies, bonuses and the boss, hand out cards, vehicles, weapons,
 ## shells and challenges. Opens with the «Админ» button or F2; the game pauses while it is open.
-## First step towards a map editor: every action only drives the arena's public API.
+## First step towards a map editor: every action only drives the arena's public API. The field rules (size, mode,
+## stars, biome, waves) live on the sandbox playground (`ground`, scripts/sandbox/sandbox_ground.gd).
 signal exit_requested
 const ENEMIES=[["soldier","Стрелок"],["grenadier","Гранатомётчик"],["shield","Щитовой"],["sniper","Снайпер"],["buggy","Багги"],["apc","БТР"],["tank","Танк"],["mortar","Миномёт"],["drone","Дрон"],["flyer","Летающий"]]
 const SIZES=[13,15,17,19,21,23,25]
@@ -9,6 +10,7 @@ const TABS=[["field","Поле"],["class","Класс"],["enemies","Враги"]
 var tuning=""  # «Класс»: the ability whose cooldown/power sliders are shown
 var ability_slot=0  # sandbox «Снаряжение»: which slot (Q, F) an ability button fills
 var arena
+var ground
 var tab="field"
 var rank=1
 var count=1
@@ -69,7 +71,7 @@ func render():
 			action(grid,"Выдать случайное оружие",func():airdrop({"recipes":[],"ammo":[],"weapons":[random_gun()]})).name="RandomWeapon"
 			action(grid,"Выдать случайные боеприпасы",func():airdrop({"recipes":[],"ammo":[Ammo.roll(Ammo.TYPES[randi()%Ammo.TYPES.size()],tier,randi())]})).name="RandomAmmo"
 			header(grid,"Размер поля")
-			for value in SIZES:action(grid,"%d × %d" % [value,value],func():rebuild({"size":value}),arena.sandbox_size==value)
+			for value in SIZES:action(grid,"%d × %d" % [value,value],func():rebuild({"size":value}),ground.size==value)
 			header(grid,"Генерация")
 			action(grid,"Новая генерация",func():rebuild({"seed":randi()}))
 			action(grid,"Обычная волна",func():rebuild({"waves":true}))
@@ -80,7 +82,7 @@ func render():
 			action(grid,"Ночь",func():lighting("night"),Settings.values.world_lighting=="night")
 			header(grid,"Биом")
 			for i in range(arena.BIOMES.ENTRIES.size()):
-				var index=i;action(grid,arena.BIOMES.ENTRIES[i].name,func():rebuild({"biome":index}),arena.sandbox_biome==i)
+				var index=i;action(grid,arena.BIOMES.ENTRIES[i].name,func():rebuild({"biome":index}),ground.biome==i)
 		"class":
 			# One place to test classes and abilities (author, 2026-10-03). The sandbox profile is a snapshot:
 			# leaving for the hub returns the real class and abilities.
@@ -173,7 +175,7 @@ func render():
 		"challenges":
 			header(grid,"Звёзды")
 			for d in range(3):
-				var value=d;action(grid,["Без звёзд","★","★★"][d],func():arena.sandbox_difficulty=value;render(),arena.sandbox_difficulty==d)
+				var value=d;action(grid,["Без звёзд","★","★★"][d],func():ground.difficulty=value;render(),ground.difficulty==d)
 			header(grid,"Запустить")
 			for mode in RoutePlan.CHALLENGES:
 				var id=mode;action(grid,ChallengeRooms.TITLES.get(mode,mode),func():rebuild({"mode":id}))
@@ -274,15 +276,15 @@ func action(grid:GridContainer,text:String,callback:Callable,selected:bool=false
 
 ## Rebuilds the room with new overrides; the soldier keeps the run's upgrades.
 func rebuild(changes:Dictionary):
-	if changes.has("size"):arena.sandbox_size=changes.size
+	if changes.has("size"):ground.size=changes.size
 	if changes.has("seed"):arena.run_seed=changes.seed
-	if changes.has("biome"):arena.sandbox_biome=changes.biome
-	if changes.has("waves"):arena.sandbox_waves=changes.waves
-	if changes.has("mode"):arena.sandbox_mode=changes.mode;arena.sandbox_waves=false if changes.mode!="battle" else arena.sandbox_waves
-	else:arena.sandbox_mode="battle" if changes.has("waves") else arena.sandbox_mode
+	if changes.has("biome"):ground.biome=changes.biome
+	if changes.has("waves"):ground.waves=changes.waves
+	if changes.has("mode"):ground.mode=changes.mode;ground.waves=false if changes.mode!="battle" else ground.waves
+	else:ground.mode="battle" if changes.has("waves") else ground.mode
 	close_panel();arena.begin_room(0)
 func boss():
-	arena.sandbox_mode="battle";arena.sandbox_waves=true;arena.run_seed=randi()
+	ground.mode="battle";ground.waves=true;arena.run_seed=randi()
 	close_panel();arena.begin_room(Campaign.BOSSES[0])
 func lighting(value:String):
 	Settings.values.world_lighting=value;Settings.apply();rebuild({})
