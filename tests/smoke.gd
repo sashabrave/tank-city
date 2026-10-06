@@ -46,19 +46,44 @@ func run():
 	arena.damage_wall(concrete,999)
 	check(arena.walls.has(concrete),"central concrete cannot be shot through")
 	var p=arena.player
-	p.set_facing(Vector2i.RIGHT);check(not p.shoot(),"no shots during turn")
-	p._physics_process(.11);check(p.shoot(),"shots allowed after turn")
+	# T-330: the hero fires the moment he turns (facing is already the new way); enemies still wait for the turn.
+	p.set_facing(Vector2i.RIGHT);check(p.turn_left>0 and p.shoot(),"hero fires at once while turning")
+	p.fire_cooldown=0;p._physics_process(.11);check(p.shoot(),"shots allowed after turn")
+	var foe=arena.spawn_actor("soldier",arena.find_free_near(Vector2i(1,1)),false)
+	foe.set_facing(Vector2i.LEFT);check(foe.turn_left>0 and not foe.shoot(),"enemies hold fire while turning")
+	arena.actors.erase(foe);foe.queue_free()
 	var press=InputEventKey.new();press.physical_keycode=KEY_SPACE;press.pressed=true;Game.input_router._input(press)
 	for dir in [Vector2i.DOWN,Vector2i.LEFT,Vector2i.UP]:
 		p.fire_cooldown=0;p.set_facing(dir);p._physics_process(.04)
-		check(is_zero_approx(p.fire_cooldown),"held fire pauses for rotation "+str(dir))
-		p._physics_process(.08);check(p.fire_cooldown>0,"held fire resumes without new keydown "+str(dir))
+		check(p.fire_cooldown>0,"held fire keeps firing through a turn "+str(dir))
 	press.pressed=false;Game.input_router._input(press);check(not Game.wants_fire(),"releasing space stops fire")
 	p.facing=Vector2i.UP;p.model.rotation.y=0;p.turn_left=0;p.moving=false
 	Game.touch_direction=Vector2i.RIGHT;p._physics_process(.01)
 	check(p.facing==Vector2i.RIGHT,"movement always turns aim; strafe removed")
 	Game.touch_direction=Vector2i.ZERO;p._physics_process(.5)
 	check(p.fire_interval==.6,"slower base rifle interval")
+	# T-330: quarter steps chain without a lost frame (the hero covers speed × time) and turning straight
+	# back reverses mid-step. A free plain lane of four cells to the right is picked for it.
+	var lane=Vector2i(-1,-1)
+	for y in range(2,arena.grid_size-2):
+		for x in range(1,arena.grid_size-5):
+			var free=true
+			for k in range(5):
+				var c=Vector2i(x+k,y)
+				if not arena.can_enter(c,p) or arena.terrain.kind_at(arena.world_pos(c)) in ["ice","sand"]:free=false;break
+			if free:lane=Vector2i(x,y);break
+		if lane.x>=0:break
+	check(lane.x>=0,"a free lane for the walk check")
+	p.cell=lane;p.position=arena.world_pos(lane);p.moving=false;p.facing=Vector2i.RIGHT;p.turn_left=0;p.terrain_direction=Vector2i.ZERO;p.slide_remaining=0
+	var walk_from=p.position.x;Game.touch_direction=Vector2i.RIGHT
+	for f in range(30):p._physics_process(1.0/60)
+	var walk_speed=minf(p.speed,Balance.speed_cap())
+	check(absf((p.position.x-walk_from)-walk_speed*.5)<.05,"steps chain at full speed: %.3f of %.3f" % [p.position.x-walk_from,walk_speed*.5])
+	if not p.moving:p._physics_process(1.0/60)
+	Game.touch_direction=Vector2i.LEFT;var turn_at=p.position.x;p._physics_process(1.0/60)
+	check(p.terrain_direction==Vector2i.LEFT and p.position.x<turn_at,"turning back reverses mid-step")
+	Game.touch_direction=Vector2i.ZERO
+	for f in range(30):p._physics_process(1.0/60)
 
 	# The soldier lands with a short spawn grace; end it before checking hits.
 	p.invulnerable=0;p.take_damage(1);check(arena.soldier_hp==2,"hit costs one heart")

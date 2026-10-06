@@ -72,6 +72,14 @@ var aim_delay_time=0.0
 var pause_scale=1.0
 var aim_hold=0.0
 var aim_glint:MeshInstance3D
+## The cloak look currently applied to the player's meshes (set only when the cloak toggles).
+var cloak_shown=false
+## Player only: travel left over this physics frame (after a quarter step ends, or all of it when standing
+## still); a step started in the same frame spends it at once, so the hero sets off on the key press and
+## steps chain without a lost frame at his set speed.
+var step_carry=0.0
+## Player only: how far the current step advanced this physics frame (a reversal walks it back).
+var step_moved=0.0
 var invulnerable = 0.0
 var dead = false
 var elite=false # Marks every room commander for existing combat AI.
@@ -251,16 +259,26 @@ func _physics_process(delta):
 	# While BattleStage hides the soldier (before the hop-out, after boarding) visibility is left alone.
 	if player_owned and not has_meta("stage_hidden"):
 		model.visible=arena.star_time<=0 or fmod(arena.elapsed,.18)<.12
-		for mesh in model.find_children("*","GeometryInstance3D",true,false):mesh.transparency=.65 if arena.abilities.cloak_time>0 else 0.0
+		# Walk the model's meshes only when the cloak turns on or off, not every physics frame.
+		var cloaked=arena.abilities.cloak_time>0
+		if cloaked!=cloak_shown:
+			cloak_shown=cloaked
+			for mesh in model.find_children("*","GeometryInstance3D",true,false):mesh.transparency=.65 if cloaked else 0.0
 	if turn_left > 0:
 		turn_left = maxf(0,turn_left-delta)
 		model.rotation.y = lerp_angle(turn_from,turn_to,1.0-turn_left/.105)
 		if turn_left == 0: model.rotation.y = turn_to
 	if not moving:arena.terrain.begin_slide(self)
+	# A hero standing still keeps the whole frame's travel: a step started by a key press below moves at once.
+	step_carry=(minf(speed,Balance.speed_cap())*arena.terrain.speed_factor(self)*delta) if player_owned and not moving else 0.0
+	step_moved=0.0
 	if moving:
 		var target=quarter_destination if uses_quarter_steps() or terrain_sliding else arena.actor_world_pos(self,destination)
-		var next_position=position.move_toward(target,(minf(speed,Balance.speed_cap()) if player_owned else speed*(1.0-slow_factor))*arena.terrain.speed_factor(self)*delta)
-		if arena.can_stand(next_position,self):position=next_position
+		var travel=(minf(speed,Balance.speed_cap()) if player_owned else speed*(1.0-slow_factor))*arena.terrain.speed_factor(self)*delta
+		var next_position=position.move_toward(target,travel)
+		if arena.can_stand(next_position,self):
+			if player_owned:step_moved=position.distance_to(next_position);step_carry=maxf(0,travel-step_moved)
+			position=next_position
 		else:moving=false
 		if position.distance_to(quarter_destination if uses_quarter_steps() or terrain_sliding else arena.actor_world_pos(self,destination)) < .005:
 			cell = destination
@@ -324,8 +342,19 @@ func _physics_process(delta):
 		var dir = Game.direction()
 		if dir != Vector2i.ZERO:
 			set_facing(dir)
-			# Finish only the current quarter-step; turning never stalls locomotion.
-			if not moving:try_move(dir)
+			# Finish only the current quarter-step; turning never stalls locomotion. Turning straight back
+			# reverses at once, toward the quarter point the step started from (always standable: we came from it).
+			if moving and uses_quarter_steps() and not terrain_sliding and dir==-terrain_direction:
+				quarter_destination-=Vector3(-dir.x,0,-dir.y)*.25;destination=arena.grid_pos(quarter_destination);terrain_direction=dir
+				# This frame already stepped the old way: walk it back and on, so the reversal shows on the press.
+				var back=position.move_toward(quarter_destination,step_moved*2.0)
+				if arena.can_stand(back,self):position=back
+			elif not moving:
+				try_move(dir)
+				if moving and step_carry>0 and uses_quarter_steps():
+					var next_position=position.move_toward(quarter_destination,step_carry)
+					if arena.can_stand(next_position,self):position=next_position
+			step_carry=0.0
 		if Game.wants_fire() and arena.phase in ["combat","countdown"]: shoot()
 		if Game.wants_interact(): arena.interact()
 	else:
@@ -380,7 +409,9 @@ func try_move(dir: Vector2i):
 		moving = true;terrain_direction=dir;terrain_sliding=false
 
 func shoot() -> bool:
-	if (kind=="shield" and shield_phase in ["raising","active"]) or kind in ["grenadier","mortar"] or turn_left > 0 or fire_cooldown > 0 or dead: return false
+	# The player fires the moment he presses: facing already points the new way, the model finishes turning
+	# while the round flies. Enemies still wait for the turn — it is their tell.
+	if (kind=="shield" and shield_phase in ["raising","active"]) or kind in ["grenadier","mortar"] or (turn_left > 0 and not player_owned) or fire_cooldown > 0 or dead: return false
 	if player_owned and not allied and arena.challenges.weapons_locked():
 		fire_cooldown=.6
 		if arena.toast_time<=0:arena.toast("Боеприпасы кончились")

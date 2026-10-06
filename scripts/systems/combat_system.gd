@@ -56,11 +56,17 @@ func bullet_hit(bullet) -> bool:
 	var cell=arena.grid_pos(pos)
 	if not arena.inside(cell): return true
 	if bullet.friendly and arena.room.generators.has(cell):arena.damage_generator(cell,bullet.damage);return true
+	# Every loop below first finds what the round touches, then acts on it: damage can change these lists
+	# (deaths, wrecks, consumed rounds), and copying each list on every 0.1 substep of every bullet was the
+	# main cost of a firefight (T-330).
 	if bullet.friendly:
-		for flying in arena.room.actors.duplicate():
-			if is_instance_valid(flying) and not flying.dead and not flying.allied and not flying.player_owned and flying.kind=="flyer" and flying not in bullet.hit_actors and arena.flat_distance(pos,flying.position)<.38:
-				bullet.hit_actors.append(flying);flying.take_damage(flying.max_hp if bullet.star_power else (CombatMods.outgoing(arena,bullet,flying) if CombatMods.player_bullet(bullet) else bullet.damage),Vector3.ZERO,bullet.vehicle_credit)
-				if not pierce_on(bullet):return true
+		var flyers=[]
+		for flying in arena.room.actors:
+			if is_instance_valid(flying) and not flying.dead and not flying.allied and not flying.player_owned and flying.kind=="flyer" and flying not in bullet.hit_actors and arena.flat_distance(pos,flying.position)<.38:flyers.append(flying)
+		for flying in flyers:
+			if not is_instance_valid(flying) or flying.dead:continue
+			bullet.hit_actors.append(flying);flying.take_damage(flying.max_hp if bullet.star_power else (CombatMods.outgoing(arena,bullet,flying) if CombatMods.player_bullet(bullet) else bullet.damage),Vector3.ZERO,bullet.vehicle_credit)
+			if not pierce_on(bullet):return true
 	if bullet.piercing and arena.room.nets.has(cell):
 		arena.shred_net(cell)
 	if bullet.sniper_round:
@@ -89,35 +95,42 @@ func bullet_hit(bullet) -> bool:
 				arena.board.damage_wall(contact,wall_damage,pos,bullet.travel_direction,bullet.wall_width)
 		arena.burst(pos,Color("dc9870"),.16)
 		return true
-	for other in arena.room.projectiles.duplicate():
+	var crossing=[]
+	for other in arena.room.projectiles:
 		if not is_instance_valid(other) or other==bullet or other.spent or other.friendly==bullet.friendly:continue
-		if arena.flat_distance(pos,other.position)<.20:
-			resolve_interception(bullet,other)
-			if bullet.spent:return true
-	for wreck in arena.room.wrecks.duplicate():
+		if arena.flat_distance(pos,other.position)<.20:crossing.append(other)
+	for other in crossing:
+		if not is_instance_valid(other) or other.spent:continue
+		resolve_interception(bullet,other)
+		if bullet.spent:return true
+	for wreck in arena.room.wrecks:
 		if is_instance_valid(wreck) and not wreck.spent and arena.flat_distance(pos,wreck.position)<.44:
 			wreck.take_damage(bullet.damage); return true
-	for actor in arena.room.actors.duplicate():
+	var struck=[]
+	for actor in arena.room.actors:
 		if actor==arena.room.player and arena.abilities.cloak_time>0 and arena.abilities.cloak_ghost:continue
 		if not is_instance_valid(actor) or actor.dead or actor.hidden_in_trench or actor in bullet.hit_actors or actor==bullet.owner_actor or (actor.player_owned or actor.allied)==bullet.friendly: continue
 		var hit=absf(pos.x-actor.position.x)<actor.footprint*.5-.1 and absf(pos.z-actor.position.z)<actor.footprint*.5-.1 if actor.footprint>1 else (absf(pos.x-actor.position.x)<.85 and absf(pos.z-actor.position.z)<.85) if actor.elite else arena.flat_distance(pos,actor.position)<(.30 if actor.kind in ["soldier","drone"] else .46)
-		if hit:
-			if not bullet.star_power and actor.blocks_shot(bullet.travel_direction):
-				if bullet.shield_pierce_chance<=0.0 or arena.combat_rng.randf()>=bullet.shield_pierce_chance:
-					arena.burst(pos,Color("9eb6c3"),.3);Game.sound("ricochet",arena);return true
-				# Armor-piercing round punched through the shield: a bright spark, then the hit lands.
-				arena.burst(pos,Color("ffe0a0"),.45);Game.sound("shield_hit",arena)
-			bullet.hit_actors.append(actor)
-			actor.resource_blast=Vector3.ZERO
-			var amount=actor.max_hp if bullet.star_power else bullet.damage
-			if not bullet.star_power and CombatMods.player_bullet(bullet):amount=CombatMods.outgoing(arena,bullet,actor)
-			arena.set_meta("attacker",attacker_of(bullet))
-			actor.take_damage(amount,Vector3.ZERO,bullet.vehicle_credit,CombatMods.bullet_source(bullet) if actor.player_owned else "")
-			arena.set_meta("attacker","")
-			if CombatMods.player_bullet(bullet) and not actor.player_owned:arena.effects.emit("enemy_hit",{"target":actor,"bullet":bullet,"damage":amount})
-			var feel=arena.get_node_or_null("CombatFeel")
-			if feel and not actor.player_owned:feel.impact(actor,actor.position)
-			if not pierce_on(bullet):return true
+		if hit:struck.append(actor)
+	for actor in struck:
+		# A hit on an earlier target (a blast, a death) may already have finished this one.
+		if not is_instance_valid(actor) or actor.dead or actor in bullet.hit_actors:continue
+		if not bullet.star_power and actor.blocks_shot(bullet.travel_direction):
+			if bullet.shield_pierce_chance<=0.0 or arena.combat_rng.randf()>=bullet.shield_pierce_chance:
+				arena.burst(pos,Color("9eb6c3"),.3);Game.sound("ricochet",arena);return true
+			# Armor-piercing round punched through the shield: a bright spark, then the hit lands.
+			arena.burst(pos,Color("ffe0a0"),.45);Game.sound("shield_hit",arena)
+		bullet.hit_actors.append(actor)
+		actor.resource_blast=Vector3.ZERO
+		var amount=actor.max_hp if bullet.star_power else bullet.damage
+		if not bullet.star_power and CombatMods.player_bullet(bullet):amount=CombatMods.outgoing(arena,bullet,actor)
+		arena.set_meta("attacker",attacker_of(bullet))
+		actor.take_damage(amount,Vector3.ZERO,bullet.vehicle_credit,CombatMods.bullet_source(bullet) if actor.player_owned else "")
+		arena.set_meta("attacker","")
+		if CombatMods.player_bullet(bullet) and not actor.player_owned:arena.effects.emit("enemy_hit",{"target":actor,"bullet":bullet,"damage":amount})
+		var feel=arena.get_node_or_null("CombatFeel")
+		if feel and not actor.player_owned:feel.impact(actor,actor.position)
+		if not pierce_on(bullet):return true
 	if not arena.hq_off_field() and not bullet.friendly and cell==arena.room.base_cell:
 		arena.set_meta("attacker",attacker_of(bullet));damage_base(bullet.damage);arena.set_meta("attacker","")
 		return true

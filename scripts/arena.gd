@@ -42,6 +42,7 @@ const ROOM_WAVES = [
  [["boss"]]
 ]
 const BIOMES=preload("res://scripts/biome_catalog.gd")
+const SectionWall=preload("res://scripts/section_wall.gd")
 var navigation=preload("res://scripts/systems/navigation_cache.gd").new(self)
 func room_palette()->Dictionary:
 	# The hub keeps its own look per visit (hub.gd room_palette).
@@ -1028,14 +1029,22 @@ func create_spawn_marker(cell:Vector2i,direction:Vector2i)->Node3D:
 	return marker
 
 func wall_contacts(pos:Vector3,direction:Vector3,width:float)->Array:
-	if absf(direction.x)>absf(direction.z):pos.z=snappedf(pos.z,.25)
+	var result=[]
+	var board_walls:Dictionary=room.walls
+	if board_walls.is_empty():return result
+	var along_x=absf(direction.x)>absf(direction.z)
+	if along_x:pos.z=snappedf(pos.z,.25)
 	else:pos.x=snappedf(pos.x,.25)
-	var half=Vector2(.035,width*.5) if absf(direction.x)>absf(direction.z) else Vector2(width*.5,.035)
-	var result=[];var cell=grid_pos(pos)
+	var half=Vector2(.035,width*.5) if along_x else Vector2(width*.5,.035)
+	var center=(room.grid_size-1)*.5
+	var cell=Vector2i(roundi(pos.x+center),roundi(pos.z+center))
 	for x in range(cell.x-1,cell.x+2):
+		# A wall (or any of its sections) lies inside its cell: no overlap past half+.5 on either axis.
+		if absf(pos.x-(x-center))>=half.x+.5:continue
 		for z in range(cell.y-1,cell.y+2):
+			if absf(pos.z-(z-center))>=half.y+.5:continue
 			var c=Vector2i(x,z)
-			if walls.has(c) and preload("res://scripts/section_wall.gd").overlap(walls[c],world_pos(c),pos,half):result.append(c)
+			if board_walls.has(c) and SectionWall.overlap(board_walls[c],Vector3(x-center,0,z-center),pos,half):result.append(c)
 	return result
 func body_size(actor)->float:
 	return 1.0 if actor.occupying_trench else .49 if UnitKinds.is_infantry(actor.kind) else float(actor.footprint)
@@ -1060,6 +1069,27 @@ func can_stand(pos:Vector3,actor,ignore_actors:bool=false,static_only:bool=false
 func clear_shot(from:Vector3,to:Vector3,width:float=.5)->bool:
 	var delta=to-from;delta.y=0
 	var direction=delta.normalized()
-	for i in range(1,ceili(delta.length()/.1)):
-		if not wall_contacts(from+direction*i*.1,direction,width).is_empty():return false
+	var steps=ceili(delta.length()/.1)
+	var board_walls:Dictionary=room.walls
+	if steps<=1 or board_walls.is_empty():return true
+	# Same samples and the same test as wall_contacts at each one, but the walls near the line are gathered
+	# once: an open lane costs a handful of lookups instead of nine per 0.1 of its length.
+	var center=(room.grid_size-1)*.5
+	var a=Vector2i(roundi(from.x+center),roundi(from.z+center));var b=Vector2i(roundi(to.x+center),roundi(to.z+center))
+	var near:Array[Vector2i]=[]
+	for x in range(mini(a.x,b.x)-2,maxi(a.x,b.x)+3):
+		for z in range(mini(a.y,b.y)-2,maxi(a.y,b.y)+3):
+			if board_walls.has(Vector2i(x,z)):near.append(Vector2i(x,z))
+	if near.is_empty():return true
+	var along_x=absf(direction.x)>absf(direction.z)
+	var half=Vector2(.035,width*.5) if along_x else Vector2(width*.5,.035)
+	for i in range(1,steps):
+		var pos=from+direction*i*.1
+		if along_x:pos.z=snappedf(pos.z,.25)
+		else:pos.x=snappedf(pos.x,.25)
+		var cx=roundi(pos.x+center);var cz=roundi(pos.z+center)
+		for c in near:
+			if absi(c.x-cx)>1 or absi(c.y-cz)>1:continue
+			if absf(pos.x-(c.x-center))>=half.x+.5 or absf(pos.z-(c.y-center))>=half.y+.5:continue
+			if SectionWall.overlap(board_walls[c],Vector3(c.x-center,0,c.y-center),pos,half):return false
 	return true

@@ -66,6 +66,7 @@ const PROJECTILES={
 }
 static var trail_materials:={}
 static var projectile_sphere:SphereMesh
+static var projectile_box:BoxMesh
 static func trail_energy()->float:return 1.0 if Settings.values.world_lighting=="night" else .75
 ## Warm inverted-hull rim around the player's rounds (T-177): pale tracers vanished on light day maps. A deep
 ## amber edge, not black (author, 2026-10-03: the black outline looked wrong) — it reads as a hot rim.
@@ -87,7 +88,9 @@ static func projectile_visual(parent:Node3D,kind:String,color:Color,rim:=false)-
 		var mat=ShaderMaterial.new();mat.shader=preload("res://shaders/fx/tracer.gdshader")
 		mat.set_shader_parameter("color",color);mat.set_shader_parameter("flicker",1.0 if kind=="rocket" else 0.0);mat.set_shader_parameter("energy",trail_energy())
 		trail_materials[key]=mat
-	var trail=MeshInstance3D.new();var box=BoxMesh.new();box.size=Vector3.ONE;trail.mesh=box
+	# One shared unit box for every trail (scaled per node): a new mesh per round was built on every shot.
+	if projectile_box==null:projectile_box=BoxMesh.new();projectile_box.size=Vector3.ONE
+	var trail=MeshInstance3D.new();trail.mesh=projectile_box
 	trail.scale=Vector3(spec.width,spec.width*.6,spec.trail);trail.position.z=spec.trail*.5;trail.material_override=trail_materials[key]
 	for node in [trail,halo,core]:node.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF;root.add_child(node)
 	if rim and rim_outlines:
