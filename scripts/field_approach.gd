@@ -16,8 +16,10 @@ var wide=6.4
 func no_shadows():
 	for node in find_children("*","GeometryInstance3D",true,false):
 		node.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		# Only our own override materials: model materials (crates) are shared with the field.
-		if node.material_override is BaseMaterial3D:node.material_override.disable_receive_shadows=true
+		# Only override materials, and as a copy: box materials are shared per colour across the field (T-331),
+		# so editing one in place switched receiving shadows off for every box of that colour.
+		if node.material_override is BaseMaterial3D and not node.material_override.disable_receive_shadows:
+			node.material_override=Visuals.unshadowed(node.material_override)
 func build(arena,ground_node,seed_value:int):
 	ground=ground_node
 	var rng=RandomNumberGenerator.new();rng.seed=hash([seed_value,"approach"])

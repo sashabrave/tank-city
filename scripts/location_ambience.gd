@@ -66,6 +66,7 @@ func _ready():
 			for k in range(first,backdrop_materials.size()):
 				var mat:StandardMaterial3D=backdrop_materials[k];mat.set_meta("day_color",Color(mat.get_meta("day_color")).lerp(tone,.7))
 			update_lighting()
+		if MeshMerge.enabled:MeshMerge.merge_built(root)
 		silhouettes.append({"node":root,"phase":rng.randf()*TAU,"scale":scale_value,"y":root.position.y})
 	if not miniature:
 		Game.sound_loop("ambience_"+biome,self)
@@ -97,14 +98,19 @@ static func landscape(parent:Node3D,palette:Dictionary,seed_value:int,spots:Arra
 		for k in range(first,node.backdrop_materials.size()):
 			# A little more contrast than the battle backdrop: the hub looks at them from close by.
 			var mat:StandardMaterial3D=node.backdrop_materials[k];mat.set_meta("day_color",Color(mat.get_meta("day_color")).lerp(tone,.5))
+		if MeshMerge.enabled:MeshMerge.merge_built(root)
 		node.silhouettes.append({"node":root,"phase":rng.randf()*TAU,"scale":float(spot[1]),"y":root.position.y})
 	node.update_lighting()
 	return node
 func mesh(parent,shape,pos,scale_value=Vector3.ONE):
 	var node=MeshInstance3D.new();node.mesh=shape;node.position=pos;node.scale=scale_value
-	var mat=StandardMaterial3D.new();mat.roughness=.9;mat.rim_enabled=true;mat.emission_enabled=true
-	mat.albedo_color=Color("bec3b8").lerp(LocationStyle.COLORS[biome],.27 if not miniature else .55)
-	mat.set_meta("day_color",mat.albedo_color);backdrop_materials.append(mat);update_lighting()
+	# One material per silhouette (T-331): its parts are toned alike, and merge into one mesh after the build.
+	var mat:StandardMaterial3D=parent.get_meta("backdrop_material") if parent.has_meta("backdrop_material") else null
+	if mat==null:
+		mat=StandardMaterial3D.new();mat.roughness=.9;mat.rim_enabled=true;mat.emission_enabled=true
+		mat.albedo_color=Color("bec3b8").lerp(LocationStyle.COLORS[biome],.27 if not miniature else .55)
+		mat.set_meta("day_color",mat.albedo_color);backdrop_materials.append(mat);update_lighting()
+		parent.set_meta("backdrop_material",mat)
 	node.material_override=mat;node.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF;parent.add_child(node)
 func cone(parent,pos,width,height):
 	var shape=CylinderMesh.new();shape.top_radius=0;shape.bottom_radius=width;shape.height=height;shape.radial_segments=5;mesh(parent,shape,pos)

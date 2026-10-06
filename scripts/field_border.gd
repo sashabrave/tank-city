@@ -70,7 +70,7 @@ static func cargo(root:Node3D,arena,half:float,middle:float):
 	var spots=[]
 	for k in range(rng.randi_range(0,1)):spots.append([Vector3(lerpf(-half+2.2,half-2.2,(k+rng.randf_range(.2,.8))/3.0),0,-middle),0.0])
 	for spot in spots:
-		var pile=load("res://assets/models/environment_v7/tarp_%d.glb" % rng.randi_range(0,2)).instantiate()
+		var pile=MeshMerge.instance("res://assets/models/environment_v7/tarp_%d.glb" % rng.randi_range(0,2))
 		root.add_child(pile);pile.position=spot[0];pile.rotation.y=spot[1]+rng.randf_range(-.2,.2);pile.scale=Vector3.ONE*rng.randf_range(.55,.65)
 		tint_to_map(pile,Color(arena.room_palette().floor))
 ## Rim props lean to the map colour (0.8), so the border reads as one calm frame.

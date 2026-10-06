@@ -131,7 +131,7 @@ func landscape(biome:Dictionary):
 	preload("res://scripts/location_ambience.gd").landscape(self,biome,rng.randi(),spots)
 func cargo():
 	for p in [Vector3(-9.5,GROUND_Y,-4.5),Vector3(-10.5,GROUND_Y,1.5),Vector3(21,GROUND_Y,-4.5),Vector3(12.5,GROUND_Y,4.6)]:
-		var pile=load("res://assets/models/environment_v7/tarp_%d.glb" % rng.randi_range(0,2)).instantiate()
+		var pile=MeshMerge.instance("res://assets/models/environment_v7/tarp_%d.glb" % rng.randi_range(0,2))
 		add_child(pile);pile.position=p;pile.rotation.y=rng.randf_range(-.5,.5)+PI*.5;pile.scale=Vector3.ONE*1.3
 	for p in [Vector3(-8.6,GROUND_Y,4.2),Vector3(10.6,GROUND_Y,-5.2)]:
 		var stack=Visuals.model("supply_stack",self,p);stack.rotation.y=rng.randf()*TAU

@@ -9,7 +9,8 @@
 					"Кот трогается в момент нажатия и идёт ровно со своей скоростью: раньше на каждой четверти клетки терялся кадр, и ход казался вязким.",
 					"Разворот назад срабатывает сразу, не дожидаясь конца шага.",
 					"Выстрел уходит в момент нажатия, даже во время поворота, — больше нет паузы в десятую долю секунды. Враги, как и раньше, сначала доворачиваются.",
-					"Бой с толпой врагов и шквальным огнём нагружает процессор заметно меньше: враги быстрее проверяют линию огня, пули — попадания."
+					"Бой с толпой врагов и шквальным огнём нагружает процессор заметно меньше: враги быстрее проверяют линию огня, пули — попадания.",
+					"Видеокарте стало легче: детали штаба и окружения рисуются вместе, одинаковые материалы общие, мелочь не отбрасывает невидимую сверху тень — вызовов отрисовки почти вдвое меньше. Картинка та же."
 				]
 			},
 			"en": {
@@ -18,7 +19,8 @@
 					"The cat sets off the moment you press and walks at exactly its speed: a frame used to be lost on every quarter cell, which made movement feel sluggish.",
 					"Turning straight back works at once, without finishing the step.",
 					"Shots leave the moment you press, even while turning — no more tenth-of-a-second pause. Enemies still turn first, as before.",
-					"Crowded battles with heavy fire load the CPU noticeably less: enemies check lines of fire faster, and so do bullets."
+					"Crowded battles with heavy fire load the CPU noticeably less: enemies check lines of fire faster, and so do bullets.",
+					"Lighter on the GPU: HQ and scenery parts draw together, identical materials are shared, and tiny parts no longer cast shadows you cannot see from above — almost half the draw calls. The picture is the same."
 				]
 			}
 		},

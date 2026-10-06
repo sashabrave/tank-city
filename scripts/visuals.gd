@@ -11,7 +11,8 @@ static func model(kind: String, parent: Node3D, pos = Vector3.ZERO, species:Stri
 	if kind in ["soldier","grenadier","shield","sniper","rpg_soldier","boss","tank","apc","buggy","drone","flyer","mortar"] or kind.begins_with("weapon_"):return kit_model(kind,parent,pos,species,player)
 	var environment_kind="bench_mechanic" if kind=="workbench" else kind
 	var environment_path=("res://assets/models/cover_v1/" if kind in ["net","trench"] else "res://assets/models/concrete_v1/" if kind.begins_with("concrete_") else "res://assets/models/biome_props/" if kind.begins_with("biome_") else "res://assets/models/environment_v7/")+environment_kind.trim_prefix("biome_")+".glb"
-	var obj = load(environment_path if ResourceLoader.exists(environment_path) else "res://assets/models/" + kind + ".glb").instantiate()
+	# Still parts sharing a material come as one mesh (MeshMerge, T-331): the same look in far fewer draw calls.
+	var obj = MeshMerge.instance(environment_path if ResourceLoader.exists(environment_path) else "res://assets/models/" + kind + ".glb")
 	normalize_materials(obj)
 	if ResourceLoader.exists(environment_path):apply_environment_palette(obj,parent,0.0,kind in ["net","trench"])
 	parent.add_child(obj)
@@ -55,6 +56,20 @@ static func material(color: Color, emission = false) -> StandardMaterial3D:
 	cozy_material(mat)
 	return mat
 
+## The plain matte material of a box, shared per colour (T-331): every box used to get its own copy — hundreds
+## of identical materials on a field. Code that tints or animates a part gives it its own material() first.
+static var plain_cache:Dictionary={}
+static func plain_material(color:Color)->StandardMaterial3D:
+	var key=color.to_html()
+	if not plain_cache.has(key) or not is_instance_valid(plain_cache[key]):plain_cache[key]=material(color)
+	return plain_cache[key]
+## A copy of a (shared) material that receives no shadows, itself shared per source material.
+static var unshadowed_cache:Dictionary={}
+static func unshadowed(source:BaseMaterial3D)->BaseMaterial3D:
+	var key=source.get_instance_id()
+	if not unshadowed_cache.has(key) or not is_instance_valid(unshadowed_cache[key]):
+		var copy:BaseMaterial3D=source.duplicate();copy.disable_receive_shadows=true;unshadowed_cache[key]=copy
+	return unshadowed_cache[key]
 ## A material of a library surface with this colour (shared per colour and surface).
 static var surface_cache:Dictionary={}
 static func surface_material(color:Color,surface:String)->StandardMaterial3D:
@@ -69,7 +84,10 @@ static func box(parent: Node3D, pos: Vector3, dimensions: Vector3, color: Color,
 	var mesh = BoxMesh.new()
 	mesh.size = dimensions
 	m.mesh = mesh
-	m.material_override = material(color) if surface=="" else surface_material(color,surface)
+	m.material_override = plain_material(color) if surface=="" else surface_material(color,surface)
+	# Small parts cast no sun shadow (T-331, MeshMerge.SHADOW_MIN_SIZE): unseen from the battle camera, yet
+	# each was drawn again in every shadow cascade.
+	if MeshMerge.enabled and maxf(dimensions.x,maxf(dimensions.y,dimensions.z))<MeshMerge.SHADOW_MIN_SIZE:m.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	parent.add_child(m)
 	m.position = pos
 	return m
@@ -259,6 +277,7 @@ static func equip_model(actor_model:Node3D,id:String):
 	var weapon=load("res://assets/models/cozy/weapon_"+id+".glb").instantiate();holder.add_child(weapon);weapon.name="EquippedWeapon";weapon.position=Vector3(.08,-.04,.35);weapon.scale=Vector3.ONE*.8
 	actor_model.gun=weapon;actor_model.gun_home=weapon.position
 
+static var environment_cache:Dictionary={}
 static func apply_environment_palette(node:Node,context:Node,shade:float=0.0,terrain_cover:bool=false):
 	var owner_node=context
 	while owner_node and not owner_node.has_meta("environment_floor"):owner_node=owner_node.get_parent()
@@ -275,15 +294,21 @@ static func apply_environment_palette(node:Node,context:Node,shade:float=0.0,ter
 		for index in range(mesh.mesh.get_surface_count()):
 			var source=mesh.mesh.surface_get_material(index)
 			if not source is StandardMaterial3D or not source.resource_name.begins_with("ENV7_"):continue
-			var mat=source.duplicate()
 			var key=source.resource_name.trim_prefix("ENV7_")
 			if terrain_cover:key=key.get_slice(".",0)  # «steel.002» from the cover export is still steel
-			mat.albedo_color=colors.get(key,floor_color).darkened(shade)
-			# Net legs paint like the indestructible blocks: same colour, matte — not shiny steel (author, 2026-10-03).
-			if terrain_cover and key=="steel":mat.resource_name="ENV7_cover_post"
-			mat.metallic=0;mat.roughness=.9
-			cozy_material(mat)
-			mesh.set_surface_override_material(index,mat)
+			var color:Color=colors.get(key,floor_color).darkened(shade)
+			# One recoloured copy per source material, colour and kind, shared by every prop (T-331): each part of
+			# each prop used to get its own duplicate.
+			var cache_key=[source.get_instance_id(),color.to_html(),terrain_cover and key=="steel"]
+			if not environment_cache.has(cache_key) or not is_instance_valid(environment_cache[cache_key]):
+				var mat=source.duplicate()
+				mat.albedo_color=color
+				# Net legs paint like the indestructible blocks: same colour, matte — not shiny steel (author, 2026-10-03).
+				if terrain_cover and key=="steel":mat.resource_name="ENV7_cover_post"
+				mat.metallic=0;mat.roughness=.9
+				cozy_material(mat)
+				environment_cache[cache_key]=mat
+			mesh.set_surface_override_material(index,environment_cache[cache_key])
 
 static func battle_foundation(parent:Node3D,positions:Array,grid_size:int,tint:Color):
 	box(parent,Vector3(0,-1.02,0),Vector3(grid_size,.14,grid_size),tint)
