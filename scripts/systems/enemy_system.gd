@@ -224,7 +224,10 @@ func quarter_path_direction(actor)->Vector2i:
 		if Time.get_ticks_usec()-began+path_budget_usec>=2000 or Time.get_ticks_usec()-began>=450:break
 		var p:Vector2i=frontier_pop(state.queue);expanded+=1
 		var pos=Vector3(p.x*.25,actor.position.y,p.y*.25);var cell=arena.grid_pos(pos)
-		var at_waypoint=cell==waypoint and (not arena.trenches.has(cell) or pos.is_equal_approx(arena.world_pos(cell)))
+		# A trench or a base firing cell is reached only at its centre (T-336): standing on the boundary between two
+		# rows rounds to the right cell but is half a cell off the base line, so the shot never lines up.
+		var centred=pos.is_equal_approx(arena.world_pos(cell))
+		var at_waypoint=cell==waypoint and (centred or (not arena.trenches.has(cell) and actor.get_meta("base_attack_cell",Vector2i(-1,-1))!=cell))
 		if (waypoint!=Vector2i(-1,-1) and at_waypoint) or (waypoint==Vector2i(-1,-1) and ((not arena.hq_off_field() and cell.x==arena.base_cell.x and cell.y>=arena.grid_size-4 and cell!=arena.base_cell) or (arena.hq_off_field() and is_instance_valid(arena.player) and arena.aligned_direction(cell,arena.player.cell)!=Vector2i.ZERO and arena.clear_line(cell,arena.player.cell)))):
 			goal=p;state.done=true;break
 		for dir in arena.DIRS:

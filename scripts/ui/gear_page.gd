@@ -433,18 +433,33 @@ func popover():
 	var actions=actions_for(selected)
 	if actions.is_empty():return
 	var cell:Control=cells[selected]
-	# A vertical list (T-203): one button per line, the main action first.
-	var bw=maxf(150.0,C*1.4);var h=36.0;var pad=6.0
+	# A small vertical list beside the item (T-338): right of the cell, or left when there is no room; buttons
+	# 1.5× smaller than before; kept inside the visible part of the page so it never slides under the scroll.
+	var bw=100.0;var h=24.0;var pad=4.0
+	var font=UiKit.field_font()
+	for action in actions:bw=maxf(bw,font.get_string_size(Texts.render(str(action[0])),HORIZONTAL_ALIGNMENT_LEFT,-1,12).x+34)
 	var box=Panel.new();box.name="GearActions";body.add_child(box);box.z_index=5
 	box.size=Vector2(bw+pad*2,actions.size()*h+(actions.size()+1)*pad)
-	box.add_theme_stylebox_override("panel",UiKit.style(Color("1d2420"),12,UiKit.ORANGE))
-	var x=clampf(cell.position.x+(cell.size.x-box.size.x)*.5,right_x,right_x+4*C+3*GAP-box.size.x)
-	box.position=Vector2(x,cell.position.y+cell.size.y+6)
+	box.add_theme_stylebox_override("panel",UiKit.style(Color("1d2420"),10,UiKit.ORANGE))
+	var right_edge=right_x+4*C+3*GAP
+	var x=cell.position.x+cell.size.x+6
+	if x+box.size.x>right_edge:x=cell.position.x-6-box.size.x
+	var scroll=body.get_parent() as ScrollContainer
+	var top=float(scroll.scroll_vertical) if scroll else 0.0;var bottom=top+(scroll.size.y if scroll else 99999.0)
+	var y=clampf(cell.position.y,top+4,maxf(top+4,bottom-box.size.y-4))
+	box.position=Vector2(x,y)
+	var at_y=pad
 	for i in range(actions.size()):
-		var b=UiKit.button(box,actions[i][0],Vector2(pad,pad+i*(h+pad)),Vector2(bw,h),actions[i][1],i==0);b.add_theme_font_size_override("font_size",14);b.name="Act_%d" % i;b.clip_text=true
+		var b=UiKit.button(box,actions[i][0],Vector2(pad,at_y),Vector2(bw,h),actions[i][1],i==0);b.add_theme_font_size_override("font_size",12);b.name="Act_%d" % i;b.clip_text=true
+		# Tight padding so the small buttons keep their height (the theme's margins made them grow out of the box).
+		for state in ["normal","hover","pressed","disabled","focus"]:
+			var st=b.get_theme_stylebox(state)
+			if st:st=st.duplicate();st.content_margin_top=2;st.content_margin_bottom=2;b.add_theme_stylebox_override(state,st)
+		b.size=Vector2(bw,maxf(h,b.get_combined_minimum_size().y));at_y+=b.size.y+pad
 		if actions[i][0]=="Уничтожить":b.add_theme_color_override("font_color",Color("e0806b"));b.add_theme_color_override("font_hover_color",Color("f09a86"))
+	box.size.y=at_y;box.position.y=clampf(cell.position.y,top+4,maxf(top+4,bottom-box.size.y-4))
 	if UiKit.motion_enabled():
-		box.modulate.a=0;box.pivot_offset=Vector2(box.size.x*.5,0);box.scale=Vector2(.9,.9)
+		box.modulate.a=0;box.pivot_offset=Vector2(0 if x>cell.position.x else box.size.x,0);box.scale=Vector2(.9,.9)
 		var t=box.create_tween().set_parallel();t.tween_property(box,"modulate:a",1.0,.12);t.tween_property(box,"scale",Vector2.ONE,.16).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 func actions_for(key:String)->Array:
 	var cell:GearCell=cells[key];var actions=[]

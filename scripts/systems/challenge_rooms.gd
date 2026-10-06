@@ -125,14 +125,20 @@ func status()->String:
 		"maze":return TITLES.maze+(" · готово" if rewarded else " · свет включён" if timed_out else " · %d с" % ceili(goal-progress))
 	return ""
 
+## Pie fill of the hold area (shaders/fx/hold_sector.gdshader).
+var sector:MeshInstance3D
 func start_hold():
 	goal=HOLD_SECONDS[clampi(arena.room.difficulty,0,2)]
 	var cell=Vector2i(int(arena.room.grid_size/2),int(arena.room.grid_size/3))
 	cell=arena.find_free_near(cell)
 	zone=Node3D.new();zone.name="HoldZone";arena.add_child(zone);zone.position=arena.world_pos(cell)
 	Visuals.ring(zone,Color("e5b34f"),HOLD_RADIUS)
-	Visuals.box(zone,Vector3(0,1,0),Vector3(.08,2,.08),Color("eee9d8"))
-	Visuals.box(zone,Vector3(.35,1.7,0),Vector3(.7,.45,.07),Color("e5b34f"))
+	# T-335: the same waving flag model as the exit, in the hold colour; the area fills by sectors with time.
+	var flag=ExitFlag.build(zone);flag.name="HoldFlag"
+	var cloth=flag.get_node_or_null("Cloth")
+	if cloth:cloth.material_override=cloth.material_override.duplicate();cloth.material_override.set_shader_parameter("cloth",Color("5fa8c8"))
+	sector=MeshInstance3D.new();sector.name="HoldSector";var disc=QuadMesh.new();disc.orientation=PlaneMesh.FACE_Y;disc.size=Vector2.ONE*HOLD_RADIUS*2.0;sector.mesh=disc
+	var mat=ShaderMaterial.new();mat.shader=preload("res://shaders/fx/hold_sector.gdshader");sector.material_override=mat;sector.position.y=.04;sector.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF;zone.add_child(sector)
 	Visuals.label3d(zone,"Держи точку",Vector3(0,2.5,0),Color("fff0ce"),32)
 	refill_enemies()
 	if is_instance_valid(arena.presentation):arena.presentation.announce("Удержание","Стой в зоне, пока враги наступают",.8)
@@ -153,6 +159,8 @@ func tick_hold(delta:float):
 	contested_now=contested or not (is_instance_valid(player) and in_zone(player.position))
 	if is_instance_valid(player) and in_zone(player.position) and not contested:progress=minf(goal,progress+delta)
 	elif not is_instance_valid(player) or not in_zone(player.position):progress=maxf(0,progress-delta*.25)
+	if is_instance_valid(sector):
+		sector.material_override.set_shader_parameter("ratio",clampf(progress/maxf(goal,.01),0.0,1.0));sector.material_override.set_shader_parameter("paused",1.0 if contested_now else 0.0)
 	if progress>=goal:complete(zone.position)
 
 func start_maze():

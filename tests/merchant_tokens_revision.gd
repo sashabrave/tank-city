@@ -15,12 +15,12 @@ func run():
 	check(RoomLayout.plan(7,2,true).fortune=="slot","merchant fortune is the slot machine")
 	var kinds={}
 	for seed in range(200):kinds[RoomLayout.plan(seed,2,false).fortune]=true;kinds["m_"+RoomLayout.plan(seed,2,false).machine]=true
-	check(kinds.has("slot") and kinds.has("lootbox") and kinds.has("closed") and kinds.has("m_medkit") and kinds.has("m_lootbox"),"fortune and machine kinds all appear (%s)" % [kinds.keys()])
+	check(kinds.has("slot") and kinds.has("medkit") and kinds.has("closed") and kinds.has("m_lootbox") and not kinds.has("m_medkit"),"the ammo lootbox is in every room, the aid kit is a fortune spot (%s)" % [kinds.keys()])
 	# T-234: the slot machine is the usual fortune (about 65% of rooms), a closed booth about one room in five.
-	var counts={"slot":0,"lootbox":0,"closed":0};var doubled=0
+	var counts={"slot":0,"medkit":0,"closed":0};var doubled=0
 	for seed in range(1000):
 		var layout=RoomLayout.plan(seed,3,false);counts[layout.fortune]+=1
-		if layout.fortune=="lootbox" and layout.machine=="lootbox":doubled+=1
+		if layout.fortune==layout.machine:doubled+=1
 	check(counts.slot>550 and counts.slot<750 and counts.closed>140 and counts.closed<260 and doubled==0,"fortune shares: %s, no double ammo box" % [counts])
 	check(RoutePlan.lane_span(0,2,3)==[0,1] and RoutePlan.lane_span(1,2,3)==[1,2] and RoutePlan.lane_span(0,1,3)==[0,1,2],"service stops link to neighbouring lanes")
 	check(Campaign.service_options(1,2)==["ability","merchant"],"world 1 rows: instructor and merchant")
@@ -86,8 +86,12 @@ func run():
 	check(shop.purchase(card) and arena.run.upgrade_history.size()==history+1 and arena.run.tokens==27-price,"card bought and applied")
 	var before=arena.run.tokens
 	shop.place_hero(RoomLayout.FORTUNE-Vector3(1.15,0,0));shop.interact();await settle()  # the slot machine stands on the «Фортуна» spot
+	# T-339: E first opens a small dialog with the bet and the odds; «Крутить» starts the reels.
+	var confirm=shop.find_child("FortuneConfirm",true,false)
+	check(confirm!=null and arena.run.tokens==before,"E at the machine opens the fortune dialog first, nothing paid yet")
+	if confirm:confirm.find_child("Spin",true,false).pressed.emit();await settle()
 	var reels=shop.find_child("SlotWindow",true,false)
-	check(reels!=null and reels.find_child("Reel2",true,false)!=null,"E at the machine opens the reel window at once")
+	check(reels!=null and reels.find_child("Reel2",true,false)!=null,"«Крутить» opens the reel window")
 	var strip=reels.reels[0].strip.position.y
 	await get_tree().create_timer(.25).timeout
 	check(reels.reels[0].strip.position.y>strip,"reels spin")
@@ -95,7 +99,12 @@ func run():
 		if not is_instance_valid(reels):break
 		await get_tree().create_timer(.1).timeout
 	check(not is_instance_valid(reels) and shop.modal==null,"window closes by itself after the verdict")
-	shop.interact();await settle();shop.modal.finish();await settle()
+	shop.interact();await settle()
+	var again=shop.find_child("FortuneConfirm",true,false)
+	if again:again.find_child("Spin",true,false).pressed.emit();await settle()
+	var window=shop.spots.fortune.modal
+	if is_instance_valid(window) and window.has_method("finish"):window.finish()
+	await settle()
 	check(arena.run.tokens-before in [-4,0,4],"each pull costs 2 or pays back double")
 	arena.run.tokens=0
 	check(not shop.pull_lever(),"no tokens, no play")

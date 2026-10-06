@@ -11,8 +11,10 @@ const EXIT:=Vector3(4,0,1)
 ## Machines for the vending spot. The fortune spot (T-234, 4 Oct: the slot machine was too rare) holds the slot
 ## machine, an ammo loot box or a closed booth with these weights; the merchant always has its slot machine there.
 ## The ammo loot box never stands twice in one room: on the fortune spot it turns into the slot machine.
-const MACHINES:=["medkit","lootbox"]
-const FORTUNE_WEIGHTS:={"slot":.5,"lootbox":.3,"closed":.2}
+## T-339 (author, 5 Oct: «лутбокс патронов куда-то потерялся»): the ammo lootbox stands in every upgrade room;
+## the aid-kit machine moved to the fortune spot.
+const MACHINES:=["lootbox"]
+const FORTUNE_WEIGHTS:={"slot":.65,"medkit":.15,"closed":.2}
 
 ## What stands where in this room. Seeded by the run and the room only (own generator): the same room shows the
 ## same machines after a reload, and the combat RNG is not touched.
@@ -25,7 +27,7 @@ static func plan(run_seed:int,index:int,merchant:bool)->Dictionary:
 		for kind in FORTUNE_WEIGHTS:
 			acc+=float(FORTUNE_WEIGHTS[kind]);fortune=kind
 			if roll<acc:break
-		if fortune=="lootbox" and machine=="lootbox":fortune="slot"
+		if fortune==machine:fortune="slot"
 	return {"machine":machine,"fortune":fortune}
 
 ## Places the weapon crate, the vending machine and the fortune spot; returns them as {crate, machine, fortune}.

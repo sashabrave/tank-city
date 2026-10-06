@@ -51,8 +51,28 @@ func pull(ui_root:Control,done:Callable)->String:
 		modal.finished.connect(func():modal=null;done.call())
 	else:done.call()
 	return line
+## A small dialog before the spin (T-339): the bet, what can drop and with what chance, «Крутить» / «Отмена».
 func use(ui_root:Control,done:Callable):
-	if pull(ui_root,done)=="" and is_instance_valid(arena):arena.toast(Texts.render("Автомату нужно %d жетона") % PRICE)
+	if ui_root==null:
+		if pull(null,done)=="" and is_instance_valid(arena):arena.toast(Texts.render("Автомату нужно %d жетона") % PRICE)
+		return
+	modal=Control.new();modal.name="FortuneConfirm";ui_root.add_child(modal);modal.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);modal.add_to_group("selection_scope")
+	var shade=ColorRect.new();modal.add_child(shade);shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);shade.color=Color(0,0,0,.45)
+	var list=prizes();var size=Vector2(420,150+list.size()*24);var screen=ui_root.get_viewport_rect().size
+	var panel=UiKit.glass(modal,((screen-size)*.5).round(),size)
+	UiKit.accent(UiKit.label(panel,"Фортуна",Vector2(20,14),Vector2(size.x-40,32),22))
+	UiKit.label(panel,"Ставка %d жетона · у тебя %d" % [PRICE,arena.run.tokens],Vector2(20,48),Vector2(size.x-40,20),13,UiKit.MUTED)
+	for i in range(list.size()):
+		UiKit.label(panel,str(list[i][1]),Vector2(20,76+i*24),Vector2(size.x-110,22),14)
+		var pct=UiKit.label(panel,"%d%%" % int(list[i][2]),Vector2(size.x-90,76+i*24),Vector2(70,22),14,UiKit.MUTED);pct.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
+	var close=func():
+		if is_instance_valid(modal):modal.queue_free()
+		modal=null
+	UiKit.button(panel,"Отмена",Vector2(20,size.y-58),Vector2((size.x-52)*.5,44),func():close.call();done.call()).name="Cancel"
+	var spin=UiKit.button(panel,"Крутить · %d" % PRICE,Vector2(32+(size.x-52)*.5,size.y-58),Vector2((size.x-52)*.5,44),func():
+		close.call()
+		if pull(ui_root,done)=="" and is_instance_valid(arena):arena.toast(Texts.render("Автомату нужно %d жетона") % PRICE),true)
+	spin.name="Spin";spin.disabled=arena.run.tokens<PRICE;UiKit.muted_locked_button(spin);spin.grab_focus.call_deferred()
 func heal_full():
 	arena.run.soldier_hp=arena.run.soldier_max_hp
 	if is_instance_valid(arena.room.player) and arena.room.player.kind=="soldier":arena.room.player.hp=arena.run.soldier_hp;arena.room.player.refresh_health()

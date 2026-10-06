@@ -21,12 +21,11 @@ run/main_scene="res://scenes/main.tscn"
 config/use_custom_user_dir=true
 config/custom_user_dir_name="Godot/app_userdata/Рубеж - 13"
 config/features=PackedStringArray("4.7", "Forward Plus")
-config/build="410"
-config/icon="res://assets/branding/app_icon.png"
 boot_splash/bg_color=Color(0.113725, 0.141176, 0.12549, 1)
+boot_splash/stretch_mode=0
 boot_splash/image="res://assets/ui/branding_v1/war_cats_logo_v2.png"
-boot_splash/fullsize=false
-boot_splash/use_filter=true
+config/icon="res://assets/branding/app_icon.png"
+config/build="410"
 
 [audio]
 

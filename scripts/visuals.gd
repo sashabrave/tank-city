@@ -403,5 +403,7 @@ static func parachute(visual:Node3D,size:=1.0,top:=.3)->Node3D:
 		for z in [-.16,.16]:
 			var anchor=Vector3(side*.46,.84,z);var bottom=Vector3(0,.3,0)
 			var line=Visuals.box(chute,(anchor+bottom)*.5,Vector3(.01,.01,anchor.distance_to(bottom)),Color("c9c8bf"))
-			line.look_at_from_position(line.position,anchor,Vector3.UP)
+			# Oriented in the chute's own space: look_at_from_position works in world space, so the lines of a chute
+			# that is not at the origin floated off across the screen as faint threads (2026-10-05).
+			line.basis=Basis.looking_at(anchor-line.position,Vector3.UP)
 	return chute

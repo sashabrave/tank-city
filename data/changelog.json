@@ -10,7 +10,8 @@
 					"Разворот назад срабатывает сразу, не дожидаясь конца шага.",
 					"Выстрел уходит в момент нажатия, даже во время поворота, — больше нет паузы в десятую долю секунды. Враги, как и раньше, сначала доворачиваются.",
 					"Бой с толпой врагов и шквальным огнём нагружает процессор заметно меньше: враги быстрее проверяют линию огня, пули — попадания.",
-					"Видеокарте стало легче: детали штаба и окружения рисуются вместе, одинаковые материалы общие, мелочь не отбрасывает невидимую сверху тень — вызовов отрисовки почти вдвое меньше. Картинка та же."
+					"Видеокарте стало легче: детали штаба и окружения рисуются вместе, одинаковые материалы общие, мелочь не отбрасывает невидимую сверху тень — вызовов отрисовки почти вдвое меньше. Картинка та же.",
+					"Меню предмета в инвентаре — компактное, сбоку от предмета и всегда на экране. Купленная техника въезжает за штабом фарами вперёд. Враги у штаба с проломом в барьере подходят к пролому и стреляют через него. Точка удержания: развевающийся флаг, зона медленно мерцает и заполняется по секторам. В комнатах прокачки всегда есть автомат патронов, а перед игровым автоматом — окошко со ставкой и шансами. Нити от парашютов больше не летают по экрану"
 				]
 			},
 			"en": {
@@ -20,7 +21,8 @@
 					"Turning straight back works at once, without finishing the step.",
 					"Shots leave the moment you press, even while turning — no more tenth-of-a-second pause. Enemies still turn first, as before.",
 					"Crowded battles with heavy fire load the CPU noticeably less: enemies check lines of fire faster, and so do bullets.",
-					"Lighter on the GPU: HQ and scenery parts draw together, identical materials are shared, and tiny parts no longer cast shadows you cannot see from above — almost half the draw calls. The picture is the same."
+					"Lighter on the GPU: HQ and scenery parts draw together, identical materials are shared, and tiny parts no longer cast shadows you cannot see from above — almost half the draw calls. The picture is the same.",
+					"The item menu in the inventory is compact, beside the item and always on screen. A bought vehicle drives in behind the HQ headlights first. Enemies at an HQ with a broken barrier go to the gap and shoot through it. Hold point: a waving flag, the zone slowly pulses and fills by sectors. Upgrade rooms always have the ammo machine, and the slot machine shows a small dialog with the bet and odds. Parachute threads no longer drift across the screen"
 				]
 			}
 		},

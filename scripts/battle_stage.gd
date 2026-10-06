@@ -58,7 +58,8 @@ static func fort_walls(arena)->Array:
 static func intro(arena):
 	stop(arena)
 	var hq:Node3D=arena.base_model
-	if not is_instance_valid(hq):return
+	if not is_instance_valid(hq):
+		show_parked(arena);return
 	var rest=hq.position;var yaw=hq.rotation.y;var s=side(arena)
 	var approach=arena.find_child("FieldApproach",true,false)
 	if approach and approach.has_meta("track_right"):
@@ -71,6 +72,7 @@ static func intro(arena):
 		build_bricks(arena,ARRIVE_RAMP+BEAT+HOP-BRICKS_AT,arena.player.cell if is_instance_valid(arena.player) else Vector2i(-1,-1))
 		arena.countdown=ARRIVE_RAMP+BEAT+HOP+COUNT_AFTER_LANDING
 		return
+	show_parked(arena)  # no approach ramp here: the parked vehicle simply appears at its cell
 	if is_instance_valid(arena.presentation):arena.presentation.swoop_in(s)
 	# The curve ends level with the rest point, so its last tangent is the final heading: no turn on the spot.
 	var start=rest+Vector3(s*5.5,0,3.2);var bend=rest+Vector3(s*4.2,0,0)
@@ -124,9 +126,13 @@ static func ramp_arrival(arena,hq:Node3D,approach,rest:Vector3,yaw:float):
 		arena.burst(rest,Color("d8cfb4"),.5)
 		for node in [arena.base_label,arena.base_bar]:
 			if is_instance_valid(node):node.visible=true;pop(node))
+static func show_parked(arena):
+	if not arena.has_meta("arriving_vehicle"):return
+	var parked=arena.get_meta("arriving_vehicle");arena.remove_meta("arriving_vehicle")
+	if is_instance_valid(parked):parked.visible=true;pop(parked)
 ## The hero's own vehicle follows the HQ along the same track (author, 4 Oct 2026) and turns off to its cell next
 ## to the start; it stands there ready before the countdown ends.
-const VEHICLE_DELAY:=.45
+const VEHICLE_DELAY:=.5
 static func vehicle_arrival(arena,approach,rest:Vector3,yaw:float):
 	if not arena.has_meta("arriving_vehicle"):return
 	var wreck:Node3D=arena.get_meta("arriving_vehicle");arena.remove_meta("arriving_vehicle")
@@ -134,13 +140,16 @@ static func vehicle_arrival(arena,approach,rest:Vector3,yaw:float):
 	var goal=wreck.position;var turn=wreck.rotation.y;var offset=goal-rest
 	var curve=approach_curve(approach,side(arena),rest,Vector3(sin(yaw),0,cos(yaw)),true);var length=curve.get_baked_length()
 	wreck.visible=false
+	# Start already pointing along the track, so it does not swing round on the first frame.
+	var first=curve.sample_baked(1.5,true)-curve.sample_baked(0.0,true);wreck.rotation.y=atan2(-first.x,-first.z)
 	var drive=func(t:float):
 		if not is_instance_valid(wreck):return
 		var p=curve.sample_baked(t*length,true)+offset*smoothstep(.7,1.0,t)
 		var ahead=curve.sample_baked(minf(length,t*length+1.5),true)+offset*smoothstep(.7,1.0,minf(1.0,t+.05))
 		wreck.position=Vector3(p.x,approach.path_height(p) if p.z>goal.z+.01 else goal.y,p.z)
 		var flat=Vector2(ahead.x-p.x,ahead.z-p.z)
-		if flat.length()>.001 and t<.97:wreck.rotation.y=lerp_angle(wreck.rotation.y,atan2(flat.x,flat.y),.25)
+		# Vehicle models look along -Z (unlike the HQ): headlights first means atan2(-x,-z) (T-337).
+		if flat.length()>.001 and t<.97:wreck.rotation.y=lerp_angle(wreck.rotation.y,atan2(-flat.x,-flat.y),.25)
 	var tween=stage_tween(arena,wreck);tween.tween_interval(VEHICLE_DELAY)
 	tween.tween_callback(func():if is_instance_valid(wreck):wreck.visible=true)
 	tween.tween_method(drive,0.0,1.0,ARRIVE_RAMP).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)

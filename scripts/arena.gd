@@ -451,6 +451,7 @@ func park_arriving_vehicle(kind:String,armor:float,salvaged:bool,origin:String,z
 	var full=vehicle.player_armor(kind,origin,zone)
 	var wreck=make_wreck(kind,cell,Vector2i.UP,false,armor if armor>0 else full,origin,zone)
 	wreck.salvaged=salvaged;set_meta("arriving_vehicle",wreck)
+	wreck.visible=false  # hidden until it drives in behind the HQ (T-337), never popping in at its cell first
 ## The HQ stands on the field as a target in every fight except the final boss (T-260, author 4 Oct: the general
 ## fight keeps the HQ like a battle field, his reinforcements go for it).
 func hq_off_field()->bool:return peaceful() or (boss_room and Campaign.is_final(room_index))
